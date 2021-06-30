@@ -32,13 +32,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class GURL;
-
 namespace chromeos {
 
-class LacrosChromeServiceDelegate;
-class SystemIdleCache;
 class NativeThemeCache;
+class SystemIdleCache;
 
 // Forward declaration for class defined in .cc file that holds most of the
 // business logic of this class.
@@ -85,10 +82,16 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // this pointer during shutdown can result in UaF.
   static LacrosChromeServiceImpl* Get();
 
+  // Alias for testing currently.
+  // TODO(hidehiko): the argument |browser_service| will be removed soon.
+  // So this is the forward compatibility to avoid updating callers (tests)
+  // twice.
+  LacrosChromeServiceImpl();
+
   // This class is expected to be constructed and destroyed on the same
   // sequence.
   explicit LacrosChromeServiceImpl(
-      std::unique_ptr<LacrosChromeServiceDelegate> delegate);
+      std::unique_ptr<crosapi::mojom::BrowserService> browser_service);
   ~LacrosChromeServiceImpl();
 
   // This can be called on any thread. This call allows LacrosChromeServiceImpl
@@ -279,27 +282,21 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
             uint32_t MethodMinVersion>
   class InterfaceEntry;
 
-  // Creates a new window on the affine sequence.
-  void NewWindowAffineSequence(bool incognito);
-
-  // Creates a new tab on the affine sequence.
-  void NewTabAffineSequence();
-
-  // Restores a tab on the affine sequence.
-  void RestoreTabAffineSequence();
-
-  using GetFeedbackDataCallback = base::OnceCallback<void(base::Value)>;
-  // Gets feedback data on the affine sequence.
-  void GetFeedbackDataAffineSequence(GetFeedbackDataCallback callback);
-
-  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
-  // Gets histograms on the affine sequence.
-  void GetHistogramsAffineSequence(GetHistogramsCallback callback);
-
-  using GetActiveTabUrlCallback =
-      base::OnceCallback<void(const absl::optional<GURL>&)>;
-  // Gets Url of the active tab on the affine sequence.
-  void GetActiveTabUrlAffineSequence(GetActiveTabUrlCallback callback);
+  // Following methods are proxy to BrowserServiceLacros.
+  // TODO(hidehiko): Remove them.
+  void NewWindowAffineSequence(
+      bool incognito,
+      crosapi::mojom::BrowserService::NewWindowCallback callback);
+  void NewTabAffineSequence(
+      crosapi::mojom::BrowserService::NewTabCallback callback);
+  void RestoreTabAffineSequence(
+      crosapi::mojom::BrowserService::RestoreTabCallback callback);
+  void GetFeedbackDataAffineSequence(
+      crosapi::mojom::BrowserService::GetFeedbackDataCallback callback);
+  void GetHistogramsAffineSequence(
+      crosapi::mojom::BrowserService::GetHistogramsCallback callback);
+  void GetActiveTabUrlAffineSequence(
+      crosapi::mojom::BrowserService::GetActiveTabUrlCallback callback);
 
   // Update device account policy with the input data. The data comes as
   // serialized blob of PolicyFetchResponse object.
@@ -345,9 +342,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // this functional for tests without modifying production code
   static bool disable_crosapi_for_testing_;
 
-  // Delegate instance to inject Chrome dependent code. Must only be used on the
+  // BrowserService implementation injected by chrome/. Must only be used on the
   // affine sequence.
-  std::unique_ptr<LacrosChromeServiceDelegate> delegate_;
+  // TODO(hidehiko): Remove this.
+  std::unique_ptr<crosapi::mojom::BrowserService> browser_service_;
 
   // Parameters passed from ash-chrome.
   crosapi::mojom::BrowserInitParamsPtr init_params_;

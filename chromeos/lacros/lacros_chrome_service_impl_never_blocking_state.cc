@@ -35,28 +35,30 @@ void LacrosChromeServiceImplNeverBlockingState::REMOVED_2(
 void LacrosChromeServiceImplNeverBlockingState::NewWindow(
     bool incognito,
     NewWindowCallback callback) {
-  owner_sequence_->PostTaskAndReply(
+  owner_sequence_->PostTask(
       FROM_HERE,
       base::BindOnce(&LacrosChromeServiceImpl::NewWindowAffineSequence, owner_,
-                     incognito),
-      std::move(callback));
+                     incognito,
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(callback))));
 }
 
 void LacrosChromeServiceImplNeverBlockingState::NewTab(
     NewTabCallback callback) {
-  owner_sequence_->PostTaskAndReply(
+  owner_sequence_->PostTask(
       FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::NewTabAffineSequence, owner_),
-      std::move(callback));
+      base::BindOnce(&LacrosChromeServiceImpl::NewTabAffineSequence, owner_,
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(callback))));
 }
 
 void LacrosChromeServiceImplNeverBlockingState::RestoreTab(
     RestoreTabCallback callback) {
-  owner_sequence_->PostTaskAndReply(
+  owner_sequence_->PostTask(
       FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::RestoreTabAffineSequence,
-                     owner_),
-      std::move(callback));
+      base::BindOnce(&LacrosChromeServiceImpl::RestoreTabAffineSequence, owner_,
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(callback))));
 }
 
 void LacrosChromeServiceImplNeverBlockingState::GetFeedbackData(

@@ -7,10 +7,6 @@
 #include "base/test/task_environment.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#endif
-
 namespace content {
 
 // Acts like normal ShellContentBrowserClient but injects a test TaskTracker to
@@ -35,8 +31,7 @@ ContentBrowserTestShellMainDelegate::~ContentBrowserTestShellMainDelegate() =
 void ContentBrowserTestShellMainDelegate::PostEarlyInitialization(
     bool is_running_tests) {
   // Browser tests on Lacros requires a non-null LacrosService.
-  lacros_service_ = std::make_unique<chromeos::LacrosService>(
-      /*delegate=*/nullptr);
+  lacros_service_ = std::make_unique<chromeos::LacrosService>();
   ShellMainDelegate::PostEarlyInitialization(is_running_tests);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

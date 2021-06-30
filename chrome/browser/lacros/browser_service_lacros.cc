@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/lacros_chrome_service_delegate_impl.h"
+#include "chrome/browser/lacros/browser_service_lacros.h"
 
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -46,52 +46,62 @@ std::string GetCompressedHistograms() {
 
 }  // namespace
 
-LacrosChromeServiceDelegateImpl::LacrosChromeServiceDelegateImpl() = default;
+BrowserServiceLacros::BrowserServiceLacros() = default;
 
-LacrosChromeServiceDelegateImpl::~LacrosChromeServiceDelegateImpl() = default;
+BrowserServiceLacros::~BrowserServiceLacros() = default;
 
-void LacrosChromeServiceDelegateImpl::NewWindow(bool incognito) {
+void BrowserServiceLacros::REMOVED_0(REMOVED_0Callback callback) {
+  NOTIMPLEMENTED();
+}
+
+void BrowserServiceLacros::REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) {
+  NOTIMPLEMENTED();
+}
+
+void BrowserServiceLacros::NewWindow(bool incognito,
+                                     NewWindowCallback callback) {
   // TODO(crbug.com/1102815): Find what profile should be used.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
   chrome::NewEmptyWindow(
       incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                 : profile);
+  std::move(callback).Run();
 }
 
-void LacrosChromeServiceDelegateImpl::NewTab() {
+void BrowserServiceLacros::NewTab(NewTabCallback callback) {
   // TODO(crbug.com/1102815): Find what profile should be used.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
   Browser* browser = chrome::FindBrowserWithProfile(profile);
   DCHECK(browser) << "No browser is found.";
   chrome::NewTab(browser);
+  std::move(callback).Run();
 }
 
-void LacrosChromeServiceDelegateImpl::RestoreTab() {
+void BrowserServiceLacros::RestoreTab(RestoreTabCallback callback) {
   // TODO(crbug.com/1102815): Find what profile should be used.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
   Browser* browser = chrome::FindBrowserWithProfile(profile);
   DCHECK(browser) << "No browser is found.";
   chrome::RestoreTab(browser);
+  std::move(callback).Run();
 }
 
-void LacrosChromeServiceDelegateImpl::GetFeedbackData(
-    GetFeedbackDataCallback callback) {
+void BrowserServiceLacros::GetFeedbackData(GetFeedbackDataCallback callback) {
   DCHECK(!callback.is_null());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Self-deleting object.
   system_logs::SystemLogsFetcher* fetcher =
       system_logs::BuildLacrosSystemLogsFetcher(/*scrub_data=*/true);
-  fetcher->Fetch(
-      base::BindOnce(&LacrosChromeServiceDelegateImpl::OnSystemInformationReady,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  fetcher->Fetch(base::BindOnce(&BrowserServiceLacros::OnSystemInformationReady,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(callback)));
 }
 
-void LacrosChromeServiceDelegateImpl::GetHistograms(
-    GetHistogramsCallback callback) {
+void BrowserServiceLacros::GetHistograms(GetHistogramsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // GetCompressedHistograms calls functions marking as blocking, so it
@@ -99,29 +109,27 @@ void LacrosChromeServiceDelegateImpl::GetHistograms(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(GetCompressedHistograms),
-      base::BindOnce(
-          &LacrosChromeServiceDelegateImpl::OnGetCompressedHistograms,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&BrowserServiceLacros::OnGetCompressedHistograms,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void LacrosChromeServiceDelegateImpl::OnGetCompressedHistograms(
-    GetHistogramsCallback callback,
-    const std::string& compressed_histograms) {
-  DCHECK(!callback.is_null());
-  std::move(callback).Run(compressed_histograms);
-}
-
-GURL LacrosChromeServiceDelegateImpl::GetActiveTabUrl() {
+void BrowserServiceLacros::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   GURL page_url;
   if (browser) {
     page_url = chrome::GetTargetTabUrl(
         browser->session_id(), browser->tab_strip_model()->active_index());
   }
-  return page_url;
+  std::move(callback).Run(page_url);
 }
 
-void LacrosChromeServiceDelegateImpl::OnSystemInformationReady(
+void BrowserServiceLacros::UpdateDeviceAccountPolicy(
+    const std::vector<uint8_t>& policy) {
+  // TODO(hidehiko): Implement this.
+  NOTIMPLEMENTED();
+}
+
+void BrowserServiceLacros::OnSystemInformationReady(
     GetFeedbackDataCallback callback,
     std::unique_ptr<system_logs::SystemLogsResponse> sys_info) {
   base::Value system_log_entries(base::Value::Type::DICTIONARY);
@@ -149,4 +157,11 @@ void LacrosChromeServiceDelegateImpl::OnSystemInformationReady(
 
   DCHECK(!callback.is_null());
   std::move(callback).Run(std::move(system_log_entries));
+}
+
+void BrowserServiceLacros::OnGetCompressedHistograms(
+    GetHistogramsCallback callback,
+    const std::string& compressed_histograms) {
+  DCHECK(!callback.is_null());
+  std::move(callback).Run(compressed_histograms);
 }

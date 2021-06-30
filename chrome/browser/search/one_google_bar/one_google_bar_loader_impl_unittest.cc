@@ -30,8 +30,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
@@ -75,7 +74,7 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
     testing::Test::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (!chromeos::LacrosChromeServiceImpl::Get()) {
+    if (!chromeos::LacrosService::Get()) {
       scoped_lacros_test_helper_ =
           std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
     }
@@ -330,7 +329,7 @@ TEST_F(OneGoogleBarLoaderImplTest, MirrorAccountConsistencyNotRequired) {
   check_x_chrome_connected_header = true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+      chromeos::LacrosService::Get()->init_params();
   if (init_params->use_new_account_manager)
     check_x_chrome_connected_header = true;
 #endif
@@ -378,7 +377,7 @@ TEST_F(OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest,
   check_x_chrome_connected_header = true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+      chromeos::LacrosService::Get()->init_params();
   if (init_params->use_new_account_manager)
     check_x_chrome_connected_header = true;
 #endif

@@ -43,7 +43,6 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "chromeos/lacros/lacros_chrome_service_impl_never_blocking_state.h"
 #include "chromeos/lacros/native_theme_cache.h"
 #include "chromeos/lacros/system_idle_cache.h"
@@ -124,9 +123,12 @@ LacrosChromeServiceImpl* LacrosChromeServiceImpl::Get() {
   return g_instance;
 }
 
+LacrosChromeServiceImpl::LacrosChromeServiceImpl()
+    : LacrosChromeServiceImpl(/*browser_service=*/nullptr) {}
+
 LacrosChromeServiceImpl::LacrosChromeServiceImpl(
-    std::unique_ptr<LacrosChromeServiceDelegate> delegate)
-    : delegate_(std::move(delegate)),
+    std::unique_ptr<crosapi::mojom::BrowserService> browser_service)
+    : browser_service_(std::move(browser_service)),
       // If crosapi is disabled, use the empty params.
       // Otherwise, read the startup data from the inherited FD.
       init_params_(disable_crosapi_for_testing_
@@ -512,37 +514,41 @@ void LacrosChromeServiceImpl::SetInitParamsForTests(
   init_params_ = std::move(init_params);
 }
 
-void LacrosChromeServiceImpl::NewWindowAffineSequence(bool incognito) {
+void LacrosChromeServiceImpl::NewWindowAffineSequence(
+    bool incognito,
+    crosapi::mojom::BrowserService::NewWindowCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->NewWindow(incognito);
+  browser_service_->NewWindow(incognito, std::move(callback));
 }
 
-void LacrosChromeServiceImpl::NewTabAffineSequence() {
+void LacrosChromeServiceImpl::NewTabAffineSequence(
+    crosapi::mojom::BrowserService::NewTabCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->NewTab();
+  browser_service_->NewTab(std::move(callback));
 }
 
-void LacrosChromeServiceImpl::RestoreTabAffineSequence() {
+void LacrosChromeServiceImpl::RestoreTabAffineSequence(
+    crosapi::mojom::BrowserService::RestoreTabCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->RestoreTab();
+  browser_service_->RestoreTab(std::move(callback));
 }
 
 void LacrosChromeServiceImpl::GetFeedbackDataAffineSequence(
-    GetFeedbackDataCallback callback) {
+    crosapi::mojom::BrowserService::GetFeedbackDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->GetFeedbackData(std::move(callback));
+  browser_service_->GetFeedbackData(std::move(callback));
 }
 
 void LacrosChromeServiceImpl::GetHistogramsAffineSequence(
-    GetHistogramsCallback callback) {
+    crosapi::mojom::BrowserService::GetHistogramsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->GetHistograms(std::move(callback));
+  browser_service_->GetHistograms(std::move(callback));
 }
 
 void LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence(
-    GetActiveTabUrlCallback callback) {
+    crosapi::mojom::BrowserService::GetActiveTabUrlCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  std::move(callback).Run(delegate_->GetActiveTabUrl());
+  browser_service_->GetActiveTabUrl(std::move(callback));
 }
 
 absl::optional<uint32_t> LacrosChromeServiceImpl::CrosapiVersion() const {

@@ -8,8 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -17,11 +16,11 @@ TEST(LacrosMetricsProviderTest, EnrollmentStatusRecordedForCurrentSession) {
   base::test::TaskEnvironment task_environment;
 
   // Simulate lacros initialization on an enterprise-enrolled device.
-  chromeos::LacrosChromeServiceImpl lacros_chrome_service(/*delegate=*/nullptr);
+  chromeos::LacrosService lacros_service;
   crosapi::mojom::BrowserInitParamsPtr init_params =
       crosapi::mojom::BrowserInitParams::New();
   init_params->device_mode = crosapi::mojom::DeviceMode::kEnterprise;
-  lacros_chrome_service.SetInitParamsForTests(std::move(init_params));
+  lacros_service.SetInitParamsForTests(std::move(init_params));
 
   // Provide current session metrics.
   base::HistogramTester histogram_tester;

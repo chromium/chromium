@@ -5,7 +5,6 @@
 #include "chromeos/lacros/lacros_test_helper.h"
 
 #include "base/check.h"
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
 
 namespace chromeos {
 
@@ -20,8 +19,7 @@ ScopedDisableCrosapiForTesting::ScopedDisableCrosapiForTesting()
 // Currently, browser_tests' shutdown is an exception.
 ScopedDisableCrosapiForTesting::~ScopedDisableCrosapiForTesting() = default;
 
-ScopedLacrosServiceTestHelper::ScopedLacrosServiceTestHelper()
-    : lacros_service_(/*delegate=*/nullptr) {}
+ScopedLacrosServiceTestHelper::ScopedLacrosServiceTestHelper() = default;
 
 ScopedLacrosServiceTestHelper::~ScopedLacrosServiceTestHelper() = default;
 

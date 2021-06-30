@@ -18,8 +18,7 @@ specific_include_rules = {
     "+chromeos/crosapi/mojom/crosapi.mojom.h"
   ],
   "signin_header_helper_unittest.cc": [
-    "+chromeos/lacros/lacros_chrome_service_delegate.h",
-    "+chromeos/lacros/lacros_chrome_service_impl.h",
+    "+chromeos/lacros/lacros_service.h",
     "+chromeos/lacros/lacros_test_helper.h"
   ]
 }

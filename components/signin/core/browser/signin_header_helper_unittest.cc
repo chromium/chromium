@@ -27,8 +27,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
@@ -76,7 +75,7 @@ class SigninHeaderHelperTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(crbug.com/1198528): remove this after the rollout.
-    if (!chromeos::LacrosChromeServiceImpl::Get()) {
+    if (!chromeos::LacrosService::Get()) {
       scoped_lacros_test_helper_ =
           std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
     }
@@ -178,7 +177,7 @@ class SigninHeaderHelperTest : public testing::Test {
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+      chromeos::LacrosService::Get()->init_params();
   if (!init_params->use_new_account_manager)
     return;
 #endif

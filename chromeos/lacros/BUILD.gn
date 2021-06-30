@@ -27,7 +27,6 @@ component("lacros") {
     "//ui/native_theme",
   ]
   sources = [
-    "lacros_chrome_service_delegate.h",
     "lacros_chrome_service_impl.cc",
     "lacros_chrome_service_impl.h",
     "lacros_chrome_service_impl_never_blocking_state.cc",
