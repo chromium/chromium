@@ -128,8 +128,6 @@ class EventSender {
 
   void DumpFilenameBeingDragged();
 
-  void GestureScrollFirstPoint(float x, float y);
-
   void TouchStart(gin::Arguments* args);
   void TouchMove(gin::Arguments* args);
   void TouchCancel(gin::Arguments* args);
@@ -146,9 +144,7 @@ class EventSender {
 
   void AddTouchPoint(float x, float y, gin::Arguments* args);
 
-  void GestureScrollBegin(blink::WebLocalFrame* frame, gin::Arguments* args);
-  void GestureScrollEnd(blink::WebLocalFrame* frame, gin::Arguments* args);
-  void GestureScrollUpdate(blink::WebLocalFrame* frame, gin::Arguments* args);
+  void GestureScrollPopup(blink::WebLocalFrame* frame, gin::Arguments* args);
   void GestureTap(blink::WebLocalFrame* frame, gin::Arguments* args);
   void GestureTapDown(blink::WebLocalFrame* frame, gin::Arguments* args);
   void GestureShowPress(blink::WebLocalFrame* frame, gin::Arguments* args);
@@ -157,7 +153,6 @@ class EventSender {
   void GestureLongTap(blink::WebLocalFrame* frame, gin::Arguments* args);
   void GestureTwoFingerTap(blink::WebLocalFrame* frame, gin::Arguments* args);
 
-  void MouseScrollBy(gin::Arguments* args, MouseScrollType scroll_type);
   void MouseMoveTo(blink::WebLocalFrame* frame, gin::Arguments* args);
   void MouseLeave(blink::WebPointerProperties::PointerType, int pointerId);
   void ScheduleAsynchronousClick(blink::WebLocalFrame* frame,
