@@ -276,8 +276,7 @@ void ExtensionInstallEventLogUploader::OnSerialized(
                  std::unique_ptr<::reporting::ReportQueue> report_queue,
                  base::OnceCallback<void()> on_set_cb) {
                 uploader->SetReportQueue(std::move(report_queue));
-                // TODO(crbug.com/1217717): Investigate and remove.
-                (void)std::move(on_set_cb);
+                std::move(on_set_cb);
               },
               std::move(uploader), std::move(report_queue),
               std::move(on_set_cb));
