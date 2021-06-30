@@ -4,6 +4,9 @@
 """Presubmit tests for ProductionSupportedFlagList.java
 """
 
+USE_PYTHON3 = True
+
+
 import os
 import sys
 

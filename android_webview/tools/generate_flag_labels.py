@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -53,7 +53,7 @@ KNOWN_MISTAKES = {
 
 def GetSwitchId(label):
   """Generate a hash consistent with flags_ui::GetSwitchUMAId()."""
-  digest = hashlib.md5(label).hexdigest()
+  digest = hashlib.md5(label.encode('utf-8')).hexdigest()
   first_eight_bytes = digest[:16]
   long_value = int(first_eight_bytes, 16)
   signed_32bit = ctypes.c_int(long_value).value
