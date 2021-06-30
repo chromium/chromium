@@ -13,6 +13,7 @@ include_rules = [
     "+net/ssl/ssl_cipher_suite_names.h",
     "+net/ssl/ssl_connection_status_flags.h",
     "+net/ssl/ssl_info.h",
+    "+net/test/cert_test_util.h",
     "+net/traffic_annotation/network_traffic_annotation.h",
     "+net/url_request/referrer_policy.h",
     "+services/network/public/mojom/url_loader.mojom.h",
