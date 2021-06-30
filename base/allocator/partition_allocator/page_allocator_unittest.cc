@@ -205,12 +205,13 @@ TEST(PartitionAllocPageAllocatorTest,
   // the Armv8.5 Branch Target Identification extension.
   base::CPU cpu;
   if (!cpu.has_bti()) {
-#if !defined(OS_IOS)
+#if defined(OS_IOS)
     // Workaround for incorrectly failed iOS tests with GTEST_SKIP,
     // see crbug.com/912138 for details.
+    return;
+#else
     GTEST_SKIP();
 #endif
-    return;
   }
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
   // Next, map some read-write memory and copy the BTI-enabled function there.
@@ -253,10 +254,11 @@ TEST(PartitionAllocPageAllocatorTest,
   base::CPU cpu;
   if (!cpu.has_mte()) {
     // Skip this test if there's no MTE.
-#if !defined(OS_IOS)
+#if defined(OS_IOS)
+    return;
+#else
     GTEST_SKIP();
 #endif
-    return;
   }
 
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
@@ -307,10 +309,11 @@ TEST(PartitionAllocPageAllocatorTest,
   base::CPU cpu;
   if (!cpu.has_mte()) {
     // Skip this test if there's no MTE.
-#if !defined(OS_IOS)
+#if defined(OS_IOS)
+    return;
+#else
     GTEST_SKIP();
 #endif
-    return;
   }
 
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)

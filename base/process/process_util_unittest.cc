@@ -795,7 +795,6 @@ MULTIPROCESS_TEST_MAIN(process_util_test_never_die) {
   while (1) {
     PlatformThread::Sleep(TimeDelta::FromSeconds(500));
   }
-  return kSuccess;
 }
 
 TEST_F(ProcessUtilTest, EnsureTerminationGracefulExit) {

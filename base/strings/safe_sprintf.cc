@@ -490,7 +490,6 @@ ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt, const Arg* args,
             goto format_character_found;
           }
         }
-        break;
       case 'c': {  // Output an ASCII character.
         // Check that there are arguments left to be inserted.
         if (cur_arg >= max_args) {

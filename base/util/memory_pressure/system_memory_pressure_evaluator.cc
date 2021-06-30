@@ -44,9 +44,10 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
     evaluator->CreateOSSignalPressureEvaluator(monitor->CreateVoter());
   }
   return evaluator;
-#endif
+#else
   // Chrome OS and Chromecast evaluators are created in separate components.
   return nullptr;
+#endif
 }
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(

@@ -144,7 +144,6 @@ TEST(IDMapTest, IteratorRemainsValidWhenRemovingOtherElements) {
         break;
       default:
         FAIL() << "should not have that many elements";
-        break;
     }
 
     counter++;
@@ -248,7 +247,6 @@ TEST(IDMapTest, IteratorRemainsValidWhenClearing) {
         break;
       default:
         FAIL() << "should not have that many elements";
-        break;
     }
     counter++;
   }
