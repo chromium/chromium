@@ -236,6 +236,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_SHARE = 5;
   // Target for segmentation: Voice user.
   OPTIMIZATION_TARGET_SEGMENTATION_VOICE = 6;
+  // Target for model validation.
+  OPTIMIZATION_TARGET_MODEL_VALIDATION = 7;
 }
 
 // The types of models that can be evaluated.

@@ -7,6 +7,8 @@
 
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 
+#include "base/observer_list.h"
+
 namespace optimization_guide {
 
 // An implementation of |OptimizationGuideModelProvider| that can be selectively
@@ -30,6 +32,18 @@ class TestOptimizationGuideModelProvider
   void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       OptimizationTargetModelObserver* observer) override;
+
+  // Notifies the observers for |optimization_target| about the model file
+  // update.
+  void NotifyModelFileUpdate(proto::OptimizationTarget optimization_target,
+                             const base::FilePath& model_file_path);
+
+ private:
+  // The map from optimization target to observers that have been registered
+  // to receive model updates.
+  std::map<proto::OptimizationTarget,
+           base::ObserverList<OptimizationTargetModelObserver>>
+      registered_observers_for_optimization_targets_;
 };
 
 }  // namespace optimization_guide
