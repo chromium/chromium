@@ -660,7 +660,6 @@ class End2EndTest : public ::testing::Test {
           break;
         default:
           FAIL();
-          return;
       }
     }
     std::vector<PacketEvent> all_packet_events;
@@ -677,7 +676,6 @@ class End2EndTest : public ::testing::Test {
           break;
         default:
           FAIL();
-          return;
       }
     }
 
