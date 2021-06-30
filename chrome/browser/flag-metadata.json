@@ -5566,6 +5566,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "win-10-tab-search-caption-button",
+    "owners": [ "tluk@google.com", "chrome-cros@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "win-use-native-spellchecker",
     "owners": [ "gujen@google.com", "chrome-language@google.com" ],
     "expiry_milestone": 88

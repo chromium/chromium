@@ -3866,6 +3866,12 @@ const char kUseXpsForPrintingFromPdfDescription[] =
     "printing PDF documents.";
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
+const char kWin10TabSearchCaptionButtonName[] =
+    "Windows 10 Tab Search Caption Button";
+const char kWin10TabSearchCaptionButtonDescription[] =
+    "Move the Tab Search entrypoint besides the window caption buttons on "
+    "Windows 10 platforms.";
+
 #endif  // defined(OS_WIN)
 
 // Mac -------------------------------------------------------------------------
