@@ -21,7 +21,7 @@ enum class WindowType {
 
 // A report about a JavaScript error that we might want to send back to Google
 // so it can be fixed. Fill in the fields and then call
-// SendJavaScriptErrorReport.
+// JsErrorReportProcessor::SendErrorReport().
 struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
   JavaScriptErrorReport();
   JavaScriptErrorReport(const JavaScriptErrorReport& rhs);
