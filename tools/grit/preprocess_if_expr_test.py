@@ -22,7 +22,8 @@ class PreprocessIfExprTest(unittest.TestCase):
 
   def _read_out_file(self, file_name):
     assert self._out_folder
-    return open(os.path.join(self._out_folder, file_name), 'r').read()
+    with open(os.path.join(self._out_folder, file_name), 'r') as f:
+      return f.read()
 
   def _run_test(self, defines, file_name):
     assert not self._out_folder
