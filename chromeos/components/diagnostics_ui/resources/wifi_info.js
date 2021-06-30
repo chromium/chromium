@@ -9,6 +9,7 @@ import './diagnostics_shared_css.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network} from './diagnostics_types.js';
+import {getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -41,5 +42,14 @@ Polymer({
    */
   joinNameServers_(nameServers) {
     return nameServers ? nameServers.join(', ') : '';
+  },
+
+  /**
+   * @protected
+   * @param {number} prefix
+   * @return {string}
+   */
+  getSubnetMask_(prefix) {
+    return getSubnetMaskFromRoutingPrefix(prefix);
   },
 });

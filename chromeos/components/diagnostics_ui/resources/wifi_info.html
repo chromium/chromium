@@ -47,10 +47,8 @@
         value="[[network.ipConfig.gateway]]"
         orientation="horizontal">
       </data-point>
-      <!-- TODO(michaelcheco): Use routing prefix to get value for
-      subnet mask. -->
       <data-point id="subnetMask" header="Subnet Mask"
-        value="[[network.ipConfig.routingPrefix]]"
+        value="[[getSubnetMask_(network.ipConfig.routingPrefix)]]"
         orientation="horizontal">
       </data-point>
     </div>

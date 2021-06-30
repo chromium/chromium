@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {convertKibToGibDecimalString} from 'chrome://diagnostics/diagnostics_utils.js';
+import {convertKibToGibDecimalString, getSubnetMaskFromRoutingPrefix} from 'chrome://diagnostics/diagnostics_utils.js';
 import {assertEquals} from '../../chai_assert.js';
 
 export function diagnosticsUtilsTestSuite() {
@@ -17,5 +17,40 @@ export function diagnosticsUtilsTestSuite() {
     assertEquals('1.00', convertKibToGibDecimalString(2 ** 20 + 1, 2));
     assertEquals('1.00', convertKibToGibDecimalString(2 ** 20 - 1, 2));
     assertEquals('0.999999', convertKibToGibDecimalString(2 ** 20 - 1, 6));
+  });
+
+  test('ConvertRoutingPrefixToSubnetMask', () => {
+    assertEquals(getSubnetMaskFromRoutingPrefix(1), '128.0.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(2), '192.0.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(3), '224.0.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(4), '240.0.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(5), '248.0.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(6), '252.0.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(7), '254.0.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(8), '255.0.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(9), '255.128.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(10), '255.192.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(11), '255.224.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(12), '255.240.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(13), '255.248.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(14), '255.252.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(15), '255.254.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(16), '255.255.0.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(17), '255.255.128.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(18), '255.255.192.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(19), '255.255.224.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(20), '255.255.240.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(21), '255.255.248.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(22), '255.255.252.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(23), '255.255.254.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(24), '255.255.255.0');
+    assertEquals(getSubnetMaskFromRoutingPrefix(25), '255.255.255.128');
+    assertEquals(getSubnetMaskFromRoutingPrefix(26), '255.255.255.192');
+    assertEquals(getSubnetMaskFromRoutingPrefix(27), '255.255.255.224');
+    assertEquals(getSubnetMaskFromRoutingPrefix(28), '255.255.255.240');
+    assertEquals(getSubnetMaskFromRoutingPrefix(29), '255.255.255.248');
+    assertEquals(getSubnetMaskFromRoutingPrefix(30), '255.255.255.252');
+    assertEquals(getSubnetMaskFromRoutingPrefix(31), '255.255.255.254');
+    assertEquals(getSubnetMaskFromRoutingPrefix(32), '255.255.255.255');
   });
 }
