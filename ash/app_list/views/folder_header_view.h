@@ -46,6 +46,8 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
   views::Textfield* GetFolderNameViewForTest() const;
 
+  int GetMaxFolderNameCharLengthForTest() const;
+
  private:
   class FolderNameView;
   friend class test::FolderHeaderViewTest;
@@ -63,8 +65,6 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
   // Returns true if folder name is enabled, only for testing use.
   bool IsFolderNameEnabledForTest() const;
-
-  int GetMaxFolderNameWidth() const;
 
   // Returns elided folder name from |folder_name|.
   std::u16string GetElidedFolderName(const std::u16string& folder_name) const;

@@ -55,7 +55,6 @@ namespace {
 
 constexpr int kFolderHeaderPadding = 12;
 constexpr int kOnscreenKeyboardTopPadding = 16;
-constexpr int kFolderHorizontalMargin = 8;
 
 // Indexes of interesting views in ViewModel of AppListFolderView.
 constexpr int kIndexBackground = 0;
@@ -455,7 +454,6 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
                                      ContentsView* contents_view,
                                      AppListViewDelegate* view_delegate)
     : container_view_(container_view),
-      contents_view_(contents_view),
       view_model_(new views::ViewModel),
       model_(model) {
   DCHECK(view_delegate);
@@ -473,7 +471,7 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
   view_model_->Add(contents_container_, kIndexContentsContainer);
 
   items_grid_view_ = contents_container_->AddChildView(
-      std::make_unique<PagedAppsGridView>(contents_view_, this));
+      std::make_unique<PagedAppsGridView>(contents_view, this));
   items_grid_view_->Init();
   items_grid_view_->SetModel(model);
   view_model_->Add(items_grid_view_, kIndexChildItems);
@@ -485,7 +483,7 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
   page_switcher_ =
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
           items_grid_view_->pagination_model(), false /* vertical */,
-          contents_view_->app_list_view()->is_tablet_mode(),
+          view_delegate->IsInTabletMode(),
           AppListColorProvider::Get()->GetFolderBackgroundColor(
               items_grid_view_->GetAppListConfig().folder_background_color())));
   view_model_->Add(page_switcher_, kIndexPageSwitcher);
@@ -513,9 +511,11 @@ void AppListFolderView::SetAppListFolderItem(AppListFolderItem* folder) {
   UpdatePreferredBounds();
 }
 
-void AppListFolderView::ScheduleShowHideAnimation(bool show,
-                                                  bool hide_for_reparent) {
-  CreateOpenOrCloseFolderAccessibilityEvent(show);
+void AppListFolderView::ScheduleShowHideAnimation(
+    bool show,
+    bool hide_for_reparent,
+    views::View* announcement_view) {
+  CreateOpenOrCloseFolderAccessibilityEvent(show, announcement_view);
   show_hide_metrics_tracker_ =
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
   show_hide_metrics_tracker_->Start(
@@ -613,23 +613,8 @@ void AppListFolderView::UpdatePreferredBounds() {
   preferred_bounds_ += (icon_bounds_in_container.CenterPoint() -
                         preferred_bounds_.CenterPoint());
 
-  gfx::Rect container_bounds = container_view_->GetContentsBounds();
-  const gfx::Size search_box_size =
-      contents_view_->GetSearchBoxSize(AppListState::kStateApps);
-  // Adjust for apps container margins.
-  gfx::Insets adjusted_margins =
-      container_view_->CalculateMarginsForAvailableBounds(container_bounds,
-                                                          search_box_size);
-  // App list folders can open past the app list bounds and within
-  // |kFolderHorizontalMargin| px of the screen.
-  adjusted_margins.set_left(kFolderHorizontalMargin);
-  adjusted_margins.set_right(kFolderHorizontalMargin);
-  container_bounds.Inset(adjusted_margins);
-
-  // Avoid overlap with the search box widget.
-  container_bounds.Inset(
-      0, search_box_size.height() + SearchBoxView::GetFocusRingSpacing(), 0, 0);
-  preferred_bounds_.AdjustToFit(container_bounds);
+  if (!bounding_box_.IsEmpty())
+    preferred_bounds_.AdjustToFit(bounding_box_);
 
   // Calculate the folder icon's bounds relative to this view.
   folder_item_icon_bounds_ =
@@ -672,6 +657,10 @@ int AppListFolderView::GetYOffsetForFolder() {
 
 bool AppListFolderView::IsAnimationRunning() const {
   return top_icon_animation_ && top_icon_animation_->IsAnimationRunning();
+}
+
+void AppListFolderView::SetBoundingBox(const gfx::Rect& bounding_box) {
+  bounding_box_ = bounding_box;
 }
 
 AppListItemView* AppListFolderView::GetActivatedFolderItemView() {
@@ -812,26 +801,13 @@ void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
-const AppListConfig& AppListFolderView::GetAppListConfig() const {
-  return items_grid_view_->GetAppListConfig();
-}
-
-void AppListFolderView::NavigateBack(AppListFolderItem* item,
-                                     const ui::Event& event_flags) {
-  contents_view_->Back();
-}
-
-void AppListFolderView::GiveBackFocusToSearchBox() {
-  // Avoid announcing search box focus since it is overlapped with closing
-  // folder alert.
-  auto* search_box = contents_view_->GetSearchBoxView()->search_box();
-  search_box->GetViewAccessibility().OverrideIsIgnored(true);
-  search_box->RequestFocus();
-}
-
 void AppListFolderView::SetItemName(AppListFolderItem* item,
                                     const std::string& name) {
   model_->SetItemName(item, name);
+}
+
+const AppListConfig& AppListFolderView::GetAppListConfig() const {
+  return items_grid_view_->GetAppListConfig();
 }
 
 void AppListFolderView::CalculateIdealBounds() {
@@ -892,9 +868,9 @@ ui::Compositor* AppListFolderView::GetCompositor() {
   return GetWidget()->GetCompositor();
 }
 
-void AppListFolderView::CreateOpenOrCloseFolderAccessibilityEvent(bool open) {
-  auto* announcement_view =
-      contents_view_->app_list_view()->announcement_view();
+void AppListFolderView::CreateOpenOrCloseFolderAccessibilityEvent(
+    bool open,
+    views::View* announcement_view) {
   announcement_view->GetViewAccessibility().OverrideName(
       ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
           open ? IDS_APP_LIST_FOLDER_OPEN_FOLDER_ACCESSIBILE_NAME

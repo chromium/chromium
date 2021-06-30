@@ -7,30 +7,12 @@
 
 #include <string>
 
-namespace ui {
-class Event;
-}
-
 namespace ash {
 
 class AppListFolderItem;
 
 class FolderHeaderViewDelegate {
  public:
-  // Gets the AppListConfig for the app list view in which the folder header
-  // view is shown.
-  virtual const AppListConfig& GetAppListConfig() const = 0;
-
-  // Invoked when the back button on the folder header view is clicked.
-  // |item| is the folder item which FolderHeaderview represents.
-  // |event_flags| contains the flags of the keyboard/mouse event that triggers
-  // the request.
-  virtual void NavigateBack(AppListFolderItem* item,
-                            const ui::Event& event_flags) = 0;
-
-  // Gives back the focus to the search box.
-  virtual void GiveBackFocusToSearchBox() = 0;
-
   // Tells the model to set the name of |item|.
   virtual void SetItemName(AppListFolderItem* item,
                            const std::string& name) = 0;

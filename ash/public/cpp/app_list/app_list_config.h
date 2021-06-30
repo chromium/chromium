@@ -282,17 +282,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int expand_arrow_tile_height() const { return expand_arrow_tile_height_; }
   int folder_bubble_radius() const { return folder_bubble_radius_; }
   int folder_bubble_y_offset() const { return folder_bubble_y_offset_; }
-  int folder_header_height() const { return folder_header_height_; }
-  int folder_header_min_width() const { return folder_header_min_width_; }
-  int folder_header_max_width() const { return folder_header_max_width_; }
-  int folder_header_min_tap_width() const {
-    return folder_header_min_tap_width_;
-  }
-  int folder_name_border_radius() const { return folder_name_border_radius_; }
-  int folder_name_border_thickness() const {
-    return folder_name_border_thickness_;
-  }
-  int folder_name_padding() const { return folder_name_padding_; }
   int folder_icon_dimension() const { return folder_icon_dimension_; }
   int folder_unclipped_icon_dimension() const {
     return folder_unclipped_icon_dimension_;
@@ -472,25 +461,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The y offset of folder image bubble center.
   const int folder_bubble_y_offset_;
-
-  // The height of the in folder name and pagination buttons.
-  const int folder_header_height_;
-
-  // The min and max widths of the folder name.
-  const int folder_header_min_width_;
-  const int folder_header_max_width_;
-
-  // The min width of folder name for tap events.
-  const int folder_header_min_tap_width_;
-
-  // The border radius for folder name.
-  const int folder_name_border_radius_;
-
-  // The border thickness for folder name.
-  const int folder_name_border_thickness_;
-
-  // The inner padding for folder name.
-  const int folder_name_padding_;
 
   // The icon dimension of folder.
   const int folder_icon_dimension_;

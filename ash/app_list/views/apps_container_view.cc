@@ -57,6 +57,9 @@ constexpr int kNonAppsStateVerticalOffset = 24;
 // The opacity the apps container UI should have when shown on non apps page UI.
 constexpr float kNonAppsStateOpacity = 0.1;
 
+// The horizontal margin within the apps container for app list folder view.
+constexpr int kFolderHorizontalMargin = 8;
+
 }  // namespace
 
 AppsContainerView::AppsContainerView(ContentsView* contents_view,
@@ -261,6 +264,13 @@ void AppsContainerView::Layout() {
                             0);
   suggestion_chip_container_view_->SetBoundsRect(chip_container_rect);
 
+  // Set bounding box for the folder view - the folder may overlap with
+  // suggestion chips, but not the search box.
+  gfx::Rect folder_bounding_box = rect;
+  folder_bounding_box.set_y(chip_container_rect.y());
+  folder_bounding_box.Inset(kFolderHorizontalMargin, 0);
+  app_list_folder_view_->SetBoundingBox(folder_bounding_box);
+
   // Leave the same available bounds for the apps grid view in both
   // fullscreen and peeking state to avoid resizing the view during
   // animation and dragging, which is an expensive operation.
@@ -305,6 +315,7 @@ void AppsContainerView::Layout() {
     case SHOW_APPS:
       break;
     case SHOW_ACTIVE_FOLDER: {
+      app_list_folder_view_->UpdatePreferredBounds();
       folder_background_view_->SetBoundsRect(rect);
       app_list_folder_view_->SetBoundsRect(
           app_list_folder_view_->preferred_bounds());
@@ -579,26 +590,33 @@ void AppsContainerView::SetShowState(ShowState show_state,
   // calculated based on the layout.
   Layout();
 
+  views::View* announcement_view =
+      contents_view_->app_list_view()->announcement_view();
+
   switch (show_state_) {
     case SHOW_APPS:
       page_switcher_->SetCanProcessEventsWithinSubtree(true);
       folder_background_view_->SetVisible(false);
       apps_grid_view_->ResetForShowApps();
       app_list_folder_view_->ResetItemsGridForClose();
-      if (show_apps_with_animation)
-        app_list_folder_view_->ScheduleShowHideAnimation(false, false);
-      else
+      if (show_apps_with_animation) {
+        app_list_folder_view_->ScheduleShowHideAnimation(false, false,
+                                                         announcement_view);
+      } else {
         app_list_folder_view_->HideViewImmediately();
+      }
       break;
     case SHOW_ACTIVE_FOLDER:
       page_switcher_->SetCanProcessEventsWithinSubtree(false);
       folder_background_view_->SetVisible(true);
-      app_list_folder_view_->ScheduleShowHideAnimation(true, false);
+      app_list_folder_view_->ScheduleShowHideAnimation(true, false,
+                                                       announcement_view);
       break;
     case SHOW_ITEM_REPARENT:
       page_switcher_->SetCanProcessEventsWithinSubtree(true);
       folder_background_view_->SetVisible(false);
-      app_list_folder_view_->ScheduleShowHideAnimation(false, true);
+      app_list_folder_view_->ScheduleShowHideAnimation(false, true,
+                                                       announcement_view);
       break;
     default:
       NOTREACHED();

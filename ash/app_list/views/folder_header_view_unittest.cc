@@ -33,19 +33,8 @@ namespace {
 
 class TestFolderHeaderViewDelegate : public FolderHeaderViewDelegate {
  public:
-  TestFolderHeaderViewDelegate()
-      : app_list_config_(AppListConfigType::kLarge) {}
-  ~TestFolderHeaderViewDelegate() override {}
-
-  // FolderHeaderViewDelegate
-  const AppListConfig& GetAppListConfig() const override {
-    return app_list_config_;
-  }
-
-  void NavigateBack(AppListFolderItem* item,
-                    const ui::Event& event_flags) override {}
-
-  void GiveBackFocusToSearchBox() override {}
+  TestFolderHeaderViewDelegate() = default;
+  ~TestFolderHeaderViewDelegate() override = default;
 
   void SetItemName(AppListFolderItem* item, const std::string& name) override {
     folder_name_ = name;
@@ -54,7 +43,6 @@ class TestFolderHeaderViewDelegate : public FolderHeaderViewDelegate {
   const std::string& folder_name() const { return folder_name_; }
 
  private:
-  AppListConfig app_list_config_;
   std::string folder_name_;
 
   DISALLOW_COPY_AND_ASSIGN(TestFolderHeaderViewDelegate);
@@ -167,7 +155,7 @@ TEST_F(FolderHeaderViewTest, MaxFolderNameLength) {
   // If folder name is set beyond the maximum char limit, it should revert to
   // the previous valid folder name.
   std::string max_len_name;
-  for (size_t i = 0; i < delegate_->GetAppListConfig().max_folder_name_chars();
+  for (int i = 0; i < folder_header_view_->GetMaxFolderNameCharLengthForTest();
        ++i) {
     max_len_name += "a";
   }

@@ -58,7 +58,10 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Schedules an animation to show or hide the view.
   // If |show| is false, the view should be set to invisible after the
   // animation is done unless |hide_for_reparent| is true.
-  void ScheduleShowHideAnimation(bool show, bool hide_for_reparent);
+  // |announcement_view| - view used for accessibility notifications.
+  void ScheduleShowHideAnimation(bool show,
+                                 bool hide_for_reparent,
+                                 views::View* announcement_view);
 
   // Hides the view immediately without animation.
   void HideViewImmediately();
@@ -90,6 +93,10 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // closing the folder.
   bool IsAnimationRunning() const;
 
+  // Sets the bounding box for the folder view bounds. The bounds are expected
+  // to be in the parent view's coordinate system.
+  void SetBoundingBox(const gfx::Rect& bounding_box);
+
   PagedAppsGridView* items_grid_view() { return items_grid_view_; }
 
   FolderHeaderView* folder_header_view() { return folder_header_view_; }
@@ -120,10 +127,6 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Overridden from FolderHeaderViewDelegate:
-  const AppListConfig& GetAppListConfig() const override;
-  void NavigateBack(AppListFolderItem* item,
-                    const ui::Event& event_flags) override;
-  void GiveBackFocusToSearchBox() override;
   void SetItemName(AppListFolderItem* item, const std::string& name) override;
 
   // Overridden from AppsGridViewFolderDelegate:
@@ -140,6 +143,8 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void SetRootLevelDragViewVisible(bool visible) override;
   void HandleKeyboardReparent(AppListItemView* reparented_view,
                               ui::KeyboardCode key_code) override;
+
+  const AppListConfig& GetAppListConfig() const;
 
  private:
   void CalculateIdealBounds();
@@ -158,11 +163,12 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   // Creates accessibility event for opening folder if |open| is true.
   // Otherwise, creates the event for closing folder.
-  void CreateOpenOrCloseFolderAccessibilityEvent(bool open);
+  void CreateOpenOrCloseFolderAccessibilityEvent(
+      bool open,
+      views::View* announcement_view);
 
   // Views below are not owned by views hierarchy.
   AppsContainerView* container_view_;
-  ContentsView* contents_view_;
 
   // The view is used to draw a background with corner radius.
   views::View* background_view_;  // Owned by views hierarchy.
@@ -184,6 +190,10 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   // The preferred bounds of this view relative to AppsContainerView.
   gfx::Rect preferred_bounds_;
+
+  // The bounds of the box within which the folder view can be shown. The bounds
+  // are relative the the parent view's coordinate system.
+  gfx::Rect bounding_box_;
 
   bool hide_for_reparent_ = false;
 
