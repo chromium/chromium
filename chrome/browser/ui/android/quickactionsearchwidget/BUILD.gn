@@ -10,6 +10,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
+    "//components/embedder_support/android:util_java",
     "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
@@ -27,10 +28,13 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/embedder_support/android:util_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit:junit",
+    "//url:gurl_java",
   ]
 }
 

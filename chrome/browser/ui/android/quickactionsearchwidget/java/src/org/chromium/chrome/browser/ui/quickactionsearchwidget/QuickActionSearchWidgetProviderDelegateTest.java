@@ -22,15 +22,22 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.Matchers;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -52,8 +59,9 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     }
 
     private static final class TestDelegate extends QuickActionSearchWidgetProviderDelegate {
-        public TestDelegate(ComponentName searchComponent, ComponentName widgetComponent) {
-            super(searchComponent, widgetComponent);
+        public TestDelegate(ComponentName searchComponent, ComponentName widgetComponent,
+                ComponentName chromeLauncherComponent) {
+            super(searchComponent, widgetComponent, chromeLauncherComponent);
         }
 
         public final List<RemoteViews> mRemoteViews = new ArrayList<>();
@@ -84,7 +92,9 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         ComponentName searchComponent = new ComponentName(mContext, SearchActivity.class);
         ComponentName widgetComponent =
                 new ComponentName(mContext, QuickActionSearchWidgetProvider.class);
-        mDelegate = new TestDelegate(searchComponent, widgetComponent);
+        ComponentName chromeLauncherComponent =
+                new ComponentName(mContext, ChromeLauncherActivity.class);
+        mDelegate = new TestDelegate(searchComponent, widgetComponent, chromeLauncherComponent);
 
         QuickActionSearchWidgetProvider.setWidgetEnabled(true);
 
@@ -109,12 +119,31 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
+    public void testHandleStartDinoGameAction() {
+        Intent startDinoGameIntent =
+                new Intent(QuickActionSearchWidgetProviderDelegate.ACTION_START_DINO_GAME);
+
+        assertDinoGameLaunchedAfterAction(
+                () -> mDelegate.handleAction(mContext, startDinoGameIntent));
+    }
+
+    @Test
+    @SmallTest
     public void testSearchBarClick() {
         for (View view : mWidgetViews) {
             // clang-format off
             assertSearchActivityLaunchedAfterAction(() -> clickOnView(view,
                     R.id.quick_action_search_widget_search_bar_container));
             // clang-format on
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testDinoButtonClick() {
+        for (View view : mWidgetViews) {
+            assertDinoGameLaunchedAfterAction(
+                    () -> clickOnView(view, R.id.dino_quick_action_button));
         }
     }
 
@@ -137,6 +166,21 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         Activity activity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SearchActivity.class, action);
         Assert.assertNotNull(activity);
+    }
+
+    private void assertDinoGameLaunchedAfterAction(Runnable action) {
+        final ChromeTabbedActivity activity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), ChromeTabbedActivity.class, action);
+
+        Assert.assertNotNull(activity);
+
+        CriteriaHelper.pollUiThread(() -> {
+            Tab activityTab = activity.getActivityTab();
+            Criteria.checkThat(activityTab, Matchers.notNullValue());
+            Criteria.checkThat(activityTab.getUrl(), Matchers.notNullValue());
+            Criteria.checkThat(activityTab.getUrl().getSpec(),
+                    Matchers.startsWith(UrlConstants.CHROME_DINO_URL));
+        });
     }
 
     private void clickOnView(final View view, final int clickTarget) {

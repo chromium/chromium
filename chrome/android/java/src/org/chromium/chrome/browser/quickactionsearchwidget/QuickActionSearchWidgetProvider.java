@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
@@ -54,9 +55,11 @@ public class QuickActionSearchWidgetProvider extends AppWidgetProvider {
             ComponentName searchComponent = new ComponentName(context, SearchActivity.class);
             ComponentName widgetComponent =
                     new ComponentName(context, QuickActionSearchWidgetProvider.class);
+            ComponentName chromeLauncherComponent =
+                    new ComponentName(context, ChromeLauncherActivity.class);
 
-            mDelegate =
-                    new QuickActionSearchWidgetProviderDelegate(searchComponent, widgetComponent);
+            mDelegate = new QuickActionSearchWidgetProviderDelegate(
+                    searchComponent, widgetComponent, chromeLauncherComponent);
         }
         return mDelegate;
     }
