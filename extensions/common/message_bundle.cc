@@ -264,8 +264,6 @@ bool MessageBundle::ReplaceVariables(const SubstitutionMap& variables,
     // And position pointer to after the replacement.
     beg_index += value.size() - var_begin_delimiter_size;
   }
-
-  return true;
 }
 
 // static
