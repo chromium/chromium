@@ -20,6 +20,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/bits.h"
 #include "base/callback.h"
 #include "base/files/scoped_file.h"
 #include "base/location.h"
@@ -133,7 +134,7 @@ struct UpgradeOfferMessage {
 };
 
 constexpr size_t RoundUpToWordBoundary(size_t size) {
-  return (size + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+  return base::bits::AlignUp(size, sizeof(void*));
 }
 
 base::ScopedFD CreateSealedMemFD(size_t size) {

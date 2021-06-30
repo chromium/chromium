@@ -593,7 +593,7 @@ void PaintOpWriter::AlignMemory(size_t alignment) {
   //   padding = (alignment - memory % alignment) % alignment;
   // because alignment is a power of two. This doesn't use modulo operator
   // however, since it can be slow.
-  size_t padding = ((memory + alignment - 1) & ~(alignment - 1)) - memory;
+  size_t padding = base::bits::AlignUp(memory, alignment) - memory;
   EnsureBytes(padding);
   if (!valid_)
     return;

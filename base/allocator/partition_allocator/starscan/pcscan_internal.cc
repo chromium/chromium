@@ -34,6 +34,7 @@
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/debug/alias.h"
@@ -1174,14 +1175,14 @@ void PCScanInternal::ProtectPages(uintptr_t begin, size_t size) {
   // slot-spans doesn't need to be protected (the allocator will enter the
   // safepoint before trying to allocate from it).
   PA_DCHECK(write_protector_.get());
-  write_protector_->ProtectPages(
-      begin, (size + SystemPageSize() - 1) & ~(SystemPageSize() - 1));
+  write_protector_->ProtectPages(begin,
+                                 base::bits::AlignUp(size, SystemPageSize()));
 }
 
 void PCScanInternal::UnprotectPages(uintptr_t begin, size_t size) {
   PA_DCHECK(write_protector_.get());
-  write_protector_->UnprotectPages(
-      begin, (size + SystemPageSize() - 1) & ~(SystemPageSize() - 1));
+  write_protector_->UnprotectPages(begin,
+                                   base::bits::AlignUp(size, SystemPageSize()));
 }
 
 void PCScanInternal::ClearRootsForTesting() {
