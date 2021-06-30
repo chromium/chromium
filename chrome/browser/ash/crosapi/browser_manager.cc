@@ -89,6 +89,15 @@ const char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
 const char kLacrosLauncherNotifierID[] = "lacros_launcher";
 
+// To be sure the lacros is running with neutral priority
+class ThreadPriorityDelegate : public base::LaunchOptions::PreExecDelegate {
+ public:
+  void RunAsyncSafe() override {
+    base::PlatformThread::SetCurrentThreadPriority(
+        base::ThreadPriority::NORMAL);
+  }
+};
+
 base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
 }
@@ -588,6 +597,10 @@ void BrowserManager::StartWithLogFile(
   base::CommandLine command_line(argv);
   LOG(WARNING) << "Launching lacros with command: "
                << command_line.GetCommandLineString();
+
+  // Lacros-chrome starts with NORMAL priority
+  ThreadPriorityDelegate thread_priority_delegate;
+  options.pre_exec_delegate = &thread_priority_delegate;
 
   // Prepare to invite lacros-chrome to the Mojo universe of Crosapi.
   mojo::PlatformChannel channel;
