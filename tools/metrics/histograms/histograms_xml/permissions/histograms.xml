@@ -21,6 +21,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="BrowserDialogs.ExternalProtocol.HandleState"
+    enum="HandleStateType" expires_after="2022-01-31">
+  <owner>engedy@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <owner>meacer@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Whether or not the user checked the option in the external protocol dialog
+    to remember their choice of opening or not opening the specified app.
+    Recorded each time the user interacts with the External Protocol Dialog,
+    when making a decision.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Action" enum="PermissionAction"
     expires_after="never">
 <!-- expires-never: Primary metrics for monitoring capability usage and trends. -->
