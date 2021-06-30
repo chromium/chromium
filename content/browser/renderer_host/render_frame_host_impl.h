@@ -718,11 +718,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost (LifecycleStateImpl::kRunningUnloadHandlers) or when this
   // RenderFrameHost is ready to be deleted
   // (LifecycleStateImpl::kReadyToBeDeleted).
-  bool IsPendingDeletion();
+  bool IsPendingDeletion() const;
 
   // Returns true if this RenderFrameHost is currently stored in the
   // back-forward cache i.e., when lifecycle_state() is kInBackForwardCache.
-  bool IsInBackForwardCache();
+  bool IsInBackForwardCache() const;
 
   // Returns a pending same-document navigation request in this frame that has
   // the navigation_token |token|, if any.
@@ -861,8 +861,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     //
     // Transitions from this state happen to one of:
     // - kActive -- when the prerendered page is activated.
-    // - kRunningUnloadHandlers -- when a cross-site navigation commits in a
-    // prerendered frame tree, unloading the previous one.
+    // - kRunningUnloadHandlers -- when a navigation commits in a prerendered
+    // frame tree, unloading the previous one.
     // - kReadyToBeDeleted -- when prerendering is cancelled and the prerendered
     // page is deleted.
     //
@@ -915,10 +915,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // RenderFrameHost transitions to kReadyToBeDeleted state.
     //
     // Transition to this state happens only from kActive and kPrerendering
-    // states. Note that eviction from BackForwardCache does not run unload
-    // handlers, and kInBackForwardCache moves to kReadyToBeDeleted. Similarly,
-    // canceling prerendering does not run unload handlers, and kPrerendering
-    // moves to kReadyToBeDeleted.
+    // states. Note that eviction from BackForwardCache does not wait for unload
+    // handlers, and kInBackForwardCache moves to kReadyToBeDeleted.
+    // TODO(https://crbug.com/1222909): Omit unload handling on canceling
+    // prerendering, and making kPrerendering move to kReadyToBeDeleted
+    // directly.
     kRunningUnloadHandlers,
 
     // This state corresponds to when RenderFrameHost has completed running the
@@ -2800,8 +2801,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void MaybeGenerateCrashReport(base::TerminationStatus status, int exit_code);
 
   // Move every child frame into the pending deletion state.
-  // For each process, send the command to delete the local subtree and execute
-  // the unload handlers.
+  // For each process, send the command to delete the local subtree, and wait
+  // for unload handlers to finish if needed.
   void StartPendingDeletionOnSubtree();
 
   // This function checks whether a pending deletion frame and all of its
@@ -2893,7 +2894,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // See |SetIsXrOverlaySetup()|
   bool HasSeenRecentXrOverlaySetup();
 
-  bool has_unload_handlers() {
+  bool has_unload_handlers() const {
     return has_unload_handler_ || has_pagehide_handler_ ||
            has_visibilitychange_handler_ || do_not_delete_for_testing_;
   }
@@ -2964,6 +2965,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Sets the storage key for the last committed document in this
   // RenderFrameHostImpl.
   void SetStorageKey(const blink::StorageKey& storage_key);
+
+  // Check if we should wait for unload handlers when shutting down the
+  // renderer.
+  bool ShouldWaitForUnloadHandlers() const;
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
