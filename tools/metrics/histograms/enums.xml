@@ -6836,6 +6836,7 @@ others/histograms.xml -->
   <int value="196619" label="kEmbedder-kModalDialog"/>
   <int value="196620" label="kEmbedder-kExtensions"/>
   <int value="196621" label="kEmbedder-kExtensionMessaging"/>
+  <int value="196622" label="kEmbedder-kExtensionMessagingForOpenPort"/>
 </enum>
 
 <enum name="BackForwardCacheDisabledForRenderFrameHostReasonShort">

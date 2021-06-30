@@ -10,8 +10,12 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["change_page_title.js"],
+      "js": ["content_script.js"],
       "run_at": "document_end"
     }
-  ]
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
 }
