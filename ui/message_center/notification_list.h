@@ -137,6 +137,10 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   // Marks a specific popup item as displayed.
   void MarkSinglePopupAsDisplayed(const std::string& id);
 
+  // Resets the state for a pop up so that it can be shown again. Used to
+  // bring up a grouped notification when a new item is added to it.
+  void ResetSinglePopup(const std::string& id);
+
   NotificationDelegate* GetNotificationDelegate(const std::string& id);
 
   bool quiet_mode() const { return quiet_mode_; }

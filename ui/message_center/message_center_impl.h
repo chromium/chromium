@@ -23,6 +23,7 @@
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_blocker.h"
 #include "ui/message_center/popup_timers_controller.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace message_center {
@@ -50,6 +51,9 @@ class MessageCenterImpl : public MessageCenter,
   bool HasPopupNotifications() const override;
   bool IsQuietMode() const override;
   bool IsSpokenFeedbackEnabled() const override;
+  Notification* FindOldestNotificationByNotiferId(
+      const NotifierId& notifier_id) override;
+  Notification* FindPopupNotificationById(const std::string& id) override;
   Notification* FindVisibleNotificationById(const std::string& id) override;
   NotificationList::Notifications FindNotificationsByAppId(
       const std::string& app_id) override;
@@ -77,6 +81,7 @@ class MessageCenterImpl : public MessageCenter,
   void DisableNotification(const std::string& id) override;
   void MarkSinglePopupAsShown(const std::string& id,
                               bool mark_notification_as_read) override;
+  void ResetSinglePopup(const std::string& id) override;
   void DisplayedNotification(const std::string& id,
                              const DisplaySource source) override;
   void SetQuietMode(bool in_quiet_mode) override;
@@ -119,6 +124,7 @@ class MessageCenterImpl : public MessageCenter,
   bool visible_ = false;
   bool has_message_center_view_ = true;
   bool spoken_feedback_enabled_ = false;
+  bool notifications_grouping_enabled_ = false;
 
   std::u16string system_notification_app_name_;
 

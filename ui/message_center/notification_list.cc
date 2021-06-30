@@ -259,6 +259,15 @@ void NotificationList::MarkSinglePopupAsDisplayed(const std::string& id) {
   state->is_read = true;
 }
 
+void NotificationList::ResetSinglePopup(const std::string& id) {
+  auto iter = GetNotification(id);
+  DCHECK(iter != notifications_.end());
+
+  NotificationState* state = &iter->second;
+  state->shown_as_popup = false;
+  state->is_read = false;
+}
+
 NotificationDelegate* NotificationList::GetNotificationDelegate(
     const std::string& id) {
   auto iter = GetNotification(id);

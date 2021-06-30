@@ -213,6 +213,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // HasAddedPopup() return true by the lack of work area to show popup.
   bool AddPopup();
 
+  bool AddInExistingGroup(Notification* notification);
+
   // Mark |is_animating| flag of removed popup to true for FADE_OUT animation.
   void MarkRemovedPopup();
 

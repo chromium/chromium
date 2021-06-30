@@ -229,6 +229,11 @@ void UnifiedMessageListView::Init() {
   bool is_latest = true;
   for (auto* notification :
        message_center_utils::GetSortedVisibleNotifications()) {
+    if (notification->group_child()) {
+      // TODO(crbug/1223697): Add grouped notifications to existing parent
+      // message views.
+      continue;
+    }
     auto* view =
         new MessageViewContainer(CreateMessageView(*notification), this);
     view->LoadExpandedState(model_, is_latest);

@@ -80,6 +80,11 @@ class MESSAGE_CENTER_EXPORT MessageView
   explicit MessageView(const Notification& notification);
   ~MessageView() override;
 
+  // Updates this view with an additional grouped notification. If the view
+  // wasn't previously grouped it also takes care of converting the view to
+  // the grouped notification state.
+  virtual void AddGroupedNotification(const Notification& notification);
+
   // Updates this view with the new data contained in the notification.
   virtual void UpdateWithNotification(const Notification& notification);
 
@@ -158,6 +163,7 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
   std::string notification_id() const { return notification_id_; }
+  NotifierId notifier_id() const { return notifier_id_; }
 
  protected:
   class HighlightPathGenerator : public views::HighlightPathGenerator {
@@ -202,6 +208,9 @@ class MESSAGE_CENTER_EXPORT MessageView
   void UpdateBackgroundPainter();
 
   std::string notification_id_;
+
+  const NotifierId notifier_id_;
+
   views::ScrollView* scroller_ = nullptr;
 
   std::u16string accessible_name_;
@@ -224,6 +233,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   // MessageViewFactory parlance.
   bool is_nested_ = false;
 
+  bool is_grouped_ = false;
   // True if the slide is disabled forcibly.
   bool disable_slide_ = false;
 

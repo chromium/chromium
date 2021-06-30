@@ -274,6 +274,15 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // A display string for the source of the notification.
   const std::u16string& display_source() const { return display_source_; }
 
+  bool allow_group() const { return allow_group_; }
+  void set_allow_group(bool allow_group) { allow_group_ = allow_group; }
+
+  bool group_child() const { return group_child_; }
+  void set_group_child(bool group_child) { group_child_ = group_child; }
+
+  bool group_parent() const { return group_parent_; }
+  void set_group_parent(bool group_parent) { group_parent_ = group_parent; }
+
   const NotifierId& notifier_id() const { return notifier_id_; }
 
   void set_profile_id(const std::string& profile_id) {
@@ -504,6 +513,18 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // TODO(estade): these book-keeping fields should be moved into
   // NotificationList.
   unsigned serial_number_;
+
+  // If set to true the notification can be displayed inside a group
+  // notification.
+  bool allow_group_ = false;
+
+  // If set to true the notification should not be displayed separately
+  // but inside a group notification.
+  bool group_child_ = false;
+
+  // If set to true the message view associated with this notification will
+  // be responsible to display all notifications that are part of its group.
+  bool group_parent_ = false;
 
   // A proxy object that allows access back to the JavaScript object that
   // represents the notification, for firing events.

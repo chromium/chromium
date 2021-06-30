@@ -86,7 +86,9 @@ SkPath MessageView::HighlightPathGenerator::GetHighlightPath(
 }
 
 MessageView::MessageView(const Notification& notification)
-    : notification_id_(notification.id()), slide_out_controller_(this, this) {
+    : notification_id_(notification.id()),
+      notifier_id_(notification.notifier_id()),
+      slide_out_controller_(this, this) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
   views::HighlightPathGenerator::Install(
@@ -113,6 +115,10 @@ MessageView::MessageView(const Notification& notification)
 
 MessageView::~MessageView() {
   RemovedFromWidget();
+}
+
+void MessageView::AddGroupedNotification(const Notification& notification) {
+  // Stub
 }
 
 void MessageView::UpdateWithNotification(const Notification& notification) {

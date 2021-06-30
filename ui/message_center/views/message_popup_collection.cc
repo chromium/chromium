@@ -11,8 +11,10 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_types.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_view.h"
+#include "ui/message_center/views/message_view.h"
 
 namespace message_center {
 
@@ -468,6 +470,22 @@ bool MessagePopupCollection::AddPopup() {
     item.will_fade_in = false;
   }
 
+  if (AddInExistingGroup(new_notification))
+    return false;
+
+  // The notification needs to be grouped but the popup for the group does not
+  // currently exist. Show the parent pop up again and let it assemble all
+  // grouped notifications.
+  if (new_notification->group_child()) {
+    new_notification = MessageCenter::Get()->FindOldestNotificationByNotiferId(
+        new_notification->notifier_id());
+    // TODO(crbug/1223697): Implement grouped notification construction when the
+    // MessageView for a parent notification is created.
+    new_notification->set_group_parent(true);
+
+    MessageCenter::Get()->ResetSinglePopup(new_notification->id());
+  }
+
   {
     PopupItem item;
     item.id = new_notification->id();
@@ -502,6 +520,34 @@ bool MessagePopupCollection::AddPopup() {
   item.start_bounds = item.bounds;
   item.start_bounds +=
       gfx::Vector2d((IsFromLeft() ? -1 : 1) * item.bounds.width(), 0);
+  return true;
+}
+
+bool MessagePopupCollection::AddInExistingGroup(Notification* notification) {
+  if (!notification->allow_group())
+    return false;
+
+  Notification* parent_notification =
+      MessageCenter::Get()->FindOldestNotificationByNotiferId(
+          notification->notifier_id());
+  DCHECK(parent_notification);
+  if (parent_notification->id() == notification->id())
+    return false;
+
+  notification->set_group_child(true);
+
+  MessagePopupView* parent_popup =
+      GetPopupViewForNotificationID(parent_notification->id());
+  // If the parent popup has already expired, we will add it back and
+  // create the group from scratch in MessagePopupCollection::AddPopup.
+  if (!parent_popup)
+    return false;
+
+  parent_notification->set_group_parent(true);
+  parent_popup->message_view()->AddGroupedNotification(*notification);
+  MessageCenter::Get()->DisplayedNotification(notification->id(),
+                                              DISPLAY_SOURCE_POPUP);
+  MessageCenter::Get()->MarkSinglePopupAsShown(notification->id(), false);
   return true;
 }
 

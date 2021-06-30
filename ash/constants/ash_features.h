@@ -463,6 +463,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsNotificationExperimentalShortTimeoutsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationScrollBarEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsInContextMenuEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeChromeVoxHintEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPciguardUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPerDeskShelfEnabled();

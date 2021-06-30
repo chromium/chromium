@@ -1305,6 +1305,10 @@ bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
 }
 
+bool IsNotificationsRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kNotificationsRefresh);
+}
+
 bool IsOobeChromeVoxHintEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeChromeVoxHint);
 }
