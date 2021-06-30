@@ -54,7 +54,7 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
     params.request_params.url = server_.GetURL(relative_url);
     base::RunLoop loop;
     helper_->StartDownload(
-        params,
+        params.request_params, params.scheduling_params,
         base::BindLambdaForTesting([&](bool, const base::FilePath& file_path) {
           std::string content;
           ASSERT_TRUE(base::ReadFileToString(file_path, &content));

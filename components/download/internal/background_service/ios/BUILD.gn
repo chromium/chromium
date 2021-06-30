@@ -32,11 +32,17 @@ source_set("unit_tests") {
   deps = [
     ":background_service",
     "//base",
+    "//base/test:test_support",
+    "//components/download/internal/background_service/test:test_support",
+    "//components/download/public/background_service/test:test_support",
     "//net",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
-  sources = [ "background_download_task_helper_unittest.mm" ]
+  sources = [
+    "background_download_service_impl_unittest.cc",
+    "background_download_task_helper_unittest.mm",
+  ]
 }

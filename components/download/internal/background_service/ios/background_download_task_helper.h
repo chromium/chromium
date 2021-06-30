@@ -4,8 +4,6 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_BACKGROUND_DOWNLOAD_TASK_HELPER_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_BACKGROUND_DOWNLOAD_TASK_HELPER_H_
 
-#import <Foundation/Foundation.h>
-
 #include <memory>
 #include <string>
 
@@ -16,7 +14,8 @@ class FilePath;
 }  // namespace base
 
 namespace download {
-struct DownloadParams;
+struct RequestParams;
+struct SchedulingParams;
 
 // Helper class to perform background download with iOS platform API.
 // Notes:
@@ -40,7 +39,8 @@ class BackgroundDownloadTaskHelper {
       delete;
 
   // Starts a download.
-  virtual void StartDownload(const DownloadParams& download_params,
+  virtual void StartDownload(const RequestParams& request_params,
+                             const SchedulingParams& scheduling_params,
                              CompletionCallback completion_callback) = 0;
 };
 

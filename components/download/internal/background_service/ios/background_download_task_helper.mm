@@ -116,7 +116,8 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
   ~BackgroundDownloadTaskHelperImpl() override = default;
 
  private:
-  void StartDownload(const DownloadParams& download_params,
+  void StartDownload(const RequestParams& request_params,
+                     const SchedulingParams& scheduling_params,
                      CompletionCallback completion_callback) override {
     // TODO(xingliu): Support more parameters in download::DownloadParams, the
     // session id should have guid as suffix. Implement
@@ -132,7 +133,7 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
     NSURLSession* session = [NSURLSession sessionWithConfiguration:configuration
                                                           delegate:delegate
                                                      delegateQueue:nil];
-    NSURL* url = net::NSURLWithGURL(download_params.request_params.url);
+    NSURL* url = net::NSURLWithGURL(request_params.url);
 
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
     NSURLSessionDownloadTask* downloadTask =
