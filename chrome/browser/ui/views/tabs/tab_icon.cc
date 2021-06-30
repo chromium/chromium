@@ -187,7 +187,7 @@ void TabIcon::OnThemeChanged() {
   views::View::OnThemeChanged();
   crashed_icon_ = gfx::ImageSkia();  // Force recomputation if crashed.
   if (!themed_favicon_.isNull())
-    themed_favicon_ = ThemeImage(favicon_);
+    themed_favicon_ = ThemeFavicon(favicon_);
 }
 
 void TabIcon::AnimationProgressed(const gfx::Animation* animation) {
@@ -264,7 +264,8 @@ const gfx::ImageSkia& TabIcon::GetIconToPaint() {
     if (crashed_icon_.isNull()) {
       // Lazily create a themed sad tab icon.
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-      crashed_icon_ = ThemeImage(*rb.GetImageSkiaNamed(IDR_CRASH_SAD_FAVICON));
+      crashed_icon_ =
+          ThemeFavicon(*rb.GetImageSkiaNamed(IDR_CRASH_SAD_FAVICON));
     }
     return crashed_icon_;
   }
@@ -351,7 +352,7 @@ void TabIcon::SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon) {
   favicon_ = icon;
 
   if (!GetNonDefaultFavicon() || should_themify_favicon) {
-    themed_favicon_ = ThemeImage(icon);
+    themed_favicon_ = ThemeFavicon(icon);
   } else {
     themed_favicon_ = gfx::ImageSkia();
   }
@@ -422,35 +423,13 @@ void TabIcon::RefreshLayer() {
   }
 }
 
-gfx::ImageSkia TabIcon::ThemeImage(const gfx::ImageSkia& source) {
-  // Choose between leaving the image as-is or changing to the toolbar button
-  // icon color.
-  const SkColor original_color =
-      color_utils::CalculateKMeanColorOfBitmap(*source.bitmap());
+gfx::ImageSkia TabIcon::ThemeFavicon(const gfx::ImageSkia& source) {
   const ui::ThemeProvider* tp = GetThemeProvider();
-  const SkColor alternate_color =
-      tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-
-  // Compute the minimum contrast of each color against foreground and
-  // background tabs (for active windows).
-  const SkColor active_tab_background =
-      tp->GetColor(ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE);
-  const SkColor inactive_tab_background =
-      tp->GetColor(ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE);
-  const float original_contrast = std::min(
-      color_utils::GetContrastRatio(original_color, active_tab_background),
-      color_utils::GetContrastRatio(original_color, inactive_tab_background));
-  const float alternate_contrast = std::min(
-      color_utils::GetContrastRatio(alternate_color, active_tab_background),
-      color_utils::GetContrastRatio(alternate_color, inactive_tab_background));
-
-  // Recolor the image if the original has low minimum contrast and recoloring
-  // will improve it.
-  return ((original_contrast < color_utils::kMinimumVisibleContrastRatio) &&
-          (alternate_contrast > original_contrast))
-             ? gfx::ImageSkiaOperations::CreateColorMask(source,
-                                                         alternate_color)
-             : source;
+  return favicon::ThemeFavicon(
+      source, tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
+      tp->GetColor(ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE),
+      tp->GetColor(
+          ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE));
 }
 
 BEGIN_METADATA(TabIcon, views::View)

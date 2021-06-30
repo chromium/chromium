@@ -41,6 +41,14 @@ gfx::Image GetDefaultFavicon();
 // database.
 void SaveFaviconEvenIfInIncognito(content::WebContents* contents);
 
+// Recolor favicon with |alternate_color| if contrast ratio is low between
+// source color and background |active_tab_background| or
+// |inactive_tab_background|.
+gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
+                            SkColor alternate_color,
+                            SkColor active_tab_background,
+                            SkColor inactive_tab_background);
+
 }  // namespace favicon
 
 #endif  // CHROME_BROWSER_FAVICON_FAVICON_UTILS_H_
