@@ -276,17 +276,14 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
   // nothing, but inform the caller to wait for such a task to run.
   auto existing_session_it = LookupAvailableSessionByKey(key);
   if (existing_session_it != available_sessions_.end()) {
-    // If this is an alias, the host resolution is for a websocket
-    // connection, and the aliased session doesn't support websockets,
-    // continue looking for an aliased session that does.  Unlikely there
-    // is one, but can't hurt to check.
-    bool continue_searching_for_websockets =
-        is_websocket && !existing_session_it->second->support_websocket();
+    if (is_websocket && !existing_session_it->second->support_websocket()) {
+      // We don't look for aliased sessions because it would not be possible to
+      // add them to the available_sessions_ map. See https://crbug.com/1220771.
+      return OnHostResolutionCallbackResult::kContinue;
+    }
 
-    if (!continue_searching_for_websockets)
-      return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
+    return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
   }
-
   for (const auto& address : addresses) {
     auto range = aliases_.equal_range(address);
     for (auto alias_it = range.first; alias_it != range.second; ++alias_it) {
