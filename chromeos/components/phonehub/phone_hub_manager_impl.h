@@ -32,6 +32,7 @@ namespace phonehub {
 
 class BrowserTabsModelController;
 class BrowserTabsModelProvider;
+class CameraRollManager;
 class CrosStateSender;
 class InvalidConnectionDisconnector;
 class MessageSender;
@@ -97,6 +98,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
       multidevice_setup_state_updater_;
   std::unique_ptr<InvalidConnectionDisconnector>
       invalid_connection_disconnector_;
+  std::unique_ptr<CameraRollManager> camera_roll_manager_;
 };
 
 }  // namespace phonehub

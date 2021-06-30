@@ -7,7 +7,9 @@
 #include <netinet/in.h>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,10 +31,19 @@ class FakeObserver : public MessageReceiver::Observer {
     return phone_status_updated_num_calls_;
   }
 
+  size_t fetch_camera_roll_items_response_calls() const {
+    return fetch_camera_roll_items_response_calls_;
+  }
+
   proto::PhoneStatusSnapshot last_snapshot() const { return last_snapshot_; }
 
   proto::PhoneStatusUpdate last_status_update() const {
     return last_status_update_;
+  }
+
+  proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response()
+      const {
+    return last_fetch_camera_roll_items_response_;
   }
 
   // MessageReceiver::Observer:
@@ -48,11 +59,19 @@ class FakeObserver : public MessageReceiver::Observer {
     ++phone_status_updated_num_calls_;
   }
 
+  void OnFetchCameraRollItemsResponseReceived(
+      const proto::FetchCameraRollItemsResponse& response) override {
+    last_fetch_camera_roll_items_response_ = response;
+    ++fetch_camera_roll_items_response_calls_;
+  }
+
  private:
   size_t phone_status_snapshot_updated_num_calls_ = 0;
   size_t phone_status_updated_num_calls_ = 0;
+  size_t fetch_camera_roll_items_response_calls_ = 0;
   proto::PhoneStatusSnapshot last_snapshot_;
   proto::PhoneStatusUpdate last_status_update_;
+  proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response_;
 };
 
 std::string SerializeMessage(proto::MessageType message_type,
@@ -96,12 +115,21 @@ class MessageReceiverImplTest : public testing::Test {
     return fake_observer_.status_updated_num_calls();
   }
 
+  size_t GetNumFetchCameraRollItemsResponseCalls() const {
+    return fake_observer_.fetch_camera_roll_items_response_calls();
+  }
+
   proto::PhoneStatusSnapshot GetLastSnapshot() const {
     return fake_observer_.last_snapshot();
   }
 
   proto::PhoneStatusUpdate GetLastStatusUpdate() const {
     return fake_observer_.last_status_update();
+  }
+
+  proto::FetchCameraRollItemsResponse GetLastFetchCameraRollItemsResponse()
+      const {
+    return fake_observer_.last_fetch_camera_roll_items_response();
   }
 
   FakeObserver fake_observer_;
@@ -130,6 +158,7 @@ TEST_F(MessageReceiverImplTest, OnPhoneStatusSnapshotReceieved) {
 
   EXPECT_EQ(1u, GetNumPhoneStatusSnapshotCalls());
   EXPECT_EQ(0u, GetNumPhoneStatusUpdatedCalls());
+  EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
   EXPECT_EQ(expected_battery_percentage,
             actual_snapshot.properties().battery_percentage());
   EXPECT_EQ(1, actual_snapshot.notifications_size());
@@ -157,10 +186,62 @@ TEST_F(MessageReceiverImplTest, OnPhoneStatusUpdated) {
 
   EXPECT_EQ(0u, GetNumPhoneStatusSnapshotCalls());
   EXPECT_EQ(1u, GetNumPhoneStatusUpdatedCalls());
+  EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
   EXPECT_EQ(expected_battery_percentage,
             actual_update.properties().battery_percentage());
   EXPECT_EQ(1, actual_update.updated_notifications_size());
   EXPECT_EQ(expected_removed_id, actual_update.removed_notification_ids()[0]);
+}
+
+TEST_F(MessageReceiverImplTest,
+       OnFetchCameraRollItemsResponseReceivedWthFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPhoneHubCameraRoll);
+
+  proto::FetchCameraRollItemsResponse expected_response;
+  proto::CameraRollItem* item_proto = expected_response.add_items();
+  proto::CameraRollItemMetadata* metadata = item_proto->mutable_metadata();
+  metadata->set_key("key");
+  proto::CameraRollItemThumbnail* thumbnail = item_proto->mutable_thumbnail();
+  thumbnail->set_data("encoded_thumbnail_data");
+
+  // Simulate receiving a message.
+  const std::string expected_message = SerializeMessage(
+      proto::FETCH_CAMERA_ROLL_ITEMS_RESPONSE, &expected_response);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  proto::FetchCameraRollItemsResponse actual_response =
+      GetLastFetchCameraRollItemsResponse();
+
+  EXPECT_EQ(0u, GetNumPhoneStatusSnapshotCalls());
+  EXPECT_EQ(0u, GetNumPhoneStatusUpdatedCalls());
+  EXPECT_EQ(1u, GetNumFetchCameraRollItemsResponseCalls());
+  EXPECT_EQ(1, actual_response.items_size());
+  EXPECT_EQ("key", actual_response.items(0).metadata().key());
+  EXPECT_EQ("encoded_thumbnail_data",
+            actual_response.items(0).thumbnail().data());
+}
+
+TEST_F(MessageReceiverImplTest,
+       OnFetchCameraRollItemsResponseReceivedWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPhoneHubCameraRoll);
+
+  proto::FetchCameraRollItemsResponse expected_response;
+  proto::CameraRollItem* item_proto = expected_response.add_items();
+  proto::CameraRollItemMetadata* metadata = item_proto->mutable_metadata();
+  metadata->set_key("key");
+  proto::CameraRollItemThumbnail* thumbnail = item_proto->mutable_thumbnail();
+  thumbnail->set_data("encoded_thumbnail_data");
+
+  // Simulate receiving a message.
+  const std::string expected_message = SerializeMessage(
+      proto::FETCH_CAMERA_ROLL_ITEMS_RESPONSE, &expected_response);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  EXPECT_EQ(0u, GetNumPhoneStatusSnapshotCalls());
+  EXPECT_EQ(0u, GetNumPhoneStatusUpdatedCalls());
+  EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
 }
 
 }  // namespace phonehub
