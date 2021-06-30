@@ -1671,6 +1671,7 @@ if (enable_vr || enable_arcore) {
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArDepthSensingTest.java",
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArHitTestTest.java",
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArLightEstimationTest.java",
+        "javatests/src/org/chromium/chrome/browser/vr/WebXrArSanityTest.java",
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArSessionTest.java",
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArTestFramework.java",
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArViewportScaleTest.java",
