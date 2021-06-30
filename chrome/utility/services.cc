@@ -31,7 +31,6 @@
 #include "printing/buildflags/buildflags.h"
 
 #if defined(OS_WIN)
-#include "chrome/services/util_win/processor_metrics.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "chrome/services/util_win/util_read_icon.h"
@@ -147,11 +146,6 @@ auto RunWebAppOriginAssociationParser(
 }
 
 #if defined(OS_WIN)
-auto RunProcessorMetrics(
-    mojo::PendingReceiver<chrome::mojom::ProcessorMetrics> receiver) {
-  return std::make_unique<ProcessorMetricsImpl>(std::move(receiver));
-}
-
 auto RunQuarantineService(
     mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
   DCHECK(base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine));
@@ -339,7 +333,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif
 
 #if defined(OS_WIN)
-  services.Add(RunProcessorMetrics);
   services.Add(RunQuarantineService);
   services.Add(RunWindowsUtility);
   services.Add(RunWindowsIconReader);
