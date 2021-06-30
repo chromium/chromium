@@ -843,4 +843,54 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBlockedExtensionBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
+// Test that ensures the content scripts only execute once on a back/forward
+// cached page.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       ContentScriptsRunOnlyOnce) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                                .AppendASCII("content_script_stages")));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  std::u16string expected_title = u"document_idle";
+  content::TitleWatcher title_watcher(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  // Verify that the content scripts have been run (the 'stage' element
+  // is created by the content script running at 'document_start" and
+  // populated whenever the content script run at 'document_start',
+  // 'document_end', or 'document_idle').
+  EXPECT_EQ("document_start/document_end/document_idle/page_show/",
+            EvalJs(rfh_a, "document.getElementById('stage').value;"));
+
+  // 2) Navigate to B.
+  ui_test_utils::NavigateToURL(browser(), url_b);
+
+  // Ensure that `rfh_a` is in the cache.
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 3) Go back to A.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Verify that the content scripts have not run again and that the
+  // 'stage' element has the appended a page_hide/page_show to its list.
+  EXPECT_EQ(
+      "document_start/document_end/document_idle/page_show/page_hide/"
+      "page_show/",
+      EvalJs(rfh_a, "document.getElementById('stage').value;"));
+}
+
 }  // namespace extensions
