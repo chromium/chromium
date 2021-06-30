@@ -8807,9 +8807,8 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
           worker_process_id,
           /*creator_render_frame_host_id=*/GetGlobalId(),
           /*creator_worker_token=*/absl::nullopt,
-          /*ancestor_render_frame_host_id=*/GetGlobalId(),
-          last_committed_origin_, isolation_info_,
-          cross_origin_embedder_policy_,
+          /*ancestor_render_frame_host_id=*/GetGlobalId(), storage_key(),
+          isolation_info_, cross_origin_embedder_policy_,
           /*creator_coep_reporter=*/coep_reporter,
           /*ancestor_coep_reporter=*/coep_reporter),
       std::move(receiver));

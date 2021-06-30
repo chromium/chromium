@@ -52,7 +52,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
     absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
-    const url::Origin& creator_origin,
+    const blink::StorageKey& creator_storage_key,
     const net::IsolationInfo& isolation_info,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
@@ -64,10 +64,11 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       creator_render_frame_host_id_(creator_render_frame_host_id),
       creator_worker_token_(creator_worker_token),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
-      creator_origin_(creator_origin),
+      creator_origin_(creator_storage_key.origin()),
       // TODO(https://crbug.com/1058759): Calculate the worker origin based on
-      // the worker script URL.
-      worker_origin_(creator_origin),
+      // the worker script URL (the worker's storage key should have an opaque
+      // origin if the worker script URL's scheme is data:).
+      storage_key_(creator_storage_key),
       isolation_info_(isolation_info),
       reporting_source_(base::UnguessableToken::Create()),
       creator_cross_origin_embedder_policy_(cross_origin_embedder_policy),
@@ -79,6 +80,10 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
   DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
          (!creator_render_frame_host_id_ && creator_worker_token_));
+
+  // TODO(https://crbug.com/11990077): Once we add more stuff to
+  // `blink::StorageKey`, DCHECK that `storage_key` is consistent with
+  // `isolation_info_` here (i.e. their origin and top frame origin match).
 
   scoped_process_host_observation_.Observe(worker_process_host_);
 
@@ -402,7 +407,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
 
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
-          ancestor_render_frame_host, worker_origin_, isolation_info_,
+          ancestor_render_frame_host, GetStorageKey().origin(), isolation_info_,
           ancestor_render_frame_host->BuildClientSecurityState(),
           std::move(coep_reporter), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
@@ -414,7 +419,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       worker_process_host_->GetBrowserContext(),
       /*frame=*/nullptr, worker_process_host_->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
-      worker_origin_, /*navigation_id=*/absl::nullopt,
+      GetStorageKey().origin(), /*navigation_id=*/absl::nullopt,
       ukm::SourceIdObj::FromInt64(
           ancestor_render_frame_host->GetPageUkmSourceId()),
       &default_factory_receiver, &factory_params->header_client,
@@ -502,7 +507,8 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           ancestor_render_frame_host_id_.child_id,
-          ancestor_render_frame_host_id_.frame_routing_id, worker_origin_,
+          ancestor_render_frame_host_id_.frame_routing_id,
+          GetStorageKey().origin(),
           ancestor_render_frame_host->GetIsolationInfoForSubresources()),
       std::move(receiver));
 }
@@ -512,8 +518,8 @@ void DedicatedWorkerHost::CreateWebTransportConnector(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
-          worker_process_host_->GetID(), /*frame=*/nullptr, worker_origin_,
-          isolation_info_.network_isolation_key()),
+          worker_process_host_->GetID(), /*frame=*/nullptr,
+          GetStorageKey().origin(), isolation_info_.network_isolation_key()),
       std::move(receiver));
 }
 
@@ -536,9 +542,9 @@ void DedicatedWorkerHost::BindCacheStorage(
     GetWorkerCoepReporter()->Clone(
         coep_reporter.InitWithNewPipeAndPassReceiver());
   }
-  worker_process_host_->BindCacheStorage(cross_origin_embedder_policy(),
-                                         std::move(coep_reporter),
-                                         worker_origin_, std::move(receiver));
+  worker_process_host_->BindCacheStorage(
+      cross_origin_embedder_policy(), std::move(coep_reporter),
+      GetStorageKey().origin(), std::move(receiver));
 }
 
 void DedicatedWorkerHost::CreateNestedDedicatedWorker(
@@ -555,7 +561,7 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
           worker_process_host_->GetID(),
           /*creator_render_frame_host_id_=*/absl::nullopt,
           /*creator_worker_token=*/token_, ancestor_render_frame_host_id_,
-          worker_origin_, isolation_info_, cross_origin_embedder_policy(),
+          GetStorageKey(), isolation_info_, cross_origin_embedder_policy(),
           creator_coep_reporter, ancestor_coep_reporter_),
       std::move(receiver));
 }

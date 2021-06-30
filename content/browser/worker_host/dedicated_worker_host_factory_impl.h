@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "url/origin.h"
 
@@ -29,7 +30,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
       absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
-      const url::Origin& creator_origin,
+      const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
@@ -66,7 +67,9 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   const absl::optional<blink::DedicatedWorkerToken> creator_worker_token_;
   const GlobalRenderFrameHostId ancestor_render_frame_host_id_;
 
-  const url::Origin creator_origin_;
+  // Storage key is used for storage partitioning, and for retrieving the
+  // worker's origin.
+  const blink::StorageKey creator_storage_key_;
   const net::IsolationInfo isolation_info_;
   const network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 

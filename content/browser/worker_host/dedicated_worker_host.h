@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
@@ -65,7 +66,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
       absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
       absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
-      const url::Origin& creator_origin,
+      const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
@@ -78,7 +79,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   const blink::DedicatedWorkerToken& GetToken() const { return token_; }
   RenderProcessHost* GetProcessHost() const { return worker_process_host_; }
-  const url::Origin& GetWorkerOrigin() const { return worker_origin_; }
+  const blink::StorageKey& GetStorageKey() const { return storage_key_; }
   const GlobalRenderFrameHostId& GetAncestorRenderFrameHostId() const {
     return ancestor_render_frame_host_id_;
   }
@@ -239,9 +240,10 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   // The origin of the frame or dedicated worker that starts this worker.
   const url::Origin creator_origin_;
 
-  // The origin of this worker.
-  // https://html.spec.whatwg.org/C/#concept-settings-object-origin
-  const url::Origin worker_origin_;
+  // The storage key of this worker. This is used for storage partitioning and
+  // for retrieving the origin of this worker
+  // (https://html.spec.whatwg.org/C/#concept-settings-object-origin).
+  const blink::StorageKey storage_key_;
 
   // The IsolationInfo associated with this worker. Same as that of the
   // frame or the worker that created this worker.

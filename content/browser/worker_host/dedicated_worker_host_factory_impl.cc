@@ -14,6 +14,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -40,7 +41,7 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
     absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
-    const url::Origin& creator_origin,
+    const blink::StorageKey& creator_storage_key,
     const net::IsolationInfo& isolation_info,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
@@ -49,7 +50,7 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
       creator_render_frame_host_id_(creator_render_frame_host_id),
       creator_worker_token_(creator_worker_token),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
-      creator_origin_(creator_origin),
+      creator_storage_key_(creator_storage_key),
       isolation_info_(isolation_info),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       creator_coep_reporter_(std::move(creator_coep_reporter)),
@@ -95,8 +96,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
 
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
-      creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
-      isolation_info_, cross_origin_embedder_policy_,
+      creator_worker_token_, ancestor_render_frame_host_id_,
+      creator_storage_key_, isolation_info_, cross_origin_embedder_policy_,
       std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
       std::move(host_receiver));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
@@ -131,14 +132,14 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     return;
   }
 
-  // TODO(https://crbug.com/1058759): Compare |creator_origin_| to
-  // |script_url|, and report as bad message if that fails.
+  // TODO(https://crbug.com/1058759): Compare `creator_storage_key_.origin()` to
+  // `script_url`, and report as bad message if that fails.
 
   mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
-      creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
-      isolation_info_, cross_origin_embedder_policy_,
+      creator_worker_token_, ancestor_render_frame_host_id_,
+      creator_storage_key_, isolation_info_, cross_origin_embedder_policy_,
       std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
       pending_remote_host.InitWithNewPipeAndPassReceiver());
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;

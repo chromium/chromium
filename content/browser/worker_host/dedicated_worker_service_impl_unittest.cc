@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
@@ -50,7 +51,7 @@ class MockDedicatedWorker
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
             worker_process_id, render_frame_host_id,
             /*creator_worker_token=*/absl::nullopt, render_frame_host_id,
-            url::Origin(), net::IsolationInfo::CreateTransient(),
+            blink::StorageKey(), net::IsolationInfo::CreateTransient(),
             network::CrossOriginEmbedderPolicy(), coep_reporter->GetWeakPtr(),
             coep_reporter->GetWeakPtr()),
         factory_.BindNewPipeAndPassReceiver());
