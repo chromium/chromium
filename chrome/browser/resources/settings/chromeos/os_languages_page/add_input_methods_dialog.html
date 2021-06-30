@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+<link rel="import" href="./cr_checkbox_with_policy.html">
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="shared_style.html">
 <link rel="import" href="../../languages_page/languages.html">
@@ -93,23 +94,14 @@
           <iron-list items="[[getAllInputMethods_(languages.inputMethods,
               lowercaseQueryString_)]]">
             <template>
-              <div class="list-item no-outline is-width-of-dialog">
-                <cr-checkbox class="flex"
-                    checked="[[willAdd_(item.id, inputMethodsToAdd_.size)]]"
-                    disabled="[[item.isProhibitedByPolicy]]"
-                    tab-index="[[tabIndex]]" on-change="onCheckboxChange_">
-                  [[item.displayName]]
-                </cr-checkbox>
-                <template is="dom-if" if="[[item.isProhibitedByPolicy]]">
-                  <iron-icon id="policy[[index]]" class="policy"
-                      icon="cr20:domain" describedby="tooltip[[index]]">
-                  </iron-icon>
-                  <paper-tooltip for="policy[[index]]" id="tooltip[[index]]"
-                      role="tooltip" tabindex="-1" position="left">
-                    $i18n{inputMethodNotAllowed}
-                  </paper-tooltip>
-                </template>
-              </div>
+              <cr-checkbox-with-policy
+                  class="list-item no-outline is-width-of-dialog"
+                  checked="[[willAdd_(item.id, inputMethodsToAdd_.size)]]"
+                  disabled="[[item.isProhibitedByPolicy]]"
+                  policy-tooltip="$i18n{inputMethodNotAllowed}"
+                  tab-index="[[tabIndex]]" on-change="onCheckboxChange_">
+                [[item.displayName]]
+              </cr-checkbox-with-policy>
             </template>
           </iron-list>
         </div>

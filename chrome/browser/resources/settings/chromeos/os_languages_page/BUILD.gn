@@ -14,6 +14,7 @@ js_type_check("closure_compile_module") {
     ":add_input_methods_dialog.m",
     ":add_spellcheck_languages_dialog",
     ":change_device_language_dialog.m",
+    ":cr_checkbox_with_policy",
     ":input_method_options_page.m",
     ":input_method_util.m",
     ":input_page.m",
@@ -28,11 +29,13 @@ js_type_check("closure_compile_module") {
 
 js_library("add_input_methods_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/add_input_methods_dialog.m.js" ]
+  deps = [ ":cr_checkbox_with_policy" ]
   extra_deps = [ ":add_input_methods_dialog_module" ]
 }
 
 js_library("add_spellcheck_languages_dialog") {
   deps = [
+    ":cr_checkbox_with_policy",
     "..:metrics_recorder.m",
     "../../languages_page:languages_types",
     "../../prefs:prefs_behavior",
@@ -57,6 +60,15 @@ js_library("change_device_language_dialog.m") {
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
   extra_deps = [ ":change_device_language_dialog_module" ]
+}
+
+js_library("cr_checkbox_with_policy") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
+  ]
 }
 
 js_library("input_method_util.m") {
@@ -198,6 +210,7 @@ group("polymer3_elements") {
     ":add_input_methods_dialog_module",
     ":add_spellcheck_languages_dialog_module",
     ":change_device_language_dialog_module",
+    ":cr_checkbox_with_policy_module",
     ":input_method_options_page_module",
     ":input_page_module",
     ":modulize",
@@ -233,6 +246,12 @@ polymer_modulizer("change_device_language_dialog") {
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("cr_checkbox_with_policy") {
+  js_file = "cr_checkbox_with_policy.js"
+  html_file = "cr_checkbox_with_policy.html"
+  html_type = "v3-ready"
 }
 
 polymer_modulizer("os_add_languages_dialog") {

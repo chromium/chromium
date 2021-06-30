@@ -11,6 +11,7 @@ import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import './cr_checkbox_with_policy.js';
 import './shared_style.m.js';
 import '../../settings_shared_css.js';
 
