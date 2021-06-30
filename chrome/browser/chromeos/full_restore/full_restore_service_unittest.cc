@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -234,6 +235,9 @@ class FullRestoreServiceTestHavingFullRestoreFile
   // FullRestoreServiceTest:
   void SetUp() override {
     FullRestoreServiceTest::SetUp();
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+
     CreateRestoreData();
   }
 
@@ -320,6 +324,24 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCancel) {
 
   EXPECT_FALSE(::full_restore::ShouldRestore(account_id()));
   EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+}
+
+// For an existing user, if re-image, don't show notifications for the first
+// run.
+TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
+  // Set the restore pref setting to simulate sync for the first time.
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kForceFirstRun);
+
+  CreateFullRestoreServiceForTesting();
+
+  EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
+
+  VerifyNotification(false, false, false);
 }
 
 // For a brand new user, if sync off, set 'Ask Every Time' as the default value,
