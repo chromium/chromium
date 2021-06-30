@@ -44,14 +44,30 @@ class AppControllerTest : public PlatformTest {
   TestingProfile* profile_;
 };
 
+TEST_F(AppControllerTest, DockMenuProfileNotLoaded) {
+  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
+  NSMenu* menu = [ac applicationDockMenu:NSApp];
+  // Incognito item is hidden when the profile is not loaded.
+  EXPECT_EQ(nil, [ac lastProfileIfLoaded]);
+  EXPECT_EQ(-1, [menu indexOfItemWithTag:IDC_NEW_INCOGNITO_WINDOW]);
+}
+
 TEST_F(AppControllerTest, DockMenu) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed,
+                         profile_->GetPath().BaseName().MaybeAsASCII());
+
   base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
   NSMenu* menu = [ac applicationDockMenu:NSApp];
   NSMenuItem* item;
 
   EXPECT_TRUE(menu);
   EXPECT_NE(-1, [menu indexOfItemWithTag:IDC_NEW_WINDOW]);
+
+  // Incognito item is shown when the profile is loaded.
+  EXPECT_EQ(profile_, [ac lastProfileIfLoaded]);
   EXPECT_NE(-1, [menu indexOfItemWithTag:IDC_NEW_INCOGNITO_WINDOW]);
+
   for (item in [menu itemArray]) {
     EXPECT_EQ(ac.get(), [item target]);
     EXPECT_EQ(@selector(commandFromDock:), [item action]);

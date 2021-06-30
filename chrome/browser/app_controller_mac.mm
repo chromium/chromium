@@ -1671,7 +1671,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 
 - (NSMenu*)applicationDockMenu:(NSApplication*)sender {
   NSMenu* dockMenu = [[[NSMenu alloc] initWithTitle: @""] autorelease];
-  Profile* profile = [self lastProfile];
 
   BOOL profilesAdded = [_profileMenuController insertItemsIntoMenu:dockMenu
                                                           atOffset:0
@@ -1689,10 +1688,16 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   [item setEnabled:[self validateUserInterfaceItem:item]];
   [dockMenu addItem:item];
 
-  // |profile| can be NULL during unit tests.
-  if (!profile ||
-      IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-          IncognitoModePrefs::DISABLED) {
+  Profile* profile = [self lastProfileIfLoaded];
+
+  // Buttons below require the profile to be loaded. In particular, if the
+  // profile picker is shown at startup, these buttons won't be added until the
+  // user picks a profile.
+  if (!profile)
+    return dockMenu;
+
+  if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+      IncognitoModePrefs::DISABLED) {
     titleStr = l10n_util::GetNSStringWithFixup(IDS_NEW_INCOGNITO_WINDOW_MAC);
     item.reset(
         [[NSMenuItem alloc] initWithTitle:titleStr
@@ -1704,33 +1709,28 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     [dockMenu addItem:item];
   }
 
-  // TODO(rickcam): Mock out BackgroundApplicationListModel, then add unit
-  // tests which use the mock in place of the profile-initialized model.
-
-  // Avoid breaking unit tests which have no profile.
-  if (profile) {
-    BackgroundApplicationListModel applications(profile);
-    if (applications.size()) {
-      int position = 0;
-      NSString* menuStr =
-          l10n_util::GetNSStringWithFixup(IDS_BACKGROUND_APPS_MAC);
-      base::scoped_nsobject<NSMenu> appMenu(
-          [[NSMenu alloc] initWithTitle:menuStr]);
-      for (extensions::ExtensionList::const_iterator cursor =
-               applications.begin();
-           cursor != applications.end();
-           ++cursor, ++position) {
-        DCHECK_EQ(applications.GetPosition(cursor->get()), position);
-        NSString* itemStr =
-            base::SysUTF16ToNSString(base::UTF8ToUTF16((*cursor)->name()));
-        base::scoped_nsobject<NSMenuItem> appItem(
-            [[NSMenuItem alloc] initWithTitle:itemStr
-                                       action:@selector(executeApplication:)
-                                keyEquivalent:@""]);
-        [appItem setTarget:self];
-        [appItem setTag:position];
-        [appMenu addItem:appItem];
-      }
+  // TODO(rickcam): Mock out BackgroundApplicationListModel, then add unit tests
+  // which use the mock in place of the profile-initialized model.
+  BackgroundApplicationListModel applications(profile);
+  if (applications.size()) {
+    int position = 0;
+    NSString* menuStr =
+        l10n_util::GetNSStringWithFixup(IDS_BACKGROUND_APPS_MAC);
+    base::scoped_nsobject<NSMenu> appMenu(
+        [[NSMenu alloc] initWithTitle:menuStr]);
+    for (extensions::ExtensionList::const_iterator cursor =
+             applications.begin();
+         cursor != applications.end(); ++cursor, ++position) {
+      DCHECK_EQ(applications.GetPosition(cursor->get()), position);
+      NSString* itemStr =
+          base::SysUTF16ToNSString(base::UTF8ToUTF16((*cursor)->name()));
+      base::scoped_nsobject<NSMenuItem> appItem([[NSMenuItem alloc]
+          initWithTitle:itemStr
+                 action:@selector(executeApplication:)
+          keyEquivalent:@""]);
+      [appItem setTarget:self];
+      [appItem setTag:position];
+      [appMenu addItem:appItem];
     }
   }
 
