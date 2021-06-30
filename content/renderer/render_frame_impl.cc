@@ -3615,6 +3615,13 @@ blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
   return proxy->web_frame();
 }
 
+blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
+    const blink::WebElement& fenced_frame_element) {
+  // TODO(crbug.com/1123606): Initialize and register remote frame and return it
+  // from here.
+  return nullptr;
+}
+
 blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
   if (render_view_->renderer_wide_named_frame_lookup()) {
     for (const auto& it : g_routing_id_frame_map.Get()) {

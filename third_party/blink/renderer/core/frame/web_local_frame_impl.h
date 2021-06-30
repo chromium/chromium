@@ -70,6 +70,7 @@ namespace blink {
 class ChromePrintContext;
 struct ContextMenuData;
 class FindInPage;
+class HTMLFencedFrameElement;
 class HTMLPortalElement;
 class IntSize;
 class LocalFrameClientImpl;
@@ -409,6 +410,8 @@ class CORE_EXPORT WebLocalFrameImpl final
       mojo::PendingAssociatedReceiver<mojom::blink::Portal>,
       mojo::PendingAssociatedRemote<mojom::blink::PortalClient>);
   RemoteFrame* AdoptPortal(HTMLPortalElement*);
+
+  RemoteFrame* CreateFencedFrame(HTMLFencedFrameElement*);
 
   void DidChangeContentsSize(const IntSize&);
 

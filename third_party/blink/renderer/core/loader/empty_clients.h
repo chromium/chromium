@@ -328,6 +328,9 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       mojo::PendingAssociatedReceiver<mojom::blink::Portal>,
       mojo::PendingAssociatedRemote<mojom::blink::PortalClient>) override;
   RemoteFrame* AdoptPortal(HTMLPortalElement*) override;
+
+  RemoteFrame* CreateFencedFrame(HTMLFencedFrameElement*) override;
+
   WebPluginContainerImpl* CreatePlugin(HTMLPlugInElement&,
                                        const KURL&,
                                        const Vector<String>&,

@@ -194,6 +194,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -2161,6 +2162,12 @@ RemoteFrame* WebLocalFrameImpl::AdoptPortal(HTMLPortalElement* portal) {
   auto* portal_frame =
       To<WebRemoteFrameImpl>(client_->AdoptPortal(portal->GetToken(), portal));
   return portal_frame->GetFrame();
+}
+
+RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
+    HTMLFencedFrameElement* fenced_frame) {
+  WebRemoteFrame* frame = client_->CreateFencedFrame(fenced_frame);
+  return To<WebRemoteFrameImpl>(frame)->GetFrame();
 }
 
 void WebLocalFrameImpl::DidChangeContentsSize(const IntSize& size) {

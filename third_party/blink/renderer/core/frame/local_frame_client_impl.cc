@@ -834,6 +834,11 @@ RemoteFrame* LocalFrameClientImpl::AdoptPortal(HTMLPortalElement* portal) {
   return web_frame_->AdoptPortal(portal);
 }
 
+RemoteFrame* LocalFrameClientImpl::CreateFencedFrame(
+    HTMLFencedFrameElement* fenced_frame) {
+  return web_frame_->CreateFencedFrame(fenced_frame);
+}
+
 WebPluginContainerImpl* LocalFrameClientImpl::CreatePlugin(
     HTMLPlugInElement& element,
     const KURL& url,

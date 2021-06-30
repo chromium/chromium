@@ -81,6 +81,7 @@ namespace blink {
 
 class AssociatedInterfaceProvider;
 class DocumentLoader;
+class HTMLFencedFrameElement;
 class HTMLFormElement;
 class HTMLFrameOwnerElement;
 class HTMLMediaElement;
@@ -263,6 +264,10 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // Adopting the predecessor allows a page to keep it alive and embed it as a
   // portal, allowing instantaneous back and forward activations.
   virtual RemoteFrame* AdoptPortal(HTMLPortalElement* portal) = 0;
+
+  // Creates a remote fenced frame hosted by an MPArch frame tree for the
+  // |HTMLFencedFrameElement|.
+  virtual RemoteFrame* CreateFencedFrame(HTMLFencedFrameElement*) = 0;
 
   // Whether or not plugin creation should fail if the HTMLPlugInElement isn't
   // in the DOM after plugin initialization.

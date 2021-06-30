@@ -262,6 +262,13 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
+  // Request the creation of a new fenced frame, and return the WebRemoteFrame*
+  // associated with it.
+  virtual WebRemoteFrame* CreateFencedFrame(
+      const WebElement& fenced_frame_element) {
+    return nullptr;
+  }
+
   // Called when Blink cannot find a frame with the given name in the frame's
   // browsing instance.  This gives the embedder a chance to return a frame
   // from outside of the browsing instance.

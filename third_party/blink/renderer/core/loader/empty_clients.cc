@@ -140,6 +140,10 @@ RemoteFrame* EmptyLocalFrameClient::AdoptPortal(HTMLPortalElement*) {
   return nullptr;
 }
 
+RemoteFrame* EmptyLocalFrameClient::CreateFencedFrame(HTMLFencedFrameElement*) {
+  return nullptr;
+}
+
 WebPluginContainerImpl* EmptyLocalFrameClient::CreatePlugin(
     HTMLPlugInElement&,
     const KURL&,

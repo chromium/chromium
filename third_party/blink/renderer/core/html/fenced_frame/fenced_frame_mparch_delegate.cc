@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -16,7 +19,12 @@ FencedFrameMPArchDelegate::FencedFrameMPArchDelegate(
             features::FencedFramesImplementationType::kMPArch);
 }
 
-void FencedFrameMPArchDelegate::DidGetInserted() {}
+void FencedFrameMPArchDelegate::DidGetInserted() {
+  RemoteFrame* remote_frame =
+      GetElement().GetDocument().GetFrame()->Client()->CreateFencedFrame(
+          &GetElement());
+  DCHECK_EQ(remote_frame, GetElement().ContentFrame());
+}
 
 void FencedFrameMPArchDelegate::Navigate(const KURL& url) {}
 
