@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -215,8 +216,13 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
   if (browser_view_->GetProfile()->IsIncognitoProfile())
     return false;
 
-  if (snooze_service_->IsBlocked(iph_feature))
-    return false;
+  // Some checks should not be done in demo mode, because we absolutely want to
+  // trigger the bubble if possible. Put any checks that should be bypassed in
+  // demo mode in this block.
+  if (!base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)) {
+    if (snooze_service_->IsBlocked(iph_feature))
+      return false;
+  }
 
   // If another bubble is showing through `bubble_owner_` it will not show ours.
   // In this case, don't query `tracker_`.
