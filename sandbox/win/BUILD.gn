@@ -260,16 +260,18 @@ group("maybe_set_appcontainer_acls") {
   }
 }
 
-action("set_appcontainer_acls") {
-  script = "//build/win/set_appcontainer_acls.py"
-  stamp_file = "$target_out_dir/acls.stamp"
-  inputs = [ script ]
-  outputs = [ stamp_file ]
+if (current_cpu == target_cpu && host_os == "win") {
+  action("set_appcontainer_acls") {
+    script = "//build/win/set_appcontainer_acls.py"
+    stamp_file = "$target_out_dir/acls.stamp"
+    inputs = [ script ]
+    outputs = [ stamp_file ]
 
-  args = [
-    "--stamp=" + rebase_path(stamp_file, root_out_dir),
-    "--dir=" + rebase_path(root_out_dir, root_out_dir),
-  ]
+    args = [
+      "--stamp=" + rebase_path(stamp_file, root_out_dir),
+      "--dir=" + rebase_path(root_out_dir, root_out_dir),
+    ]
+  }
 }
 
 loadable_module("sbox_integration_test_hijack_shim_dll") {
