@@ -55,6 +55,7 @@ typedef NS_ENUM(NSUInteger, InitStage) {
 @optional
 
 // Called when a scene is connected.
+// On iOS 12, called when the mainSceneState is set.
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
 
 // Called when the first scene initializes its UI.

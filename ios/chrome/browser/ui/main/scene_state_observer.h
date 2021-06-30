@@ -30,7 +30,8 @@ enum SceneActivationLevel : NSUInteger;
 - (void)sceneStateHasInitializedUI:(SceneState*)sceneState;
 // Notifies when URLContexts have been added to |URLContextsToOpen|.
 - (void)sceneState:(SceneState*)sceneState
-    hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts;
+    hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts
+    API_AVAILABLE(ios(13));
 // Notifies that a new activity request has been received.
 - (void)sceneState:(SceneState*)sceneState
     receivedUserActivity:(NSUserActivity*)userActivity;

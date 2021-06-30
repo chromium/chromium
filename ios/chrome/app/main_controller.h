@@ -27,6 +27,9 @@
                                       BrowsingDataCommands,
                                       AppStateObserver>
 
+// The application window.
+@property(nonatomic, strong) UIWindow* window;
+
 // Contains information about the application state, for example whether the
 // safe mode is activated.
 @property(nonatomic, weak) AppState* appState;

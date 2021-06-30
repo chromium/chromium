@@ -172,12 +172,19 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     _mainApplicationDelegate = applicationDelegate;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];
 
-    // Subscribe to scene connection notifications.
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(sceneWillConnect:)
-               name:UISceneWillConnectNotification
-             object:nil];
+    // Subscribe to scene-related notifications when using scenes.
+    // Note these are also sent when not using scenes, so avoid subscribing to
+    // them unless necessary.
+    if (base::ios::IsSceneStartupSupported()) {
+      if (@available(iOS 13, *)) {
+        // Subscribe to scene connection notifications.
+        [[NSNotificationCenter defaultCenter]
+            addObserver:self
+               selector:@selector(sceneWillConnect:)
+                   name:UISceneWillConnectNotification
+                 object:nil];
+      }
+    }
 
     [self addObserver:self];
   }
@@ -185,6 +192,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 #pragma mark - Properties implementation
+
+- (void)setMainSceneState:(SceneState*)mainSceneState {
+  DCHECK(!_mainSceneState);
+  _mainSceneState = mainSceneState;
+  [self.observers appState:self sceneConnected:mainSceneState];
+}
 
 - (void)setUiBlockerTarget:(id<UIBlockerTarget>)uiBlockerTarget {
   _uiBlockerTarget = uiBlockerTarget;
@@ -363,6 +376,44 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 }
 
+- (void)resumeSessionWithTabOpener:(id<TabOpening>)tabOpener
+                       tabSwitcher:(id<TabSwitching>)tabSwitcher
+             connectionInformation:
+                 (id<ConnectionInformation>)connectionInformation {
+  DCHECK(!base::ios::IsSceneStartupSupported());
+  DCHECK(self.initStage >= InitStageBrowserObjectsForUI);
+
+  // This is for iOS 12-compatibility only.
+  DCHECK(self.mainSceneState);
+
+  id<BrowserInterface> currentInterface =
+      self.mainSceneState.interfaceProvider.currentInterface;
+  CommandDispatcher* dispatcher =
+      currentInterface.browser->GetCommandDispatcher();
+  if ([connectionInformation startupParameters]) {
+    [UserActivityHandler
+        handleStartupParametersWithTabOpener:tabOpener
+                       connectionInformation:connectionInformation
+                          startupInformation:self.startupInformation
+                                browserState:currentInterface.browserState
+                                   initStage:self.initStage];
+  } else if ([tabOpener shouldOpenNTPTabOnActivationOfBrowser:currentInterface
+                                                                  .browser]) {
+    // Opens an NTP if needed.
+    // TODO(crbug.com/623491): opening a tab when the application is launched
+    // without a tab should not be counted as a user action. Revisit the way tab
+    // creation is counted.
+    if (![tabSwitcher openNewTabFromTabSwitcher]) {
+      OpenNewTabCommand* command =
+          [OpenNewTabCommand commandWithIncognito:currentInterface.incognito];
+      [HandlerForProtocol(dispatcher, ApplicationCommands)
+          openURLInNewTab:command];
+    }
+  } else {
+    [HandlerForProtocol(dispatcher, HelpCommands) showHelpBubbleIfEligible];
+  }
+}
+
 - (void)applicationWillTerminate:(UIApplication*)application {
   if (!_applicationInBackground) {
     base::UmaHistogramBoolean(
@@ -395,11 +446,17 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     }
   }
 
+  // Trigger UI teardown on iOS 12.
+  if (!base::ios::IsSceneStartupSupported()) {
+    self.mainSceneState.activationLevel = SceneActivationLevelUnattached;
+  }
+
   [self.startupInformation stopChromeMain];
 }
 
 - (void)application:(UIApplication*)application
-    didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
+    didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
+    API_AVAILABLE(ios(13)) {
   NSMutableArray<NSString*>* sessionIDs =
       [NSMutableArray arrayWithCapacity:sceneSessions.count];
   // This method is invoked by iOS to inform the application that the sessions
@@ -538,22 +595,31 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (NSArray<SceneState*>*)connectedScenes {
-  NSMutableArray* sceneStates = [[NSMutableArray alloc] init];
-  NSSet* connectedScenes = [UIApplication sharedApplication].connectedScenes;
-  for (UIWindowScene* scene in connectedScenes) {
-    if (![scene.delegate isKindOfClass:[SceneDelegate class]]) {
-      // This might happen in tests.
-      // TODO(crbug.com/1113097): This shouldn't be needed. (It might also
-      // be the cause of crbug.com/1142782).
-      [sceneStates addObject:[[SceneState alloc] initWithAppState:self]];
-      continue;
-    }
+  if (base::ios::IsSceneStartupSupported()) {
+    if (@available(iOS 13, *)) {
+      NSMutableArray* sceneStates = [[NSMutableArray alloc] init];
+      NSSet* connectedScenes =
+          [UIApplication sharedApplication].connectedScenes;
+      for (UIWindowScene* scene in connectedScenes) {
+        if (![scene.delegate isKindOfClass:[SceneDelegate class]]) {
+          // This might happen in tests.
+          // TODO(crbug.com/1113097): This shouldn't be needed. (It might also
+          // be the cause of crbug.com/1142782).
+          [sceneStates addObject:[[SceneState alloc] initWithAppState:self]];
+          continue;
+        }
 
-    SceneDelegate* sceneDelegate =
-        base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
-    [sceneStates addObject:sceneDelegate.sceneState];
+        SceneDelegate* sceneDelegate =
+            base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
+        [sceneStates addObject:sceneDelegate.sceneState];
+      }
+      return sceneStates;
+    }
+  } else if (self.mainSceneState) {
+    return @[ self.mainSceneState ];
   }
-  return sceneStates;
+  // This can happen if the app is terminating before any scenes are set up.
+  return @[];
 }
 
 - (NSArray<SceneState*>*)foregroundScenes {
@@ -666,22 +732,25 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 #pragma mark - Scenes lifecycle
 
 - (void)sceneWillConnect:(NSNotification*)notification {
-  UIWindowScene* scene =
-      base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
-  SceneDelegate* sceneDelegate =
-      base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
+  DCHECK(base::ios::IsSceneStartupSupported());
+  if (@available(iOS 13, *)) {
+    UIWindowScene* scene =
+        base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
+    SceneDelegate* sceneDelegate =
+        base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
 
-  // Under some iOS 15 betas, Chrome gets scene connection events for some
-  // system scene connections. To handle this, early return if the connecting
-  // scene doesn't have a valid delegate. (See crbug.com/1217461)
-  if (!sceneDelegate)
-    return;
+    // Under some iOS 15 betas, Chrome gets scene connection events for some
+    // system scene connections. To handle this, early return if the connecting
+    // scene doesn't have a valid delegate. (See crbug.com/1217461)
+    if (!sceneDelegate)
+      return;
 
-  SceneState* sceneState = sceneDelegate.sceneState;
-  DCHECK(sceneState);
+    SceneState* sceneState = sceneDelegate.sceneState;
+    DCHECK(sceneState);
 
-  [self.observers appState:self sceneConnected:sceneState];
-  crash_keys::SetConnectedScenesCount([self connectedScenes].count);
+    [self.observers appState:self sceneConnected:sceneState];
+    crash_keys::SetConnectedScenesCount([self connectedScenes].count);
+  }
 }
 
 #pragma mark - AppStateObserver

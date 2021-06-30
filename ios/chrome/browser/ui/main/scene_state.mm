@@ -235,7 +235,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return _appState;
 }
 
-- (void)bringBlockerToFront:(UIScene*)requestingScene {
+- (void)bringBlockerToFront:(UIScene*)requestingScene API_AVAILABLE(ios(13)) {
   if (!base::ios::IsMultipleScenesSupported()) {
     return;
   }

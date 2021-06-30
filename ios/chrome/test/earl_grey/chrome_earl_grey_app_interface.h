@@ -45,8 +45,8 @@
 // the operation failed.
 + (NSError*)removeBrowsingCache;
 
-// Opens |URL| using some connected scene.
-+ (void)sceneOpenURL:(NSString*)spec;
+// Opens |URL| using the application delegate.
++ (void)applicationOpenURL:(NSString*)spec;
 
 // Loads the URL |spec| in the current WebState with transition type
 // ui::PAGE_TRANSITION_TYPED and returns without waiting for the page to load.

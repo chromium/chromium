@@ -279,6 +279,17 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [_sceneState addObserver:self];
     [_sceneState.appState addObserver:self];
 
+    // The window is necessary very early in the app/scene lifecycle, so it
+    // should be created right away.
+    // When multiwindow is supported, the window is created by SceneDelegate,
+    // and fetched by SceneState from UIScene's windows.
+    if (!base::ios::IsSceneStartupSupported() && !self.sceneState.window) {
+      self.sceneState.window = [[ChromeOverlayWindow alloc]
+          initWithFrame:[[UIScreen mainScreen] bounds]];
+      // Assign an a11y identifier for using in EGTest.
+      self.sceneState.window.accessibilityIdentifier = @"0";
+      CustomizeUIWindowAppearance(self.sceneState.window);
+    }
     _sceneURLLoadingService = new SceneUrlLoadingService();
     _sceneURLLoadingService->SetDelegate(self);
 
@@ -380,50 +391,58 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       self.sceneState.presentingModalOverlay) {
     return;
   }
-  // Handle URL opening from
-  // |UIWindowSceneDelegate scene:willConnectToSession:options:|.
-  for (UIOpenURLContext* context in self.sceneState.connectionOptions
-           .URLContexts) {
-    URLOpenerParams* params =
-        [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
-    [self
-        openTabFromLaunchWithParams:params
-                 startupInformation:self.sceneState.appState.startupInformation
-                           appState:self.sceneState.appState];
-  }
-  if (self.sceneState.connectionOptions.shortcutItem) {
-    [UserActivityHandler
-        performActionForShortcutItem:self.sceneState.connectionOptions
-                                         .shortcutItem
-                   completionHandler:nil
-                           tabOpener:self
-               connectionInformation:self
-                  startupInformation:self.sceneState.appState.startupInformation
-                   interfaceProvider:self.interfaceProvider
-                           initStage:self.sceneState.appState.initStage];
+
+  if (!base::ios::IsSceneStartupSupported()) {
+    return;
   }
 
-  // See if this scene launched as part of a multiwindow URL opening.
-  // If so, load that URL (this also creates a new tab to load the URL
-  // in). No other UI will show in this case.
-  NSUserActivity* activityWithCompletion;
-  for (NSUserActivity* activity in self.sceneState.connectionOptions
-           .userActivities) {
-    if (ActivityIsURLLoad(activity)) {
-      UrlLoadParams params = LoadParamsFromActivity(activity);
-      ApplicationMode mode = params.in_incognito ? ApplicationMode::INCOGNITO
-                                                 : ApplicationMode::NORMAL;
-      [self openOrReuseTabInMode:mode
-               withUrlLoadParams:params
-             tabOpenedCompletion:nil];
-    } else if (ActivityIsTabMove(activity)) {
-      NSString* tabID = GetTabIDFromActivity(activity);
-      MoveTabToBrowser(tabID, self.mainInterface.browser,
-                       /*destination_tab_index=*/0);
-    } else if (!activityWithCompletion) {
-      // Completion involves user interaction.
-      // Only one can be triggered.
-      activityWithCompletion = activity;
+  if (@available(iOS 13, *)) {
+    // Handle URL opening from
+    // |UIWindowSceneDelegate scene:willConnectToSession:options:|.
+    for (UIOpenURLContext* context in self.sceneState.connectionOptions
+             .URLContexts) {
+      URLOpenerParams* params =
+          [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
+      [self openTabFromLaunchWithParams:params
+                     startupInformation:self.sceneState.appState
+                                            .startupInformation
+                               appState:self.sceneState.appState];
+    }
+    if (self.sceneState.connectionOptions.shortcutItem) {
+      [UserActivityHandler
+          performActionForShortcutItem:self.sceneState.connectionOptions
+                                           .shortcutItem
+                     completionHandler:nil
+                             tabOpener:self
+                 connectionInformation:self
+                    startupInformation:self.sceneState.appState
+                                           .startupInformation
+                     interfaceProvider:self.interfaceProvider
+                             initStage:self.sceneState.appState.initStage];
+    }
+
+    // See if this scene launched as part of a multiwindow URL opening.
+    // If so, load that URL (this also creates a new tab to load the URL
+    // in). No other UI will show in this case.
+    NSUserActivity* activityWithCompletion;
+    for (NSUserActivity* activity in self.sceneState.connectionOptions
+             .userActivities) {
+      if (ActivityIsURLLoad(activity)) {
+        UrlLoadParams params = LoadParamsFromActivity(activity);
+        ApplicationMode mode = params.in_incognito ? ApplicationMode::INCOGNITO
+                                                   : ApplicationMode::NORMAL;
+        [self openOrReuseTabInMode:mode
+                 withUrlLoadParams:params
+               tabOpenedCompletion:nil];
+      } else if (ActivityIsTabMove(activity)) {
+        NSString* tabID = GetTabIDFromActivity(activity);
+        MoveTabToBrowser(tabID, self.mainInterface.browser,
+                         /*destination_tab_index=*/0);
+      } else if (!activityWithCompletion) {
+        // Completion involves user interaction.
+        // Only one can be triggered.
+        activityWithCompletion = activity;
+      }
     }
     if (activityWithCompletion) {
       // This function is called when the scene is activated (or unblocked).
@@ -550,7 +569,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)sceneState:(SceneState*)sceneState
-    hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts {
+    hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts
+    API_AVAILABLE(ios(13)) {
   DCHECK(URLContexts);
   // It is necessary to reset the URLContextsToOpen after opening them.
   // Handle the opening asynchronously to avoid interfering with potential
@@ -562,8 +582,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
-                   completionHandler:
-                       (void (^)(BOOL succeeded))completionHandler {
+                   completionHandler:(void (^)(BOOL succeeded))completionHandler
+    API_AVAILABLE(ios(13)) {
   if (self.sceneState.appState.initStage <= InitStageNormalUI ||
       !self.currentInterface.browserState) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
@@ -673,16 +693,22 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                    !self.sceneState.hasInitializedUI;
   if (initializingUIInColdStart) {
     [self initializeUI];
-    // Add the scene to the list of connected scene, to restore in case of
-    // crashes.
-    [[PreviousSessionInfo sharedInstance]
-        addSceneSessionID:self.sceneState.sceneSessionID];
+    if (base::ios::IsMultiwindowSupported()) {
+      if (@available(iOS 13, *)) {
+        // Add the scene to the list of connected scene, to restore in case of
+        // crashes.
+        [[PreviousSessionInfo sharedInstance]
+            addSceneSessionID:self.sceneState.sceneSessionID];
+      }
+    }
   }
 
   // When the scene transitions to inactive (such as when it's being shown in
   // the OS app-switcher), update the title for display on iPadOS.
-  if (level == SceneActivationLevelForegroundInactive) {
-    self.sceneState.scene.title = [self displayTitleForAppSwitcher];
+  if (@available(iOS 13, *)) {
+    if (level == SceneActivationLevelForegroundInactive) {
+      self.sceneState.scene.title = [self displayTitleForAppSwitcher];
+    }
   }
 
   if (level == SceneActivationLevelForegroundActive &&
@@ -715,11 +741,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   if (self.sceneState.hasInitializedUI &&
       level == SceneActivationLevelUnattached) {
-    if (base::ios::IsMultipleScenesSupported()) {
-      // If Multiple scenes are not supported, the session shouldn't be
-      // removed as it can be used for normal restoration.
-      [[PreviousSessionInfo sharedInstance]
-          removeSceneSessionID:self.sceneState.sceneSessionID];
+    if (base::ios::IsMultiwindowSupported()) {
+      if (@available(iOS 13, *)) {
+        if (base::ios::IsMultipleScenesSupported()) {
+          // If Multiple scenes are not supported, the session shouldn't be
+          // removed as it can be used for normal restoration.
+          [[PreviousSessionInfo sharedInstance]
+              removeSceneSessionID:self.sceneState.sceneSessionID];
+        }
+      }
     }
     [self teardownUI];
   }
@@ -788,12 +818,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // and the user will not have a chance to restore the session.
 - (BOOL)shouldShowRestorePrompt {
   BOOL shouldShow = !self.startupParameters && ![self isIncognitoForced];
-  if (shouldShow) {
-    for (NSUserActivity* activity in self.sceneState.connectionOptions
-             .userActivities) {
-      if (ActivityIsTabMove(activity) || ActivityIsURLLoad(activity)) {
-        shouldShow = NO;
-        break;
+  if (shouldShow && base::ios::IsSceneStartupSupported()) {
+    if (@available(iOS 13, *)) {
+      for (NSUserActivity* activity in self.sceneState.connectionOptions
+               .userActivities) {
+        if (ActivityIsTabMove(activity) || ActivityIsURLLoad(activity)) {
+          shouldShow = NO;
+          break;
+        }
       }
     }
   }
@@ -846,7 +878,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   policyWatcherAgent->Initialize(handler);
 
   if (@available(iOS 14, *)) {
-    if (base::FeatureList::IsEnabled(kEnableFullPageScreenshot)) {
+    if (base::ios::IsSceneStartupSupported() &&
+        base::FeatureList::IsEnabled(kEnableFullPageScreenshot)) {
       self.screenshotDelegate = [[ScreenshotDelegate alloc]
           initWithBrowserInterfaceProvider:self.browserViewWrangler];
       [self.sceneState.scene.screenshotService
@@ -859,7 +892,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (self.sceneState.appState.sessionRestorationRequired &&
       !self.sceneState.appState.startupInformation.isFirstRun) {
     Browser* mainBrowser = self.mainInterface.browser;
-    if ([CrashRestoreHelper
+    if (!base::ios::IsMultiwindowSupported() ||
+        [CrashRestoreHelper
             isBackedUpSessionID:self.sceneState.sceneSessionID
                    browserState:mainBrowser->GetBrowserState()]) {
       self.sceneState.appState.startupInformation.restoreHelper =
@@ -1580,16 +1614,18 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (!base::ios::IsMultipleScenesSupported())
     return;  // silent no-op.
 
-  UISceneActivationRequestOptions* options =
-      [[UISceneActivationRequestOptions alloc] init];
-  options.requestingScene = self.sceneState.scene;
+  if (@available(iOS 13, *)) {
+    UISceneActivationRequestOptions* options =
+        [[UISceneActivationRequestOptions alloc] init];
+    options.requestingScene = self.sceneState.scene;
 
-  if (self.mainInterface) {
-    PrefService* prefs = self.mainInterface.browserState->GetPrefs();
-    if (IsIncognitoModeForced(prefs)) {
-      userActivity = AdaptUserActivityToIncognito(userActivity, true);
-    } else if (IsIncognitoModeDisabled(prefs)) {
-      userActivity = AdaptUserActivityToIncognito(userActivity, false);
+    if (self.mainInterface) {
+      PrefService* prefs = self.mainInterface.browserState->GetPrefs();
+      if (IsIncognitoModeForced(prefs)) {
+        userActivity = AdaptUserActivityToIncognito(userActivity, true);
+      } else if (IsIncognitoModeDisabled(prefs)) {
+        userActivity = AdaptUserActivityToIncognito(userActivity, false);
+      }
     }
 
     [UIApplication.sharedApplication
@@ -2140,10 +2176,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (BOOL)shouldOpenNTPTabOnActivationOfBrowser:(Browser*)browser {
   // Check if there are pending actions that would result in opening a new tab.
   // In that case, it is not useful to open another tab.
-  for (NSUserActivity* activity in self.sceneState.connectionOptions
-           .userActivities) {
-    if (ActivityIsURLLoad(activity) || ActivityIsTabMove(activity)) {
-      return NO;
+  if (base::ios::IsSceneStartupSupported()) {
+    if (@available(iOS 13, *)) {
+      for (NSUserActivity* activity in self.sceneState.connectionOptions
+               .userActivities) {
+        if (ActivityIsURLLoad(activity) || ActivityIsTabMove(activity)) {
+          return NO;
+        }
+      }
     }
   }
 
@@ -2804,7 +2844,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self.mainCoordinator showTabGrid];
 }
 
-- (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
+- (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts
+    API_AVAILABLE(ios(13)) {
   if (self.sceneState.appState.initStage <= InitStageNormalUI ||
       !self.currentInterface.browserState) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.

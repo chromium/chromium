@@ -84,7 +84,6 @@ source_set("unit_tests") {
     "//ios/public/provider/chrome/browser/user_feedback:test_support",
     "//ios/testing:block_swizzler",
     "//ios/testing:ocmock_support",
-    "//ios/testing:open_url_context",
     "//ios/web",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

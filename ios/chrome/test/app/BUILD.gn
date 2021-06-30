@@ -94,7 +94,6 @@ source_set("test_support") {
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
-    "//ios/testing:open_url_context",
     "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ios/web/public/security",

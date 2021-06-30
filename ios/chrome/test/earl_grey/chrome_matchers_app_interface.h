@@ -370,7 +370,7 @@
 
 // Matcher for a Copy button, such as the one in the Activity View. This matcher
 // is very broad and will look for any button with a matching string.
-+ (id<GREYMatcher>)copyActivityButton;
++ (id<GREYMatcher>)copyActivityButton API_AVAILABLE(ios(13));
 
 // Matcher for the Copy Link option in the updated context menus when long
 // pressing on a link. |useNewString| determines which string to use.

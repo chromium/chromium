@@ -474,12 +474,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // browser state.
   BOOL needRestoration = NO;
   if (isPostCrashLaunch) {
-    NSSet<NSString*>* sessions =
-        [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs];
+    NSSet<NSString*>* sessions = nil;
+    if (@available(ios 13, *)) {
+      sessions =
+          [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs];
+    } else {
+      sessions = [NSSet setWithObjects:SessionIdentifierForScene(nil), nil];
+    }
+
     needRestoration = [CrashRestoreHelper moveAsideSessions:sessions
                                             forBrowserState:chromeBrowserState];
   }
-  if (!base::ios::IsMultipleScenesSupported()) {
+  if (!base::ios::IsMultipleScenesSupported() &&
+      base::ios::IsMultiwindowSupported()) {
     NSSet<NSString*>* previousSessions =
         [PreviousSessionInfo sharedInstance].connectedSceneSessionsIDs;
     DCHECK(previousSessions.count <= 1);
@@ -923,7 +930,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   DCHECK(!_memoryDebuggerManager);
   DCHECK(experimental_flags::IsMemoryDebuggingEnabled());
   _memoryDebuggerManager = [[MemoryDebuggerManager alloc]
-      initWithView:self.appState.foregroundActiveScene.window
+      initWithView:self.window
              prefs:GetApplicationContext()->GetLocalState()];
 }
 
@@ -1203,11 +1210,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   BOOL willShowActivityIndicator = NO;
   BOOL didShowActivityIndicator = NO;
 
-  // TODO(crbug.com/632772): Visited links clearing doesn't require disabling
-  // web usage with iOS 13. Stop disabling web usage once iOS 12 is not
-  // supported.
-  willShowActivityIndicator = disableWebUsageDuringRemoval;
-  disableWebUsageDuringRemoval = NO;
+  if (@available(iOS 13, *)) {
+    // TODO(crbug.com/632772): Visited links clearing doesn't require disabling
+    // web usage with iOS 13. Stop disabling web usage once iOS 12 is not
+    // supported.
+    willShowActivityIndicator = disableWebUsageDuringRemoval;
+    disableWebUsageDuringRemoval = NO;
+  }
 
   for (SceneState* sceneState in self.appState.connectedScenes) {
     // Assumes all scenes share |browserState|.
@@ -1270,7 +1279,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 #pragma mark - BlockingSceneCommands
 
-- (void)activateBlockingScene:(UIScene*)requestingScene {
+- (void)activateBlockingScene:(UIScene*)requestingScene
+    API_AVAILABLE(ios(13.0)) {
   id<UIBlockerTarget> uiBlocker = self.appState.currentUIBlocker;
   if (!uiBlocker) {
     return;

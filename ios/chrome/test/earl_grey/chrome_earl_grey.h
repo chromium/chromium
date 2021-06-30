@@ -92,9 +92,9 @@ UIWindow* GetAnyKeyWindow();
 
 #pragma mark - Navigation Utilities (EG2)
 
-// Instructs some connected scene to open |URL| with default opening
+// Instructs the application delegate to open |URL| with default opening
 // options.
-- (void)sceneOpenURL:(const GURL&)URL;
+- (void)applicationOpenURL:(const GURL&)URL;
 
 // Loads |URL| in the current WebState with transition type
 // ui::PAGE_TRANSITION_TYPED, and if waitForCompletion is YES

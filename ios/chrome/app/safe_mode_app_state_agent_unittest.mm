@@ -107,6 +107,7 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
           [[AppState alloc] initWithBrowserLauncher:browser_launcher_mock_
                                  startupInformation:startup_information_mock_
                                 applicationDelegate:main_application_delegate_];
+      app_state_.mainSceneState = main_scene_state_;
 
       main_scene_state_ = [main_scene_state_ initWithAppState:app_state_];
       main_scene_state_.window = getWindowMock();

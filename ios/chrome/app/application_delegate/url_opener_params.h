@@ -27,7 +27,12 @@
     NS_DESIGNATED_INITIALIZER;
 
 // The init method for the UIWindowSceneDelegate format.
-- (instancetype)initWithUIOpenURLContext:(UIOpenURLContext*)context;
+- (instancetype)initWithUIOpenURLContext:(UIOpenURLContext*)context
+    API_AVAILABLE(ios(13));
+
+// The init method for the |UIApplicationDelegate application:openURL:options|
+// format.
+- (instancetype)initWithOpenURL:(NSURL*)URL options:(NSDictionary*)options;
 
 // The init method for the |UIApplicationDelegate
 // application:didFinishLaunchingWithOptions:| format.
