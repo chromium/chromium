@@ -971,6 +971,14 @@
       "use_goma": true
     }
   },
+  "mac-arm64-on-arm64-rel": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "mac-code-coverage": {
     "gn_args": {
       "is_clang": true,

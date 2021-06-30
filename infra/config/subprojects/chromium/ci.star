@@ -4361,6 +4361,18 @@ ci.fyi_mac_builder(
 )
 
 ci.fyi_mac_builder(
+    name = "mac-arm64-on-arm64-rel",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "a64",
+    ),
+    cores = None,
+    cpu = cpu.ARM64,
+    os = os.MAC_11,
+)
+
+ci.fyi_mac_builder(
     name = "mac-hermetic-upgrade-rel",
     console_view_entry = consoles.console_view_entry(
         category = "mac",

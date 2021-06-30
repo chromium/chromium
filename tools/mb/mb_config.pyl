@@ -351,6 +351,7 @@
       'linux-wpt-fyi-rel': 'release_bot_minimal_symbols',
       'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols',
       'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols',
+      'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot',
       'mac-code-coverage': 'clang_code_coverage',
       'mac-hermetic-upgrade-rel': 'release_bot',
       'mac-paeverywhere-x64-fyi-dbg': 'debug_bot_paeverywhere_x64',
