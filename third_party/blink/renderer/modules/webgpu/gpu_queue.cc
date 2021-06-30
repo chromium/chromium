@@ -732,8 +732,7 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
   // Check src/dst texture formats are supported by CopyTextureForBrowser
   SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
   if (!IsValidCopyTextureForBrowserFormats(image_info.colorType(),
-                                           dest_texture_format) ||
-      (image->IsPremultiplied() != premultiplied_alpha)) {
+                                           dest_texture_format)) {
     return false;
   }
 
@@ -757,6 +756,11 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
   if (flipY) {
     options.flipY = true;
   }
+
+  options.alphaOp = image->IsPremultiplied() == premultiplied_alpha
+                        ? WGPUAlphaOp_DontChange
+                        : premultiplied_alpha ? WGPUAlphaOp_Premultiply
+                                              : WGPUAlphaOp_Unpremultiply;
 
   GetProcs().queueCopyTextureForBrowser(GetHandle(), &src, &destination,
                                         &copy_size, &options);
