@@ -155,12 +155,32 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
   return {layout_overflow_changed, rebuild_fragment_tree};
 }
 
+static void RecalcFragmentLayoutOverflow(RecalcLayoutOverflowResult& result,
+                                         const NGPhysicalFragment& fragment) {
+  for (const auto& child : fragment.PostLayoutChildren()) {
+    if (child->GetLayoutObject()) {
+      if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(child.get())) {
+        if (LayoutBox* owner_box = box->MutableOwnerLayoutBox())
+          result.Unite(owner_box->RecalcLayoutOverflow());
+      }
+    } else {
+      // We enter this branch when the |child| is a fragmentainer.
+      RecalcFragmentLayoutOverflow(result, *child.get());
+    }
+  }
+}
+
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
   DCHECK(RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled());
   DCHECK(Base::ChildNeedsLayoutOverflowRecalc());
   Base::ClearChildNeedsLayoutOverflowRecalc();
 
+#if DCHECK_IS_ON()
+  // We use PostLayout methods to navigate the fragment tree and reach the
+  // corresponding LayoutObjects, so we need to use AllowPostLayoutScope here.
+  NGPhysicalBoxFragment::AllowPostLayoutScope allow_post_layout_scope;
+#endif
   RecalcLayoutOverflowResult result;
   for (auto& layout_result : Base::layout_results_) {
     const auto& fragment =
@@ -177,12 +197,7 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
       }
     }
 
-    for (const auto& child : fragment.PostLayoutChildren()) {
-      if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(child.get())) {
-        if (LayoutBox* owner_box = box->MutableOwnerLayoutBox())
-          result.Unite(owner_box->RecalcLayoutOverflow());
-      }
-    }
+    RecalcFragmentLayoutOverflow(result, fragment);
   }
 
   return result;

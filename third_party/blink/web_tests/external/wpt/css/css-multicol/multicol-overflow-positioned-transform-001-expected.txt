@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Check scrollWidth before and after transform chage assert_equals: expected 250 but got 100
+FAIL Check scrollHeight before and after transform chage assert_equals: expected 350 but got 100
+FAIL Check scrollWidth and scrollHeight before and after transform chage assert_equals: expected 250 but got 100
+Harness: the test ran to completion.
+
