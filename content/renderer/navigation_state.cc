@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/renderer/internal_document_state_data.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom.h"
 
 namespace content {
@@ -34,7 +35,8 @@ std::unique_ptr<NavigationState> NavigationState::Create(
 // static
 std::unique_ptr<NavigationState> NavigationState::CreateForSynchronousCommit() {
   return base::WrapUnique(new NavigationState(
-      CreateCommonNavigationParams(), CreateCommitNavigationParams(),
+      blink::CreateCommonNavigationParams(),
+      blink::CreateCommitNavigationParams(),
       /*is_for_synchronous_commit=*/true,
       content::mojom::NavigationClient::CommitNavigationCallback(),
       /*navigation_client=*/nullptr,

@@ -24,6 +24,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -195,10 +196,10 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   // TODO(zetamoo): Use NavigationSimulator instead of creating
   // NavigationRequest and NavigationHandleImpl.
   void CreateNavigationHandle() {
-    auto common_params = CreateCommonNavigationParams();
+    auto common_params = blink::CreateCommonNavigationParams();
     common_params->initiator_origin =
         url::Origin::Create(GURL("https://initiator.example.com"));
-    auto commit_params = CreateCommitNavigationParams();
+    auto commit_params = blink::CreateCommitNavigationParams();
     commit_params->frame_policy =
         main_test_rfh()->frame_tree_node()->pending_frame_policy();
     auto request = NavigationRequest::CreateBrowserInitiated(

@@ -8,7 +8,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
-#include "content/common/navigation_params.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
 #include "net/http/http_request_headers.h"

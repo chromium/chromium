@@ -15,6 +15,7 @@
 #include "net/test/cert_test_util.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
@@ -52,8 +53,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     endpoints->url_loader_client = client_remote_.BindNewPipeAndPassReceiver();
     blink::WebNavigationParams navigation_params;
     navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;
-    auto common_params = CreateCommonNavigationParams();
-    auto commit_params = CreateCommitNavigationParams();
+    auto common_params = blink::CreateCommonNavigationParams();
+    auto commit_params = blink::CreateCommitNavigationParams();
     NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         std::move(common_params), std::move(commit_params), /*request_id=*/1,
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
@@ -326,9 +327,9 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
   net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
                                      &response->ssl_info->connection_status);
 
-  auto common_params = CreateCommonNavigationParams();
+  auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = GURL("https://example.test");
-  auto commit_params = CreateCommitNavigationParams();
+  auto commit_params = blink::CreateCommitNavigationParams();
 
   blink::WebNavigationParams navigation_params;
   navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;

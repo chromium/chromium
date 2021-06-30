@@ -18,7 +18,6 @@
 #include "content/app/mojo/mojo_init.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/navigation_params.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -47,6 +46,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
@@ -772,7 +772,7 @@ void RenderViewTest::Reload(const GURL& url) {
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */,
       base::TimeTicks() /* input_start */);
-  auto commit_params = CreateCommitNavigationParams();
+  auto commit_params = blink::CreateCommitNavigationParams();
   commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   TestRenderFrame* frame = static_cast<TestRenderFrame*>(GetMainRenderFrame());
   FrameLoadWaiter waiter(frame);
@@ -908,7 +908,7 @@ void RenderViewTest::GoToOffset(int offset,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */,
       base::TimeTicks() /* input_start */);
-  auto commit_params = CreateCommitNavigationParams();
+  auto commit_params = blink::CreateCommitNavigationParams();
   commit_params->page_state = state.ToEncodedData();
   commit_params->nav_entry_id = pending_offset + 1;
   commit_params->pending_history_list_offset = pending_offset;

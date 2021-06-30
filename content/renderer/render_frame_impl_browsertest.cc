@@ -44,6 +44,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -1022,14 +1023,14 @@ TEST_F(RenderFrameRemoteInterfacesTest, ReusedOnSameDocumentNavigation) {
 TEST_F(RenderFrameImplTest, LastCommittedUrlForUKM) {
   // Test the case where we have a data url with a base_url.
   GURL data_url = GURL("data:text/html,");
-  auto common_params = CreateCommonNavigationParams();
+  auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = data_url;
   common_params->navigation_type =
       blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->base_url_for_data_url = GURL("about:blank");
   common_params->history_url_for_data_url = GURL("about:blank");
-  auto commit_params = CreateCommitNavigationParams();
+  auto commit_params = blink::CreateCommitNavigationParams();
   auto waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
   GetMainRenderFrame()->Navigate(std::move(common_params),
                                  std::move(commit_params));
