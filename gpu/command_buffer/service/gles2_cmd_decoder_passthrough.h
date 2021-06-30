@@ -456,8 +456,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   void UpdateTextureSizeFromClientID(GLuint client_id);
 
   // Some operations like binding a VAO will update the element array buffer
-  // binding without an explicit glBindBuffer.
-  void UpdateCurrentlyBoundElementArrayBuffer();
+  // binding without an explicit glBindBuffer. This function is extremely
+  // expensive, and it is crucial that it be called only when the command
+  // decoder's notion of the element array buffer absolutely has to be
+  // up-to-date.
+  void LazilyUpdateCurrentlyBoundElementArrayBuffer();
 
   error::Error BindTexImage2DCHROMIUMImpl(GLenum target,
                                           GLenum internalformat,
@@ -654,6 +657,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   // State tracking of currently bound buffers
   std::unordered_map<GLenum, GLuint> bound_buffers_;
+  // Lazy tracking of the bound element array buffer when changing VAOs.
+  bool bound_element_array_buffer_dirty_;
 
   // Track the service-id to type of all queries for validation
   struct QueryInfo {

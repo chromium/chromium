@@ -1122,6 +1122,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     bound_buffers_[GL_DRAW_INDIRECT_BUFFER] = 0;
     bound_buffers_[GL_DISPATCH_INDIRECT_BUFFER] = 0;
   }
+  bound_element_array_buffer_dirty_ = false;
 
   if (feature_info_->feature_flags().chromium_texture_filtering_hint) {
     api()->glHintFn(GL_TEXTURE_FILTERING_HINT_CHROMIUM, GL_NICEST);
@@ -2245,6 +2246,9 @@ error::Error GLES2DecoderPassthroughImpl::PatchGetBufferResults(GLenum target,
 
   // If there was no error, the buffer target should exist
   DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    LazilyUpdateCurrentlyBoundElementArrayBuffer();
+  }
   GLuint current_client_buffer = bound_buffers_[target];
 
   auto mapped_buffer_info_iter =
@@ -2891,7 +2895,11 @@ void GLES2DecoderPassthroughImpl::UpdateTextureSizeFromClientID(
   }
 }
 
-void GLES2DecoderPassthroughImpl::UpdateCurrentlyBoundElementArrayBuffer() {
+void GLES2DecoderPassthroughImpl::
+    LazilyUpdateCurrentlyBoundElementArrayBuffer() {
+  if (!bound_element_array_buffer_dirty_)
+    return;
+
   GLint service_element_array_buffer = 0;
   api_->glGetIntegervFn(GL_ELEMENT_ARRAY_BUFFER_BINDING,
                         &service_element_array_buffer);
@@ -2904,6 +2912,7 @@ void GLES2DecoderPassthroughImpl::UpdateCurrentlyBoundElementArrayBuffer() {
   }
 
   bound_buffers_[GL_ELEMENT_ARRAY_BUFFER] = client_element_array_buffer;
+  bound_element_array_buffer_dirty_ = false;
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleSetActiveURLCHROMIUM(

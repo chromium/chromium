@@ -391,6 +391,9 @@ error::Error GLES2DecoderPassthroughImpl::DoBindBuffer(GLenum target,
 
   DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
   bound_buffers_[target] = buffer;
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    bound_element_array_buffer_dirty_ = false;
+  }
 
   return error::kNoError;
 }
@@ -408,6 +411,9 @@ error::Error GLES2DecoderPassthroughImpl::DoBindBufferBase(GLenum target,
 
   DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
   bound_buffers_[target] = buffer;
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    bound_element_array_buffer_dirty_ = false;
+  }
 
   return error::kNoError;
 }
@@ -428,6 +434,9 @@ error::Error GLES2DecoderPassthroughImpl::DoBindBufferRange(GLenum target,
 
   DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
   bound_buffers_[target] = buffer;
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    bound_element_array_buffer_dirty_ = false;
+  }
 
   return error::kNoError;
 }
@@ -641,6 +650,10 @@ error::Error GLES2DecoderPassthroughImpl::DoBufferData(GLenum target,
   api()->glBufferDataFn(target, size, data, usage);
   if (CheckErrorCallbackState()) {
     return error::kNoError;
+  }
+
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    LazilyUpdateCurrentlyBoundElementArrayBuffer();
   }
 
   // Calling buffer data on a mapped buffer will implicitly unmap it
@@ -961,6 +974,8 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteBuffers(
     InsertError(GL_INVALID_VALUE, "n cannot be negative.");
     return error::kNoError;
   }
+
+  LazilyUpdateCurrentlyBoundElementArrayBuffer();
 
   std::vector<GLuint> service_ids(n, 0);
   for (GLsizei ii = 0; ii < n; ++ii) {
@@ -1285,6 +1300,10 @@ error::Error GLES2DecoderPassthroughImpl::DoFlushMappedBufferRange(
     GLenum target,
     GLintptr offset,
     GLsizeiptr size) {
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    LazilyUpdateCurrentlyBoundElementArrayBuffer();
+  }
+
   auto bound_buffers_iter = bound_buffers_.find(target);
   if (bound_buffers_iter == bound_buffers_.end() ||
       bound_buffers_iter->second == 0) {
@@ -3780,7 +3799,7 @@ error::Error GLES2DecoderPassthroughImpl::DoIsVertexArrayOES(GLuint array,
 error::Error GLES2DecoderPassthroughImpl::DoBindVertexArrayOES(GLuint array) {
   api()->glBindVertexArrayOESFn(
       GetVertexArrayServiceID(array, &vertex_array_id_map_));
-  UpdateCurrentlyBoundElementArrayBuffer();
+  bound_element_array_buffer_dirty_ = true;
   return error::kNoError;
 }
 
@@ -3913,6 +3932,9 @@ error::Error GLES2DecoderPassthroughImpl::DoMapBufferRange(
   // Track the mapping of this buffer so that data can be synchronized when it
   // is unmapped
   DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    LazilyUpdateCurrentlyBoundElementArrayBuffer();
+  }
   GLuint client_buffer = bound_buffers_.at(target);
 
   MappedBuffer mapped_buffer_info;
@@ -3933,6 +3955,9 @@ error::Error GLES2DecoderPassthroughImpl::DoMapBufferRange(
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoUnmapBuffer(GLenum target) {
+  if (target == GL_ELEMENT_ARRAY_BUFFER) {
+    LazilyUpdateCurrentlyBoundElementArrayBuffer();
+  }
   auto bound_buffers_iter = bound_buffers_.find(target);
   if (bound_buffers_iter == bound_buffers_.end()) {
     InsertError(GL_INVALID_ENUM, "Invalid buffer target.");
