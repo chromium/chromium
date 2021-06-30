@@ -37,17 +37,23 @@ bool ThreadPool::UnRegisterWaits(void* cookie) {
   if (0 == cookie) {
     return false;
   }
-  AutoLock lock(&lock_);
-  bool success = true;
-  PoolObjects::iterator it = pool_objects_.begin();
-  while (it != pool_objects_.end()) {
-    if (it->cookie == cookie) {
-      HANDLE wait = it->wait;
-      it = pool_objects_.erase(it);
-      success &= (::UnregisterWaitEx(wait, INVALID_HANDLE_VALUE) != 0);
-    } else {
-      ++it;
+  std::vector<HANDLE> finished_waits;
+  {
+    AutoLock lock(&lock_);
+    PoolObjects::iterator it = pool_objects_.begin();
+    while (it != pool_objects_.end()) {
+      if (it->cookie == cookie) {
+        HANDLE wait = it->wait;
+        it = pool_objects_.erase(it);
+        finished_waits.push_back(wait);
+      } else {
+        ++it;
+      }
     }
+  }
+  bool success = true;
+  for (HANDLE wait : finished_waits) {
+    success &= (::UnregisterWaitEx(wait, INVALID_HANDLE_VALUE) != 0);
   }
   return success;
 }
