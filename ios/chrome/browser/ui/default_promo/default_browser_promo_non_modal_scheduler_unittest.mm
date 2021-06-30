@@ -537,4 +537,58 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
       NonModalPromoAction::kBackgroundCancel, 0);
 }
 
+// Tests that if the user currently has Chrome as default, the promo does not
+// show. Prevents regression of crbug.com/1224875
+TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoPromoIfDefault) {
+  // Default promo is not supported on iOS < 14
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  // Mark Chrome as currently default
+  [[NSUserDefaults standardUserDefaults]
+      setObject:[NSDate dateWithTimeIntervalSinceNow:-10]
+         forKey:kLastHTTPURLOpenTime];
+
+  [scheduler_ logUserPastedInOmnibox];
+
+  // Finish loading the page.
+  test_web_state_->SetLoading(true);
+  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state_->SetLoading(false);
+
+  // Advance the timer and the mock handler should not have any interactions.
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+}
+
+// Tests that if the promo can't be shown, the state is cleaned up, so a
+// DCHECK is not fired on the next page load. Prevents regression of
+// crbug.com/1224427
+TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoDCHECKIfPromoNotShown) {
+  // Default promo is not supported on iOS < 14
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  [scheduler_ logUserPastedInOmnibox];
+
+  // Switch to a new tab before loading a page. This will prevent the promo from
+  // showing.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state_list_.InsertWebState(
+      1, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  // Activate the first page again.
+  web_state_list_.ActivateWebStateAt(0);
+
+  // Finish loading the page.
+  test_web_state_->SetLoading(true);
+  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state_->SetLoading(false);
+
+  // Advance the timer and the mock handler should not have any interactions and
+  // there should be no DCHECK.
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+}
+
 }  // namespace
