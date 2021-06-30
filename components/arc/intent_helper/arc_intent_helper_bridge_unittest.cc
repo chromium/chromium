@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/intent_helper/intent_constants.h"
@@ -415,6 +416,7 @@ TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent) {
     // When the feature is enabled, open the Intent through the delegate.
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(arc::kEnableWebAppShareFeature);
+    base::HistogramTester histograms;
 
     auto intent = mojom::LaunchIntent::New();
     intent->action = arc::kIntentActionSend;
@@ -425,6 +427,8 @@ TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent) {
               test_open_url_delegate_->TakeLastOpenedUrl());
     EXPECT_EQ("Foo",
               test_open_url_delegate_->TakeLastOpenedIntent()->extra_text);
+    histograms.ExpectBucketCount("Arc.IntentHelper.OpenAppWithIntentAction",
+                                 2 /* OpenIntentAction::kSend */, 1);
 
     instance_->OnOpenAppWithIntent(GURL("http://www.google.com"),
                                    mojom::LaunchIntent::New());

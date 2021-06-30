@@ -21,6 +21,7 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/audio/arc_audio_bridge.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
+#include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/url_formatter/url_fixer.h"
@@ -76,6 +77,29 @@ enum class ArcIntentHelperOpenType {
 // Records Arc.IntentHelper.OpenType UMA histogram.
 void RecordOpenType(ArcIntentHelperOpenType type) {
   UMA_HISTOGRAM_ENUMERATION("Arc.IntentHelper.OpenType", type);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OpenIntentAction {
+  kUnknown = 0,
+  kView = 1,
+  kSend = 2,
+  kSendMultiple = 3,
+  kMaxValue = kSendMultiple,
+};
+
+void RecordOpenAppIntentAction(const mojom::LaunchIntentPtr& intent) {
+  OpenIntentAction action = OpenIntentAction::kUnknown;
+  if (intent->action == kIntentActionView) {
+    action = OpenIntentAction::kView;
+  } else if (intent->action == kIntentActionSend) {
+    action = OpenIntentAction::kSend;
+  } else if (intent->action == kIntentActionSendMultiple) {
+    action = OpenIntentAction::kSendMultiple;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Arc.IntentHelper.OpenAppWithIntentAction", action);
 }
 
 }  // namespace
@@ -342,6 +366,7 @@ void ArcIntentHelperBridge::OnOpenAppWithIntent(
     return;
 
   RecordOpenType(ArcIntentHelperOpenType::WEB_APP);
+  RecordOpenAppIntentAction(intent);
 
   // Web app launches should only be invoked on HTTPS URLs.
   if (start_url.SchemeIs(url::kHttpsScheme))
