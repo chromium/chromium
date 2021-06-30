@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -157,24 +158,36 @@ File* DataObjectItem::GetAsFile() const {
 
   DCHECK_EQ(source_, DataSource::kClipboardSource);
   if (GetType() == kMimeTypeImagePng) {
-    SkBitmap bitmap =
-        system_clipboard_->ReadImage(mojom::ClipboardBuffer::kStandard);
-
-    SkPixmap pixmap;
-    bitmap.peekPixels(&pixmap);
-
-    // Set encoding options to favor speed over size.
-    SkPngEncoder::Options options;
-    options.fZLibLevel = 1;
-    options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
-
-    Vector<uint8_t> png_data;
-    if (!ImageEncoder::Encode(&png_data, pixmap, options))
-      return nullptr;
-
+    // TODO(crbug.com/1223849): Reorder to initialize `data` after the system
+    // clipboard call once `ReadImage()` is removed entirely. This was moved up
+    // to allow `AppendBytes()` to read either vector or buffer data.
     auto data = std::make_unique<BlobData>();
     data->SetContentType(kMimeTypeImagePng);
-    data->AppendBytes(png_data.data(), png_data.size());
+
+    if (RuntimeEnabledFeatures::ClipboardReadPngEnabled()) {
+      mojo_base::BigBuffer png_data =
+          system_clipboard_->ReadPng(mojom::blink::ClipboardBuffer::kStandard);
+
+      data->AppendBytes(png_data.data(), png_data.size());
+    } else {
+      SkBitmap bitmap = system_clipboard_->ReadImage(
+          mojom::blink::ClipboardBuffer::kStandard);
+
+      SkPixmap pixmap;
+      bitmap.peekPixels(&pixmap);
+
+      // Set encoding options to favor speed over size.
+      SkPngEncoder::Options options;
+      options.fZLibLevel = 1;
+      options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
+
+      Vector<uint8_t> png_data;
+      if (!ImageEncoder::Encode(&png_data, pixmap, options))
+        return nullptr;
+
+      data->AppendBytes(png_data.data(), png_data.size());
+    }
+
     const uint64_t length = data->length();
     auto blob = BlobDataHandle::Create(std::move(data), length);
     return MakeGarbageCollected<File>("image.png", base::Time::Now(),
