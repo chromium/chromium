@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_consumer.h"
@@ -27,8 +27,8 @@
 @property(nonatomic, assign, readonly)
     ios::ChromeIdentityService* chromeIdentityService;
 
-// Pref service to retrieve preference values.
-@property(nonatomic, assign) PrefService* prefService;
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
@@ -37,15 +37,17 @@
 @synthesize consumer = _consumer;
 @synthesize selectedIdentity = _selectedIdentity;
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithAccountManagerService:
+    (ChromeAccountManagerService*)accountManagerService {
   if (self = [super init]) {
-    _prefService = prefService;
+    DCHECK(accountManagerService);
+    _accountManagerService = accountManagerService;
   }
   return self;
 }
 
 - (void)dealloc {
-  DCHECK(!self.prefService);
+  DCHECK(!self.accountManagerService);
 }
 
 - (void)start {
@@ -57,7 +59,7 @@
 }
 
 - (void)disconnect {
-  self.prefService = nullptr;
+  self.accountManagerService = nullptr;
 }
 
 - (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
@@ -81,7 +83,7 @@
 }
 
 - (void)selectIdentityWithGaiaID:(NSString*)gaiaID {
-  self.selectedIdentity = self.chromeIdentityService->GetIdentityWithGaiaID(
+  self.selectedIdentity = self.accountManagerService->GetIdentityWithGaiaID(
       base::SysNSStringToUTF8(gaiaID));
 }
 
@@ -90,13 +92,13 @@
 // Creates the identity section with its header item, and all the identity items
 // based on the ChromeIdentity.
 - (void)loadIdentitySection {
-  if (!self.prefService) {
+  if (!self.accountManagerService) {
     return;
   }
 
   // Create all the identity items.
   NSArray<ChromeIdentity*>* identities =
-      self.chromeIdentityService->GetAllIdentities(self.prefService);
+      self.accountManagerService->GetAllIdentities();
   NSMutableArray<TableViewIdentityItem*>* items = [NSMutableArray array];
   for (ChromeIdentity* identity in identities) {
     TableViewIdentityItem* item =
@@ -132,20 +134,15 @@
 #pragma mark - ChromeIdentityServiceObserver
 
 - (void)identityListChanged {
-  if (!self.prefService) {
+  if (!self.accountManagerService) {
     return;
   }
 
   [self loadIdentitySection];
   // Updates the selection.
-  NSArray* allIdentities =
-      self.chromeIdentityService->GetAllIdentities(self.prefService);
-  if (![allIdentities containsObject:self.selectedIdentity]) {
-    if (allIdentities.count) {
-      self.selectedIdentity = allIdentities[0];
-    } else {
-      self.selectedIdentity = nil;
-    }
+  if (!self.selectedIdentity ||
+      !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+    self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
   }
 }
 

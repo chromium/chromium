@@ -8,8 +8,8 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_transition_delegate.h"
@@ -81,7 +81,9 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
 
   // Creates the mediator.
   self.identityChooserMediator = [[IdentityChooserMediator alloc]
-      initWithPrefService:self.browser->GetBrowserState()->GetPrefs()];
+      initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                        GetForBrowserState(
+                                            self.browser->GetBrowserState())];
 
   self.identityChooserMediator.consumer = self.identityChooserViewController;
   // Setups.

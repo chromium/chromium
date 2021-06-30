@@ -7,16 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+class ChromeAccountManagerService;
 @class ChromeIdentity;
 @protocol IdentityChooserConsumer;
-class PrefService;
 
 // A mediator object that monitors updates of chrome identities, and updates the
 // IdentityChooserViewController.
 @interface IdentityChooserMediator : NSObject
 
 // The designated initializer.
-- (instancetype)initWithPrefService:(PrefService*)prefService
+- (instancetype)initWithAccountManagerService:
+    (ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
