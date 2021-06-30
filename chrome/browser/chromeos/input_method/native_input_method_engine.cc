@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 #include "chrome/browser/chromeos/input_method/grammar_service_client.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/services/ime/public/mojom/input_method.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -30,6 +32,8 @@
 namespace chromeos {
 
 namespace {
+
+namespace mojom = ime::mojom;
 
 // Returns the current input context. This may change during the session, even
 // if the IME engine does not change.
@@ -132,14 +136,202 @@ void LogEvent(ImeServiceEvent event) {
   UMA_HISTOGRAM_ENUMERATION("InputMethod.Mojo.Extension.Event", event);
 }
 
-ime::mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
+// Not using a EnumTraits here because the mapping is not 1:1.
+mojom::DomCode DomCodeToMojom(const ui::DomCode code) {
+  switch (code) {
+    case ui::DomCode::BACKQUOTE:
+      return mojom::DomCode::kBackquote;
+    case ui::DomCode::BACKSLASH:
+      return mojom::DomCode::kBackslash;
+    case ui::DomCode::BRACKET_LEFT:
+      return mojom::DomCode::kBracketLeft;
+    case ui::DomCode::BRACKET_RIGHT:
+      return mojom::DomCode::kBracketRight;
+    case ui::DomCode::COMMA:
+      return mojom::DomCode::kComma;
+    case ui::DomCode::DIGIT0:
+      return mojom::DomCode::kDigit0;
+    case ui::DomCode::DIGIT1:
+      return mojom::DomCode::kDigit1;
+    case ui::DomCode::DIGIT2:
+      return mojom::DomCode::kDigit2;
+    case ui::DomCode::DIGIT3:
+      return mojom::DomCode::kDigit3;
+    case ui::DomCode::DIGIT4:
+      return mojom::DomCode::kDigit4;
+    case ui::DomCode::DIGIT5:
+      return mojom::DomCode::kDigit5;
+    case ui::DomCode::DIGIT6:
+      return mojom::DomCode::kDigit6;
+    case ui::DomCode::DIGIT7:
+      return mojom::DomCode::kDigit7;
+    case ui::DomCode::DIGIT8:
+      return mojom::DomCode::kDigit8;
+    case ui::DomCode::DIGIT9:
+      return mojom::DomCode::kDigit9;
+    case ui::DomCode::EQUAL:
+      return mojom::DomCode::kEqual;
+    case ui::DomCode::INTL_BACKSLASH:
+      return mojom::DomCode::kIntlBackslash;
+    case ui::DomCode::INTL_RO:
+      return mojom::DomCode::kIntlRo;
+    case ui::DomCode::INTL_YEN:
+      return mojom::DomCode::kIntlYen;
+    case ui::DomCode::US_A:
+      return mojom::DomCode::kKeyA;
+    case ui::DomCode::US_B:
+      return mojom::DomCode::kKeyB;
+    case ui::DomCode::US_C:
+      return mojom::DomCode::kKeyC;
+    case ui::DomCode::US_D:
+      return mojom::DomCode::kKeyD;
+    case ui::DomCode::US_E:
+      return mojom::DomCode::kKeyE;
+    case ui::DomCode::US_F:
+      return mojom::DomCode::kKeyF;
+    case ui::DomCode::US_G:
+      return mojom::DomCode::kKeyG;
+    case ui::DomCode::US_H:
+      return mojom::DomCode::kKeyH;
+    case ui::DomCode::US_I:
+      return mojom::DomCode::kKeyI;
+    case ui::DomCode::US_J:
+      return mojom::DomCode::kKeyJ;
+    case ui::DomCode::US_K:
+      return mojom::DomCode::kKeyK;
+    case ui::DomCode::US_L:
+      return mojom::DomCode::kKeyL;
+    case ui::DomCode::US_M:
+      return mojom::DomCode::kKeyM;
+    case ui::DomCode::US_N:
+      return mojom::DomCode::kKeyN;
+    case ui::DomCode::US_O:
+      return mojom::DomCode::kKeyO;
+    case ui::DomCode::US_P:
+      return mojom::DomCode::kKeyP;
+    case ui::DomCode::US_Q:
+      return mojom::DomCode::kKeyQ;
+    case ui::DomCode::US_R:
+      return mojom::DomCode::kKeyR;
+    case ui::DomCode::US_S:
+      return mojom::DomCode::kKeyS;
+    case ui::DomCode::US_T:
+      return mojom::DomCode::kKeyT;
+    case ui::DomCode::US_U:
+      return mojom::DomCode::kKeyU;
+    case ui::DomCode::US_V:
+      return mojom::DomCode::kKeyV;
+    case ui::DomCode::US_W:
+      return mojom::DomCode::kKeyW;
+    case ui::DomCode::US_X:
+      return mojom::DomCode::kKeyX;
+    case ui::DomCode::US_Y:
+      return mojom::DomCode::kKeyY;
+    case ui::DomCode::US_Z:
+      return mojom::DomCode::kKeyZ;
+    case ui::DomCode::MINUS:
+      return mojom::DomCode::kMinus;
+    case ui::DomCode::PERIOD:
+      return mojom::DomCode::kPeriod;
+    case ui::DomCode::QUOTE:
+      return mojom::DomCode::kQuote;
+    case ui::DomCode::SEMICOLON:
+      return mojom::DomCode::kSemicolon;
+    case ui::DomCode::SLASH:
+      return mojom::DomCode::kSlash;
+    case ui::DomCode::BACKSPACE:
+      return mojom::DomCode::kBackspace;
+    case ui::DomCode::ENTER:
+      return mojom::DomCode::kEnter;
+    case ui::DomCode::SPACE:
+      return mojom::DomCode::kSpace;
+    case ui::DomCode::ALT_LEFT:
+      return mojom::DomCode::kAltLeft;
+    case ui::DomCode::ALT_RIGHT:
+      return mojom::DomCode::kAltRight;
+    case ui::DomCode::SHIFT_LEFT:
+      return mojom::DomCode::kShiftLeft;
+    case ui::DomCode::SHIFT_RIGHT:
+      return mojom::DomCode::kShiftRight;
+    case ui::DomCode::CONTROL_LEFT:
+      return mojom::DomCode::kControlLeft;
+    case ui::DomCode::CONTROL_RIGHT:
+      return mojom::DomCode::kControlRight;
+    case ui::DomCode::CAPS_LOCK:
+      return mojom::DomCode::kCapsLock;
+    default:
+      return mojom::DomCode::kOther;
+  }
+}
+
+// Not using an EnumTraits here because the mapping is not 1:1.
+absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
+    const ui::DomKey::Base& key) {
+  switch (key) {
+    case ui::DomKey::ALT:
+      return mojom::NamedDomKey::kAlt;
+    case ui::DomKey::ALT_GRAPH:
+      return mojom::NamedDomKey::kAltGraph;
+    case ui::DomKey::CAPS_LOCK:
+      return mojom::NamedDomKey::kCapsLock;
+    case ui::DomKey::CONTROL:
+      return mojom::NamedDomKey::kControl;
+    case ui::DomKey::SHIFT:
+      return mojom::NamedDomKey::kShift;
+    case ui::DomKey::ENTER:
+      return mojom::NamedDomKey::kEnter;
+    case ui::DomKey::BACKSPACE:
+      return mojom::NamedDomKey::kBackspace;
+    default:
+      return absl::nullopt;
+  }
+}
+
+// Returns nullptr if it's not convertible.
+// Not using a UnionTraits here because the mapping is not 1:1.
+mojom::DomKeyPtr DomKeyToMojom(const ui::DomKey& key) {
+  if (key.IsCharacter()) {
+    return mojom::DomKey::NewCodepoint(key.ToCharacter());
+  }
+
+  absl::optional<mojom::NamedDomKey> named_key = NamedDomKeyToMojom(key);
+  return named_key ? mojom::DomKey::NewNamedKey(*named_key) : nullptr;
+}
+
+// Returns nullptr if it's not convertible.
+// Not using a StructTraits here because the mapping is not 1:1.
+mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
     const ui::KeyEvent& event) {
+  mojom::DomKeyPtr key = DomKeyToMojom(event.GetDomKey());
+  if (!key) {
+    return nullptr;
+  }
+
   return ime::mojom::PhysicalKeyEvent::New(
       event.type() == ui::ET_KEY_PRESSED ? ime::mojom::KeyEventType::kKeyDown
                                          : ime::mojom::KeyEventType::kKeyUp,
-      ui::KeycodeConverter::DomCodeToCodeString(event.code()),
-      ui::KeycodeConverter::DomKeyToKeyString(event.GetDomKey()),
+      std::move(key), DomCodeToMojom(event.code()),
       ModifierStateFromEvent(event));
+}
+
+uint32_t Utf8ToCodepoint(const std::string& str) {
+  int32_t index = 0;
+  uint32_t codepoint = 0;
+  base::ReadUnicodeCharacter(str.data(), str.length(), &index, &codepoint);
+
+  // Should only contain a single codepoint.
+  DCHECK_EQ(index, str.length() - 1);
+  return codepoint;
+}
+
+uint32_t Utf16ToCodepoint(const std::u16string& str) {
+  int32_t index = 0;
+  uint32_t codepoint = 0;
+  base::ReadUnicodeCharacter(str.data(), str.length(), &index, &codepoint);
+
+  // Should only contain a single codepoint.
+  DCHECK_EQ(index, str.length() - 1);
+  return codepoint;
 }
 
 ui::ImeTextSpan::Thickness GetCompositionSpanThickness(
@@ -411,12 +603,17 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
         return;
       }
 
-      auto key_event = CreatePhysicalKeyEventFromKeyEvent(event);
+      mojom::PhysicalKeyEventPtr key_event =
+          CreatePhysicalKeyEventFromKeyEvent(event);
+      if (!key_event) {
+        std::move(callback).Run(false);
+        return;
+      }
       if (filtered) {
         // TODO(b/174612548): Transform the corresponding KEY_RELEASED event to
         // use the composed character as well.
-        key_event->key =
-            base::UTF16ToUTF8(character_composer_.composed_character());
+        key_event->key = mojom::DomKey::NewCodepoint(
+            Utf16ToCodepoint(character_composer_.composed_character()));
       }
 
       input_method_->ProcessKeyEvent(

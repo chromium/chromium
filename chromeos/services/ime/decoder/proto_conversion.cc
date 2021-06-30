@@ -4,6 +4,9 @@
 
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 
+#include <sstream>
+
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -11,6 +14,9 @@
 namespace chromeos {
 namespace ime {
 namespace {
+
+// TODO(crbug.com/1194372): Delete this file once the browser process can talk
+// directly with the decoder shared library without proto conversions.
 
 ModifierState ModifierStateToProto(mojom::ModifierStatePtr modifier_state) {
   ModifierState result;
@@ -125,6 +131,40 @@ absl::optional<mojom::InputMethodApiOperation> InputMethodApiOperationToMojo(
   }
 }
 
+std::string KeyEventCodeToString(const mojom::DomCode code) {
+  if (code == mojom::DomCode::kOther) {
+    return "Unidentified";
+  }
+
+  // Use the "<<" operator to convert the code to a string. Although this is
+  // not ideal, this file will be removed soon, so aim for simplicity.
+  // TODO(crbug.com/1194372): Delete this code.
+  std::stringstream ss;
+  ss << code;
+  return ss.str().substr(1);  // Skip the 'k' prefix
+}
+
+std::string NamedKeyToString(const mojom::NamedDomKey key) {
+  // Use the "<<" operator to convert the code to a string. Although this is
+  // not ideal, this file will be removed soon, so aim for simplicity.
+  // TODO(crbug.com/1194372): Delete this code.
+  std::stringstream ss;
+  ss << key;
+  return ss.str().substr(1);  // Skip the 'k' prefix
+}
+
+std::string KeyEventKeyToString(const mojom::DomKey& key) {
+  switch (key.which()) {
+    case mojom::DomKey::Tag::CODEPOINT: {
+      std::string s;
+      base::WriteUnicodeCharacter(key.get_codepoint(), &s);
+      return s;
+    }
+    case mojom::DomKey::Tag::NAMED_KEY:
+      return NamedKeyToString(key.get_named_key());
+  }
+}
+
 }  // namespace
 
 ime::PublicMessage OnInputMethodChangedToProto(uint64_t seq_id,
@@ -168,8 +208,8 @@ ime::PublicMessage OnKeyEventToProto(uint64_t seq_id,
   key_event.set_type(event->type == mojom::KeyEventType::kKeyDown
                          ? ime::PhysicalKeyEvent::EVENT_TYPE_KEY_DOWN
                          : ime::PhysicalKeyEvent::EVENT_TYPE_KEY_UP);
-  key_event.set_code(event->code);
-  key_event.set_key(event->key);
+  key_event.set_code(KeyEventCodeToString(event->code));
+  key_event.set_key(KeyEventKeyToString(*event->key));
   *key_event.mutable_modifier_state() =
       ModifierStateToProto(std::move(event->modifier_state));
   return message;

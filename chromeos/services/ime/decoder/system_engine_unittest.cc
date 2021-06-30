@@ -202,7 +202,8 @@ TEST_F(SystemEngineTest, ProcessKeyEventRepliesWithCallback) {
   input_method.FlushForTesting();
 
   auto key_event = mojom::PhysicalKeyEvent::New(
-      mojom::KeyEventType::kKeyDown, "KeyA", "A", mojom::ModifierState::New());
+      mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('A'),
+      mojom::DomCode::kKeyA, mojom::ModifierState::New());
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
       OnKeyEventToProto(/*seq_id=*/1, key_event.Clone());

@@ -265,18 +265,21 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
 
-  // Pairs of Code/Key.
-  constexpr std::pair<const char*, const char*> kModifierKeys[] = {
-      {"ShiftLeft", "Shift"},     {"ShiftRight", "Shift"},
-      {"AltLeft", "Alt"},         {"AltRight", "Alt"},
-      {"AltRight", "AltGraph"},   {"CapsLock", "CapsLock"},
-      {"ControlLeft", "Control"}, {"ControlRight", "Control"}};
-
+  constexpr std::pair<mojom::NamedDomKey, mojom::DomCode> kModifierKeys[] = {
+      {mojom::NamedDomKey::kShift, mojom::DomCode::kShiftLeft},
+      {mojom::NamedDomKey::kShift, mojom::DomCode::kShiftRight},
+      {mojom::NamedDomKey::kAlt, mojom::DomCode::kAltLeft},
+      {mojom::NamedDomKey::kAlt, mojom::DomCode::kAltRight},
+      {mojom::NamedDomKey::kAltGraph, mojom::DomCode::kAltRight},
+      {mojom::NamedDomKey::kCapsLock, mojom::DomCode::kCapsLock},
+      {mojom::NamedDomKey::kControl, mojom::DomCode::kControlLeft},
+      {mojom::NamedDomKey::kControl, mojom::DomCode::kControlRight}};
   for (const auto& modifier_key : kModifierKeys) {
     input_method->ProcessKeyEvent(
-        mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown,
-                                     modifier_key.first, modifier_key.second,
-                                     mojom::ModifierState::New()),
+        mojom::PhysicalKeyEvent::New(
+            mojom::KeyEventType::kKeyDown,
+            mojom::DomKey::NewNamedKey(modifier_key.first), modifier_key.second,
+            mojom::ModifierState::New()),
         base::BindLambdaForTesting([](mojom::KeyEventResult result) {
           EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
         }));
@@ -297,15 +300,22 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
   EXPECT_TRUE(success);
 
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "ControlLeft",
-                                   "Control", mojom::ModifierState::New()),
-      base::DoNothing());
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown,
+          mojom::DomKey::NewNamedKey(mojom::NamedDomKey::kControl),
+          mojom::DomCode::kControlLeft,
+
+          mojom::ModifierState::New()),
+      base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
+        EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
+      }));
 
   auto modifier_state_with_control = mojom::ModifierState::New();
   modifier_state_with_control->control = true;
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
-                                   modifier_state_with_control->Clone()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('a'),
+          mojom::DomCode::kKeyA, modifier_state_with_control->Clone()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
       }));
@@ -325,15 +335,22 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
   EXPECT_TRUE(success);
 
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltLeft",
-                                   "Alt", mojom::ModifierState::New()),
-      base::DoNothing());
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown,
+          mojom::DomKey::NewNamedKey(mojom::NamedDomKey::kAlt),
+          mojom::DomCode::kAltLeft,
+
+          mojom::ModifierState::New()),
+      base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
+        EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
+      }));
 
   auto new_modifier_state = mojom::ModifierState::New();
   new_modifier_state->alt = true;
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
-                                   std::move(new_modifier_state)),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('a'),
+          mojom::DomCode::kKeyA, std::move(new_modifier_state)),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
       }));
@@ -354,15 +371,22 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
   EXPECT_TRUE(success);
 
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltRight",
-                                   "Alt", mojom::ModifierState::New()),
-      base::DoNothing());
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown,
+          mojom::DomKey::NewNamedKey(mojom::NamedDomKey::kAlt),
+          mojom::DomCode::kAltRight,
+
+          mojom::ModifierState::New()),
+      base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
+        EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
+      }));
 
   auto modifier_state_with_alt = mojom::ModifierState::New();
   modifier_state_with_alt->alt = true;
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
-                                   modifier_state_with_alt->Clone()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('a'),
+          mojom::DomCode::kKeyA, modifier_state_with_alt->Clone()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_FALSE(mock_host.last_commit.empty());
@@ -388,8 +412,9 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
   auto modifier_state_with_shift = mojom::ModifierState::New();
   modifier_state_with_shift->shift = true;
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "A",
-                                   modifier_state_with_shift->Clone()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('A'),
+          mojom::DomCode::kKeyA, modifier_state_with_shift->Clone()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_EQ(mock_host.last_commit, u"\u0650");
@@ -399,8 +424,9 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   // Test KeyB
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyB", "b",
-                                   mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('b'),
+          mojom::DomCode::kKeyB, mojom::ModifierState::New()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_EQ(mock_host.last_commit, u"\u0644\u0627");
@@ -410,8 +436,12 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   // Test unhandled key.
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Enter",
-                                   "Enter", mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown,
+          mojom::DomKey::NewNamedKey(mojom::NamedDomKey::kEnter),
+          mojom::DomCode::kEnter,
+
+          mojom::ModifierState::New()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
       }));
@@ -419,8 +449,12 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   // Test keyup.
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyUp, "Enter",
-                                   "Enter", mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyUp,
+          mojom::DomKey::NewNamedKey(mojom::NamedDomKey::kEnter),
+          mojom::DomCode::kEnter,
+
+          mojom::ModifierState::New()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
       }));
@@ -428,15 +462,6 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 
   // TODO(keithlee) Test reset function
   input_method->OnCompositionCanceledBySystem();
-
-  // Test invalid request.
-  input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "", "",
-                                   mojom::ModifierState::New()),
-      base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
-        EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
-      }));
-  input_method.FlushForTesting();
 }
 
 // Tests that the rule-based DevaPhone keyboard can work correctly.
@@ -455,8 +480,9 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   // Test KeyN.
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyN", "n",
-                                   mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('n'),
+          mojom::DomCode::kKeyN, mojom::ModifierState::New()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_TRUE(mock_host.last_commit.empty());
@@ -466,8 +492,12 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   // Backspace.
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Backspace",
-                                   "Backspace", mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown,
+          mojom::DomKey::NewNamedKey(mojom::NamedDomKey::kBackspace),
+          mojom::DomCode::kBackspace,
+
+          mojom::ModifierState::New()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_TRUE(mock_host.last_commit.empty());
@@ -477,12 +507,14 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   // KeyN + KeyC.
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyN", "n",
-                                   mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('n'),
+          mojom::DomCode::kKeyN, mojom::ModifierState::New()),
       base::DoNothing());
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyC", "c",
-                                   mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('c'),
+          mojom::DomCode::kKeyC, mojom::ModifierState::New()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_EQ(mock_host.last_composition, u"\u091e\u094d\u091a");
@@ -491,8 +523,9 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 
   // Space.
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Space", " ",
-                                   mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint(' '),
+          mojom::DomCode::kSpace, mojom::ModifierState::New()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_EQ(mock_host.last_composition, u"\u091e\u094d\u091a");
@@ -519,8 +552,9 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
 
   // Test Shift+Quote ('"').
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Quote", "\"",
-                                   modifier_state_with_shift->Clone()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('"'),
+          mojom::DomCode::kQuote, modifier_state_with_shift->Clone()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_EQ(mock_host.last_commit, u"\"");
@@ -530,8 +564,9 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
 
   // Backslash.
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Backslash",
-                                   "\\", mojom::ModifierState::New()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('\\'),
+          mojom::DomCode::kBackslash, mojom::ModifierState::New()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_EQ(mock_host.last_commit, u"\\");
@@ -541,8 +576,9 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
 
   // Shift+Comma ('<')
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "Comma", "<",
-                                   modifier_state_with_shift->Clone()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('<'),
+          mojom::DomCode::kComma, modifier_state_with_shift->Clone()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_EQ(mock_host.last_commit, u"<");
@@ -568,15 +604,22 @@ TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
   // Test AltRight+KeyA.
   // We do not support AltGr for rule-based. We treat AltRight as AltGr.
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltRight",
-                                   "Alt", mojom::ModifierState::New()),
-      base::DoNothing());
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown,
+          mojom::DomKey::NewNamedKey(mojom::NamedDomKey::kAlt),
+          mojom::DomCode::kAltRight,
+
+          mojom::ModifierState::New()),
+      base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
+        EXPECT_EQ(result, mojom::KeyEventResult::kNeedsHandlingBySystem);
+      }));
 
   auto modifier_state_with_alt = mojom::ModifierState::New();
   modifier_state_with_alt->alt = true;
   input_method->ProcessKeyEvent(
-      mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyA", "a",
-                                   modifier_state_with_alt->Clone()),
+      mojom::PhysicalKeyEvent::New(
+          mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('a'),
+          mojom::DomCode::kKeyA, modifier_state_with_alt->Clone()),
       base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
         EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
         EXPECT_EQ(mock_host.last_commit, u"+");

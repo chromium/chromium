@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "chromeos/services/ime/public/mojom/input_method.mojom-shared.h"
 
 namespace re2 {
 class RE2;
@@ -20,7 +21,7 @@ namespace chromeos {
 namespace ime {
 namespace rulebased {
 
-using KeyMap = std::map<std::string, const char*>;
+using KeyMap = std::map<mojom::DomCode, const char*>;
 
 using TransformRule = std::pair<std::unique_ptr<re2::RE2>, std::string>;
 

@@ -66,11 +66,19 @@ mojom::KeyEventResult HandleEngineResult(
                             : mojom::KeyEventResult::kNeedsHandlingBySystem;
 }
 
-bool IsModifierKey(const std::string& key_code) {
-  return key_code == "AltLeft" || key_code == "AltRight" ||
-         key_code == "ShiftLeft" || key_code == "ShiftRight" ||
-         key_code == "ControlLeft" || key_code == "ControlRight" ||
-         key_code == "CapsLock";
+bool IsModifierKey(const mojom::DomCode code) {
+  switch (code) {
+    case mojom::DomCode::kAltLeft:
+    case mojom::DomCode::kAltRight:
+    case mojom::DomCode::kShiftLeft:
+    case mojom::DomCode::kShiftRight:
+    case mojom::DomCode::kControlLeft:
+    case mojom::DomCode::kControlRight:
+    case mojom::DomCode::kCapsLock:
+      return true;
+    default:
+      return false;
+  }
 }
 
 // Returns whether the given ime_spec is supported by rulebased engine.
@@ -109,7 +117,7 @@ void RuleBasedEngine::ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
   // [1] https://www.w3.org/TR/uievents-key/#keys-modifier
   // TODO(https://crbug.com/1014778): Change the base layouts for the
   // rule-based input methods so that |altKey| is false when AltGr is pressed.
-  if (event->code == "AltRight") {
+  if (event->code == mojom::DomCode::kAltRight) {
     is_alt_right_key_down_ = event->type == mojom::KeyEventType::kKeyDown;
   }
 

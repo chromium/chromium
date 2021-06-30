@@ -61,7 +61,8 @@ TEST(ProtoConversionTest, OnKeyEventToProto) {
   auto modifier_state = mojom::ModifierState::New();
   modifier_state->shift = true;
   auto key_event = mojom::PhysicalKeyEvent::New(
-      mojom::KeyEventType::kKeyDown, "KeyA", "A", std::move(modifier_state));
+      mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('A'),
+      mojom::DomCode::kKeyA, std::move(modifier_state));
 
   ime::PublicMessage expected_message;
   expected_message.set_seq_id(42);

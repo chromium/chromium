@@ -40,6 +40,7 @@
 #include "chromeos/services/ime/public/cpp/rulebased/def/vi_telex.h"
 #include "chromeos/services/ime/public/cpp/rulebased/def/vi_viqr.h"
 #include "chromeos/services/ime/public/cpp/rulebased/def/vi_vni.h"
+#include "chromeos/services/ime/public/mojom/input_method.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace chromeos {
@@ -146,41 +147,62 @@ const std::map<std::string, RawDataEntry>& GetRawData() {
   return kRawData;
 }
 
-const char* const k101Keys[] = {
+constexpr mojom::DomCode k101Keys[] = {
     // Row #1
-    "Backquote", "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6",
-    "Digit7", "Digit8", "Digit9", "Digit0", "Minus", "Equal",
+    mojom::DomCode::kBackquote, mojom::DomCode::kDigit1,
+    mojom::DomCode::kDigit2, mojom::DomCode::kDigit3, mojom::DomCode::kDigit4,
+    mojom::DomCode::kDigit5, mojom::DomCode::kDigit6, mojom::DomCode::kDigit7,
+    mojom::DomCode::kDigit8, mojom::DomCode::kDigit9, mojom::DomCode::kDigit0,
+    mojom::DomCode::kMinus, mojom::DomCode::kEqual,
     // Row #2
-    "KeyQ", "KeyW", "KeyE", "KeyR", "KeyT", "KeyY", "KeyU", "KeyI", "KeyO",
-    "KeyP", "BracketLeft", "BracketRight", "Backslash",
+    mojom::DomCode::kKeyQ, mojom::DomCode::kKeyW, mojom::DomCode::kKeyE,
+    mojom::DomCode::kKeyR, mojom::DomCode::kKeyT, mojom::DomCode::kKeyY,
+    mojom::DomCode::kKeyU, mojom::DomCode::kKeyI, mojom::DomCode::kKeyO,
+    mojom::DomCode::kKeyP, mojom::DomCode::kBracketLeft,
+    mojom::DomCode::kBracketRight, mojom::DomCode::kBackslash,
     // Row #3
-    "KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyL",
-    "Semicolon", "Quote",
+    mojom::DomCode::kKeyA, mojom::DomCode::kKeyS, mojom::DomCode::kKeyD,
+    mojom::DomCode::kKeyF, mojom::DomCode::kKeyG, mojom::DomCode::kKeyH,
+    mojom::DomCode::kKeyJ, mojom::DomCode::kKeyK, mojom::DomCode::kKeyL,
+    mojom::DomCode::kSemicolon, mojom::DomCode::kQuote,
     // Row #4
-    "KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM", "Comma", "Period",
-    "Slash",
+    mojom::DomCode::kKeyZ, mojom::DomCode::kKeyX, mojom::DomCode::kKeyC,
+    mojom::DomCode::kKeyV, mojom::DomCode::kKeyB, mojom::DomCode::kKeyN,
+    mojom::DomCode::kKeyM, mojom::DomCode::kComma, mojom::DomCode::kPeriod,
+    mojom::DomCode::kSlash,
     // Row #5
-    "Space"};
+    mojom::DomCode::kSpace};
 
-const char* const k102Keys[] = {
+constexpr mojom::DomCode k102Keys[] = {
     // Row #1
-    "Backquote", "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6",
-    "Digit7", "Digit8", "Digit9", "Digit0", "Minus", "Equal",
+    mojom::DomCode::kBackquote, mojom::DomCode::kDigit1,
+    mojom::DomCode::kDigit2, mojom::DomCode::kDigit3, mojom::DomCode::kDigit4,
+    mojom::DomCode::kDigit5, mojom::DomCode::kDigit6, mojom::DomCode::kDigit7,
+    mojom::DomCode::kDigit8, mojom::DomCode::kDigit9, mojom::DomCode::kDigit0,
+    mojom::DomCode::kMinus, mojom::DomCode::kEqual,
     // Row #2
-    "KeyQ", "KeyW", "KeyE", "KeyR", "KeyT", "KeyY", "KeyU", "KeyI", "KeyO",
-    "KeyP", "BracketLeft", "BracketRight",
+    mojom::DomCode::kKeyQ, mojom::DomCode::kKeyW, mojom::DomCode::kKeyE,
+    mojom::DomCode::kKeyR, mojom::DomCode::kKeyT, mojom::DomCode::kKeyY,
+    mojom::DomCode::kKeyU, mojom::DomCode::kKeyI, mojom::DomCode::kKeyO,
+    mojom::DomCode::kKeyP, mojom::DomCode::kBracketLeft,
+    mojom::DomCode::kBracketRight,
     // Row #3
-    "KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyL",
-    "Semicolon", "Quote", "Backslash",
+    mojom::DomCode::kKeyA, mojom::DomCode::kKeyS, mojom::DomCode::kKeyD,
+    mojom::DomCode::kKeyF, mojom::DomCode::kKeyG, mojom::DomCode::kKeyH,
+    mojom::DomCode::kKeyJ, mojom::DomCode::kKeyK, mojom::DomCode::kKeyL,
+    mojom::DomCode::kSemicolon, mojom::DomCode::kQuote,
+    mojom::DomCode::kBackslash,
     // Row #4
-    "IntlBackslash", "KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM",
-    "Comma", "Period", "Slash",
+    mojom::DomCode::kIntlBackslash, mojom::DomCode::kKeyZ,
+    mojom::DomCode::kKeyX, mojom::DomCode::kKeyC, mojom::DomCode::kKeyV,
+    mojom::DomCode::kKeyB, mojom::DomCode::kKeyN, mojom::DomCode::kKeyM,
+    mojom::DomCode::kComma, mojom::DomCode::kPeriod, mojom::DomCode::kSlash,
     // Row #5
-    "Space"};
+    mojom::DomCode::kSpace};
 
 // Parses the raw key mappings and generate a KeyMap instance.
 KeyMap ParseKeyMap(const char** raw_key_map, bool is_102) {
-  const char* const* std_keys = is_102 ? k102Keys : k101Keys;
+  const mojom::DomCode* std_keys = is_102 ? k102Keys : k101Keys;
   size_t nkeys = is_102 ? base::size(k102Keys) : base::size(k101Keys);
   KeyMap key_map;
   for (size_t i = 0; i < nkeys; ++i)

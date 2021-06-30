@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "chromeos/services/ime/public/mojom/input_method.mojom.h"
 
 namespace chromeos {
 namespace ime {
@@ -38,7 +39,7 @@ class Engine {
 
   void Activate(const std::string& id);
   void Reset();
-  ProcessKeyResult ProcessKey(const std::string& code, uint8_t modifier_state);
+  ProcessKeyResult ProcessKey(mojom::DomCode code, uint8_t modifier_state);
 
  private:
   void ClearHistory();

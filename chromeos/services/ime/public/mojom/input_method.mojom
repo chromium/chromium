@@ -9,6 +9,41 @@ enum KeyEventType {
   kKeyUp = 1,
 };
 
+// List of specific keys from:
+// https://www.w3.org/TR/uievents-key/#named-key-attribute-values
+//
+// If a key is not listed here, then it means that the Chrome OS first-party
+// IMEs do not handle it and it is safe for the OS to handle the key itself.
+enum NamedDomKey {
+  // Modifier keys
+  kAlt,
+  kAltGraph,
+  kCapsLock,
+  kControl,
+  kShift,
+  // Whitespace keys
+  kEnter,
+  // Editing keys
+  kBackspace,
+};
+
+// Represents a key pressed by the user, taking into account aspects like
+// modifiers and keyboard layout.
+//
+// It is either a single Unicode codepoint corresponding to the key, or a
+// NamedDomKey for special keys (e.g. Shift), as specified by:
+// https://www.w3.org/TR/uievents/#dom-keyboardevent-key
+union DomKey {
+  // If the key is a key with a "named key attribute" in:
+  // https://www.w3.org/TR/uievents-key/#named-key-attribute-value
+  // then `named_key` is set to that named key.
+  NamedDomKey named_key;
+
+  // Otherwise, the key is represented as a single Unicode codepoint,
+  // encoded in UTF-32.
+  uint32 codepoint;
+};
+
 // Whether modifier keys are held down or not.
 // Modifier keys are specified by:
 // https://www.w3.org/TR/uievents-key/#keys-modifier
@@ -21,25 +56,86 @@ struct ModifierState {
   bool shift;
 };
 
+// Represents the physical location of the key on a set of standard keyboard
+// layouts, as specified by:
+// https://www.w3.org/TR/uievents-code/
+//
+// Avoid adding new values here if possible. If any value here is not used by
+// Chrome OS first-party IMEs, consider deprecating the value.
+enum DomCode {
+  // All other codes fall into this value.
+  kOther,
+  kBackquote,
+  kBackslash,
+  kBracketLeft,
+  kBracketRight,
+  kComma,
+  kDigit0,
+  kDigit1,
+  kDigit2,
+  kDigit3,
+  kDigit4,
+  kDigit5,
+  kDigit6,
+  kDigit7,
+  kDigit8,
+  kDigit9,
+  kEqual,
+  kIntlBackslash,
+  kIntlRo,
+  kIntlYen,
+  kKeyA,
+  kKeyB,
+  kKeyC,
+  kKeyD,
+  kKeyE,
+  kKeyF,
+  kKeyG,
+  kKeyH,
+  kKeyI,
+  kKeyJ,
+  kKeyK,
+  kKeyL,
+  kKeyM,
+  kKeyN,
+  kKeyO,
+  kKeyP,
+  kKeyQ,
+  kKeyR,
+  kKeyS,
+  kKeyT,
+  kKeyU,
+  kKeyV,
+  kKeyW,
+  kKeyX,
+  kKeyY,
+  kKeyZ,
+  kMinus,
+  kPeriod,
+  kQuote,
+  kSemicolon,
+  kSlash,
+  kBackspace,
+  kEnter,
+  kSpace,
+  kAltLeft,
+  kAltRight,
+  kShiftLeft,
+  kShiftRight,
+  kControlLeft,
+  kControlRight,
+  kCapsLock,
+};
+
 // Information about a physical key event.
 struct PhysicalKeyEvent {
-  // Whether this is a key down or key up event.
   KeyEventType type;
+  DomKey key;
 
-  // The physical key event code, as specified by:
-  // https://www.w3.org/TR/uievents/#dom-keyboardevent-code
-  //
-  // A full list of valid key codes can be found in:
-  // https://www.w3.org/TR/uievents-code/
-  string code;
-
-  // A string corresponding to the character the user typed, or a special
-  // value for special keys (e.g. Shift), as specified by:
-  // https://www.w3.org/TR/uievents/#dom-keyboardevent-key
-  //
-  // If this information is not available, it is set to "Unidentifed":
-  // https://www.w3.org/TR/uievents-key/#key-Unidentified
-  string key;
+  // Using this field is discouraged, as it makes it difficult for an IME to be
+  // used with different keyboard layouts. Prefer to isolate locational logic in
+  // the XKB layout file, if possible.
+  DomCode code;
 
   ModifierState modifier_state;
 };
