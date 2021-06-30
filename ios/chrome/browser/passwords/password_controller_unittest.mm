@@ -1971,6 +1971,31 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
   EXPECT_FALSE(form_manager->IsPasswordUpdate());
 }
 
+// Tests that submission is not detected on form removal if saving is
+// disabled.
+TEST_F(PasswordControllerTest,
+       DetectNoSubmissionOnRemovedFormIfSavingDisabled) {
+  ON_CALL(*weak_client_, IsSavingAndFillingEnabled)
+      .WillByDefault(Return(false));
+
+  ON_CALL(*store_, GetLogins)
+      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms()));
+  LoadHtml(kHtmlWithPasswordForm);
+  WaitForFormManagersCreation();
+
+  std::string mainFrameID = web::GetMainWebFrameId(web_state());
+
+  SimulateUserTyping("login_form", FormRendererId(1), "username",
+                     FieldRendererId(2), "user1", mainFrameID);
+  SimulateUserTyping("login_form", FormRendererId(1), "pw", FieldRendererId(3),
+                     "password1", mainFrameID);
+
+  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
+
+  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(1),
+                                     FieldRendererId(), std::string());
+}
+
 // Tests that submission is not detected on removal of the form that never
 // had user input.
 TEST_F(PasswordControllerTest,
