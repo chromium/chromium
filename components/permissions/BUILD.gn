@@ -160,6 +160,8 @@ source_set("permissions") {
     sources += [
       "bluetooth_chooser_controller.cc",
       "bluetooth_chooser_controller.h",
+      "bluetooth_scanning_prompt_controller.cc",
+      "bluetooth_scanning_prompt_controller.h",
       "permission_prompt_impl.cc",
     ]
   }
@@ -232,7 +234,10 @@ source_set("unit_tests") {
     "permission_uma_util_unittest.cc",
   ]
   if (!is_android) {
-    sources += [ "bluetooth_chooser_controller_unittest.cc" ]
+    sources += [
+      "bluetooth_chooser_controller_unittest.cc",
+      "bluetooth_scanning_prompt_controller_unittest.cc",
+    ]
   }
   deps = [
     ":permissions",

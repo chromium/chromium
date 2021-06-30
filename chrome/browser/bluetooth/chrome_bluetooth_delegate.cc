@@ -27,6 +27,7 @@
 #else
 #include "chrome/browser/ui/bluetooth/bluetooth_chooser_desktop.h"
 #include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_desktop.h"
+#include "components/permissions/bluetooth_scanning_prompt_controller.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif  // OS_ANDROID

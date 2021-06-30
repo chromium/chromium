@@ -4,15 +4,19 @@
 
 #include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_desktop.h"
 
-#include "base/check.h"
-#include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_controller.h"
+#include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "components/permissions/bluetooth_scanning_prompt_controller.h"
+#include "components/strings/grit/components_strings.h"
 
 BluetoothScanningPromptDesktop::BluetoothScanningPromptDesktop(
     content::RenderFrameHost* frame,
     const content::BluetoothScanningPrompt::EventHandler& event_handler) {
   auto controller =
-      std::make_unique<BluetoothScanningPromptController>(frame, event_handler);
+      std::make_unique<permissions::BluetoothScanningPromptController>(
+          frame, event_handler,
+          CreateChooserTitle(frame, IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN,
+                             IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN));
   bluetooth_scanning_prompt_controller_ = controller->GetWeakPtr();
   close_closure_ =
       chrome::ShowDeviceChooserDialog(frame, std::move(controller));

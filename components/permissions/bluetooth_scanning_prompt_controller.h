@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_SCANNING_PROMPT_CONTROLLER_H_
-#define CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_SCANNING_PROMPT_CONTROLLER_H_
+#ifndef COMPONENTS_PERMISSIONS_BLUETOOTH_SCANNING_PROMPT_CONTROLLER_H_
+#define COMPONENTS_PERMISSIONS_BLUETOOTH_SCANNING_PROMPT_CONTROLLER_H_
 
 #include <stddef.h>
 
@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/chooser_controller.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
@@ -22,18 +21,26 @@ namespace content {
 class RenderFrameHost;
 }
 
+namespace permissions {
+
 // BluetoothScanningPromptController is a prompt that presents a list of
 // Bluetooth device names. It can be used by Bluetooth Scanning API to
 // show example nearby Bluetooth devices to user.
-class BluetoothScanningPromptController
-    : public permissions::ChooserController {
+class BluetoothScanningPromptController : public ChooserController {
  public:
   BluetoothScanningPromptController(
       content::RenderFrameHost* owner,
-      const content::BluetoothScanningPrompt::EventHandler& event_handler);
+      const content::BluetoothScanningPrompt::EventHandler& event_handler,
+      std::u16string title);
+
+  BluetoothScanningPromptController(const BluetoothScanningPromptController&) =
+      delete;
+  BluetoothScanningPromptController& operator=(
+      const BluetoothScanningPromptController&) = delete;
+
   ~BluetoothScanningPromptController() override;
 
-  // permissions::ChooserController:
+  // ChooserController:
   bool ShouldShowHelpButton() const override;
   std::u16string GetNoOptionsText() const override;
   std::u16string GetOkButtonLabel() const override;
@@ -70,8 +77,8 @@ class BluetoothScanningPromptController
   content::BluetoothScanningPrompt::EventHandler event_handler_;
 
   base::WeakPtrFactory<BluetoothScanningPromptController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothScanningPromptController);
 };
 
-#endif  // CHROME_BROWSER_UI_BLUETOOTH_BLUETOOTH_SCANNING_PROMPT_CONTROLLER_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_BLUETOOTH_SCANNING_PROMPT_CONTROLLER_H_

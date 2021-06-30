@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_controller.h"
+#include "components/permissions/bluetooth_scanning_prompt_controller.h"
 
 #include <algorithm>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chooser_controller/title_util.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace permissions {
+
 BluetoothScanningPromptController::BluetoothScanningPromptController(
     content::RenderFrameHost* owner,
-    const content::BluetoothScanningPrompt::EventHandler& event_handler)
-    : ChooserController(
-          CreateChooserTitle(owner,
-                             IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN,
-                             IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN)),
-      event_handler_(event_handler) {}
+    const content::BluetoothScanningPrompt::EventHandler& event_handler,
+    std::u16string title)
+    : ChooserController(title), event_handler_(event_handler) {}
 
 BluetoothScanningPromptController::~BluetoothScanningPromptController() {}
 
@@ -153,3 +150,5 @@ base::WeakPtr<BluetoothScanningPromptController>
 BluetoothScanningPromptController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+}  // namespace permissions

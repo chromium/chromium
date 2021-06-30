@@ -10496,14 +10496,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Unknown device [<ph name="VENDOR_ID">$1<ex>123</ex></ph>:<ph name="PRODUCT_ID">$2<ex>123</ex></ph>]
     </message>
 
-    <!-- Bluetooth Scanning Prompt -->
-    <message name="IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN" desc="The label that is used to introduce Bluetooth scanning prompt details to the user when it is from a website.">
-      <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to scan for nearby Bluetooth devices. The following devices have been found:
-    </message>
-    <message name="IDS_BLUETOOTH_SCANNING_DEVICE_UNKNOWN" desc="Text to identify Bluetooth devices of unknown or unsupported class.">
-      Unknown or unsupported device (<ph name="DEVICE_ID">$1<ex>A1:B2:C3:D4:E5:F6</ex></ph>)
-    </message>
-
     <!-- Device descriptions for devices defined by policy with wildcards. -->
     <message name="IDS_USB_POLICY_DEVICE_DESCRIPTION_FOR_PRODUCT_ID_AND_VENDOR_NAME" desc="String describing a device by its vendor name when only the numeric product ID is available.">
       Unknown product <ph name="PRODUCT_ID">$1<ex>123</ex></ph> from <ph name="VENDOR_NAME">$2<ex>Google</ex></ph>

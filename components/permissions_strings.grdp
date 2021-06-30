@@ -163,6 +163,14 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
 
   <!-- Bluetooth Scanning Prompt -->
+  <if expr="not is_android">
+    <message name="IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN" desc="The label that is used to introduce Bluetooth scanning prompt details to the user when it is from a website.">
+      <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to scan for nearby Bluetooth devices. The following devices have been found:
+    </message>
+    <message name="IDS_BLUETOOTH_SCANNING_DEVICE_UNKNOWN" desc="Text to identify Bluetooth devices of unknown or unsupported class.">
+      Unknown or unsupported device (<ph name="DEVICE_ID">$1<ex>A1:B2:C3:D4:E5:F6</ex></ph>)
+    </message>
+  </if>
   <message name="IDS_BLUETOOTH_SCANNING_PROMPT_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no nearby Bluetooth devices were found using the requirements that the application provided." formatter_data="android_java">
     No nearby devices found.
   </message>

@@ -5,14 +5,14 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/bluetooth/bluetooth_scanning_prompt_controller.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/permissions/bluetooth_scanning_prompt_controller.h"
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace permissions {
 
 class BluetoothScanningPromptControllerTest : public testing::Test {
  public:
@@ -21,10 +21,16 @@ class BluetoothScanningPromptControllerTest : public testing::Test {
             nullptr,
             base::BindRepeating(&BluetoothScanningPromptControllerTest::
                                     OnBluetoothScanningPromptEvent,
-                                base::Unretained(this))) {
+                                base::Unretained(this)),
+            u"title") {
     bluetooth_scanning_prompt_controller_.set_view(
         &mock_bluetooth_scanning_prompt_view_);
   }
+
+  BluetoothScanningPromptControllerTest(
+      const BluetoothScanningPromptControllerTest&) = delete;
+  BluetoothScanningPromptControllerTest& operator=(
+      const BluetoothScanningPromptControllerTest&) = delete;
 
  protected:
   void OnBluetoothScanningPromptEvent(
@@ -33,11 +39,8 @@ class BluetoothScanningPromptControllerTest : public testing::Test {
   }
 
   BluetoothScanningPromptController bluetooth_scanning_prompt_controller_;
-  permissions::MockChooserControllerView mock_bluetooth_scanning_prompt_view_;
+  MockChooserControllerView mock_bluetooth_scanning_prompt_view_;
   content::BluetoothScanningPrompt::Event last_event_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothScanningPromptControllerTest);
 };
 
 class BluetoothScanningPromptControllerWithDevicesAddedTest
@@ -138,3 +141,5 @@ TEST_F(BluetoothScanningPromptControllerWithDevicesAddedTest,
   bluetooth_scanning_prompt_controller_.Close();
   EXPECT_EQ(content::BluetoothScanningPrompt::Event::kCanceled, last_event_);
 }
+
+}  // namespace permissions
