@@ -3,103 +3,39 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-  deps = [ ":history_clusters" ]
-}
+preprocess_folder = "preprocessed"
 
-js_library("app") {
-  deps = [
-    ":browser_proxy",
-    ":cluster",
-    ":router",
-    "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-list",
-    "//third_party/polymer/v3_0/components-chromium/iron-scroll-threshold",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//url/mojom:url_mojom_origin_webui_js",
+ts_library("build") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "app.js",
+    "browser_proxy.js",
+    "cluster.js",
+    "history_clusters.js",
+    "page_favicon.js",
+    "router.js",
+    "search_query.js",
+    "shared_style.js",
+    "shared_vars.js",
+    "top_visit.js",
+    "utils.js",
+    "visit_row.js",
   ]
-}
-
-js_library("browser_proxy") {
-  deps = [ "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js" ]
-}
-
-js_library("history_clusters") {
-  deps = [ ":app" ]
-}
-
-js_library("cluster") {
   deps = [
-    ":page_favicon",
-    ":top_visit",
-    ":utils",
-    "//components/history_clusters/core:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//url/mojom:url_mojom_origin_webui_js",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
-}
-
-js_library("page_favicon") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:icon.m",
-    "//url/mojom:url_mojom_origin_webui_js",
-  ]
-}
-
-js_library("router") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("search_query") {
-  deps = [
-    "//components/history_clusters/core:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("top_visit") {
-  deps = [
-    ":search_query",
-    ":visit_row",
-    "//components/history_clusters/core:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("utils") {
-  deps = [ "//url/mojom:url_mojom_origin_webui_js" ]
-}
-
-js_library("visit_row") {
-  deps = [
-    ":page_favicon",
-    ":utils",
-    "//components/history_clusters/core:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//url/mojom:url_mojom_origin_webui_js",
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_generated",
   ]
 }
 
@@ -121,16 +57,10 @@ group("web_components") {
   public_deps = [ ":web_components_local" ]
 }
 
-grd_prefix = "history_clusters"
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-
 preprocess_if_expr("preprocess") {
   defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "browser_proxy.js",
     "history_clusters.js",
@@ -138,11 +68,10 @@ preprocess_if_expr("preprocess") {
   ]
 }
 
-preprocess_if_expr("preprocess_gen") {
+preprocess_if_expr("preprocess_generated") {
   defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "app.js",
     "cluster.js",
@@ -157,8 +86,10 @@ preprocess_if_expr("preprocess_gen") {
   deps = [ ":web_components" ]
 }
 
+grd_prefix = "history_clusters"
+
 generate_grd("build_history_clusters_api_mojo_grdp") {
-  grd_prefix = "$grd_prefix" + "_API"
+  grd_prefix = "${grd_prefix}_API"
   out_grd = "$target_gen_dir/clusters_api_mojo_resources.grdp"
   input_files = [ "history_clusters.mojom-webui.js" ]
   resource_path_rewrites = [ "history_clusters.mojom-webui.js|chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js" ]
@@ -169,7 +100,7 @@ generate_grd("build_history_clusters_api_mojo_grdp") {
 }
 
 generate_grd("build_history_clusters_definition_mojo_grdp") {
-  grd_prefix = "$grd_prefix" + "_DEFINITION"
+  grd_prefix = "${grd_prefix}_DEFINITION"
   out_grd = "$target_gen_dir/clusters_definition_mojo_resources.grdp"
   input_files = [ "history_clusters.mojom-webui.js" ]
   resource_path_rewrites = [ "history_clusters.mojom-webui.js|components/history_clusters/core/history_clusters.mojom-webui.js" ]
@@ -188,15 +119,11 @@ generate_grd("build_grd") {
     "$target_gen_dir/clusters_definition_mojo_resources.grdp",
   ]
   deps = [
+    ":build",
     ":build_history_clusters_api_mojo_grdp",
     ":build_history_clusters_definition_mojo_grdp",
-    ":preprocess",
-    ":preprocess_gen",
   ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_gen_manifest",
-  ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
 grit("resources") {
