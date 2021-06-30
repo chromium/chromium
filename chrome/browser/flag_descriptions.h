@@ -1802,6 +1802,9 @@ extern const char kFillingPasswordsFromAnyOriginDescription[];
 extern const char kHomepagePromoCardName[];
 extern const char kHomepagePromoCardDescription[];
 
+extern const char kInstanceSwitcherName[];
+extern const char kInstanceSwitcherDescription[];
+
 extern const char kInstantStartName[];
 extern const char kInstantStartDescription[];
 

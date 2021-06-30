@@ -3144,6 +3144,11 @@ const char kHomepagePromoCardDescription[] =
     "Enable homepage promo card that will be shown to users with partner "
     "configured homepage.";
 
+const char kInstanceSwitcherName[] = "Enable instance switcher";
+const char kInstanceSwitcherDescription[] =
+    "Enable instance switcher dialog UI that helps users manage multiple "
+    "instances of Chrome.";
+
 const char kInstantStartName[] = "Instant start";
 const char kInstantStartDescription[] =
     "Show start surface before native library is loaded.";

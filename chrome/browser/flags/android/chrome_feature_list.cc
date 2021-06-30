@@ -206,6 +206,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kImmersiveUiMode,
     &kIncognitoScreenshot,
     &kInlineUpdateFlow,
+    &kInstanceSwitcher,
     &kInstantStart,
     &kKitKatSupported,
     &kLensCameraAssistedSearch,
@@ -583,6 +584,9 @@ const base::Feature kSearchEnginePromoNewDevice{
 
 const base::Feature kNewWindowAppMenu{"NewWindowAppMenu",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kInstanceSwitcher{"InstanceSwitcher",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // TODO(knollr): This is a temporary kill switch, it can be removed once we feel
 // okay about leaving it on.

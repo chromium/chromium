@@ -3356,6 +3356,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "instance-switcher",
+    "owners": [ "jinsukkim" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "instant-tethering",
     "owners": [ "hansberry", "khorimoto", "vecore", "cros-system-services@google.com" ],
     // Though Instant Tethering is now a launched feature, it is only marked enabled on select,
