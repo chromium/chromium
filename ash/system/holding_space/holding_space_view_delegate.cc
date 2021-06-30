@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_drag_util.h"
@@ -556,7 +557,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
 
     // The "Pause" command should only be present if *all* of the selected
     // holding space items are pausable.
-    is_pausable &= item->IsInProgress() && !item->IsPaused();
+    is_pausable &= !item->progress().IsComplete() && !item->IsPaused();
 
     // The "Resume" command should only be present if *all* of the selected
     // holding space items are resumable.
@@ -564,16 +565,16 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
 
     // The "Cancel" command should only be present if *all* of the selected
     // holding space items are cancelable.
-    is_cancelable &= item->IsInProgress();
+    is_cancelable &= !item->progress().IsComplete();
 
     // The "Remove" command should only be present if *all* of the selected
     // holding space items are removable.
     is_removable &= item->type() != HoldingSpaceItem::Type::kPinnedFile &&
-                    !item->IsInProgress();
+                    item->progress().IsComplete();
 
     // In-progress holding space items are ignored with respect to the pin-/
     // unpin-ability of the `selection`.
-    if (item->IsInProgress())
+    if (!item->progress().IsComplete())
       continue;
 
     // The "Pin" command should be present if *any* selected holding space item

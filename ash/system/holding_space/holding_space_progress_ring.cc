@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -116,38 +117,18 @@ class HoldingSpaceControllerProgressRing
     if (!model)
       return 1.f;
 
-    // TODO(crbug.com/1184438): The below progress calculation is a temporary
-    // approximation until a more accurate cumulative progress calculation is
-    // implemented in a follow up CL.
-    float cumulative_progress = 0.f;
-    int number_of_in_progress_items = 0;
+    HoldingSpaceProgress cumulative_progress;
 
     // Iterate over all holding space items.
     for (const auto& item : model->items()) {
       // Ignore any holding space items that are not yet initialized, since
       // they are not visible to the user, or items that are not in-progress,
-      // since they do not contribute to cumulative progress.
-      if (!item->IsInitialized() || !item->IsInProgress())
-        continue;
-
-      // If any holding space `item` has indeterminate progress, then cumulative
-      // progress is also indeterminate.
-      if (!item->progress().has_value())
-        return absl::nullopt;
-
-      // Update incremental tracking of cumulative progress.
-      cumulative_progress += item->progress().value();
-      ++number_of_in_progress_items;
+      // since they do not contribute to `cumulative_progress`.
+      if (item->IsInitialized() && !item->progress().IsComplete())
+        cumulative_progress += item->progress();
     }
 
-    // If there are no in-progress holding space items, return `1.f` to prevent
-    // the progress ring from painting.
-    if (number_of_in_progress_items == 0)
-      return 1.f;
-
-    // Return the average progress as a temporary approximation until a more
-    // accurate cumulative progress can be calculated.
-    return cumulative_progress / number_of_in_progress_items;
+    return cumulative_progress.GetValue();
   }
 
   // HoldingSpaceControllerObserver:
@@ -165,7 +146,7 @@ class HoldingSpaceControllerProgressRing
   void OnHoldingSpaceItemsAdded(
       const std::vector<const HoldingSpaceItem*>& items) override {
     for (const HoldingSpaceItem* item : items) {
-      if (item->IsInitialized() && item->IsInProgress()) {
+      if (item->IsInitialized() && !item->progress().IsComplete()) {
         InvalidateLayer();
         return;
       }
@@ -175,7 +156,7 @@ class HoldingSpaceControllerProgressRing
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override {
     for (const HoldingSpaceItem* item : items) {
-      if (item->IsInitialized() && item->IsInProgress()) {
+      if (item->IsInitialized() && !item->progress().IsComplete()) {
         InvalidateLayer();
         return;
       }
@@ -188,7 +169,7 @@ class HoldingSpaceControllerProgressRing
   }
 
   void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override {
-    if (item->IsInProgress())
+    if (!item->progress().IsComplete())
       InvalidateLayer();
   }
 
@@ -222,7 +203,7 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
   absl::optional<float> GetProgress() const override {
     // If `item_` is `nullptr` it is being destroyed. Return `1.f` in that case
     // so that no progress ring will be painted.
-    return item_ ? item_->progress() : 1.f;
+    return item_ ? item_->progress().GetValue() : 1.f;
   }
 
   // HoldingSpaceModelObserver:

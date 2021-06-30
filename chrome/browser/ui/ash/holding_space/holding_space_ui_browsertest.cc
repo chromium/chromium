@@ -18,6 +18,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
@@ -862,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, PinAndUnpinItems) {
   for (HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes())
     AddItem(GetProfile(), type, CreateFile());
   AddItem(GetProfile(), HoldingSpaceItem::Type::kDownload, CreateFile(),
-          /*progress=*/0.f);
+          HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100));
 
   // Show holding space UI.
   test_api().Show();
@@ -1345,12 +1346,13 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
   }
 
   // Creates and returns a mock download item with the specified `state`,
-  // `file_path`, `target_file_path`, and `percent_complete`.
+  // `file_path`, `target_file_path`, `received_bytes`, and `total_bytes`.
   std::unique_ptr<testing::NiceMock<download::MockDownloadItem>>
   CreateMockDownloadItem(download::DownloadItem::DownloadState state,
                          const base::FilePath& file_path,
                          const base::FilePath& target_file_path,
-                         int percent_complete) {
+                         int64_t received_bytes,
+                         int64_t total_bytes) {
     auto mock_download_item =
         std::make_unique<testing::NiceMock<download::MockDownloadItem>>();
 
@@ -1377,6 +1379,10 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
                          : file_path;
             }));
 
+    // Mock `download::DownloadItem::GetReceivedBytes()`.
+    ON_CALL(*mock_download_item, GetReceivedBytes)
+        .WillByDefault(testing::Return(received_bytes));
+
     // Mock `download::DownloadItem::GetState()`.
     ON_CALL(*mock_download_item, GetState)
         .WillByDefault(testing::Return(state));
@@ -1387,7 +1393,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
 
     // Mock `download::DownloadItem::GetTotalBytes()`.
     ON_CALL(*mock_download_item, GetTotalBytes)
-        .WillByDefault(testing::Return(-1));
+        .WillByDefault(testing::Return(total_bytes));
 
     // Mock `download::DownloadItem::IsPaused()`.
     auto paused = std::make_unique<bool>(false);
@@ -1412,10 +1418,6 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
     ON_CALL(*mock_download_item, Pause).WillByDefault([set_paused]() {
       set_paused.Run(true);
     });
-
-    // Mock `download::DownloadItem::PercentComplete()`.
-    ON_CALL(*mock_download_item, PercentComplete)
-        .WillByDefault(testing::Return(percent_complete));
 
     // Mock `download::DownloadItem::Resume()`.
     ON_CALL(*mock_download_item, Resume(/*from_user=*/testing::Eq(true)))
@@ -1448,7 +1450,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   const base::FilePath target_file_path(CreateFile());
   auto in_progress_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      target_file_path, /*percent_complete=*/0);
+      target_file_path, /*received_bytes=*/0, /*total_bytes=*/-1);
   in_progress_download->NotifyObserversDownloadUpdated();
 
   // Show holding space UI.
@@ -1560,7 +1562,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   auto in_progress_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
       /*target_file_path=*/CreateFile(),
-      /*percent_complete=*/0);
+      /*received_bytes=*/0, /*total_bytes=*/100);
   in_progress_download->NotifyObserversDownloadUpdated();
 
   // Create a completed download.
@@ -1570,10 +1572,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // then update it to COMPLETE state.
   auto completed_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      /*target_file_path=*/CreateFile(), /*percent_complete=*/0);
+      /*target_file_path=*/CreateFile(), /*received_bytes=*/0,
+      /*total_bytes=*/100);
   ON_CALL(*completed_download, GetState())
       .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
-  ON_CALL(*completed_download, PercentComplete())
+  ON_CALL(*completed_download, GetReceivedBytes())
       .WillByDefault(testing::Return(100));
   completed_download->NotifyObserversDownloadUpdated();
 
@@ -1657,7 +1660,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // Create an in-progress download.
   auto in_progress_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      /*target_file_path=*/CreateFile(), /*percent_complete=*/0);
+      /*target_file_path=*/CreateFile(), /*received_bytes=*/0,
+      /*total_bytes=*/100);
   in_progress_download->NotifyObserversDownloadUpdated();
 
   // Create a completed download.
@@ -1667,10 +1671,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // then update it to COMPLETE state.
   auto completed_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      /*target_file_path=*/CreateFile(), /*percent_complete=*/0);
+      /*target_file_path=*/CreateFile(), /*received_bytes=*/0,
+      /*total_bytes=*/100);
   ON_CALL(*completed_download, GetState())
       .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
-  ON_CALL(*completed_download, PercentComplete())
+  ON_CALL(*completed_download, GetReceivedBytes())
       .WillByDefault(testing::Return(100));
   completed_download->NotifyObserversDownloadUpdated();
 
@@ -1761,7 +1766,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   auto in_progress_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
       /*target_file_path=*/CreateFile(),
-      /*percent_complete=*/0);
+      /*received_bytes=*/0, /*total_bytes=*/100);
   in_progress_download->NotifyObserversDownloadUpdated();
 
   // Create a completed download.
@@ -1771,10 +1776,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // then update it to COMPLETE state.
   auto completed_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      /*target_file_path=*/CreateFile(), /*percent_complete=*/0);
+      /*target_file_path=*/CreateFile(), /*bytes_received=*/0,
+      /*total_bytes=*/100);
   ON_CALL(*completed_download, GetState())
       .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
-  ON_CALL(*completed_download, PercentComplete())
+  ON_CALL(*completed_download, GetReceivedBytes())
       .WillByDefault(testing::Return(100));
   completed_download->NotifyObserversDownloadUpdated();
 
@@ -1852,7 +1858,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // Complete the in-progress download.
   ON_CALL(*in_progress_download, GetState())
       .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
-  ON_CALL(*in_progress_download, PercentComplete())
+  ON_CALL(*in_progress_download, GetReceivedBytes())
       .WillByDefault(testing::Return(100));
   in_progress_download->NotifyObserversDownloadUpdated();
 
@@ -1895,7 +1901,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // on parameterization.
   auto in_progress_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      /*target_file_path=*/CreateFile(), /*percent_complete=*/0);
+      /*target_file_path=*/CreateFile(), /*received_bytes=*/0,
+      /*total_bytes=*/100);
   if (GetPauseOrResumeCommandId() == HoldingSpaceCommandId::kResumeItem)
     in_progress_download->Pause();
   in_progress_download->NotifyObserversDownloadUpdated();
@@ -1907,10 +1914,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // then update it to COMPLETE state.
   auto completed_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      /*target_file_path=*/CreateFile(), /*percent_complete=*/0);
+      /*target_file_path=*/CreateFile(), /*received_bytes=*/0,
+      /*total_bytes=*/100);
   ON_CALL(*completed_download, GetState())
       .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
-  ON_CALL(*completed_download, PercentComplete())
+  ON_CALL(*completed_download, GetReceivedBytes())
       .WillByDefault(testing::Return(100));
   completed_download->NotifyObserversDownloadUpdated();
 
@@ -1993,7 +2001,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // on parameterization.
   auto in_progress_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      /*target_file_path=*/CreateFile(), /*percent_complete=*/0);
+      /*target_file_path=*/CreateFile(),
+      /*received_bytes=*/0, /*total_bytes=*/100);
   if (GetPauseOrResumeCommandId() == HoldingSpaceCommandId::kResumeItem)
     in_progress_download->Pause();
   in_progress_download->NotifyObserversDownloadUpdated();
@@ -2005,10 +2014,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // then update it to COMPLETE state.
   auto completed_download = CreateMockDownloadItem(
       download::DownloadItem::IN_PROGRESS, /*file_path=*/CreateFile(),
-      /*target_file_path=*/CreateFile(), /*percent_complete=*/0);
+      /*target_file_path=*/CreateFile(), /*received_bytes=*/0,
+      /*total_bytes=*/100);
   ON_CALL(*completed_download, GetState())
       .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
-  ON_CALL(*completed_download, PercentComplete())
+  ON_CALL(*completed_download, GetReceivedBytes())
       .WillByDefault(testing::Return(100));
   completed_download->NotifyObserversDownloadUpdated();
 

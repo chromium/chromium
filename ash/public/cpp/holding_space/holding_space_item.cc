@@ -48,7 +48,8 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     const GURL& file_system_url,
     ImageResolver image_resolver) {
   return CreateFileBackedItem(type, file_path, file_system_url,
-                              /*progress=*/1.f, std::move(image_resolver));
+                              HoldingSpaceProgress(),
+                              std::move(image_resolver));
 }
 
 // static
@@ -56,7 +57,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     Type type,
     const base::FilePath& file_path,
     const GURL& file_system_url,
-    const absl::optional<float>& progress,
+    const HoldingSpaceProgress& progress,
     ImageResolver image_resolver) {
   DCHECK(!file_system_url.is_empty());
 
@@ -101,7 +102,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
   return base::WrapUnique(new HoldingSpaceItem(
       type, DeserializeId(dict), file_path,
       /*file_system_url=*/GURL(),
-      std::move(image_resolver).Run(type, file_path), /*progress=*/1.f));
+      std::move(image_resolver).Run(type, file_path), HoldingSpaceProgress()));
 }
 
 // static
@@ -193,23 +194,14 @@ bool HoldingSpaceItem::SetSecondaryText(
   return true;
 }
 
-bool HoldingSpaceItem::IsInProgress() const {
-  return progress_ != 1.f;
-}
-
-bool HoldingSpaceItem::SetProgress(const absl::optional<float>& progress) {
+bool HoldingSpaceItem::SetProgress(const HoldingSpaceProgress& progress) {
   // NOTE: Progress can only be updated for in progress items.
-  if (progress_ == progress || !IsInProgress())
+  if (progress_ == progress || progress_.IsComplete())
     return false;
-
-  if (progress.has_value()) {
-    DCHECK_GE(progress.value(), 0.f);
-    DCHECK_LE(progress.value(), 1.f);
-  }
 
   progress_ = progress;
 
-  if (progress_ == 1.f)
+  if (progress_.IsComplete())
     paused_ = false;
 
   return true;
@@ -242,7 +234,7 @@ bool HoldingSpaceItem::IsPaused() const {
 }
 
 bool HoldingSpaceItem::SetPaused(bool paused) {
-  if (!IsInProgress() || paused_ == paused)
+  if (paused_ == paused || progress_.IsComplete())
     return false;
 
   paused_ = paused;
@@ -254,17 +246,12 @@ HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const base::FilePath& file_path,
                                    const GURL& file_system_url,
                                    std::unique_ptr<HoldingSpaceImage> image,
-                                   const absl::optional<float>& progress)
+                                   const HoldingSpaceProgress& progress)
     : type_(type),
       id_(id),
       file_path_(file_path),
       file_system_url_(file_system_url),
       image_(std::move(image)),
-      progress_(progress) {
-  if (progress_.has_value()) {
-    DCHECK_GE(progress_.value(), 0.f);
-    DCHECK_LE(progress_.value(), 1.f);
-  }
-}
+      progress_(progress) {}
 
 }  // namespace ash

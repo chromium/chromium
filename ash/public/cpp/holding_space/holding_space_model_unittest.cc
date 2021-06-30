@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/scoped_observation.h"
@@ -119,7 +120,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
-      /*progress=*/absl::nullopt,
+      HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
 
@@ -146,10 +147,13 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_TRUE(item_ptr->IsPaused());
 
   // Update progress.
-  model().UpdateItem(item_ptr->id())->SetProgress(0.5f);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetProgress(
+          HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
-  EXPECT_EQ(item_ptr->progress(), 0.5f);
+  EXPECT_EQ(item_ptr->progress().GetValue(), 0.5f);
 
   // Update text.
   model().UpdateItem(item_ptr->id())->SetText(u"text");
@@ -172,13 +176,14 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       .SetText(u"updated_text")
       .SetSecondaryText(u"updated_secondary_text")
       .SetPaused(false)
-      .SetProgress(0.75f);
+      .SetProgress(
+          HoldingSpaceProgress(/*current_bytes=*/75, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
   EXPECT_FALSE(item_ptr->IsPaused());
-  EXPECT_EQ(item_ptr->progress(), 0.75f);
+  EXPECT_EQ(item_ptr->progress().GetValue(), 0.75f);
   EXPECT_EQ(item_ptr->GetText(), u"updated_text");
   EXPECT_EQ(item_ptr->secondary_text(), u"updated_secondary_text");
 }
@@ -193,8 +198,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
-      GURL("filesystem::file_system_url"),
-      /*progress=*/absl::nullopt,
+      GURL("filesystem::file_system_url"), HoldingSpaceProgress(),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
 
@@ -229,7 +233,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Pause) {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
-      /*progress=*/absl::nullopt,
+      HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
 
@@ -258,9 +262,13 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Pause) {
 
   // Update pause to `true` and progress to completion. Because the item is no
   // longer in progress, it should no longer be paused.
-  model().UpdateItem(item_ptr->id())->SetPaused(true).SetProgress(1.f);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetPaused(true)
+      .SetProgress(
+          HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
-  EXPECT_EQ(item_ptr->progress(), 1.f);
+  EXPECT_TRUE(item_ptr->progress().IsComplete());
   EXPECT_FALSE(item_ptr->IsPaused());
 
   // Attempts to update pause should no-op for completed items.
@@ -283,7 +291,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
-      /*progress=*/absl::nullopt,
+      HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
+                           /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
 
@@ -293,33 +302,48 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
   EXPECT_EQ(model().items()[0].get(), item_ptr);
 
   // Verify progress is indeterminate.
-  EXPECT_EQ(item_ptr->progress(), absl::nullopt);
+  EXPECT_TRUE(item_ptr->progress().IsIndeterminate());
 
   // Update progress to `0.5f`.
-  model().UpdateItem(item_ptr->id())->SetProgress(0.5f);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetProgress(
+          HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
-  EXPECT_EQ(item_ptr->progress(), 0.5f);
+  EXPECT_EQ(item_ptr->progress().GetValue(), 0.5f);
 
   // Update progress to `0.5f` again. This should no-op.
-  model().UpdateItem(item_ptr->id())->SetProgress(0.5f);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetProgress(
+          HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100));
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
-  EXPECT_EQ(item_ptr->progress(), 0.5f);
+  EXPECT_EQ(item_ptr->progress().GetValue(), 0.5f);
 
   // Update progress to indeterminate.
-  model().UpdateItem(item_ptr->id())->SetProgress(absl::nullopt);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetProgress(HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
+                                         /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
-  EXPECT_EQ(item_ptr->progress(), absl::nullopt);
+  EXPECT_TRUE(item_ptr->progress().IsIndeterminate());
 
   // Update progress to complete.
-  model().UpdateItem(item_ptr->id())->SetProgress(1.f);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetProgress(
+          HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
-  EXPECT_EQ(item_ptr->progress(), 1.f);
+  EXPECT_TRUE(item_ptr->progress().IsComplete());
 
   // Update progress to `0.5f`. This should no-op as progress becomes read-only
   // after being marked completed.
-  model().UpdateItem(item_ptr->id())->SetProgress(0.5f);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetProgress(
+          HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100));
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
-  EXPECT_EQ(item_ptr->progress(), 1.f);
+  EXPECT_TRUE(item_ptr->progress().IsComplete());
 }
 
 }  // namespace ash

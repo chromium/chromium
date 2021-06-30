@@ -65,7 +65,7 @@ HoldingSpaceModel::ScopedItemUpdate::SetPaused(bool paused) {
 
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetProgress(
-    const absl::optional<float>& progress) {
+    const HoldingSpaceProgress& progress) {
   progress_ = progress;
   return *this;
 }

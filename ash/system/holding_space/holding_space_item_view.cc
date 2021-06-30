@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
@@ -455,7 +456,7 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   }
 
   // Cancel.
-  const bool is_item_in_progress = item()->IsInProgress();
+  const bool is_item_in_progress = !item()->progress().IsComplete();
   primary_action_cancel_->SetVisible(is_item_in_progress);
 
   // Pin.

@@ -13,6 +13,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,9 +56,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetPaused(bool paused);
 
     // Sets the `progress` of the item and returns a reference to `this`.
-    // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
-    // NOTE: Once set to `1.f`, holding space item progress becomes read-only.
-    ScopedItemUpdate& SetProgress(const absl::optional<float>& progress);
+    // NOTE: Only in-progress holding space items can be progressed.
+    ScopedItemUpdate& SetProgress(const HoldingSpaceProgress& progress);
 
     // Sets the secondary text that should be shown for the item and returns a
     // reference to `this`.
@@ -79,7 +79,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     absl::optional<base::FilePath> file_path_;
     absl::optional<GURL> file_system_url_;
     absl::optional<bool> paused_;
-    absl::optional<absl::optional<float>> progress_;
+    absl::optional<HoldingSpaceProgress> progress_;
     absl::optional<absl::optional<std::u16string>> secondary_text_;
     absl::optional<absl::optional<std::u16string>> text_;
   };

@@ -237,7 +237,7 @@ void HoldingSpaceKeyedService::AddDiagnosticsLog(
 void HoldingSpaceKeyedService::AddDownload(
     HoldingSpaceItem::Type type,
     const base::FilePath& download_file,
-    const absl::optional<float>& progress) {
+    const HoldingSpaceProgress& progress) {
   DCHECK(HoldingSpaceItem::IsDownload(type));
   AddItemOfType(type, download_file, progress);
 }
@@ -290,7 +290,7 @@ void HoldingSpaceKeyedService::AddItems(
 void HoldingSpaceKeyedService::AddItemOfType(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path,
-    const absl::optional<float>& progress) {
+    const HoldingSpaceProgress& progress) {
   const GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, file_path);
   if (file_system_url.is_empty())

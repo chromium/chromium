@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,7 +66,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsAdded(
   // Write the new finalized `items` to persistent storage.
   ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   for (const HoldingSpaceItem* item : items) {
-    if (!item->IsInProgress())
+    if (item->progress().IsComplete())
       update->Append(item->Serialize());
   }
 }
@@ -93,7 +94,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
     return;
 
   // Only finalized items are persisted.
-  if (item->IsInProgress())
+  if (!item->progress().IsComplete())
     return;
 
   // Attempt to find the finalized `item` in persistent storage.
@@ -119,7 +120,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
       update->Insert(item_it, item->Serialize());
       return;
     }
-    if (!candidate_item->IsInProgress())
+    if (candidate_item->progress().IsComplete())
       ++item_it;
   }
 

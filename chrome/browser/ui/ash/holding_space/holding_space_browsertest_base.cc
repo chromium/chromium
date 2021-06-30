@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
-#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
@@ -178,7 +177,7 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
     Profile* profile,
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path,
-    const absl::optional<float>& progress) {
+    const HoldingSpaceProgress& progress) {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       type, file_path,
       holding_space_util::ResolveFileSystemUrl(profile, file_path), progress,
