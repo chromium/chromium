@@ -416,10 +416,8 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Test that force migrating the account id to Gaia ID is finished.
 TEST_F(PrimaryAccountManagerTest, GaiaIdMigration_ForceAllAccounts) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(switches::kForceAccountIdMigration);
-
   ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
             account_tracker()->GetMigrationState());
   std::string email = "user@gmail.com";

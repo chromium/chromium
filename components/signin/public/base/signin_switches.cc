@@ -20,9 +20,6 @@ const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kAccountIdMigration{"AccountIdMigration",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
-#else
-const base::Feature kForceAccountIdMigration{"ForceAccountIdMigration",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_ANDROID)
