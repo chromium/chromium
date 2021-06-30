@@ -122,8 +122,6 @@ SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
       upload_stream_in_progress_(false),
       user_buffer_len_(0),
       request_body_buf_size_(0),
-      buffered_read_callback_pending_(false),
-      more_read_data_pending_(false),
       was_alpn_negotiated_(false),
       dns_aliases_(std::move(dns_aliases)) {
   DCHECK(spdy_session_.get());
@@ -464,12 +462,7 @@ void SpdyHttpStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   DCHECK(!stream_->IsClosed() || stream_->type() == SPDY_PUSH_STREAM);
   if (buffer) {
     response_body_queue_.Enqueue(std::move(buffer));
-
-    if (user_buffer_.get()) {
-      // Handing small chunks of data to the caller creates measurable overhead.
-      // We buffer data in short time-spans and send a single read notification.
-      ScheduleBufferedReadCallback();
-    }
+    MaybeScheduleBufferedReadCallback();
   }
 }
 
@@ -615,52 +608,42 @@ void SpdyHttpStream::OnRequestBodyReadCompleted(int status) {
                     eof ? NO_MORE_DATA_TO_SEND : MORE_DATA_TO_SEND);
 }
 
-void SpdyHttpStream::ScheduleBufferedReadCallback() {
-  // If there is already a scheduled DoBufferedReadCallback, don't issue
-  // another one.  Mark that we have received more data and return.
-  if (buffered_read_callback_pending_) {
-    more_read_data_pending_ = true;
+void SpdyHttpStream::MaybeScheduleBufferedReadCallback() {
+  DCHECK(!stream_closed_);
+
+  if (!user_buffer_.get())
+    return;
+
+  // If enough data was received to fill the user buffer, invoke
+  // DoBufferedReadCallback() with no delay.
+  //
+  // Note: DoBufferedReadCallback() is invoked asynchronously to preserve
+  // historical behavior. It would be interesting to evaluate whether it can be
+  // invoked synchronously to avoid the overhead of posting a task. A long time
+  // ago, the callback was invoked synchronously
+  // https://codereview.chromium.org/652209/diff/2018/net/spdy/spdy_stream.cc.
+  if (response_body_queue_.GetTotalSize() >=
+      static_cast<size_t>(user_buffer_len_)) {
+    buffered_read_timer_.Start(FROM_HERE, base::TimeDelta() /* no delay */,
+                               this, &SpdyHttpStream::DoBufferedReadCallback);
     return;
   }
 
-  more_read_data_pending_ = false;
-  buffered_read_callback_pending_ = true;
-  const base::TimeDelta kBufferTime = base::TimeDelta::FromMilliseconds(1);
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&SpdyHttpStream::DoBufferedReadCallback,
-                     weak_factory_.GetWeakPtr()),
-      kBufferTime);
-}
-
-// Checks to see if we should wait for more buffered data before notifying
-// the caller.  Returns true if we should wait, false otherwise.
-bool SpdyHttpStream::ShouldWaitForMoreBufferedData() const {
-  // If the response is complete, there is no point in waiting.
-  if (stream_closed_)
-    return false;
-
-  DCHECK_GT(user_buffer_len_, 0);
-  return response_body_queue_.GetTotalSize() <
-      static_cast<size_t>(user_buffer_len_);
+  // Handing small chunks of data to the caller creates measurable overhead.
+  // Wait 1ms to allow handing off multiple chunks of data received within a
+  // short time span at once.
+  buffered_read_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+                             this, &SpdyHttpStream::DoBufferedReadCallback);
 }
 
 void SpdyHttpStream::DoBufferedReadCallback() {
-  buffered_read_callback_pending_ = false;
+  buffered_read_timer_.Stop();
 
   // If the transaction is cancelled or errored out, we don't need to complete
   // the read.
   if (stream_closed_ && closed_stream_status_ != OK) {
     if (response_callback_)
       DoResponseCallback(closed_stream_status_);
-    return;
-  }
-
-  // When more_read_data_pending_ is true, it means that more data has
-  // arrived since we started waiting.  Wait a little longer and continue
-  // to buffer.
-  if (more_read_data_pending_ && ShouldWaitForMoreBufferedData()) {
-    ScheduleBufferedReadCallback();
     return;
   }
 
