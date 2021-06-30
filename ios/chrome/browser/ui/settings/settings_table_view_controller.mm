@@ -42,6 +42,7 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
@@ -557,10 +558,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     // Create the sign-in promo mediator if it doesn't exist.
     if (!_signinPromoViewMediator) {
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-          initWithBrowserState:_browserState
-                   accessPoint:signin_metrics::AccessPoint::
-                                   ACCESS_POINT_SETTINGS
-                     presenter:self /* id<SigninPresenter> */];
+          initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                            GetForBrowserState(_browserState)
+                            authService:AuthenticationServiceFactory::
+                                            GetForBrowserState(_browserState)
+                            prefService:_browserState->GetPrefs()
+                            accessPoint:signin_metrics::AccessPoint::
+                                            ACCESS_POINT_SETTINGS
+                              presenter:self];
       _signinPromoViewMediator.consumer = self;
     }
     TableViewSigninPromoItem* signinPromoItem =
@@ -648,7 +653,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
          [SigninPromoViewMediator
              shouldDisplaySigninPromoViewWithAccessPoint:
                  signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-                                            browserState:_browserState] &&
+                                             prefService:_browserState
+                                                             ->GetPrefs()] &&
          !authService->IsAuthenticated();
 }
 
@@ -661,7 +667,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
          [SigninPromoViewMediator
              shouldDisplaySigninPromoViewWithAccessPoint:
                  signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-                                            browserState:_browserState] &&
+                                             prefService:_browserState
+                                                             ->GetPrefs()] &&
          !syncSetupService->IsFirstSetupComplete();
 }
 

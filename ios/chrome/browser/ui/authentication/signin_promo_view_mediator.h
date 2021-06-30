@@ -10,8 +10,10 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 
-class ChromeBrowserState;
+class AuthenticationService;
+class ChromeAccountManagerService;
 @class ChromeIdentity;
+class PrefService;
 @protocol SigninPresenter;
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewConsumer;
@@ -75,19 +77,19 @@ class PrefRegistrySyncable;
 // of times it has been displayed and if the user closed the sign-in promo view.
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
-                                       browserState:
-                                           (ChromeBrowserState*)browserState;
+                                        prefService:(PrefService*)prefService;
 
 // See -[SigninPromoViewMediator initWithBrowserState:].
 - (instancetype)init NS_UNAVAILABLE;
 
-// Initialises with browser state.
-// * |browserState| is the current browser state.
-// * |accessPoint| only ACCESS_POINT_SETTINGS, ACCESS_POINT_BOOKMARK_MANAGER,
-// ACCESS_POINT_RECENT_TABS, ACCESS_POINT_TAB_SWITCHER are supported.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                         accessPoint:(signin_metrics::AccessPoint)accessPoint
-                           presenter:(id<SigninPresenter>)presenter
+// Designated initializer.
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                      authService:(AuthenticationService*)authService
+                      prefService:(PrefService*)prefService
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                        presenter:(id<SigninPresenter>)presenter
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;

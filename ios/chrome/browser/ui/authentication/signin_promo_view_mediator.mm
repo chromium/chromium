@@ -12,13 +12,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
@@ -344,8 +341,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // Presenter which can show signin UI.
 @property(nonatomic, weak, readonly) id<SigninPresenter> presenter;
 
-// The coordinator's BrowserState.
-@property(nonatomic, assign, readonly) ChromeBrowserState* browserState;
+// User's preferences service.
+@property(nonatomic, assign) PrefService* prefService;
+
+// AccountManager Service used to retrive identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+
+// Authentication Service for the user's signed-in state.
+@property(nonatomic, assign) AuthenticationService* authService;
 
 // The access point for the sign-in promo view.
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
@@ -378,36 +381,42 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
-                                       browserState:
-                                           (ChromeBrowserState*)browserState {
-  PrefService* prefs = browserState->GetPrefs();
-  if (!signin::IsSigninAllowed(prefs)) {
+                                        prefService:(PrefService*)prefService {
+  if (!signin::IsSigninAllowed(prefService)) {
     return NO;
   }
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(accessPoint);
   if (displayedCountPreferenceKey &&
-      prefs->GetInteger(displayedCountPreferenceKey) >=
+      prefService->GetInteger(displayedCountPreferenceKey) >=
           kAutomaticSigninPromoViewDismissCount) {
     return NO;
   }
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(accessPoint);
   if (alreadySeenSigninViewPreferenceKey &&
-      prefs->GetBoolean(alreadySeenSigninViewPreferenceKey)) {
+      prefService->GetBoolean(alreadySeenSigninViewPreferenceKey)) {
     return NO;
   }
   return YES;
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                         accessPoint:(signin_metrics::AccessPoint)accessPoint
-                           presenter:(id<SigninPresenter>)presenter {
+- (instancetype)
+    initWithAccountManagerService:
+        (ChromeAccountManagerService*)accountManagerService
+                      authService:(AuthenticationService*)authService
+                      prefService:(PrefService*)prefService
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                        presenter:(id<SigninPresenter>)presenter {
   self = [super init];
   if (self) {
+    DCHECK(accountManagerService);
     DCHECK(IsSupportedAccessPoint(accessPoint));
+
+    _accountManagerService = accountManagerService;
+    _authService = authService;
+    _prefService = prefService;
     _accessPoint = accessPoint;
-    _browserState = browserState;
     _presenter = presenter;
 
     ChromeIdentity* defaultIdentity = [self defaultIdentity];
@@ -461,10 +470,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
       DisplayedCountPreferenceKey(self.accessPoint);
   if (!displayedCountPreferenceKey)
     return;
-  PrefService* prefs = self.browserState->GetPrefs();
-  int displayedCount = prefs->GetInteger(displayedCountPreferenceKey);
+  int displayedCount =
+      self.prefService->GetInteger(displayedCountPreferenceKey);
   ++displayedCount;
-  prefs->SetInteger(displayedCountPreferenceKey, displayedCount);
+  self.prefService->SetInteger(displayedCountPreferenceKey, displayedCount);
 }
 
 - (void)signinPromoViewIsHidden {
@@ -483,21 +492,21 @@ const char* AlreadySeenSigninViewPreferenceKey(
   self.signinPromoViewVisible = NO;
   if (wasNeverVisible)
     return;
+
   // If the sign-in promo view has been used at least once, it should not be
   // counted as dismissed (even if the sign-in has been canceled).
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
   if (!displayedCountPreferenceKey || !wasUnused)
     return;
+
   // If the sign-in view is removed when the user is authenticated, then the
   // sign-in has been done by another view, and this mediator cannot be counted
   // as being dismissed.
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
-  if (authService->IsAuthenticated())
+  if (self.authService->IsAuthenticated())
     return;
-  PrefService* prefs = self.browserState->GetPrefs();
-  int displayedCount = prefs->GetInteger(displayedCountPreferenceKey);
+  int displayedCount =
+      self.prefService->GetInteger(displayedCountPreferenceKey);
   RecordImpressionsTilDismissHistogramForAccessPoint(self.accessPoint,
                                                      displayedCount);
 }
@@ -520,10 +529,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 // Returns the first ChromeIdentity object.
 - (ChromeIdentity*)defaultIdentity {
-  DCHECK(self.browserState);
-  return ChromeAccountManagerServiceFactory::GetForBrowserState(
-             self.browserState)
-      ->GetDefaultIdentity();
+  DCHECK(self.accountManagerService);
+  return self.accountManagerService->GetDefaultIdentity();
 }
 
 // Sets the Chrome identity to display in the sign-in promo.
@@ -570,8 +577,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
       DisplayedCountPreferenceKey(self.accessPoint);
   if (!displayedCountPreferenceKey)
     return;
-  PrefService* prefs = self.browserState->GetPrefs();
-  int displayedCount = prefs->GetInteger(displayedCountPreferenceKey);
+  int displayedCount =
+      self.prefService->GetInteger(displayedCountPreferenceKey);
   RecordImpressionsTilSigninButtonsHistogramForAccessPoint(self.accessPoint,
                                                            displayedCount);
 }
@@ -694,12 +701,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint);
   DCHECK(alreadySeenSigninViewPreferenceKey);
-  PrefService* prefs = self.browserState->GetPrefs();
-  prefs->SetBoolean(alreadySeenSigninViewPreferenceKey, true);
+  self.prefService->SetBoolean(alreadySeenSigninViewPreferenceKey, true);
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
   if (displayedCountPreferenceKey) {
-    int displayedCount = prefs->GetInteger(displayedCountPreferenceKey);
+    int displayedCount =
+        self.prefService->GetInteger(displayedCountPreferenceKey);
     RecordImpressionsTilXButtonHistogramForAccessPoint(self.accessPoint,
                                                        displayedCount);
   }
