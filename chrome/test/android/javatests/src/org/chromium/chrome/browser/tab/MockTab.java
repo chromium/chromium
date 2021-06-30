@@ -16,6 +16,8 @@ import org.chromium.url.GURL;
  */
 public class MockTab extends TabImpl {
     private GURL mGurlOverride;
+    // TODO(crbug.com/1223963) set mIsInitialized to true when initialize is called
+    private boolean mIsInitialized;
     /**
      * Create a new Tab for testing and initializes Tab UserData objects.
      */
@@ -80,5 +82,14 @@ public class MockTab extends TabImpl {
 
     public void setGurlOverrideForTesting(GURL url) {
         mGurlOverride = url;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return mIsInitialized;
+    }
+
+    public void setIsInitialized(boolean isInitialized) {
+        mIsInitialized = isInitialized;
     }
 }

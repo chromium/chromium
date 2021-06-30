@@ -878,6 +878,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
         MockTab tab = (MockTab) MockTab.createAndInitialize(1, false);
         tab.setGurlOverrideForTesting(TEST_GURL);
+        tab.setIsInitialized(true);
         CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
         TabListMediator.ShoppingPersistedTabDataFetcher fetcher =
                 new TabListMediator.ShoppingPersistedTabDataFetcher(tab, null);
