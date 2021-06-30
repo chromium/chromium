@@ -51280,6 +51280,16 @@ from previous Chrome versions.
   <int value="5" label="OTHER_DEVELOPER">Other Dev</int>
 </enum>
 
+<enum name="LowLatencyStylusLibraryApisList">
+<!-- Value from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="InkOverlay::LowLatencyStylusLibInActiveUse"/>
+  <int value="2" label="GLInkOverlay::LowLatencyStylusLibInActiveUse"/>
+  <int value="3" label="GLInkRenderer::SetProjectionMatrix"/>
+  <int value="4" label="GLInkRenderer::SetViewMatrix"/>
+</enum>
+
 <enum name="MacbookRetryGetDeviceInfosEvent">
   <int value="0"
       label="Provider received zero infos. Stopping service for retry."/>

@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 10
+// Next MinVersion: 12
 
 module arc.mojom;
 
@@ -196,7 +196,43 @@ enum ArcClipboardDragDropEvent {
   kImageDragDropFromArc = 7,
 };
 
-// Next method ID: 11
+// Enumerates variations of Low Latency Stylus Library.
+[Extensible]
+enum LowLatencyStylusLibraryType {
+  [Default] kUnsupported = 0,
+  kCPU = 1,
+  kGPU = 2,
+};
+
+// The prediction target set in Low Latency Stylus Library.
+struct LowLatencyStylusLibPredictionTarget {
+  // Variations of Low Latency Stylus Library.
+  LowLatencyStylusLibraryType type;
+  // Prediction target set in Low Latency Stylus Library.
+  uint32 target;
+};
+
+// Enumerates the API call from ChromeOS Low-latency stylus library, which
+// provides mechanisms to reduce the draw latency for ARC++ app running on
+// ChromeOS.
+[Extensible]
+enum LowLatencyStylusLibApiId {
+  // If the library version doesn't support an API call, the API
+  // call will be recorded as UNSUPPORTED.
+  [Default] kUnsupported = 0,
+
+  // com.google.android.chromeos.lowlatencystylus.InkOverlay
+  kInkOverlayLowLatencyLibInUse = 1,
+
+  // com.google.android.chromeos.lowlatencystylus.gpu.GLInkOverlay
+  kGLInkOverlayLowLatencyLibInUse = 2,
+
+  // com.google.android.chromeos.lowlatencystylus.gpu.GLInkRenderer
+  kGLInkOverlaySetProjectionMatrix = 3,
+  kGLInkOverlaySetViewMatrix = 4,
+};
+
+// Next method ID: 14
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -235,6 +271,14 @@ interface MetricsHost {
   [MinVersion=10] ReportArcSystemHealthUpgrade@11(
     mojo_base.mojom.TimeDelta duration,
     bool packages_deleted);
+
+  // Reports api usage of Low-latency Stylus Library.
+  [MinVersion=11] ReportLowLatencyStylusLibApiUsage@12
+      (LowLatencyStylusLibApiId api_id);
+
+  // Reports prediction target used in Low-latency Stylus Library.
+  [MinVersion=11] ReportLowLatencyStylusLibPredictionTarget@13(
+    LowLatencyStylusLibPredictionTarget prediction_target);
 };
 
 // Next method ID: 3

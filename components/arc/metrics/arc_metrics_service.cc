@@ -13,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -88,6 +89,20 @@ std::string BootTypeToString(mojom::BootType boot_type) {
       return ".FirstBootAfterUpdate";
     case mojom::BootType::REGULAR_BOOT:
       return ".RegularBoot";
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* LowLatencyStylusLibraryTypeToString(
+    mojom::LowLatencyStylusLibraryType library_type) {
+  switch (library_type) {
+    case mojom::LowLatencyStylusLibraryType::kUnsupported:
+      break;
+    case mojom::LowLatencyStylusLibraryType::kCPU:
+      return ".CPU";
+    case mojom::LowLatencyStylusLibraryType::kGPU:
+      return ".GPU";
   }
   NOTREACHED();
   return "";
@@ -419,6 +434,22 @@ void ArcMetricsService::ReportAnr(mojom::AnrPtr anr) {
 
   base::UmaHistogramEnumeration("Arc.Anr." + AnrSourceToTableName(anr->source),
                                 anr->type);
+}
+
+void ArcMetricsService::ReportLowLatencyStylusLibApiUsage(
+    mojom::LowLatencyStylusLibApiId api_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  UMA_HISTOGRAM_ENUMERATION("Arc.LowLatencyStylusLibraryApisCounter", api_id);
+}
+
+void ArcMetricsService::ReportLowLatencyStylusLibPredictionTarget(
+    mojom::LowLatencyStylusLibPredictionTargetPtr prediction_target) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramCounts100(
+      base::StrCat(
+          {"Arc.LowLatencyStylusLibrary.PredictionTarget",
+           LowLatencyStylusLibraryTypeToString(prediction_target->type)}),
+      prediction_target->target);
 }
 
 void ArcMetricsService::OnWindowActivated(

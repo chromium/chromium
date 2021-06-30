@@ -113,6 +113,10 @@ class ArcMetricsService : public KeyedService,
   void ReportClipboardDragDropEvent(
       mojom::ArcClipboardDragDropEvent event_type) override;
   void ReportAnr(mojom::AnrPtr anr) override;
+  void ReportLowLatencyStylusLibApiUsage(
+      mojom::LowLatencyStylusLibApiId api_id) override;
+  void ReportLowLatencyStylusLibPredictionTarget(
+      mojom::LowLatencyStylusLibPredictionTargetPtr prediction_target) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
