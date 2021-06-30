@@ -28,6 +28,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "gin/gin_features.h"
 
@@ -207,13 +208,24 @@ void SetV8FlagsFormatted(const char* format, ...) {
 }
 
 void RunArrayBufferCageReservationExperiment() {
-  // TODO(1218005) remove this function once the experiment has ended.
+  // TODO(1218005) remove this function and windows_version.h include once the
+  // experiment has ended.
 #if defined(ARCH_CPU_64_BITS)
   constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
   constexpr size_t kTeraBytes = 1024 * kGigaBytes;
 
   constexpr size_t kCageMaxSize = 1 * kTeraBytes;
   constexpr size_t kCageMinSize = 8 * kGigaBytes;
+
+#if defined(OS_WIN)
+  // Windows prior to Win10 (or possibly Win8/8.1) appears to create page table
+  // entries when reserving virtual memory, causing unacceptably high memory
+  // consumption (e.g. ~2GB when reserving 1TB). As such, the experiment is
+  // only enabled on Win10.
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    return;
+  }
+#endif
 
   void* reservation = nullptr;
   size_t current_size = kCageMaxSize;
