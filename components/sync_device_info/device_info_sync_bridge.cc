@@ -433,7 +433,6 @@ absl::optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
     }
 
     if (change->type() == EntityChange::ACTION_DELETE) {
-      // This should never get exercised as no client issues tombstones.
       has_changes |= DeleteSpecifics(guid, batch.get());
     } else {
       const DeviceInfoSpecifics& specifics =

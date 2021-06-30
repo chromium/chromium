@@ -22,6 +22,7 @@
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
@@ -1622,6 +1623,39 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldInvokeCallbackOnReadAllMetadata) {
   // Check that the bridge has notified observers even if the local data hasn't
   // been changed.
   EXPECT_EQ(1, change_count());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, ShouldRemoveDeviceInfoOnTombstone) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+  const DeviceInfoSpecifics specifics = CreateSpecifics(1);
+  absl::optional<ModelError> error = bridge()->ApplySyncChanges(
+      bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
+  ASSERT_FALSE(error);
+  ASSERT_EQ(2u, bridge()->GetAllDeviceInfo().size());
+
+  EntityChangeList changes;
+  changes.push_back(EntityChange::CreateDelete(specifics.cache_guid()));
+  error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                                     std::move(changes));
+  ASSERT_FALSE(error);
+
+  EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
+  EXPECT_NE(bridge()->GetAllDeviceInfo().front()->guid(),
+            specifics.cache_guid());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, ShouldIgnoreLocalDeviceInfoTombstone) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+  ASSERT_EQ(1u, bridge()->GetAllDeviceInfo().size());
+
+  EntityChangeList changes;
+  changes.push_back(
+      EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix)));
+  absl::optional<ModelError> error = bridge()->ApplySyncChanges(
+      bridge()->CreateMetadataChangeList(), std::move(changes));
+  ASSERT_FALSE(error);
+
+  EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
 }
 
 }  // namespace
