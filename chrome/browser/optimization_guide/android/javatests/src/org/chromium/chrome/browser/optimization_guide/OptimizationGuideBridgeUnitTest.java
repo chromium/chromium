@@ -98,11 +98,10 @@ public class OptimizationGuideBridgeUnitTest {
     @UiThreadTest
     @Feature({"OptimizationHints"})
     public void testCanApplyOptimization_withoutNativeBridge() {
+        GURL gurl = new GURL(TEST_URL);
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
-        NavigationHandle navHandle =
-                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
 
-        bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
+        bridge.canApplyOptimization(gurl, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
 
         verify(mOptimizationGuideBridgeJniMock, never())
                 .canApplyOptimization(anyLong(), anyObject(), anyInt(),
@@ -118,11 +117,46 @@ public class OptimizationGuideBridgeUnitTest {
     public void testCanApplyOptimization() {
         GURL gurl = new GURL(TEST_URL);
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
-        NavigationHandle navHandle = new NavigationHandle(0, gurl, true, false, false);
 
-        bridge.canApplyOptimization(navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
+        bridge.canApplyOptimization(gurl, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
 
         verify(mOptimizationGuideBridgeJniMock, times(1))
                 .canApplyOptimization(eq(1L), eq(gurl), eq(6), eq(mCallbackMock));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"OptimizationHints"})
+    public void testCanApplyOptimizationAsync_withoutNativeBridge() {
+        GURL gurl = new GURL(TEST_URL);
+        OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
+        NavigationHandle navHandle =
+                new NavigationHandle(0, new GURL(TEST_URL), true, false, false);
+
+        bridge.canApplyOptimizationAsync(
+                navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
+
+        verify(mOptimizationGuideBridgeJniMock, never())
+                .canApplyOptimization(anyLong(), anyObject(), anyInt(),
+                        any(OptimizationGuideBridge.OptimizationGuideCallback.class));
+        verify(mCallbackMock)
+                .onOptimizationGuideDecision(eq(OptimizationGuideDecision.UNKNOWN), isNull());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"OptimizationHints"})
+    public void testCanApplyOptimizationAsync() {
+        GURL gurl = new GURL(TEST_URL);
+        OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
+        NavigationHandle navHandle = new NavigationHandle(0, gurl, true, false, false);
+
+        bridge.canApplyOptimizationAsync(
+                navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
+
+        verify(mOptimizationGuideBridgeJniMock, times(1))
+                .canApplyOptimizationAsync(eq(1L), eq(gurl), eq(6), eq(mCallbackMock));
     }
 }

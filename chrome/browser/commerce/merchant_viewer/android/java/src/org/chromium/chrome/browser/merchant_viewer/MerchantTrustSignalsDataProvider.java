@@ -26,7 +26,7 @@ class MerchantTrustSignalsDataProvider {
     /** Fetches {@link MerchantTrustSignals} through {@link OptimizationGuideBridge}. */
     public void getDataForNavigationHandle(
             NavigationHandle navigationHandle, Callback<MerchantTrustSignals> callback) {
-        sOptimizationGuideBridgeFactory.create().canApplyOptimization(navigationHandle,
+        sOptimizationGuideBridgeFactory.create().canApplyOptimizationAsync(navigationHandle,
                 HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS, (decision, metadata) -> {
                     if (decision != OptimizationGuideDecision.TRUE || metadata == null) {
                         callback.onResult(null);
