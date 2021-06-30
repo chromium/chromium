@@ -81,6 +81,22 @@ using gfx::Quaternion;
 typedef double Vector4[4];
 typedef double Vector3[3];
 
+static void Clamp(double& value) {
+  // TODO(crbug.com/1224320): We should prevent NaN input from outside.
+  // To prevent crashes, the following clamp NaN to 0 is added.
+  if (std::isnan(value))
+    value = 0;
+  value = clampTo<double>(value);
+}
+
+static void ClampMatrix(TransformationMatrix::Matrix4& matrix) {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      Clamp(matrix[i][j]);
+    }
+  }
+}
+
 // inverse(original_matrix, inverse_matrix)
 //
 // calculate the inverse of a 4x4 matrix
@@ -987,15 +1003,15 @@ FloatQuad TransformationMatrix::MapQuad(const FloatQuad& q) const {
 
 TransformationMatrix& TransformationMatrix::ScaleNonUniform(double sx,
                                                             double sy) {
-  matrix_[0][0] *= sx;
-  matrix_[0][1] *= sx;
-  matrix_[0][2] *= sx;
-  matrix_[0][3] *= sx;
+  Clamp(matrix_[0][0] *= sx);
+  Clamp(matrix_[0][1] *= sx);
+  Clamp(matrix_[0][2] *= sx);
+  Clamp(matrix_[0][3] *= sx);
 
-  matrix_[1][0] *= sy;
-  matrix_[1][1] *= sy;
-  matrix_[1][2] *= sy;
-  matrix_[1][3] *= sy;
+  Clamp(matrix_[1][0] *= sy);
+  Clamp(matrix_[1][1] *= sy);
+  Clamp(matrix_[1][2] *= sy);
+  Clamp(matrix_[1][3] *= sy);
   return *this;
 }
 
@@ -1004,10 +1020,10 @@ TransformationMatrix& TransformationMatrix::Scale3d(double sx,
                                                     double sz) {
   ScaleNonUniform(sx, sy);
 
-  matrix_[2][0] *= sz;
-  matrix_[2][1] *= sz;
-  matrix_[2][2] *= sz;
-  matrix_[2][3] *= sz;
+  Clamp(matrix_[2][0] *= sz);
+  Clamp(matrix_[2][1] *= sz);
+  Clamp(matrix_[2][2] *= sz);
+  Clamp(matrix_[2][3] *= sz);
   return *this;
 }
 
@@ -1178,39 +1194,42 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double rx,
 }
 
 TransformationMatrix& TransformationMatrix::Translate(double tx, double ty) {
-  matrix_[3][0] += tx * matrix_[0][0] + ty * matrix_[1][0];
-  matrix_[3][1] += tx * matrix_[0][1] + ty * matrix_[1][1];
-  matrix_[3][2] += tx * matrix_[0][2] + ty * matrix_[1][2];
-  matrix_[3][3] += tx * matrix_[0][3] + ty * matrix_[1][3];
+  Clamp(matrix_[3][0] += tx * matrix_[0][0] + ty * matrix_[1][0]);
+  Clamp(matrix_[3][1] += tx * matrix_[0][1] + ty * matrix_[1][1]);
+  Clamp(matrix_[3][2] += tx * matrix_[0][2] + ty * matrix_[1][2]);
+  Clamp(matrix_[3][3] += tx * matrix_[0][3] + ty * matrix_[1][3]);
   return *this;
 }
 
 TransformationMatrix& TransformationMatrix::Translate3d(double tx,
                                                         double ty,
                                                         double tz) {
-  matrix_[3][0] += tx * matrix_[0][0] + ty * matrix_[1][0] + tz * matrix_[2][0];
-  matrix_[3][1] += tx * matrix_[0][1] + ty * matrix_[1][1] + tz * matrix_[2][1];
-  matrix_[3][2] += tx * matrix_[0][2] + ty * matrix_[1][2] + tz * matrix_[2][2];
-  matrix_[3][3] += tx * matrix_[0][3] + ty * matrix_[1][3] + tz * matrix_[2][3];
+  Clamp(matrix_[3][0] +=
+        tx * matrix_[0][0] + ty * matrix_[1][0] + tz * matrix_[2][0]);
+  Clamp(matrix_[3][1] +=
+        tx * matrix_[0][1] + ty * matrix_[1][1] + tz * matrix_[2][1]);
+  Clamp(matrix_[3][2] +=
+        tx * matrix_[0][2] + ty * matrix_[1][2] + tz * matrix_[2][2]);
+  Clamp(matrix_[3][3] +=
+        tx * matrix_[0][3] + ty * matrix_[1][3] + tz * matrix_[2][3]);
   return *this;
 }
 
 TransformationMatrix& TransformationMatrix::PostTranslate(double tx,
                                                           double ty) {
   if (tx != 0) {
-    matrix_[0][0] += matrix_[0][3] * tx;
-    matrix_[1][0] += matrix_[1][3] * tx;
-    matrix_[2][0] += matrix_[2][3] * tx;
-    matrix_[3][0] += matrix_[3][3] * tx;
+    Clamp(matrix_[0][0] += matrix_[0][3] * tx);
+    Clamp(matrix_[1][0] += matrix_[1][3] * tx);
+    Clamp(matrix_[2][0] += matrix_[2][3] * tx);
+    Clamp(matrix_[3][0] += matrix_[3][3] * tx);
   }
 
   if (ty != 0) {
-    matrix_[0][1] += matrix_[0][3] * ty;
-    matrix_[1][1] += matrix_[1][3] * ty;
-    matrix_[2][1] += matrix_[2][3] * ty;
-    matrix_[3][1] += matrix_[3][3] * ty;
+    Clamp(matrix_[0][1] += matrix_[0][3] * ty);
+    Clamp(matrix_[1][1] += matrix_[1][3] * ty);
+    Clamp(matrix_[2][1] += matrix_[2][3] * ty);
+    Clamp(matrix_[3][1] += matrix_[3][3] * ty);
   }
-
   return *this;
 }
 
@@ -1219,12 +1238,11 @@ TransformationMatrix& TransformationMatrix::PostTranslate3d(double tx,
                                                             double tz) {
   PostTranslate(tx, ty);
   if (tz != 0) {
-    matrix_[0][2] += matrix_[0][3] * tz;
-    matrix_[1][2] += matrix_[1][3] * tz;
-    matrix_[2][2] += matrix_[2][3] * tz;
-    matrix_[3][2] += matrix_[3][3] * tz;
+    Clamp(matrix_[0][2] += matrix_[0][3] * tz);
+    Clamp(matrix_[1][2] += matrix_[1][3] * tz);
+    Clamp(matrix_[2][2] += matrix_[2][3] * tz);
+    Clamp(matrix_[3][2] += matrix_[3][3] * tz);
   }
-
   return *this;
 }
 
@@ -1260,12 +1278,12 @@ TransformationMatrix& TransformationMatrix::ApplyTransformOrigin(double x,
 }
 
 TransformationMatrix& TransformationMatrix::Zoom(double zoom_factor) {
-  matrix_[0][3] /= zoom_factor;
-  matrix_[1][3] /= zoom_factor;
-  matrix_[2][3] /= zoom_factor;
-  matrix_[3][0] *= zoom_factor;
-  matrix_[3][1] *= zoom_factor;
-  matrix_[3][2] *= zoom_factor;
+  Clamp(matrix_[0][3] /= zoom_factor);
+  Clamp(matrix_[1][3] /= zoom_factor);
+  Clamp(matrix_[2][3] /= zoom_factor);
+  Clamp(matrix_[3][0] *= zoom_factor);
+  Clamp(matrix_[3][1] *= zoom_factor);
+  Clamp(matrix_[3][2] *= zoom_factor);
   return *this;
 }
 
@@ -1613,6 +1631,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
 
   SetMatrix(tmp);
 #endif
+  ClampMatrix(matrix_);
   return *this;
 }
 
@@ -1620,12 +1639,12 @@ void TransformationMatrix::MultVecMatrix(double x,
                                          double y,
                                          double& result_x,
                                          double& result_y) const {
-  result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0];
-  result_y = matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1];
+  Clamp(result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0]);
+  Clamp(result_y = matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1]);
   double w = matrix_[3][3] + x * matrix_[0][3] + y * matrix_[1][3];
   if (w != 1 && w != 0) {
-    result_x /= w;
-    result_y /= w;
+    Clamp(result_x /= w);
+    Clamp(result_y /= w);
   }
 }
 
@@ -1635,18 +1654,18 @@ void TransformationMatrix::MultVecMatrix(double x,
                                          double& result_x,
                                          double& result_y,
                                          double& result_z) const {
-  result_x =
-      matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0] + z * matrix_[2][0];
-  result_y =
-      matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1] + z * matrix_[2][1];
-  result_z =
-      matrix_[3][2] + x * matrix_[0][2] + y * matrix_[1][2] + z * matrix_[2][2];
+  Clamp(result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0] +
+                   z * matrix_[2][0]);
+  Clamp(result_y = matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1] +
+                   z * matrix_[2][1]);
+  Clamp(result_z = matrix_[3][2] + x * matrix_[0][2] + y * matrix_[1][2] +
+                   z * matrix_[2][2]);
   double w =
       matrix_[3][3] + x * matrix_[0][3] + y * matrix_[1][3] + z * matrix_[2][3];
   if (w != 1 && w != 0) {
-    result_x /= w;
-    result_y /= w;
-    result_z /= w;
+    Clamp(result_x /= w);
+    Clamp(result_y /= w);
+    Clamp(result_z /= w);
   }
 }
 
@@ -1991,6 +2010,7 @@ void TransformationMatrix::Recompose2D(const Decomposed2dType& decomp) {
 
   // Scale transform.
   Scale3d(decomp.scale_x, decomp.scale_y, 1);
+  DCHECK(!IsInvalidMatrix());
 }
 
 bool TransformationMatrix::IsIntegerTranslation() const {

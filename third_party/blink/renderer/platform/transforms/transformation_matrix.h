@@ -444,6 +444,16 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   bool IsIntegerTranslation() const;
 
+  bool IsInvalidMatrix() const {
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        if (std::isinf(matrix_[i][j]) || std::isnan(matrix_[i][j]))
+          return true;
+      }
+    }
+    return false;
+  }
+
   // Returns true if axis-aligned 2d rects will remain axis-aligned after being
   // transformed by this matrix.
   bool Preserves2dAxisAlignment() const;

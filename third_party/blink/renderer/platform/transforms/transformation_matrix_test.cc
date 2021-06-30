@@ -157,6 +157,61 @@ TEST(TransformationMatrixTest, Multiplication) {
   EXPECT_EQ(expected_atimes_b, a);
 }
 
+TEST(TransformationMatrixTest, ValidRangedMatrix) {
+  double entries[][2] = {
+      /*
+        first entry is initial matrix value
+        second entry is a factor to use transformation operations
+      */
+      {std::numeric_limits<double>::max(),
+       std::numeric_limits<double>::infinity()},
+      {1, std::numeric_limits<double>::infinity()},
+      {-1, std::numeric_limits<double>::infinity()},
+      {1, -std::numeric_limits<double>::infinity()},
+      {
+          std::numeric_limits<double>::max(),
+          std::numeric_limits<double>::max(),
+      },
+      {
+          std::numeric_limits<double>::lowest(),
+          -std::numeric_limits<double>::infinity(),
+      },
+  };
+  for (double* entry : entries) {
+    const double mv = entry[0];
+    const double factor = entry[1];
+
+    TransformationMatrix m(mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv,
+                           mv, mv, mv);
+
+    EXPECT_FALSE(m.Translate(factor, factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+    EXPECT_FALSE(m.Translate3d(factor, factor, factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+
+    EXPECT_FALSE(m.PostTranslate(factor, factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+
+    EXPECT_FALSE(m.Scale(factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+    EXPECT_FALSE(m.Scale3d(factor, factor, factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+
+    EXPECT_FALSE(m.Rotate(factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+    EXPECT_FALSE(m.Zoom(factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+
+    EXPECT_FALSE(m.Skew(factor, factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+    EXPECT_FALSE(m.ApplyPerspective(factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+    EXPECT_FALSE(
+        m.ApplyTransformOrigin(factor, factor, factor).IsInvalidMatrix())
+        << "m: " << m << " factor: " << factor << '\n';
+  }
+}
+
 TEST(TransformationMatrixTest, BasicOperations) {
   // Just some arbitrary matrix that introduces no rounding, and is unlikely
   // to commute with other operations.
