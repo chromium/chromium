@@ -1700,6 +1700,7 @@ TEST_F(MapCoordinatesTest, LocalToAbsoluteTransformFlattens) {
 }
 
 TEST_F(MapCoordinatesTest, Transform3DWithOffset) {
+  ScopedTransformInteropForTest disabled(false);
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0; }
@@ -1722,6 +1723,7 @@ TEST_F(MapCoordinatesTest, Transform3DWithOffset) {
 }
 
 TEST_F(MapCoordinatesTest, Transform3DWithOffset2) {
+  ScopedTransformInteropForTest disabled(false);
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0; }
