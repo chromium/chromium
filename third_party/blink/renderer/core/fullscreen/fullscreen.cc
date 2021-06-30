@@ -277,7 +277,7 @@ bool AllowedToUseFullscreen(const Document& document,
       mojom::blink::PermissionsPolicyFeature::kFullscreen, report_on_failure);
 }
 
-bool AllowedToRequestFullscreen(Document& document) {
+bool AllowedToRequestFullscreen(Document& document, Element& element) {
   //  WebXR DOM Overlay integration, cf.
   //  https://immersive-web.github.io/dom-overlays/
   //
@@ -307,6 +307,12 @@ bool AllowedToRequestFullscreen(Document& document) {
              << ": rejecting change of fullscreen element for XR DOM overlay";
     return false;
   }
+
+  // If the element is already fullscreen, then it is allowed to repeat a
+  // request to fullscreen (possibly on another display) without requiring
+  // user activation.
+  if (element == Fullscreen::FullscreenElementFrom(document))
+    return true;
 
   // An algorithm is allowed to request fullscreen if one of the following is
   // true:
@@ -390,7 +396,7 @@ bool RequestFullscreenConditionsMet(Element& pending, Document& document) {
     return false;
 
   // This algorithm is allowed to request fullscreen.
-  if (!AllowedToRequestFullscreen(document))
+  if (!AllowedToRequestFullscreen(document, pending))
     return false;
 
   return true;
