@@ -5,13 +5,16 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
+import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -33,6 +36,7 @@ public class ContinuousSearchListCoordinator {
     private final SimpleRecyclerViewAdapter mRecyclerViewAdapter;
     private final ObservableSupplier<Tab> mTabSupplier;
     private final PropertyModel mRootViewModel;
+    private final Resources mResources;
 
     public ContinuousSearchListCoordinator(ObservableSupplier<Tab> tabSupplier,
             Callback<VisibilitySettings> setLayoutVisibility, ThemeColorProvider themeColorProvider,
@@ -40,6 +44,7 @@ public class ContinuousSearchListCoordinator {
         mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);
+        mResources = resources;
 
         mRecyclerViewAdapter.registerType(ListItemType.PROVIDER,
                 (parent)
@@ -88,6 +93,7 @@ public class ContinuousSearchListCoordinator {
         LinearLayoutManager layoutManager = new LinearLayoutManager(
                 container.getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new SpaceItemDecoration(mResources));
         recyclerView.setAdapter(mRecyclerViewAdapter);
         recyclerView.addOnScrollListener(new OnScrollListener() {
             @Override
@@ -101,5 +107,26 @@ public class ContinuousSearchListCoordinator {
     void destroy() {
         mTabSupplier.removeObserver(mListMediator);
         mListMediator.destroy();
+    }
+
+    private static class SpaceItemDecoration extends ItemDecoration {
+        private final int mInterPaddingPx;
+        private final int mSidePaddingPx;
+
+        public SpaceItemDecoration(Resources resources) {
+            mInterPaddingPx =
+                    (int) resources.getDimensionPixelSize(R.dimen.chip_list_inter_chip_padding);
+            mSidePaddingPx = (int) resources.getDimensionPixelSize(R.dimen.chip_list_side_padding);
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
+            int position = parent.getChildAdapterPosition(view);
+            boolean isFirst = position == 0;
+            boolean isLast = position == parent.getAdapter().getItemCount() - 1;
+
+            outRect.left = isFirst ? mSidePaddingPx : mInterPaddingPx;
+            outRect.right = isLast ? mSidePaddingPx : mInterPaddingPx;
+        }
     }
 }

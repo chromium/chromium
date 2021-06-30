@@ -201,12 +201,9 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                 .with(ListItemProperties.CLICK_LISTENER,
                         (view) -> handleItemClick(url, resultPosition, /*isProviderLabel=*/false))
                 .with(ListItemProperties.BACKGROUND_COLOR, backgroundColor)
-                .with(ListItemProperties.TITLE_TEXT_STYLE,
-                        useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                                      : R.style.TextAppearance_TextMedium_Primary_Light)
-                .with(ListItemProperties.DESCRIPTION_TEXT_STYLE,
-                        useDarkColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
-                                      : R.style.TextAppearance_TextMedium_Secondary_Light)
+                .with(ListItemProperties.PRIMARY_TEXT_STYLE,
+                        useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipText_Dark
+                                      : R.style.TextAppearance_ContinuousNavigationChipText_Light)
                 .build();
     }
 
@@ -269,12 +266,9 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                                       : R.style.TextAppearance_TextMedium_Primary_Light);
             } else {
                 listItem.model.set(ListItemProperties.BACKGROUND_COLOR, itemBgColor);
-                listItem.model.set(ListItemProperties.TITLE_TEXT_STYLE,
-                        useDarkColors ? R.style.TextAppearance_TextMedium_Primary_Dark
-                                      : R.style.TextAppearance_TextMedium_Primary_Light);
-                listItem.model.set(ListItemProperties.DESCRIPTION_TEXT_STYLE,
-                        useDarkColors ? R.style.TextAppearance_TextMedium_Secondary_Dark
-                                      : R.style.TextAppearance_TextMedium_Secondary_Light);
+                listItem.model.set(ListItemProperties.PRIMARY_TEXT_STYLE,
+                        useDarkColors ? R.style.TextAppearance_ContinuousNavigationChipText_Dark
+                                      : R.style.TextAppearance_ContinuousNavigationChipText_Light);
                 listItem.model.set(ListItemProperties.BORDER_COLOR,
                         useDarkColors ? getColor(R.color.default_icon_color_dark)
                                       : getColor(R.color.default_icon_color_light));

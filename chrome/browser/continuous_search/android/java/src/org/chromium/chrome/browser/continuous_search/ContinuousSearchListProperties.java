@@ -56,12 +56,11 @@ class ContinuousSearchListProperties {
         public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
                 new WritableObjectPropertyKey<>();
         public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
-        public static final WritableIntPropertyKey TITLE_TEXT_STYLE = new WritableIntPropertyKey();
-        public static final WritableIntPropertyKey DESCRIPTION_TEXT_STYLE =
+        public static final WritableIntPropertyKey PRIMARY_TEXT_STYLE =
                 new WritableIntPropertyKey();
 
         static final PropertyKey[] ALL_KEYS = {LABEL, URL, IS_SELECTED, BORDER_COLOR,
-                CLICK_LISTENER, BACKGROUND_COLOR, TITLE_TEXT_STYLE, DESCRIPTION_TEXT_STYLE};
+                CLICK_LISTENER, BACKGROUND_COLOR, PRIMARY_TEXT_STYLE};
     }
 
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();

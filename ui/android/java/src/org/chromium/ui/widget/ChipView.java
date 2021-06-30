@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
@@ -350,6 +351,20 @@ public class ChipView extends LinearLayout {
         } else {
             ApiCompatibilityUtils.setImageTintList(mStartIcon, null);
         }
+    }
+
+    /**
+     * Sets border around the chip. If width is zero, then no border is drawn.
+     * @param width of the border in pixels.
+     * @param color of the border.
+     */
+    public void setBorder(int width, @ColorInt int color) {
+        mRippleBackgroundHelper.setBorder(width, color);
+    }
+
+    @Override
+    public void setBackgroundColor(@ColorInt int color) {
+        mRippleBackgroundHelper.setBackgroundColor(color);
     }
 
     /**

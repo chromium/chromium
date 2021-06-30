@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
-import android.graphics.drawable.GradientDrawable;
+import android.text.TextUtils.TruncateAt;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,14 +16,13 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ChipView;
 import org.chromium.url.GURL;
 
 /**
  * Responsible for binding the {@link PropertyModel} for a search result item to a View.
  */
 class ContinuousSearchListViewBinder {
-    private static final int BORDER_WIDTH = 5;
-
     static void bindProvider(PropertyModel model, View view, PropertyKey propertyKey) {
         if (ProviderProperties.LABEL == propertyKey) {
             TextView textView = view.findViewById(R.id.continuous_search_provider_label);
@@ -46,12 +45,11 @@ class ContinuousSearchListViewBinder {
      * Binds properties related to an individual item within the RecyclerView.
      */
     static void bindListItem(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (ListItemProperties.LABEL == propertyKey) {
-            TextView textView = view.findViewById(R.id.continuous_search_list_item_text);
-            textView.setText(model.get(ListItemProperties.LABEL));
-        } else if (ListItemProperties.URL == propertyKey) {
+        ChipView chipView = view.findViewById(R.id.csn_chip);
+
+        if (ListItemProperties.URL == propertyKey) {
             GURL url = model.get(ListItemProperties.URL);
-            TextView textView = view.findViewById(R.id.continuous_search_list_item_description);
+            TextView textView = chipView.getPrimaryTextView();
 
             String safeUrl = "";
             if (url != null) {
@@ -62,35 +60,28 @@ class ContinuousSearchListViewBinder {
                 safeUrl = UrlFormatter.formatUrlForSecurityDisplay(
                         url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             }
+            textView.setEllipsize(TruncateAt.START);
             textView.setTextDirection(View.TEXT_DIRECTION_LTR);
             textView.setText(safeUrl);
         } else if (ListItemProperties.IS_SELECTED == propertyKey) {
-            setBorder(model, view);
+            setBorder(chipView, model);
         } else if (ListItemProperties.BORDER_COLOR == propertyKey) {
-            setBorder(model, view);
+            setBorder(chipView, model);
         } else if (ListItemProperties.CLICK_LISTENER == propertyKey) {
             view.setOnClickListener(model.get(ListItemProperties.CLICK_LISTENER));
         } else if (ListItemProperties.BACKGROUND_COLOR == propertyKey) {
-            GradientDrawable drawable = (GradientDrawable) view.getBackground();
-            drawable.mutate();
-            drawable.setColor(model.get(ListItemProperties.BACKGROUND_COLOR));
-        } else if (ListItemProperties.TITLE_TEXT_STYLE == propertyKey) {
-            TextView textTitle = view.findViewById(R.id.continuous_search_list_item_text);
-            ApiCompatibilityUtils.setTextAppearance(
-                    textTitle, model.get(ListItemProperties.TITLE_TEXT_STYLE));
-        } else if (ListItemProperties.DESCRIPTION_TEXT_STYLE == propertyKey) {
-            TextView textDescription =
-                    view.findViewById(R.id.continuous_search_list_item_description);
-            ApiCompatibilityUtils.setTextAppearance(
-                    textDescription, model.get(ListItemProperties.DESCRIPTION_TEXT_STYLE));
+            chipView.setBackgroundColor(model.get(ListItemProperties.BACKGROUND_COLOR));
+        } else if (ListItemProperties.PRIMARY_TEXT_STYLE == propertyKey) {
+            ApiCompatibilityUtils.setTextAppearance(chipView.getPrimaryTextView(),
+                    model.get(ListItemProperties.PRIMARY_TEXT_STYLE));
         }
     }
 
-    private static void setBorder(PropertyModel model, View view) {
-        GradientDrawable drawable = (GradientDrawable) view.getBackground();
-        drawable.mutate();
-        drawable.setStroke(model.get(ListItemProperties.IS_SELECTED) ? BORDER_WIDTH : 0,
-                model.get(ListItemProperties.BORDER_COLOR));
+    private static void setBorder(ChipView chipView, PropertyModel model) {
+        chipView.setBorder(chipView.getResources().getDimensionPixelSize(R.dimen.chip_border_width),
+                model.get(ListItemProperties.IS_SELECTED)
+                        ? model.get(ListItemProperties.BORDER_COLOR)
+                        : model.get(ListItemProperties.BACKGROUND_COLOR));
     }
 
     /**
