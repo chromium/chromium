@@ -53,6 +53,7 @@
 #include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
+#include "components/performance_manager/graph/policies/bfcache_policy.h"
 #endif  // !defined(OS_ANDROID)
 
 namespace {
@@ -167,6 +168,12 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
         std::make_unique<
             performance_manager::policies::TabLoadingFrameNavigationPolicy>());
   }
+
+  // TODO(crbug.com/1225070): Consider using this policy on Android.
+#if !defined(OS_ANDROID)
+  graph->PassToGraph(
+      std::make_unique<performance_manager::policies::BFCachePolicy>());
+#endif
 }
 
 content::FeatureObserverClient*

@@ -228,6 +228,10 @@ static_library("performance_manager") {
       "public/decorators/site_data_recorder.h",
       "public/persistence/site_data/feature_usage.h",
       "public/persistence/site_data/site_data_reader.h",
+
+      # TODO(crbug.com/1225070): Consider using this policy on Android.
+      "graph/policies/bfcache_policy.cc",
+      "graph/policies/bfcache_policy.h",
     ]
 
     public_deps += [
@@ -322,6 +326,9 @@ source_set("unit_tests") {
       "persistence/site_data/site_data_writer_unittest.cc",
       "persistence/site_data/unittest_utils.cc",
       "persistence/site_data/unittest_utils.h",
+
+      # TODO(crbug.com/1225070): Consider using this policy on Android.
+      "graph/policies/bfcache_policy_unittest.cc",
     ]
   }
 }
