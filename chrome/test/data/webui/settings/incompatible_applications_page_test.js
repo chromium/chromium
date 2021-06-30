@@ -106,8 +106,8 @@ suite('incompatibleApplicationsHandler', function() {
    */
   function validateList(incompatibleApplications) {
     if (incompatibleApplications.length === 0) {
-      const list =
-          incompatibleApplicationsPage.$$('#incompatible-applications-list');
+      const list = incompatibleApplicationsPage.shadowRoot.querySelector(
+          '#incompatible-applications-list');
       assertEquals('none', list.style.display);
       // The contents of a dom-if that is false no longer receive updates. When
       // there are no applications the parent dom-if becomes false, so only
@@ -180,9 +180,9 @@ suite('incompatibleApplicationsHandler', function() {
 
           // Retrieve the incompatible-application-item and tap it. It should be
           // visible.
-          const item = incompatibleApplicationsPage.$$(
+          const item = incompatibleApplicationsPage.shadowRoot.querySelector(
               '.incompatible-application:not([hidden])');
-          item.$$('.action-button').click();
+          item.shadowRoot.querySelector('.action-button').click();
 
           return incompatibleApplicationsBrowserProxy.whenCalled(
               'startApplicationUninstallation');
@@ -206,9 +206,9 @@ suite('incompatibleApplicationsHandler', function() {
 
           // Retrieve the incompatible-application-item and tap it. It should be
           // visible.
-          const item = incompatibleApplicationsPage.$$(
+          const item = incompatibleApplicationsPage.shadowRoot.querySelector(
               '.incompatible-application:not([hidden])');
-          item.$$('.action-button').click();
+          item.shadowRoot.querySelector('.action-button').click();
 
           return incompatibleApplicationsBrowserProxy.whenCalled('openURL');
         })
@@ -257,7 +257,9 @@ suite('incompatibleApplicationsHandler', function() {
       validateList(incompatibleApplicationsTestList);
 
 
-      const isDoneSection = incompatibleApplicationsPage.$$('#is-done-section');
+      const isDoneSection =
+          incompatibleApplicationsPage.shadowRoot.querySelector(
+              '#is-done-section');
       assertTrue(isDoneSection.hidden);
 
       // Send the event.

@@ -17,10 +17,10 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
 import {ChromeCleanupRemovalListItem} from './items_to_remove_list.js';
@@ -130,181 +130,202 @@ let ChromeCleanerScannerResults;
  *      ... other pages ...
  *    </iron-animated-pages>
  */
-Polymer({
-  is: 'settings-chrome-cleanup-page',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsChromeCleanupPageElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+/** @polymer */
+class SettingsChromeCleanupPageElement extends
+    SettingsChromeCleanupPageElementBase {
+  static get is() {
+    return 'settings-chrome-cleanup-page';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    title_: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
-    /** @private */
-    explanation_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      title_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    isWaitingForResult_: {
-      type: Boolean,
-      value: '',
-    },
+      /** @private */
+      explanation_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    showActionButton_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      isWaitingForResult_: {
+        type: Boolean,
+        value: '',
+      },
 
-    /** @private */
-    cleanupEnabled_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @private */
+      showActionButton_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    actionButtonLabel_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      cleanupEnabled_: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private */
-    showExplanation_: {
-      type: Boolean,
-      computed: 'computeShowExplanation_(explanation_)',
-    },
+      /** @private */
+      actionButtonLabel_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    showLogsPermission_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      showExplanation_: {
+        type: Boolean,
+        computed: 'computeShowExplanation_(explanation_)',
+      },
 
-    /** @private */
-    showNotificationPermission_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      showLogsPermission_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    showItemsToRemove_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      showNotificationPermission_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    itemsToRemoveSectionExpanded_: {
-      type: Boolean,
-      value: false,
-      observer: 'itemsToRemoveSectionExpandedChanged_',
-    },
+      /** @private */
+      showItemsToRemove_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    showItemsLinkLabel_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      itemsToRemoveSectionExpanded_: {
+        type: Boolean,
+        value: false,
+        observer: 'itemsToRemoveSectionExpandedChanged_',
+      },
 
-    /** @private */
-    showingAllFiles_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      showItemsLinkLabel_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      showingAllFiles_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {!ChromeCleanerScannerResults} */
+      scannerResults_: {
+        type: Array,
+        value() {
+          return {'files': [], 'registryKeys': []};
+        },
+      },
+
+      /** @private */
+      hasFilesToShow_: {
+        type: Boolean,
+        computed: 'computeHasFilesToShow_(scannerResults_)',
+      },
+
+      /** @private */
+      hasRegistryKeysToShow_: {
+        type: Boolean,
+        computed: 'computeHasRegistryKeysToShow_(scannerResults_)',
+      },
+
+      /** @private {chrome.settingsPrivate.PrefObject} */
+      logsUploadPref_: {
+        type: Object,
+        value() {
+          return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+        },
+      },
+
+      /** @private */
+      isPoweredByPartner_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Virtual pref that's attached to the notification checkbox.
+       * @private {!chrome.settingsPrivate.PrefObject}
+       */
+      notificationEnabledPref_: {
+        type: Object,
+        value() {
+          return /** @type {chrome.settingsPrivate.PrefObject} */ ({
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          });
+        },
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /** @private {!ChromeCleanerScannerResults} */
-    scannerResults_: {
-      type: Array,
-      value() {
-        return {'files': [], 'registryKeys': []};
-      },
-    },
+    this.emptyChromeCleanerScannerResults_ = {'files': [], 'registryKeys': []};
 
-    /** @private */
-    hasFilesToShow_: {
-      type: Boolean,
-      computed: 'computeHasFilesToShow_(scannerResults_)',
-    },
+    /** @private {?ChromeCleanupProxy} */
+    this.browserProxy_ = null;
 
-    /** @private */
-    hasRegistryKeysToShow_: {
-      type: Boolean,
-      computed: 'computeHasRegistryKeysToShow_(scannerResults_)',
-    },
-
-    /** @private {chrome.settingsPrivate.PrefObject} */
-    logsUploadPref_: {
-      type: Object,
-      value() {
-        return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
-      },
-    },
-
-    /** @private */
-    isPoweredByPartner_: {
-      type: Boolean,
-      value: false,
-    },
+    /** @private {?function()} */
+    this.doAction_ = null;
 
     /**
-     * Virtual pref that's attached to the notification checkbox.
-     * @private {!chrome.settingsPrivate.PrefObject}
+     * @private {?Map<ChromeCleanerCardState, !ChromeCleanupCardComponents>}
      */
-    notificationEnabledPref_: {
-      type: Object,
-      value() {
-        return /** @type {chrome.settingsPrivate.PrefObject} */ ({
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        });
-      },
-    },
-  },
+    this.cardStateToComponentsMap_ = null;
 
-  /** @private {!ChromeCleanerScannerResults} */
-  emptyChromeCleanerScannerResults_: {'files': [], 'registryKeys': []},
+    /** @private {ChromeCleanupOngoingAction} */
+    this.ongoingAction_ = ChromeCleanupOngoingAction.NONE;
 
-  /** @private {?ChromeCleanupProxy} */
-  browserProxy_: null,
-
-  /** @private {?function()} */
-  doAction_: null,
-
-  /**
-   * @private {?Map<ChromeCleanerCardState,
-   *                 !ChromeCleanupCardComponents>}
-   */
-  cardStateToComponentsMap_: null,
-
-  /** @private {ChromeCleanupOngoingAction} */
-  ongoingAction_: ChromeCleanupOngoingAction.NONE,
-
-  /**
-   * If true, the scan offered view is rendered on state idle, regardless of
-   * the idle reason received from the cleaner controller. The goal is to
-   * ignore previous interactions (such as completed cleanups) performed on
-   * other tabs or if this tab is reloaded.
-   * Set to false whenever there is a transition to a non-idle state while the
-   * current tab is open.
-   * @private {boolean}
-   */
-  renderScanOfferedByDefault_: true,
+    /**
+     * If true; the scan offered view is rendered on state idle, regardless of
+     * the idle reason received from the cleaner controller. The goal is to
+     * ignore previous interactions (such as completed cleanups) performed on
+     * other tabs or if this tab is reloaded.
+     * Set to false whenever there is a transition to a non-idle state while the
+     * current tab is open.
+     * @private {boolean}
+     */
+    this.renderScanOfferedByDefault_ = true;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.browserProxy_ = ChromeCleanupProxyImpl.getInstance();
     this.cardStateToComponentsMap_ = this.buildCardStateToComponentsMap_();
 
@@ -324,7 +345,7 @@ Polymer({
         'chrome-cleanup-enabled-change',
         this.onCleanupEnabledChange_.bind(this));
     this.browserProxy_.registerChromeCleanerObserver();
-  },
+  }
 
   /**
    * Implements the action for the only visible button in the UI, which can be
@@ -333,7 +354,7 @@ Polymer({
    */
   proceed_() {
     this.doAction_();
-  },
+  }
 
   /**
    * Notifies Chrome that the details section was opened or closed.
@@ -343,7 +364,7 @@ Polymer({
     if (!oldVal && newVal) {
       this.browserProxy_.notifyShowDetails(this.itemsToRemoveSectionExpanded_);
     }
-  },
+  }
 
   /**
    * @param {string} explanation
@@ -352,7 +373,7 @@ Polymer({
    */
   computeShowExplanation_(explanation) {
     return explanation !== '';
-  },
+  }
 
   /**
    * Returns true if there are files to show to the user.
@@ -363,7 +384,7 @@ Polymer({
    */
   computeHasFilesToShow_(scannerResults) {
     return scannerResults.files.length > 0;
-  },
+  }
 
   /**
    * Returns true if user-initiated cleanups are enabled and there are
@@ -375,7 +396,7 @@ Polymer({
    */
   computeHasRegistryKeysToShow_(scannerResults) {
     return scannerResults.registryKeys.length > 0;
-  },
+  }
 
   /**
    * Listener of event 'chrome-cleanup-on-idle'.
@@ -432,7 +453,7 @@ Polymer({
       default:
         assert(false, `Unknown idle reason: ${idleReason}`);
     }
-  },
+  }
 
   /**
    * Listener of event 'chrome-cleanup-on-scanning'.
@@ -445,7 +466,7 @@ Polymer({
     this.scannerResults_ = this.emptyChromeCleanerScannerResults_;
     this.renderScanOfferedByDefault_ = false;
     this.renderCleanupCard_(ChromeCleanerCardState.SCANNING);
-  },
+  }
 
   /**
    * Listener of event 'chrome-cleanup-on-infected'.
@@ -463,7 +484,7 @@ Polymer({
     this.scannerResults_ = scannerResults;
     this.updateShowItemsLinklabel_();
     this.renderCleanupCard_(ChromeCleanerCardState.CLEANUP_OFFERED);
-  },
+  }
 
   /**
    * Listener of event 'chrome-cleanup-on-cleaning'.
@@ -482,7 +503,7 @@ Polymer({
     this.scannerResults_ = scannerResults;
     this.updateShowItemsLinklabel_();
     this.renderCleanupCard_(ChromeCleanerCardState.CLEANING);
-  },
+  }
 
   /**
    * Listener of event 'chrome-cleanup-on-reboot-required'.
@@ -495,7 +516,7 @@ Polymer({
     this.scannerResults_ = this.emptyChromeCleanerScannerResults_;
     this.renderScanOfferedByDefault_ = false;
     this.renderCleanupCard_(ChromeCleanerCardState.REBOOT_REQUIRED);
-  },
+  }
 
   /**
    * Renders the cleanup card given the state and list of files.
@@ -511,7 +532,7 @@ Polymer({
     this.explanation_ = components.explanation || '';
     this.updateActionButton_(components.actionButton);
     this.updateCardFlags_(components.flags);
-  },
+  }
 
   /**
    * Updates the action button on the cleanup card as the action expected for
@@ -530,7 +551,7 @@ Polymer({
       this.actionButtonLabel_ = actionButton.label;
       this.doAction_ = actionButton.doAction;
     }
-  },
+  }
 
   /**
    * Updates boolean flags corresponding to optional components to be rendered
@@ -558,7 +579,7 @@ Polymer({
     if (!this.showExplanation_ || !this.showItemsToRemove_) {
       this.itemsToRemoveSectionExpanded_ = false;
     }
-  },
+  }
 
   /**
    * @param {boolean} enabled Whether cleanup is enabled.
@@ -566,7 +587,7 @@ Polymer({
    */
   onCleanupEnabledChange_(enabled) {
     this.cleanupEnabled_ = enabled;
-  },
+  }
 
   /**
    * Sends an action to the browser proxy to start scanning.
@@ -576,7 +597,7 @@ Polymer({
     this.browserProxy_.startScanning(
         this.$.chromeCleanupLogsUploadControl.checked,
         this.$.chromeCleanupShowNotificationControl.checked);
-  },
+  }
 
   /**
    * Sends an action to the browser proxy to start the cleanup.
@@ -585,7 +606,7 @@ Polymer({
   startCleanup_() {
     this.browserProxy_.startCleanup(
         this.$.chromeCleanupLogsUploadControl.checked);
-  },
+  }
 
   /**
    * Sends an action to the browser proxy to restart the machine.
@@ -593,7 +614,7 @@ Polymer({
    */
   restartComputer_() {
     this.browserProxy_.restartComputer();
-  },
+  }
 
   /**
    * Updates the label for the collapsed detailed view. If user-initiated
@@ -608,7 +629,7 @@ Polymer({
             this.scannerResults_.files.length +
             this.scannerResults_.registryKeys.length)
         .then(setShowItemsLabel);
-  },
+  }
 
   /**
    * Returns the map of card states to components to be rendered.
@@ -734,7 +755,7 @@ Polymer({
         },
       ],
     ]);
-  },
+  }
 
   /**
    * @param {!Array<string>} list
@@ -743,7 +764,7 @@ Polymer({
    */
   getListEntriesFromStrings_(list) {
     return list.map(entry => ({text: entry, highlightSuffix: null}));
-  },
+  }
 
   /**
    * @param {!Array<ChromeCleanupFilePath>} paths
@@ -753,5 +774,8 @@ Polymer({
   getListEntriesFromFilePaths_(paths) {
     return paths.map(
         path => ({text: path.dirname, highlightSuffix: path.basename}));
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsChromeCleanupPageElement.is, SettingsChromeCleanupPageElement);

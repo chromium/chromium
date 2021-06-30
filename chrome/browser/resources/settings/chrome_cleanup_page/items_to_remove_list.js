@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import '../settings_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
 
@@ -45,63 +45,71 @@ export const CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW = 4;
  *        items-to-show="[[filesToShow]]">
  *    </items-to-remove-list>
  */
-Polymer({
-  is: 'items-to-remove-list',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ItemsToRemoveListElement extends PolymerElement {
+  static get is() {
+    return 'items-to-remove-list';
+  }
 
-  properties: {
-    title: {
-      type: String,
-      value: '',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!Array<ChromeCleanupRemovalListItem>} */
-    itemsToShow: {
-      type: Array,
-      observer: 'updateVisibleState_',
-    },
+  static get properties() {
+    return {
+      title: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * If true, all items from |itemsToShow| will be presented on the card,
-     * and the "show more" link will be omitted.
-     */
-    expanded_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {!Array<ChromeCleanupRemovalListItem>} */
+      itemsToShow: {
+        type: Array,
+        observer: 'updateVisibleState_',
+      },
 
-    /**
-     * The first |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW| items of |itemsToShow|
-     * if the list is longer than |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW|.
-     * @private {?Array<ChromeCleanupRemovalListItem>}
-     */
-    initialItems_: Array,
+      /**
+       * If true, all items from |itemsToShow| will be presented on the card,
+       * and the "show more" link will be omitted.
+       */
+      expanded_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * The remaining items to be presented that are not included in
-     * |initialItems_|. Items in this list are only shown to the user if
-     * |expanded_| is true.
-     * @private {?Array<ChromeCleanupRemovalListItem>}
-     */
-    remainingItems_: Array,
+      /**
+       * The first |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW| items of |itemsToShow|
+       * if the list is longer than |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW|.
+       * @private {?Array<ChromeCleanupRemovalListItem>}
+       */
+      initialItems_: Array,
 
-    /**
-     * The text for the "show more" link available if not all files are
-     * visible in the card.
-     * @private
-     */
-    moreItemsLinkText_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * The remaining items to be presented that are not included in
+       * |initialItems_|. Items in this list are only shown to the user if
+       * |expanded_| is true.
+       * @private {?Array<ChromeCleanupRemovalListItem>}
+       */
+      remainingItems_: Array,
+
+      /**
+       * The text for the "show more" link available if not all files are
+       * visible in the card.
+       * @private
+       */
+      moreItemsLinkText_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   /** @private */
   expandList_() {
     this.expanded_ = true;
     this.moreItemsLinkText_ = '';
-  },
+  }
 
   /**
    * Decides which elements will be visible in the card and if the "show more"
@@ -138,7 +146,7 @@ Polymer({
         .then(linkText => {
           this.moreItemsLinkText_ = linkText;
         });
-  },
+  }
 
   /**
    * Returns the class for the <li> elements that correspond to the items
@@ -147,7 +155,7 @@ Polymer({
    */
   remainingItemsClass_(expanded) {
     return expanded ? 'visible-item' : 'hidden-item';
-  },
+  }
 
   /**
    * @param {ChromeCleanupRemovalListItem} item
@@ -156,5 +164,7 @@ Polymer({
    */
   hasHighlightSuffix_(item) {
     return item.highlightSuffix !== null;
-  },
-});
+  }
+}
+
+customElements.define(ItemsToRemoveListElement.is, ItemsToRemoveListElement);

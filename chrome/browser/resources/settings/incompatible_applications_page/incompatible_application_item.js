@@ -37,48 +37,62 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import '../settings_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionTypes, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
 
-Polymer({
-  is: 'incompatible-application-item',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const IncompatibleApplicationItemElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class IncompatibleApplicationItemElement extends
+    IncompatibleApplicationItemElementBase {
+  static get is() {
+    return 'incompatible-application-item';
+  }
 
-  properties: {
-    /**
-     * The name of the application to be displayed. Also used for the UNINSTALL
-     * action, where the name is passed to the startApplicationUninstallation()
-     * call.
-     */
-    applicationName: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The type of the action to be taken on this incompatible application. Must
-     * be one of BlacklistMessageType in
-     * chrome/browser/win/conflicts/proto/module_list.proto.
-     * @type {!ActionTypes}
-     */
-    actionType: Number,
+  static get properties() {
+    return {
+      /**
+       * The name of the application to be displayed. Also used for the
+       * UNINSTALL action, where the name is passed to the
+       * startApplicationUninstallation() call.
+       */
+      applicationName: String,
 
-    /**
-     * For the actions MORE_INFO and UPGRADE, this is the URL that must be
-     * opened when the action button is tapped.
-     */
-    actionUrl: String,
-  },
+      /**
+       * The type of the action to be taken on this incompatible application.
+       * Must be one of BlacklistMessageType in
+       * chrome/browser/win/conflicts/proto/module_list.proto.
+       * @type {!ActionTypes}
+       */
+      actionType: Number,
 
-  /** @private {IncompatibleApplicationsBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * For the actions MORE_INFO and UPGRADE, this is the URL that must be
+       * opened when the action button is tapped.
+       */
+      actionUrl: String,
+    };
+  }
 
-  /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!IncompatibleApplicationsBrowserProxy} */
     this.browserProxy_ = IncompatibleApplicationsBrowserProxyImpl.getInstance();
-  },
+  }
 
   /**
    * Executes the action for this incompatible application, depending on
@@ -95,7 +109,7 @@ Polymer({
     } else {
       assertNotReached();
     }
-  },
+  }
 
   /**
    * @return {string} The label that should be applied to the action button.
@@ -112,5 +126,8 @@ Polymer({
       return this.i18n('incompatibleApplicationsUpdateButton');
     }
     assertNotReached();
-  },
-});
+  }
+}
+
+customElements.define(
+    IncompatibleApplicationItemElement.is, IncompatibleApplicationItemElement);
