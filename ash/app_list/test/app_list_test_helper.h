@@ -15,6 +15,7 @@ namespace ash {
 class AppListBubbleSearchPage;
 class AppListControllerImpl;
 class AppListView;
+class ScrollableAppsGridView;
 class SearchBoxView;
 enum class AppListViewState;
 
@@ -69,6 +70,7 @@ class AppListTestHelper {
 
   // Bubble launcher helpers.
   SearchBoxView* GetBubbleSearchBoxView();
+  ScrollableAppsGridView* GetScrollableAppsGridView();
   AppListBubbleSearchPage* GetBubbleSearchPage();
 
   TestAppListClient* app_list_client() { return app_list_client_.get(); }

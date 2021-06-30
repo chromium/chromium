@@ -868,8 +868,8 @@ bool AppsGridView::OnKeyPressed(const ui::KeyEvent& event) {
   if (!IsUnhandledUpDownKeyEvent(event))
     return false;
 
-  return HandleVerticalFocusMovement(event.key_code() ==
-                                     ui::VKEY_UP /* arrow_up */);
+  const bool arrow_up = event.key_code() == ui::VKEY_UP;
+  return HandleVerticalFocusMovement(arrow_up);
 }
 
 bool AppsGridView::OnKeyReleased(const ui::KeyEvent& event) {
@@ -1564,7 +1564,8 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
   if (target_page < 0) {
     // Move focus up outside the apps grid if target page is negative.
     views::View* v = GetFocusManager()->GetNextFocusableView(
-        view_model_.view_at(0), nullptr, true, false);
+        view_model_.view_at(0), /*starting_widget=*/nullptr, /*reverse=*/true,
+        /*dont_loop=*/false);
     DCHECK(v);
     v->RequestFocus();
     return true;
@@ -1573,8 +1574,9 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
   if (target_page >= pagination_model_.total_pages()) {
     // Move focus down outside the apps grid if target page is beyond range.
     views::View* v = GetFocusManager()->GetNextFocusableView(
-        view_model_.view_at(view_model_.view_size() - 1), nullptr, false,
-        false);
+        view_model_.view_at(view_model_.view_size() - 1),
+        /*starting_widget=*/nullptr, /*reverse=*/false,
+        /*dont_loop=*/false);
     DCHECK(v);
     v->RequestFocus();
     return true;

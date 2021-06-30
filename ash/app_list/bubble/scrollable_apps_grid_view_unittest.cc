@@ -7,14 +7,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/bubble/app_list_bubble_apps_page.h"
-#include "ash/app_list/bubble/app_list_bubble_view.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/constants/ash_features.h"
@@ -25,19 +23,6 @@
 
 namespace ash {
 namespace {
-
-ScrollableAppsGridView* GetScrollableAppsGridView() {
-  return Shell::Get()
-      ->app_list_controller()
-      ->bubble_presenter_for_test()
-      ->bubble_view_for_test()
-      ->apps_page_for_test()
-      ->scrollable_apps_grid_view_for_test();
-}
-
-void ShowAppList() {
-  Shell::Get()->app_list_controller()->ShowAppList();
-}
 
 void AddAppListItem(const std::string& id) {
   Shell::Get()->app_list_controller()->GetModel()->AddItem(
@@ -65,6 +50,8 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     Shell::Get()->app_list_controller()->SetClient(&app_list_client_);
   }
 
+  // TODO(crbug.com/1222777): Convert the methods below to use
+  // GetEventGenerator().
   void SimulateKeyPress(ui::KeyboardCode key_code) {
     SimulateKeyPress(key_code, ui::EF_NONE);
   }
@@ -77,6 +64,18 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   void SimulateKeyReleased(ui::KeyboardCode key_code, int flags) {
     ui::KeyEvent key_event(ui::ET_KEY_RELEASED, key_code, flags);
     GetScrollableAppsGridView()->OnKeyReleased(key_event);
+  }
+
+  // Simulates typing a key.
+  void PressAndReleaseKey(ui::KeyboardCode key) {
+    GetEventGenerator()->PressKey(key, ui::EF_NONE);
+    GetEventGenerator()->ReleaseKey(key, ui::EF_NONE);
+  }
+
+  void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
+
+  ScrollableAppsGridView* GetScrollableAppsGridView() {
+    return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -126,6 +125,59 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   ASSERT_EQ(2u, item_list->item_count());
   EXPECT_EQ("id2", item_list->item_at(0)->id());
   EXPECT_EQ("id1", item_list->item_at(1)->id());
+}
+
+TEST_F(ScrollableAppsGridViewTest, LeftAndRightArrowKeysMoveSelection) {
+  PopulateApps(2);
+  ShowAppList();
+
+  auto* apps_grid_view = GetScrollableAppsGridView();
+  AppListItemView* item1 = apps_grid_view->GetItemViewAt(0);
+  AppListItemView* item2 = apps_grid_view->GetItemViewAt(1);
+
+  apps_grid_view->GetFocusManager()->SetFocusedView(item1);
+  EXPECT_TRUE(item1->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  EXPECT_FALSE(item1->HasFocus());
+  EXPECT_TRUE(item2->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_LEFT);
+  EXPECT_TRUE(item1->HasFocus());
+  EXPECT_FALSE(item2->HasFocus());
+}
+
+TEST_F(ScrollableAppsGridViewTest, ArrowKeysCanMoveFocusOutOfGrid) {
+  PopulateApps(2);
+  ShowAppList();
+
+  auto* apps_grid_view = GetScrollableAppsGridView();
+  AppListItemView* item1 = apps_grid_view->GetItemViewAt(0);
+  AppListItemView* item2 = apps_grid_view->GetItemViewAt(1);
+
+  // Moving left from the first item removes focus from the grid.
+  apps_grid_view->GetFocusManager()->SetFocusedView(item1);
+  PressAndReleaseKey(ui::VKEY_LEFT);
+  EXPECT_FALSE(item1->HasFocus());
+  EXPECT_FALSE(item2->HasFocus());
+
+  // Moving up from the first item removes focus from the grid.
+  apps_grid_view->GetFocusManager()->SetFocusedView(item1);
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_FALSE(item1->HasFocus());
+  EXPECT_FALSE(item2->HasFocus());
+
+  // Moving right from the last item removes focus from the grid.
+  apps_grid_view->GetFocusManager()->SetFocusedView(item2);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  EXPECT_FALSE(item1->HasFocus());
+  EXPECT_FALSE(item2->HasFocus());
+
+  // Moving down from the last item removes focus from the grid.
+  apps_grid_view->GetFocusManager()->SetFocusedView(item2);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(item1->HasFocus());
+  EXPECT_FALSE(item2->HasFocus());
 }
 
 // Tests that histograms are recorded when apps are moved with control+arrow.

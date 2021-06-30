@@ -116,6 +116,10 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
   set_color(AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kOpaque));
 
+  // Arrow left/right and up/down triggers the same focus movement as
+  // tab/shift+tab.
+  SetEnableArrowKeyTraversal(true);
+
   auto* layout = SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
@@ -190,8 +194,8 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
 }
 
 void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
-  // TODO(crbug.com/1216082): Keyboard navigation for bubble launcher.
-  NOTIMPLEMENTED_LOG_ONCE();
+  // Nothing to do. Search box starts focused, and FocusManager handles arrow
+  // key traversal from there.
 }
 
 bool AppListBubbleView::CanSelectSearchResults() {

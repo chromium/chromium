@@ -56,15 +56,12 @@ testing::AssertionResult IsNear(const gfx::Point& a, const gfx::Point& b) {
 }
 
 void AddAppItems(int num_apps) {
-  int num_apps_already_added = Shell::Get()
-                                   ->app_list_controller()
-                                   ->GetModel()
-                                   ->top_level_item_list()
-                                   ->item_count();
+  auto* controller = Shell::Get()->app_list_controller();
+  int num_apps_already_added =
+      controller->GetModel()->top_level_item_list()->item_count();
   for (int i = 0; i < num_apps; i++) {
-    Shell::Get()->app_list_controller()->GetModel()->AddItem(
-        std::make_unique<AppListItem>(
-            /*app_id=*/base::NumberToString(i + num_apps_already_added)));
+    controller->GetModel()->AddItem(std::make_unique<AppListItem>(
+        /*app_id=*/base::NumberToString(i + num_apps_already_added)));
   }
 }
 
@@ -254,14 +251,27 @@ TEST_F(AppListBubbleViewTest, CanSelectSearchResults) {
   EXPECT_TRUE(view->CanSelectSearchResults());
 }
 
-TEST_F(AppListBubbleViewTest, KeyboardNavigation) {
+TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToApps) {
+  // Add an app, but no "Continue" suggestions.
+  AddAppItems(1);
   ShowAppList();
-  PressAndReleaseKey(ui::VKEY_DOWN);
-  // No crash.
-  PressAndReleaseKey(ui::VKEY_UP);
-  // No crash.
 
-  // TODO(crbug.com/1216082): More tests when keyboard navigation works.
+  auto* apps_grid_view = GetAppListTestHelper()->GetScrollableAppsGridView();
+  AppListItemView* app_item = apps_grid_view->GetItemViewAt(0);
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+
+  // Pressing down arrow moves focus into apps.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(apps_grid_view->IsSelectedView(app_item));
+  EXPECT_TRUE(app_item->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(apps_grid_view->has_selected_view());
+  EXPECT_FALSE(app_item->HasFocus());
 }
 
 TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {

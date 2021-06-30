@@ -1276,6 +1276,10 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
 
   keyboard_traversal_engaged_ = engaged;
 
+  // No need to schedule paint for bubble presenter.
+  if (bubble_presenter_ && bubble_presenter_->IsShowing())
+    return;
+
   views::View* focused_view =
       fullscreen_presenter_->GetView()->GetFocusManager()->GetFocusedView();
 

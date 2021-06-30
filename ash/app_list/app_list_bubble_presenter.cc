@@ -52,6 +52,9 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   controller_->OnVisibilityChanged(/*visible=*/true, display_id);
   bubble_view_->FocusSearchBox();  // Must happen after widget creation.
 
+  // Bubble launcher is always keyboard traversable.
+  controller_->SetKeyboardTraversalMode(true);
+
   // Set up event filter to close the bubble for clicks outside the bubble that
   // don't cause window activation changes (e.g. clicks on wallpaper or blank
   // areas of shelf).
@@ -76,6 +79,11 @@ void AppListBubblePresenter::Dismiss() {
   DVLOG(1) << __PRETTY_FUNCTION__;
   if (!bubble_widget_)
     return;
+
+  // Reset keyboard traversal in case the user switches to tablet launcher.
+  // Must happen before widget is destroyed.
+  controller_->SetKeyboardTraversalMode(false);
+
   const int64_t display_id = GetDisplayId();
   controller_->OnVisibilityWillChange(/*visible=*/false, display_id);
   bubble_widget_->CloseNow();

@@ -33,11 +33,10 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
   views::ScrollView* scroll_view() { return scroll_view_; }
 
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
-  ScrollableAppsGridView* scrollable_apps_grid_view_for_test() {
-    return scrollable_apps_grid_view_;
-  }
 
  private:
+  friend class AppListTestHelper;
+
   RecentAppsView* recent_apps_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;

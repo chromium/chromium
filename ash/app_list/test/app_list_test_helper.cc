@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 #include "ash/app_list/bubble/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/shell.h"
@@ -90,6 +91,13 @@ SearchBoxView* AppListTestHelper::GetBubbleSearchBoxView() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
       ->search_box_view_for_test();
+}
+
+ScrollableAppsGridView* AppListTestHelper::GetScrollableAppsGridView() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->apps_page_for_test()
+      ->scrollable_apps_grid_view_;
 }
 
 AppListBubbleSearchPage* AppListTestHelper::GetBubbleSearchPage() {
