@@ -42,6 +42,7 @@ class ContentProtectionAsh : public aura::WindowObserver,
                               EnableWindowProtectionCallback callback) override;
   void QueryWindowStatus(const std::string& window_id,
                          QueryWindowStatusCallback callback) override;
+  void GetSystemSalt(GetSystemSaltCallback callback) override;
 
  private:
   // If an OutputProtectionDelegate already exists, returns it. Otherwise

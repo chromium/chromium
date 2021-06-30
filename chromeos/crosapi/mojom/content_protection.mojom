@@ -49,4 +49,11 @@ interface ContentProtection {
   //   QueryStatus().
   EnableWindowProtection@1(string window_id, uint32 desired_protection_mask) =>
       (bool success);
+
+  // Returns the system hash in hex encoded ascii. This may return an empty
+  // string on error.
+  // This intentionally mirrors the existing SystemSaltGetter API to avoid
+  // unnecessary conversions on both sides of the crosapi interface.
+  [MinVersion=1]
+  GetSystemSalt@2() => (string salt);
 };

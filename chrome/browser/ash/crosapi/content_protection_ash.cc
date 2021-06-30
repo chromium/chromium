@@ -6,6 +6,7 @@
 
 #include "ash/display/output_protection_delegate.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chromeos/cryptohome/system_salt_getter.h"
 
 namespace crosapi {
 
@@ -66,6 +67,10 @@ void ContentProtectionAsh::QueryWindowStatus(
   delegate->QueryStatus(
       base::BindOnce(&ContentProtectionAsh::ExecuteWindowStatusCallback,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContentProtectionAsh::GetSystemSalt(GetSystemSaltCallback callback) {
+  chromeos::SystemSaltGetter::Get()->GetSystemSalt(std::move(callback));
 }
 
 void ContentProtectionAsh::OnWindowDestroyed(aura::Window* window) {

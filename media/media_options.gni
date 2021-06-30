@@ -161,7 +161,7 @@ declare_args() {
   # Enable Storage ID which is used by CDMs. This is only available with chrome
   # branding, but may be overridden by other embedders.
   enable_cdm_storage_id = enable_library_cdms && is_chrome_branded &&
-                          (is_win || is_mac || is_chromeos_ash)
+                          (is_win || is_mac || is_chromeos)
 
   # If |enable_cdm_storage_id| is set, then an implementation specific key
   # must also be provided. It can be provided by defining CDM_STORAGE_ID_KEY
