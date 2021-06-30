@@ -41,8 +41,8 @@
 
 // Handler for the UIWindowSceneDelegate callback with the same selector.
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
-                   completionHandler:(void (^)(BOOL succeeded))completionHandler
-    API_AVAILABLE(ios(13));
+                   completionHandler:
+                       (void (^)(BOOL succeeded))completionHandler;
 
 @end
 

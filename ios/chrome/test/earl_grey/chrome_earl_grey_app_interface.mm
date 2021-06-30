@@ -53,6 +53,7 @@
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
+#import "ios/testing/open_url_context.h"
 #include "ios/testing/verify_custom_webkit.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
@@ -147,11 +148,15 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
       @"Clearing web state browsing data for main tabs timed out");
 }
 
-+ (void)applicationOpenURL:(NSString*)spec {
++ (void)sceneOpenURL:(NSString*)spec {
+  NSURL* url = [NSURL URLWithString:spec];
+  TestOpenURLContext* context = [[TestOpenURLContext alloc] init];
+  context.URL = url;
+
   UIApplication* application = UIApplication.sharedApplication;
-  [application.delegate application:application
-                            openURL:[NSURL URLWithString:spec]
-                            options:[NSDictionary dictionary]];
+  UIScene* scene = application.connectedScenes.anyObject;
+
+  [scene.delegate scene:scene openURLContexts:[NSSet setWithObject:context]];
 }
 
 + (void)startLoadingURL:(NSString*)spec {
