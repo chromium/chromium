@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

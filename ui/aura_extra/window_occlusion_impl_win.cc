@@ -4,6 +4,7 @@
 
 #include "ui/aura_extra/window_occlusion_impl_win.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/win/scoped_gdi_object.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/rect.h"

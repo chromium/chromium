@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/public/common/content_switches.h"

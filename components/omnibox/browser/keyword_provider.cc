@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

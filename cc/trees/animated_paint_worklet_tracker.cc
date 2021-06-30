@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "cc/layers/picture_layer_impl.h"
 
 namespace cc {

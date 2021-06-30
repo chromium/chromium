@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"

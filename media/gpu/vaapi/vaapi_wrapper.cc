@@ -24,6 +24,7 @@
 #include "base/bits.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/cpu.h"
 #include "base/cxx17_backports.h"
 #include "base/environment.h"

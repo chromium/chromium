@@ -4,8 +4,8 @@
 
 #include <set>
 
+#include "base/containers/cxx20_erase.h"
 #include "chrome/common/privacy_budget/container_ops.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace internal {

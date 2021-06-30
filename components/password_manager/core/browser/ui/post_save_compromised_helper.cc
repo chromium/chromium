@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"

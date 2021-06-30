@@ -10,6 +10,7 @@
 #include "base/bind_post_task.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"

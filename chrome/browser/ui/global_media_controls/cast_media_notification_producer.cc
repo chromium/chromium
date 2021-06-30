@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/media_message_center/media_notification_controller.h"

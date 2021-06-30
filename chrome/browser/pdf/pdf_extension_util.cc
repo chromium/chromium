@@ -4,6 +4,7 @@
 
 #include "chrome/browser/pdf/pdf_extension_util.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"

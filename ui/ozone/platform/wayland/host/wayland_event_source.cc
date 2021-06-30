@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"

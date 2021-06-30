@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"

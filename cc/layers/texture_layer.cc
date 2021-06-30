@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"

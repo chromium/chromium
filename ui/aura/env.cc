@@ -5,6 +5,7 @@
 #include "ui/aura/env.h"
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list_types.h"

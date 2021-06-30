@@ -5,6 +5,7 @@
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"

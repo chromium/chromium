@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

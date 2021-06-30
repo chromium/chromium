@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"

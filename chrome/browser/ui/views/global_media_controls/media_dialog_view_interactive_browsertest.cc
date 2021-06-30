@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"

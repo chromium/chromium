@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"

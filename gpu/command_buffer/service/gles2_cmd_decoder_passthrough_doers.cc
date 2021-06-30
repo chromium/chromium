@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"

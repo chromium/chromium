@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/rand_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"

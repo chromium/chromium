@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"

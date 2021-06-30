@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/stack.h"
 #include "base/files/file_util.h"
 #include "base/i18n/break_iterator.h"

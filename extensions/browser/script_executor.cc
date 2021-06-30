@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
 #include "components/crash/core/common/crash_key.h"
 #include "extensions/common/extension_messages.h"

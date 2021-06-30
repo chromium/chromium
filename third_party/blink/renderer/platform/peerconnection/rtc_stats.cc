@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"

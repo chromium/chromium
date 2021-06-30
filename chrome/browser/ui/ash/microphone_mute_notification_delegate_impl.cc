@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/ash/microphone_mute_notification_delegate_impl.h"
 

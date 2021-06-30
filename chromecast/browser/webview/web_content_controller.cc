@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"

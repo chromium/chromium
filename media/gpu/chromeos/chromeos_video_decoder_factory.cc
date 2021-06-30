@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/sequenced_task_runner.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"

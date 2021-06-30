@@ -10,6 +10,7 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_delegate.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/test/task_environment.h"
 #include "ui/aura/window.h"

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/accelerator_utils.h"

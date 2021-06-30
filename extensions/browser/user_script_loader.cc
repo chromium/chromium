@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"

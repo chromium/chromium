@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"

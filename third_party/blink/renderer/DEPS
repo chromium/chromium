@@ -10,6 +10,7 @@ include_rules = [
     "+base/compiler_specific.h",
     "+base/containers/adapters.h",
     "+base/containers/contains.h",
+    "+base/containers/cxx20_erase.h",
     "+base/containers/span.h",
     "+base/cxx17_backports.h",
     "+base/dcheck_is_on.h",
