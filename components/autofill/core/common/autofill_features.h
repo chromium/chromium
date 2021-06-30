@@ -39,6 +39,9 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>
     kAutofillAutoBlockUpdateAddressProfilePromptStrikeLimit;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature
+    kAutofillAddressProfileSavePromptAddressVerificationSupport;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAddressProfileSavePromptNicknameSupport;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
