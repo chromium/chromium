@@ -7,6 +7,7 @@ package org.chromium.weblayer_private;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 
@@ -22,6 +23,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.ExternalIntentInIncognitoUserDecision;
 
 /**
  * WebLayer's implementation of the {@link ExternalNavigationDelegate}.
@@ -120,14 +123,30 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean hasCustomLeavingIncognitoDialog() {
-        return false;
+        return mTab.getExternalIntentInIncognitoCallbackProxy() != null;
     }
 
     @Override
     public void presentLeavingIncognitoModalDialog(Callback<Boolean> onUserDecision) {
-        // This should never be called due to returning false in
-        // hasCustomLeavingIncognitoDialog().
-        assert false;
+        try {
+            mTab.getExternalIntentInIncognitoCallbackProxy().onExternalIntentInIncognito(
+                    (Integer result) -> {
+                        @ExternalIntentInIncognitoUserDecision
+                        int userDecision = result.intValue();
+                        switch (userDecision) {
+                            case ExternalIntentInIncognitoUserDecision.ALLOW:
+                                onUserDecision.onResult(Boolean.valueOf(true));
+                                break;
+                            case ExternalIntentInIncognitoUserDecision.DENY:
+                                onUserDecision.onResult(Boolean.valueOf(false));
+                                break;
+                            default:
+                                assert false;
+                        }
+                    });
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
     }
 
     @Override

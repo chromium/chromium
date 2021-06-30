@@ -20,6 +20,7 @@ import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
+import org.chromium.weblayer_private.interfaces.IExternalIntentInIncognitoCallbackClient;
 import org.chromium.weblayer_private.interfaces.IFullscreenCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountsCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
@@ -485,6 +486,28 @@ public class Tab {
         try {
             mImpl.setGoogleAccountsCallbackClient(
                     callback == null ? null : new GoogleAccountsCallbackClientImpl(callback));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Sets a callback to present warning dialogs gating external intent launches in incognito mode.
+     * If this callback is set, any such pending intent launch will trigger a call to {@link
+     * ExternalIntentInIncognitoCallback#onExternalIntentInIncognito}.
+     * @since 93
+     */
+    public void setExternalIntentInIncognitoCallback(
+            @Nullable ExternalIntentInIncognitoCallback callback) {
+        ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
+        if (WebLayer.getSupportedMajorVersionInternal() < 93) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.setExternalIntentInIncognitoCallbackClient(callback == null
+                            ? null
+                            : new ExternalIntentInIncognitoCallbackClientImpl(callback));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -1029,6 +1052,25 @@ public class Tab {
         public String getGaiaId() {
             StrictModeWorkaround.apply();
             return mCallback.getGaiaId();
+        }
+    }
+
+    private static final class ExternalIntentInIncognitoCallbackClientImpl
+            extends IExternalIntentInIncognitoCallbackClient.Stub {
+        private ExternalIntentInIncognitoCallback mCallback;
+
+        ExternalIntentInIncognitoCallbackClientImpl(ExternalIntentInIncognitoCallback callback) {
+            mCallback = callback;
+        }
+
+        @Override
+        public void onExternalIntentInIncognito(IObjectWrapper onUserDecisionWrapper) {
+            StrictModeWorkaround.apply();
+            ValueCallback<Integer> valueCallback =
+                    ObjectWrapper.unwrap(onUserDecisionWrapper, ValueCallback.class);
+
+            mCallback.onExternalIntentInIncognito(
+                    (userDecision) -> valueCallback.onReceiveValue(userDecision));
         }
     }
 }

@@ -6,6 +6,7 @@ package org.chromium.weblayer.test;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -17,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -28,6 +30,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
+import org.chromium.weblayer.Callback;
+import org.chromium.weblayer.ExternalIntentInIncognitoCallback;
+import org.chromium.weblayer.ExternalIntentInIncognitoUserDecision;
 import org.chromium.weblayer.NavigateParams;
 import org.chromium.weblayer.Navigation;
 import org.chromium.weblayer.NavigationCallback;
@@ -139,6 +144,26 @@ public class ExternalNavigationTest {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private class ExternalIntentInIncognitoCallbackTestImpl
+            extends ExternalIntentInIncognitoCallback {
+        private Callback<Integer> mOnUserDecisionCallback;
+        CallbackHelper mCallbackHelper = new CallbackHelper();
+
+        @Override
+        public void onExternalIntentInIncognito(@NonNull Callback<Integer> onUserDecisionCallback) {
+            mOnUserDecisionCallback = onUserDecisionCallback;
+            mCallbackHelper.notifyCalled();
+        }
+
+        public Callback<Integer> getOnUserDecisionCallback() {
+            return mOnUserDecisionCallback;
+        }
+
+        public void waitForNotificationOnExternalIntentLaunch() throws Throwable {
+            mCallbackHelper.waitForFirst();
         }
     }
 
@@ -692,6 +717,167 @@ public class ExternalNavigationTest {
                 .check(matches(withText("Stay")))
                 .check(matches(isDisplayed()))
                 .perform(click());
+
+        // The navigation should fail...
+        onNavigationToIntentFailedCallbackHelper.waitForFirst();
+
+        // ...the intent should not have been launched.
+        Assert.assertNull(intentInterceptor.mLastIntent);
+
+        // As there was no fallback Url, there should be zero navigations in the tab.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numNavigationsInTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return browser.getActiveTab().getNavigationController().getNavigationListSize();
+        });
+        Assert.assertEquals(0, numNavigationsInTab);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            browser.getActiveTab().getNavigationController().unregisterNavigationCallback(
+                    navigationCallback);
+        });
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in browser startup in incognito mode
+     * with the embedder having set an ExternalIntentInIncognitoCallback instance causes that
+     * instance to be notified if the embedder specifies that intent launches in the background are
+     * allowed for this navigation, and that the intent is then launched if the embedder calls back
+     * that the user has consented.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(93)
+    public void
+    testExternalIntentWithNoRedirectInBrowserStartupInIncognitoWithEmbedderPresentingWarningDialogLaunchedWhenBackgroundLaunchesAllowedAndUserConsents()
+            throws Throwable {
+        CallbackHelper onTabRemovedCallbackHelper = new CallbackHelper();
+        TabListCallback tabListCallback = new TabListCallback() {
+            @Override
+            public void onTabRemoved(Tab tab) {
+                onTabRemovedCallbackHelper.notifyCalled();
+            }
+        };
+
+        final IntentInterceptor intentInterceptor = new IntentInterceptor();
+        final ExternalIntentInIncognitoCallbackTestImpl externalIntentCallback =
+                new ExternalIntentInIncognitoCallbackTestImpl();
+        InstrumentationActivity.registerOnCreatedCallback(
+                new InstrumentationActivity.OnCreatedCallback() {
+                    @Override
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
+                        Assert.assertEquals(true, browser.getProfile().isIncognito());
+                        activity.setIntentInterceptor(intentInterceptor);
+                        browser.registerTabListCallback(tabListCallback);
+
+                        browser.getActiveTab().setExternalIntentInIncognitoCallback(
+                                externalIntentCallback);
+
+                        NavigateParams.Builder navigateParamsBuilder = new NavigateParams.Builder();
+                        navigateParamsBuilder.allowIntentLaunchesInBackground();
+                        browser.getActiveTab().getNavigationController().navigate(
+                                Uri.parse(INTENT_TO_CHROME_URL), navigateParamsBuilder.build());
+                    }
+                });
+
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_IS_INCOGNITO, true);
+        mActivityTestRule.launchShell(extras);
+
+        // The embedder should be invoked to present the warning dialog rather than WebLayer
+        // presenting the default warning dialog.
+        externalIntentCallback.waitForNotificationOnExternalIntentLaunch();
+        onView(withText(android.R.id.button1)).check(doesNotExist());
+
+        // Have the embedder notify the implementation that the user has consented.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            externalIntentCallback.getOnUserDecisionCallback().onResult(
+                    new Integer(ExternalIntentInIncognitoUserDecision.ALLOW));
+        });
+
+        // The intent should be launched...
+        intentInterceptor.waitForIntent();
+        Intent intent = intentInterceptor.mLastIntent;
+        Assert.assertNotNull(intent);
+        Assert.assertEquals(INTENT_TO_CHROME_PACKAGE, intent.getPackage());
+        Assert.assertEquals(INTENT_TO_CHROME_ACTION, intent.getAction());
+        Assert.assertEquals(INTENT_TO_CHROME_DATA_STRING, intent.getDataString());
+
+        // ...the tab created for the initial navigation should be closed...
+        onTabRemovedCallbackHelper.waitForFirst();
+
+        // ...and there should now be no tabs in the browser.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numTabs =
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.getTabs().size(); });
+        Assert.assertEquals(0, numTabs);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { browser.unregisterTabListCallback(tabListCallback); });
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in browser startup in incognito mode
+     * with the embedder having set an ExternalIntentInIncognitoCallback instance causes that
+     * instance to be notified if the embedder specifies that intent launches in the background are
+     * allowed for this navigation, and that the intent is then blocked if the embedder calls back
+     * that the user has not consented.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(93)
+    public void
+    testExternalIntentWithNoRedirectInBrowserStartupInIncognitoWithEmbedderPresentingWarningDialogBlockedWhenBackgroundLaunchesAllowedAndUserForbids()
+            throws Throwable {
+        CallbackHelper onNavigationToIntentFailedCallbackHelper = new CallbackHelper();
+        NavigationCallback navigationCallback = new NavigationCallback() {
+            @Override
+            public void onNavigationStarted(Navigation navigation) {
+                // There should be no additional navigations after the initial one.
+                Assert.assertEquals(INTENT_TO_CHROME_URL, navigation.getUri().toString());
+            }
+            @Override
+            public void onNavigationFailed(Navigation navigation) {
+                if (navigation.getUri().toString().equals(INTENT_TO_CHROME_URL)) {
+                    onNavigationToIntentFailedCallbackHelper.notifyCalled();
+                }
+            }
+        };
+
+        final IntentInterceptor intentInterceptor = new IntentInterceptor();
+        final ExternalIntentInIncognitoCallbackTestImpl externalIntentCallback =
+                new ExternalIntentInIncognitoCallbackTestImpl();
+        InstrumentationActivity.registerOnCreatedCallback(
+                new InstrumentationActivity.OnCreatedCallback() {
+                    @Override
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
+                        activity.setIntentInterceptor(intentInterceptor);
+                        Assert.assertEquals(true, browser.getProfile().isIncognito());
+                        browser.getActiveTab().setExternalIntentInIncognitoCallback(
+                                externalIntentCallback);
+                        browser.getActiveTab().getNavigationController().registerNavigationCallback(
+                                navigationCallback);
+
+                        NavigateParams.Builder navigateParamsBuilder = new NavigateParams.Builder();
+                        navigateParamsBuilder.allowIntentLaunchesInBackground();
+                        browser.getActiveTab().getNavigationController().navigate(
+                                Uri.parse(INTENT_TO_CHROME_URL), navigateParamsBuilder.build());
+                    }
+                });
+
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_IS_INCOGNITO, true);
+        mActivityTestRule.launchShell(extras);
+
+        // The embedder should be invoked to present the warning dialog rather than WebLayer
+        // presenting the default warning dialog.
+        externalIntentCallback.waitForNotificationOnExternalIntentLaunch();
+        onView(withText(android.R.id.button1)).check(doesNotExist());
+
+        // Have the embedder notify the implementation that the user has forbidden the launch.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            externalIntentCallback.getOnUserDecisionCallback().onResult(
+                    new Integer(ExternalIntentInIncognitoUserDecision.DENY));
+        });
 
         // The navigation should fail...
         onNavigationToIntentFailedCallbackHelper.waitForFirst();

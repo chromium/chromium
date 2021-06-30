@@ -61,6 +61,8 @@ android_library("java") {
     "org/chromium/weblayer/DownloadState.java",
     "org/chromium/weblayer/ErrorPage.java",
     "org/chromium/weblayer/ErrorPageCallback.java",
+    "org/chromium/weblayer/ExternalIntentInIncognitoCallback.java",
+    "org/chromium/weblayer/ExternalIntentInIncognitoUserDecision.java",
     "org/chromium/weblayer/FaviconCallback.java",
     "org/chromium/weblayer/FaviconFetcher.java",
     "org/chromium/weblayer/FindInPageCallback.java",

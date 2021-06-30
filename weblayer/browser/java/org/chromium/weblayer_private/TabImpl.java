@@ -65,6 +65,7 @@ import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
+import org.chromium.weblayer_private.interfaces.IExternalIntentInIncognitoCallbackClient;
 import org.chromium.weblayer_private.interfaces.IFaviconFetcher;
 import org.chromium.weblayer_private.interfaces.IFaviconFetcherClient;
 import org.chromium.weblayer_private.interfaces.IFindInPageCallbackClient;
@@ -108,6 +109,7 @@ public final class TabImpl extends ITab.Stub {
     private FullscreenCallbackProxy mFullscreenCallbackProxy;
     private TabViewAndroidDelegate mViewAndroidDelegate;
     private GoogleAccountsCallbackProxy mGoogleAccountsCallbackProxy;
+    private ExternalIntentInIncognitoCallbackProxy mExternalIntentInIncognitoCallbackProxy;
     // BrowserImpl this TabImpl is in.
     @NonNull
     private BrowserImpl mBrowser;
@@ -696,6 +698,26 @@ public final class TabImpl extends ITab.Stub {
         AddToHomescreenCoordinator.showForAppMenu(mBrowser.getContext(),
                 mBrowser.getWindowAndroid(), mBrowser.getWindowAndroid().getModalDialogManager(),
                 mWebContents, menuItemData);
+    }
+
+    @Override
+    public void setExternalIntentInIncognitoCallbackClient(
+            IExternalIntentInIncognitoCallbackClient client) {
+        StrictModeWorkaround.apply();
+        if (client != null) {
+            if (mExternalIntentInIncognitoCallbackProxy == null) {
+                mExternalIntentInIncognitoCallbackProxy =
+                        new ExternalIntentInIncognitoCallbackProxy(client);
+            } else {
+                mExternalIntentInIncognitoCallbackProxy.setClient(client);
+            }
+        } else if (mExternalIntentInIncognitoCallbackProxy != null) {
+            mExternalIntentInIncognitoCallbackProxy = null;
+        }
+    }
+
+    public ExternalIntentInIncognitoCallbackProxy getExternalIntentInIncognitoCallbackProxy() {
+        return mExternalIntentInIncognitoCallbackProxy;
     }
 
     public void removeFaviconCallbackProxy(FaviconCallbackProxy proxy) {

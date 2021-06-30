@@ -58,6 +58,7 @@ android_library("weblayer_java_tests") {
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
@@ -214,8 +215,8 @@ weblayer_instrumentation("weblayer_instrumentation_test_with_chrome_apk") {
   use_webview_provider = system_webview_apk_target
 
   deps = [
-      ":weblayer_java_tests",
-      "//chrome/android/:chrome_public_apk",
+    ":weblayer_java_tests",
+    "//chrome/android/:chrome_public_apk",
   ]
 
   data_deps = [ "//chrome/android/:chrome_public_apk" ]
@@ -257,8 +258,7 @@ copy("weblayer_skew_tests") {
 
   sources = [ "weblayer_instrumentation_test_versions.py" ]
 
-  outputs =
-      [ "$root_build_dir/bin/run_weblayer_skew_tests" ]
+  outputs = [ "$root_build_dir/bin/run_weblayer_skew_tests" ]
 
   # Also explicitly list the output as data so it gets isolated on bots.
   data = [
@@ -281,8 +281,7 @@ copy("weblayer_skew_tests_with_chrome") {
 
   sources = [ "weblayer_instrumentation_test_versions.py" ]
 
-  outputs =
-      [ "$root_build_dir/bin/run_weblayer_skew_tests_with_chrome" ]
+  outputs = [ "$root_build_dir/bin/run_weblayer_skew_tests_with_chrome" ]
 
   # Also explicitly list the output as data so it gets isolated on bots.
   data = [
