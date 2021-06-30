@@ -4144,6 +4144,17 @@
       }
     },
 
+    'lacros_all_tast_tests': {
+      'lacros_all_tast_tests': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/923426#c27
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
     # TODO(crbug.com/1204231): Re-enable vaapi_unittest.
     'lacros_device_or_vm_gtests': {
       'aura_unittests': {},
@@ -4167,17 +4178,6 @@
       'lacros_fyi_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:lacros")',
         'timeout_sec': 10800,
-      },
-    },
-
-    'lacros_smoke_tast_tests': {
-      'lacros_smoke_tast_tests': {
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/923426#c27
-        },
-        'resultdb': {
-          'enable': True,
-        },
       },
     },
 
@@ -7264,9 +7264,17 @@
       },
     },
 
+    'lacros_all_tast_tests_eve': {
+      'lacros_all_tast_tests': {
+        'variants': [
+          'LACROS_EVE',
+        ]
+      },
+    },
+
     # TODO(crbug.com/1195415): Add EVE variant once HW arrives and is deployed.
     'lacros_device_or_vm_tests': {
-      'lacros_smoke_tast_tests': {
+      'lacros_all_tast_tests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
           'LACROS_EVE',
@@ -7324,14 +7332,6 @@
           'CROS_ATLAS_TOT-1',
           'CROS_EVE_TOT',
           'CROS_EVE_TOT-1',
-        ]
-      },
-    },
-
-    'lacros_smoke_tast_tests_eve': {
-      'lacros_smoke_tast_tests': {
-        'variants': [
-          'LACROS_EVE',
         ]
       },
     },

@@ -1294,7 +1294,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_smoke_tast_tests_amd64-generic",
+        "name": "lacros_all_tast_tests_amd64-generic",
         "resultdb": {
           "enable": true
         },
@@ -1310,8 +1310,8 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "lacros_smoke_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_smoke_tast_tests/"
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/"
       },
       {
         "args": [
@@ -1322,7 +1322,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_smoke_tast_tests_eve",
+        "name": "lacros_all_tast_tests_eve",
         "resultdb": {
           "enable": true
         },
@@ -1337,8 +1337,8 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "lacros_smoke_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_smoke_tast_tests/",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "trigger_script": {
           "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
         }

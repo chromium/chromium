@@ -57,15 +57,11 @@ lacros_resource_sizes_test("resource_sizes_lacros_chrome") {
 }
 
 if (is_chromeos_device) {
-  lacros_tast_tests("lacros_smoke_tast_tests") {
-    # A list of tests that are known to work reliably.
-    # TODO(crbug.com/1158590): use --attr-expr instead of hard-coding the tests.
-    tast_tests = [
-      "lacros.AppLauncherLaunch",
-      "lacros.AudioPlay",
-      "lacros.Basic",
-      "lacros.ShelfLaunch",
-    ]
+  lacros_tast_tests("lacros_all_tast_tests") {
+    # The following expression filters out all non-critical tests. See the link
+    # below for more details:
+    # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
+    tast_attr_expr = "\"group:mainline\" && \"dep:lacros\" && !informational"
   }
 
   lacros_tast_tests("lacros_fyi_tast_tests") {
