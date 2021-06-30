@@ -15,6 +15,9 @@ namespace history_clusters {
 
 // Returns the remote model debug endpoint used to cluster visits into memories.
 // Returns an empty GURL() when the remote model debug endpoint is disabled.
+// Note, the on-device backend (enabled by default) takes precedence over the
+// remote model endpoint. The on-device backend has to be separately disabled
+// to access the remote model endpoint.
 GURL RemoteModelEndpoint();
 
 // Returns the experiment name to pass through to the remote model debug
@@ -41,6 +44,11 @@ extern const base::FeatureParam<int> kMaxDaysToCluster;
 // new clusters without persisting them.
 extern const base::FeatureParam<bool> kPersistClustersInHistoryDb;
 
+// Enables the on-device clustering backend. Enabled by default, since this is
+// the production mode of the whole feature. The backend is only in official
+// builds, so it won't work in unofficial builds.
+extern const base::FeatureParam<bool> kUseOnDeviceClusteringBackend;
+
 // Features
 
 // Enables the Chrome Memories history clustering feature.
@@ -61,10 +69,6 @@ extern const base::Feature kRemoteModelForDebugging;
 // exposing the Memories UI in general. If EITHER this flag or `kMemories` is
 // enabled, users will have context annotations persisted into their History DB.
 extern const base::Feature kPersistContextAnnotationsInHistoryDb;
-
-// Enables the on-device clustering backend. Only enabled for official Chrome
-// builds.
-extern const base::Feature kUseOnDeviceClusteringBackend;
 
 }  // namespace history_clusters
 

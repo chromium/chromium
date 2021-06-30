@@ -964,42 +964,48 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
 
 const FeatureEntry::FeatureVariation kMemoriesVariations[] = {
     {
-        "Visit Limit 200",
-        (FeatureEntry::FeatureParam[]){{"MemoriesMaxVisitsToCluster", "200"}},
+        "Limit 1000, On-Device",
+        (FeatureEntry::FeatureParam[]){{"MemoriesMaxVisitsToCluster", "1000"}},
         1,
         nullptr,
     },
     {
-        "Visit Limit 200, Experiment A",
+        "Limit 200, Remote Exp. A",
         (FeatureEntry::FeatureParam[]){
             {"MemoriesExperimentName", "A"},
             {"MemoriesMaxVisitsToCluster", "200"},
+            {"MemoriesOnDeviceClusteringBackend", "false"},
         },
-        2,
+        3,
         nullptr,
     },
     {
-        "Visit Limit 200, Experiment B",
+        "Limit 200, Remote Exp. B",
         (FeatureEntry::FeatureParam[]){
             {"MemoriesExperimentName", "B"},
             {"MemoriesMaxVisitsToCluster", "200"},
+            {"MemoriesOnDeviceClusteringBackend", "false"},
         },
-        2,
+        3,
         nullptr,
     },
     {
-        "Visit Limit 200, Experiment C",
+        "Limit 200, Remote Exp. C",
         (FeatureEntry::FeatureParam[]){
             {"MemoriesExperimentName", "C"},
             {"MemoriesMaxVisitsToCluster", "200"},
+            {"MemoriesOnDeviceClusteringBackend", "false"},
         },
-        2,
+        3,
         nullptr,
     },
     {
-        "Visit Limit 10k",
-        (FeatureEntry::FeatureParam[]){{"MemoriesMaxVisitsToCluster", "10000"}},
-        1,
+        "Limit 10k, Remote",
+        (FeatureEntry::FeatureParam[]){
+            {"MemoriesMaxVisitsToCluster", "10000"},
+            {"MemoriesOnDeviceClusteringBackend", "false"},
+        },
+        2,
         nullptr,
     },
 };

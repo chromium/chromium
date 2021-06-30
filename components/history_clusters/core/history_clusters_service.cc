@@ -69,9 +69,9 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
 //  we'll need a common non-mojom response.
 // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
 // Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
-history_clusters::mojom::URLVisitPtr VisitToMojom(
+mojom::URLVisitPtr VisitToMojom(
     const history::ScoredAnnotatedVisit& scored_annotated_visit) {
-  auto visit_mojom = history_clusters::mojom::URLVisit::New();
+  auto visit_mojom = mojom::URLVisit::New();
   auto& annotated_visit = scored_annotated_visit.annotated_visit;
   visit_mojom->normalized_url = annotated_visit.url_row.url();
   visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());
@@ -83,24 +83,22 @@ history_clusters::mojom::URLVisitPtr VisitToMojom(
       base::Time::Now() - annotated_visit.visit_row.visit_time));
   if (annotated_visit.context_annotations.is_existing_part_of_tab_group ||
       annotated_visit.context_annotations.is_placed_in_tab_group) {
-    visit_mojom->annotations.push_back(
-        history_clusters::mojom::Annotation::kTabGrouped);
+    visit_mojom->annotations.push_back(mojom::Annotation::kTabGrouped);
   }
   if (annotated_visit.context_annotations.is_existing_bookmark ||
       annotated_visit.context_annotations.is_new_bookmark) {
-    visit_mojom->annotations.push_back(
-        history_clusters::mojom::Annotation::kBookmarked);
+    visit_mojom->annotations.push_back(mojom::Annotation::kBookmarked);
   }
   visit_mojom->score = scored_annotated_visit.score;
   return visit_mojom;
 }
 
 // Translate a vector of `Cluster`s to a vector of `mojom::ClusterPtr`s.
-std::vector<history_clusters::mojom::ClusterPtr> ClustersToMojom(
+std::vector<mojom::ClusterPtr> ClustersToMojom(
     const std::vector<history::Cluster>& clusters) {
-  std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
+  std::vector<mojom::ClusterPtr> clusters_mojom;
   for (const auto& cluster : clusters) {
-    auto cluster_mojom = history_clusters::mojom::Cluster::New();
+    auto cluster_mojom = mojom::Cluster::New();
     cluster_mojom->id = cluster.cluster_id;
     for (const auto& keyword : cluster.keywords)
       cluster_mojom->keywords.push_back(keyword);
@@ -178,17 +176,26 @@ HistoryClustersService::HistoryClustersService(
     : history_service_(history_service) {
   DCHECK(history_service_);
 
-  backend_ = std::make_unique<RemoteClusteringBackend>(
-      url_loader_factory,
-      base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,
-                          weak_ptr_factory_.GetWeakPtr()));
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
-  if (base::FeatureList::IsEnabled(kUseOnDeviceClusteringBackend)) {
+  if (kUseOnDeviceClusteringBackend.Get()) {
     backend_ = std::make_unique<OnDeviceClusteringBackend>();
   }
 #endif
-  backend_weak_factory_ =
-      std::make_unique<base::WeakPtrFactory<ClusteringBackend>>(backend_.get());
+
+  if (!backend_ && RemoteModelEndpoint().is_valid()) {
+    backend_ = std::make_unique<RemoteClusteringBackend>(
+        url_loader_factory,
+        base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // Create a WeakPtrFactory for calling into the backend.
+  // TODO(tommycli): It seems weird that we need both this and `backend_`.
+  if (backend_) {
+    backend_weak_factory_ =
+        std::make_unique<base::WeakPtrFactory<ClusteringBackend>>(
+            backend_.get());
+  }
 }
 
 HistoryClustersService::~HistoryClustersService() = default;
@@ -256,6 +263,16 @@ void HistoryClustersService::QueryClusters(
     mojom::QueryParamsPtr query_params,
     base::OnceCallback<void(QueryClustersResponse)> callback,
     base::CancelableTaskTracker* task_tracker) {
+  NotifyDebugMessage("HistoryClustersService::QueryClusters()");
+
+  if (!backend_ || !backend_weak_factory_) {
+    NotifyDebugMessage(
+        "HistoryClustersService::QueryClusters Error: ClusteringBackend is "
+        "nullptr. Returning empty cluster vector.");
+    std::move(callback).Run({{}, {}});
+    return;
+  }
+
   // `QueryClusters` has 4 steps:
   // 1. Get visits either asynchronously from the history db or synchronously
   //    from `visits_`.

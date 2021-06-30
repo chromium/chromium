@@ -123,9 +123,7 @@ class HistoryClustersService : public KeyedService {
   // Non-owning pointer, but never nullptr.
   history::HistoryService* const history_service_;
 
-  // Helper service to handle communicating with the remote model. This will be
-  // used for debugging only; the launch ready feature will use a local model
-  // instead.
+  // The backend used for clustering. This can be nullptr.
   std::unique_ptr<ClusteringBackend> backend_;
 
   // In-memory cache of keywords match clusters, so we can query this
@@ -139,7 +137,8 @@ class HistoryClustersService : public KeyedService {
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;
 
-  // Used to asyncly call into `backend_` after async history request.
+  // Used to asyncly call into `backend_` after async history request. This can
+  // be nullptr.
   std::unique_ptr<base::WeakPtrFactory<ClusteringBackend>>
       backend_weak_factory_;
   // Weak pointers issued from this factory never get invalidated before the

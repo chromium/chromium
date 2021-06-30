@@ -167,7 +167,11 @@ void RemoteClusteringBackend::GetClusters(
     ClustersCallback callback,
     const std::vector<history::AnnotatedVisit>& visits) {
   const GURL endpoint(RemoteModelEndpoint());
-  if (!endpoint.is_valid() || visits.empty()) {
+  DCHECK(endpoint.is_valid());
+  if (debug_logger_)
+    debug_logger_->Run("RemoteClusteringBackend::GetClusters()");
+
+  if (visits.empty()) {
     std::move(callback).Run({});
     return;
   }

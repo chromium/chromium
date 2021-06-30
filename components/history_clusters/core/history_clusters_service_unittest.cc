@@ -76,6 +76,10 @@ class HistoryClustersServiceTest : public testing::Test {
                 kMemories,
                 {
                     {"MemoriesExperimentName", endpoint_experiment},
+                    // TODO(tommycli): All the unit tests are written assuming
+                    // we are using the remote backend. We should revamp them
+                    // to use a TestClusteringBackend and simplify the tests.
+                    {"MemoriesOnDeviceClusteringBackend", "false"},
                 },
             },
             {
@@ -86,6 +90,14 @@ class HistoryClustersServiceTest : public testing::Test {
             },
         },
         {});
+
+    // Re-create service after changing flags.
+    // TODO(tommycli): Remove this after migrating tests to use a test backend.
+    history_clusters_service_ = std::make_unique<HistoryClustersService>(
+        history_service_.get(), shared_url_loader_factory_);
+    history_clusters_service_test_api_ =
+        std::make_unique<HistoryClustersServiceTestApi>(
+            history_clusters_service_.get(), history_service_.get());
   }
 
   void AddVisit(const history::AnnotatedVisit& visit) {

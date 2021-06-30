@@ -39,6 +39,9 @@ const base::FeatureParam<int> kMaxDaysToCluster{&kMemories,
 const base::FeatureParam<bool> kPersistClustersInHistoryDb{
     &kMemories, "MemoriesPersistClustersInHistoryDb", false};
 
+const base::FeatureParam<bool> kUseOnDeviceClusteringBackend{
+    &kMemories, "MemoriesOnDeviceClusteringBackend", true};
+
 const base::Feature kMemories{"Memories", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kDebug{"MemoriesDebug", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -49,8 +52,5 @@ const base::Feature kRemoteModelForDebugging{"MemoriesRemoteModelForDebugging",
 const base::Feature kPersistContextAnnotationsInHistoryDb{
     "MemoriesPersistContextAnnotationsInHistoryDb",
     enabled_by_default_desktop_only};
-
-const base::Feature kUseOnDeviceClusteringBackend{
-    "MemoriesOnDeviceClusteringBackend", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace history_clusters
