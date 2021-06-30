@@ -5300,11 +5300,19 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.dispatcher showAccountsSettingsFromViewController:self];
 }
 
-- (void)showTrustedVaultReauthenticationWithRetrievalTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)retrievalTrigger {
+- (void)showTrustedVaultReauthForFetchKeysWithTrigger:
+    (syncer::KeyRetrievalTriggerForUMA)trigger {
   [self.dispatcher
-      showTrustedVaultReauthenticationFromViewController:self
-                                        retrievalTrigger:retrievalTrigger];
+      showTrustedVaultReauthForFetchKeysFromViewController:self
+                                                   trigger:trigger];
+}
+
+- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+    (syncer::KeyRetrievalTriggerForUMA)trigger {
+  [self.dispatcher
+      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
+                                                                trigger:
+                                                                    trigger];
 }
 
 #pragma mark - NewTabPageTabHelperDelegate

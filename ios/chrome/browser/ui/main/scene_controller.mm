@@ -1479,20 +1479,31 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)
-    showTrustedVaultReauthenticationFromViewController:
-        (UIViewController*)baseViewController
-                                      retrievalTrigger:
-                                          (syncer::KeyRetrievalTriggerForUMA)
-                                              retrievalTrigger {
-  DCHECK(!self.signinCoordinator);
-  Browser* mainBrowser = self.mainInterface.browser;
-  self.signinCoordinator = [SigninCoordinator
-      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
-          baseViewController
-                                                            browser:mainBrowser
-                                                   retrievalTrigger:
-                                                       retrievalTrigger];
-  [self startSigninCoordinatorWithCompletion:nil];
+    showTrustedVaultReauthForFetchKeysFromViewController:
+        (UIViewController*)viewController
+                                                 trigger:
+                                                     (syncer::
+                                                          KeyRetrievalTriggerForUMA)
+                                                         trigger {
+  [self
+      showTrustedVaultDialogFromViewController:viewController
+                                        intent:
+                                            SigninTrustedVaultDialogIntentFetchKeys
+                                       trigger:trigger];
+}
+
+- (void)
+    showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
+        (UIViewController*)viewController
+                                                              trigger:
+                                                                  (syncer::
+                                                                       KeyRetrievalTriggerForUMA)
+                                                                      trigger {
+  [self
+      showTrustedVaultDialogFromViewController:viewController
+                                        intent:
+                                            SigninTrustedVaultDialogIntentFetchKeys
+                                       trigger:trigger];
 }
 
 - (void)showConsistencyPromoFromViewController:
@@ -2536,6 +2547,26 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 #pragma mark - Sign In UI presentation
+
+// Show trusted vault dialog.
+// |intent| Dialog to present.
+// |trigger| UI elements where the trusted vault reauth has been triggered.
+- (void)
+    showTrustedVaultDialogFromViewController:(UIViewController*)viewController
+                                      intent:
+                                          (SigninTrustedVaultDialogIntent)intent
+                                     trigger:(syncer::KeyRetrievalTriggerForUMA)
+                                                 trigger {
+  DCHECK(!self.signinCoordinator);
+  Browser* mainBrowser = self.mainInterface.browser;
+  self.signinCoordinator = [SigninCoordinator
+      trustedVaultReAuthenticationCoordinatorWithBaseViewController:
+          viewController
+                                                            browser:mainBrowser
+                                                             intent:intent
+                                                            trigger:trigger];
+  [self startSigninCoordinatorWithCompletion:nil];
+}
 
 - (void)presentSignedInAccountsViewControllerForBrowserState:
     (ChromeBrowserState*)browserState {

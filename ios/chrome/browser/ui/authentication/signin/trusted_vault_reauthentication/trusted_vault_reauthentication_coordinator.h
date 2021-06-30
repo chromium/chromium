@@ -20,12 +20,13 @@ enum class KeyRetrievalTriggerForUMA;
 
 // Designated initializer.
 // |viewController| presents the sign-in.
-// |retrievalTrigger| UI elements where the trusted vault reauth has been
-// triggered.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                          retrievalTrigger:(syncer::KeyRetrievalTriggerForUMA)
-                                               retrievalTrigger
+// |intent| Dialog to present.
+// |trigger| UI elements where the trusted vault reauth has been triggered.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                        intent:(SigninTrustedVaultDialogIntent)intent
+                       trigger:(syncer::KeyRetrievalTriggerForUMA)trigger
     NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -80,7 +80,9 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()
-                                                   retrievalTrigger:trigger];
+                                                             intent:
+                                         SigninTrustedVaultDialogIntentFetchKeys
+                                                            trigger:trigger];
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =

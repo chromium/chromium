@@ -107,17 +107,20 @@ class PrefRegistrySyncable;
 // Vault for the primary identity. This is done with ChromeTrustedVaultService.
 // Related to IOSTrustedVaultClient.
 // |viewController| presents the sign-in.
-// |retrievalTrigger| UI elements where the trusted vault reauth has been
-// triggered.
+// |intent| Dialog to present.
+// |trigger| UI elements where the trusted vault reauth has been triggered.
 + (instancetype)
     trustedVaultReAuthenticationCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                           browser:
                                                               (Browser*)browser
-                                                 retrievalTrigger:
-                                                     (syncer::
-                                                          KeyRetrievalTriggerForUMA)
-                                                         retrievalTrigger;
+                                                           intent:
+                                                (SigninTrustedVaultDialogIntent)
+                                                                   intent
+                                                          trigger:
+                                                              (syncer::
+                                                      KeyRetrievalTriggerForUMA)
+                                                                  trigger;
 
 // Returns a coordinator to display the account consistency promo with a list
 // of accounts available on the device for sign-in.

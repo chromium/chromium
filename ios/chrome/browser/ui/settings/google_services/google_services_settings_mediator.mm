@@ -1086,11 +1086,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       [self.syncErrorHandler openPassphraseDialog];
       break;
     case SyncNeedsTrustedVaultKeyErrorItemType:
-      [self.syncErrorHandler openTrustedVaultReauth];
+      [self.syncErrorHandler openTrustedVaultReauthForFetchKeys];
       break;
     case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
-      // TODO(crbug.com/1100278): Invoke dedicated function.
-      [self.syncErrorHandler openTrustedVaultReauth];
+      [self.syncErrorHandler openTrustedVaultReauthForDegradedRecoverability];
       break;
     case ManageSyncItemType:
       [self.commandHandler openManageSyncSettings];

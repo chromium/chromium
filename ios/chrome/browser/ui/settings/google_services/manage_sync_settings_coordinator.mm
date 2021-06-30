@@ -278,15 +278,28 @@ using signin_metrics::PromoAction;
                                            animated:YES];
 }
 
-- (void)openTrustedVaultReauth {
+- (void)openTrustedVaultReauthForFetchKeys {
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
   [applicationCommands
-      showTrustedVaultReauthenticationFromViewController:self.viewController
-                                        retrievalTrigger:
-                                            syncer::KeyRetrievalTriggerForUMA::
-                                                kSettings];
+      showTrustedVaultReauthForFetchKeysFromViewController:self.viewController
+                                                   trigger:
+                                                       syncer::
+                                                           KeyRetrievalTriggerForUMA::
+                                                               kSettings];
+}
+
+- (void)openTrustedVaultReauthForDegradedRecoverability {
+  id<ApplicationCommands> applicationCommands =
+      static_cast<id<ApplicationCommands>>(
+          self.browser->GetCommandDispatcher());
+  [applicationCommands
+      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
+          self.viewController
+                                                                trigger:
+                                                                    syncer::KeyRetrievalTriggerForUMA::
+                                                                        kSettings];
 }
 
 - (void)restartAuthenticationFlow {

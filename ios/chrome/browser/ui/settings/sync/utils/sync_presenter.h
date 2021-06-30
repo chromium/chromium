@@ -27,10 +27,15 @@ enum class KeyRetrievalTriggerForUMA;
 - (void)showAccountSettings;
 
 // Presents the Trusted Vault reauthentication dialog.
-// |retrievalTrigger| UI elements where the trusted vault reauth has been
-// triggered.
-- (void)showTrustedVaultReauthenticationWithRetrievalTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)retrievalTrigger;
+// |trigger| UI elements where the trusted vault reauth has been triggered.
+- (void)showTrustedVaultReauthForFetchKeysWithTrigger:
+    (syncer::KeyRetrievalTriggerForUMA)trigger;
+
+// Presents the Trusted Vault degraded recoverability dialog (to enroll
+// additional recovery factors).
+// |trigger| UI elements where the trusted vault reauth has been triggered.
+- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+    (syncer::KeyRetrievalTriggerForUMA)trigger;
 
 @end
 

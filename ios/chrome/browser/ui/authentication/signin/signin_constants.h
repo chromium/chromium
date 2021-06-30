@@ -62,4 +62,14 @@ typedef NS_ENUM(NSUInteger, SigninCompletionAction) {
   SigninCompletionActionOpenCompletionURL,
 };
 
+// Intent for TrustedVaultReauthenticationCoordinator to display either
+// the reauthentication or degraded recoverability dialog.
+typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {
+  // Show reauthentication dialog for fetch keys.
+  SigninTrustedVaultDialogIntentFetchKeys,
+  // Show reauthentication degraded recoverability dialog (to enroll additional
+  // recovery factors).
+  SigninTrustedVaultDialogIntentDegradedRecoverability,
+};
+
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_CONSTANTS_H_

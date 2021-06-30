@@ -96,14 +96,26 @@ enum class KeyRetrievalTriggerForUMA;
 
 // Presents the Trusted Vault reauth dialog.
 // |baseViewController| presents the sign-in.
-// |retrievalTrigger| UI elements where the trusted vault reauth has been
-// triggered.
+// |trigger| UI elements where the trusted vault reauth has been triggered.
 - (void)
-    showTrustedVaultReauthenticationFromViewController:
+    showTrustedVaultReauthForFetchKeysFromViewController:
         (UIViewController*)baseViewController
-                                      retrievalTrigger:
-                                          (syncer::KeyRetrievalTriggerForUMA)
-                                              retrievalTrigger;
+                                                 trigger:
+                                                     (syncer::
+                                                          KeyRetrievalTriggerForUMA)
+                                                         trigger;
+
+// Presents the Trusted Vault degraded recoverability (to enroll additional
+// recovery factors).
+// |baseViewController| presents the sign-in.
+// |trigger| UI elements where the trusted vault reauth has been triggered.
+- (void)
+    showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
+        (UIViewController*)baseViewController
+                                                              trigger:
+                                                                  (syncer::
+                                                                       KeyRetrievalTriggerForUMA)
+                                                                      trigger;
 
 // Starts a voice search on the current BVC.
 - (void)startVoiceSearch;

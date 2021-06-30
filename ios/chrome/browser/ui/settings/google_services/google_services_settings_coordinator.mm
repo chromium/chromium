@@ -246,16 +246,29 @@ using signin_metrics::PromoAction;
   [self.baseNavigationController pushViewController:controller animated:YES];
 }
 
-- (void)openTrustedVaultReauth {
+- (void)openTrustedVaultReauthForFetchKeys {
   id<ApplicationCommands> applicationCommands =
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
   [applicationCommands
-      showTrustedVaultReauthenticationFromViewController:
+      showTrustedVaultReauthForFetchKeysFromViewController:
           self.googleServicesSettingsViewController
-                                        retrievalTrigger:
-                                            syncer::KeyRetrievalTriggerForUMA::
-                                                kSettings];
+                                                   trigger:
+                                                       syncer::
+                                                           KeyRetrievalTriggerForUMA::
+                                                               kSettings];
+}
+
+- (void)openTrustedVaultReauthForDegradedRecoverability {
+  id<ApplicationCommands> applicationCommands =
+      static_cast<id<ApplicationCommands>>(
+          self.browser->GetCommandDispatcher());
+  [applicationCommands
+      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
+          self.viewController
+                                                                trigger:
+                                                                    syncer::KeyRetrievalTriggerForUMA::
+                                                                        kSettings];
 }
 
 #pragma mark - GoogleServicesSettingsCommandHandler

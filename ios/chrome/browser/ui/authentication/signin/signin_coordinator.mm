@@ -130,14 +130,18 @@ using signin_metrics::PromoAction;
         (UIViewController*)viewController
                                                           browser:
                                                               (Browser*)browser
-                                                 retrievalTrigger:
-                                                     (syncer::
-                                                          KeyRetrievalTriggerForUMA)
-                                                         retrievalTrigger {
+                                                           intent:
+                                                (SigninTrustedVaultDialogIntent)
+                                                                   intent
+                                                          trigger:
+                                                              (syncer::
+                                                      KeyRetrievalTriggerForUMA)
+                                                                  trigger {
   return [[TrustedVaultReauthenticationCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
-                retrievalTrigger:retrievalTrigger];
+                          intent:intent
+                         trigger:trigger];
 }
 
 + (instancetype)

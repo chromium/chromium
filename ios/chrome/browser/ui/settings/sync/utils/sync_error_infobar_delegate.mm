@@ -105,12 +105,11 @@ bool SyncErrorInfoBarDelegate::Accept() {
     [presenter_ showSyncPassphraseSettings];
   } else if (error_state_ ==
              SyncSetupService::kSyncServiceNeedsTrustedVaultKey) {
-    [presenter_ showTrustedVaultReauthenticationWithRetrievalTrigger:
+    [presenter_ showTrustedVaultReauthForFetchKeysWithTrigger:
                     syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
   } else if (error_state_ ==
              SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded) {
-    // TODO(crbug.com/1100278): Invoke dedicated function.
-    [presenter_ showTrustedVaultReauthenticationWithRetrievalTrigger:
+    [presenter_ showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
                     syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
   }
   return false;

@@ -581,7 +581,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case EncryptionItemType:
       if (self.syncSetupService->GetSyncServiceState() ==
           SyncSetupService::kSyncServiceNeedsTrustedVaultKey) {
-        [self.syncErrorHandler openTrustedVaultReauth];
+        [self.syncErrorHandler openTrustedVaultReauthForFetchKeys];
         break;
       }
       [self.syncErrorHandler openPassphraseDialog];
@@ -602,11 +602,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       [self.syncErrorHandler openPassphraseDialog];
       break;
     case SyncNeedsTrustedVaultKeyErrorItemType:
-      [self.syncErrorHandler openTrustedVaultReauth];
+      [self.syncErrorHandler openTrustedVaultReauthForFetchKeys];
       break;
     case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
-      // TODO(crbug.com/1100278): Invoke dedicated function.
-      [self.syncErrorHandler openTrustedVaultReauth];
+      [self.syncErrorHandler openTrustedVaultReauthForDegradedRecoverability];
       break;
     case SignOutItemType:
       [self.commandHandler showTurnOffSyncOptionsFromTargetRect:cellRect];

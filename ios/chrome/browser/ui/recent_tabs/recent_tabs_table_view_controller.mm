@@ -1395,11 +1395,18 @@ API_AVAILABLE(ios(13.0))
   [self.handler showAccountsSettingsFromViewController:self];
 }
 
-- (void)showTrustedVaultReauthenticationWithRetrievalTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)retrievalTrigger {
+- (void)showTrustedVaultReauthForFetchKeysWithTrigger:
+    (syncer::KeyRetrievalTriggerForUMA)trigger {
+  [self.handler showTrustedVaultReauthForFetchKeysFromViewController:self
+                                                             trigger:trigger];
+}
+
+- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+    (syncer::KeyRetrievalTriggerForUMA)trigger {
   [self.handler
-      showTrustedVaultReauthenticationFromViewController:self
-                                        retrievalTrigger:retrievalTrigger];
+      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
+                                                                trigger:
+                                                                    trigger];
 }
 
 #pragma mark - SigninPresenter
