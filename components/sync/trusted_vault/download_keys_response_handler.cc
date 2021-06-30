@@ -69,30 +69,20 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
   return result;
 }
 
-// |sorted_keys| must be non-empty and sorted by version. Returns new keys:
-// 1. If |last_known_trusted_vault_key_and_version| isn't nullopt, then a key is
-// new if it has higher version.
-// 2. If |last_known_trusted_vault_key_and_version| is nullopt (constant key was
-// used), only the first key is filtered out if it's a constant one.
+// |sorted_keys| must be non-empty and sorted by version. Returns new keys, a
+// key is new if it has higher version than
+// |last_known_trusted_vault_key_and_version|.
 std::vector<ExtractedSharedKey> GetNewKeys(
     const std::vector<ExtractedSharedKey>& sorted_keys,
-    const absl::optional<TrustedVaultKeyAndVersion>&
-        last_known_trusted_vault_key_and_version) {
+    const TrustedVaultKeyAndVersion& last_known_trusted_vault_key_and_version) {
   DCHECK(!sorted_keys.empty());
-  auto new_keys_start_it = sorted_keys.begin();
-  if (last_known_trusted_vault_key_and_version.has_value()) {
-    new_keys_start_it =
-        std::find_if(sorted_keys.begin(), sorted_keys.end(),
-                     [&last_known_trusted_vault_key_and_version](
-                         const ExtractedSharedKey& key) {
-                       return key.version >
-                              last_known_trusted_vault_key_and_version->version;
-                     });
-  } else if (sorted_keys.front().trusted_vault_key ==
-             GetConstantTrustedVaultKey()) {
-    // Constant key is expected to be first, filter it out.
-    new_keys_start_it = sorted_keys.begin() + 1;
-  }
+  auto new_keys_start_it = std::find_if(
+      sorted_keys.begin(), sorted_keys.end(),
+      [&last_known_trusted_vault_key_and_version](
+          const ExtractedSharedKey& key) {
+        return key.version > last_known_trusted_vault_key_and_version.version;
+      });
+
   return std::vector<ExtractedSharedKey>(new_keys_start_it, sorted_keys.end());
 }
 
@@ -150,8 +140,7 @@ DownloadKeysResponseHandler::ProcessedResponse::operator=(
 DownloadKeysResponseHandler::ProcessedResponse::~ProcessedResponse() = default;
 
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(
-    const absl::optional<TrustedVaultKeyAndVersion>&
-        last_trusted_vault_key_and_version,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair)
     : last_trusted_vault_key_and_version_(last_trusted_vault_key_and_version),
       device_key_pair_(std::move(device_key_pair)) {
@@ -201,8 +190,7 @@ DownloadKeysResponseHandler::ProcessResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted);
   }
 
-  if (last_trusted_vault_key_and_version_.has_value() &&
-      !IsValidKeyChain(extracted_keys, *last_trusted_vault_key_and_version_)) {
+  if (!IsValidKeyChain(extracted_keys, last_trusted_vault_key_and_version_)) {
     // Data corresponding to |current_member| is corrupted or
     // |last_trusted_vault_key_and_version_| is too old.
     return ProcessedResponse(

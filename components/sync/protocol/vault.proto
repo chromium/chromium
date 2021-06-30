@@ -32,6 +32,7 @@ message SecurityDomainDetails {
 
 message SecurityDomain {
   string name = 1;
+  int32 current_epoch = 2;
   SecurityDomainDetails security_domain_details = 3;
 }
 
@@ -60,4 +61,8 @@ message JoinSecurityDomainsRequest {
   SecurityDomainMember security_domain_member = 2;
   SharedMemberKey shared_member_key = 3;
   int32 member_type_hint = 4;
+}
+
+message JoinSecurityDomainsResponse {
+  SecurityDomain security_domain = 1;
 }

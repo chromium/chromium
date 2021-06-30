@@ -65,8 +65,14 @@ struct TrustedVaultKeyAndVersion {
 // vault backend sequence.
 class TrustedVaultConnection {
  public:
+  // |last_key_version| is server-side determined version of the last trusted
+  // vault key. If request was successful, it's guaranteed to be the real
+  // version of |last_trusted_vault_key_and_version.key| passed to
+  // RegisterAuthenticationFactor() and not be equal to
+  // kUnknownConstantKeyVersion.
   using RegisterAuthenticationFactorCallback =
-      base::OnceCallback<void(TrustedVaultRegistrationStatus)>;
+      base::OnceCallback<void(TrustedVaultRegistrationStatus,
+                              int /*last_key_version*/)>;
   using DownloadNewKeysCallback =
       base::OnceCallback<void(TrustedVaultDownloadKeysStatus,
                               const std::vector<std::vector<uint8_t>>& /*keys*/,
@@ -92,15 +98,15 @@ class TrustedVaultConnection {
 
   // Asynchronously attempts to register the authentication factor on the
   // trusted vault server to allow further vault server API calls using this
-  // authentication factor. If |last_trusted_vault_key_and_version| is
-  // absl::nullopt, registration attempt with constant key will be made. Calls
-  // |callback| upon completion, unless the returned object is destroyed
-  // earlier. Caller should hold returned request object until |callback| call
-  // or until request needs to be cancelled.
+  // authentication factor. Calls |callback| upon completion, unless the
+  // returned object is destroyed earlier. Caller should hold returned request
+  // object until |callback| call or until request needs to be cancelled.
+  // |last_trusted_vault_key_and_version.version| can be set to
+  // kUnknownConstantKeyVersion if constant key is used (with non-constant key
+  // it will lead to request failure).
   virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const absl::optional<TrustedVaultKeyAndVersion>&
-          last_trusted_vault_key_and_version,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
       absl::optional<int> authentication_factor_type_hint,
@@ -112,8 +118,7 @@ class TrustedVaultConnection {
   // |callback| call or until request needs to be cancelled.
   virtual std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,
-      const absl::optional<TrustedVaultKeyAndVersion>&
-          last_trusted_vault_key_and_version,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadNewKeysCallback callback) WARN_UNUSED_RESULT = 0;
 

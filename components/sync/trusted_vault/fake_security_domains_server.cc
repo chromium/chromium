@@ -25,6 +25,20 @@ CreateHttpResponseForInvalidRequest() {
   return response;
 }
 
+std::unique_ptr<net::test_server::HttpResponse>
+CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(int current_epoch) {
+  sync_pb::JoinSecurityDomainsResponse response_proto;
+  sync_pb::SecurityDomain* security_domain =
+      response_proto.mutable_security_domain();
+  security_domain->set_name(kSyncSecurityDomainName);
+  security_domain->set_current_epoch(current_epoch);
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content(response_proto.SerializeAsString());
+  return response;
+}
+
 // Returns whether |request| satisfies protocol expectations.
 bool ValidateJoinSecurityDomainsRequest(
     const sync_pb::JoinSecurityDomainsRequest& request) {
@@ -299,10 +313,8 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
   if (shared_key.epoch() != 0) {
     // Valid joining of existing security domain.
     state_.public_key_to_shared_keys[member.public_key()] = {shared_key};
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-
-    return response;
+    return CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(
+        state_.current_epoch);
   }
 
   std::unique_ptr<SecureBoxPublicKey> member_public_key =
@@ -326,9 +338,9 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
   }
 
   state_.public_key_to_shared_keys[member.public_key()] = {shared_key};
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_code(net::HTTP_OK);
-  return response;
+
+  return CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(
+      state_.current_epoch);
 }
 
 std::unique_ptr<net::test_server::HttpResponse>

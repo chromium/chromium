@@ -47,13 +47,10 @@ MATCHER_P(KeyMaterialEq, expected, "") {
   return key_material_as_bytes == expected;
 }
 
-MATCHER_P2(OptionalTrustedVaultKeyAndVersionEq,
-           expected_key,
-           expected_version,
-           "") {
-  const absl::optional<TrustedVaultKeyAndVersion>& key_and_version = arg;
-  return key_and_version.has_value() && key_and_version->key == expected_key &&
-         key_and_version->version == expected_version;
+MATCHER_P2(TrustedVaultKeyAndVersionEq, expected_key, expected_version, "") {
+  const TrustedVaultKeyAndVersion& key_and_version = arg;
+  return key_and_version.key == expected_key &&
+         key_and_version.version == expected_version;
 }
 
 MATCHER_P(PublicKeyWhenExportedEq, expected, "") {
@@ -96,24 +93,24 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
  public:
   MockTrustedVaultConnection() = default;
   ~MockTrustedVaultConnection() override = default;
-  MOCK_METHOD(std::unique_ptr<Request>,
-              RegisterAuthenticationFactor,
-              (const CoreAccountInfo& account_info,
-               const absl::optional<TrustedVaultKeyAndVersion>&
-                   last_trusted_vault_key_and_version,
-               const SecureBoxPublicKey& authentication_factor_public_key,
-               AuthenticationFactorType authentication_factor_type,
-               absl::optional<int> authentication_factor_type_hint,
-               RegisterAuthenticationFactorCallback callback),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              DownloadNewKeys,
-              (const CoreAccountInfo& account_info,
-               const absl::optional<TrustedVaultKeyAndVersion>&
-                   last_trusted_vault_key_and_version,
-               std::unique_ptr<SecureBoxKeyPair> device_key_pair,
-               DownloadNewKeysCallback callback),
-              (override));
+  MOCK_METHOD(
+      std::unique_ptr<Request>,
+      RegisterAuthenticationFactor,
+      (const CoreAccountInfo& account_info,
+       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+       const SecureBoxPublicKey& authentication_factor_public_key,
+       AuthenticationFactorType authentication_factor_type,
+       absl::optional<int> authentication_factor_type_hint,
+       RegisterAuthenticationFactorCallback callback),
+      (override));
+  MOCK_METHOD(
+      std::unique_ptr<Request>,
+      DownloadNewKeys,
+      (const CoreAccountInfo& account_info,
+       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
+       DownloadNewKeysCallback callback),
+      (override));
   MOCK_METHOD(std::unique_ptr<Request>,
               RetrieveIsRecoverabilityDegraded,
               (const CoreAccountInfo& account_info,
@@ -176,13 +173,12 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     EXPECT_CALL(*connection_,
                 RegisterAuthenticationFactor(
                     Eq(account_info),
-                    OptionalTrustedVaultKeyAndVersionEq(vault_keys.back(),
-                                                        last_vault_key_version),
+                    TrustedVaultKeyAndVersionEq(vault_keys.back(),
+                                                last_vault_key_version),
                     _, AuthenticationFactorType::kPhysicalDevice,
                     /*authentication_factor_type_hint=*/Eq(absl::nullopt), _))
         .WillOnce(
-            [&](const CoreAccountInfo&,
-                const absl::optional<TrustedVaultKeyAndVersion>&,
+            [&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
                 const SecureBoxPublicKey& device_public_key,
                 AuthenticationFactorType, absl::optional<int>,
                 TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -200,7 +196,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
     // Pretend that the registration completed successfully.
     std::move(device_registration_callback)
-        .Run(TrustedVaultRegistrationStatus::kSuccess);
+        .Run(TrustedVaultRegistrationStatus::kSuccess, last_vault_key_version);
 
     // Reset primary account.
     backend()->SetPrimaryAccount(absl::nullopt);
@@ -442,22 +438,20 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
-  const int kLastKeyVersion = 0;
+  const int kLastKeyVersion = 1;
 
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
 
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
   std::vector<uint8_t> serialized_public_device_key;
-  EXPECT_CALL(
-      *connection(),
-      RegisterAuthenticationFactor(
-          Eq(account_info),
-          OptionalTrustedVaultKeyAndVersionEq(kVaultKey, kLastKeyVersion), _,
-          AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/Eq(absl::nullopt), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const absl::optional<TrustedVaultKeyAndVersion>&,
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info),
+                  TrustedVaultKeyAndVersionEq(kVaultKey, kLastKeyVersion), _,
+                  AuthenticationFactorType::kPhysicalDevice,
+                  /*authentication_factor_type_hint=*/Eq(absl::nullopt), _))
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType, absl::optional<int>,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -473,7 +467,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
 
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 
   // Now the device should be registered.
   sync_pb::LocalDeviceRegistrationInfo registration_info =
@@ -492,7 +486,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldThrottleAndUnthrottleDeviceRegistration) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
-  const int kLastKeyVersion = 0;
+  const int kLastKeyVersion = 1;
 
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -519,7 +513,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic transient failure.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kOtherError);
+      .Run(TrustedVaultRegistrationStatus::kOtherError, kLastKeyVersion);
 
   // Following request should be throttled.
   device_registration_callback =
@@ -548,7 +542,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldUnthrottleDeviceRegistrationWhenTimeSetToPast) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
-  const int kLastKeyVersion = 0;
+  const int kLastKeyVersion = 1;
 
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -575,7 +569,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic transient failure.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kOtherError);
+      .Run(TrustedVaultRegistrationStatus::kOtherError, kLastKeyVersion);
 
   // Mimic system set to the past.
   clock()->Advance(base::TimeDelta::FromSeconds(-1));
@@ -594,7 +588,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
-  const int kLastKeyVersion = 0;
+  const int kLastKeyVersion = 1;
 
   // Make keys downloading theoretically possible.
   StoreKeysAndMimicDeviceRegistration(kVaultKeys, kLastKeyVersion,
@@ -614,7 +608,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
-  const int kInitialLastKeyVersion = 0;
+  const int kInitialLastKeyVersion = 1;
 
   std::vector<uint8_t> private_device_key_material =
       StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
@@ -624,17 +618,16 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
 
   const std::vector<std::vector<uint8_t>> kNewVaultKeys = {kInitialVaultKey,
                                                            {1, 3, 2}};
-  const int kNewLastKeyVersion = 1;
+  const int kNewLastKeyVersion = 2;
 
   std::unique_ptr<SecureBoxKeyPair> device_key_pair;
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
   EXPECT_CALL(*connection(),
               DownloadNewKeys(Eq(account_info),
-                              OptionalTrustedVaultKeyAndVersionEq(
+                              TrustedVaultKeyAndVersionEq(
                                   kInitialVaultKey, kInitialLastKeyVersion),
                               _, _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const absl::optional<TrustedVaultKeyAndVersion>&,
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
                     std::unique_ptr<SecureBoxKeyPair> key_pair,
                     TrustedVaultConnection::DownloadNewKeysCallback callback) {
         device_key_pair = std::move(key_pair);
@@ -665,7 +658,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldThrottleAndUntrottleKeysDownloading) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
-  const int kInitialLastKeyVersion = 0;
+  const int kInitialLastKeyVersion = 1;
 
   std::vector<uint8_t> private_device_key_material =
       StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
@@ -718,16 +711,17 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldSilentlyRegisterDeviceAndDownloadNewKeys) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const int kServerConstantKeyVersion = 100;
 
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       device_registration_callback;
-  EXPECT_CALL(
-      *connection(),
-      RegisterAuthenticationFactor(
-          account_info,
-          /*last_trusted_vault_key_and_version=*/Eq(absl::nullopt), _, _, _, _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const absl::optional<TrustedVaultKeyAndVersion>&,
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  account_info,
+                  TrustedVaultKeyAndVersionEq(GetConstantTrustedVaultKey(),
+                                              kUnknownConstantKeyVersion),
+                  _, _, _, _))
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType, absl::optional<int>,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -742,7 +736,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Pretend that the registration completed successfully.
   std::move(device_registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kServerConstantKeyVersion);
 
   // Now the device should be registered.
   sync_pb::LocalDeviceRegistrationInfo registration_info =
@@ -751,13 +745,13 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(registration_info.has_private_key_material());
 
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
-  ON_CALL(*connection(),
-          DownloadNewKeys(
-              account_info,
-              /*last_trusted_vault_key_and_version=*/Eq(absl::nullopt), _, _))
+  ON_CALL(*connection(), DownloadNewKeys(account_info,
+                                         TrustedVaultKeyAndVersionEq(
+                                             GetConstantTrustedVaultKey(),
+                                             kServerConstantKeyVersion),
+                                         _, _))
       .WillByDefault(
-          [&](const CoreAccountInfo&,
-              const absl::optional<TrustedVaultKeyAndVersion>&,
+          [&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
               std::unique_ptr<SecureBoxKeyPair> key_pair,
               TrustedVaultConnection::DownloadNewKeysCallback callback) {
             download_keys_callback = std::move(callback);
@@ -778,12 +772,12 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/kNewVaultKeys));
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kSuccess, kNewVaultKeys,
-           /*last_key_version=*/40);
+           /*last_key_version=*/kServerConstantKeyVersion + 1);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
   const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
-  const int kLastKeyVersion = 0;
+  const int kLastKeyVersion = 1;
   const std::vector<uint8_t> kPublicKey =
       SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
@@ -794,15 +788,14 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
 
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       registration_callback;
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(
-                                 Eq(account_info),
-                                 OptionalTrustedVaultKeyAndVersionEq(
-                                     kVaultKeys.back(), kLastKeyVersion),
-                                 PublicKeyWhenExportedEq(kPublicKey),
-                                 AuthenticationFactorType::kUnspecified,
-                                 Eq(kMethodTypeHint), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const absl::optional<TrustedVaultKeyAndVersion>&,
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          TrustedVaultKeyAndVersionEq(kVaultKeys.back(), kLastKeyVersion),
+          PublicKeyWhenExportedEq(kPublicKey),
+          AuthenticationFactorType::kUnspecified, Eq(kMethodTypeHint), _))
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType, absl::optional<int>,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -822,7 +815,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
   // Mimic successful completion of the request.
   EXPECT_CALL(completion_callback, Run());
   std::move(registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -851,7 +844,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldDeferTrustedRecoveryMethodUntilPrimaryAccount) {
   const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
-  const int kLastKeyVersion = 0;
+  const int kLastKeyVersion = 1;
   const std::vector<uint8_t> kPublicKey =
       SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
@@ -875,15 +868,14 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(*connection(),
               RegisterAuthenticationFactor(
                   _, _, _, AuthenticationFactorType::kPhysicalDevice, _, _));
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor(
-                                 Eq(account_info),
-                                 OptionalTrustedVaultKeyAndVersionEq(
-                                     kVaultKeys.back(), kLastKeyVersion),
-                                 PublicKeyWhenExportedEq(kPublicKey),
-                                 AuthenticationFactorType::kUnspecified,
-                                 Eq(kMethodTypeHint), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    const absl::optional<TrustedVaultKeyAndVersion>&,
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info),
+          TrustedVaultKeyAndVersionEq(kVaultKeys.back(), kLastKeyVersion),
+          PublicKeyWhenExportedEq(kPublicKey),
+          AuthenticationFactorType::kUnspecified, Eq(kMethodTypeHint), _))
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorType, absl::optional<int>,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -903,7 +895,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Mimic successful completion of the request.
   EXPECT_CALL(completion_callback, Run());
   std::move(registration_callback)
-      .Run(TrustedVaultRegistrationStatus::kSuccess);
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
 
 }  // namespace

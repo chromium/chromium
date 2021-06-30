@@ -59,14 +59,30 @@ void WriteToDisk(const sync_pb::LocalTrustedVault& data,
   }
 }
 
-absl::optional<TrustedVaultKeyAndVersion> GetLastTrustedVaultKeyAndVersion(
+// Returns last stored vault key from |per_user_vault|. If no keys stored,
+// returns constant key with version set to kUnknownConstantKeyVersion.
+TrustedVaultKeyAndVersion GetLastTrustedVaultKeyAndVersion(
     const sync_pb::LocalTrustedVaultPerUser& per_user_vault) {
   if (per_user_vault.vault_key_size() != 0) {
     return TrustedVaultKeyAndVersion(
         ProtoStringToBytes(per_user_vault.vault_key().rbegin()->key_material()),
         per_user_vault.last_vault_key_version());
   }
-  return absl::nullopt;
+  return TrustedVaultKeyAndVersion(GetConstantTrustedVaultKey(),
+                                   kUnknownConstantKeyVersion);
+}
+
+bool HasNonConstantKey(
+    const sync_pb::LocalTrustedVaultPerUser& per_user_vault) {
+  std::string constant_key_as_proto_string;
+  AssignBytesToProtoString(GetConstantTrustedVaultKey(),
+                           &constant_key_as_proto_string);
+  for (const auto& key : per_user_vault.vault_key()) {
+    if (key.key_material() != constant_key_as_proto_string) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void RetrieveIsRecoverabilityDegradedCompleted(
@@ -139,8 +155,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     FulfillOngoingFetchKeys();
     return;
   }
-  if (per_user_vault->vault_key_size() != 0 &&
-      !per_user_vault->keys_are_stale()) {
+  if (HasNonConstantKey(*per_user_vault) && !per_user_vault->keys_are_stale()) {
     // There are locally available keys, which weren't marked as stale. Keys
     // download attempt is not needed.
     FulfillOngoingFetchKeys();
@@ -332,9 +347,8 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
   sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   DCHECK(per_user_vault);
 
-  const absl::optional<TrustedVaultKeyAndVersion>
-      last_trusted_vault_key_and_version =
-          GetLastTrustedVaultKeyAndVersion(*per_user_vault);
+  const TrustedVaultKeyAndVersion last_trusted_vault_key_and_version =
+      GetLastTrustedVaultKeyAndVersion(*per_user_vault);
 
   std::unique_ptr<SecureBoxPublicKey> imported_public_key =
       SecureBoxPublicKey::CreateByImport(public_key);
@@ -407,13 +421,11 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
 
-  absl::optional<TrustedVaultKeyAndVersion> last_trusted_vault_key_and_version =
-      GetLastTrustedVaultKeyAndVersion(*per_user_vault);
-  if (!last_trusted_vault_key_and_version.has_value() &&
+  if (per_user_vault->vault_key_size() == 0 &&
       !base::FeatureList::IsEnabled(
           switches::kAllowSilentTrustedVaultDeviceRegistration)) {
-    // Either vault keys should be available or registration without them should
-    // be allowed through feature flag.
+    // Either vault key with known version should be available or registration
+    // without it should be allowed through feature flag.
     return;
   }
   if (per_user_vault->keys_are_stale()) {
@@ -460,7 +472,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
   // safe to use base::Unretained() here.
   ongoing_connection_request_ = connection_->RegisterAuthenticationFactor(
-      *primary_account_, last_trusted_vault_key_and_version,
+      *primary_account_, GetLastTrustedVaultKeyAndVersion(*per_user_vault),
       key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
       /*authentication_factor_type_hint=*/absl::nullopt,
       base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
@@ -469,7 +481,8 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
 }
 
 void StandaloneTrustedVaultBackend::OnDeviceRegistered(
-    TrustedVaultRegistrationStatus status) {
+    TrustedVaultRegistrationStatus status,
+    int last_vault_key_version) {
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_.has_value());
@@ -486,8 +499,18 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
 
   switch (status) {
     case TrustedVaultRegistrationStatus::kSuccess:
+      DCHECK_NE(last_vault_key_version, kUnknownConstantKeyVersion);
       per_user_vault->mutable_local_device_registration_info()
           ->set_device_registered(true);
+      if (per_user_vault->vault_key_size() == 0) {
+        // If no keys were locally available when request was issued, the
+        // constant key was used (see GetLastTrustedVaultKeyAndVersion()). Now
+        // store constant key with version detected by request.
+        AssignBytesToProtoString(
+            GetConstantTrustedVaultKey(),
+            per_user_vault->add_vault_key()->mutable_key_material());
+        per_user_vault->set_last_vault_key_version(last_vault_key_version);
+      }
       WriteToDisk(data_, file_path_);
       return;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
@@ -544,7 +567,10 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
 
 void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
     base::OnceClosure cb,
-    TrustedVaultRegistrationStatus status) {
+    TrustedVaultRegistrationStatus status,
+    int last_vault_key_version) {
+  // |last_vault_key_version| is intentionally not used here and relevant only
+  // for OnDeviceRegistered().
   DCHECK(ongoing_add_recovery_method_request_);
   ongoing_add_recovery_method_request_ = nullptr;
 

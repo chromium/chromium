@@ -13,6 +13,8 @@
 
 namespace syncer {
 
+extern const int kUnknownConstantKeyVersion;
+
 extern const char kSyncSecurityDomainName[];
 extern const char kSecurityDomainMemberNamePrefix[];
 extern const char kJoinSecurityDomainsURLPath[];

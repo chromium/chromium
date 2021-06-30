@@ -16,6 +16,8 @@ const char kQueryParameterAlternateOutputProto[] = "proto";
 
 }  // namespace
 
+const int kUnknownConstantKeyVersion = 0;
+
 const char kSyncSecurityDomainName[] = "users/me/securitydomains/chromesync";
 const char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
 const char kJoinSecurityDomainsURLPath[] =

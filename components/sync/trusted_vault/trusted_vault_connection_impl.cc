@@ -25,20 +25,13 @@ namespace syncer {
 namespace {
 
 sync_pb::SharedMemberKey CreateSharedMemberKey(
-    const absl::optional<TrustedVaultKeyAndVersion>&
-        trusted_vault_key_and_version,
+    const TrustedVaultKeyAndVersion& trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key) {
-  std::vector<uint8_t> trusted_vault_key;
-  if (trusted_vault_key_and_version.has_value()) {
-    trusted_vault_key = trusted_vault_key_and_version->key;
-  } else {
-    trusted_vault_key = GetConstantTrustedVaultKey();
-  }
-
   sync_pb::SharedMemberKey shared_member_key;
-  if (trusted_vault_key_and_version.has_value()) {
-    shared_member_key.set_epoch(trusted_vault_key_and_version->version);
-  }
+  shared_member_key.set_epoch(trusted_vault_key_and_version.version);
+
+  const std::vector<uint8_t>& trusted_vault_key =
+      trusted_vault_key_and_version.key;
   AssignBytesToProtoString(
       ComputeTrustedVaultWrappedKey(public_key, trusted_vault_key),
       shared_member_key.mutable_wrapped_key());
@@ -77,8 +70,7 @@ sync_pb::SecurityDomainMember CreateSecurityDomainMember(
 }
 
 sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
-    const absl::optional<TrustedVaultKeyAndVersion>&
-        last_trusted_vault_key_and_version,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorType authentication_factor_type,
     absl::optional<int> authentication_factor_type_hint) {
@@ -100,19 +92,36 @@ void ProcessRegisterAuthenticationFactorRequest(
     const std::string& response_body) {
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
-      std::move(callback).Run(TrustedVaultRegistrationStatus::kSuccess);
-      return;
+      break;
     case TrustedVaultRequest::HttpStatus::kOtherError:
-      std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError);
+      std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
+                              /*last_key_version=*/0);
       return;
     case TrustedVaultRequest::HttpStatus::kNotFound:
     case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
       // Local trusted vault keys are outdated.
       std::move(callback).Run(
-          TrustedVaultRegistrationStatus::kLocalDataObsolete);
+          TrustedVaultRegistrationStatus::kLocalDataObsolete,
+          /*last_key_version=*/0);
       return;
   }
-  NOTREACHED();
+
+  sync_pb::JoinSecurityDomainsResponse response;
+  if (!response.ParseFromString(response_body)) {
+    std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
+                            /*last_key_version=*/0);
+    return;
+  }
+  const int last_key_version = response.security_domain().current_epoch();
+  if (last_key_version == kUnknownConstantKeyVersion) {
+    // kUnknownConstantKeyVersion should be never returned by the server, likely
+    // response is corrupted or empty.
+    std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
+                            /*last_key_version=*/0);
+    return;
+  }
+  std::move(callback).Run(TrustedVaultRegistrationStatus::kSuccess,
+                          last_key_version);
 }
 
 void ProcessDownloadKeysResponse(
@@ -176,8 +185,7 @@ TrustedVaultConnectionImpl::~TrustedVaultConnectionImpl() = default;
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
     const CoreAccountInfo& account_info,
-    const absl::optional<TrustedVaultKeyAndVersion>&
-        last_trusted_vault_key_and_version,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorType authentication_factor_type,
     absl::optional<int> authentication_factor_type_hint,
@@ -202,8 +210,7 @@ TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadNewKeys(
     const CoreAccountInfo& account_info,
-    const absl::optional<TrustedVaultKeyAndVersion>&
-        last_trusted_vault_key_and_version,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadNewKeysCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
