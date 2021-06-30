@@ -220,8 +220,10 @@ std::atomic<uint32_t>
 
 base::SequenceLocalStorageSlot<TracingSamplerProfiler>&
 GetSequenceLocalStorageProfilerSlot() {
-  static base::SequenceLocalStorageSlot<TracingSamplerProfiler> storage;
-  return storage;
+  static base::NoDestructor<
+      base::SequenceLocalStorageSlot<TracingSamplerProfiler>>
+      storage;
+  return *storage;
 }
 
 // Stores information about the StackFrame, to emit to the trace.

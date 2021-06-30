@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -122,8 +123,9 @@ class HttpProxyTimeoutExperiments {
 };
 
 HttpProxyTimeoutExperiments* GetProxyTimeoutExperiments() {
-  static HttpProxyTimeoutExperiments proxy_timeout_experiments;
-  return &proxy_timeout_experiments;
+  static base::NoDestructor<HttpProxyTimeoutExperiments>
+      proxy_timeout_experiments;
+  return proxy_timeout_experiments.get();
 }
 
 }  // namespace

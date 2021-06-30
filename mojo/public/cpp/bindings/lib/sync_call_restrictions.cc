@@ -47,8 +47,8 @@ GlobalSyncCallSettings& GetGlobalSettings() {
 }
 
 size_t& GetSequenceLocalScopedAllowCount() {
-  static base::SequenceLocalStorageSlot<size_t> count;
-  return count.GetOrCreateValue();
+  static base::NoDestructor<base::SequenceLocalStorageSlot<size_t>> count;
+  return count->GetOrCreateValue();
 }
 
 // Sometimes sync calls need to be made while sequence-local storage is not

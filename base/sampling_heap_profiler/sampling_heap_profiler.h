@@ -12,13 +12,15 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_id_name_manager.h"
 
 namespace base {
+
+template <typename T>
+class NoDestructor;
 
 // The class implements sampling profiling of native memory heap.
 // It uses PoissonAllocationSampler to aggregate the heap allocations and

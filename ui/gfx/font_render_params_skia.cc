@@ -5,6 +5,7 @@
 #include "ui/gfx/font_render_params.h"
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 
 namespace gfx {
@@ -39,8 +40,8 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   if (family_out)
     NOTIMPLEMENTED();
   // Customized font rendering settings are not supported, only defaults.
-  static const gfx::FontRenderParams params(LoadDefaults());
-  return params;
+  static const base::NoDestructor<gfx::FontRenderParams> params(LoadDefaults());
+  return *params;
 }
 
 float GetFontRenderParamsDeviceScaleFactor() {

@@ -57,12 +57,12 @@ std::pair<int, std::string> GetVersionData() {
 }
 
 const _SYSTEM_INFO& GetSystemInfoStorage() {
-  static const _SYSTEM_INFO system_info = [] {
+  static const NoDestructor<_SYSTEM_INFO> system_info([] {
     _SYSTEM_INFO info = {};
     ::GetNativeSystemInfo(&info);
     return info;
-  }();
-  return system_info;
+  }());
+  return *system_info;
 }
 
 }  // namespace

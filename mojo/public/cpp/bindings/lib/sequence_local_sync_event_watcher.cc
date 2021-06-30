@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -172,8 +173,8 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
  private:
   using StorageSlotType = base::SequenceLocalStorageSlot<SequenceLocalState>;
   static StorageSlotType& GetStorageSlot() {
-    static StorageSlotType storage;
-    return storage;
+    static base::NoDestructor<StorageSlotType> storage;
+    return *storage;
   }
 
   void OnEventSignaled();

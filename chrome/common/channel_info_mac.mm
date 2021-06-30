@@ -95,7 +95,7 @@ ChannelState& GetChannelState() {
 
 bool SideBySideCapable() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  static const bool capable([] {
+  static const base::NoDestructor<bool> capable([] {
     // Use the main Chrome application bundle and not the framework bundle.
     // Keystone keys don't live in the framework.
     NSBundle* bundle = base::mac::OuterBundle();

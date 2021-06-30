@@ -32,8 +32,8 @@ GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
 }
 
 absl::optional<Decorators>* GetDecoratorsOverride() {
-  static absl::optional<Decorators> decorators_override;
-  return &decorators_override;
+  static base::NoDestructor<absl::optional<Decorators>> decorators_override;
+  return decorators_override.get();
 }
 
 void OnGraphCreated(Decorators decorators,

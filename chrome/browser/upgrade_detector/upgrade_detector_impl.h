@@ -8,7 +8,6 @@
 #include <array>
 
 #include "base/macros.h"
-#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "base/version.h"
@@ -20,6 +19,8 @@
 
 namespace base {
 class Clock;
+template <typename T>
+class NoDestructor;
 class TickClock;
 }  // namespace base
 

@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -104,9 +105,10 @@ class Connector::RunLoopNestingObserver
     // The NestingObserver for each thread. Note that this is always a
     // Connector::RunLoopNestingObserver; we use the base type here because that
     // subclass is private to Connector.
-    static base::SequenceLocalStorageSlot<RunLoopNestingObserver>
+    static base::NoDestructor<
+        base::SequenceLocalStorageSlot<RunLoopNestingObserver>>
         sls_nesting_observer;
-    return &sls_nesting_observer.GetOrCreateValue();
+    return &sls_nesting_observer->GetOrCreateValue();
   }
 
  private:

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/availability/availability_prober.h"
@@ -223,13 +224,13 @@ class OriginProbeDelegate : public AvailabilityProber::Delegate {
 };
 
 CanaryCheckDelegate* GetCanaryCheckDelegate() {
-  static CanaryCheckDelegate delegate;
-  return &delegate;
+  static base::NoDestructor<CanaryCheckDelegate> delegate;
+  return delegate.get();
 }
 
 OriginProbeDelegate* GetOriginProbeDelegate() {
-  static OriginProbeDelegate delegate;
-  return &delegate;
+  static base::NoDestructor<OriginProbeDelegate> delegate;
+  return delegate.get();
 }
 
 // Allows probing to start after a delay so that browser start isn't slowed.

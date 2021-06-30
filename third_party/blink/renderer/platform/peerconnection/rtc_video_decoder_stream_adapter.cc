@@ -80,10 +80,10 @@ constexpr const char* kExternalDecoderName = "ExternalDecoder";
 
 // Number of RTCVideoDecoder instances right now that have started decoding.
 std::atomic_int* GetDecoderCounter() {
-  static std::atomic_int s_counter(0);
+  static base::NoDestructor<std::atomic_int> s_counter(0);
   // Note that this will init only in the first call in the ctor, so it's still
   // single threaded.
-  return &s_counter;
+  return s_counter.get();
 }
 
 void RecordInitializationLatency(base::TimeDelta latency) {

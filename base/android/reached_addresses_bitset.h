@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/no_destructor.h"
 
 namespace base {
+
+template <typename T>
+class NoDestructor;
 
 namespace android {
 

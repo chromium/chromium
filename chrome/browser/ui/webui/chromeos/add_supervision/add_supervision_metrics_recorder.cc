@@ -12,8 +12,8 @@
 
 // static
 AddSupervisionMetricsRecorder* AddSupervisionMetricsRecorder::GetInstance() {
-  static AddSupervisionMetricsRecorder instance_;
-  return &instance_;
+  static base::NoDestructor<AddSupervisionMetricsRecorder> instance_;
+  return instance_.get();
 }
 
 void AddSupervisionMetricsRecorder::RecordAddSupervisionEnrollment(

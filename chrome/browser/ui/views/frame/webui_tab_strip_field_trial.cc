@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -50,7 +51,7 @@ bool HasBuiltInTouchScreen() {
 
 // static
 void WebUITabStripFieldTrial::RegisterFieldTrialIfNecessary() {
-  static WebUITabStripFieldTrial instance;
+  static base::NoDestructor<WebUITabStripFieldTrial> instance;
 }
 
 WebUITabStripFieldTrial::WebUITabStripFieldTrial() {

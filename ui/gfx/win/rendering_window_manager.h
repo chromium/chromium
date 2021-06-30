@@ -9,10 +9,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace base {
+template <typename T>
+class NoDestructor;
 class SingleThreadTaskRunner;
 }
 

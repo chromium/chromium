@@ -8,11 +8,15 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/no_destructor.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 
 class KeyedService;
 class SimpleFactoryKey;
+
+namespace base {
+template <typename T>
+class NoDestructor;
+}  // namespace base
 
 namespace download {
 class SimpleDownloadManagerCoordinator;

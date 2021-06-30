@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -401,9 +402,10 @@ mojo::Remote<::media::mojom::MediaService>
 ShellContentBrowserClient::RunSecondaryMediaService() {
   mojo::Remote<::media::mojom::MediaService> remote;
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
-  static base::SequenceLocalStorageSlot<std::unique_ptr<::media::MediaService>>
+  static base::NoDestructor<
+      base::SequenceLocalStorageSlot<std::unique_ptr<::media::MediaService>>>
       service;
-  service.emplace(::media::CreateMediaServiceForTesting(
+  service->emplace(::media::CreateMediaServiceForTesting(
       remote.BindNewPipeAndPassReceiver()));
 #endif
   return remote;

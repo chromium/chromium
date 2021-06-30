@@ -5,6 +5,7 @@
 #include "chromecast/browser/system_connector.h"
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,8 +18,10 @@ namespace {
 
 base::SequenceLocalStorageSlot<service_manager::Connector>&
 GetConnectorStorage() {
-  static base::SequenceLocalStorageSlot<service_manager::Connector> storage;
-  return storage;
+  static base::NoDestructor<
+      base::SequenceLocalStorageSlot<service_manager::Connector>>
+      storage;
+  return *storage;
 }
 
 void BindReceiverOnMainThread(

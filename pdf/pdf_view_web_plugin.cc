@@ -87,9 +87,7 @@ namespace {
 class PerProcessInitializer final {
  public:
   static PerProcessInitializer& GetInstance() {
-    static base::NoDestructor<PerProcessInitializer,
-                              base::AllowForTriviallyDestructibleType>
-        instance;
+    static base::NoDestructor<PerProcessInitializer> instance;
     return *instance;
   }
 

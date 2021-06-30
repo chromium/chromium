@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -53,6 +54,6 @@ void AllTabContentsesList::Iterator::Next() {
 }
 
 const AllTabContentsesList& AllTabContentses() {
-  static const AllTabContentsesList all_tabs;
-  return all_tabs;
+  static const base::NoDestructor<AllTabContentsesList> all_tabs;
+  return *all_tabs;
 }

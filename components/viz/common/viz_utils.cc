@@ -14,6 +14,7 @@
 #include <string>
 
 #include "base/android/build_info.h"
+#include "base/no_destructor.h"
 #endif
 
 namespace viz {
@@ -36,8 +37,7 @@ bool AlwaysUseWideColorGamut() {
   if (command_line.HasSwitch(kDisableWCGForTest))
     return false;
 
-  // As it takes some work to compute this, cache the result.
-  static bool is_always_use_wide_color_gamut_enabled = [] {
+  auto compute_always_use_wide_color_gamut = []() {
     const char* current_model =
         base::android::BuildInfo::GetInstance()->model();
     const std::array<std::string, 2> enabled_models = {
@@ -48,9 +48,12 @@ bool AlwaysUseWideColorGamut() {
     }
 
     return false;
-  }();
+  };
 
-  return is_always_use_wide_color_gamut_enabled;
+  // As it takes some work to compute this, cache the result.
+  static base::NoDestructor<bool> is_always_use_wide_color_gamut_enabled(
+      compute_always_use_wide_color_gamut());
+  return *is_always_use_wide_color_gamut_enabled;
 }
 #endif
 

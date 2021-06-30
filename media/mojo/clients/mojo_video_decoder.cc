@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -38,8 +39,8 @@ namespace media {
 namespace {
 // Number of functional instances of MojoVideoDecoder in the current process.
 std::atomic<int>& get_mojo_instance_counter() {
-  static std::atomic<int> instance_counter(0);
-  return instance_counter;
+  static base::NoDestructor<std::atomic<int>> gInstanceCounter(0);
+  return *gInstanceCounter;
 }
 }  // namespace
 

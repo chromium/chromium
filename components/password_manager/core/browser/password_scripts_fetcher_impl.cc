@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/version.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -164,7 +165,7 @@ bool PasswordScriptsFetcherImpl::IsScriptAvailable(
 }
 
 void PasswordScriptsFetcherImpl::StartFetch() {
-  static const base::TimeDelta kFetchTimeout(
+  static const base::NoDestructor<base::TimeDelta> kFetchTimeout(
       base::TimeDelta::FromSeconds(kFetchTimeoutInSeconds));
   if (url_loader_)
     return;
@@ -194,7 +195,7 @@ void PasswordScriptsFetcherImpl::StartFetch() {
         })");
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
-  url_loader_->SetTimeoutDuration(kFetchTimeout);
+  url_loader_->SetTimeoutDuration(*kFetchTimeout);
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&PasswordScriptsFetcherImpl::OnFetchComplete,
@@ -267,10 +268,10 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
 }
 
 bool PasswordScriptsFetcherImpl::IsCacheStale() const {
-  static const base::TimeDelta kCacheTimeout(
+  static const base::NoDestructor<base::TimeDelta> kCacheTimeout(
       base::TimeDelta::FromMinutes(kCacheTimeoutInMinutes));
   return last_fetch_timestamp_.is_null() ||
-         base::TimeTicks::Now() - last_fetch_timestamp_ >= kCacheTimeout;
+         base::TimeTicks::Now() - last_fetch_timestamp_ >= *kCacheTimeout;
 }
 
 void PasswordScriptsFetcherImpl::RunResponseCallback(

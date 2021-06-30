@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/format_macros.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 
 namespace base {
@@ -20,8 +21,8 @@ UnguessableToken UnguessableToken::Create() {
 
 // static
 const UnguessableToken& UnguessableToken::Null() {
-  static const UnguessableToken null_token{};
-  return null_token;
+  static const NoDestructor<UnguessableToken> null_token;
+  return *null_token;
 }
 
 // static

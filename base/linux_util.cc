@@ -19,6 +19,7 @@
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/no_destructor.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -122,7 +123,7 @@ std::string GetLinuxDistro() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // We do this check only once per process. If it fails, there's
   // little reason to believe it will work if we attempt to run it again.
-  static DistroNameGetter distro_name_getter;
+  static NoDestructor<DistroNameGetter> distro_name_getter;
 #endif
   return g_linux_distro;
 }

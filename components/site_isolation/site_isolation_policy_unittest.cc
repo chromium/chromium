@@ -5,7 +5,6 @@
 #include "components/site_isolation/site_isolation_policy.h"
 
 #include "base/base_switches.h"
-#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"

@@ -11,6 +11,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "third_party/icu/source/common/unicode/uidna.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "url/url_canon_icu.h"
@@ -18,8 +19,10 @@
 
 namespace url {
 
-// Use UIDNA, a C pointer to a UTS46/IDNA 2008 handling object opened with
-// uidna_openUTS46().
+namespace {
+
+// A wrapper to use base::NoDestructor with ICU's UIDNA, a C pointer to
+// a UTS46/IDNA 2008 handling object opened with uidna_openUTS46().
 //
 // We use UTS46 with BiDiCheck to migrate from IDNA 2003 (with unassigned
 // code points allowed) to IDNA 2008 with
@@ -39,12 +42,12 @@ namespace url {
 // http://goo.gl/3XBhqw ).
 // See http://http://unicode.org/reports/tr46/ and references therein
 // for more details.
-UIDNA* GetUIDNA() {
-  static UIDNA* uidna = [] {
+struct UIDNAWrapper {
+  UIDNAWrapper() {
     UErrorCode err = U_ZERO_ERROR;
     // TODO(jungshik): Change options as different parties (browsers,
     // registrars, search engines) converge toward a consensus.
-    UIDNA* value = uidna_openUTS46(UIDNA_CHECK_BIDI, &err);
+    value = uidna_openUTS46(UIDNA_CHECK_BIDI, &err);
     if (U_FAILURE(err)) {
       CHECK(false) << "failed to open UTS46 data with error: "
                    << u_errorName(err)
@@ -53,9 +56,16 @@ UIDNA* GetUIDNA() {
                    << "tables for libicu. See https://crbug.com/778929.";
       value = nullptr;
     }
-    return value;
-  }();
-  return uidna;
+  }
+
+  UIDNA* value;
+};
+
+}  // namespace
+
+UIDNA* GetUIDNA() {
+  static base::NoDestructor<UIDNAWrapper> uidna_wrapper;
+  return uidna_wrapper->value;
 }
 
 // Converts the Unicode input representing a hostname to ASCII using IDN rules.

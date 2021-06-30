@@ -149,8 +149,9 @@ OzonePlatform::GetPlatformProperties() {
 
 const OzonePlatform::PlatformRuntimeProperties&
 OzonePlatform::GetPlatformRuntimeProperties() {
-  static const OzonePlatform::PlatformRuntimeProperties properties;
-  return properties;
+  static const base::NoDestructor<OzonePlatform::PlatformRuntimeProperties>
+      properties;
+  return *properties;
 }
 
 const OzonePlatform::InitializedHostProperties&

@@ -6,15 +6,9 @@
 #define BASE_NO_DESTRUCTOR_H_
 
 #include <new>
-#include <type_traits>
 #include <utility>
 
 namespace base {
-// A tag type used for NoDestructor to allow it to be created for a type that
-// has a trivial destructor. Use for cases where the same class might have
-// different implementations that vary on destructor triviality or when the
-// LSan hiding properties of NoDestructor are needed.
-struct AllowForTriviallyDestructibleType;
 
 // A wrapper that makes it easy to create an object of type T with static
 // storage duration that:
@@ -50,20 +44,9 @@ struct AllowForTriviallyDestructibleType;
 // Note that since the destructor is never run, this *will* leak memory if used
 // as a stack or member variable. Furthermore, a NoDestructor<T> should never
 // have global scope as that may require a static initializer.
-template <typename T, typename O = std::nullptr_t>
+template <typename T>
 class NoDestructor {
  public:
-  static_assert(
-      !std::is_trivially_destructible<T>::value ||
-          std::is_same<O, AllowForTriviallyDestructibleType>::value,
-      "base::NoDestructor is not needed because the templated class has a "
-      "trivial destructor");
-
-  static_assert(std::is_same<O, AllowForTriviallyDestructibleType>::value ||
-                    std::is_same<O, std::nullptr_t>::value,
-                "AllowForTriviallyDestructibleType is the only valid option "
-                "for the second template parameter of NoDestructor");
-
   // Not constexpr; just write static constexpr T x = ...; if the value should
   // be a constexpr.
   template <typename... Args>

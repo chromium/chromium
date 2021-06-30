@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -80,7 +81,7 @@ void AutofillAssistantOnboardingFetcher::FetchOnboardingDefinition(
 
 void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
                                                     int timeout_ms) {
-  static const base::TimeDelta kFetchTimeout(
+  static const base::NoDestructor<base::TimeDelta> kFetchTimeout(
       base::TimeDelta::FromMilliseconds(timeout_ms));
   if (url_loader_) {
     return;
@@ -95,7 +96,7 @@ void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
                                           kTrafficAnnotationDefinition);
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
-  url_loader_->SetTimeoutDuration(kFetchTimeout);
+  url_loader_->SetTimeoutDuration(*kFetchTimeout);
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&AutofillAssistantOnboardingFetcher::OnFetchComplete,

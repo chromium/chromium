@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -145,9 +146,9 @@ MojoResult InitializeImpl(const struct MojoInitializeOptions* options) {
     argv = options->argv;
   }
 
-  static GlobalStateInitializer global_state_initializer;
+  static base::NoDestructor<GlobalStateInitializer> global_state_initializer;
   const bool was_global_state_already_initialized =
-      !global_state_initializer.Initialize(argc, argv);
+      !global_state_initializer->Initialize(argc, argv);
 
   if (!should_initialize_ipc_support) {
     if (was_global_state_already_initialized)

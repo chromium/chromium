@@ -172,8 +172,9 @@ class ContextHostResolver::WrappedResolveHostRequest
   const absl::optional<HostCache::EntryStaleness>& GetStaleInfo()
       const override {
     if (!inner_request_) {
-      static const absl::optional<HostCache::EntryStaleness> nullopt_result;
-      return nullopt_result;
+      static const base::NoDestructor<absl::optional<HostCache::EntryStaleness>>
+          nullopt_result;
+      return *nullopt_result;
     }
 
     return inner_request_->GetStaleInfo();
