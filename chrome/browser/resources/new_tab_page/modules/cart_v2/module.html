@@ -16,10 +16,6 @@
     }
   }
 
-  #module:hover .side-scroll-button {
-    visibility: visible;
-  }
-
   /* Adjusting header margin and cartCarousel to make sure
    * the discount chip doesn't get clipped due to
    * overflow-x: hidden */
@@ -39,7 +35,8 @@
   }
 
   #cartCarousel {
-    display: inline-block;
+    display: flex;
+    flex-direction: row;
     overflow-x: hidden;
     padding-top: 24px;
     white-space: nowrap;
@@ -244,6 +241,13 @@
     right: 0;
   }
 
+  #moduleFooter {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+    margin-inline-end: 16px;
+  }
+
   .side-scroll-button {
     --cr-icon-button-fill-color: var(--ntp-icon-button-color);
     --cr-icon-button-icon-size: 16px;
@@ -252,10 +256,8 @@
     --cr-icon-image: url(icons/chevron.svg);
     background-color: var(--ntp-module-scroll-button-color);
     border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    visibility: hidden;
+    height: 24px;
+    width: 24px;
     z-index: 2;
   }
 
@@ -266,14 +268,11 @@
 
   #leftScrollButton {
     --cr-icon-image-transform: rotate(90deg);
-    left: 0;
-    margin-inline-start: 4px;
+    margin-inline-end: 16px;
   }
 
   #rightScrollButton {
     --cr-icon-image-transform: rotate(270deg);
-    margin-inline-end: 4px;
-    right: 0;
   }
 
   .probe {
@@ -296,12 +295,6 @@
     [[i18n('modulesCartSentence')]]
   </ntp-module-header>
   <div id="moduleContent">
-    <template is="dom-if" if="[[showLeftScrollButton_]]">
-      <div id="leftScrollShadow" class="side-scroll-shadow"></div>
-      <cr-icon-button id="leftScrollButton"
-          class="side-scroll-button" on-click="onLeftScrollClick_">
-      </cr-icon-button>
-    </template>
     <div id="cartCarousel">
       <div id="leftProbe" class="probe"></div>
       <div id ="carouselItems">
@@ -382,6 +375,14 @@
         [[cartMenuRemoveItem_]]
       </button>
     </cr-action-menu>
+  </div>
+  <div id="moduleFooter">
+    <template is="dom-if" if="[[showLeftScrollButton_]]">
+      <div id="leftScrollShadow" class="side-scroll-shadow"></div>
+      <cr-icon-button id="leftScrollButton"
+          class="side-scroll-button" on-click="onLeftScrollClick_">
+      </cr-icon-button>
+    </template>
     <template is="dom-if" if="[[showRightScrollButton_]]">
       <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
       <cr-icon-button id="rightScrollButton"
