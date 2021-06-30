@@ -39,6 +39,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/can_commit_status.h"
+#include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
@@ -200,7 +201,6 @@ class FrameTreeNode;
 class GeolocationServiceImpl;
 class IdleManager;
 class IdleManagerImpl;
-class MediaInterfaceProxy;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
 class PeakGpuMemoryTracker;
@@ -3361,10 +3361,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       audio_service_audio_output_stream_factory_;
   absl::optional<RenderFrameAudioInputStreamFactory>
       audio_service_audio_input_stream_factory_;
-
-  // Hosts media::mojom::InterfaceFactory for the RenderFrame and forwards
-  // media::mojom::InterfaceFactory calls to the remote "media" service.
-  std::unique_ptr<MediaInterfaceProxy> media_interface_proxy_;
 
   // Hosts blink::mojom::PresentationService for the RenderFrame.
   std::unique_ptr<PresentationServiceImpl> presentation_service_;

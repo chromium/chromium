@@ -117,13 +117,8 @@ void MojoCdmHelper::ConnectToOutputProtection() {
     DVLOG(2) << "Connect to mojom::OutputProtection";
     frame_interfaces_->BindEmbedderReceiver(
         output_protection_.BindNewPipeAndPassReceiver());
-    // Reset on disconnect is needed since MediaInterfaceProxy doesn't reset
-    // it's states (e.g. mojom::InterfaceFactory remotes) during document
-    // navigation, while the mojom::OutputProtection implementation is tied
-    // to the document's lifetime.
-    // TODO(crbug.com/1223163): Fix MediaInterfaceProxy lifetime to avoid
-    // similar issues in the future.
-    output_protection_.reset_on_disconnect();
+    // No reset_on_disconnect() since MediaInterfaceProxy should be destroyed
+    // when document is destroyed, which will destroy MojoCdmHelper as well.
   }
 }
 
@@ -132,13 +127,8 @@ void MojoCdmHelper::ConnectToCdmDocumentService() {
     DVLOG(2) << "Connect to mojom::CdmDocumentService";
     frame_interfaces_->BindEmbedderReceiver(
         cdm_document_service_.BindNewPipeAndPassReceiver());
-    // Reset on disconnect is needed since MediaInterfaceProxy doesn't reset
-    // it's states (e.g. mojom::InterfaceFactory remotes) during document
-    // navigation, while the mojom::CdmDocumentService implementation is tied
-    // to the document's lifetime.
-    // TODO(crbug.com/1223163): Fix MediaInterfaceProxy lifetime to avoid
-    // similar issues in the future.
-    cdm_document_service_.reset_on_disconnect();
+    // No reset_on_disconnect() since MediaInterfaceProxy should be destroyed
+    // when document is destroyed, which will destroy MojoCdmHelper as well.
   }
 }
 

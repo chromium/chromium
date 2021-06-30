@@ -83,7 +83,6 @@
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/manifest/manifest_manager_host.h"
-#include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
@@ -8706,10 +8705,8 @@ void RenderFrameHostImpl::ActivateForPrerendering() {
 
 void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(
     mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
-  if (!media_interface_proxy_) {
-    media_interface_proxy_ = std::make_unique<MediaInterfaceProxy>(this);
-  }
-  media_interface_proxy_->Bind(std::move(receiver));
+  MediaInterfaceProxy::GetOrCreateForCurrentDocument(this)->Bind(
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(

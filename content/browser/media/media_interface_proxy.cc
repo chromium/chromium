@@ -551,4 +551,6 @@ void MediaInterfaceProxy::OnChromeOsCdmCreated(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(MediaInterfaceProxy)
+
 }  // namespace content
