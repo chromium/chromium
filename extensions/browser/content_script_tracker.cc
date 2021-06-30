@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -305,6 +306,38 @@ void ContentScriptTracker::ReadyToCommitNavigation(
   URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
       base::PassKey<ContentScriptTracker>(), navigation,
       extensions_injecting_content_scripts);
+}
+
+// static
+void ContentScriptTracker::ReadyToCommitNavigationWithGuestViewContentScripts(
+    base::PassKey<WebViewGuest> pass_key,
+    content::WebContents* outer_web_contents,
+    content::NavigationHandle* navigation) {
+  // Only Chrome Apps and Extensions can inject content scripts.  OTOH,
+  // <webview> tag can be used by Chrome Apps and/or WebUI pages.  Do nothing
+  // for WebUI and only continue when the `outer_web_contents` is a Chrome App.
+  url::Origin outer_origin =
+      outer_web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  if (outer_origin.scheme() != kExtensionScheme)
+    return;
+  ExtensionId app_id = outer_origin.host();
+
+  // Store `extension_id` in `content_scripts_for_process`.
+  // ContentScriptTracker never removes entries from this set - once a renderer
+  // process gains an ability to talk on behalf of a content script, it retains
+  // this ability forever.  Note that the set will be destroyed together with
+  // the RenderProcessHost (see also a comment inside
+  // ContentScriptsSet::GetOrCreate).
+  //
+  // TODO(lukasza): false positives in ContentScriptTracker are okay, but
+  // ideally we would only populate `content_scripts_for_process` below if
+  // content script URL patterns actually match the target URL of the
+  // navigation.
+  content::RenderProcessHost* inner_process =
+      navigation->GetRenderFrameHost()->GetProcess();
+  ExtensionIdSet& content_scripts_for_process =
+      ContentScriptsSet::GetOrCreate(*inner_process);
+  content_scripts_for_process.insert(app_id);
 }
 
 // static

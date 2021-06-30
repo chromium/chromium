@@ -50,6 +50,7 @@
 #include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
@@ -893,6 +894,9 @@ void WebViewGuest::ReadyToCommitNavigation(
       ->MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
           {owner_web_contents()->GetMainFrame()->GetLastCommittedOrigin()},
           kPushToRendererNow);
+
+  ContentScriptTracker::ReadyToCommitNavigationWithGuestViewContentScripts(
+      base::PassKey<WebViewGuest>(), owner_web_contents(), navigation_handle);
 }
 
 void WebViewGuest::DidFinishNavigation(

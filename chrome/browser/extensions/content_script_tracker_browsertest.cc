@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -741,6 +742,117 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
       *second_tab->GetMainFrame()->GetProcess(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+}
+
+class ContentScriptTrackerAppBrowserTest : public PlatformAppBrowserTest {
+ public:
+  ContentScriptTrackerAppBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    PlatformAppBrowserTest::SetUpOnMainThread();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
+                       WebViewContentScript) {
+  // Load the test app.
+  TestExtensionDir dir;
+  const char kManifest[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - App",
+        "version": "1.0",
+        "manifest_version": 2,
+        "permissions": ["*://*/*", "webview"],
+        "app": {
+          "background": {
+            "scripts": ["background_script.js"]
+          }
+        }
+      } )";
+  dir.WriteManifest(kManifest);
+  const char kBackgroundScript[] = R"(
+      chrome.app.runtime.onLaunched.addListener(function() {
+        chrome.app.window.create('page.html', {}, function () {});
+      });
+  )";
+  dir.WriteFile(FILE_PATH_LITERAL("background_script.js"), kBackgroundScript);
+  const char kPage[] = R"(
+      <div id="webview-tag-container"></div>
+  )";
+  dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPage);
+
+  // Launch the test app and grab its WebContents.
+  const Extension* app = LoadAndLaunchApp(dir.UnpackedPath());
+  ASSERT_TRUE(app);
+  content::WebContents* app_contents = GetFirstAppWindowWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(app_contents));
+
+  // Navigate the <webview> tag and grab the `guest_process`.
+  content::WebContents* guest_contents = nullptr;
+  {
+    const char kWebViewInjectionScriptTemplate[] = R"(
+        document.querySelector('#webview-tag-container').innerHTML =
+            '<webview style="width: 100px; height: 100px;"></webview>';
+        var webview = document.querySelector('webview');
+        webview.src = $1;
+    )";
+    GURL guest_url1(embedded_test_server()->GetURL("/title1.html"));
+
+    content::WebContentsAddedObserver guest_contents_observer;
+    ASSERT_TRUE(ExecuteScript(
+        app_contents,
+        content::JsReplace(kWebViewInjectionScriptTemplate, guest_url1)));
+    guest_contents = guest_contents_observer.GetWebContents();
+  }
+
+  // Verify that ContentScriptTracker correctly shows that no content scripts
+  // got injected just yet.
+  content::RenderProcessHost* guest_process =
+      guest_contents->GetMainFrame()->GetProcess();
+  EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *guest_process, app->id()));
+
+  // Declare content scripts + trigger their injection with another navigation.
+  //
+  // TODO(lukasza): Ideally the URL pattern would be more restrictive for the
+  // content script `matches` below (to enable testing whether the target of
+  // navigation URL actually matched the pattern from the `addContentScripts`
+  // call).
+  {
+    const char kContentScriptDeclarationScriptTemplate[] = R"(
+        var webview = document.querySelector('webview');
+        webview.addContentScripts([{
+            name: 'rule',
+            matches: ['*://*/*'],
+            js: { code: $1 },
+            run_at: 'document_start'}]);
+        webview.src = $2;
+    )";
+    const char kContentScript[] = R"(
+        chrome.test.sendMessage("Hello from content script!");
+    )";
+    GURL guest_url2(embedded_test_server()->GetURL("/title2.html"));
+
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    content::TestNavigationObserver nav_observer(guest_contents);
+    content::ExecuteScriptAsync(
+        app_contents,
+        content::JsReplace(kContentScriptDeclarationScriptTemplate,
+                           kContentScript, guest_url2));
+
+    // Wait for the navigation to complete and verify via `listener` that the
+    // content script has run.
+    nav_observer.Wait();
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Verify that ContentScriptTracker detected the content script injection.
+  EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+      *guest_process, app->id()));
 }
 
 // TODO(crbug.com/1215386): Add a test for tracking content scripts added

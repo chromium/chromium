@@ -16,6 +16,7 @@ namespace content {
 class NavigationHandle;
 class RenderFrameHost;
 class RenderProcessHost;
+class WebContents;
 }  // namespace content
 
 namespace extensions {
@@ -24,6 +25,7 @@ class Extension;
 class ExtensionWebContentsObserver;
 class RequestContentScript;
 class ScriptExecutor;
+class WebViewGuest;
 
 // Class for
 // 1) observing when a content script gets injected into a process,
@@ -58,6 +60,13 @@ class ContentScriptTracker {
   // content scripts into the target of the `navigation`.
   static void ReadyToCommitNavigation(
       base::PassKey<ExtensionWebContentsObserver> pass_key,
+      content::NavigationHandle* navigation);
+
+  // Called before a navigation commits in a GuestView with a non-empty set of
+  // content scripts to inject into the guest.
+  static void ReadyToCommitNavigationWithGuestViewContentScripts(
+      base::PassKey<WebViewGuest> pass_key,
+      content::WebContents* outer_web_contents,
       content::NavigationHandle* navigation);
 
   // Called before ExtensionMsg_ExecuteCode is sent to a renderer process
