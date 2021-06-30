@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Deschide o fereastră nouă în modul incognito</translation>
 <translation id="152892567002884378">Mărește volumul</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, apoi <ph name="ESC" /></translation>
+<translation id="1633761758045565086">Mută focalizarea pe o casetă de ajutor</translation>
 <translation id="1652741121070700329">Mută cursorul la începutul cuvântului anterior</translation>
 <translation id="1679841710523778799">Mărește luminozitatea</translation>
 <translation id="168356808214100546">Apasă lung pe <ph name="ALT" />, apăsă pe <ph name="TAB" /> până când ajungi la fereastra pe care dorești să o deschizi, apoi eliberează.</translation>
@@ -148,6 +149,7 @@
 <translation id="6276708887952587684">Afișează sursa paginii</translation>
 <translation id="6321940490215594447">Deschide pagina Istoric</translation>
 <translation id="6340769215862220182">Mărire</translation>
+<translation id="634687982629734605">Comută focalizarea între: zona de stare (unde apare fotografia contului), Lansator, bara de adrese, bara de marcaje (dacă este vizibilă), pagina web deschisă și bara de descărcări (dacă este vizibilă). Dacă se afișează o casetă de dialog focalizabilă, mută focalizarea pe aceasta.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Selectează textul până la capătul rândului</translation>
 <translation id="6425378783626925378">Dă clic pe pictogramele 1 – 8 de pe raft</translation>

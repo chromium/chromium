@@ -108,7 +108,7 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="2015722694326466240">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder ver las contraseñas.</translation>
-<translation id="2021670401941426298">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si tu buscador lo permite).</translation>
+<translation id="2021670401941426298">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="2022352537516230970">Diseñado para tu iPhone</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
@@ -208,7 +208,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crea una nueva pestaña de incógnito</translation>
-<translation id="3134493362339304186">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si tu buscador lo permite). No se cerrará la sesión de tu cuenta de Google. Para borrar otros tipos de historial, visita <ph name="BEGIN_LINK" />Mi Actividad en Google<ph name="END_LINK" />.</translation>
+<translation id="3134493362339304186">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde). No se cerrará la sesión de tu cuenta de Google. Para borrar otros tipos de historial, visita <ph name="BEGIN_LINK" />Mi Actividad en Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Guardar tarjeta</translation>
 <translation id="3157387275655328056">Añadir a lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
@@ -560,7 +560,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="651505212789431520">¿Cancelar sincronización? Puedes activar la sincronización en cualquier momento desde los Ajustes.</translation>
 <translation id="6524918542306337007">El modo de incógnito no está disponible</translation>
-<translation id="6560725150890787329">Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si tu buscador lo permite). No se cerrará la sesión de tu cuenta de Google. Para borrar otros tipos de historial, visita <ph name="BEGIN_LINK" />Mi Actividad en Google<ph name="END_LINK" />.</translation>
+<translation id="6560725150890787329">Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde). No se cerrará la sesión de tu cuenta de Google. Para borrar otros tipos de historial, visita <ph name="BEGIN_LINK" />Mi Actividad en Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Ampliar</translation>
 <translation id="6585618849026997638">Si añades un marcador a una página que consideres importante, podrás volver a ella más tarde.</translation>
 <translation id="6603393121510733479">Tu organización ha desactivado la navegación privada.
@@ -805,7 +805,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8981454092730389528">Gestión de tu actividad en Google</translation>
 <translation id="8985320356172329008">Has iniciado sesión en Google como</translation>
-<translation id="9000089900434778519">Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si tu buscador lo permite).</translation>
+<translation id="9000089900434778519">Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="9034759925968272072">No se cerrará la sesión en tu cuenta de Google. Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>

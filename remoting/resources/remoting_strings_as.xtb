@@ -24,6 +24,7 @@
 যদি '<ph name="SERVICE_SCRIPT_NAME" />'ত ইতিমধ্যে টিক মাৰ্ক দিয়া আছে, সেইটো আঁতৰাই পুনৰাই দিয়ক।</translation>
 <translation id="225614027745146050">স্বাগতম</translation>
 <translation id="2320166752086256636">কীব'ৰ্ড লুকুৱাওক</translation>
+<translation id="2329392777730037872">ক্লায়েণ্টটোত <ph name="URL" /> খুলিব পৰা নগ’ল।</translation>
 <translation id="2333212046079545895">স্বত্বাধিকাৰ ২০২১ Google LLC। সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2366718077645204424">হ‘ষ্টৰ সৈতে সংযোগ কৰিব পৰা নগ‘ল। এইটো সম্ভৱতঃ আপুনি ব্যৱহাৰ কৰি থকা নেটৱৰ্কটোৰ কনফিগাৰেশ্বনৰ কাৰণে হৈছে।</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">PrtScn পঠিয়াওক</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" />ৰ সংযোগ বন্ধ</translation>
 <translation id="4985296110227979402">ৰিম’ট এক্সেছৰ বাবে আপুনি প্ৰথমে নিজৰ কম্পিউটাৰটো ছেট আপ কৰিব লাগিব</translation>
+<translation id="4987330545941822761">Chrome ৰিম’ট ডেস্কটপে URLসমূহ স্থানীয়ভাৱে খুলিবলৈ ব্ৰাউজাৰটো চিনাক্ত কৰিব পৰা নাই। অনুগ্ৰহ কৰি এইটোক তলৰ তালিকাখনৰ পৰা বাছনি কৰক।</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (অফলাইন হৈ আছে)</translation>
 <translation id="507204348399810022">আপুনি নিশ্চিতভাৱে <ph name="HOSTNAME" />ৰ ৰিম‘ট সংযোগ অক্ষম কৰিব বিচাৰেনে?</translation>
 <translation id="5170982930780719864">অমান্য হ'ষ্টৰ আইডি।</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7312846573060934304">হ’ষ্ট অফলাইন আছে।</translation>
 <translation id="7319983568955948908">শ্বেয়াৰ কৰা বন্ধ কৰক</translation>
+<translation id="7359298090707901886">স্থানীয় মেচিনটোত URL খুলিবলৈ বাছনি কৰা ব্ৰাউজাৰটো ব্যৱহাৰ কৰিব নোৱাৰি।</translation>
 <translation id="7401733114166276557">Chrome ৰিম’ট ডেস্কটপ</translation>
 <translation id="7434397035092923453">ক্লায়েণ্টৰ বাবে এক্সেছ প্ৰত্যাখ্যান কৰা হৈছে: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7444276978508498879">এইজন ক্লায়েণ্ট সংযোজিত হৈছে: <ph name="CLIENT_USERNAME" />।</translation>

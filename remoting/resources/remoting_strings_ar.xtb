@@ -24,6 +24,7 @@
 في حال سبق ووضعت علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />"، عليك إزالة العلامة ثم وضعها مرة أخرى.</translation>
 <translation id="225614027745146050">مرحبًا</translation>
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
+<translation id="2329392777730037872">تعذّر فتح <ph name="URL" /> على الجهاز العميل.</translation>
 <translation id="2333212046079545895">‏حقوق الطبع والنشر لعام 2021 لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2366718077645204424">يتعذر الوصول إلى المضيف. ربما يرجع ذلك إلى إعداد الشبكة التي تستخدمها.</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">‏إرسال PrtScn</translation>
 <translation id="4974476491460646149">تم إغلاق الاتصال بـ <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">تحتاج أولاً إلى إعداد جهاز الكمبيوتر لإتاحة الدخول عن بُعد</translation>
+<translation id="4987330545941822761">‏لا يمكن لميزة "الوصول إلى الكمبيوتر المكتبي عن بُعد من Chrome" تحديد المتصفّح الذي يجب استخدامه لفتح عناوين URL على الجهاز. يُرجى اختيار المتصفّح من القائمة أدناه.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (في وضع عدم اتصال)</translation>
 <translation id="507204348399810022">هل تريد فعلًا إيقاف الاتصالات عن بُعد بـ <ph name="HOSTNAME" />؟</translation>
 <translation id="5170982930780719864">رقم تعريف المضيف غير صالح.</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="7312846573060934304">المضيف بلا إنترنت.</translation>
 <translation id="7319983568955948908">إيقاف المشاركة</translation>
+<translation id="7359298090707901886">‏لا يمكن استخدام المتصفّح الذي تم اختياره لفتح عناوين URL على الجهاز المحلي.</translation>
 <translation id="7401733114166276557">‏سطح المكتب البعيد من Chrome</translation>
 <translation id="7434397035092923453">تم رفض دخول العميل: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">العميل المتصل: <ph name="CLIENT_USERNAME" />.</translation>

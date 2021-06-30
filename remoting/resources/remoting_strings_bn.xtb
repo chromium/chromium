@@ -24,6 +24,7 @@
 '<ph name="SERVICE_SCRIPT_NAME" />' বিকল্পে আগে থেকেই টিক চিহ্ন দেওয়া থাকলে, সেটি সরিয়ে আবার টিক দিন।</translation>
 <translation id="225614027745146050">স্বাগতম</translation>
 <translation id="2320166752086256636">কীবোর্ড লুকান</translation>
+<translation id="2329392777730037872">ক্লায়েন্টের ডিভাইসে <ph name="URL" /> খোলা যায়নি।</translation>
 <translation id="2333212046079545895">কপিরাইট ২০২১ Google LLC. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2366718077645204424">হোস্টে পৌঁছাতে পারেনি৷ আপনার ব্যবহার করা নেটওয়ার্কের কনফিগারেশনের কারণে সম্ভবত এটি হয়েছে৷</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">PrtScn পাঠান</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> এর জন্য সংযোগ বন্ধ হয়েছে</translation>
 <translation id="4985296110227979402">দূরবর্তী অ্যাক্সেসের জন্য প্রথমে আপনার কম্পিউটার সেট-আপ করা প্রয়োজন</translation>
+<translation id="4987330545941822761">কোন ব্রাউজার দিয়ে স্থানীয়ভাবে URL খোলা হবে, Chrome রিমোট ডেস্কটপ সেটি নির্ধারণ করতে পারে না। নিচের তালিকা থেকে সেটি বেছে নিন।</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (অফলাইন)</translation>
 <translation id="507204348399810022">আপনি কি নিশ্চিত যে আপনি <ph name="HOSTNAME" /> এর সাথে রিমোট কানেকশন বন্ধ করতে চান?</translation>
 <translation id="5170982930780719864">ভুল হোস্ট আইডি।</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="7312846573060934304">হোস্ট এখন অফলাইনে।</translation>
 <translation id="7319983568955948908">শেয়ার করা বন্ধ করুন</translation>
+<translation id="7359298090707901886">স্থানীয় মেশিনে URL খোলার জন্য বেছে নেওয়া ব্রাউজারটি ব্যবহার করা যাবে না।</translation>
 <translation id="7401733114166276557">Chrome রিমোট ডেস্কটপ</translation>
 <translation id="7434397035092923453">এই ক্লায়েন্টের জন্য অ্যাক্সেস স্বীকৃত নয়: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ক্লায়েন্ট সংযুক্ত: <ph name="CLIENT_USERNAME" />৷</translation>

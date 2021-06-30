@@ -106,7 +106,7 @@
 <translation id="4264410486868823224">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Chromium 作業系統條款》。</translation>
 <translation id="4271805377592243930">取得 Chromium 相關說明</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
-<translation id="429583012151745428">正在執行安裝作業，請勿關閉裝置。安裝作業應會在二十分鐘內完成。完成後，電腦會自動關機。</translation>
+<translation id="429583012151745428">正在進行安裝，請勿關閉裝置。安裝應在二十分鐘內完成。完成後，電腦會自動關機。</translation>
 <translation id="4407044323746248786">仍要結束 Chromium 嗎？</translation>
 <translation id="4415566066719264597">讓 Chromium 在背景執行</translation>
 <translation id="4423735387467980091">自訂及控制 Chromium</translation>
@@ -142,7 +142,6 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta 版本</translation>
 <translation id="5479196819031988440">Chromium 作業系統無法開啟此網頁。</translation>
 <translation id="5480860683791598150">Chromium 需要位置資訊存取權，才能與這個網站分享您的位置資訊</translation>
-<translation id="5481338274774984070">Chromium 建議您不要下載或開啟此檔案。</translation>
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>

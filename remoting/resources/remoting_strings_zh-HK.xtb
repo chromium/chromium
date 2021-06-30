@@ -89,7 +89,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="4867841927763172006">傳送 PrtScn</translation>
 <translation id="4974476491460646149">「<ph name="HOSTNAME" />」已解除連線</translation>
 <translation id="4985296110227979402">您必須先設定電腦，才能使用遠端存取</translation>
-<translation id="4987330545941822761">Chrome 遠端桌面無法決定要用哪個瀏覽器在本機上開啟網址。請從下方清單中選擇瀏覽器。</translation>
+<translation id="4987330545941822761">Chrome 遠端桌面無法判斷該在本機使用哪個瀏覽器開啟網址。請從下方清單選取瀏覽器。</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (離線)</translation>
 <translation id="507204348399810022">您確定要停用與 <ph name="HOSTNAME" /> 之間的遠端連線嗎？</translation>
 <translation id="5170982930780719864">主機識別碼無效。</translation>

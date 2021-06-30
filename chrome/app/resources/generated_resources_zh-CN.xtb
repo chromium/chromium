@@ -1088,7 +1088,6 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">添加 Wi-Fi...</translation>
 <translation id="2162155940152307086">一旦您离开同步设置页面，同步功能就会启动</translation>
-<translation id="2163004395084716754">无法识别的键。按任意键即可退出。</translation>
 <translation id="2163470535490402084">请连接到互联网，以便登录您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 个开关键</translation>
 <translation id="2165177462441582039">选择系统应将每项内容突出显示多久</translation>
@@ -1538,6 +1537,7 @@
 <translation id="2659971421398561408">调整为 Crostini 分配的磁盘空间大小</translation>
 <translation id="2660779039299703961">事件</translation>
 <translation id="266079277508604648">无法连接到打印机。请确保该打印机已开机且已通过 Wi-Fi 或 USB 连接到您的 Chromebook。</translation>
+<translation id="2661315027005813059">往返缓存版页面：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">在精简模式下，网页加载速度会更快且消耗的流量会更少。点击即可了解详情。</translation>
 <translation id="2662876636500006917">Chrome 网上应用店</translation>
 <translation id="2663302507110284145">语言</translation>
@@ -1899,6 +1899,7 @@
 <translation id="3021678814754966447">查看框架的源代码(&amp;V)</translation>
 <translation id="3022978424994383087">无法解析您所说的内容。</translation>
 <translation id="3023464535986383522">随选朗读</translation>
+<translation id="3023517118372899130">分配开关：选择</translation>
 <translation id="3024374909719388945">使用24小时制</translation>
 <translation id="3027296729579831126">开启“附近分享”功能</translation>
 <translation id="3029466929721441205">在任务栏中显示触控笔工具</translation>
@@ -2516,6 +2517,7 @@
 <translation id="3722108462506185496">启动虚拟机服务时出错。请重试。</translation>
 <translation id="3727187387656390258">审查弹出内容</translation>
 <translation id="372722114124766626">仅一次</translation>
+<translation id="3727473233247516571">往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">通过镜像方式显示您手机上收到的通知</translation>
 <translation id="3728681439294129328">配置网络地址</translation>
 <translation id="3729303374699765035">在网站想发现附近的蓝牙设备时询问您</translation>
@@ -3426,7 +3428,6 @@
 <translation id="473546211690256853">此帐号由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="4735803855089279419">系统未能识别此设备的设备标识符。</translation>
 <translation id="4736292055110123391">将您的书签、密码、历史记录等信息同步到您的所有设备上</translation>
-<translation id="4736765933704278771">按某个开关即可将其分配给“<ph name="ACTION" />”操作。您可向此操作分配多个开关。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="473936925429402449">已选择，第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
 <translation id="4739639199548674512">票据</translation>
@@ -3734,6 +3735,7 @@
 <translation id="5087748406101774740"><ph name="APP_NAME" />（<ph name="PROFILE_NAME" />）</translation>
 <translation id="5088534251099454936">PKCS #1，带有 RSA 加密的 SHA-512</translation>
 <translation id="5090637338841444533">不允许跟踪您的摄像头位置</translation>
+<translation id="5093569275467863761">无痕式往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">与协作的本机应用通信</translation>
 <translation id="5097002363526479830">无法连接到网络“<ph name="NAME" />”：<ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
@@ -4313,7 +4315,6 @@
 <translation id="574104302965107104">显示屏镜像</translation>
 <translation id="574209121243317957">音高</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
-<translation id="5746261205461426123">打开设置指南</translation>
 <translation id="5747552184818312860">到期时间</translation>
 <translation id="5747785204778348146">开发者版本 - 不稳定</translation>
 <translation id="5747809636523347288">粘贴并转到 <ph name="URL" /></translation>
@@ -4353,6 +4354,7 @@
 <translation id="5794414402486823030">始终使用系统查看器打开</translation>
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
 <translation id="5794786537412027208">退出所有Chrome应用</translation>
+<translation id="5797070761912323120">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索、广告和其他 Google 服务</translation>
 <translation id="5798079537501238810">网站可以安装付款处理程序</translation>
 <translation id="579907812742603813">受保护的内容</translation>
 <translation id="579915268381781820">您的安全密钥已被拔出。</translation>
@@ -4456,7 +4458,6 @@
 <translation id="5920543303088087579">您的管理员已禁止连接到此网络</translation>
 <translation id="5920835625712313205">Chrome 操作系统映像写入工具</translation>
 <translation id="5921257443092182237">Google 的位置信息服务会使用 WLAN、移动网络和传感器等来源协助估测此设备所在的位置。</translation>
-<translation id="5923205773724721589">按键不一致。按任意键即可退出。</translation>
 <translation id="5924047253200400718">获取帮助<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924527146239595929">拍摄新照片，或者选择现有照片或图标。
     <ph name="LINE_BREAK" />
@@ -4880,7 +4881,6 @@
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393550101331051049">允许显示不安全内容</translation>
 <translation id="6395423953133416962">发送<ph name="BEGIN_LINK1" />系统信息<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
-<translation id="6396481367412417758">再按一次“<ph name="CURRENTKEY" />”键即可撤消分配并退出。</translation>
 <translation id="6396988158856674517">禁止网站使用移动传感器</translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
@@ -5234,7 +5234,6 @@
 <translation id="6790497603648687708">已远程添加“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6790820461102226165">添加用户…</translation>
 <translation id="6793604637258913070">文本插入符号出现或移动时突出显示</translation>
-<translation id="6793723358811598107">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可退出。</translation>
 <translation id="6795884519221689054">熊猫</translation>
 <translation id="6797493596609571643">糟糕，出问题了。</translation>
 <translation id="6798420440063423019">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。您需要重置此安全密钥。</translation>
@@ -5581,7 +5580,6 @@
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7173336557300642430">如需获取更贴合您的需求的回复，您不妨允许 Google 助理在您提问时使用屏幕中的信息。Google 助理可能还会使用正在播放的歌曲或视频的相关信息。</translation>
-<translation id="7173852404388239669">打造您的个性化 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7174199383876220879">新功能！控制您的音乐、视频等媒体内容。</translation>
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
 <translation id="7175353351958621980">加载来源：</translation>
@@ -5613,7 +5611,6 @@
 <translation id="7207457272187520234">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="7207631048330366454">搜索应用</translation>
 <translation id="7210499381659830293">扩展打印机</translation>
-<translation id="7211769023302873228">再按一次“<ph name="CURRENTKEY" />”键即可确认分配并退出。</translation>
 <translation id="7211783048245131419">尚未分配任何开关</translation>
 <translation id="7212097698621322584">请输入您的当前 PIN 码以更改它。如果您不知道 PIN 码，则需要重置安全密钥，然后创建新 PIN 码。</translation>
 <translation id="7213903639823314449">地址栏中使用的搜索引擎</translation>
@@ -6392,6 +6389,7 @@
 <translation id="8032244173881942855">无法投射标签页。</translation>
 <translation id="8033827949643255796">已选中</translation>
 <translation id="8033958968890501070">已超时</translation>
+<translation id="8035059678007243127">无痕式往返缓存版页面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8037117027592400564">读取使用合成语音说出的所有文字</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>
@@ -6521,11 +6519,11 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Chrome 正在通过 <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> 开发新技术，以便既能保护开放网络又能使您免受跨网站跟踪。</translation>
 <translation id="8161293209665121583">使用阅读器模式显示网页</translation>
+<translation id="8162307956032783161">分配开关：下一步</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
 <translation id="8165997195302308593">Crostini 端口转发</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
 <translation id="8168435359814927499">内容</translation>
-<translation id="8168943654413034772">这是为“选择”操作分配的唯一开关，因此无法移除。按任意键即可退出。</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
 <translation id="8171334254070436367">隐藏所有卡片</translation>
 <translation id="8174047975335711832">设备信息</translation>
@@ -6662,6 +6660,7 @@
 <translation id="8317671367883557781">添加网络连接</translation>
 <translation id="8319414634934645341">扩展密钥用法</translation>
 <translation id="8321476692217554900">通知</translation>
+<translation id="8321492415476219409">分配开关：上一步</translation>
 <translation id="8321837372750396788">此 <ph name="DEVICE_TYPE" /> 将由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8322814362483282060">系统已阻止此网页使用您的麦克风。</translation>
 <translation id="8323167517179506834">输入网址</translation>
@@ -6855,8 +6854,6 @@
 <translation id="8571687764447439720">添加 Kerberos 票据</translation>
 <translation id="8574990355410201600">始终允许 <ph name="HOST" /> 播放声音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 键即可退出</translation>
-<translation id="8576785408880814823">按一下新开关即可开始分配。
-按一下所分配的开关即可撤消分配。</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
 <translation id="8578639784464423491">不能超过 99 个字母</translation>
 <translation id="857943718398505171">允许（推荐）</translation>

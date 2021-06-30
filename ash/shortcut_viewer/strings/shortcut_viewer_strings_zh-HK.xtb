@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">在無痕模式中開啟新視窗</translation>
 <translation id="152892567002884378">調高音量</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> 鍵，然後按 <ph name="ESC" /> 鍵</translation>
+<translation id="1633761758045565086">將焦點移至說明對話框</translation>
 <translation id="1652741121070700329">移至上一個字詞的開頭</translation>
 <translation id="1679841710523778799">調高亮度</translation>
 <translation id="168356808214100546">按住 <ph name="ALT" /> 鍵並輕按 <ph name="TAB" /> 鍵，直到切換至您要開啟的視窗，然後鬆開手指。</translation>
@@ -149,6 +150,7 @@
 <translation id="6276708887952587684">查看網頁原始碼</translation>
 <translation id="6321940490215594447">開啟「記錄」頁面</translation>
 <translation id="6340769215862220182">放大顯示</translation>
+<translation id="634687982629734605">在以下位置之間切換：狀態區 (帳戶相片顯示位置)、啟動器、網址列、書籤列 (如有顯示)、開啟的網頁及下載列 (如顯示)。如果畫面上有可聚焦的對話框，焦點會改為移至對話框。</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /> 鍵</translation>
 <translation id="6395172954772765143">選取文字至本行結尾</translation>
 <translation id="6425378783626925378">按一下捷徑列中的第 1-8 個圖示</translation>

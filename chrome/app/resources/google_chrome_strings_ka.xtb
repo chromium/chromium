@@ -141,6 +141,7 @@
 <translation id="4251615635259297716">მივამაგროთ Chrome-ის მონაცემები ამ ანგარიშზე?</translation>
 <translation id="4281844954008187215">მომსახურების პირობები</translation>
 <translation id="4293420128516039005">შედით სისტემაში, რათა მოახდინოთ Chrome-ის სინქრონიზაცია და პერსონალიზება თქვენს ყველა მოწყობილობას შორის</translation>
+<translation id="429583012151745428">მიმდინარეობს ინსტალაცია. არ გამორთოთ მოწყობილობა. ინსტალაციას ოც წუთზე მეტი არ უნდა დასჭირდეს. მოწყობილობა ავტომატურად გამოირთვება ინსტალაციის შემდეგ.</translation>
 <translation id="4325083532956419387">Chrome OS-ის ვერსია</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -273,7 +274,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7890208801193284374">თუ თქვენ აზიარებთ კომპიუტერს, თქვენი მეგობრები და ოჯახის წევრები შეძლებენ ინტერნეტ-გვერდების დამოუკიდებლად დათვალიერებას და Chrome-ის დაყენებას საკუთარი სურვილის შესაბამისად.</translation>
 <translation id="7896673875602241923">Chrome-ში უკვე განხორციელდა შესვლა ამ კომპიუტერიდან, როგორც <ph name="ACCOUNT_EMAIL_LAST" />. გთხოვთ, შექმნათ Chrome-ის ახალი მომხმარებელი თქვენი ინფორმაციის ცალკე შესანახად.</translation>
 <translation id="7930071585467473040">Google Chrome ცდილობს პაროლების კოპირებას.</translation>
-<translation id="7951988079884443914">Chrome იძლევა რეკომენდაციას, რომ არ გადმოტვირთოთ ან გახსნათ ეს ფაილი.</translation>
 <translation id="7962410387636238736">ეს კომპიუტერი აღარ მიიღებს Google Chrome-ის განახლებებს, რადგან Windows XP და Windows Vista აღარ არის მხარდაჭერილი</translation>
 <translation id="79947657522496226">Chrome OS და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო <ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="8008534537613507642">ხელახლა დააინსტალირეთ Chrome</translation>

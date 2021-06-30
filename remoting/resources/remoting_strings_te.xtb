@@ -24,6 +24,7 @@
 ఒకవేళ '<ph name="SERVICE_SCRIPT_NAME" />' ఇప్పటికే ఎంచుకుని ఉంటే దాని ఎంపికను తీసివేసి, ఆ తర్వాత మళ్లీ ఎంచుకోండి.</translation>
 <translation id="225614027745146050">స్వాగతం</translation>
 <translation id="2320166752086256636">కీబోర్డ్‌ను దాచు</translation>
+<translation id="2329392777730037872">క్లయింట్ పరికరంలో <ph name="URL" />‌ను తెరవడం విఫలమైంది.</translation>
 <translation id="2333212046079545895">కాపీరైట్ 2021 Google LLC. సర్వ హక్కులు కేటాయించబడ్డాయి.</translation>
 <translation id="2359808026110333948">కొనసాగించు</translation>
 <translation id="2366718077645204424">హోస్ట్‌కు చేరుకోవడం సాధ్యపడలేదు. ఇది బహుశా మీరు ఉపయోగిస్తున్న నెట్‌వర్క్ కాన్ఫిగరేషన్ వల్ల ఏర్పడి ఉండవచ్చు.</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">PrtScnని పంపు</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> యొక్క కనెక్షన్ మూసివేయబడింది</translation>
 <translation id="4985296110227979402">మీరు రిమోట్ యాక్సెస్ కోసం ముందుగా మీ కంప్యూటర్‌ను సెటప్ చేయాలి</translation>
+<translation id="4987330545941822761">URLలను కంప్యూటర్‌లో తెరవడానికి Chrome రిమోట్ డెస్క్‌టాప్‌నకు బ్రౌజర్‌ను గుర్తించడం సాధ్యం కాలేదు. దయచేసి దాన్ని కింది లిస్ట్ నుండి ఎంచుకోండి.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ఆఫ్‌లైన్)</translation>
 <translation id="507204348399810022">మీరు ఖచ్చితంగా <ph name="HOSTNAME" />కి గల రిమోట్ కనెక్షన్‌లను నిలిపివేయాలని అనుకుంటున్నారా?</translation>
 <translation id="5170982930780719864">చెల్లని హోస్ట్ id.</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
 <translation id="7312846573060934304">హోస్ట్ ఆఫ్‌లైన్‌లో ఉంది.</translation>
 <translation id="7319983568955948908">భాగస్వామ్యం చేయడాన్ని ఆపివేయి</translation>
+<translation id="7359298090707901886">లోకల్ మెషిన్‌లో URLలను తెరవడానికి, ఎంచుకున్న బ్రౌజర్‌ను ఉపయోగించడం సాధ్యపడదు.</translation>
 <translation id="7401733114166276557">Chrome రిమోట్ డెస్క్‌టాప్</translation>
 <translation id="7434397035092923453">ఈ క్లయింట్‌కు యాక్సెస్‌ తిరస్కరించబడింది: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ఈ క్లయింట్ కనెక్ట్ చేయబడ్డారు: <ph name="CLIENT_USERNAME" />.</translation>

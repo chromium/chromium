@@ -102,6 +102,7 @@
 <translation id="4264410486868823224"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini o‘qib, qabul qilishingizni talab qiladi. Bu shartlar Chromium OS shartlarini kengaytirmaydi, o‘zgartirmaydi yoki cheklamaydi.</translation>
 <translation id="4271805377592243930">Chromium yordam markazi</translation>
 <translation id="4285930937574705105">Noma’lum xatolik tufayli o‘rnatish amalga oshmadi. Agar hozirda Chromium ishlab turgan bo‘lsa, iltimos brauzeringizni yoping va qaytadan urinib ko‘ring.</translation>
+<translation id="429583012151745428">Oʻrnatilmoqda. Qurilmani oʻchirmang. Oʻrnatish jarayoni yigirma daqiqadan koʻp vaqt olmaydi. Oʻrnatish tugaganidan keyin kompyuter avtomatik oʻchadi.</translation>
 <translation id="4407044323746248786">Chromium baribir yopilsinmi?</translation>
 <translation id="4415566066719264597">Chromium fonda ishlashiga ruxsat</translation>
 <translation id="4423735387467980091">Chromium’ni sozlash va boshqarish</translation>
@@ -137,7 +138,6 @@
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium OS bu sahifani ocha olmaydi.</translation>
 <translation id="5480860683791598150">Bu sayt manzilingizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
-<translation id="5481338274774984070">Chromium bu faylni yuklab olmaslik va ochmaslikni tavsiya qiladi.</translation>
 <translation id="549669000822060376">Chromium tizimning oxirgi yangilanishlarini o‘rnatib olgunicha kutib turing.</translation>
 <translation id="5496810170689441661">Chromium parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="5527463683072221100">PDF fayllarni Chromium bilan ochish</translation>

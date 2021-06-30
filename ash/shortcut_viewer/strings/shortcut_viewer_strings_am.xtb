@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">አዲስ ትር ማንነት በማያሳውቅ ሁነታ ውስጥ ይክፈቱ</translation>
 <translation id="152892567002884378">ድምጽ ጨምር</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />፣ ከዚያ <ph name="ESC" /></translation>
+<translation id="1633761758045565086">ትኩረትን ወደ የእገዛ መገናኛ ይውሰዱት</translation>
 <translation id="1652741121070700329">ወደ የቀዳሚው ቃል መጀመሪያ ይውሰዱ</translation>
 <translation id="1679841710523778799">ብሩህነትን ጨምር</translation>
 <translation id="168356808214100546"><ph name="ALT" />ን ተጭነው ይያዙ፣  መክፈት የሚፈልጉትን መስኮት እስኪያገኙ ድረስ <ph name="TAB" /> መታ ያድርጉ፣ ከዚያ ይልቀቁ።</translation>
@@ -148,6 +149,7 @@
 <translation id="6276708887952587684">የገጽ ምንጭን ይመልከቱ</translation>
 <translation id="6321940490215594447">የታሪክ ገጹን ይክፈቱ</translation>
 <translation id="6340769215862220182">ማሳያን ማጉላት</translation>
+<translation id="634687982629734605">በእነዚህ መካከል ትኩረትን ቀያይር፦ የሁኔታ አካባቢ (የእርስዎ የመለያ ሥዕል የሚታይበት ቦታ) አስጀማሪ፣ የአድራሻ አሞሌ፣ የእልባቶች አሞሌ (የሚታይ ከሆነ)፣ የተከፈተው ድረ-ገጽ፣ የውርዶች አሞሌ (የሚታይ ከሆነ)። ሊተኮርበት የሚችል መገናኛ ከታየ በምትኩ ትኩረትን ወደዚያ ይውሰዱት።</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">ጽሑፍን እስከ የመስመሩ መጨረሻ ይምረጡ</translation>
 <translation id="6425378783626925378">በእርስዎ መደርደሪያ ላይ 1-8 አዶዎችን ጠቅ ያድርጉ</translation>

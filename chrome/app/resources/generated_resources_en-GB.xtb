@@ -1103,7 +1103,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Add Wi-Fi ...</translation>
 <translation id="2162155940152307086">Sync will start once you leave sync settings</translation>
-<translation id="2163004395084716754">Unrecognised key. Press any key to exit.</translation>
 <translation id="2163470535490402084">Please connect to the Internet to sign in to your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
 <translation id="2165177462441582039">Choose how long the highlight should stay on each item</translation>
@@ -3445,7 +3444,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="473546211690256853">This account is managed by <ph name="DOMAIN" /></translation>
 <translation id="4735803855089279419">The system failed to determine device identifiers for this device.</translation>
 <translation id="4736292055110123391">Sync your bookmarks, passwords, history and more on all your devices</translation>
-<translation id="4736765933704278771">Press a switch to assign '<ph name="ACTION" />'. You can assign multiple switches to this action.</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
@@ -4332,7 +4330,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="574104302965107104">Display mirroring</translation>
 <translation id="574209121243317957">Pitch</translation>
 <translation id="5746169159649715125">Save as PDF</translation>
-<translation id="5746261205461426123">Open setup guide</translation>
 <translation id="5747552184818312860">Expires</translation>
 <translation id="5747785204778348146">Developer - unstable</translation>
 <translation id="5747809636523347288">Paste and go to <ph name="URL" /></translation>
@@ -4372,6 +4369,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5794414402486823030">Always open with system viewer</translation>
 <translation id="5794700615121138172">Linux shared folders</translation>
 <translation id="5794786537412027208">Quit all Chrome Apps</translation>
+<translation id="5797070761912323120">Google may use your history to personalise Search, ads and other Google services</translation>
 <translation id="5798079537501238810">Sites can install payment handlers</translation>
 <translation id="579907812742603813">protected content</translation>
 <translation id="579915268381781820">Your security key was removed.</translation>
@@ -4475,7 +4473,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5920543303088087579">Connecting to this network is disabled by your administrator</translation>
 <translation id="5920835625712313205">Chrome OS System Image Writer</translation>
 <translation id="5921257443092182237">Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate this device’s location.</translation>
-<translation id="5923205773724721589">Keys do not match. Press any key to exit.</translation>
 <translation id="5924047253200400718">Get help<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924527146239595929">Take a new photo or choose an existing photo or icon.
     <ph name="LINE_BREAK" />
@@ -4899,7 +4896,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
 <translation id="6393550101331051049">Allowed to show insecure content</translation>
 <translation id="6395423953133416962">Send <ph name="BEGIN_LINK1" />system information<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
-<translation id="6396481367412417758">Press '<ph name="CURRENTKEY" />' again to remove assignment and exit.</translation>
 <translation id="6396988158856674517">Block sites from using motion sensors</translation>
 <translation id="6398715114293939307">Remove Google Play Store</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
@@ -5252,7 +5248,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> was added remotely</translation>
 <translation id="6790820461102226165">Add Person...</translation>
 <translation id="6793604637258913070">Highlight the text caret when it appears or moves</translation>
-<translation id="6793723358811598107">'<ph name="CURRENTKEY" />' is already assigned to the '<ph name="ACTION" />' action. Press any key to exit.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Oops, something went wrong.</translation>
 <translation id="6798420440063423019">The security key is locked because the wrong PIN was entered too many times. You'll need to reset the security key.</translation>
@@ -5600,7 +5595,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7173336557300642430">To get responses that are more tailored to you, let Google Assistant use info on your screen when you ask questions. Your Assistant may also use info about songs or videos that are playing.</translation>
-<translation id="7173852404388239669">Personalise your <ph name="DEVICE_TYPE" /></translation>
 <translation id="7174199383876220879">New! Control your music, videos and more.</translation>
 <translation id="7175037578838465313">Configure <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Loaded from:</translation>
@@ -5632,7 +5626,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7207457272187520234">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="7207631048330366454">Search apps</translation>
 <translation id="7210499381659830293">Extension printers</translation>
-<translation id="7211769023302873228">Press '<ph name="CURRENTKEY" />' again to confirm assignment and exit.</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
 <translation id="7213903639823314449">Search engine used in the address bar</translation>
@@ -6549,7 +6542,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8165997195302308593">Crostini port forwarding</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{a phone number}other{# phone numbers}}</translation>
 <translation id="8168435359814927499">Content</translation>
-<translation id="8168943654413034772">Can’t remove the only switch assigned to Select. Press any key to exit.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Add tab to reading list}other{Add tabs to reading list}}</translation>
 <translation id="8171334254070436367">Hide all cards</translation>
 <translation id="8174047975335711832">Device information</translation>
@@ -6880,8 +6872,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8571687764447439720">Add Kerberos ticket</translation>
 <translation id="8574990355410201600">Always allow sound on <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Hold <ph name="KEY_EQUIVALENT" /> to quit</translation>
-<translation id="8576785408880814823">Press a new switch to start assignment.
-Press an assigned switch to remove assignment.</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Add tab to reading list}other{Add tabs to reading list}}</translation>
 <translation id="8578639784464423491">Cannot exceed 99 letters</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>

@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Hap një dritare të re në modalitetin "e fshehtë"</translation>
 <translation id="152892567002884378">Rrit volumin</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, më pas <ph name="ESC" /></translation>
+<translation id="1633761758045565086">Lëvize fokusin në një dialog ndihme</translation>
 <translation id="1652741121070700329">Lëviz në fillim të fjalës së mëparshme</translation>
 <translation id="1679841710523778799">Aktivizo ndriçimin</translation>
 <translation id="168356808214100546">Shtyp dhe mbaj shtypur <ph name="ALT" />, trokit <ph name="TAB" /> derisa të arrish te dritarja që dëshiron të hapësh, më pas lëshoje.</translation>
@@ -148,6 +149,7 @@
 <translation id="6276708887952587684">Shiko burimin e faqes</translation>
 <translation id="6321940490215594447">Hap faqen e "Historikut"</translation>
 <translation id="6340769215862220182">Zmadhimi i ekranit</translation>
+<translation id="634687982629734605">Ndrysho fokusin mes: zonës së "Statusit" (ku shfaqet fotografia e llogarisë sate), "Nisësit", "Shiritit të adresës", shiritit "Faqeshënuesit" (nëse është i dukshëm), faqes së uebit që është e hapur dhe shiritit "Shkarkimet" (nëse është i dukshëm). Nëse shfaqet një dialog i fokusueshëm, lëvize atje fokusin më mirë.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Zgjidh tekstin në fund të rreshtit</translation>
 <translation id="6425378783626925378">Kliko ikonat 1-8 në raft</translation>

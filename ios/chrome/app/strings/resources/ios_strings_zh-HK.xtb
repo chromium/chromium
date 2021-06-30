@@ -108,7 +108,7 @@
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
-<translation id="2021670401941426298">如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
+<translation id="2021670401941426298">建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="2022352537516230970">專為 iPhone 而設</translation>
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
@@ -208,7 +208,7 @@
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕式分頁。</translation>
-<translation id="3134493362339304186">如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。你不會因此登出 Google 帳戶。如要清除其他類型的歷史記錄，請前往<ph name="BEGIN_LINK" />我的 Google 活動<ph name="END_LINK" />。</translation>
+<translation id="3134493362339304186">建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。您不會因此登出 Google 帳戶。如要清除其他形式的記錄，請前往「<ph name="BEGIN_LINK" />我的 Google 活動<ph name="END_LINK" />」。</translation>
 <translation id="3153862085237805241">儲存付款卡</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
 <translation id="3157684681743766797">標示全部…</translation>
@@ -231,7 +231,7 @@
 <translation id="3285962946108803577">分享網頁…</translation>
 <translation id="3290875554372353449">選擇帳戶</translation>
 <translation id="3311748811247479259">關閉</translation>
-<translation id="3317580614754548493">你不會因此登出 Google 帳戶。如要清除<ph name="BEGIN_LINK" />搜尋<ph name="END_LINK" />記錄或其他類型的歷史記錄，請前往<ph name="BEGIN_LINK" />我的 Google 帳戶<ph name="END_LINK" /></translation>
+<translation id="3317580614754548493">您不會因此登出 Google 帳戶。如要清除<ph name="BEGIN_LINK" />搜尋<ph name="END_LINK" />或其他類型的記錄，請前往「<ph name="BEGIN_LINK" />我的 Google 帳戶<ph name="END_LINK" />」</translation>
 <translation id="3324193307694657476">地址 2</translation>
 <translation id="3328801116991980348">網站資料</translation>
 <translation id="3329904751041170572">無法連上伺服器。</translation>
@@ -558,7 +558,7 @@
 <translation id="6497772452874122664">如果您信任 <ph name="TIME" />，可使用已儲存的其他網站密碼。請嘗試在每個網站使用不重複的密碼。</translation>
 <translation id="651505212789431520">要取消同步處理嗎？您可隨時在「設定」中開啟同步功能。</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
-<translation id="6560725150890787329">你的搜尋引擎是 <ph name="DSE_NAME" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。你不會因此登出 Google 帳戶。如要清除其他類型的歷史記錄，請前往<ph name="BEGIN_LINK" />我的 Google 活動<ph name="END_LINK" />。</translation>
+<translation id="6560725150890787329">您的搜尋引擎是「<ph name="DSE_NAME" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。您不會因此登出 Google 帳戶。如要清除其他形式的記錄，請前往「<ph name="BEGIN_LINK" />我的 Google 活動<ph name="END_LINK" />」。</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">您可新增書籤，以便快速返回您認為重要的網頁</translation>
 <translation id="6603393121510733479">您的機構已關閉私密瀏覽功能。
@@ -803,7 +803,7 @@
 <translation id="8976382372951310360">說明</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
-<translation id="9000089900434778519">你的搜尋引擎是 <ph name="DSE_NAME" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
+<translation id="9000089900434778519">您的搜尋引擎是「<ph name="DSE_NAME" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="9034759925968272072">您不會因此登出 Google 帳戶。您的 Google 帳戶在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="9037965129289936994">顯示原文</translation>
 <translation id="9039373489628511875">頻寬</translation>

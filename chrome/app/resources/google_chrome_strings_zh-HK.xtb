@@ -141,7 +141,7 @@
 <translation id="4251615635259297716">要將您的 Chrome 數據連結至這個帳戶嗎？</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4293420128516039005">登入即可在不同裝置上同步和設定個人化的 Chrome</translation>
-<translation id="429583012151745428">正在執行安裝作業，請勿關閉裝置。安裝作業應會在二十分鐘內完成。完成後，電腦會自動關機。</translation>
+<translation id="429583012151745428">正在進行安裝，請勿關閉裝置。安裝應在二十分鐘內完成。完成後，電腦會自動關機。</translation>
 <translation id="4325083532956419387">Chrome 作業系統版本</translation>
 <translation id="4328355335528187361">Google Chrome 開發人員版 (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome 作業系統</translation>
@@ -274,7 +274,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7890208801193284374">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，按照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他人在這部電腦上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身分登入 Chrome。請建立新的 Chrome 使用者以個別保存您的資料。</translation>
 <translation id="7930071585467473040">Google Chrome 正在嘗試複製密碼。</translation>
-<translation id="7951988079884443914">Chrome 建議您不要下載或開啟此檔案。</translation>
 <translation id="7962410387636238736">由於 Google Chrome 將停止支援 Windows XP 和 Windows Vista，因此這部電腦不會再收到 Google Chrome 更新。</translation>
 <translation id="79947657522496226">「Chrome 作業系統」的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="8008534537613507642">重新安裝 Chrome</translation>

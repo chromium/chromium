@@ -204,6 +204,7 @@
 <translation id="2542089167727451762">మీ ప్రొఫైల్ చిత్రాన్ని నొక్కండి</translation>
 <translation id="255671100581129685">Google అసిస్టెంట్ పబ్లిక్ సెషన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="256712445991462162">డాక్ చేసిన మాగ్నిఫైయర్</translation>
+<translation id="2573588302192866788"><ph name="NAME" />ను కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="2575685495496069081">బహుళ సైన్-ఇన్ నిలిపివేయబడింది</translation>
 <translation id="2582112259361606227">అప్‌డేేట్ చేయడానికి పునఃప్రారంభించండి</translation>
 <translation id="2595239820337756193">5 కిలోమీటర్‌లు, మైళ్ళలో</translation>
@@ -351,6 +352,7 @@
 <translation id="3771549900096082774">అధిక కాంట్రాస్ట్ మోడ్</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> కోసం బహుళ సైన్-ఇన్ అనుమతిని నిర్వాహకుడు తిరస్కరించారు.
 కొనసాగడానికి వినియోగదారులందరూ తప్పనిసరిగా సైన్ అవుట్ చేయాలి.</translation>
+<translation id="3779139509281456663"><ph name="NAME" />కు కనెక్ట్ అవుతోంది</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">లాక్ చేయి</translation>
 <translation id="3796746699333205839">ఒక యాప్ మీ కెమెరా, మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
@@ -705,6 +707,7 @@
 <translation id="6614169507485700968">గోప్యతా స్క్రీన్ ఆన్‌లో ఉంది</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> మీ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
+<translation id="6630773993843701741">పరికరాన్ని మాన్యువల్‌గా పెయిర్ చేయడానికి బ్లూటూత్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="6637729079642709226">సమయాన్ని మార్చండి</translation>
 <translation id="6641720045729354415">లైవ్ క్యాప్షన్‌ను టోగుల్ చేయి. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
@@ -790,6 +793,7 @@
 <translation id="7348093485538360975">ఆన్-స్క్రీన్ కీబోర్డ్</translation>
 <translation id="735745346212279324">VPN డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="7360036564632145207">పెరిఫెరల్‌ల సెట్టింగ్ కోసం మీ డేటా యాక్సెస్ రక్షణను మార్చడం పనితీరును ఆప్టిమైజ్ చేస్తుంది</translation>
+<translation id="7366890467478514168"><ph name="NAME" />ను కనెక్ట్ చేయండి</translation>
 <translation id="7371404428569700291">విండోను రికార్డ్ చేయండి</translation>
 <translation id="7377169924702866686">Caps Lock ఆన్‌లో ఉంది.</translation>
 <translation id="7378203170292176219">రికార్డ్ చేసేందుకు ప్రదేశాన్ని ఎంచుకోవడానికి లాగండి</translation>
@@ -1040,6 +1044,7 @@
 <translation id="9193626018745640770">తెలియని రిసీవర్‌లో ప్రసారం చేస్తోంది</translation>
 <translation id="9194617393863864469">మరొక వినియోగదారుగా సైన్ ఇన్ చేయండి...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> రిజల్యూషన్ <ph name="RESOLUTION" />కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'ధృవీకరించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
+<translation id="9201044636667689546"><ph name="NAME" />ను ఈ Chromebookకు కనెక్ట్ చేయండి</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="9210037371811586452">ఏకీకృత డెస్క్‌టాప్ మోడ్ నుండి ఎగ్జిట్ అవుతోంది</translation>
 <translation id="9211490828691860325">అన్ని డెస్క్‌లు</translation>
