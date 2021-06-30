@@ -127,7 +127,7 @@
             [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
           </div>
         </oobe-text-button>
-        <oobe-text-button class="focus-on-show" inverse
+        <oobe-text-button class="focus-on-show" inverse="[[!isMinorMode_]]"
             id="nonSplitSettingsAcceptButton"
             on-click="onNonSplitSettingsAccepted_"
             label-for-aria="[[i18nDynamic(locale, optInButtonTextKey_)]]">
