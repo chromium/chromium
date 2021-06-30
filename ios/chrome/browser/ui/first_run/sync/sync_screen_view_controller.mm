@@ -21,13 +21,10 @@ constexpr CGFloat kMarginBetweenContents = 12;
 @dynamic delegate;
 
 - (void)viewDidLoad {
-  self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE);
+  self.titleText =
+      [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE];
   self.subtitleText =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION);
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION);
+      [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE];
 
   self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
   self.isTallBanner = NO;
@@ -39,6 +36,11 @@ constexpr CGFloat kMarginBetweenContents = 12;
 
   UIButton* advanceSyncSettingsButton = [self createAdvanceSyncSettingsButton];
   [self.specificContentView addSubview:advanceSyncSettingsButton];
+
+  self.primaryActionString = [self
+      contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION];
+  self.secondaryActionString = [self
+      contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION];
 
   // Sync screen-specific constraints.
   [NSLayoutConstraint activateConstraints:@[
@@ -74,7 +76,8 @@ constexpr CGFloat kMarginBetweenContents = 12;
   label.textAlignment = NSTextAlignmentCenter;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.adjustsFontForContentSizeCategory = YES;
-  label.text = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT);
+  label.text =
+      [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT];
   return label;
 }
 
@@ -85,8 +88,8 @@ constexpr CGFloat kMarginBetweenContents = 12;
   button.titleLabel.adjustsFontSizeToFitWidth = YES;
   [button.titleLabel
       setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
-  [button setTitle:l10n_util::GetNSString(
-                       IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)
+  [button setTitle:[self contentTextWithStringID:
+                             IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS]
           forState:UIControlStateNormal];
   [button setTitleColor:[UIColor colorNamed:kBlueColor]
                forState:UIControlStateNormal];
@@ -95,6 +98,12 @@ constexpr CGFloat kMarginBetweenContents = 12;
                 action:@selector(showAdvanceSyncSettings)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
+}
+
+// Push the string id to |_contentStringIds| and returns NSString.
+- (NSString*)contentTextWithStringID:(const int)stringID {
+  [self.delegate addConsentStringID:stringID];
+  return l10n_util::GetNSString(stringID);
 }
 
 // Called when the sync settings button is tapped

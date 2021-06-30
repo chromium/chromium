@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
-#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#include "ios/chrome/grit/ios_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,6 +42,9 @@
 // to policy.
 @property(nonatomic, strong)
     UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
+
+// The consent string ids of texts on the sync screen.
+@property(nonatomic, assign, readonly) NSMutableArray* consentStringIDs;
 
 @end
 
@@ -85,8 +88,6 @@
                                         browserState)
                      consentAuditor:ConsentAuditorFactory::GetForBrowserState(
                                         browserState)
-              unifiedConsentService:UnifiedConsentServiceFactory::
-                                        GetForBrowserState(browserState)
                    syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
                                         browserState)];
 
@@ -116,7 +117,9 @@
 - (void)didTapPrimaryActionButton {
   base::UmaHistogramEnumeration("FirstRun.Stage",
                                 first_run::kSyncScreenCompletionWithSync);
-  [self.mediator startSync];
+  [self.mediator
+      startSyncWithConfirmationID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION
+                       consentIDs:self.consentStringIDs];
   [self.delegate willFinishPresenting];
 }
 
@@ -130,6 +133,10 @@
   base::UmaHistogramEnumeration(
       "FirstRun.Stage", first_run::kSyncScreenCompletionWithSyncSettings);
   [self.delegate skipAllAndShowSyncSettings];
+}
+
+- (void)addConsentStringID:(const int)stringID {
+  [self.consentStringIDs addObject:[NSNumber numberWithInt:stringID]];
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving

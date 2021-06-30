@@ -14,7 +14,6 @@ source_set("sync") {
     ":sync_ui",
     "//base:base",
     "//components/consent_auditor",
-    "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",

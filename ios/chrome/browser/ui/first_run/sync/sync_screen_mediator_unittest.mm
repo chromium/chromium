@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
-#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -71,8 +70,6 @@ class SyncScreenMediatorTest : public PlatformTest {
         IdentityManagerFactory::GetForBrowserState(browser_state_.get());
     consent_auditor::ConsentAuditor* consent_auditor =
         ConsentAuditorFactory::GetForBrowserState(browser_state_.get());
-    unified_consent::UnifiedConsentService* unified_consent_service =
-        UnifiedConsentServiceFactory::GetForBrowserState(browser_state_.get());
     SyncSetupService* sync_setup_service =
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
 
@@ -80,7 +77,6 @@ class SyncScreenMediatorTest : public PlatformTest {
         initWithAuthenticationService:authentication_service
                       identityManager:identity_manager
                        consentAuditor:consent_auditor
-                unifiedConsentService:unified_consent_service
                      syncSetupService:sync_setup_service];
 
     sync_setup_service_mock_ =
@@ -100,8 +96,13 @@ class SyncScreenMediatorTest : public PlatformTest {
 // Tests that the FirstSetupComplete flag is turned on after the mediator has
 // started Sync.
 TEST_F(SyncScreenMediatorTest, TestStartSyncService) {
+  NSMutableArray* consentStringIDs = [[NSMutableArray alloc] init];
+  [consentStringIDs addObject:@1];
+  [consentStringIDs addObject:@2];
+  [consentStringIDs addObject:@3];
+
   EXPECT_CALL(
       *sync_setup_service_mock_,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
-  [mediator_ startSync];
+  [mediator_ startSyncWithConfirmationID:0 consentIDs:consentStringIDs];
 }

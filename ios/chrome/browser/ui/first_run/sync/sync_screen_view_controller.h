@@ -16,6 +16,8 @@
 // Called when the user taps to see sync settings.
 - (void)showSyncSettings;
 
+- (void)addConsentStringID:(const int)stringID;
+
 @end
 
 // View controller of sync screen.

@@ -18,10 +18,6 @@ namespace signin {
 class IdentityManager;
 }
 
-namespace unified_consent {
-class UnifiedConsentService;
-}
-
 // Mediator that handles the sync operation.
 @interface SyncScreenMediator : NSObject
 
@@ -37,13 +33,14 @@ class UnifiedConsentService;
                   identityManager:(signin::IdentityManager*)identityManager
                    consentAuditor:
                        (consent_auditor::ConsentAuditor*)consentAuditor
-            unifiedConsentService:
-                (unified_consent::UnifiedConsentService*)unifiedConsentService
                  syncSetupService:(SyncSetupService*)syncSetupService
     NS_DESIGNATED_INITIALIZER;
 
 // Starts the sync engine.
-- (void)startSync;
+// @param confirmationID: The confirmation string ID of sync.
+// @param consentIDs: The consent string IDs of sync screen.
+- (void)startSyncWithConfirmationID:(const int)confirmationID
+                         consentIDs:(NSArray<NSNumber*>*)consentIDs;
 
 @end
 
