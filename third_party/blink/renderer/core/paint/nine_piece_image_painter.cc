@@ -121,7 +121,7 @@ void PaintPieces(GraphicsContext& context,
       // Since there is no way for the developer to specify decode behavior,
       // use kSync by default.
       context.DrawImage(image, Image::kSyncDecode, draw_info.destination,
-                        &draw_info.source, style.HasFilterInducingProperty());
+                        &draw_info.source, style.DisableForceDark());
       continue;
     }
 

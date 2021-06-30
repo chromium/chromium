@@ -838,8 +838,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       const ComputedStyle* style = GetComputedStyle();
       context.DrawImage(snapshot.get(), Image::kSyncDecode,
                         FloatRect(PixelSnappedIntRect(r)), &src_rect,
-                        style && style->HasFilterInducingProperty(),
-                        composite_operator);
+                        style && style->DisableForceDark(), composite_operator);
     }
   } else {
     // When alpha is false, we should draw to opaque black.

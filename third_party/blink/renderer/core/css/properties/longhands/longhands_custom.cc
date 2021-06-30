@@ -1716,7 +1716,8 @@ void ColorScheme::ApplyValue(StyleResolverState& state,
     }
     state.Style()->SetColorScheme(color_schemes);
     state.Style()->SetDarkColorScheme(has_dark && (!has_light || prefers_dark));
-    state.Style()->SetColorSchemeOnly(has_only);
+    if (RuntimeEnabledFeatures::CSSColorSchemeOnlyEnabled())
+      state.Style()->SetColorSchemeOnly(has_only);
 
     if (has_dark) {
       // Record kColorSchemeDarkSupportedOnRoot if dark is present (though dark

@@ -80,8 +80,7 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
   DCHECK(bounding_box);
   FloatRect src_rect(bounding_box.value());
   context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode, src_rect,
-                    &src_rect,
-                    clip_path_owner.StyleRef().HasFilterInducingProperty(),
+                    &src_rect, clip_path_owner.StyleRef().DisableForceDark(),
                     SkBlendMode::kSrcOver, kRespectImageOrientation);
 }
 

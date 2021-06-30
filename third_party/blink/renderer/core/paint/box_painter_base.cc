@@ -600,10 +600,10 @@ void FillRectWithPaintWorklet(const Document* document,
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
   scoped_refptr<Image> paint_worklet_image = generator->Paint(
       src_rect.Size(), node, animated_colors, offsets, progress);
-  context.DrawImageRRect(
-      paint_worklet_image.get(), Image::kSyncDecode, dest_rect, src_rect,
-      node && node->ComputedStyleRef().HasFilterInducingProperty(),
-      SkBlendMode::kSrcOver, info.respect_image_orientation);
+  context.DrawImageRRect(paint_worklet_image.get(), Image::kSyncDecode,
+                         dest_rect, src_rect,
+                         node && node->ComputedStyleRef().DisableForceDark(),
+                         SkBlendMode::kSrcOver, info.respect_image_orientation);
 }
 
 // Returns true if we can paint the background color with paint worklet.
@@ -726,10 +726,9 @@ inline bool PaintFastBottomLayer(const Document* document,
 
   // Since there is no way for the developer to specify decode behavior, use
   // kSync by default.
-  context.DrawImageRRect(
-      image, Image::kSyncDecode, image_border, src_rect,
-      node && node->ComputedStyleRef().HasFilterInducingProperty(),
-      composite_op, info.respect_image_orientation);
+  context.DrawImageRRect(image, Image::kSyncDecode, image_border, src_rect,
+                         node && node->ComputedStyleRef().DisableForceDark(),
+                         composite_op, info.respect_image_orientation);
 
   if (node && info.image && info.image->IsImageResource()) {
     PaintTimingDetector::NotifyBackgroundImagePaint(
@@ -864,10 +863,9 @@ void PaintFillLayerBackground(const Document* document,
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
         inspector_paint_image_event::Data, node, *info.image,
         FloatRect(image->Rect()), FloatRect(scrolled_paint_rect));
-    DrawTiledBackground(
-        context, image, geometry, composite_op,
-        node && node->ComputedStyleRef().HasFilterInducingProperty(),
-        info.respect_image_orientation);
+    DrawTiledBackground(context, image, geometry, composite_op,
+                        node && node->ComputedStyleRef().DisableForceDark(),
+                        info.respect_image_orientation);
     if (node && info.image && info.image->IsImageResource()) {
       PaintTimingDetector::NotifyBackgroundImagePaint(
           *node, *image, To<StyleFetchedImage>(*info.image),

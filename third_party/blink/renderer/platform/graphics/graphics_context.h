@@ -256,20 +256,20 @@ class PLATFORM_EXPORT GraphicsContext {
                  Image::ImageDecodingMode,
                  const FloatRect& dest_rect,
                  const FloatRect* src_rect = nullptr,
-                 bool has_filter_property = false,
+                 bool has_disable_dark_mode_style = false,
                  SkBlendMode = SkBlendMode::kSrcOver,
                  RespectImageOrientationEnum = kRespectImageOrientation);
   void DrawImageRRect(Image*,
                       Image::ImageDecodingMode,
                       const FloatRoundedRect& dest,
                       const FloatRect& src_rect,
-                      bool has_filter_property = false,
+                      bool has_disable_dark_mode_style = false,
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation);
   void DrawImageTiled(Image* image,
                       const FloatRect& dest_rect,
                       const ImageTilingInfo& tiling_info,
-                      bool has_filter_property = false,
+                      bool has_disable_dark_mode_style = false,
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation);
 

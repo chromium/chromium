@@ -263,7 +263,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
 
   context.DrawImage(image.get(), decode_mode,
                     FloatRect(pixel_snapped_dest_rect), &src_rect,
-                    layout_image_.StyleRef().HasFilterInducingProperty(),
+                    layout_image_.StyleRef().DisableForceDark(),
                     SkBlendMode::kSrcOver, respect_orientation);
 
   if (ImageResourceContent* image_content = image_resource.CachedImage()) {

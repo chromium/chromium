@@ -2674,6 +2674,10 @@ class ComputedStyle : public ComputedStyleBase,
     return EBoxSizing::kContentBox;
   }
 
+  bool DisableForceDark() const {
+    return ColorSchemeOnly() || HasFilterInducingProperty();
+  }
+
  private:
   EClear Clear() const { return ClearInternal(); }
   EFloat Floating() const { return FloatingInternal(); }

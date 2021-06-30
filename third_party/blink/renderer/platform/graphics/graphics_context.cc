@@ -782,7 +782,7 @@ void GraphicsContext::DrawImage(
     Image::ImageDecodingMode decode_mode,
     const FloatRect& dest,
     const FloatRect* src_ptr,
-    bool has_filter_property,
+    bool has_disable_dark_mode_style,
     SkBlendMode op,
     RespectImageOrientationEnum should_respect_image_orientation) {
   if (!image)
@@ -794,8 +794,7 @@ void GraphicsContext::DrawImage(
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
 
-  // Do not classify the image if the element has any CSS filters.
-  if (!has_filter_property) {
+  if (!has_disable_dark_mode_style) {
     DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags, src,
                                                dest);
   }
@@ -812,15 +811,15 @@ void GraphicsContext::DrawImageRRect(
     Image::ImageDecodingMode decode_mode,
     const FloatRoundedRect& dest,
     const FloatRect& src_rect,
-    bool has_filter_property,
+    bool has_disable_dark_mode_style,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation) {
   if (!image)
     return;
 
   if (!dest.IsRounded()) {
-    DrawImage(image, decode_mode, dest.Rect(), &src_rect, has_filter_property,
-              op, respect_orientation);
+    DrawImage(image, decode_mode, dest.Rect(), &src_rect,
+              has_disable_dark_mode_style, op, respect_orientation);
     return;
   }
 
@@ -899,7 +898,7 @@ void GraphicsContext::DrawImageTiled(
     Image* image,
     const FloatRect& dest_rect,
     const ImageTilingInfo& tiling_info,
-    bool has_filter_property,
+    bool has_disable_dark_mode_style,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation) {
   if (!image)
@@ -908,8 +907,7 @@ void GraphicsContext::DrawImageTiled(
   PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
 
-  // Do not classify the image if the element has any CSS filters.
-  if (!has_filter_property) {
+  if (!has_disable_dark_mode_style) {
     DarkModeFilterHelper::ApplyToImageIfNeeded(
         this, image, &image_flags, tiling_info.image_rect, dest_rect);
   }
