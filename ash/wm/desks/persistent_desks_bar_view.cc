@@ -9,8 +9,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
-#include "base/stl_util.h"
 #include "ui/views/background.h"
 
 namespace ash {

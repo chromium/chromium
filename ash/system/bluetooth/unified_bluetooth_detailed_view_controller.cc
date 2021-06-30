@@ -16,7 +16,7 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using device::mojom::BluetoothSystem;
