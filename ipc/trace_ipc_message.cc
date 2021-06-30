@@ -37,7 +37,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case ExtensionMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSION;
       break;
-      break;
     case ChromotingMsgStart:
       message_class = ChromeLegacyIpc::CLASS_CHROMOTING;
       break;
