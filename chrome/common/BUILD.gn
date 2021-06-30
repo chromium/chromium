@@ -21,10 +21,6 @@ import("//printing/buildflags/buildflags.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
-if (enable_pdf) {
-  assert(enable_plugins, "PDF support requires plugins be enabled.")
-}
-
 grit("resources") {
   source = "common_resources.grd"
   defines = chrome_grit_defines
@@ -253,6 +249,10 @@ static_library("common") {
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/page_load_metrics/common:common",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/common" ]
+  }
 
   if (enable_plugins) {
     public_deps += [ "//ppapi/shared_impl" ]

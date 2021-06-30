@@ -205,6 +205,10 @@
 #include "third_party/blink/public/web/web_view.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/common/internal_plugin_helpers.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PDF_UNSEASONED)
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/mojom/pdf.mojom.h"  // nogncheck
@@ -743,12 +747,19 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
         plugin_element);
     return false;
   }
+#if BUILDFLAG(ENABLE_PDF)
+  if (plugin_info->actual_mime_type == pdf::kInternalPluginMimeType &&
+      pdf::IsInternalPluginExternallyHandled()) {
+    // TODO(crbug.com/1123621): Handle internally if in the PDF content frame.
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
   return ChromeExtensionsRendererClient::MaybeCreateMimeHandlerView(
       plugin_element, original_url, plugin_info->actual_mime_type,
       plugin_info->plugin);
-#else
+#else   // !(BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_PLUGINS))
   return false;
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_PLUGINS)
 }
 
 v8::Local<v8::Object> ChromeContentRendererClient::GetScriptableObject(

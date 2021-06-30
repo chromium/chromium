@@ -1,0 +1,19 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+
+assert(enable_pdf)
+
+static_library("common") {
+  sources = [
+    "internal_plugin_helpers.cc",
+    "internal_plugin_helpers.h",
+  ]
+
+  deps = [
+    "//base",
+    "//pdf:features",
+  ]
+}

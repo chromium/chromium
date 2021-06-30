@@ -278,6 +278,7 @@ static_library("renderer") {
 
   if (enable_pdf) {
     deps += [
+      "//components/pdf/common",
       "//components/pdf/renderer",
       "//pdf/mojom",
     ]

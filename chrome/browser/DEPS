@@ -235,6 +235,7 @@ include_rules = [
   "+components/performance_manager/performance_manager_impl.h",
   "+components/permissions",
   "+components/pdf/browser",
+  "+components/pdf/common",
   "+components/policy",
   "+components/power_metrics",
   "+components/pref_registry",

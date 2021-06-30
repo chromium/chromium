@@ -79,6 +79,10 @@
 #include "ppapi/shared_impl/ppapi_permissions.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/common/internal_plugin_helpers.h"
+#endif
+
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 #include "chrome/common/media/cdm_host_file_path.h"
 #endif
@@ -93,8 +97,6 @@ namespace {
 #if BUILDFLAG(ENABLE_PDF)
 const char kPDFPluginExtension[] = "pdf";
 const char kPDFPluginDescription[] = "Portable Document Format";
-const char kPDFPluginOutOfProcessMimeType[] =
-    "application/x-google-chrome-pdf";
 const uint32_t kPDFPluginPermissions = ppapi::PERMISSION_PDF |
                                        ppapi::PERMISSION_DEV;
 
@@ -123,9 +125,7 @@ void ComputeBuiltInPlugins(std::vector<content::PepperPluginInfo>* plugins) {
   pdf_info.description = kPDFPluginDescription;
   pdf_info.path = base::FilePath(ChromeContentClient::kPDFPluginPath);
   content::WebPluginMimeType pdf_mime_type(
-      kPDFPluginOutOfProcessMimeType,
-      kPDFPluginExtension,
-      kPDFPluginDescription);
+      pdf::kInternalPluginMimeType, kPDFPluginExtension, kPDFPluginDescription);
   pdf_info.mime_types.push_back(pdf_mime_type);
   pdf_info.internal_entry_points.get_interface = g_pdf_get_interface;
   pdf_info.internal_entry_points.initialize_module = g_pdf_initialize_module;

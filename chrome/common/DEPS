@@ -35,6 +35,7 @@ include_rules = [
   "+components/nux",
   "+components/offline_pages/buildflags",
   "+components/password_manager/core/common",
+  "+components/pdf/common",
   "+components/policy/core/common",
   "+components/prefs",
   "+components/printing/common",

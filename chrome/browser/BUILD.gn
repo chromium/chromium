@@ -6231,6 +6231,7 @@ static_library("browser") {
     ]
     deps += [
       "//components/pdf/browser:interceptors",
+      "//components/pdf/common",
       "//pdf:buildflags",
       "//pdf:features",
     ]
