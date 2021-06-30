@@ -219,12 +219,6 @@ def _RunLint(lint_binary_path,
       ','.join(_DISABLED_ALWAYS),
   ]
 
-  # Crashes lint itself, see b/187524311
-  # Only disable if we depend on androidx.fragment (otherwise lint fails due to
-  # non-existent check).
-  if any('androidx_fragment_fragment' in aar for aar in aars):
-    cmd.extend(['--disable', 'DialogFragmentCallbacksDetector'])
-
   if baseline:
     cmd.extend(['--baseline', baseline])
   if testonly_target:
@@ -269,6 +263,10 @@ def _RunLint(lint_binary_path,
   custom_annotation_zips = []
   if aars:
     for aar in aars:
+      # androidx custom lint checks require a newer version of lint. Disable
+      # until we update see https://crbug.com/1225326
+      if 'androidx' in aar:
+        continue
       # Use relative source for aar files since they are not generated.
       aar_dir = os.path.join(aar_root_dir,
                              os.path.splitext(_SrcRelative(aar))[0])
