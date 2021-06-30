@@ -27,7 +27,7 @@
 #include "device/udev_linux/udev.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/permission_broker/permission_broker_client.h"
+#include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace device {
@@ -199,6 +199,7 @@ uint16_t HexStringToUInt16WithDefault(base::StringPiece input,
   return static_cast<uint16_t>(out);
 }
 
+// TODO(huangs): Enable for IS_CHROMEOS_LACROS for crbug.com/1217124..
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnOpenPathSuccess(
     chromeos::PermissionBrokerClient::OpenPathCallback callback,

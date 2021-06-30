@@ -30,7 +30,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/dbus/constants/dbus_switches.h"
+#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/permissions/permission_request_impl.h"
 #include "components/permissions/permission_uma_util.h"

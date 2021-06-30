@@ -26,7 +26,7 @@
 #include "services/device/usb/usb_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/permission_broker/permission_broker_client.h"
+#include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
 #include "services/device/usb/usb_device_linux.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -118,6 +118,7 @@ void DeviceManagerImpl::OnPermissionGrantedToRefresh(
 }
 #endif  // defined(OS_ANDROID)
 
+// TODO(huangs): Enable for IS_CHROMEOS_LACROS for crbug.com/1195247.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void DeviceManagerImpl::CheckAccess(const std::string& guid,
                                     CheckAccessCallback callback) {

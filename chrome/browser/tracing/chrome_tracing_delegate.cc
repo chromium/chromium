@@ -43,7 +43,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
-#include "chromeos/dbus/constants/dbus_switches.h"
+#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
 #endif
 
 namespace {
