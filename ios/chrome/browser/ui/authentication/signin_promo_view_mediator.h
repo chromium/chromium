@@ -55,9 +55,11 @@ class PrefRegistrySyncable;
 // Consumer to handle identity update notifications.
 @property(nonatomic, weak) id<SigninPromoViewConsumer> consumer;
 
-// Chrome identity used to configure the view in a warm state mode. Otherwise
-// contains nil.
-@property(nonatomic, strong, readonly) ChromeIdentity* defaultIdentity;
+// Chrome identity used to configure the view in the following modes:
+//  - SigninPromoViewModeSigninWithAccount
+//  - SigninPromoViewModeSyncWithPrimaryAccount
+// Otherwise contains nil.
+@property(nonatomic, strong, readonly) ChromeIdentity* identity;
 
 // Sign-in promo view state.
 @property(nonatomic, assign) ios::SigninPromoViewState signinPromoViewState;

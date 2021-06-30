@@ -136,7 +136,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Tests the mediator with a new created configurator when no accounts are on
   // the device.
   void TestSigninPromoWithNoAccounts() {
-    EXPECT_EQ(nil, mediator_.defaultIdentity);
+    EXPECT_EQ(nil, mediator_.identity);
     CheckNoAccountsConfigurator([mediator_ createConfigurator]);
   }
 
@@ -189,7 +189,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Expects the signin promo view to be configured when accounts are on the
   // device.
   void ExpectSigninWithAccountConfiguration() {
-    EXPECT_EQ(expected_default_identity_, mediator_.defaultIdentity);
+    EXPECT_EQ(expected_default_identity_, mediator_.identity);
     OCMExpect(
         [signin_promo_view_ setMode:SigninPromoViewModeSigninWithAccount]);
     OCMExpect([signin_promo_view_

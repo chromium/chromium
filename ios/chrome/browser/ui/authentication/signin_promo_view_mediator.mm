@@ -334,7 +334,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Redefined to be readwrite.
-@property(nonatomic, strong, readwrite) ChromeIdentity* defaultIdentity;
+@property(nonatomic, strong, readwrite) ChromeIdentity* identity;
 @property(nonatomic, assign, readwrite, getter=isSigninInProgress)
     BOOL signinInProgress;
 
@@ -421,7 +421,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
     ChromeIdentity* defaultIdentity = [self defaultIdentity];
     if (defaultIdentity) {
-      [self selectIdentity:defaultIdentity];
+      [self setIdentity:defaultIdentity];
     }
 
     _identityServiceObserver =
@@ -439,11 +439,11 @@ const char* AlreadySeenSigninViewPreferenceKey(
 - (SigninPromoViewConfigurator*)createConfigurator {
   BOOL hasCloseButton =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint) != nullptr;
-  if (_defaultIdentity) {
+  if (self.identity) {
     return [[SigninPromoViewConfigurator alloc]
         initWithSigninPromoViewMode:SigninPromoViewModeSigninWithAccount
-                          userEmail:_defaultIdentity.userEmail
-                      userGivenName:_defaultIdentity.userGivenName
+                          userEmail:self.identity.userEmail
+                      userGivenName:self.identity.userGivenName
                           userImage:self.identityAvatar
                      hasCloseButton:hasCloseButton];
   }
@@ -465,7 +465,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       self.accessPoint);
   signin_metrics::RecordSigninImpressionWithAccountUserActionForAccessPoint(
-      self.accessPoint, !!_defaultIdentity);
+      self.accessPoint, !!self.identity);
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
   if (!displayedCountPreferenceKey)
@@ -534,16 +534,16 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Sets the Chrome identity to display in the sign-in promo.
-- (void)selectIdentity:(ChromeIdentity*)identity {
-  _defaultIdentity = identity;
-  if (!_defaultIdentity) {
+- (void)setIdentity:(ChromeIdentity*)identity {
+  _identity = identity;
+  if (!self.identity) {
     self.identityAvatar = nil;
   } else {
     __weak SigninPromoViewMediator* weakSelf = self;
     ios::GetChromeBrowserProvider()
         ->GetChromeIdentityService()
         ->GetAvatarForIdentity(identity, ^(UIImage* identityAvatar) {
-          if (weakSelf.defaultIdentity != identity) {
+          if (weakSelf.identity != identity) {
             return;
           }
           [weakSelf identityAvatarUpdated:identityAvatar];
@@ -624,8 +624,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)identityListChanged {
   ChromeIdentity* newIdentity = [self defaultIdentity];
-  if (![_defaultIdentity isEqual:newIdentity]) {
-    [self selectIdentity:newIdentity];
+  if (![self.identity isEqual:newIdentity]) {
+    [self setIdentity:newIdentity];
     [self sendConsumerNotificationWithIdentityChanged:YES];
   }
 }
@@ -654,7 +654,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewDidTapSigninWithNewAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(!_defaultIdentity);
+  DCHECK(!self.identity);
   DCHECK(self.signinPromoViewVisible);
   DCHECK(!self.invalidClosedOrNeverVisible);
   [self sendImpressionsTillSigninButtonsHistogram];
@@ -670,7 +670,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)signinPromoViewDidTapSigninWithDefaultAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(_defaultIdentity);
+  DCHECK(self.identity);
   DCHECK(self.signinPromoViewVisible);
   DCHECK(!self.invalidClosedOrNeverVisible);
   [self sendImpressionsTillSigninButtonsHistogram];
@@ -678,12 +678,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint,
                                                        promo_action);
-  [self showSigninWithIdentity:_defaultIdentity promoAction:promo_action];
+  [self showSigninWithIdentity:self.identity promoAction:promo_action];
 }
 
 - (void)signinPromoViewDidTapSigninWithOtherAccount:
     (SigninPromoView*)signinPromoView {
-  DCHECK(_defaultIdentity);
+  DCHECK(self.identity);
   DCHECK(self.signinPromoViewVisible);
   DCHECK(!self.invalidClosedOrNeverVisible);
   [self sendImpressionsTillSigninButtonsHistogram];
