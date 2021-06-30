@@ -30,7 +30,7 @@
   session.navigate(testRunner.url('./resources/same-site-root.html'));
   await gotAllRequestsPromise;
 
-  requests.sort((a,b) => a.url.localeCompare(b.url));
+  requests.sort((a,b) => (a.url + a.headers.Referer).localeCompare(b.url + b.headers.Referer));
   testRunner.log(requests, 'requests', ['User-Agent']);
 
   testRunner.completeTest();
