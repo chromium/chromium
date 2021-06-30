@@ -498,13 +498,12 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerCrOSBrowserTest, GetLastUsedProfile) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Times out (http://crbug.com/159002)
-IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest,
-                       DISABLED_CreateProfileWithCallback) {
+// ChromeOS doesn't support multiple profiles.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, CreateProfileWithCallback) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   ASSERT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
 
   // Create a profile, make sure callback is invoked before any callbacks are
   // invoked (so they can do things like sign in the profile, etc).
@@ -516,15 +515,8 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest,
                           run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
-  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U);
-
-  // Now close all browser windows.
-  std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
-  for (std::vector<Profile*>::const_iterator it = profiles.begin();
-       it != profiles.end(); ++it) {
-    BrowserList::CloseAllBrowsersWithProfile(*it);
-  }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, SwitchToProfile) {
   // If multiprofile mode is not enabled, you can't switch between profiles.
