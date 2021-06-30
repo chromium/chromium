@@ -381,6 +381,10 @@
       status: "experimental",
     },
     {
+      name: "ClipboardReadPng",
+      status: "experimental",
+    },
+    {
       name: "ClipboardSvg",
       status: "experimental",
     },

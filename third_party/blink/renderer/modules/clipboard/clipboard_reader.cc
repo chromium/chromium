@@ -25,6 +25,37 @@ namespace blink {
 
 namespace {  // anonymous namespace for ClipboardReader's derived classes.
 
+// Reads a PNG from the System Clipboard as a Blob with image/png content.
+// Since the data returned from ReadPng() is already in the desired format, no
+// encoding is required and the blob is created directly from Read().
+class ClipboardPngReader final : public ClipboardReader {
+ public:
+  explicit ClipboardPngReader(SystemClipboard* system_clipboard,
+                              ClipboardPromise* promise)
+      : ClipboardReader(system_clipboard, promise) {}
+  ~ClipboardPngReader() override = default;
+
+  ClipboardPngReader(const ClipboardPngReader&) = delete;
+  ClipboardPngReader& operator=(const ClipboardPngReader&) = delete;
+
+  void Read() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    mojo_base::BigBuffer data =
+        system_clipboard()->ReadPng(mojom::blink::ClipboardBuffer::kStandard);
+
+    Blob* blob = nullptr;
+    if (data.size()) {
+      blob = Blob::Create(data.data(), data.size(), kMimeTypeImagePng);
+    }
+    promise_->OnRead(blob);
+  }
+
+ private:
+  void NextRead(Vector<uint8_t> utf8_bytes) override { NOTREACHED(); }
+};
+
+// TODO(crbug.com/1223849): Replace this class with `ClipboardPngReader` logic
+// and remove `ClipboardPngReader` once `ReadImage()` path is removed.
 // Reads an image from the System Clipboard as a Blob with image/png content.
 class ClipboardImageReader final : public ClipboardReader {
  public:
@@ -306,9 +337,17 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {
   DCHECK(ClipboardWriter::IsValidType(mime_type, /*is_raw=*/false));
-  if (mime_type == kMimeTypeImagePng)
-    return MakeGarbageCollected<ClipboardImageReader>(system_clipboard,
+  if (mime_type == kMimeTypeImagePng) {
+    // TODO(crbug.com/1223849): Use `ClipboardPngReader` once `ReadImage()` path
+    // is removed.
+    if (RuntimeEnabledFeatures::ClipboardReadPngEnabled()) {
+      return MakeGarbageCollected<ClipboardPngReader>(system_clipboard,
                                                       promise);
+    } else {
+      return MakeGarbageCollected<ClipboardImageReader>(system_clipboard,
+                                                        promise);
+    }
+  }
   if (mime_type == kMimeTypeTextPlain)
     return MakeGarbageCollected<ClipboardTextReader>(system_clipboard, promise);
 
