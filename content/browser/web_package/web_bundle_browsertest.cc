@@ -1944,7 +1944,13 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, IframeSameDocumentNavigation) {
                           &RunIframeSameDocumentNavigationTest);
 }
 
-IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, InvalidWebBundleFile) {
+// TODO(https://crbug.com/1225178): flaky
+#if defined(OS_LINUX)
+#define MAYBE_InvalidWebBundleFile DISABLED_InvalidWebBundleFile
+#else
+#define MAYBE_InvalidWebBundleFile InvalidWebBundleFile
+#endif
+IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_InvalidWebBundleFile) {
   const GURL test_data_url =
       GetTestUrlForFile(GetTestDataPath("invalid_web_bundle.wbn"));
 
@@ -1955,8 +1961,15 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, InvalidWebBundleFile) {
             console_message);
 }
 
+// TODO(https://crbug.com/1225178): flaky
+#if defined(OS_LINUX)
+#define MAYBE_ResponseParseErrorInMainResource \
+  DISABLED_ResponseParseErrorInMainResource
+#else
+#define MAYBE_ResponseParseErrorInMainResource ResponseParseErrorInMainResource
+#endif
 IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest,
-                       ResponseParseErrorInMainResource) {
+                       MAYBE_ResponseParseErrorInMainResource) {
   const GURL test_data_url = GetTestUrlForFile(
       GetTestDataPath("broken_bundle_broken_first_entry.wbn"));
 
@@ -2054,7 +2067,13 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, DataDecoderRestart) {
   EXPECT_EQ(3, mock_factory.GetParserCreationCount());
 }
 
-IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, ParseMetadataCrash) {
+// TODO(https://crbug.com/1225178): flaky
+#if defined(OS_LINUX)
+#define MAYBE_ParseMetadataCrash DISABLED_ParseMetadataCrash
+#else
+#define MAYBE_ParseMetadataCrash ParseMetadataCrash
+#endif
+IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_ParseMetadataCrash) {
   base::FilePath test_file_path = GetTestDataPath("mocked.wbn");
   MockParserFactory mock_factory({GURL(kTestPageUrl)}, test_file_path);
   mock_factory.SimulateParseMetadataCrash();
