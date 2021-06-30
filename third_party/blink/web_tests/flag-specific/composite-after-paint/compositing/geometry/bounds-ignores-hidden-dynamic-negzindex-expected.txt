@@ -19,14 +19,7 @@
     },
     {
       "name": "LayoutNGBlockFlow PRE id='layers'",
-      "position": [8, 8],
-      "bounds": [784, 16],
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='indicator box'",
-      "bounds": [100, 350],
-      "contentsOpaqueForText": true
+      "bounds": [792, 350]
     }
   ],
   "transforms": [

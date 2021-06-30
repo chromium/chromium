@@ -15,52 +15,6 @@
       "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small test-mode phase-ready state-scrubbing'",
       "bounds": [320, 240],
       "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
-      "position": [184, 174],
-      "bounds": [36, 36],
-      "contentsOpaqueForText": true,
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='closed'",
-      "position": [0, 168],
-      "bounds": [320, 72],
-      "contentsOpaqueForText": true,
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='track'",
-      "position": [161, 177],
-      "bounds": [42, 34],
-      "contentsOpaqueForText": true,
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='track'",
-      "position": [1, 203],
-      "bounds": [318, 34],
-      "contentsOpaqueForText": true,
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV id='thumb'",
-      "position": [292, 212],
-      "bounds": [12, 12],
-      "contentsOpaqueForText": true,
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
-      "position": [16, 216],
-      "bounds": [288, 4],
-      "contentsOpaqueForText": true,
-      "backgroundColor": "#FFFFFF",
-      "transform": 1
     }
   ],
   "transforms": [

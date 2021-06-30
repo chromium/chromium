@@ -8,13 +8,6 @@
       "invalidations": [
         [12, 47, 58, 16]
       ]
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV id='search-clear'",
-      "position": [177, 50],
-      "bounds": [9, 10],
-      "contentsOpaqueForText": true,
-      "drawsContent": false
     }
   ]
 }

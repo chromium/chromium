@@ -8,12 +8,6 @@
       "invalidations": [
         [8, 68, 100, 100]
       ]
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV",
-      "position": [8, 8],
-      "bounds": [784, 60],
-      "drawsContent": false
     }
   ]
 }

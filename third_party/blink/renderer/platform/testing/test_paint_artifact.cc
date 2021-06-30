@@ -131,6 +131,11 @@ TestPaintArtifact& TestPaintArtifact::HasText() {
   return *this;
 }
 
+TestPaintArtifact& TestPaintArtifact::EffectivelyInvisible() {
+  paint_artifact_->PaintChunks().back().effectively_invisible = true;
+  return *this;
+}
+
 TestPaintArtifact& TestPaintArtifact::Bounds(const IntRect& bounds) {
   auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.bounds = bounds;

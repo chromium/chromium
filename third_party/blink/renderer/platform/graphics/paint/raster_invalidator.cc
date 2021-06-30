@@ -86,11 +86,14 @@ static bool ApproximatelyEqual(const SkMatrix& a, const SkMatrix& b) {
 }
 
 PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
-    const RefCountedPropertyTreeState& new_chunk_state,
-    const RefCountedPropertyTreeState& old_chunk_state,
+    const PaintChunk& new_chunk,
+    const PaintChunk& old_chunk,
     const PaintChunkInfo& new_chunk_info,
     const PaintChunkInfo& old_chunk_info,
     const PropertyTreeState& layer_state) const {
+  if (new_chunk.effectively_invisible != old_chunk.effectively_invisible)
+    return PaintInvalidationReason::kPaintProperty;
+
   // Special case for transform changes because we may create or delete some
   // transform nodes when no raster invalidation is needed. For example, when
   // a composited layer previously not transformed now gets transformed.
@@ -102,6 +105,8 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // Treat the chunk property as changed if the effect node pointer is
   // different, or the effect node's value changed between the layer state and
   // the chunk state.
+  const auto& new_chunk_state = new_chunk.properties;
+  const auto& old_chunk_state = old_chunk.properties;
   if (&new_chunk_state.Effect() != &old_chunk_state.Effect() ||
       new_chunk_state.Effect().Changed(
           PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state,
@@ -215,9 +220,8 @@ void RasterInvalidator::GenerateRasterInvalidations(
     PaintInvalidationReason reason =
         matched_old_index < max_matched_old_index
             ? PaintInvalidationReason::kChunkReordered
-            : ChunkPropertiesChanged(new_chunk.properties, old_chunk.properties,
-                                     new_chunk_info, old_chunk_info,
-                                     layer_state);
+            : ChunkPropertiesChanged(new_chunk, old_chunk, new_chunk_info,
+                                     old_chunk_info, layer_state);
 
     if (IsFullPaintInvalidationReason(reason)) {
       // Invalidate both old and new bounds of the chunk if the chunk's paint

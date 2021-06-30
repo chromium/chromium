@@ -20,12 +20,6 @@
       "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "transform": 2
-    },
-    {
-      "name": "LayoutNGBlockFlow PRE id='layers'",
-      "position": [8, 223],
-      "bounds": [784, 16],
-      "drawsContent": false
     }
   ],
   "transforms": [

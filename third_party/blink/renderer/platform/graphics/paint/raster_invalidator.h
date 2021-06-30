@@ -128,8 +128,8 @@ class PLATFORM_EXPORT RasterInvalidator {
                                ClientIsOldOrNew);
 
   ALWAYS_INLINE PaintInvalidationReason
-  ChunkPropertiesChanged(const RefCountedPropertyTreeState& new_chunk_state,
-                         const RefCountedPropertyTreeState& old_chunk_state,
+  ChunkPropertiesChanged(const PaintChunk& new_chunk,
+                         const PaintChunk& old_chunk,
                          const PaintChunkInfo& new_chunk_info,
                          const PaintChunkInfo& old_chunk_info,
                          const PropertyTreeState& layer_state) const;

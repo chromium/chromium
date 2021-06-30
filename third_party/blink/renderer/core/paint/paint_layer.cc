@@ -3507,13 +3507,11 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
     if (PaintLayerPainter::PaintedOutputInvisible(*old_style) !=
         new_painted_output_invisible) {
       if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-        // Though CompositeAfterPaint ignores PaintedOutputInvisible during
-        // paint, we still force repaint to ensure FCP/LCP will be reported.
-        // See crbug.com/1184903. Only SetNeedsRepaint() won't work because
-        // we won't repaint the display items which are already in the old
-        // painted result. TODO(crbug.com/1104218): Optimize this.
-        if (!new_painted_output_invisible)
-          GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
+        // Force repaint of the subtree for two purposes:
+        // 1. To ensure FCP/LCP will be reported. See crbug.com/1184903.
+        // 2. To update effectively_invisible flags of PaintChunks.
+        // TODO(crbug.com/1104218): Optimize this.
+        GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
       } else {
         // Change of PaintedOutputInvisible() will affect existence of paint
         // chunks, so needs repaint.

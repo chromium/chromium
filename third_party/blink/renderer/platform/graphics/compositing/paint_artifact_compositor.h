@@ -275,8 +275,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // can be satisfied (and the effect node has no direct reason).
   void LayerizeGroup(const PaintChunkSubset&,
                      const EffectPaintPropertyNode&,
-                     PaintChunkIterator& chunk_cursor,
-                     bool effectively_invisible);
+                     PaintChunkIterator& chunk_cursor);
   bool DecompositeEffect(const EffectPaintPropertyNode& parent_effect,
                          wtf_size_t first_layer_in_parent_group_index,
                          const EffectPaintPropertyNode& effect,

@@ -73,7 +73,8 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id) {
       next_chunk_id_.emplace(id);
     FinalizeLastChunkProperties();
     wtf_size_t begin = chunks_->IsEmpty() ? 0 : chunks_->back().end_index;
-    chunks_->emplace_back(begin, begin, *next_chunk_id_, current_properties_);
+    chunks_->emplace_back(begin, begin, *next_chunk_id_, current_properties_,
+                          current_effectively_invisible_);
     next_chunk_id_ = absl::nullopt;
     will_force_new_chunk_ = false;
     return true;

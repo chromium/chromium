@@ -708,6 +708,8 @@ void ConversionContext::EndTransform() {
 void ConversionContext::Convert(const PaintChunkSubset& chunks) {
   for (auto it = chunks.begin(); it != chunks.end(); ++it) {
     const auto& chunk = *it;
+    if (chunk.effectively_invisible)
+      continue;
     const auto& chunk_state = chunk.properties;
     bool switched_to_chunk_state = false;
 

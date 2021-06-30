@@ -87,6 +87,13 @@ class PLATFORM_EXPORT PaintChunker final {
   // Returns true if a new chunk is created.
   bool EnsureChunk() { return EnsureCurrentChunk(*next_chunk_id_); }
 
+  bool CurrentEffectivelyInvisible() const {
+    return current_effectively_invisible_;
+  }
+  void SetCurrentEffectivelyInvisible(bool invisible) {
+    current_effectively_invisible_ = invisible;
+  }
+
  private:
   // Returns true if a new chunk is created.
   bool EnsureCurrentChunk(const PaintChunk::Id&);
@@ -111,6 +118,7 @@ class PLATFORM_EXPORT PaintChunker final {
   // before and after subsequences by calling ForceNewChunk().
   bool will_force_new_chunk_ = true;
 
+  bool current_effectively_invisible_ = false;
   bool should_compute_contents_opaque_ = true;
 
   Color candidate_background_color_ = Color::kTransparent;

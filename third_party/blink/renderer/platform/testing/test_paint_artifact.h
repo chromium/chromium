@@ -120,6 +120,7 @@ class TestPaintArtifact {
   TestPaintArtifact& RectKnownToBeOpaque(const IntRect&);
   TestPaintArtifact& TextKnownToBeOnOpaqueBackground();
   TestPaintArtifact& HasText();
+  TestPaintArtifact& EffectivelyInvisible();
   TestPaintArtifact& Uncacheable();
 
   // Build the paint artifact. After that, if this object has automatically

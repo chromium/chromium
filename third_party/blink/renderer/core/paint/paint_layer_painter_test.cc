@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -22,20 +23,6 @@ class PaintLayerPainterTest : public PaintControllerPaintTest {
   USING_FAST_MALLOC(PaintLayerPainterTest);
 
  public:
-  void ExpectPaintedOutputInvisibleAndPaintsWithTransparency(
-      const char* element_name,
-      bool expected_invisible,
-      bool expected_paints_with_transparency) {
-    PaintLayer* target_layer = GetPaintLayerByElementId(element_name);
-    bool invisible = PaintLayerPainter::PaintedOutputInvisible(
-        target_layer->GetLayoutObject().StyleRef());
-    EXPECT_EQ(expected_invisible, invisible);
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      EXPECT_EQ(expected_paints_with_transparency,
-                target_layer->PaintsWithTransparency(kGlobalPaintNormalPhase));
-    }
-  }
-
   PaintController& MainGraphicsLayerPaintController() {
     return GetLayoutView()
         .Layer()
@@ -893,149 +880,6 @@ TEST_P(PaintLayerPainterTest, PaintPhasesUpdateOnBecomingNonSelfPainting) {
   EXPECT_TRUE(html_layer.NeedsPaintPhaseDescendantOutlines());
 }
 
-TEST_P(PaintLayerPainterTest, DontPaintWithTinyOpacity) {
-  SetBodyInnerHTML(
-      "<div id='target' style='background: blue; opacity: 0.0001'></div>");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", true, true);
-}
-
-TEST_P(PaintLayerPainterTest, DoPaintWithTinyOpacityAndWillChangeOpacity) {
-  SetBodyInnerHTML(
-      "<div id='target' style='background: blue; opacity: 0.0001; "
-      "    will-change: opacity'></div>");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", false, false);
-}
-
-TEST_P(PaintLayerPainterTest, DoPaintWithTinyOpacityAndBackdropFilter) {
-  SetBodyInnerHTML(
-      "<div id='target' style='background: blue; opacity: 0.0001;"
-      "    backdrop-filter: blur(2px);'></div>");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", false, false);
-}
-
-TEST_P(PaintLayerPainterTest,
-       DoPaintWithTinyOpacityAndBackdropFilterAndWillChangeOpacity) {
-  SetBodyInnerHTML(
-      "<div id='target' style='background: blue; opacity: 0.0001;"
-      "    backdrop-filter: blur(2px); will-change: opacity'></div>");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", false, false);
-}
-
-TEST_P(PaintLayerPainterTest, DoPaintWithCompositedTinyOpacity) {
-  SetBodyInnerHTML(
-      "<div id='target' style='background: blue; opacity: 0.0001;"
-      "    will-change: transform'></div>");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", true, false);
-}
-
-TEST_P(PaintLayerPainterTest, DoPaintWithNonTinyOpacity) {
-  SetBodyInnerHTML(
-      "<div id='target' style='background: blue; opacity: 0.1'></div>");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", false, true);
-}
-
-TEST_P(PaintLayerPainterTest, DoPaintWithEffectAnimationZeroOpacity) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    div {
-      width: 100px;
-      height: 100px;
-      animation-name: example;
-      animation-duration: 4s;
-    }
-    @keyframes example {
-      from { opacity: 0.0;}
-      to { opacity: 1.0;}
-    }
-    </style>
-    <div id='target'></div>
-  )HTML");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", true, false);
-}
-
-TEST_P(PaintLayerPainterTest, DoPaintWithTransformAnimationZeroOpacity) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    div#target {
-      animation-name: example;
-      animation-duration: 4s;
-      opacity: 0.0;
-    }
-    @keyframes example {
-      from { transform: translate(0px, 0px); }
-      to { transform: translate(3em, 0px); }
-    }
-    </style>
-    <div id='target'>x</div></div>
-  )HTML");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", true, false);
-}
-
-TEST_P(PaintLayerPainterTest,
-       DoPaintWithTransformAnimationZeroOpacityWillChangeOpacity) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    div#target {
-      animation-name: example;
-      animation-duration: 4s;
-      opacity: 0.0;
-      will-change: opacity;
-    }
-    @keyframes example {
-      from { transform: translate(0px, 0px); }
-      to { transform: translate(3em, 0px); }
-    }
-    </style>
-    <div id='target'>x</div></div>
-  )HTML");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", false, false);
-}
-
-TEST_P(PaintLayerPainterTest, DoPaintWithWillChangeOpacity) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    div {
-      width: 100px;
-      height: 100px;
-      will-change: opacity;
-    }
-    </style>
-    <div id='target'></div>
-  )HTML");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", false, false);
-}
-
-TEST_P(PaintLayerPainterTest, DoPaintWithZeroOpacityAndWillChangeOpacity) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    div {
-      width: 100px;
-      height: 100px;
-      opacity: 0;
-      will-change: opacity;
-    }
-    </style>
-    <div id='target'></div>
-  )HTML");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", false, false);
-}
-
-TEST_P(PaintLayerPainterTest,
-       DoPaintWithNoContentAndZeroOpacityAndWillChangeOpacity) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    div {
-      width: 100px;
-      height: 100px;
-      opacity: 0;
-      will-change: opacity;
-    }
-    </style>
-    <div id='target'></div>
-  )HTML");
-  ExpectPaintedOutputInvisibleAndPaintsWithTransparency("target", false, false);
-}
-
 using PaintLayerPainterTestCAP = PaintLayerPainterTest;
 
 INSTANTIATE_CAP_TEST_SUITE_P(PaintLayerPainterTestCAP);
@@ -1381,6 +1225,140 @@ TEST_P(PaintLayerPainterTestCAP, ClippedBigLayer) {
 
   EXPECT_EQ(IntRect(8, 8, 1, 1),
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
+}
+
+class PaintLayerPainterPaintedOutputInvisibleTest
+    : public PaintLayerPainterTest {
+ protected:
+  void RunTest() {
+    SetBodyInnerHTML(R"HTML(
+      <div id="parent">
+        <div id="target">
+          <div id="child"></div>
+        </div>
+      </div>
+      <style>
+        #parent {
+          width: 10px;
+          height: 10px;
+          will-change: transform;
+        }
+        #target {
+          width: 100px;
+          height: 100px;
+          opacity: 0.0001;
+        }
+        #child {
+          width: 200px;
+          height: 50px;
+          opacity: 0.9;
+        }
+    )HTML" + additional_style_ +
+                     "</style>");
+
+    auto* parent = GetLayoutObjectByElementId("parent");
+    auto* parent_layer = To<LayoutBox>(parent)->Layer();
+    auto* target = GetLayoutObjectByElementId("target");
+    auto* target_layer = To<LayoutBox>(target)->Layer();
+    auto* child = GetLayoutObjectByElementId("child");
+    auto* child_layer = To<LayoutBox>(child)->Layer();
+
+    EXPECT_EQ(expected_invisible_,
+              PaintLayerPainter::PaintedOutputInvisible(
+                  target_layer->GetLayoutObject().StyleRef()));
+
+    auto* cc_layer =
+        CcLayersByDOMElementId(GetDocument().View()->RootCcLayer(),
+                               expected_composited_ ? "target" : "parent")[0];
+    ASSERT_TRUE(cc_layer);
+    EXPECT_EQ(gfx::Size(200, 100), cc_layer->bounds());
+
+    auto chunks = ContentPaintChunks();
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      EXPECT_THAT(
+          chunks,
+          ElementsAre(
+              VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+              IsPaintChunk(
+                  1, 1, PaintChunk::Id(*parent_layer, DisplayItem::kLayerChunk),
+                  parent->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                  IntRect(0, 0, 10, 10)),
+              IsPaintChunk(
+                  1, 1, PaintChunk::Id(*target_layer, DisplayItem::kLayerChunk),
+                  target->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                  IntRect(0, 0, 100, 100)),
+              IsPaintChunk(
+                  1, 1, PaintChunk::Id(*child_layer, DisplayItem::kLayerChunk),
+                  child->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                  IntRect(0, 0, 200, 50))));
+      EXPECT_FALSE((chunks.begin() + 1)->effectively_invisible);
+      EXPECT_EQ(expected_invisible_,
+                (chunks.begin() + 2)->effectively_invisible);
+      EXPECT_EQ(expected_invisible_,
+                (chunks.begin() + 3)->effectively_invisible);
+    } else {
+      EXPECT_EQ(expected_paints_with_transparency_,
+                target_layer->PaintsWithTransparency(kGlobalPaintNormalPhase));
+    }
+  }
+
+  String additional_style_;
+  bool expected_composited_ = false;
+  bool expected_invisible_ = true;
+  bool expected_paints_with_transparency_ = true;
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(PaintLayerPainterPaintedOutputInvisibleTest);
+
+TEST_P(PaintLayerPainterPaintedOutputInvisibleTest, TinyOpacity) {
+  expected_composited_ = false;
+  expected_invisible_ = true;
+  expected_paints_with_transparency_ = true;
+  RunTest();
+}
+
+TEST_P(PaintLayerPainterPaintedOutputInvisibleTest,
+       TinyOpacityAndWillChangeOpacity) {
+  additional_style_ = "#target { will-change: opacity; }";
+  expected_composited_ = true;
+  expected_invisible_ = false;
+  expected_paints_with_transparency_ = false;
+  RunTest();
+}
+
+TEST_P(PaintLayerPainterPaintedOutputInvisibleTest,
+       TinyOpacityAndBackdropFilter) {
+  additional_style_ = "#target { backdrop-filter: blur(2px); }";
+  expected_composited_ = true;
+  expected_invisible_ = false;
+  expected_paints_with_transparency_ = false;
+  RunTest();
+}
+
+TEST_P(PaintLayerPainterPaintedOutputInvisibleTest,
+       TinyOpacityAndWillChangeTransform) {
+  additional_style_ = "#target { will-change: transform; }";
+  expected_composited_ = true;
+  expected_invisible_ = true;
+  expected_paints_with_transparency_ = false;
+  RunTest();
+}
+
+TEST_P(PaintLayerPainterPaintedOutputInvisibleTest, NonTinyOpacity) {
+  additional_style_ = "#target { opacity: 0.5; }";
+  expected_composited_ = false;
+  expected_invisible_ = false;
+  expected_paints_with_transparency_ = true;
+  RunTest();
+}
+
+TEST_P(PaintLayerPainterPaintedOutputInvisibleTest,
+       NonTinyOpacityAndWillChangeOpacity) {
+  additional_style_ = "#target { opacity: 1; will-change: opacity; }";
+  expected_composited_ = true;
+  expected_invisible_ = false;
+  expected_paints_with_transparency_ = false;
+  RunTest();
 }
 
 }  // namespace blink

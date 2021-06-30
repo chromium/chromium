@@ -230,21 +230,15 @@ class PaintArtifactCompositorTest : public testing::Test,
     return -1;
   }
 
-  void AddSimpleRectChunk(TestPaintArtifact& artifact) {
-    artifact.Chunk().RectDrawing(IntRect(100, 100, 200, 100), Color::kBlack);
-  }
-
-  void UpdateWithArtifactWithOpacity(float opacity,
-                                     bool include_preceding_chunk,
-                                     bool include_subsequent_chunk) {
+  void UpdateWithEffectivelyInvisibleChunk(bool include_preceding_chunk,
+                                           bool include_subsequent_chunk) {
     TestPaintArtifact artifact;
     if (include_preceding_chunk)
-      AddSimpleRectChunk(artifact);
-    auto effect = CreateOpacityEffect(e0(), opacity);
-    artifact.Chunk(t0(), c0(), *effect)
-        .RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
+      artifact.Chunk().RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
+    artifact.Chunk().EffectivelyInvisible().RectDrawing(
+        IntRect(100, 0, 100, 100), Color(255, 0, 0));
     if (include_subsequent_chunk)
-      AddSimpleRectChunk(artifact);
+      artifact.Chunk().RectDrawing(IntRect(0, 100, 100, 100), Color::kWhite);
     Update(artifact.Build());
   }
 
@@ -2492,180 +2486,47 @@ TEST_P(PaintArtifactCompositorTest, DecompositedEffectNotMergingDueToOverlap) {
   EXPECT_EQ(1, layer4->effect_tree_index());
 }
 
-TEST_P(PaintArtifactCompositorTest, SkipChunkWithOpacityZero) {
-  UpdateWithArtifactWithOpacity(0, false, false);
-  EXPECT_EQ(1u, LayerCount());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(LayerAt(0)->DrawsContent());
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       SkipChunkWithOpacityZeroWithPrecedingChunk) {
-  UpdateWithArtifactWithOpacity(0, true, false);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_EQ(2u, LayerCount());
-    EXPECT_FALSE(LayerAt(1)->DrawsContent());
-  } else {
-    ASSERT_EQ(1u, LayerCount());
-  }
-}
-
-TEST_P(PaintArtifactCompositorTest, SkipChunkWithOpacityZeroSubsequentChunk) {
-  UpdateWithArtifactWithOpacity(0, false, true);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_EQ(2u, LayerCount());
-    EXPECT_FALSE(LayerAt(0)->DrawsContent());
-  } else {
-    ASSERT_EQ(1u, LayerCount());
-  }
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       SkipChunkWithOpacityZeroWithPrecedingAndSubsequentChunk) {
-  UpdateWithArtifactWithOpacity(0, true, true);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_EQ(2u, LayerCount());
-    EXPECT_FALSE(LayerAt(1)->DrawsContent());
-  } else {
-    ASSERT_EQ(1u, LayerCount());
-  }
-}
-
-TEST_P(PaintArtifactCompositorTest, SkipChunkWithTinyOpacity) {
-  UpdateWithArtifactWithOpacity(0.0003f, false, false);
-  EXPECT_EQ(1u, LayerCount());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(LayerAt(0)->DrawsContent());
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       SkipChunkWithTinyOpacityWithPrecedingChunk) {
-  UpdateWithArtifactWithOpacity(0.0003f, true, false);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_EQ(2u, LayerCount());
-    EXPECT_FALSE(LayerAt(1)->DrawsContent());
-  } else {
-    ASSERT_EQ(1u, LayerCount());
-  }
-}
-
-TEST_P(PaintArtifactCompositorTest, SkipChunkWithTinyOpacitySubsequentChunk) {
-  UpdateWithArtifactWithOpacity(0.0003f, false, true);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_EQ(2u, LayerCount());
-    EXPECT_FALSE(LayerAt(0)->DrawsContent());
-  } else {
-    ASSERT_EQ(1u, LayerCount());
-  }
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       SkipChunkWithTinyOpacityWithPrecedingAndSubsequentChunk) {
-  UpdateWithArtifactWithOpacity(0.0003f, true, true);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_EQ(2u, LayerCount());
-    EXPECT_FALSE(LayerAt(1)->DrawsContent());
-  } else {
-    ASSERT_EQ(1u, LayerCount());
-  }
-}
-
-TEST_P(PaintArtifactCompositorTest, DontSkipChunkWithMinimumOpacity) {
-  UpdateWithArtifactWithOpacity(0.0004f, false, false);
+TEST_P(PaintArtifactCompositorTest, EffectivelyInvisibleChunk) {
+  UpdateWithEffectivelyInvisibleChunk(false, false);
   ASSERT_EQ(1u, LayerCount());
+  EXPECT_EQ(gfx::Size(100, 100), LayerAt(0)->bounds());
+  EXPECT_FALSE(LayerAt(0)->DrawsContent());
+  EXPECT_FALSE(LayerAt(0)->GetPicture());
 }
 
 TEST_P(PaintArtifactCompositorTest,
-       DontSkipChunkWithMinimumOpacityWithPrecedingChunk) {
-  UpdateWithArtifactWithOpacity(0.0004f, true, false);
+       EffectivelyInvisibleChunkWithPrecedingChunk) {
+  UpdateWithEffectivelyInvisibleChunk(true, false);
   ASSERT_EQ(1u, LayerCount());
+  EXPECT_EQ(gfx::Size(200, 100), LayerAt(0)->bounds());
+  EXPECT_TRUE(LayerAt(0)->DrawsContent());
+  EXPECT_THAT(LayerAt(0)->GetPicture(),
+              Pointee(DrawsRectangles(
+                  {RectWithColor(FloatRect(0, 0, 100, 100), Color::kBlack)})));
 }
 
 TEST_P(PaintArtifactCompositorTest,
-       DontSkipChunkWithMinimumOpacitySubsequentChunk) {
-  UpdateWithArtifactWithOpacity(0.0004f, false, true);
+       EffectivelyInvisibleChunkWithSubsequentChunk) {
+  UpdateWithEffectivelyInvisibleChunk(false, true);
   ASSERT_EQ(1u, LayerCount());
+  EXPECT_EQ(gfx::Size(200, 200), LayerAt(0)->bounds());
+  EXPECT_TRUE(LayerAt(0)->DrawsContent());
+  EXPECT_THAT(LayerAt(0)->GetPicture(),
+              Pointee(DrawsRectangles({RectWithColor(
+                  FloatRect(0, 100, 100, 100), Color::kWhite)})));
 }
 
 TEST_P(PaintArtifactCompositorTest,
-       DontSkipChunkWithMinimumOpacityWithPrecedingAndSubsequentChunk) {
-  UpdateWithArtifactWithOpacity(0.0004f, true, true);
+       EffectivelyInvisibleChunkWithPrecedingAndSubsequentChunks) {
+  UpdateWithEffectivelyInvisibleChunk(true, true);
   ASSERT_EQ(1u, LayerCount());
-}
-
-TEST_P(PaintArtifactCompositorTest, DontSkipChunkWithAboveMinimumOpacity) {
-  UpdateWithArtifactWithOpacity(0.3f, false, false);
-  ASSERT_EQ(1u, LayerCount());
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       DontSkipChunkWithAboveMinimumOpacityWithPrecedingChunk) {
-  UpdateWithArtifactWithOpacity(0.3f, true, false);
-  ASSERT_EQ(1u, LayerCount());
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       DontSkipChunkWithAboveMinimumOpacitySubsequentChunk) {
-  UpdateWithArtifactWithOpacity(0.3f, false, true);
-  ASSERT_EQ(1u, LayerCount());
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       DontSkipChunkWithAboveMinimumOpacityWithPrecedingAndSubsequentChunk) {
-  UpdateWithArtifactWithOpacity(0.3f, true, true);
-  ASSERT_EQ(1u, LayerCount());
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       DontSkipChunkWithTinyOpacityAndDirectCompositingReason) {
-  auto effect = CreateOpacityEffect(e0(), 0.0001f, CompositingReason::kCanvas);
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *effect)
-      .RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
-  Update(artifact.Build());
-  ASSERT_EQ(1u, LayerCount());
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       SkipChunkWithTinyOpacityAndVisibleChildEffectNode) {
-  auto tiny_effect =
-      CreateOpacityEffect(e0(), 0.0001f, CompositingReason::kNone);
-  auto visible_effect =
-      CreateOpacityEffect(*tiny_effect, 0.5f, CompositingReason::kNone);
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *visible_effect)
-      .RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
-  Update(artifact.Build());
-  EXPECT_EQ(1u, LayerCount());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(LayerAt(0)->DrawsContent());
-}
-
-TEST_P(
-    PaintArtifactCompositorTest,
-    DontSkipChunkWithTinyOpacityAndVisibleChildEffectNodeWithCompositingParent) {
-  auto tiny_effect =
-      CreateOpacityEffect(e0(), 0.0001f, CompositingReason::kCanvas);
-  auto visible_effect = CreateOpacityEffect(*tiny_effect, 0.5f);
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *visible_effect)
-      .RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
-  Update(artifact.Build());
-  ASSERT_EQ(1u, LayerCount());
-}
-
-TEST_P(PaintArtifactCompositorTest,
-       SkipChunkWithTinyOpacityAndVisibleChildEffectNodeWithCompositingChild) {
-  auto tiny_effect = CreateOpacityEffect(e0(), 0.0001f);
-  auto visible_effect =
-      CreateOpacityEffect(*tiny_effect, 0.5f, CompositingReason::kCanvas);
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *visible_effect)
-      .RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
-  Update(artifact.Build());
-  EXPECT_EQ(1u, LayerCount());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(LayerAt(0)->DrawsContent());
+  EXPECT_EQ(gfx::Size(200, 200), LayerAt(0)->bounds());
+  EXPECT_TRUE(LayerAt(0)->DrawsContent());
+  EXPECT_THAT(
+      LayerAt(0)->GetPicture(),
+      Pointee(DrawsRectangles(
+          {RectWithColor(FloatRect(0, 0, 100, 100), Color::kBlack),
+           RectWithColor(FloatRect(0, 100, 100, 100), Color::kWhite)})));
 }
 
 TEST_P(PaintArtifactCompositorTest, UpdateManagesLayerElementIds) {

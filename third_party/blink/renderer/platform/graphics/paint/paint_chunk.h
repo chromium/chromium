@@ -37,7 +37,8 @@ struct PLATFORM_EXPORT PaintChunk {
   PaintChunk(wtf_size_t begin,
              wtf_size_t end,
              const Id& id,
-             const PropertyTreeStateOrAlias& props)
+             const PropertyTreeStateOrAlias& props,
+             bool effectively_invisible = false)
       : begin_index(begin),
         end_index(end),
         background_color(Color::kTransparent),
@@ -48,7 +49,8 @@ struct PLATFORM_EXPORT PaintChunk {
         has_text(false),
         is_cacheable(id.client.IsCacheable()),
         client_is_just_created(id.client.IsJustCreated()),
-        is_moved_from_cached_subsequence(false) {}
+        is_moved_from_cached_subsequence(false),
+        effectively_invisible(effectively_invisible) {}
 
   // Move a paint chunk from a cached subsequence.
   PaintChunk(wtf_size_t begin, PaintChunk&& other)
@@ -69,7 +71,8 @@ struct PLATFORM_EXPORT PaintChunk {
         has_text(other.has_text),
         is_cacheable(other.is_cacheable),
         client_is_just_created(false),
-        is_moved_from_cached_subsequence(true) {
+        is_moved_from_cached_subsequence(true),
+        effectively_invisible(other.effectively_invisible) {
 #if DCHECK_IS_ON()
     DCHECK(other.id.client.IsAlive());
     DCHECK(!other.id.client.IsJustCreated());
@@ -175,6 +178,7 @@ struct PLATFORM_EXPORT PaintChunk {
   bool is_cacheable : 1;
   bool client_is_just_created : 1;
   bool is_moved_from_cached_subsequence : 1;
+  bool effectively_invisible : 1;
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PaintChunk&);

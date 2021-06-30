@@ -301,8 +301,7 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   IntRect cc_combined_bounds = EnclosingIntRect(pending_layer.Bounds());
   auto cc_layer = content_layer_client->UpdateCcPictureLayer(
       pending_layer.Chunks(), cc_combined_bounds,
-      pending_layer.GetPropertyTreeState(),
-      pending_layer.EffectivelyInvisible());
+      pending_layer.GetPropertyTreeState());
 
   new_content_layer_clients.push_back(std::move(content_layer_client));
 
@@ -501,27 +500,6 @@ bool PaintArtifactCompositor::DecompositeEffect(
   return true;
 }
 
-static bool IsEffectivelyInvisible(const EffectPaintPropertyNode& group) {
-  // In pre-CompositeAfterPaint, existence of composited layers is decided
-  // during compositing update before paint. Each chunk contains a foreign
-  // layer corresponding a composited layer. We should not skip any of them to
-  // ensure correct composited hit testing and animation.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return false;
-
-  // The lower bound of visibility is considered to be 0.0004f < 1/2048. With
-  // 10-bit color channels (only available on the newest Macs as of 2016;
-  // otherwise it's 8-bit), we see that an alpha of 1/2048 or less leads to a
-  // color output of less than 0.5 in all channels, hence not visible.
-  static const float kMinimumVisibleOpacity = 0.0004f;
-  if (group.Opacity() >= kMinimumVisibleOpacity ||
-      group.HasDirectCompositingReasons()) {
-    return false;
-  }
-
-  return true;
-}
-
 static bool IsCompositedScrollHitTest(const PaintChunk& chunk) {
   if (!chunk.hit_test_data)
     return false;
@@ -542,10 +520,7 @@ static bool IsCompositedScrollbar(const DisplayItem& item) {
 void PaintArtifactCompositor::LayerizeGroup(
     const PaintChunkSubset& chunks,
     const EffectPaintPropertyNode& current_group,
-    PaintChunkIterator& chunk_cursor,
-    bool effectively_invisible) {
-  effectively_invisible |= IsEffectivelyInvisible(current_group);
-
+    PaintChunkIterator& chunk_cursor) {
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
   // The worst case time complexity of the algorithm is O(pqd), where
   // p = the number of paint chunks.
@@ -584,8 +559,7 @@ void PaintArtifactCompositor::LayerizeGroup(
           compositing_type = PendingLayer::kScrollbarLayer;
       }
 
-      pending_layers_.emplace_back(chunks, chunk_cursor, compositing_type,
-                                   effectively_invisible);
+      pending_layers_.emplace_back(chunks, chunk_cursor, compositing_type);
       ++chunk_cursor;
       if (pending_layers_.back().RequiresOwnLayer())
         continue;
@@ -599,7 +573,7 @@ void PaintArtifactCompositor::LayerizeGroup(
       // Case C: The following chunks belong to a subgroup. Process them by
       //         a recursion call.
       wtf_size_t first_layer_in_subgroup = pending_layers_.size();
-      LayerizeGroup(chunks, *subgroup, chunk_cursor, effectively_invisible);
+      LayerizeGroup(chunks, *subgroup, chunk_cursor);
       // The above LayerizeGroup generated new layers in pending_layers_
       // [first_layer_in_subgroup .. pending_layers.size() - 1]. If it
       // generated 2 or more layer that we already know can't be merged
@@ -646,8 +620,7 @@ void PaintArtifactCompositor::CollectPendingLayers(
       continue;
     }
     auto cursor = layer.chunks.begin();
-    LayerizeGroup(layer.chunks, EffectPaintPropertyNode::Root(), cursor,
-                  /*effectively_invisible=*/false);
+    LayerizeGroup(layer.chunks, EffectPaintPropertyNode::Root(), cursor);
     DCHECK(cursor == layer.chunks.end());
   }
   pending_layers_.ShrinkToReasonableCapacity();
@@ -1054,8 +1027,7 @@ void PaintArtifactCompositor::UpdateRepaintedLayer(
         IntRect cc_combined_bounds = EnclosingIntRect(pending_layer.Bounds());
         content_layer_client->UpdateCcPictureLayer(
             pending_layer.Chunks(), cc_combined_bounds,
-            pending_layer.GetPropertyTreeState(),
-            pending_layer.EffectivelyInvisible());
+            pending_layer.GetPropertyTreeState());
       }
       layer = &content_layer_client->Layer();
     }
@@ -1120,16 +1092,27 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
   DCHECK(!needs_update_);
 
 #if DCHECK_IS_ON()
-  // Any property tree state change should have caused a full update. Some
-  // chunks in |pre_composited_layers| with changed properties to be ignored
-  // (see: SkipGroupIfEffectivelyInvisible) so we check the existing chunks in
-  // |pending_layers_|.
-  for (const auto& pending_layer : pending_layers_) {
-    for (const auto& chunk : pending_layer.Chunks()) {
-      // If this fires, a property tree value has changed but we are missing a
-      // call to |PaintArtifactCompositor::SetNeedsUpdate|.
-      DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
-          PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
+  // Any property tree state change should have caused a full update.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    for (const auto& pre_composited_layer : pre_composited_layers) {
+      for (const auto& chunk : pre_composited_layer.chunks) {
+        // If this fires, a property tree value has changed but we are missing a
+        // call to |PaintArtifactCompositor::SetNeedsUpdate|.
+        DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
+            PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
+      }
+    }
+  } else {
+    // Not sure why some blink unittests will trigger the DCHECK below if we
+    // check the new paint chunks. Will not bother because we are launching
+    // CompositeAfterPaint.
+    for (const auto& pending_layer : pending_layers_) {
+      for (const auto& chunk : pending_layer.Chunks()) {
+        // If this fires, a property tree value has changed but we are missing a
+        // call to |PaintArtifactCompositor::SetNeedsUpdate|.
+        DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
+            PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
+      }
     }
   }
 #endif

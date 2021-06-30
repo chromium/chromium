@@ -102,7 +102,12 @@ class PLATFORM_EXPORT PaintController {
     paint_chunker_.SetWillForceNewChunk(force);
   }
   bool WillForceNewChunk() const { return paint_chunker_.WillForceNewChunk(); }
-
+  void SetCurrentEffectivelyInvisible(bool invisible) {
+    paint_chunker_.SetCurrentEffectivelyInvisible(invisible);
+  }
+  bool CurrentEffectivelyInvisible() const {
+    return paint_chunker_.CurrentEffectivelyInvisible();
+  }
   void EnsureChunk();
 
   void SetShouldComputeContentsOpaque(bool should_compute) {

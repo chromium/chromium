@@ -35,7 +35,8 @@ bool PaintChunk::EqualsForUnderInvalidationChecking(
          raster_effect_outset == other.raster_effect_outset &&
          ((!hit_test_data && !other.hit_test_data) ||
           (hit_test_data && other.hit_test_data &&
-           *hit_test_data == *other.hit_test_data));
+           *hit_test_data == *other.hit_test_data)) &&
+         effectively_invisible == other.effectively_invisible;
   // Derived fields like rect_known_to_be_opaque are not checked because they
   // are updated when we create the next chunk or release chunks. We ensure
   // their correctness with unit tests and under-invalidation checking of
@@ -57,10 +58,10 @@ String PaintChunk::ToString() const {
   StringBuilder sb;
   sb.AppendFormat(
       "PaintChunk(begin=%u, end=%u, id=%s cacheable=%d props=(%s) bounds=%s "
-      "rect_known_to_be_opaque=%s",
+      "rect_known_to_be_opaque=%s effectively_invisible=%d",
       begin_index, end_index, id.ToString().Utf8().c_str(), is_cacheable,
       properties.ToString().Utf8().c_str(), bounds.ToString().Utf8().c_str(),
-      rect_known_to_be_opaque.ToString().Utf8().c_str());
+      rect_known_to_be_opaque.ToString().Utf8().c_str(), effectively_invisible);
   if (hit_test_data) {
     sb.Append(", hit_test_data=");
     sb.Append(hit_test_data->ToString());

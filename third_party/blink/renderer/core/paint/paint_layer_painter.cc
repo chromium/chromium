@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scoped_effectively_invisible.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_hint.h"
 #include "third_party/blink/renderer/platform/graphics/paint/subsequence_recorder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -510,6 +511,11 @@ PaintResult PaintLayerPainter::PaintLayerContents(
       is_painting_composited_foreground &&
       !is_painting_overlay_overflow_controls;
   bool is_video = IsA<LayoutVideo>(object);
+
+  absl::optional<ScopedEffectivelyInvisible> effectively_invisible;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+      PaintedOutputInvisible(object.StyleRef()))
+    effectively_invisible.emplace(context.GetPaintController());
 
   absl::optional<ScopedPaintChunkHint> paint_chunk_hint;
   if (should_paint_content) {

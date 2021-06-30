@@ -44,8 +44,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   PendingLayer(const PaintChunkSubset&,
                const PaintChunkIterator&,
-               CompositingType compositng_type = kOther,
-               bool effectively_invisible = false);
+               CompositingType compositng_type = kOther);
   explicit PendingLayer(const PreCompositedLayerInfo&);
 
   const FloatRect& Bounds() const { return bounds_; }
@@ -55,7 +54,6 @@ class PLATFORM_EXPORT PendingLayer {
   bool TextKnownToBeOnOpaqueBackground() const {
     return text_known_to_be_on_opaque_background_;
   }
-  bool EffectivelyInvisible() const { return effectively_invisible_; }
   const PaintChunkSubset& Chunks() const { return chunks_; }
   const PropertyTreeState& GetPropertyTreeState() const {
     return property_tree_state_;
@@ -138,7 +136,6 @@ class PLATFORM_EXPORT PendingLayer {
   FloatRect rect_known_to_be_opaque_;
   bool has_text_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
-  bool effectively_invisible_ = false;
   PaintChunkSubset chunks_;
   PropertyTreeState property_tree_state_;
   FloatPoint offset_of_decomposited_transforms_;

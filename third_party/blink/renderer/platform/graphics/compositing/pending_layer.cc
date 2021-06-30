@@ -42,14 +42,12 @@ void ClipToVisibilityLimit(const PropertyTreeState& state, FloatRect& rect) {
 
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
                            const PaintChunkIterator& first_chunk,
-                           CompositingType compositing_type,
-                           bool effectively_invisible)
+                           CompositingType compositing_type)
     : bounds_(first_chunk->bounds),
       rect_known_to_be_opaque_(first_chunk->rect_known_to_be_opaque),
       has_text_(first_chunk->has_text),
       text_known_to_be_on_opaque_background_(
           first_chunk->text_known_to_be_on_opaque_background),
-      effectively_invisible_(effectively_invisible),
       chunks_(&chunks.GetPaintArtifact(), first_chunk.IndexInPaintArtifact()),
       property_tree_state_(
           first_chunk->properties.GetPropertyTreeState().Unalias()),
@@ -162,8 +160,6 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   if (RequiresOwnLayer() || guest.RequiresOwnLayer())
     return false;
   if (&GetPropertyTreeState().Effect() != &guest_state.Effect())
-    return false;
-  if (EffectivelyInvisible() != guest.EffectivelyInvisible())
     return false;
 
   const absl::optional<PropertyTreeState>& merged_state =
