@@ -845,6 +845,9 @@ void SpdyStreamRequest::Reset() {
 
 void SpdyStreamRequest::OnConfirmHandshakeComplete(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
+  if (!session_)
+    return;
+
   if (rv != OK) {
     OnRequestCompleteFailure(rv);
     return;

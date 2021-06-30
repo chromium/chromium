@@ -1303,10 +1303,9 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // nullptr.
   NetworkQualityEstimator* network_quality_estimator_;
 
-  // Used for posting asynchronous IO tasks.  We use this even though
-  // SpdySession is refcounted because we don't need to keep the SpdySession
-  // alive if the last reference is within a RunnableMethod.  Just revoke the
-  // method.
+  // Used for accessing the SpdySession from asynchronous tasks. An asynchronous
+  // must check if its WeakPtr<SpdySession> is valid before accessing it, to
+  // correctly handle the case where it became unavailable and was deleted.
   base::WeakPtrFactory<SpdySession> weak_factory_{this};
 };
 
