@@ -163,6 +163,7 @@
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/navigation_client.mojom.h"
+#include "content/common/navigation_params.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"

@@ -150,7 +150,6 @@ source_set("common") {
     "native_io/native_io_utils.cc",
     "navigation/impression.cc",
     "navigation/impression_mojom_traits.cc",
-    "navigation/navigation_params.cc",
     "navigation/navigation_policy.cc",
     "navigation/navigation_policy_mojom_traits.cc",
     "navigation/prefetched_signed_exchange_info_mojom_traits.cc",

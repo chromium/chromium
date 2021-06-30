@@ -37,7 +37,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
-#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -238,8 +237,7 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       navigation_client_.BindNewPipeAndPassReceiver());
 
   navigation_client_->CommitNavigation(
-      blink::CreateCommonNavigationParams(),
-      blink::CreateCommitNavigationParams(),
+      CreateCommonNavigationParams(), CreateCommitNavigationParams(),
       network::mojom::URLResponseHead::New(),
       mojo::ScopedDataPipeConsumerHandle(), nullptr, nullptr, absl::nullopt,
       nullptr, std::move(info), mojo::NullRemote(),
