@@ -845,7 +845,7 @@ def _PackageApk(options, build):
     # can call it in the case where the APK is being loaded as a library.
     with open(build.proguard_path, 'a') as proguard_file:
       keep_rule = '''
-                  -keep class {package}.R {{
+                  -keep,allowoptimization class {package}.R {{
                     public static void onResourcesLoaded(int);
                   }}
                   '''.format(package=desired_manifest_package_name)
