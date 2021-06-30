@@ -440,8 +440,9 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
 }
 
 void HoldingSpaceItemChipView::UpdateLabels() {
-  const bool multiselect = delegate()->selection_ui() ==
-                           HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
+  const bool multiselect =
+      delegate() && delegate()->selection_ui() ==
+                        HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   // Primary.
   primary_label_->SetText(item()->GetText());
