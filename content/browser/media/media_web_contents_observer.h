@@ -198,15 +198,24 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     void OnMediaSizeChanged(const ::gfx::Size& size) override;
     void OnPictureInPictureAvailabilityChanged(bool available) override;
     void OnAudioOutputSinkChanged(const std::string& hashed_device_id) override;
+    void OnUseAudioServiceChanged(bool uses_audio_service) override;
     void OnAudioOutputSinkChangingDisabled() override;
     void OnBufferUnderflow() override;
     void OnSeek() override;
 
    private:
-    MediaPlayerId media_player_id_;
-    MediaWebContentsObserver* media_web_contents_observer_;
+    PlayerInfo* GetPlayerInfo();
+    void NotifyAudioStreamMonitorIfNeeded();
+
+    const MediaPlayerId media_player_id_;
+    MediaWebContentsObserver* const media_web_contents_observer_;
+
     mojo::AssociatedReceiver<media::mojom::MediaPlayerObserver>
         media_player_observer_receiver_{this};
+
+    // Helps monitor audio stream when not using AudioService.
+    bool uses_audio_service_ = true;
+    bool audible_client_added_ = false;
   };
 
   using MediaPlayerHostImplMap =

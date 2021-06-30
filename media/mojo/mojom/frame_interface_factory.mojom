@@ -9,8 +9,20 @@ import "media/mojo/mojom/provision_fetcher.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "url/mojom/origin.mojom";
 
-// A factory for acquiring media mojo interfaces that are bound to a
-// RenderFrameHost.
+// Implemented by things like audio playback in the utility process to respond
+// to mute state changes (e.g. the user checks "Mute Site" or "Unmute Site" on a
+// tab).
+[EnableIf=is_win]
+interface MuteStateObserver {
+  // Notifies mute state change.
+  OnMuteStateChange(bool muted);
+};
+
+// A factory providing extra services for media mojo services running remotely.
+// The implementation of this interface lives in the browser process and
+// is bound to a RenderFrameHost (see MediaInterfaceProxy). Interfaces created
+// via this interface also live in the browser process and are mostly bound to
+// a document's lifetime.
 interface FrameInterfaceFactory {
   // Binds the ProvisionFetcher for the frame.
   CreateProvisionFetcher(pending_receiver<ProvisionFetcher> provision_fetcher);
@@ -18,6 +30,10 @@ interface FrameInterfaceFactory {
   // Binds the CdmStorage for the frame. This requires that the frame have
   // CDM storage available.
   CreateCdmStorage(pending_receiver<CdmStorage> cdm_storage);
+
+  // Registers `site_mute_observer` to get notified of site mute state changes.
+  [EnableIf=is_win]
+  RegisterMuteStateObserver(pending_remote<MuteStateObserver> site_mute_observer);
 
   // Gets the origin of the frame associated with the CDM.
   [Sync]

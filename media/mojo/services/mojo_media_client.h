@@ -88,6 +88,7 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
 #if defined(OS_WIN)
   virtual std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojom::FrameInterfaceFactory* frame_interfaces,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver);
 #endif  // defined(OS_WIN)

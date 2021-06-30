@@ -20,6 +20,8 @@
 #include "content/public/browser/media_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "media/base/cdm_context.h"
 #include "media/media_buildflags.h"
@@ -27,6 +29,7 @@
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 #include "content/public/browser/browser_context.h"
@@ -134,13 +137,17 @@ media::mojom::MediaService& GetSecondaryMediaService() {
   return *remote->get();
 }
 
-class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory {
+class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
+                                  public WebContentsObserver {
  public:
-  FrameInterfaceFactoryImpl(RenderFrameHost* rfh,
+  FrameInterfaceFactoryImpl(RenderFrameHost* render_frame_host,
                             const std::string& cdm_file_system_id)
-      : render_frame_host_(rfh),
-        cdm_file_system_id_(cdm_file_system_id) {
-  }
+      : WebContentsObserver(
+            WebContents::FromRenderFrameHost(render_frame_host)),
+        render_frame_host_(render_frame_host),
+        cdm_file_system_id_(cdm_file_system_id) {}
+
+  // media::mojom::FrameInterfaceFactory implementation:
 
   void CreateProvisionFetcher(
       mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver) override {
@@ -165,6 +172,16 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory {
 #endif
   }
 
+#if defined(OS_WIN)
+  void RegisterMuteStateObserver(
+      mojo::PendingRemote<media::mojom::MuteStateObserver> observer) override {
+    auto remote_id = site_mute_observers_.Add(std::move(observer));
+    // Initial notification on mute stage.
+    site_mute_observers_.Get(remote_id)->OnMuteStateChange(
+        WebContents::FromRenderFrameHost(render_frame_host_)->IsAudioMuted());
+  }
+#endif  // defined(OS_WIN)
+
   void GetCdmOrigin(GetCdmOriginCallback callback) override {
     return std::move(callback).Run(
         render_frame_host_->GetLastCommittedOrigin());
@@ -175,9 +192,21 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory {
         render_frame_host_, std::move(receiver));
   }
 
+#if defined(OS_WIN)
+  // WebContentsObserver implementation:
+  void DidUpdateAudioMutingState(bool muted) override {
+    for (const auto& observer : site_mute_observers_)
+      observer->OnMuteStateChange(muted);
+  }
+#endif  // defined(OS_WIN)
+
  private:
   RenderFrameHost* const render_frame_host_;
   const std::string cdm_file_system_id_;
+
+#if defined(OS_WIN)
+  mojo::RemoteSet<media::mojom::MuteStateObserver> site_mute_observers_;
+#endif  // defined(OS_WIN)
 };
 
 }  // namespace

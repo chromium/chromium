@@ -398,4 +398,64 @@ TEST_F(AudioStreamMonitorTest, RenderFrameGone) {
   ExpectIsMonitoring(kAnotherRenderProcessId, kRenderFrameId, kStreamId, true);
 }
 
+TEST_F(AudioStreamMonitorTest, OneAudibleClient) {
+  ExpectNotCurrentlyAudible();
+
+  ExpectRecentlyAudibleChangeNotification(true);
+  ExpectCurrentlyAudibleChangeNotification(true);
+  monitor_->AddAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  ExpectCurrentlyAudibleChangeNotification(false);
+  monitor_->RemoveAudibleClient();
+  ExpectNotCurrentlyAudible();
+}
+
+TEST_F(AudioStreamMonitorTest, MultipleAudibleClients) {
+  ExpectNotCurrentlyAudible();
+
+  // Add one client and the tab becomes audible.
+  ExpectRecentlyAudibleChangeNotification(true);
+  ExpectCurrentlyAudibleChangeNotification(true);
+  monitor_->AddAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  // Add another client and the tab remains audible.
+  monitor_->AddAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  // Removes one client and the tab remains audible.
+  monitor_->RemoveAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  // Removes another client and the tab is not audible.
+  ExpectCurrentlyAudibleChangeNotification(false);
+  monitor_->RemoveAudibleClient();
+  ExpectNotCurrentlyAudible();
+}
+
+TEST_F(AudioStreamMonitorTest, AudibleClientAndStream) {
+  StartMonitoring(kRenderProcessId, kRenderFrameId, kStreamId);
+  ExpectNotCurrentlyAudible();
+
+  // Add one client and the tab becomes audible.
+  ExpectRecentlyAudibleChangeNotification(true);
+  ExpectCurrentlyAudibleChangeNotification(true);
+  monitor_->AddAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  // The stream becomes audible and the tab remains audible.
+  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, true);
+  ExpectIsCurrentlyAudible();
+
+  // Remove the client and the tab remains audible.
+  monitor_->RemoveAudibleClient();
+  ExpectIsCurrentlyAudible();
+
+  // The stream becomes not audible and the tab is not audible.
+  ExpectCurrentlyAudibleChangeNotification(false);
+  UpdateAudibleState(kRenderProcessId, kRenderFrameId, kStreamId, false);
+  ExpectNotCurrentlyAudible();
+}
+
 }  // namespace content

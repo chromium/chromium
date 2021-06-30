@@ -55,6 +55,10 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // any outstanding poll callbacks.
   void RenderProcessGone(int render_process_id);
 
+  // Adds/Removes Audible clients.
+  void AddAudibleClient();
+  void RemoveAudibleClient();
+
   // Starts or stops monitoring respectively for the stream owned by the
   // specified renderer.  Safe to call from any thread.
   static void StartMonitoringStream(int render_process_id,
@@ -130,15 +134,18 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // streams will have an entry in this map.
   base::flat_map<StreamID, bool> streams_;
 
+  // Number of non-stream audible clients, e.g. players not using AudioServices.
+  int audible_clients_ = 0;
+
   // Records the last time at which all streams became silent.
   base::TimeTicks last_became_silent_time_;
 
   // Set to true if the last call to MaybeToggle() determined the indicator
   // should be turned on.
-  bool indicator_is_on_;
+  bool indicator_is_on_ = false;
 
   // Whether the WebContents is currently audible.
-  bool is_audible_;
+  bool is_audible_ = false;
 
   // Started only when an indicator is toggled on, to turn it off again in the
   // future.

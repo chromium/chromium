@@ -43,9 +43,7 @@ bool AudioStreamMonitor::StreamID::operator==(const StreamID& other) const {
 AudioStreamMonitor::AudioStreamMonitor(WebContents* contents)
     : WebContentsObserver(contents),
       web_contents_(contents),
-      clock_(base::DefaultTickClock::GetInstance()),
-      indicator_is_on_(false),
-      is_audible_(false) {
+      clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK(web_contents_);
 }
 
@@ -76,6 +74,20 @@ void AudioStreamMonitor::RenderProcessGone(int render_process_id) {
                 [render_process_id](const std::pair<StreamID, bool>& entry) {
                   return entry.first.render_process_id == render_process_id;
                 });
+  UpdateStreams();
+}
+
+void AudioStreamMonitor::AddAudibleClient() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_GE(audible_clients_, 0);
+  ++audible_clients_;
+  UpdateStreams();
+}
+
+void AudioStreamMonitor::RemoveAudibleClient() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_GE(audible_clients_, 0);
+  --audible_clients_;
   UpdateStreams();
 }
 
@@ -179,6 +191,9 @@ void AudioStreamMonitor::UpdateStreams() {
       continue;
     audible_frame_map[render_frame_host_impl] |= is_stream_audible;
   }
+
+  // Check non-stream audible clients.
+  is_audible_ |= (audible_clients_ > 0);
 
   if (was_audible && !is_audible_)
     last_became_silent_time_ = clock_->NowTicks();

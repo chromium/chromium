@@ -4542,6 +4542,12 @@ void HTMLMediaElement::DidDisableAudioOutputSinkChanges() {
     observer->OnAudioOutputSinkChangingDisabled();
 }
 
+void HTMLMediaElement::DidUseAudioServiceChange(bool uses_audio_service) {
+  for (auto& observer : media_player_observer_remote_set_->Value()) {
+    observer->OnUseAudioServiceChanged(uses_audio_service);
+  }
+}
+
 void HTMLMediaElement::DidPlayerSizeChange(const gfx::Size& size) {
   for (auto& observer : media_player_observer_remote_set_->Value())
     observer->OnMediaSizeChanged(size);

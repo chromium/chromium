@@ -579,6 +579,7 @@ class WebMediaPlayerMSTest
                                          base::TimeDelta position,
                                          bool end_of_media) override {}
   void DidDisableAudioOutputSinkChanges() override {}
+  void DidUseAudioServiceChange(bool uses_audio_service) override {}
   void DidPlayerSizeChange(const gfx::Size& size) override {}
   void DidBufferUnderflow() override {}
   void DidSeek() override {}

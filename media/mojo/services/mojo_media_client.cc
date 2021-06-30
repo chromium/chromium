@@ -59,6 +59,7 @@ std::unique_ptr<Renderer> MojoMediaClient::CreateCastRenderer(
 #if defined(OS_WIN)
 std::unique_ptr<Renderer> MojoMediaClient::CreateMediaFoundationRenderer(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    mojom::FrameInterfaceFactory* frame_interfaces,
     mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {
   return nullptr;

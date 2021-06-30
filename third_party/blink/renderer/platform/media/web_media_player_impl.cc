@@ -314,6 +314,13 @@ bool MediaPositionNeedsUpdate(
   return drift > base::TimeDelta::FromMilliseconds(100);
 }
 
+// Returns whether the player uses AudioService. This is needed to enable
+// AudioStreamMonitor (for audio indicator) when not using AudioService.
+// TODO(crbug.com/1017943): Support other RendererTypes.
+bool UsesAudioService(RendererType renderer_type) {
+  return renderer_type != RendererType::kMediaFoundation;
+}
+
 }  // namespace
 
 class BufferedDataSourceHostImpl;
@@ -1027,8 +1034,7 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
 
   if (delegate_has_audio_ != HasUnmutedAudio()) {
     delegate_has_audio_ = HasUnmutedAudio();
-    MediaContentType content_type =
-        DurationToMediaContentType(GetPipelineMediaDuration());
+    MediaContentType content_type = GetMediaContentType();
     client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
                                     content_type);
     delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
@@ -1945,8 +1951,7 @@ void WebMediaPlayerImpl::OnMetadata(const PipelineMetadata& metadata) {
     observer_->OnMetadataChanged(pipeline_metadata_);
 
   delegate_has_audio_ = HasUnmutedAudio();
-  MediaContentType content_type =
-      DurationToMediaContentType(GetPipelineMediaDuration());
+  MediaContentType content_type = GetMediaContentType();
   client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
                                   content_type);
   delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
@@ -2237,9 +2242,7 @@ void WebMediaPlayerImpl::OnDurationChange() {
     return;
 
   client_->DurationChanged();
-
-  MediaContentType content_type =
-      DurationToMediaContentType(GetPipelineMediaDuration());
+  MediaContentType content_type = GetMediaContentType();
   client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
                                   content_type);
   delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
@@ -2747,9 +2750,14 @@ std::unique_ptr<Renderer> WebMediaPlayerImpl::CreateRenderer(
     renderer_factory_selector_->SetBaseRendererType(renderer_type.value());
   }
 
-  reported_renderer_type_ =
-      renderer_factory_selector_->GetCurrentRendererType();
-  media_metrics_provider_->SetRendererType(reported_renderer_type_);
+  bool old_uses_audio_service = UsesAudioService(renderer_type_);
+  renderer_type_ = renderer_factory_selector_->GetCurrentRendererType();
+
+  bool new_uses_audio_service = UsesAudioService(renderer_type_);
+  if (new_uses_audio_service != old_uses_audio_service)
+    client_->DidUseAudioServiceChange(new_uses_audio_service);
+
+  media_metrics_provider_->SetRendererType(renderer_type_);
 
   return renderer_factory_selector_->GetCurrentFactory()->CreateRenderer(
       media_task_runner_, worker_task_runner_, audio_source_provider_.get(),
@@ -2991,9 +2999,8 @@ void WebMediaPlayerImpl::SetDelegateState(DelegateState new_state,
     case DelegateState::PLAYING: {
       // When delegate get PlayerGone it removes all state, need to make sure
       // it is up-to-date before calling DidPlay.
-      delegate_->DidMediaMetadataChange(
-          delegate_id_, delegate_has_audio_, HasVideo(),
-          DurationToMediaContentType(GetPipelineMediaDuration()));
+      delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
+                                        HasVideo(), GetMediaContentType());
       if (HasVideo())
         client_->DidPlayerSizeChange(NaturalSize());
       client_->DidPlayerStartPlaying();
@@ -3654,6 +3661,10 @@ base::TimeDelta WebMediaPlayerImpl::GetPipelineMediaDuration() const {
       pipeline_controller_->GetMediaDuration());
 }
 
+MediaContentType WebMediaPlayerImpl::GetMediaContentType() const {
+  return DurationToMediaContentType(GetPipelineMediaDuration());
+}
+
 void WebMediaPlayerImpl::SwitchToRemoteRenderer(
     const std::string& remote_device_friendly_name) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -3817,7 +3828,7 @@ void WebMediaPlayerImpl::MaybeUpdateBufferSizesForPlayback() {
 }
 
 void WebMediaPlayerImpl::OnSimpleWatchTimerTick() {
-  RecordSimpleWatchTimeUMA(reported_renderer_type_);
+  RecordSimpleWatchTimeUMA(renderer_type_);
 
   if (playback_events_recorder_)
     playback_events_recorder_->OnPipelineStatistics(GetPipelineStatistics());

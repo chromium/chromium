@@ -191,6 +191,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Notify the client that the audio sink cannot be changed.
   virtual void DidDisableAudioOutputSinkChanges() = 0;
 
+  // Notify the client that the playback starts/stops to use AudioService.
+  virtual void DidUseAudioServiceChange(bool uses_audio_service) = 0;
+
   // Notify the client that the size of the media player has changed.
   // TODO(crbug.com/1039252): Remove by merging this method into SizeChanged().
   virtual void DidPlayerSizeChange(const gfx::Size& size) = 0;

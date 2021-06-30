@@ -174,6 +174,11 @@ class TestMediaPlayerObserver final
 
   void OnAudioOutputSinkChanged(const WTF::String& hashed_device_id) override {}
 
+  void OnUseAudioServiceChanged(bool uses_audio_service) override {
+    received_uses_audio_service_ = uses_audio_service;
+    run_loop_->Quit();
+  }
+
   void OnAudioOutputSinkChangingDisabled() override {}
 
   void OnBufferUnderflow() override {
@@ -201,6 +206,10 @@ class TestMediaPlayerObserver final
 
   gfx::Size received_media_size() const { return received_media_size_; }
 
+  bool received_use_audio_service_changed(bool uses_audio_service) const {
+    return received_uses_audio_service_.value() == uses_audio_service;
+  }
+
   bool received_buffer_underflow() const { return received_buffer_underflow_; }
 
  private:
@@ -210,6 +219,7 @@ class TestMediaPlayerObserver final
   absl::optional<bool> received_muted_status_type_;
   absl::optional<OnMetadataChangedResult> received_metadata_changed_result_;
   gfx::Size received_media_size_{0, 0};
+  absl::optional<bool> received_uses_audio_service_;
   bool received_buffer_underflow_{false};
 };
 
@@ -386,6 +396,16 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   bool ReceivedMessageMediaSizeChange(const gfx::Size& size) {
     return media_player_observer().received_media_size() == size;
+  }
+
+  void NotifyUseAudioServiceChanged(bool uses_audio_service) {
+    media_->DidUseAudioServiceChange(uses_audio_service);
+    media_player_observer().WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageUseAudioServiceChanged(bool uses_audio_service) {
+    return media_player_observer().received_use_audio_service_changed(
+        uses_audio_service);
   }
 
   void NotifyBufferUnderflowEvent() {
@@ -1064,6 +1084,16 @@ TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {
   const gfx::Size kTestMediaSizeChangedValue(16, 9);
   NotifyMediaSizeChange(kTestMediaSizeChangedValue);
   EXPECT_TRUE(ReceivedMessageMediaSizeChange(kTestMediaSizeChangedValue));
+}
+
+TEST_P(HTMLMediaElementTest, SendUseAudioServiceChangedToObserver) {
+  WaitForPlayer();
+
+  NotifyUseAudioServiceChanged(false);
+  EXPECT_TRUE(ReceivedMessageUseAudioServiceChanged(false));
+
+  NotifyUseAudioServiceChanged(true);
+  EXPECT_TRUE(ReceivedMessageUseAudioServiceChanged(true));
 }
 
 TEST_P(HTMLMediaElementTest, SendBufferOverflowToObserver) {

@@ -11,19 +11,37 @@
 
 namespace media {
 
+namespace {
+
+bool HasAudio(MediaResource* media_resource) {
+  DCHECK(media_resource->GetType() == MediaResource::Type::STREAM);
+
+  const auto media_streams = media_resource->GetAllStreams();
+  for (const media::DemuxerStream* stream : media_streams) {
+    if (stream->type() == media::DemuxerStream::Type::AUDIO)
+      return true;
+  }
+
+  return false;
+}
+
+}  // namespace
+
 // TODO(xhwang): Remove `force_dcomp_mode_for_testing=true` after composition is
 // working by default.
 MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
-    bool web_contents_muted,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    mojom::FrameInterfaceFactory* frame_interfaces,
     mojo::PendingReceiver<RendererExtension> renderer_extension_receiver)
-    : renderer_(std::make_unique<media::MediaFoundationRenderer>(
-          web_contents_muted,
+    : frame_interfaces_(frame_interfaces),
+      renderer_(std::make_unique<MediaFoundationRenderer>(
           std::move(task_runner),
           /*force_dcomp_mode_for_testing=*/true)),
       renderer_extension_receiver_(this,
-                                   std::move(renderer_extension_receiver)) {
+                                   std::move(renderer_extension_receiver)),
+      site_mute_observer_(this) {
   DVLOG_FUNC(1);
+  DCHECK(frame_interfaces_);
 }
 
 MediaFoundationRendererWrapper::~MediaFoundationRendererWrapper() {
@@ -31,9 +49,14 @@ MediaFoundationRendererWrapper::~MediaFoundationRendererWrapper() {
 }
 
 void MediaFoundationRendererWrapper::Initialize(
-    media::MediaResource* media_resource,
-    media::RendererClient* client,
-    media::PipelineStatusCallback init_cb) {
+    MediaResource* media_resource,
+    RendererClient* client,
+    PipelineStatusCallback init_cb) {
+  if (HasAudio(media_resource)) {
+    frame_interfaces_->RegisterMuteStateObserver(
+        site_mute_observer_.BindNewPipeAndPassRemote());
+  }
+
   renderer_->Initialize(media_resource, client, std::move(init_cb));
 }
 
@@ -60,7 +83,7 @@ void MediaFoundationRendererWrapper::SetPlaybackRate(double playback_rate) {
 }
 
 void MediaFoundationRendererWrapper::SetVolume(float volume) {
-  return renderer_->SetVolume(volume);
+  renderer_->SetVolume(muted_ ? 0 : volume_);
 }
 
 base::TimeDelta MediaFoundationRendererWrapper::GetMediaTime() {
@@ -88,6 +111,16 @@ void MediaFoundationRendererWrapper::SetVideoStreamEnabled(bool enabled) {
 void MediaFoundationRendererWrapper::SetOutputParams(
     const gfx::Rect& output_rect) {
   renderer_->SetOutputParams(output_rect);
+}
+
+void MediaFoundationRendererWrapper::OnMuteStateChange(bool muted) {
+  DVLOG_FUNC(2) << ": muted=" << muted;
+
+  if (muted == muted_)
+    return;
+
+  muted_ = muted;
+  renderer_->SetVolume(muted_ ? 0 : volume_);
 }
 
 void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(HANDLE handle) {

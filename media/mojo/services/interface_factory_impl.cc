@@ -145,7 +145,7 @@ void InterfaceFactoryImpl::CreateMediaFoundationRenderer(
         renderer_extension_receiver) {
   DVLOG(2) << __func__;
   auto renderer = mojo_media_client_->CreateMediaFoundationRenderer(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::ThreadTaskRunnerHandle::Get(), frame_interfaces_.get(),
       std::move(renderer_extension_receiver));
   if (!renderer) {
     DLOG(ERROR) << "MediaFoundationRenderer creation failed.";

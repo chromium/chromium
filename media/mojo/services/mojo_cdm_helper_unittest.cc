@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -74,6 +75,10 @@ class TestFrameInterfaceFactory : public mojom::FrameInterfaceFactory {
     mojo::MakeSelfOwnedReceiver(std::make_unique<MockCdmStorage>(),
                                 std::move(receiver));
   }
+#if defined(OS_WIN)
+  void RegisterMuteStateObserver(
+      mojo::PendingRemote<media::mojom::MuteStateObserver> observer) override {}
+#endif  // defined(OS_WIN)
   void GetCdmOrigin(GetCdmOriginCallback callback) override {}
   void BindEmbedderReceiver(mojo::GenericPendingReceiver) override {}
 };

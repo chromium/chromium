@@ -41,8 +41,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Whether MediaFoundationRenderer() is supported on the current device.
   static bool IsSupported();
 
-  MediaFoundationRenderer(bool muted,
-                          scoped_refptr<base::SequencedTaskRunner> task_runner,
+  MediaFoundationRenderer(scoped_refptr<base::SequencedTaskRunner> task_runner,
                           bool force_dcomp_mode_for_testing = false);
 
   ~MediaFoundationRenderer() override;
@@ -96,10 +95,6 @@ class MEDIA_EXPORT MediaFoundationRenderer
   HRESULT GetDCompSurfaceInternal(HANDLE* surface_handle);
   HRESULT SetSourceOnMediaEngine();
   HRESULT SetOutputParamsInternal(const gfx::Rect& output_rect);
-
-  // TODO(crbug.com/1017943): Support Audio Indicator when using
-  // media::MojoRenderer. For now, keep |muted_| as const.
-  const bool muted_;
 
   // Renderer methods are running in the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

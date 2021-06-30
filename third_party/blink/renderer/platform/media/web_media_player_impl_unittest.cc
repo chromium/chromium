@@ -172,6 +172,7 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
                     base::TimeDelta position,
                     bool end_of_media));
   MOCK_METHOD0(DidDisableAudioOutputSinkChanges, void());
+  MOCK_METHOD1(DidUseAudioServiceChange, void(bool uses_audio_service));
   MOCK_METHOD1(DidPlayerSizeChange, void(const gfx::Size&));
   MOCK_METHOD0(DidBufferUnderflow, void());
   MOCK_METHOD0(DidSeek, void());
@@ -1810,11 +1811,16 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   CreateCdm();
   SetCdm();
 
-  // Load encrypted media and wait for HaveCurrentData.
+  // Load encrypted media and expect encrypted event.
   EXPECT_CALL(encrypted_client_,
               Encrypted(EmeInitDataType::WEBM, NotNull(), Gt(0u)));
-  LoadAndWaitForReadyState(kEncryptedVideoOnlyTestFile,
-                           blink::WebMediaPlayer::kReadyStateHaveCurrentData);
+
+  base::RunLoop run_loop;
+  // MediaFoundationRenderer doesn't use AudioService.
+  EXPECT_CALL(client_, DidUseAudioServiceChange(/*uses_audio_service=*/false))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  Load(kEncryptedVideoOnlyTestFile);
+  run_loop.Run();
 }
 #endif  // defined(OS_WIN)
 

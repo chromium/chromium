@@ -70,11 +70,9 @@ bool MediaFoundationRenderer::IsSupported() {
 }
 
 MediaFoundationRenderer::MediaFoundationRenderer(
-    bool muted,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     bool force_dcomp_mode_for_testing)
-    : muted_(muted),
-      task_runner_(std::move(task_runner)),
+    : task_runner_(std::move(task_runner)),
       force_dcomp_mode_for_testing_(force_dcomp_mode_for_testing) {
   DVLOG_FUNC(1);
 }
@@ -538,13 +536,12 @@ void MediaFoundationRenderer::StopSendingStatistics() {
 }
 
 void MediaFoundationRenderer::SetVolume(float volume) {
+  DVLOG_FUNC(2) << "volume=" << volume;
   volume_ = volume;
-  float set_volume = muted_ ? 0 : volume_;
-  DVLOG_FUNC(2) << "set_volume=" << set_volume;
   if (!mf_media_engine_)
     return;
 
-  HRESULT hr = mf_media_engine_->SetVolume(set_volume);
+  HRESULT hr = mf_media_engine_->SetVolume(volume_);
   DVLOG_IF(1, FAILED(hr)) << "Failed to set volume: " << PrintHr(hr);
 }
 

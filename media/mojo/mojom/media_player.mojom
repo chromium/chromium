@@ -89,6 +89,9 @@ interface MediaPlayerObserver {
   // Notifies that the audio output sink has changed.
   OnAudioOutputSinkChanged(string hashed_device_id);
 
+  // Notifies that the playback starts/stops using AudioService.
+  OnUseAudioServiceChanged(bool uses_audio_service);
+
   // Notifies the browser process that the ability to switch audio output
   // devices for the associated media player has been disabled.
   OnAudioOutputSinkChangingDisabled();

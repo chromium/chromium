@@ -544,8 +544,10 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   // GetPipelineMediaDuration() for tests.
   void SetPipelineMediaDurationForTest(base::TimeDelta duration);
 
-  // Return the pipeline media duration or the value overridden by tests.
+  // Returns the pipeline media duration or the value overridden by tests.
   base::TimeDelta GetPipelineMediaDuration() const;
+
+  MediaContentType GetMediaContentType() const;
 
   // Records |duration| to the appropriate metric based on whether we're
   // handling a src= or MSE based playback.
@@ -1018,8 +1020,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
 
   base::CancelableOnceClosure have_enough_after_lazy_load_cb_;
 
-  // State for simplified watch time reporting.
-  RendererType reported_renderer_type_ = RendererType::kDefault;
+  RendererType renderer_type_ = RendererType::kDefault;
   SimpleWatchTimer simple_watch_timer_;
 
   LearningExperimentHelper will_play_helper_;
