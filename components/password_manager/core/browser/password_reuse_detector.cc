@@ -115,7 +115,8 @@ void PasswordReuseDetector::CheckReuse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
   if (input.size() < kMinPasswordLengthToCheck) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {}, saved_passwords_);
+    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
+                               SavedPasswordsCount());
     return;
   }
 
@@ -141,7 +142,8 @@ void PasswordReuseDetector::CheckReuse(
                 enterprise_reused_password_length});
 
   if (max_reused_password_length == 0) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {}, saved_passwords_);
+    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
+                               SavedPasswordsCount());
     return;
   }
 
@@ -152,9 +154,9 @@ void PasswordReuseDetector::CheckReuse(
   } else if (enterprise_reused_password_length != 0) {
     reused_protected_password_hash = std::move(reused_enterprise_password_hash);
   }
-  consumer->OnReuseCheckDone(true, max_reused_password_length,
-                             reused_protected_password_hash,
-                             matching_reused_credentials, saved_passwords_);
+  consumer->OnReuseCheckDone(
+      true, max_reused_password_length, reused_protected_password_hash,
+      matching_reused_credentials, SavedPasswordsCount());
 }
 
 absl::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
@@ -327,12 +329,8 @@ void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
   if (form.password_value.size() < kMinPasswordLengthToCheck)
     return;
 
-  const auto result =
-      passwords_with_matching_reused_credentials_[form.password_value].insert(
-          {form.signon_realm, form.username_value, form.in_store});
-  if (result.second) {
-    saved_passwords_++;
-  }
+  passwords_with_matching_reused_credentials_[form.password_value].insert(
+      {form.signon_realm, form.username_value, form.in_store});
 }
 
 void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
@@ -361,7 +359,6 @@ void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
       if (stored_credentials_for_password_value.empty()) {
         password_value_iter = passwords_with_matching_reused_credentials_.erase(
             password_value_iter);
-        saved_passwords_--;
       }
     } else {
       password_value_iter++;
@@ -405,6 +402,15 @@ PasswordReuseDetector::FindNextSavedPassword(
   return IsSuffix(input, it->first)
              ? it
              : passwords_with_matching_reused_credentials_.end();
+}
+
+size_t PasswordReuseDetector::SavedPasswordsCount() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  size_t count = 0;
+  for (const auto& pair : passwords_with_matching_reused_credentials_) {
+    count += pair.second.size();
+  }
+  return count;
 }
 
 }  // namespace password_manager

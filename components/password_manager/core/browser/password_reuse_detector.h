@@ -110,8 +110,7 @@ class PasswordReuseDetector : public PasswordStoreInterface::Observer {
   void AddPassword(const PasswordForm& form);
 
   // Remove password of |form| from
-  // |passwords_with_matching_reused_credentials_| and lower the counter of
-  // |saved_passwords_|.
+  // |passwords_with_matching_reused_credentials_|;
   void RemovePassword(const PasswordForm& form);
 
   // If Gaia password reuse is found, return the PasswordHashData of the reused
@@ -150,6 +149,11 @@ class PasswordReuseDetector : public PasswordStoreInterface::Observer {
   passwords_iterator FindNextSavedPassword(const std::u16string& input,
                                            passwords_iterator it);
 
+  // Number of passwords in |passwords_with_matching_reused_credentials_|,
+  // each password is calculated the number of times how many different sites
+  // it's saved on.
+  size_t SavedPasswordsCount();
+
   // Ensures that all methods, excluding construction, are called on the same
   // sequence.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -168,10 +172,6 @@ class PasswordReuseDetector : public PasswordStoreInterface::Observer {
   // See https://crbug.com/668155.
   PasswordsReusedCredentialsMap passwords_with_matching_reused_credentials_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Number of passwords in |passwords_|, each password is calculated the number
-  // of times how many different sites it's saved on.
-  int saved_passwords_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   absl::optional<std::vector<PasswordHashData>> gaia_password_hash_data_list_
       GUARDED_BY_CONTEXT(sequence_checker_);
