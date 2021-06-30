@@ -4,8 +4,9 @@
 
 import './shared_style.js';
 
-import {SearchQuery} from '/components/history_clusters/core/history_clusters.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SearchQuery} from './components/history_clusters/core/history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a search query.

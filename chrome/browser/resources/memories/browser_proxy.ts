@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandler, PageHandlerRemote} from '/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
+import {PageCallbackRouter, PageHandler, PageHandlerRemote} from './chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo
@@ -11,25 +11,22 @@ import {PageCallbackRouter, PageHandler, PageHandlerRemote} from '/chrome/browse
  */
 
 export class BrowserProxy {
-  constructor() {
-    /** @type {!PageHandlerRemote} */
-    this.handler = PageHandler.getRemote();
+  handler: PageHandlerRemote;
+  callbackRouter: PageCallbackRouter;
 
-    /** @type {!PageCallbackRouter} */
+  constructor() {
+    this.handler = PageHandler.getRemote();
     this.callbackRouter = new PageCallbackRouter();
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
 
-  /** @return {!BrowserProxy} */
-  static getInstance() {
+  static getInstance(): BrowserProxy {
     return instance || (instance = new BrowserProxy());
   }
 
-  /** @param {!BrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: BrowserProxy) {
     instance = obj;
   }
 }
 
-/** @type {?BrowserProxy} */
-let instance = null;
+let instance: BrowserProxy|null = null;

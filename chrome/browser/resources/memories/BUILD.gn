@@ -9,18 +9,20 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-preprocess_folder = "preprocessed"
+preprocess_folder = "$target_gen_dir/preprocessed"
 
-ts_library("build") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
+ts_library("build_ts") {
+  root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "app.js",
-    "browser_proxy.js",
+    "browser_proxy.ts",
+    "chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js",
     "cluster.js",
+    "components/history_clusters/core/history_clusters.mojom-webui.js",
     "history_clusters.js",
-    "page_favicon.js",
+    "page_favicon.ts",
     "router.js",
     "search_query.js",
     "shared_style.js",
@@ -29,21 +31,55 @@ ts_library("build") {
     "utils.js",
     "visit_row.js",
   ]
+  path_mappings = [
+    "chrome://resources/mojo/url/mojom/*|" +
+        rebase_path("$preprocess_folder/*", target_gen_dir),
+    "/chrome/browser/ui/webui/history_clusters/*|" +
+        rebase_path(
+            "$preprocess_folder/chrome/browser/ui/webui/history_clusters/*",
+            target_gen_dir),
+    "/components/history_clusters/core/*|" +
+        rebase_path("$preprocess_folder/components/history_clusters/core/*",
+                    target_gen_dir),
+  ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
   extra_deps = [
+    ":copy_chrome_resources_mojom",
+    ":copy_history_clusters_api_mojom",
+    ":copy_history_clusters_definitions_mojom",
     ":preprocess",
     ":preprocess_generated",
   ]
+}
+
+copy("copy_chrome_resources_mojom") {
+  sources = [ "$root_gen_dir/mojom-webui/url/mojom/url.mojom-webui.js" ]
+  outputs = [ "$preprocess_folder/{{source_file_part}}" ]
+  deps = [ "//url/mojom:url_mojom_gurl_js__generator" ]
+}
+
+copy("copy_history_clusters_api_mojom") {
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js" ]
+  outputs = [ "$preprocess_folder/chrome/browser/ui/webui/history_clusters/{{source_file_part}}" ]
+  deps = [ "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js" ]
+}
+
+copy("copy_history_clusters_definitions_mojom") {
+  sources = [ "$root_gen_dir/mojom-webui/components/history_clusters/core/history_clusters.mojom-webui.js" ]
+  outputs = [
+    "$preprocess_folder/components/history_clusters/core/{{source_file_part}}",
+  ]
+  deps = [ "//components/history_clusters/core:mojo_bindings_webui_js" ]
 }
 
 html_to_js("web_components_local") {
   js_files = [
     "app.js",
     "cluster.js",
-    "page_favicon.js",
+    "page_favicon.ts",
     "router.js",
     "search_query.js",
     "shared_style.js",
@@ -60,9 +96,9 @@ group("web_components") {
 preprocess_if_expr("preprocess") {
   defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
   in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_folder = preprocess_folder
   in_files = [
-    "browser_proxy.js",
+    "browser_proxy.ts",
     "history_clusters.js",
     "utils.js",
   ]
@@ -71,11 +107,11 @@ preprocess_if_expr("preprocess") {
 preprocess_if_expr("preprocess_generated") {
   defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
   in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_folder = preprocess_folder
   in_files = [
     "app.js",
     "cluster.js",
-    "page_favicon.js",
+    "page_favicon.ts",
     "router.js",
     "search_query.js",
     "shared_style.js",
@@ -86,43 +122,12 @@ preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
 }
 
-grd_prefix = "history_clusters"
-
-generate_grd("build_history_clusters_api_mojo_grdp") {
-  grd_prefix = "${grd_prefix}_API"
-  out_grd = "$target_gen_dir/clusters_api_mojo_resources.grdp"
-  input_files = [ "history_clusters.mojom-webui.js" ]
-  resource_path_rewrites = [ "history_clusters.mojom-webui.js|chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js" ]
-  input_files_base_dir =
-      rebase_path(
-          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/history_clusters",
-          root_build_dir)
-}
-
-generate_grd("build_history_clusters_definition_mojo_grdp") {
-  grd_prefix = "${grd_prefix}_DEFINITION"
-  out_grd = "$target_gen_dir/clusters_definition_mojo_resources.grdp"
-  input_files = [ "history_clusters.mojom-webui.js" ]
-  resource_path_rewrites = [ "history_clusters.mojom-webui.js|components/history_clusters/core/history_clusters.mojom-webui.js" ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/mojom-webui/components/history_clusters/core",
-                  root_build_dir)
-}
-
 generate_grd("build_grd") {
-  grd_prefix = "$grd_prefix"
+  grd_prefix = "history_clusters"
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "history_clusters.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  grdp_files = [
-    "$target_gen_dir/clusters_api_mojo_resources.grdp",
-    "$target_gen_dir/clusters_definition_mojo_resources.grdp",
-  ]
-  deps = [
-    ":build",
-    ":build_history_clusters_api_mojo_grdp",
-    ":build_history_clusters_definition_mojo_grdp",
-  ]
+  deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
@@ -130,11 +135,7 @@ grit("resources") {
   defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/resources.grd"
-  deps = [
-    ":build_grd",
-    "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js",
-    "//components/history_clusters/core:mojo_bindings_webui_js",
-  ]
+  deps = [ ":build_grd" ]
   outputs = [
     "grit/history_clusters_resources.h",
     "grit/history_clusters_resources_map.cc",

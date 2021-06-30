@@ -10,6 +10,12 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
  * @fileoverview This file provides a custom element displaying a page favicon.
  */
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'page-favicon': PageFavicon,
+  }
+}
+
 class PageFavicon extends PolymerElement {
   static get is() {
     return 'page-favicon';
@@ -21,19 +27,13 @@ class PageFavicon extends PolymerElement {
 
   static get properties() {
     return {
-      //========================================================================
-      // Public properties
-      //========================================================================
-
       /**
        * The URL for which the favicon is shown.
-       * @type {!Url}
        */
       url: Object,
 
       /**
        * The element's style attribute.
-       * @type {string}
        */
       style: {
         type: String,
@@ -44,11 +44,16 @@ class PageFavicon extends PolymerElement {
   }
 
   //============================================================================
+  // Properties
+  //============================================================================
+
+  url: Url = new Url();
+
+  //============================================================================
   // Helper methods
   //============================================================================
 
-  /** @private */
-  computeStyle_() {
+  private computeStyle_() {
     return `background-image:${
         getFaviconForPageURL(
             this.url.url, false, '', /** --favicon-size */ 16)}`;
