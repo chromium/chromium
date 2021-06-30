@@ -9,6 +9,7 @@
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/grit/chromeos_personalization_app_resources.h"
 #include "chromeos/grit/chromeos_personalization_app_resources_map.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -23,6 +24,21 @@ namespace chromeos {
 
 namespace {
 
+void AddStrings(content::WebUIDataSource* source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES},
+      {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
+      {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
+      {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES}};
+  source->AddLocalizedStrings(kLocalizedStrings);
+  // Add load_time_data manually because it is not available at
+  // chrome-untrusted://resources/load_time_data.js. Specifically add
+  // load_time_data.js and not load_time_data.m.js because StringsJs will fail
+  // to import load_time_data.m.js at this unusual path.
+  source->AddResourcePath("load_time_data.js", IDR_WEBUI_JS_LOAD_TIME_DATA_JS);
+  source->UseStringsJs();
+}
+
 class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
  public:
   explicit UntrustedPersonalizationAppUI(content::WebUI* web_ui)
@@ -30,6 +46,8 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     std::unique_ptr<content::WebUIDataSource> source =
         base::WrapUnique(content::WebUIDataSource::Create(
             kChromeUIUntrustedPersonalizationAppURL));
+
+    AddStrings(source.get());
 
     const auto resources =
         base::make_span(kChromeosPersonalizationAppResources,

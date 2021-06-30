@@ -10,7 +10,10 @@
       <template is="dom-if" if="[[item.preview]]">
         <img src="[[item.preview.url]]">
       </template>
-      <p class="collection-name">[[item.name]]</p>
+      <div class="photo-text-container">
+        <p>[[item.name]]</p>
+        <p>[[item.count]]</p>
+      </div>
     </div>
   </template>
 </iron-list>

@@ -12,13 +12,14 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {sendCollections, sendLocalImageData, sendLocalImages} from '../common/iframe_api.js';
+import {sendCollections, sendImageCounts, sendLocalImageData, sendLocalImages} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload, unguessableTokenToString} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {initializeBackdropData, initializeLocalData} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 let sendCollectionsFunction = sendCollections;
+let sendImageCountsFunction = sendImageCounts;
 let sendLocalImagesFunction = sendLocalImages;
 let sendLocalImageDataFunction = sendLocalImageData;
 
@@ -27,6 +28,7 @@ let sendLocalImageDataFunction = sendLocalImageData;
  * resolved when the function is called by |WallpaperCollectionsElement|.
  * @return {{
  *   sendCollections: Promise<?>,
+ *   sendImageCounts: Promise<?>,
  *   sendLocalImages: Promise<?>,
  *   sendLocalImageData: Promise<?>,
  * }}
@@ -34,12 +36,13 @@ let sendLocalImageDataFunction = sendLocalImageData;
 export function promisifyIframeFunctionsForTesting() {
   let resolvers = {};
   const promises = [
-    sendCollections, sendLocalImages, sendLocalImageData
+    sendCollections, sendImageCounts, sendLocalImages, sendLocalImageData
   ].reduce((result, next) => {
     result[next.name] = new Promise(resolve => resolvers[next.name] = resolve);
     return result;
   }, {});
   sendCollectionsFunction = (...args) => resolvers[sendCollections.name](args);
+  sendImageCountsFunction = (...args) => resolvers[sendImageCounts.name](args);
   sendLocalImagesFunction = (...args) => resolvers[sendLocalImages.name](args);
   sendLocalImageDataFunction = (...args) =>
       resolvers[sendLocalImageData.name](args);
@@ -71,6 +74,17 @@ export class WallpaperCollections extends WithPersonalizationStore {
       /** @private */
       collectionsLoading_: {
         type: Boolean,
+      },
+
+      /**
+       * Contains a mapping of collection id to an array of images.
+       * @private
+       * @type {?Object<string,
+       *     ?Array<!chromeos.personalizationApp.mojom.WallpaperImage>>}
+       */
+      images_: {
+        type: Object,
+        observer: 'onImagesChanged_',
       },
 
       /**
@@ -133,6 +147,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     super.connectedCallback();
     this.watch('collections_', state => state.backdrop.collections);
     this.watch('collectionsLoading_', state => state.loading.collections);
+    this.watch('images_', state => state.backdrop.images);
     this.watch('localImages_', state => state.local.images);
     this.watch('localImageData_', state => state.local.data);
     this.updateFromStore();
@@ -172,6 +187,27 @@ export class WallpaperCollections extends WithPersonalizationStore {
       const iframe = await this.iframePromise_;
       sendCollectionsFunction(iframe.contentWindow, this.collections_);
     }
+  }
+
+  /**
+   * Send count of images in each collection when a new collection is fetched.
+   * @param {?Object<string,
+   *     ?Array<!chromeos.personalizationApp.mojom.WallpaperImage>>} value
+   */
+  async onImagesChanged_(value) {
+    if (value == undefined) {
+      return;
+    }
+    const iframe = await this.iframePromise_;
+    const counts =
+        Object.entries(value)
+            .filter(([_, value]) => Array.isArray(value))
+            .map(([key, value]) => [key, value.length])
+            .reduce(
+                (result, [key, value]) => Object.assign(result, {[key]: value}),
+                {});
+    sendImageCountsFunction(
+        /** @type {!Window} */ (iframe.contentWindow), counts);
   }
 
   /**

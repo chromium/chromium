@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome-untrusted://personalization/polymer/v3_0/iron-list/iron-list.js';
-import '../common/styles.js';
+import './setup.js';
 import './styles.js';
 import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType} from '../common/constants.js';
@@ -18,9 +18,33 @@ import {unguessableTokenToString} from '../common/utils.js';
 const kLocalCollectionId = 'local_';
 
 /**
- * @typedef {{id: string, name: string, preview: ?url.mojom.Url}}
+ * A displayable type constructed from a LocalImage or a WallpaperImage.
+ * @typedef {{id: string, name: string, count: string, preview: ?url.mojom.Url}}
  */
 let Tile;
+
+/**
+ * Get the text to display for number of images.
+ * @param {?number|undefined} x
+ * @return {string}
+ */
+function getCountText(x) {
+  switch (x) {
+    case undefined:
+    case null:
+      return '';
+    case 0:
+      return loadTimeData.getString('zeroImages');
+    case 1:
+      return loadTimeData.getString('oneImage');
+    default:
+      if (typeof x !== 'number' || x < 0) {
+        console.error('Received an impossible value');
+        return '';
+      }
+      return loadTimeData.getStringF('multipleImages', x);
+  }
+}
 
 /**
  * A common display format between local images and WallpaperCollection.
@@ -31,19 +55,30 @@ let Tile;
  * @return {!Tile}
  */
 function getLocalTile(localImages, localImageData) {
+  const name = loadTimeData.getString('myImagesLabel');
   if (localImageData && Array.isArray(localImages)) {
-    for (const {id, name} of localImages) {
+    for (const {id} of localImages) {
       const key = unguessableTokenToString(id);
       const data = localImageData[key];
       if (!data) {
         continue;
       }
-      return {name, preview: {url: data}, id: kLocalCollectionId};
+      return {
+        name,
+        id: kLocalCollectionId,
+        count: getCountText(localImages.length),
+        preview: {url: data},
+      };
     }
   }
-  // TODO(b/184774974) replace zero state with translated string from UI spec.
-  return {name: 'No Images', preview: null, id: kLocalCollectionId};
+  return {
+    name,
+    id: kLocalCollectionId,
+    count: getCountText(0),
+    preview: null,
+  };
 }
+
 
 class CollectionsGrid extends PolymerElement {
   static get is() {
@@ -62,6 +97,18 @@ class CollectionsGrid extends PolymerElement {
        */
       collections_: {
         type: Array,
+        value: [],
+      },
+
+      /**
+       * Mapping of collection id to number of images. Loads in progressively
+       * after collections_.
+       * @type {!Object<string, number>}
+       * @private
+       */
+      imageCounts_: {
+        type: Object,
+        value: {},
       },
 
       /**
@@ -88,7 +135,8 @@ class CollectionsGrid extends PolymerElement {
        */
       tiles_: {
         type: Array,
-        computed: 'computeTiles_(collections_, localImages_, localImageData_)',
+        computed:
+            'computeTiles_(collections_, imageCounts_, localImages_, localImageData_)',
       },
     };
   }
@@ -114,10 +162,20 @@ class CollectionsGrid extends PolymerElement {
   /**
    * @param {!Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
    *     collections
+   * @param {!Object<string, number>} imageCounts
    * @param {!Array<!chromeos.personalizationApp.mojom.LocalImage>} localImages
    */
-  computeTiles_(collections, localImages, localImageData) {
-    return [getLocalTile(localImages, localImageData), ...(collections || [])];
+  computeTiles_(collections, imageCounts, localImages, localImageData) {
+    const localTile = getLocalTile(localImages, localImageData);
+    const collectionTiles = collections.map(({name, id, preview}) => {
+      return {
+        name,
+        id,
+        count: getCountText(imageCounts[id]),
+        preview,
+      };
+    });
+    return [localTile, ...collectionTiles];
   }
 
   /**
@@ -136,6 +194,9 @@ class CollectionsGrid extends PolymerElement {
           console.warn('Invalid collections received', e);
           this.collections_ = [];
         }
+        break;
+      case EventType.SEND_IMAGE_COUNTS:
+        this.imageCounts_ = message.data.counts;
         break;
       case EventType.SEND_LOCAL_IMAGES:
         try {

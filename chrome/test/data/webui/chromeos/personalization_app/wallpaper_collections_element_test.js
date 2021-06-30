@@ -74,6 +74,47 @@ export function WallpaperCollectionsTest() {
     assertDeepEquals(wallpaperProvider.collections, data);
   });
 
+  test('sends image counts when a collection loads', async () => {
+    personalizationStore.data.backdrop = {
+      collections: wallpaperProvider.collections,
+      images: {},
+    };
+    personalizationStore.data.loading = {
+      collections: false,
+      images: {},
+    };
+
+    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    // Wait for initial load to complete.
+    await wallpaperCollectionsElement.iframePromise_;
+
+    let {sendImageCounts: sendImageCountsPromise} =
+        promisifyIframeFunctionsForTesting();
+
+    personalizationStore.data.backdrop.images = {
+      'id_0': [wallpaperProvider.images[0]]
+    };
+    personalizationStore.notifyObservers();
+
+    let counts = (await sendImageCountsPromise)[1];
+    assertDeepEquals({'id_0': 1}, counts);
+
+    // Load two collections in at once, and simulate one failure.
+    sendImageCountsPromise =
+        promisifyIframeFunctionsForTesting().sendImageCounts;
+    personalizationStore.data.backdrop.images = {
+      'id_0': [wallpaperProvider.images[0]],
+      'id_1': [wallpaperProvider.images[0], wallpaperProvider.images[1]],
+      'id_2': [],
+      // Ignores id_3 because it is not Array.
+      'id_3': undefined,
+    };
+    personalizationStore.notifyObservers();
+
+    counts = (await sendImageCountsPromise)[1];
+    assertDeepEquals({'id_0': 1, 'id_1': 2, 'id_2': 0}, counts);
+  });
+
   test('sends local images when loaded', async () => {
     const {sendLocalImages: sendLocalImagesPromise} =
         promisifyIframeFunctionsForTesting();

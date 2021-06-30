@@ -31,12 +31,9 @@ styles.innerHTML = `
       object-fit: cover;
       width: 100%;
     }
-    .photo-container > .collection-name,
-    .photo-container > .image-name {
+    .photo-text-container {
       bottom: 0;
       position: absolute;
-      text-align: center;
-      width: 100%;
     }
   </style>
 </template>`;

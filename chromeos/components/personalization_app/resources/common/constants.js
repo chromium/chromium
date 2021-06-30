@@ -15,6 +15,7 @@ export const EventType = {
   SEND_COLLECTIONS: 'send_collections',
   SELECT_COLLECTION: 'select_collection',
   SELECT_LOCAL_COLLECTION: 'select_local_collection',
+  SEND_IMAGE_COUNTS: 'send_image_counts',
   SEND_IMAGES: 'send_images',
   SEND_LOCAL_IMAGE_DATA: 'send_local_image_data',
   SEND_LOCAL_IMAGES: 'send_local_images',
@@ -40,6 +41,11 @@ export let SelectCollectionEvent;
  * @typedef {{ type: EventType }}
  */
 export let SelectLocalCollectionEvent;
+
+/**
+ * @typedef {{ type: EventType, counts: Object<string, number> }}
+ */
+export let SendImageCountsEvent;
 
 /**
  * @typedef {{

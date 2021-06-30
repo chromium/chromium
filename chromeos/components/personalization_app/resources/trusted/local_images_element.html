@@ -16,7 +16,9 @@
           <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
             src="[[getImageData_(item, imageData_)]]">
         </template>
-        <p class="image-name">[[item.name]]</p>
+        <div class="photo-text-container">
+          <p>[[item.name]]</p>
+        </div>
       </div>
     </template>
   </iron-list>

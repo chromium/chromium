@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '/assert.m.js';
-import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, trustedOrigin, untrustedOrigin} from './constants.js';
+import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, trustedOrigin, untrustedOrigin} from './constants.js';
 import {isNonEmptyArray} from './utils.js';
 
 /**
@@ -23,6 +23,17 @@ import {isNonEmptyArray} from './utils.js';
 export function sendCollections(target, collections) {
   /** @type {!SendCollectionsEvent} */
   const event = {type: EventType.SEND_COLLECTIONS, collections};
+  target.postMessage(event, untrustedOrigin);
+}
+
+/**
+ * Send a mapping of collectionId to the number of images in that collection.
+ * @param {!Window} target
+ * @param {!Object<string, number>} counts
+ */
+export function sendImageCounts(target, counts) {
+  /** @type {!SendImageCountsEvent} */
+  const event = {type: EventType.SEND_IMAGE_COUNTS, counts};
   target.postMessage(event, untrustedOrigin);
 }
 
