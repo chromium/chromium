@@ -34,6 +34,7 @@ android_library("java") {
     "java/src/org/chromium/components/content_capture/ContentRemovedTask.java",
     "java/src/org/chromium/components/content_capture/ContentUpdateTask.java",
     "java/src/org/chromium/components/content_capture/ExperimentContentCaptureConsumer.java",
+    "java/src/org/chromium/components/content_capture/FaviconUpdateTask.java",
     "java/src/org/chromium/components/content_capture/FrameSession.java",
     "java/src/org/chromium/components/content_capture/NotificationTask.java",
     "java/src/org/chromium/components/content_capture/OnscreenContentProvider.java",

@@ -80,6 +80,7 @@ public class PlatformAPIWrapperTest {
         public static final int NOTIFY_VIEWS_DISAPPEARED = 6;
         public static final int NOTIFY_VIEW_TEXT_CHANGED = 7;
         public static final int DESTROY_CONTENT_CAPTURE_SESSION = 8;
+        public static final int NOTIFY_FAVICON_UPDATE = 9;
 
         // The array for objects returned by the mocked APIs
         public final ArrayList<ContentCaptureSession> mCreatedContentCaptureSessions =
@@ -152,7 +153,7 @@ public class PlatformAPIWrapperTest {
 
         @Override
         public ContentCaptureSession createContentCaptureSession(
-                ContentCaptureSession parent, String url) {
+                ContentCaptureSession parent, String url, String favicon) {
             mCallbacks.add(CREATE_CONTENT_CAPTURE_SESSION);
             ContentCaptureSession mockedContentCaptureSession = createMockedContentCaptureSession();
             mCreatedContentCaptureSessions.add(mockedContentCaptureSession);
@@ -207,6 +208,11 @@ public class PlatformAPIWrapperTest {
             mCallbacks.add(NOTIFY_VIEW_TEXT_CHANGED);
         }
 
+        @Override
+        public void notifyFaviconUpdated(ContentCaptureSession session, String favicon) {
+            mCallbacks.add(NOTIFY_FAVICON_UPDATE);
+        }
+
         public void reset() {
             mCallbacks.clear();
         }
@@ -223,6 +229,14 @@ public class PlatformAPIWrapperTest {
 
     private static final String MAIN_URL = "http://main.domain.com";
     private static final String MAIN_TITLE = "MAIN TITLE";
+    private static final String FAVICON = "[{"
+            + "\"url\":\"http://main.domain.com/favicon\","
+            + "\"type:\":\"favicon\""
+            + "}]";
+    private static final String UPDATED_FAVICON = "[{"
+            + "\"url\":\"http://main.domain.com/favicon\","
+            + "\"type:\":\"updated_favicon\""
+            + "}]";
     private static final String UPDATED_MAIN_TITLE = "MAIN TITLE UPDATE";
     private static final long MAIN_ID = 4;
     private static final Rect MAIN_FRAME_RECT = new Rect(0, 0, 200, 200);
@@ -291,7 +305,7 @@ public class PlatformAPIWrapperTest {
         FrameSession frameSession = new FrameSession(1);
         frameSession.add(ContentCaptureFrame.createContentCaptureFrame(MAIN_ID, MAIN_URL,
                 MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
-                MAIN_FRAME_RECT.height(), MAIN_TITLE, null));
+                MAIN_FRAME_RECT.height(), MAIN_TITLE, FAVICON));
         return frameSession;
     }
 
@@ -344,6 +358,12 @@ public class PlatformAPIWrapperTest {
         return new TitleUpdateTask(mainFrame, mRootPlatformSession);
     }
 
+    private FaviconUpdateTask createFaviconUpdateTask() {
+        ContentCaptureFrame mainFrame = ContentCaptureFrame.createContentCaptureFrame(MAIN_ID,
+                MAIN_URL, MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
+                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE, UPDATED_FAVICON);
+        return new FaviconUpdateTask(mainFrame, mRootPlatformSession);
+    }
     private void runContentCapturedTask() throws Exception {
         runTaskAndVerifyCallback(createContentCapturedTask(),
                 toIntArray(PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
@@ -384,7 +404,7 @@ public class PlatformAPIWrapperTest {
         // Verifies main frame.
         InOrder inOrder = Mockito.inOrder(mPlatformAPIWrapperTestHelperSpy);
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
-                .createContentCaptureSession(mMockedRootContentCaptureSession, MAIN_URL);
+                .createContentCaptureSession(mMockedRootContentCaptureSession, MAIN_URL, FAVICON);
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .newAutofillId(mMockedRootContentCaptureSession, mMockedRootAutofillId, MAIN_ID);
 
@@ -401,7 +421,7 @@ public class PlatformAPIWrapperTest {
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .createContentCaptureSession(
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(0),
-                        CHILD_URL);
+                        CHILD_URL, null);
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .newAutofillId(mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(0),
                         mMockedRootAutofillId, CHILD_FRAME_ID);
@@ -475,6 +495,12 @@ public class PlatformAPIWrapperTest {
                 .notifyViewTextChanged(mMockedRootContentCaptureSession,
                         mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(3),
                         UPDATED_MAIN_TITLE);
+
+        // Update the favicon
+        runTaskAndVerifyCallback(createFaviconUpdateTask(),
+                toIntArray(PlatformAPIWrapperTestHelper.NOTIFY_FAVICON_UPDATE));
+        inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
+                .notifyFaviconUpdated(mMockedRootContentCaptureSession, UPDATED_FAVICON);
     }
 
     // The below testFooException() tests mock the specific method to throw exception, then verify
@@ -486,7 +512,8 @@ public class PlatformAPIWrapperTest {
         PlatformAPIWrapper.setPlatformAPIWrapperImplForTesting(mockedApiWrapperTestHelper);
         doThrow(createMainContentCaptureSessionException())
                 .when(mockedApiWrapperTestHelper)
-                .createContentCaptureSession(ArgumentMatchers.any(), ArgumentMatchers.any());
+                .createContentCaptureSession(
+                        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
         runTaskAndVerifyCallbackWithException(createContentCapturedTask(), toIntArray());
     }
 

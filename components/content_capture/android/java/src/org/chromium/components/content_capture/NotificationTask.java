@@ -94,7 +94,8 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
         if (platformSessionData == null && !TextUtils.isEmpty(frame.getUrl())) {
             ContentCaptureSession session =
                     PlatformAPIWrapper.getInstance().createContentCaptureSession(
-                            parentPlatformSessionData.contentCaptureSession, frame.getUrl());
+                            parentPlatformSessionData.contentCaptureSession, frame.getUrl(),
+                            frame.getFavicon());
             AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId(
                     parentPlatformSessionData.contentCaptureSession,
                     mPlatformSession.getRootPlatformSessionData().autofillId, frame.getId());

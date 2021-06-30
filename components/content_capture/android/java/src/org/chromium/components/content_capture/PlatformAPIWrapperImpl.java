@@ -7,6 +7,7 @@ package org.chromium.components.content_capture;
 import android.annotation.TargetApi;
 import android.content.LocusId;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillId;
 import android.view.contentcapture.ContentCaptureContext;
@@ -22,9 +23,11 @@ import org.chromium.base.annotations.VerifiesOnQ;
 public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
     @Override
     public ContentCaptureSession createContentCaptureSession(
-            ContentCaptureSession parent, String url) {
+            ContentCaptureSession parent, String url, String favicon) {
+        Bundle bundle = new Bundle();
+        if (favicon != null) bundle.putCharSequence("favicon", favicon);
         return parent.createContentCaptureSession(
-                new ContentCaptureContext.Builder(new LocusId(url)).build());
+                new ContentCaptureContext.Builder(new LocusId(url)).setExtras(bundle).build());
     }
 
     @Override
@@ -64,5 +67,15 @@ public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
     public void notifyViewTextChanged(
             ContentCaptureSession session, AutofillId autofillId, String newContent) {
         session.notifyViewTextChanged(autofillId, newContent);
+    }
+
+    @Override
+    public void notifyFaviconUpdated(ContentCaptureSession session, String favicon) {
+        Bundle bundle = new Bundle();
+        if (favicon != null) bundle.putCharSequence("favicon", favicon);
+        session.setContentCaptureContext(
+                new ContentCaptureContext.Builder(session.getContentCaptureContext().getLocusId())
+                        .setExtras(bundle)
+                        .build());
     }
 }

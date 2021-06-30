@@ -31,7 +31,7 @@ public abstract class PlatformAPIWrapper {
     }
 
     public abstract ContentCaptureSession createContentCaptureSession(
-            ContentCaptureSession parent, String url);
+            ContentCaptureSession parent, String url, String favicon);
 
     public abstract void destroyContentCaptureSession(ContentCaptureSession session);
 
@@ -52,6 +52,8 @@ public abstract class PlatformAPIWrapper {
 
     public abstract void notifyViewTextChanged(
             ContentCaptureSession session, AutofillId autofillId, String newContent);
+
+    public abstract void notifyFaviconUpdated(ContentCaptureSession session, String favicon);
 
     @VisibleForTesting
     public static void setPlatformAPIWrapperImplForTesting(PlatformAPIWrapper impl) {
