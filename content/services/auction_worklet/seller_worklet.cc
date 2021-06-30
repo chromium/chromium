@@ -110,28 +110,6 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
   return true;
 }
 
-// Temporary utility methods to run callbacks asynchronously, to imitate
-// behavior once this class starts implementing a Mojo API.
-//
-// TODO(mmenke): Remove once this class switches over to using Mojo.
-
-void InvokeScoreAdCallbackAsync(SellerWorklet::ScoreAdCallback callback,
-                                double score,
-                                const std::vector<std::string>& errors) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), score, errors));
-}
-
-void InvokeReportResultCallbackAsync(
-    SellerWorklet::ReportResultCallback callback,
-    const absl::optional<std::string>& signals_for_winner,
-    const absl::optional<GURL>& report_url,
-    const std::vector<std::string>& errors) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), signals_for_winner,
-                                report_url, errors));
-}
-
 }  // namespace
 
 SellerWorklet::SellerWorklet(
@@ -174,8 +152,6 @@ void SellerWorklet::ScoreAd(
     const std::string& browser_signal_ad_render_fingerprint,
     uint32_t browser_signal_bidding_duration_msecs,
     ScoreAdCallback callback) {
-  callback = base::BindOnce(&InvokeScoreAdCallbackAsync, std::move(callback));
-
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
   v8::Isolate* isolate = v8_helper_->isolate();
   // Short lived context, to avoid leaking data at global scope between either
@@ -255,9 +231,6 @@ void SellerWorklet::ReportResult(
     double browser_signal_bid,
     double browser_signal_desirability,
     ReportResultCallback callback) {
-  callback =
-      base::BindOnce(&InvokeReportResultCallbackAsync, std::move(callback));
-
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_);
   v8::Isolate* isolate = v8_helper_->isolate();
 
