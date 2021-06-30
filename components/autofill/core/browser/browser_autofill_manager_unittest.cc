@@ -9423,8 +9423,7 @@ INSTANTIATE_TEST_SUITE_P(
     BrowserAutofillManagerProfileMetricsTest,
     testing::ValuesIn({profile_metrics::BrowserProfileType::kRegular,
                        profile_metrics::BrowserProfileType::kIncognito,
-                       profile_metrics::BrowserProfileType::kGuest,
-                       profile_metrics::BrowserProfileType::kEphemeralGuest}));
+                       profile_metrics::BrowserProfileType::kGuest}));
 
 // BrowserAutofillManagerTest with kAutofillDisabledMixedForms feature enabled.
 class BrowserAutofillManagerTestWithMixedForms

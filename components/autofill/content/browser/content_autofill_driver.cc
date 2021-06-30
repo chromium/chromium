@@ -21,7 +21,6 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/profile_metrics/browser_profile_type.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
@@ -122,20 +121,12 @@ void ContentAutofillDriver::BindPendingReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+// TODO(https://crbug.com/1225171): Consider renaming this function to
+// |IsOffTheRecord| if off-the-record Guest mode is not deprecated.
 bool ContentAutofillDriver::IsIncognito() const {
-  // TODO(https://crbug.com/1125474): Enable Autofill for Ephemeral Guest
-  // profiles.
-  // TODO(https://crbug.com/1125474): Consider renaming this function to
-  // |IsOffTheRecord| after deprecation of off-the-record or ephemeral Guest
-  // profiles.
-  auto* browser_context =
-      render_frame_host_->GetSiteInstance()->GetBrowserContext();
-  if (profile_metrics::GetBrowserProfileType(browser_context) ==
-      profile_metrics::BrowserProfileType::kEphemeralGuest) {
-    return true;
-  }
-
-  return browser_context->IsOffTheRecord();
+  return render_frame_host_->GetSiteInstance()
+      ->GetBrowserContext()
+      ->IsOffTheRecord();
 }
 
 bool ContentAutofillDriver::IsInMainFrame() const {

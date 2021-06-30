@@ -44,10 +44,7 @@ KeyedService* AutocompleteHistoryManagerFactory::BuildServiceInstanceFor(
   auto local_storage = WebDataServiceFactory::GetAutofillWebDataForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
 
-  // TODO(crbug.com/1181204): Enable autocomplete for Ephemeral Guest profiles.
-  service->Init(local_storage, profile->GetPrefs(),
-                /*is_off_the_record=*/profile->IsOffTheRecord() ||
-                    profile->IsEphemeralGuestProfile());
+  service->Init(local_storage, profile->GetPrefs(), profile->IsOffTheRecord());
 
   return service;
 }
