@@ -748,6 +748,8 @@ config("compiler") {
 
   if (is_clang && !is_nacl && show_includes) {
     if (is_win) {
+      # TODO(crbug.com/1223741): Goma mixes the -H and /showIncludes output.
+      assert(!use_goma, "show_includes on Windows is not reliable with goma")
       cflags += [
         "/clang:-H",
         "/clang:-fshow-skipped-includes",
