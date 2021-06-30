@@ -16,10 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -85,6 +82,33 @@ const char kCorsErrorWhenFetching[] = "error: TypeError: Failed to fetch";
 constexpr char kOriginTrialPublicKeyForTesting[] =
     "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
 
+std::string CreateFetchScript(
+    const GURL& resource,
+    absl::optional<base::Value> request_init = absl::nullopt) {
+  CHECK(request_init == absl::nullopt || request_init->is_dict());
+
+  const char kFetchScriptTemplate[] = R"(
+    fetch($1, $2)
+      .then(response => response.text())
+      .then(text => domAutomationController.send(text))
+      .catch(err => domAutomationController.send('error: ' + err));
+  )";
+  return content::JsReplace(kFetchScriptTemplate, resource,
+                            request_init
+                                ? std::move(*request_init)
+                                : base::Value(base::Value::Type::DICTIONARY));
+}
+
+std::string PopString(content::DOMMessageQueue* message_queue) {
+  std::string json;
+  EXPECT_TRUE(message_queue->WaitForMessage(&json));
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
+  std::string result;
+  EXPECT_TRUE(value->GetAsString(&result));
+  return result;
+}
+
 }  // namespace
 
 using CORBAction = network::CrossOriginReadBlocking::Action;
@@ -105,33 +129,6 @@ class CorbAndCorsExtensionTestBase : public ExtensionBrowserTest {
 
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
-  }
-
-  std::string CreateFetchScript(
-      const GURL& resource,
-      absl::optional<base::Value> request_init = absl::nullopt) {
-    CHECK(request_init == absl::nullopt || request_init->is_dict());
-
-    const char kFetchScriptTemplate[] = R"(
-      fetch($1, $2)
-        .then(response => response.text())
-        .then(text => domAutomationController.send(text))
-        .catch(err => domAutomationController.send('error: ' + err));
-    )";
-    return content::JsReplace(kFetchScriptTemplate, resource,
-                              request_init
-                                  ? std::move(*request_init)
-                                  : base::Value(base::Value::Type::DICTIONARY));
-  }
-
-  std::string PopString(content::DOMMessageQueue* message_queue) {
-    std::string json;
-    EXPECT_TRUE(message_queue->WaitForMessage(&json));
-    absl::optional<base::Value> value =
-        base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
-    std::string result;
-    EXPECT_TRUE(value->GetAsString(&result));
-    return result;
   }
 
  protected:
@@ -1957,11 +1954,20 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
                             content::JsReplace(kScriptTemplate, "logo2.png")));
 }
 
-using CorbAndCorsAppBrowserTest = CorbAndCorsExtensionTestBase;
+class CorbAndCorsAppBrowserTest : public PlatformAppBrowserTest {
+ public:
+  CorbAndCorsAppBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    PlatformAppBrowserTest::SetUpOnMainThread();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(CorbAndCorsAppBrowserTest, WebViewContentScript) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   // Load the test app.
   const char kManifest[] = R"(
       {
@@ -1975,30 +1981,26 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsAppBrowserTest, WebViewContentScript) {
           }
         }
       } )";
-  dir_.WriteManifest(kManifest);
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
   const char kBackgroungScript[] = R"(
       chrome.app.runtime.onLaunched.addListener(function() {
         chrome.app.window.create('page.html', {}, function () {});
       });
   )";
-  dir_.WriteFile(FILE_PATH_LITERAL("background_script.js"), kBackgroungScript);
+  dir.WriteFile(FILE_PATH_LITERAL("background_script.js"), kBackgroungScript);
   const char kPage[] = R"(
       <div id="webview-tag-container"></div>
   )";
-  dir_.WriteFile(FILE_PATH_LITERAL("page.html"), kPage);
-  const Extension* app = LoadExtension(dir_.UnpackedPath());
+  dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPage);
+  const Extension* app = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(app);
 
   // Launch the test app and grab its WebContents.
   content::WebContents* app_contents = nullptr;
   {
     content::WebContentsAddedObserver new_contents_observer;
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParams(apps::AppLaunchParams(
-            app->id(), LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::NEW_WINDOW,
-            apps::mojom::AppLaunchSource::kSourceTest));
+    LaunchPlatformApp(app);
     app_contents = new_contents_observer.GetWebContents();
   }
   ASSERT_TRUE(content::WaitForLoadStop(app_contents));
@@ -2038,7 +2040,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsAppBrowserTest, WebViewContentScript) {
     content::ExecuteScriptAsync(app_contents, web_view_navigation_script);
     std::string fetch_result = PopString(&queue);
 
-    // Verify that no CORB blocking occurred.
+    // Verify that no CORB or CORS blocking occurred.
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 
     // Verify UMA histograms.

@@ -73,15 +73,6 @@ specific_include_rules = {
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/1084826
-  "corb_and_cors_extension_browsertest\.cc": [
-    "+chrome/browser/apps/app_service/app_launch_params.h",
-    "+chrome/browser/apps/app_service/app_service_proxy.h",
-    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
-    "+chrome/browser/apps/app_service/browser_app_launcher.h",
-  ],
-
-  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
   "extension_apitest\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
