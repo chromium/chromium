@@ -109,8 +109,22 @@ def main():
           params.task_output_dir)
       logging.info(
           'Identified directories containing coverage %s', coverage_dirs)
-      javascript_merger.convert_raw_coverage_to_istanbul(
-          coverage_dirs, parsed_scripts, params.task_output_dir)
+
+      try:
+        logging.info('Converting raw coverage to istanbul')
+        javascript_merger.convert_raw_coverage_to_istanbul(
+            coverage_dirs, parsed_scripts, params.task_output_dir)
+
+        istanbul_coverage_dir = os.path.join(params.task_output_dir, 'istanbul')
+        output_dir = os.path.join(istanbul_coverage_dir, 'merged')
+        os.makedirs(output_dir)
+
+        coverage_file_path = os.path.join(output_dir, 'coverage.json')
+        logging.info('Merging istanbul reports to %s', coverage_file_path)
+        javascript_merger.merge_istanbul_reports(
+            istanbul_coverage_dir, parsed_scripts, coverage_file_path)
+      except RuntimeError as e:
+        logging.warn('Failed executing istanbul tasks: %s', e.message)
 
     # Ensure JavaScript coverage dir exists.
     if not os.path.exists(params.javascript_coverage_dir):
