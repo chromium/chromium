@@ -56,6 +56,8 @@ scoped_refptr<media::VideoFrame> CopyFrame(
   if (frame->HasTextures()) {
     DCHECK(frame->format() == media::PIXEL_FORMAT_ARGB ||
            frame->format() == media::PIXEL_FORMAT_XRGB ||
+           frame->format() == media::PIXEL_FORMAT_ABGR ||
+           frame->format() == media::PIXEL_FORMAT_XBGR ||
            frame->format() == media::PIXEL_FORMAT_I420 ||
            frame->format() == media::PIXEL_FORMAT_NV12);
     auto provider = Platform::Current()->SharedMainThreadContextProvider();
