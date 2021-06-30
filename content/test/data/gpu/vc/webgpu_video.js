@@ -286,8 +286,9 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const verticesBuffer = createVertexBuffer(device, videos, videoRows,
                          videoColumns);
 
-  const swapChainFormat = 'bgra8unorm';
-  const swapChain = context.configureSwapChain({
+  const swapChainFormat = context.getPreferredFormat(device.adapter);
+
+  const swapChain = context.configure({
     device,
     format: swapChainFormat,
     usage: GPUTextureUsage.RENDER_ATTACHMENT,
@@ -464,7 +465,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     }
     lastTimestamp = timestamp;
 
-    const swapChainTexture = swapChain.getCurrentTexture();
+    const swapChainTexture = context.getCurrentTexture();
     renderPassDescriptor.colorAttachments[0].view = swapChainTexture
       .createView();
 
@@ -538,16 +539,24 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     }
     lastTimestamp = timestamp;
 
+    // First, destroy all textures that are ready to update, then import all
+    // textures. The performance is better this way than doing destroy and
+    // import one by one.
     for (let i = 0; i < videos.length; ++i) {
       if (videoIsReady[i]) {
         videoTextures[i].destroy();
+      }
+    }
+
+    for (let i = 0; i < videos.length; ++i) {
+      if (videoIsReady[i]) {
         videoTextures[i] = device.experimentalImportTexture(
           videos[i], GPUTextureUsage.SAMPLED);
         videoIsReady[i] = false;
       }
     }
 
-    const swapChainTexture = swapChain.getCurrentTexture();
+    const swapChainTexture = context.getCurrentTexture();
     renderPassDescriptor.colorAttachments[0].view = swapChainTexture
       .createView();
 
