@@ -46,8 +46,9 @@ SemaphoreHandle GpuFenceHandleToSemaphoreHandle(
 #elif defined(OS_WIN)
   return SemaphoreHandle(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT,
                          std::move(fence_handle.owned_handle));
-#endif  // defined(OS_FUCHSIA)
+#else
   return SemaphoreHandle();
+#endif  // defined(OS_FUCHSIA)
 }
 
 }  // namespace

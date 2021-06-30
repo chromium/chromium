@@ -69,14 +69,11 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
       return plane == gfx::BufferPlane::DEFAULT ||
              plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::U ||
              plane == gfx::BufferPlane::V;
-      break;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return plane == gfx::BufferPlane::DEFAULT ||
              plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
-      break;
     default:
       return plane == gfx::BufferPlane::DEFAULT;
-      break;
   }
   NOTREACHED();
   return false;

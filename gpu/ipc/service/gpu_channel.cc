@@ -324,7 +324,6 @@ void GpuChannelMessageFilter::CrashForTesting() {
 void GpuChannelMessageFilter::TerminateForTesting() {
   if (allow_process_kill_for_testing_) {
     base::Process::TerminateCurrentProcessImmediately(0);
-    return;
   }
 
   receiver_.ReportBadMessage("TerminateForTesting is a test-only API");
