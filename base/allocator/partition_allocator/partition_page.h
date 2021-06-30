@@ -20,6 +20,7 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/object_bitmap.h"
 #include "base/base_export.h"
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/thread_annotations.h"
@@ -36,13 +37,40 @@ namespace internal {
 template <bool thread_safe>
 struct PartitionSuperPageExtentEntry {
   PartitionRoot<thread_safe>* root;
-  char* super_page_base;
-  char* super_pages_end;
   PartitionSuperPageExtentEntry<thread_safe>* next;
+  uint16_t number_of_consecutive_super_pages;
 };
 static_assert(
     sizeof(PartitionSuperPageExtentEntry<ThreadSafe>) <= kPageMetadataSize,
     "PartitionSuperPageExtentEntry must be able to fit in a metadata slot");
+static_assert(
+    kMaxSuperPages / kSuperPageSize <=
+        std::numeric_limits<
+            decltype(PartitionSuperPageExtentEntry<
+                     ThreadSafe>::number_of_consecutive_super_pages)>::max(),
+    "number_of_consecutive_super_pages must be big enough");
+
+// Returns the base of the first super page in the range of consecutive super
+// pages. CAUTION! |extent| must point to the extent of the first super page in
+// the range of consecutive super pages.
+template <bool thread_safe>
+ALWAYS_INLINE char* SuperPagesBeginFromExtent(
+    PartitionSuperPageExtentEntry<thread_safe>* extent) {
+  PA_DCHECK(0 < extent->number_of_consecutive_super_pages);
+  PA_DCHECK(IsManagedByNormalBuckets(extent));
+  return base::bits::AlignDown(reinterpret_cast<char*>(extent),
+                               kSuperPageAlignment);
+}
+
+// Returns the end of the last super page in the range of consecutive super
+// pages. CAUTION! |extent| must point to the extent of the first super page in
+// the range of consecutive super pages.
+template <bool thread_safe>
+ALWAYS_INLINE char* SuperPagesEndFromExtent(
+    PartitionSuperPageExtentEntry<thread_safe>* extent) {
+  return SuperPagesBeginFromExtent(extent) +
+         (extent->number_of_consecutive_super_pages * kSuperPageSize);
+}
 
 // SlotSpanMetadata::Free() defers unmapping a large page until the lock is
 // released. Callers of SlotSpanMetadata::Free() must invoke Run().

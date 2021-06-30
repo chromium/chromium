@@ -316,8 +316,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // The new structures are all located inside a fresh system page so they
     // will all be zeroed out. These DCHECKs are for documentation and to assert
     // our expectations of the kernel.
-    PA_DCHECK(!super_page_extent->super_page_base);
-    PA_DCHECK(!super_page_extent->super_pages_end);
+    PA_DCHECK(!super_page_extent->number_of_consecutive_super_pages);
     PA_DCHECK(!super_page_extent->next);
 
     PartitionPage<thread_safe>* first_page =
@@ -612,11 +611,10 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // By storing the root in every extent metadata object, we have a fast way
   // to go from a pointer within the partition to the root object.
   latest_extent->root = root;
-  // Most new extents will be part of a larger extent, and these three fields
+  // Most new extents will be part of a larger extent, and these two fields
   // are unused, but we initialize them to 0 so that we get a clear signal
   // in case they are accidentally used.
-  latest_extent->super_page_base = nullptr;
-  latest_extent->super_pages_end = nullptr;
+  latest_extent->number_of_consecutive_super_pages = 0;
   latest_extent->next = nullptr;
 
   PartitionSuperPageExtentEntry<thread_safe>* current_extent =
@@ -627,19 +625,18 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
       PA_DCHECK(!root->first_extent);
       root->first_extent = latest_extent;
     } else {
-      PA_DCHECK(current_extent->super_page_base);
+      PA_DCHECK(current_extent->number_of_consecutive_super_pages);
       current_extent->next = latest_extent;
     }
     root->current_extent = latest_extent;
-    latest_extent->super_page_base = super_page;
-    latest_extent->super_pages_end = super_page + kSuperPageSize;
+    latest_extent->number_of_consecutive_super_pages = 1;
   } else {
     // We allocated next to an existing extent so just nudge the size up a
     // little.
-    PA_DCHECK(current_extent->super_pages_end);
-    current_extent->super_pages_end += kSuperPageSize;
-    PA_DCHECK(ret >= current_extent->super_page_base &&
-              ret < current_extent->super_pages_end);
+    PA_DCHECK(current_extent->number_of_consecutive_super_pages);
+    ++current_extent->number_of_consecutive_super_pages;
+    PA_DCHECK(ret > SuperPagesBeginFromExtent(current_extent) &&
+              ret < SuperPagesEndFromExtent(current_extent));
   }
   return ret;
 }

@@ -620,9 +620,9 @@ void PartitionRoot<thread_safe>::ConfigureLazyCommit() {
 
     for (auto* super_page_extent = first_extent; super_page_extent;
          super_page_extent = super_page_extent->next) {
-      for (char* super_page = super_page_extent->super_page_base;
-           super_page != super_page_extent->super_pages_end;
-           super_page += kSuperPageSize) {
+      for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
+                *super_page_end = SuperPagesEndFromExtent(super_page_extent);
+           super_page != super_page_end; super_page += kSuperPageSize) {
         internal::IterateSlotSpans<thread_safe>(
             super_page, IsQuarantineAllowed(),
             [this](SlotSpan* slot_span) -> bool {

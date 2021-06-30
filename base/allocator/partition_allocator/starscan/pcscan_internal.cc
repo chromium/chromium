@@ -217,9 +217,9 @@ void CommitQuarantineBitmaps(PCScan::Root& root) {
   size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
   for (auto* super_page_extent = root.first_extent; super_page_extent;
        super_page_extent = super_page_extent->next) {
-    for (char* super_page = super_page_extent->super_page_base;
-         super_page != super_page_extent->super_pages_end;
-         super_page += kSuperPageSize) {
+    for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
+              *super_page_end = SuperPagesEndFromExtent(super_page_extent);
+         super_page != super_page_end; super_page += kSuperPageSize) {
       RecommitSystemPages(internal::SuperPageQuarantineBitmaps(super_page),
                           quarantine_bitmaps_size_to_commit, PageReadWrite,
                           PageUpdatePermissions);
@@ -298,9 +298,9 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
     // Take a snapshot of all super pages and scannable slot spans.
     for (auto* super_page_extent = root->first_extent; super_page_extent;
          super_page_extent = super_page_extent->next) {
-      for (char* super_page = super_page_extent->super_page_base;
-           super_page != super_page_extent->super_pages_end;
-           super_page += kSuperPageSize) {
+      for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
+                *super_page_end = SuperPagesEndFromExtent(super_page_extent);
+           super_page != super_page_end; super_page += kSuperPageSize) {
         const size_t visited_slot_spans = IterateSlotSpans<ThreadSafe>(
             super_page, true /*with_quarantine*/,
             [this](SlotSpan* slot_span) -> bool {
@@ -341,9 +341,9 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
     // Take a snapshot of all super pages and nnonscannable slot spans.
     for (auto* super_page_extent = root->first_extent; super_page_extent;
          super_page_extent = super_page_extent->next) {
-      for (char* super_page = super_page_extent->super_page_base;
-           super_page != super_page_extent->super_pages_end;
-           super_page += kSuperPageSize) {
+      for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
+                *super_page_end = SuperPagesEndFromExtent(super_page_extent);
+           super_page != super_page_end; super_page += kSuperPageSize) {
         super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
         super_pages_worklist_.Push(reinterpret_cast<uintptr_t>(super_page));
       }
