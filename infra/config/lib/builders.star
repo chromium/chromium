@@ -780,6 +780,7 @@ def builder(
 _BOOTSTRAP_ALLOWLIST = {e: True for e in [
     ("ci", "linux-bootstrap"),
     ("ci", "linux-bootstrap-tests"),
+    ("try", "linux-bootstrap"),
 ]}
 
 def _bootstrap_key(bucket_name, builder_name):

@@ -5605,7 +5605,7 @@ ci.infra_builder(
         category = "bootstrap",
         short_name = "tst",
     ),
-    triggered_by = ["linux-bootstrap"],
+    triggered_by = ["ci/linux-bootstrap"],
 )
 
 ci.infra_builder(

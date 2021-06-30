@@ -1191,6 +1191,10 @@
       'devtools_frontend_linux_blink_rel': 'release_trybot_blink',
     },
 
+    'tryserver.infra': {
+      'linux-bootstrap': 'release_trybot',
+    },
+
     'tryserver.v8': {
       'v8_linux_blink_rel': 'release_trybot_blink',
       'v8_linux_chromium_gn_rel': 'release_trybot',

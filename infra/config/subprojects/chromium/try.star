@@ -174,6 +174,10 @@ consoles.list_view(
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
 
+consoles.list_view(
+    name = "tryserver.infra",
+)
+
 # Builders are sorted first lexicographically by the function used to define
 # them, then lexicographically by their name
 
@@ -2098,6 +2102,11 @@ try_.chromium_mac_ios_builder(
     tryjob = try_.job(
         experiment_percentage = 1,
     ),
+)
+
+try_.infra_builder(
+    name = "linux-bootstrap",
+    bootstrap = True,
 )
 
 # Errors that this builder would catch would go unnoticed until a project is set

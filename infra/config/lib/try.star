@@ -506,6 +506,20 @@ def gpu_chromium_win_builder(*, name, os = builders.os.WINDOWS_ANY, **kwargs):
         **kwargs
     )
 
+def infra_builder(
+        *,
+        name,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.LINUX_BIONIC_REMOVE,
+        **kwargs):
+    return try_builder(
+        name = name,
+        builder_group = "tryserver.infra",
+        goma_backend = goma_backend,
+        os = os,
+        **kwargs
+    )
+
 def presubmit_builder(*, name, tryjob, os = builders.os.LINUX_BIONIC_SWITCH_TO_DEFAULT, **kwargs):
     """Define a presubmit builder.
 
@@ -566,5 +580,6 @@ try_ = struct(
     gpu_chromium_linux_builder = gpu_chromium_linux_builder,
     gpu_chromium_mac_builder = gpu_chromium_mac_builder,
     gpu_chromium_win_builder = gpu_chromium_win_builder,
+    infra_builder = infra_builder,
     presubmit_builder = presubmit_builder,
 )
