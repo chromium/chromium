@@ -1351,6 +1351,17 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
+<histogram name="PowerML.SmartDimFeature.WebPageInfoSource"
+    enum="PowerMLSmartDimWebPageInfoSource" expires_after="2022-06-24">
+  <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>napper@chromium.org</owner>
+  <summary>
+    The source of web page info in smart dim features, emitted everytime smart
+    dim is requested.
+  </summary>
+</histogram>
+
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
     expires_after="2021-10-24">
   <owner>amoylan@chromium.org</owner>

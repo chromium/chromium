@@ -64227,6 +64227,11 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PowerMLSmartDimWebPageInfoSource">
+  <int value="0" label="Ash">Web page info comes from ash chrome.</int>
+  <int value="1" label="Lacros">Web page info comes from lacros chrome.</int>
+</enum>
+
 <enum name="PowerMode">
   <int value="0" label="kIdle"/>
   <int value="1" label="kAudible"/>

@@ -76,6 +76,9 @@ enum class DimImminentAction {
 // numeric values should never be reused.
 enum class FinalResult { kReactivation = 0, kOff = 1, kMaxValue = kOff };
 
+// The source of web page info in smart dim features.
+enum class WebPageInfoSource { kAsh = 0, kLacros = 1, kMaxValue = kLacros };
+
 // Logs user activity after an idle event is observed.
 // TODO(renjieliu): Add power-related activity as well.
 class UserActivityManager : public ui::UserActivityObserver,

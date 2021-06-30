@@ -57,6 +57,11 @@ void LogPowerMLModelNoDimResult(FinalResult result) {
   UMA_HISTOGRAM_ENUMERATION("PowerML.ModelNoDim.Result", result);
 }
 
+void LogWebPageInfoSource(WebPageInfoSource source) {
+  UMA_HISTOGRAM_ENUMERATION("PowerML.SmartDimFeature.WebPageInfoSource",
+                            source);
+}
+
 void LogPowerMLSmartDimModelRequestCancel(base::TimeDelta time) {
   UMA_HISTOGRAM_TIMES("PowerML.SmartDimModel.RequestCanceledDuration", time);
 }
@@ -320,6 +325,11 @@ void UserActivityManager::UpdateFeaturesWithLacrosIfApplicableAndDoRequest(
   // TODO(alanlxl): source ids from ash & lacros don't match, e.g. a blank
   // newtab gets different source_ids.
   // This may have a negative influence on the model performance.
+  if (lacros_web_page_info) {
+    LogWebPageInfoSource(WebPageInfoSource::kLacros);
+  } else {
+    LogWebPageInfoSource(WebPageInfoSource::kAsh);
+  }
 
   ExtractFeatures(activity_data, std::move(lacros_web_page_info));
 
