@@ -163,9 +163,7 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
                       [](const auto& entry) { return entry.second->empty(); });
       }
     }
-  };
-
-  return false;
+  }
 }
 
 SyncHandleRegistry::~SyncHandleRegistry() = default;
