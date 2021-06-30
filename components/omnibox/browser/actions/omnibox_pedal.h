@@ -181,7 +181,7 @@ class OmniboxPedal : public OmniboxAction {
   void AddSynonymGroup(SynonymGroup&& group);
 
   // Specify synonym groups to load from localization strings.
-  virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups();
+  virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups() const;
 
   OmniboxPedalId id() const { return id_; }
 
