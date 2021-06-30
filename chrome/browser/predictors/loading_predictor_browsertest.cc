@@ -2357,7 +2357,13 @@ class MultiPageBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<content::TestPageHolder> page_holder_;
 };
 
-IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {
+// TODO(https://crbug.com/1204677): Flaky on MAC OS.
+#if defined(OS_MAC)
+#define MAYBE_LoadingPredictor DISABLED_LoadingPredictor
+#else
+#define MAYBE_LoadingPredictor LoadingPredictor
+#endif
+IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, MAYBE_LoadingPredictor) {
   GURL url1 = embedded_test_server()->GetURL("/echo-raw?1");
   GURL url2 = embedded_test_server()->GetURL("/echo-raw?2");
 
