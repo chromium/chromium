@@ -110,8 +110,11 @@ ConversionHost::~ConversionHost() {
 
 void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // Impression navigations need to navigate the main frame to be valid.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main
+  // frame to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->GetImpression() ||
-      !navigation_handle->IsInMainFrame() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
       !conversion_manager_provider_->GetManager(web_contents())) {
     return;
   }
@@ -181,7 +184,10 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // If the navigation did not commit, committed to a Chrome error page, or was
   // same document, ignore it. Impressions should never be attached to
   // same-document navigations but can be the result of a bad renderer.
-  if (!navigation_handle->IsInMainFrame() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||
       navigation_handle->IsSameDocument()) {
     return;

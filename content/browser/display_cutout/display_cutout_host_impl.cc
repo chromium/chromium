@@ -54,7 +54,10 @@ void DisplayCutoutHostImpl::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   // If the navigation is not in the main frame or if we are a same document
   // navigation then we should stop now.
-  if (!navigation_handle->IsInMainFrame() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }

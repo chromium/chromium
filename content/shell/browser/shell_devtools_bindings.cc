@@ -201,7 +201,10 @@ void ShellDevToolsBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
 #if !defined(OS_ANDROID)
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
-  if (navigation_handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     frontend_host_ = DevToolsFrontendHost::Create(
         frame, base::BindRepeating(
                    &ShellDevToolsBindings::HandleMessageFromDevToolsFrontend,

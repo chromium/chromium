@@ -5365,8 +5365,11 @@ void WebContentsImpl::ReadyToCommitNavigation(
 
   // Cross-document navigation of the top-level frame resets the capture
   // handle config.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main
+  // frame to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsSameDocument() &&
-      navigation_handle->IsInMainFrame()) {
+      navigation_handle->IsInPrimaryMainFrame()) {
     SetCaptureHandleConfig(blink::mojom::CaptureHandleConfig::New());
   }
 

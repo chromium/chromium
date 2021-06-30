@@ -255,7 +255,10 @@ void SessionMetricsHelper::DidStartNavigation(
     content::NavigationHandle* handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (handle && handle->IsInMainFrame() && !handle->IsSameDocument()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (handle && handle->IsInPrimaryMainFrame() && !handle->IsSameDocument()) {
     // All sessions are terminated on navigations, so to ensure that we log
     // everything that we have, cleanup any outstanding session trackers now.
     if (webxr_immersive_session_tracker_) {
