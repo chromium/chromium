@@ -12,67 +12,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-
-namespace {
-
-const base::flat_map<UINT, std::string>& PredefinedFormatToNameMap() {
-  // These formats are described in winuser.h and
-  // https://docs.microsoft.com/en-us/windows/win32/dataxchg/standard-clipboard-formats
-  static const base::NoDestructor<base::flat_map<UINT, std::string>>
-      format_to_name({
-          {CF_TEXT, "CF_TEXT"},
-          {CF_DIF, "CF_DIF"},
-          {CF_TIFF, "CF_TIFF"},
-          {CF_OEMTEXT, "CF_OEMTEXT"},
-          {CF_DIB, "CF_DIB"},
-          {CF_PENDATA, "CF_PENDATA"},
-          {CF_RIFF, "CF_RIFF"},
-          {CF_WAVE, "CF_WAVE"},
-          {CF_UNICODETEXT, "CF_UNICODETEXT"},
-          {CF_DIBV5, "CF_DIBV5"},
-          {CF_OWNERDISPLAY, "CF_OWNERDISPLAY"},
-
-          // These formats are predefined but explicitly blocked from use,
-          // either due to passing along handles, or concerns regarding exposing
-          // private information.
-          // {CF_MAX, "CF_MAX"},
-          // {CF_PRIVATEFIRST, "CF_PRIVATEFIRST"},
-          // {CF_PRIVATELAST, "CF_PRIVATELAST"},
-          // {CF_GDIOBJFIRST, "CF_GDIOBJFIRST"},
-          // {CF_GDIOBJLAST, "CF_GDIOBJLAST"},
-          // {CF_BITMAP, "CF_BITMAP"},
-          // {CF_SYLK, "CF_SYLK"},
-          // {CF_METAFILEPICT, "CF_METAFILEPICT"},
-          // {CF_DSPTEXT, "CF_DSPTEXT"},
-          // {CF_DSPBITMAP, "CF_DSPBITMAP"},
-          // {CF_DSPMETAFILEPICT, "CF_DSPMETAFILEPICT"},
-          // {CF_DSPENHMETAFILE, "CF_DSPENHMETAFILE"},
-          // {CF_ENHMETAFILE, "CF_ENHMETAFILE"},
-          // {CF_HDROP, "CF_HDROP"},
-          // {CF_LOCALE, "CF_LOCALE"},
-          // {CF_PALETTE, "CF_PALETTE"},
-
-      });
-  return *format_to_name;
-}
-
-const base::flat_map<std::string, UINT>& PredefinedNameToFormatMap() {
-  // Use lambda constructor for thread-safe initialization of name_to_format.
-  static const base::NoDestructor<base::flat_map<std::string, UINT>>
-      name_to_format([] {
-        base::flat_map<std::string, UINT> new_name_to_format;
-        const auto& format_to_name = PredefinedFormatToNameMap();
-        new_name_to_format.reserve(format_to_name.size());
-        for (const auto& it : format_to_name)
-          new_name_to_format.emplace(it.second, it.first);
-        return new_name_to_format;
-      }());
-  return *name_to_format;
-}
-
-}  // namespace
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
 
@@ -122,22 +66,102 @@ ClipboardFormatType ClipboardFormatType::Deserialize(
   return ClipboardFormatType(clipboard_format);
 }
 
-std::string ClipboardFormatType::GetName() const {
-  const auto& predefined_format_to_name = PredefinedFormatToNameMap();
-  const auto it = predefined_format_to_name.find(data_.cfFormat);
-  if (it != predefined_format_to_name.end())
-    return it->second;
+// static
+ClipboardFormatType ClipboardFormatType::GetCustomPlatformType(
+    const std::string& format_string) {
+  // For unsanitized custom formats, we add `Web ` prefix and capitalize the
+  // first letter of each word in the format. e.g. `text/custom` format would be
+  // converted to `Web Text Custom`. Similarly for `text/html` or any other
+  // standard formats, the pickled version would be prefixed with `Web ` and
+  // first letter capitalized. e.g. text/html would be converted to `Web Text
+  // Html`.
+  // For security reasons we also check for valid ascii codepoints.
+  constexpr int kMinNameSize = 3;  // Formats need to have at least 3 chars.
+  if (!base::IsStringASCII(format_string) ||
+      format_string.size() < kMinNameSize) {
+    return ClipboardFormatType();
+  }
 
+  size_t index = format_string.find('/');
+  if (index == std::string::npos || index == 0 ||
+      index == format_string.size() - 1)
+    return ClipboardFormatType();
+  base::StringPiece first_part =
+      base::StringPiece(format_string).substr(0, index);
+  base::StringPiece second_part =
+      base::StringPiece(format_string).substr(index + 1);
+  std::string web_custom_format_string = base::StrCat(
+      {"Web ", base::ToUpperASCII(first_part.substr(0, 1)),
+       first_part.substr(1), " ", base::ToUpperASCII(second_part.substr(0, 1)),
+       second_part.substr(1)});
+  return ClipboardFormatType(::RegisterClipboardFormat(
+      base::ASCIIToWide(web_custom_format_string).c_str()));
+}
+
+// static
+std::string ClipboardFormatType::GetCustomPlatformName() const {
   constexpr size_t kMaxFormatSize = 1024;
   static base::NoDestructor<std::vector<wchar_t>> name_buffer(kMaxFormatSize);
   int name_size = GetClipboardFormatName(data_.cfFormat, name_buffer->data(),
                                          kMaxFormatSize);
-  if (!name_size) {
+  // Custom formats should have at least 7 characters. e.g. "Web x y"
+  constexpr int kMinNameSize = 7;
+  if (!name_size || name_size < kMinNameSize) {
     // Input format doesn't exist or is predefined.
     return std::string();
   }
 
-  return base::WideToUTF8(std::wstring(name_buffer->data(), name_size));
+  std::string format_name_in_clipboard =
+      base::WideToASCII(std::wstring(name_buffer->data(), name_size));
+
+  // For security reasons we also check for valid ascii codepoints.
+  if (!base::IsStringASCII(format_name_in_clipboard))
+    return std::string();
+  // For unsanitized custom formats (prefixed with Web) we extract the strings
+  // and convert it into standard representation. e.g. `Web Text Custom` format
+  // would be converted to `text/custom`.
+  if (format_name_in_clipboard.substr(0, 4) == "Web ") {
+    base::StringPiece format_name =
+        base::StringPiece(format_name_in_clipboard).substr(4);
+    size_t space_index = format_name.find(" ");
+
+    if (space_index == std::string::npos)
+      return std::string();
+    if (format_name.size() < (space_index + 2))
+      return std::string();
+
+    return base::StrCat(
+        {base::ToLowerASCII(format_name.substr(0, space_index)), "/",
+         base::ToLowerASCII(format_name.substr(space_index + 1))});
+  }
+  return format_name_in_clipboard;
+}
+
+std::string ClipboardFormatType::GetName() const {
+  if (ClipboardFormatType::GetPlainTextAType().ToFormatEtc().cfFormat ==
+      data_.cfFormat) {
+    return kMimeTypeText;
+  }
+  if (ClipboardFormatType::GetHtmlType().ToFormatEtc().cfFormat ==
+      data_.cfFormat) {
+    return kMimeTypeHTML;
+  }
+  if (ClipboardFormatType::GetRtfType().ToFormatEtc().cfFormat ==
+      data_.cfFormat) {
+    return kMimeTypeRTF;
+  }
+  if (CF_DIB == data_.cfFormat)
+    return kMimeTypePNG;
+  if (ClipboardFormatType::GetCFHDropType().ToFormatEtc().cfFormat ==
+          data_.cfFormat ||
+      ClipboardFormatType::GetFilenameType().ToFormatEtc().cfFormat ==
+          data_.cfFormat ||
+      ClipboardFormatType::GetFilenameAType().ToFormatEtc().cfFormat ==
+          data_.cfFormat) {
+    return kMimeTypeURIList;
+  }
+  // Not a standard format type.
+  return std::string();
 }
 
 bool ClipboardFormatType::operator<(const ClipboardFormatType& other) const {
@@ -153,11 +177,6 @@ bool ClipboardFormatType::operator==(const ClipboardFormatType& other) const {
 // static
 ClipboardFormatType ClipboardFormatType::GetType(
     const std::string& format_string) {
-  const auto& predefined_name_to_format = PredefinedNameToFormatMap();
-  const auto it = predefined_name_to_format.find(format_string);
-  if (it != predefined_name_to_format.end())
-    return ClipboardFormatType(it->second);
-
   return ClipboardFormatType(
       ::RegisterClipboardFormat(base::ASCIIToWide(format_string).c_str()));
 }

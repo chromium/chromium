@@ -722,24 +722,9 @@ void ClipboardAndroid::ClearLastModifiedTime() {
 // Main entry point used to write several values in the clipboard.
 // |data_src| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::WritePortableRepresentations(
+void ClipboardAndroid::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  g_map.Get().Clear();
-
-  for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
-
-  g_map.Get().CommitToAndroidClipboard();
-}
-
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardAndroid::WritePlatformRepresentations(
-    ClipboardBuffer buffer,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src) {
   DCHECK(CalledOnValidThread());
@@ -747,6 +732,8 @@ void ClipboardAndroid::WritePlatformRepresentations(
   g_map.Get().Clear();
 
   DispatchPlatformRepresentations(std::move(platform_representations));
+  for (const auto& object : objects)
+    DispatchPortableRepresentation(object.first, object.second);
 
   g_map.Get().CommitToAndroidClipboard();
 }

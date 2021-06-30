@@ -217,26 +217,16 @@ bool HeadlessClipboard::IsSelectionBufferAvailable() const {
 
 // |data_src| is not used. It's only passed to be consistent with other
 // platforms.
-void HeadlessClipboard::WritePortableRepresentations(
+void HeadlessClipboard::WritePortableAndPlatformRepresentations(
     ui::ClipboardBuffer buffer,
     const ObjectMap& objects,
-    std::unique_ptr<ui::DataTransferEndpoint> data_src) {
-  Clear(buffer);
-  default_store_buffer_ = buffer;
-  for (const auto& kv : objects)
-    DispatchPortableRepresentation(kv.first, kv.second);
-  default_store_buffer_ = ui::ClipboardBuffer::kCopyPaste;
-}
-
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
-void HeadlessClipboard::WritePlatformRepresentations(
-    ui::ClipboardBuffer buffer,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<ui::DataTransferEndpoint> data_src) {
   Clear(buffer);
   default_store_buffer_ = buffer;
   DispatchPlatformRepresentations(std::move(platform_representations));
+  for (const auto& kv : objects)
+    DispatchPortableRepresentation(kv.first, kv.second);
   default_store_buffer_ = ui::ClipboardBuffer::kCopyPaste;
 }
 

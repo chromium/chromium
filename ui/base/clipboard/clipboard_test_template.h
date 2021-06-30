@@ -811,7 +811,7 @@ TYPED_TEST(ClipboardTest, DataTest) {
   const std::string kFormatString = "chromium/x-test-format";
   const std::u16string kFormatString16 = u"chromium/x-test-format";
   const ClipboardFormatType kFormat =
-      ClipboardFormatType::GetType(kFormatString);
+      ClipboardFormatType::GetCustomPlatformType(kFormatString);
   const std::string payload = "test string";
   base::span<const uint8_t> payload_span(
       reinterpret_cast<const uint8_t*>(payload.data()), payload.size());
@@ -830,6 +830,30 @@ TYPED_TEST(ClipboardTest, DataTest) {
   EXPECT_EQ(payload, output);
 }
 
+#if defined(OS_WIN)
+TYPED_TEST(ClipboardTest, CustomFormatTypeAndNameTest) {
+  const std::string kFormatString1 = "a/bc";
+  const std::string kFormatString2 = "/abc";
+  const std::string kFormatString3 = "abc/";
+  const std::string kFormatString4 = "a/";
+  const std::string kFormatString5 = "/a";
+  const std::string kFormatString6 = "a/c";
+  ClipboardFormatType format =
+      ClipboardFormatType::GetCustomPlatformType(kFormatString1);
+  EXPECT_EQ("a/bc", format.GetCustomPlatformName());
+  format = ClipboardFormatType::GetCustomPlatformType(kFormatString2);
+  EXPECT_EQ("", format.GetCustomPlatformName());
+  format = ClipboardFormatType::GetCustomPlatformType(kFormatString3);
+  EXPECT_EQ("", format.GetCustomPlatformName());
+  format = ClipboardFormatType::GetCustomPlatformType(kFormatString4);
+  EXPECT_EQ("", format.GetCustomPlatformName());
+  format = ClipboardFormatType::GetCustomPlatformType(kFormatString5);
+  EXPECT_EQ("", format.GetCustomPlatformName());
+  format = ClipboardFormatType::GetCustomPlatformType(kFormatString6);
+  EXPECT_EQ("a/c", format.GetCustomPlatformName());
+}
+#endif
+
 // TODO(https://crbug.com/1032161): Implement multiple raw types for
 // ClipboardInternal. This test currently doesn't run on ClipboardInternal
 // because ClipboardInternal only supports one raw type.
@@ -841,7 +865,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   const std::string kFormatString1 = "chromium/x-test-format1";
   const std::u16string kFormatString116 = u"chromium/x-test-format1";
   const ClipboardFormatType kFormat1 =
-      ClipboardFormatType::GetType(kFormatString1);
+      ClipboardFormatType::GetCustomPlatformType(kFormatString1);
   const std::string payload1("test string1");
   base::span<const uint8_t> payload_span1(
       reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
@@ -849,7 +873,54 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   const std::string kFormatString2 = "chromium/x-test-format2";
   const std::u16string kFormatString216 = u"chromium/x-test-format2";
   const ClipboardFormatType kFormat2 =
-      ClipboardFormatType::GetType(kFormatString2);
+      ClipboardFormatType::GetCustomPlatformType(kFormatString2);
+  const std::string payload2("test string2");
+  base::span<const uint8_t> payload_span2(
+      reinterpret_cast<const uint8_t*>(payload2.data()), payload2.size());
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    // Both payloads should write successfully and not overwrite one another.
+    clipboard_writer.WriteData(kFormatString116,
+                               mojo_base::BigBuffer(payload_span1));
+    clipboard_writer.WriteData(kFormatString216,
+                               mojo_base::BigBuffer(payload_span2));
+  }
+
+  // Check format 1.
+  EXPECT_THAT(this->clipboard().ReadAvailablePlatformSpecificFormatNames(
+                  ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
+              Contains(kFormatString116));
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      kFormat1, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
+  std::string output1;
+  this->clipboard().ReadData(kFormat1, /* data_dst = */ nullptr, &output1);
+  EXPECT_EQ(payload1, output1);
+
+  // Check format 2.
+  EXPECT_THAT(this->clipboard().ReadAvailablePlatformSpecificFormatNames(
+                  ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
+              Contains(kFormatString216));
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      kFormat2, ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
+  std::string output2;
+  this->clipboard().ReadData(kFormat2, /* data_dst = */ nullptr, &output2);
+  EXPECT_EQ(payload2, output2);
+}
+
+TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
+  const std::string kFormatString1 = "chromium/x-test-format1";
+  const std::u16string kFormatString116 = u"chromium/x-test-format1";
+  const ClipboardFormatType kFormat1 =
+      ClipboardFormatType::GetCustomPlatformType(kFormatString1);
+  const std::string payload1("test string1");
+  base::span<const uint8_t> payload_span1(
+      reinterpret_cast<const uint8_t*>(payload1.data()), payload1.size());
+
+  const std::string kFormatString2 = "text/plain";
+  const std::u16string kFormatString216 = u"text/plain";
+  const ClipboardFormatType kFormat2 =
+      ClipboardFormatType::GetCustomPlatformType(kFormatString2);
   const std::string payload2("test string2");
   base::span<const uint8_t> payload_span2(
       reinterpret_cast<const uint8_t*>(payload2.data()), payload2.size());
@@ -894,10 +965,22 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   ReadAvailablePlatformSpecificFormatNamesTest
 #endif
 TYPED_TEST(ClipboardTest, MAYBE_ReadAvailablePlatformSpecificFormatNamesTest) {
+  // We're testing platform-specific behavior, so use PlatformClipboardTest.
+  // TODO(https://crbug.com/1083050): The template shouldn't know about its
+  // instantiations. Move this information up using a flag, virtual method, or
+  // creating separate test files for different platforms.
+  std::string test_suite_name = ::testing::UnitTest::GetInstance()
+                                    ->current_test_info()
+                                    ->test_suite_name();
+  // TODO(crbug.com/106449): Update other platforms to support custom formats.
+  if (test_suite_name != std::string("ClipboardTest/PlatformClipboardTest"))
+    return;
+
   std::u16string text = u"Test String";
   std::string ascii_text;
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    // `WriteText` uses `GetPlainTextType` format.
     clipboard_writer.WriteText(text);
   }
 
@@ -927,12 +1010,7 @@ TYPED_TEST(ClipboardTest, MAYBE_ReadAvailablePlatformSpecificFormatNamesTest) {
   EXPECT_FALSE(features::IsUsingOzonePlatform());
   EXPECT_EQ(raw_types.size(), 4u);
 #endif  // USE_X11
-#elif defined(OS_WIN)
-  EXPECT_THAT(raw_types, Contains(u"CF_UNICODETEXT"));
-  EXPECT_THAT(raw_types, Contains(u"CF_TEXT"));
-  EXPECT_THAT(raw_types, Contains(u"CF_OEMTEXT"));
-  EXPECT_EQ(raw_types.size(), 3u);
-#elif defined(USE_AURA) || defined(OS_ANDROID)
+#elif defined(USE_AURA) || defined(OS_ANDROID) || defined(OS_WIN)
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeText)));
   EXPECT_EQ(raw_types.size(), 1u);
 #else
@@ -957,13 +1035,11 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
     return;
 
   const std::string text = "test string";
+  const std::string kFormatString = "text/plain";
 #if defined(OS_WIN)
-  // Windows pre-defined ANSI text format.
-  const std::string kFormatString = "CF_TEXT";
   // Windows requires an extra '\0' at the end for a raw write.
   const std::string kPlatformSpecificText = text + '\0';
 #elif defined(USE_X11)
-  const std::string kFormatString = "text/plain";  // X11 text format
   const std::string kPlatformSpecificText = text;
 #endif
   base::span<const uint8_t> text_span(
@@ -982,16 +1058,16 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kFormatString)));
 
 #if defined(OS_WIN)
-  // Only Windows ClipboardFormatType recognizes ANSI formats.
+  // Custom format is only available on Windows.
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
-      ClipboardFormatType::GetPlainTextAType(), ClipboardBuffer::kCopyPaste,
+      ClipboardFormatType::GetCustomPlatformType(kFormatString),
+      ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
-#endif  // defined(OS_WIN)
-
+#else
+  // TODO(crbug.com/106449): Support custom formats on other platforms.
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
-
   std::string text_result;
   this->clipboard().ReadAsciiText(ClipboardBuffer::kCopyPaste,
                                   /* data_dst = */ nullptr, &text_result);
@@ -1004,11 +1080,11 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &text_result16);
   EXPECT_EQ(text_result16, base::ASCIIToUTF16(text));
-
+#endif  // defined(OS_WIN)
   std::string platform_specific_result;
-  this->clipboard().ReadData(ClipboardFormatType::GetType(kFormatString),
-                             /* data_dst = */ nullptr,
-                             &platform_specific_result);
+  this->clipboard().ReadData(
+      ClipboardFormatType::GetCustomPlatformType(kFormatString),
+      /* data_dst = */ nullptr, &platform_specific_result);
   EXPECT_EQ(platform_specific_result, kPlatformSpecificText);
 }
 #endif  // defined(OS_WIN) || defined(USE_X11)

@@ -352,8 +352,11 @@ ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
   cf_format = ::EnumClipboardFormats(cf_format);
   while (cf_format) {
     std::string type_name = ClipboardFormatType(cf_format).GetName();
+    // Search for custom types if we couldn't find a standard format.
+    if (type_name.empty())
+      type_name = ClipboardFormatType(cf_format).GetCustomPlatformName();
     if (!type_name.empty())
-      types.push_back(base::UTF8ToUTF16(type_name));
+      types.push_back(base::ASCIIToUTF16(type_name));
     cf_format = ::EnumClipboardFormats(cf_format);
   }
   return types;
@@ -680,37 +683,19 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
 
 // |data_src| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardWin::WritePortableRepresentations(
+void ClipboardWin::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
-  ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
-    return;
-
-  ::EmptyClipboard();
-
-  for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
-}
-
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::WritePlatformRepresentations(
-    ClipboardBuffer buffer,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
-
   ::EmptyClipboard();
 
   DispatchPlatformRepresentations(std::move(platform_representations));
+  for (const auto& object : objects)
+    DispatchPortableRepresentation(object.first, object.second);
 }
 
 void ClipboardWin::WriteText(const char* text_data, size_t text_len) {

@@ -534,18 +534,8 @@ bool ClipboardOzone::IsSelectionBufferAvailable() const {
   return async_clipboard_ozone_->IsSelectionBufferAvailable();
 }
 
-// TODO(crbug.com/1103194): |data_src| should be supported
-void ClipboardOzone::WritePortableRepresentations(
-    ClipboardBuffer buffer,
-    const ObjectMap& objects,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
-  DCHECK(CalledOnValidThread());
-
-  async_clipboard_ozone_->PrepareForWriting();
-  for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
-  async_clipboard_ozone_->OfferData(buffer);
-
+void ClipboardOzone::WritePortableTextRepresentation(ClipboardBuffer buffer,
+                                                     const ObjectMap& objects) {
   // Just like Non-Backed/X11 implementation does, copy text data from the
   // copy/paste selection to the primary selection.
   if (buffer == ClipboardBuffer::kCopyPaste && IsSelectionBufferAvailable()) {
@@ -558,20 +548,23 @@ void ClipboardOzone::WritePortableRepresentations(
       async_clipboard_ozone_->OfferData(ClipboardBuffer::kSelection);
     }
   }
-
-  data_src_[buffer] = std::move(data_src);
 }
 
 // TODO(crbug.com/1103194): |data_src| should be supported
-void ClipboardOzone::WritePlatformRepresentations(
+void ClipboardOzone::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
+    const ObjectMap& objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src) {
   DCHECK(CalledOnValidThread());
 
   async_clipboard_ozone_->PrepareForWriting();
   DispatchPlatformRepresentations(std::move(platform_representations));
+  for (const auto& object : objects)
+    DispatchPortableRepresentation(object.first, object.second);
   async_clipboard_ozone_->OfferData(buffer);
+
+  WritePortableTextRepresentation(buffer, objects);
 
   data_src_[buffer] = std::move(data_src);
 }

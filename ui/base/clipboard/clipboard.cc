@@ -211,7 +211,7 @@ void Clipboard::DispatchPortableRepresentation(PortableFormat format,
 void Clipboard::DispatchPlatformRepresentations(
     std::vector<Clipboard::PlatformRepresentation> platform_representations) {
   for (const auto& representation : platform_representations) {
-    WriteData(ClipboardFormatType::GetType(representation.format),
+    WriteData(ClipboardFormatType::GetCustomPlatformType(representation.format),
               reinterpret_cast<const char*>(representation.data.data()),
               representation.data.size());
   }

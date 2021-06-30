@@ -24,16 +24,11 @@ ScopedClipboardWriter::ScopedClipboardWriter(
 
 ScopedClipboardWriter::~ScopedClipboardWriter() {
   static constexpr size_t kMaxRepresentations = 1 << 12;
-  DCHECK(objects_.empty() || platform_representations_.empty())
-      << "Portable and Platform representations should not be written on the "
-         "same write.";
   DCHECK(platform_representations_.size() < kMaxRepresentations);
-  if (!objects_.empty()) {
-    Clipboard::GetForCurrentThread()->WritePortableRepresentations(
-        buffer_, objects_, std::move(data_src_));
-  } else if (!platform_representations_.empty()) {
-    Clipboard::GetForCurrentThread()->WritePlatformRepresentations(
-        buffer_, std::move(platform_representations_), std::move(data_src_));
+  if (!objects_.empty() || !platform_representations_.empty()) {
+    Clipboard::GetForCurrentThread()->WritePortableAndPlatformRepresentations(
+        buffer_, objects_, std::move(platform_representations_),
+        std::move(data_src_));
   }
 
   if (confidential_)
@@ -177,7 +172,7 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
                                       mojo_base::BigBuffer data) {
   RecordWrite(ClipboardFormatMetric::kData);
   platform_representations_.push_back(
-      {base::UTF16ToUTF8(format), std::move(data)});
+      {base::UTF16ToASCII(format), std::move(data)});
 }
 
 void ScopedClipboardWriter::Reset() {

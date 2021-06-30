@@ -385,23 +385,9 @@ void ClipboardMac::ReadData(const ClipboardFormatType& format,
 
 // |data_src| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardMac::WritePortableRepresentations(
+void ClipboardMac::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
-  [GetPasteboard() declareTypes:@[] owner:nil];
-
-  for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
-}
-
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardMac::WritePlatformRepresentations(
-    ClipboardBuffer buffer,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src) {
   DCHECK(CalledOnValidThread());
@@ -410,6 +396,8 @@ void ClipboardMac::WritePlatformRepresentations(
   [GetPasteboard() declareTypes:@[] owner:nil];
 
   DispatchPlatformRepresentations(std::move(platform_representations));
+  for (const auto& object : objects)
+    DispatchPortableRepresentation(object.first, object.second);
 }
 
 void ClipboardMac::WriteText(const char* text_data, size_t text_len) {

@@ -76,6 +76,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
 
   // Data is written to the system clipboard in the same order as WriteData
   // calls are received.
+  // This is only used to write custom format data.
   void WriteData(const std::u16string& format, mojo_base::BigBuffer data);
 
   void WriteImage(const SkBitmap& bitmap);

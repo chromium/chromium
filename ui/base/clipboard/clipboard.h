@@ -328,22 +328,14 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   Clipboard();
   virtual ~Clipboard();
 
-  // Write a bunch of objects to the system clipboard. Copies are made of the
-  // contents of |objects|. Also, adds the source of the data to the clipboard,
-  // which can be used when we need to restrict the clipboard data between a set
-  // of confidential documents. The data source maybe passed as nullptr.
-  virtual void WritePortableRepresentations(
+  // Write platform & portable formats, in the order of their appearance in
+  // `platform_representations` & `ObjectMap`. Also, adds the source of the data
+  // to the clipboard, which can be used when we need to restrict the clipboard
+  // data between a set of confidential documents. The data source maybe passed
+  // as nullptr.
+  virtual void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,
-      std::unique_ptr<DataTransferEndpoint> data_src) = 0;
-
-  // Write |platform_representations|, in the order of their appearance in
-  // |platform_representations|. Also, adds the source of the data to the
-  // clipboard, which can be used when we need to restrict the clipboard data
-  // between a set of confidential documents. The data source maybe passed as
-  // nullptr.
-  virtual void WritePlatformRepresentations(
-      ClipboardBuffer buffer,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
       std::unique_ptr<DataTransferEndpoint> data_src) = 0;
 

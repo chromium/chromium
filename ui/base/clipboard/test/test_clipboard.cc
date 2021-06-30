@@ -140,8 +140,12 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
   const auto& data = store.data;
   std::vector<std::u16string> types;
   types.reserve(data.size());
-  for (const auto& it : data)
-    types.push_back(base::UTF8ToUTF16(it.first.GetName()));
+  for (const auto& it : data) {
+    std::string format_type = it.first.GetName();
+    if (format_type.empty())
+      format_type = it.first.GetCustomPlatformName();
+    types.push_back(base::UTF8ToUTF16(format_type));
+  }
 
   // Some platforms add additional raw types to represent text, or offer them
   // as available formats by automatically converting between them.
@@ -323,25 +327,16 @@ bool TestClipboard::IsSelectionBufferAvailable() const {
 }
 #endif  // defined(USE_OZONE)
 
-void TestClipboard::WritePortableRepresentations(
+void TestClipboard::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
-  Clear(buffer);
-  default_store_buffer_ = buffer;
-  for (const auto& kv : objects)
-    DispatchPortableRepresentation(kv.first, kv.second);
-  default_store_buffer_ = ClipboardBuffer::kCopyPaste;
-  GetStore(buffer).SetDataSource(std::move(data_src));
-}
-
-void TestClipboard::WritePlatformRepresentations(
-    ClipboardBuffer buffer,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src) {
   Clear(buffer);
   default_store_buffer_ = buffer;
   DispatchPlatformRepresentations(std::move(platform_representations));
+  for (const auto& kv : objects)
+    DispatchPortableRepresentation(kv.first, kv.second);
   default_store_buffer_ = ClipboardBuffer::kCopyPaste;
   GetStore(buffer).SetDataSource(std::move(data_src));
 }

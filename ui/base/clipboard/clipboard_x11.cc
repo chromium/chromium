@@ -294,20 +294,8 @@ bool ClipboardX11::IsSelectionBufferAvailable() const {
 }
 #endif  // defined(USE_OZONE)
 
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardX11::WritePortableRepresentations(
-    ClipboardBuffer buffer,
-    const ObjectMap& objects,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
-  DCHECK(CalledOnValidThread());
-  DCHECK(IsSupportedClipboardBuffer(buffer));
-
-  x_clipboard_helper_->CreateNewClipboardData();
-  for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
-  x_clipboard_helper_->TakeOwnershipOfSelection(buffer);
-
+void ClipboardX11::WritePortableTextRepresentation(ClipboardBuffer buffer,
+                                                   const ObjectMap& objects) {
   if (buffer == ClipboardBuffer::kCopyPaste) {
     auto text_iter = objects.find(PortableFormat::kText);
     if (text_iter != objects.end()) {
@@ -322,14 +310,13 @@ void ClipboardX11::WritePortableRepresentations(
           ClipboardBuffer::kSelection);
     }
   }
-
-  data_src_[buffer] = std::move(data_src);
 }
 
 // |data_src| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardX11::WritePlatformRepresentations(
+void ClipboardX11::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
+    const ObjectMap& objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src) {
   DCHECK(CalledOnValidThread());
@@ -337,7 +324,12 @@ void ClipboardX11::WritePlatformRepresentations(
 
   x_clipboard_helper_->CreateNewClipboardData();
   DispatchPlatformRepresentations(std::move(platform_representations));
+  for (const auto& object : objects)
+    DispatchPortableRepresentation(object.first, object.second);
   x_clipboard_helper_->TakeOwnershipOfSelection(buffer);
+
+  WritePortableTextRepresentation(buffer, objects);
+
   data_src_[buffer] = std::move(data_src);
 }
 
