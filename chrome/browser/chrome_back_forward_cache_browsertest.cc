@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
   // Mixed content should be blocked at first.
   EXPECT_FALSE(MixedContentSettingsTabHelper::FromWebContents(web_contents())
-                   ->IsRunningInsecureContentAllowed());
+                   ->IsRunningInsecureContentAllowed(*current_frame_host()));
 
   // 2) Emulate link clicking on the mixed script bubble to allow mixed content
   // to run.
@@ -394,14 +394,14 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // Mixed content should no longer be blocked.
   EXPECT_TRUE(MixedContentSettingsTabHelper::FromWebContents(web_contents())
-                  ->IsRunningInsecureContentAllowed());
+                  ->IsRunningInsecureContentAllowed(*current_frame_host()));
 
   // 4) Navigate to page B, which should use a different SiteInstance and
   // resets the mixed content settings.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
   // Mixed content should be blocked in the new page.
   EXPECT_FALSE(MixedContentSettingsTabHelper::FromWebContents(web_contents())
-                   ->IsRunningInsecureContentAllowed());
+                   ->IsRunningInsecureContentAllowed(*current_frame_host()));
 
   // 5) A is stored in BackForwardCache.
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
   // Mixed content settings is restored, so it's no longer blocked.
   EXPECT_TRUE(MixedContentSettingsTabHelper::FromWebContents(web_contents())
-                  ->IsRunningInsecureContentAllowed());
+                  ->IsRunningInsecureContentAllowed(*current_frame_host()));
 }
 
 class MetricsChromeBackForwardCacheBrowserTest

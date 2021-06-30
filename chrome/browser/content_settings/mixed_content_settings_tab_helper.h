@@ -26,7 +26,8 @@ class MixedContentSettingsTabHelper
   // back to the default (mixed content resources are not allowed to run).
   void AllowRunningOfInsecureContent();
 
-  bool IsRunningInsecureContentAllowed();
+  bool IsRunningInsecureContentAllowed(
+      content::RenderFrameHost& render_frame_host);
 
  private:
   friend class content::WebContentsUserData<MixedContentSettingsTabHelper>;
