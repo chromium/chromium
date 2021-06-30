@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Loader"
+}
+team_email: "loading-dev@chromium.org"

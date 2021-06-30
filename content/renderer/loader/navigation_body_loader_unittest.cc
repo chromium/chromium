@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
+#include "content/renderer/loader/navigation_body_loader.h"
 
 #include "base/bind.h"
 #include "base/macros.h"
@@ -17,17 +17,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
-#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
 
-namespace blink {
+namespace content {
 
 namespace {
 
 class NavigationBodyLoaderTest : public ::testing::Test,
-                                 public WebNavigationBodyLoader::Client {
+                                 public blink::WebNavigationBodyLoader::Client {
  protected:
   NavigationBodyLoaderTest() {}
 
@@ -52,17 +51,17 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     writer_ = std::move(producer_handle);
     auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
     endpoints->url_loader_client = client_remote_.BindNewPipeAndPassReceiver();
-    WebNavigationParams navigation_params;
+    blink::WebNavigationParams navigation_params;
     navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;
-    auto common_params = CreateCommonNavigationParams();
-    auto commit_params = CreateCommitNavigationParams();
-    WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
+    auto common_params = blink::CreateCommonNavigationParams();
+    auto commit_params = blink::CreateCommitNavigationParams();
+    NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         std::move(common_params), std::move(commit_params), /*request_id=*/1,
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
-        std::move(endpoints), scheduler::GetSingleThreadTaskRunnerForTesting(),
-        std::make_unique<ResourceLoadInfoNotifierWrapper>(
-            /*resource_load_info_notifier=*/nullptr),
-        /*is_main_frame=*/true, &navigation_params);
+        std::move(endpoints),
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+        /*render_frame_impl=*/nullptr, /*is_main_frame=*/true,
+        &navigation_params);
     loader_ = std::move(navigation_params.body_loader);
   }
 
@@ -94,12 +93,13 @@ class NavigationBodyLoaderTest : public ::testing::Test,
       run_loop_.Quit();
   }
 
-  void BodyLoadingFinished(base::TimeTicks completion_time,
-                           int64_t total_encoded_data_length,
-                           int64_t total_encoded_body_length,
-                           int64_t total_decoded_body_length,
-                           bool should_report_corb_blocking,
-                           const absl::optional<WebURLError>& error) override {
+  void BodyLoadingFinished(
+      base::TimeTicks completion_time,
+      int64_t total_encoded_data_length,
+      int64_t total_encoded_body_length,
+      int64_t total_decoded_body_length,
+      bool should_report_corb_blocking,
+      const absl::optional<blink::WebURLError>& error) override {
     ASSERT_TRUE(expecting_finished_);
     did_finish_ = true;
     error_ = error;
@@ -117,8 +117,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     }
     if (toggle_defers_loading_) {
       toggle_defers_loading_ = false;
-      loader_->SetDefersLoading(WebLoaderFreezeMode::kNone);
-      loader_->SetDefersLoading(WebLoaderFreezeMode::kStrict);
+      loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kNone);
+      loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kStrict);
     }
     if (destroy_loader_) {
       destroy_loader_ = false;
@@ -160,7 +160,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   base::test::TaskEnvironment task_environment_;
   static const MojoWriteDataFlags kNone = MOJO_WRITE_DATA_FLAG_NONE;
   mojo::Remote<network::mojom::URLLoaderClient> client_remote_;
-  std::unique_ptr<WebNavigationBodyLoader> loader_;
+  std::unique_ptr<blink::WebNavigationBodyLoader> loader_;
   mojo::ScopedDataPipeProducerHandle writer_;
 
   base::RunLoop run_loop_;
@@ -172,13 +172,13 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   bool toggle_defers_loading_ = false;
   bool destroy_loader_ = false;
   std::string data_received_;
-  absl::optional<WebURLError> error_;
+  absl::optional<blink::WebURLError> error_;
 };
 
 TEST_F(NavigationBodyLoaderTest, SetDefersBeforeStart) {
   CreateBodyLoader();
-  loader_->SetDefersLoading(WebLoaderFreezeMode::kStrict);
-  loader_->SetDefersLoading(WebLoaderFreezeMode::kNone);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kStrict);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kNone);
   // Should not crash.
 }
 
@@ -223,22 +223,22 @@ TEST_F(NavigationBodyLoaderTest, SetDefersLoadingFromDataReceived) {
 
 TEST_F(NavigationBodyLoaderTest, StartDeferred) {
   CreateBodyLoader();
-  loader_->SetDefersLoading(WebLoaderFreezeMode::kStrict);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kStrict);
   StartLoading();
   Write("hello");
   ExpectDataReceived();
-  loader_->SetDefersLoading(WebLoaderFreezeMode::kNone);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kNone);
   Wait();
   EXPECT_EQ("hello", TakeDataReceived());
 }
 
 TEST_F(NavigationBodyLoaderTest, StartDeferredWithBackForwardCache) {
   CreateBodyLoader();
-  loader_->SetDefersLoading(WebLoaderFreezeMode::kBufferIncoming);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kBufferIncoming);
   StartLoading();
   Write("hello");
   ExpectDataReceived();
-  loader_->SetDefersLoading(WebLoaderFreezeMode::kNone);
+  loader_->SetDefersLoading(blink::WebLoaderFreezeMode::kNone);
   Wait();
   EXPECT_EQ("hello", TakeDataReceived());
 }
@@ -327,11 +327,11 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
   net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
                                      &response->ssl_info->connection_status);
 
-  auto common_params = CreateCommonNavigationParams();
+  auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = GURL("https://example.test");
-  auto commit_params = CreateCommitNavigationParams();
+  auto commit_params = blink::CreateCommitNavigationParams();
 
-  WebNavigationParams navigation_params;
+  blink::WebNavigationParams navigation_params;
   navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -339,17 +339,16 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
   MojoResult rv =
       mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
   ASSERT_EQ(MOJO_RESULT_OK, rv);
-  WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
+  NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
       std::move(common_params), std::move(commit_params), /*request_id=*/1,
       std::move(response), std::move(consumer_handle), std::move(endpoints),
-      scheduler::GetSingleThreadTaskRunnerForTesting(),
-      std::make_unique<ResourceLoadInfoNotifierWrapper>(
-          /*resource_load_info_notifier=*/nullptr),
-      /*is_main_frame=*/true, &navigation_params);
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*render_frame_impl=*/nullptr, /*is_main_frame=*/true,
+      &navigation_params);
   EXPECT_TRUE(
       navigation_params.response.SecurityDetailsForTesting().has_value());
 }
 
 }  // namespace
 
-}  // namespace blink
+}  // namespace content
