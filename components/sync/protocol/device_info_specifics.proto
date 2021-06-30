@@ -32,6 +32,7 @@ message DeviceInfoSpecifics {
   optional SyncEnums.DeviceType device_type = 3;
 
   // The UserAgent used when contacting the Chrome Sync server.
+  // Only present when talking to the HTTP server.
   optional string sync_user_agent = 4;
 
   // The Chrome instance's version.  Updated (if necessary) on every startup.
@@ -44,7 +45,7 @@ message DeviceInfoSpecifics {
   optional int64 deprecated_backup_timestamp = 6 [deprecated = true];
 
   // Device_id that is stable until user signs out. This device_id is used for
-  // annotating login scoped refresh token.
+  // annotating login scoped refresh token. Present only for Chrome Clients.
   optional string signin_scoped_device_id = 7;
 
   // This field is updated to be the current time periodically, and is also set
