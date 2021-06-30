@@ -633,11 +633,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationEventArriveFirst) {
   arc_notification_surface_manager_->AddSurface(&test_surface);
 
   // Confirm that axtree id is set to the surface.
-  auto treeKey =
-      ArcAccessibilityTreeTracker::KeyForNotification(kNotificationKey);
-  auto it = key_to_tree_.find(treeKey);
-  EXPECT_NE(key_to_tree_.end(), it);
-  AXTreeSourceArc* tree = it->second.get();
+  AXTreeSourceArc* tree = key_to_tree_.begin()->second.get();
   ui::AXTreeData tree_data;
   tree->GetTreeData(&tree_data);
   EXPECT_EQ(tree_data.tree_id, test_surface.GetAXTreeId());
@@ -670,9 +666,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationEventArriveFirst) {
 
   // Ax tree from the second event is attached to the first surface. This is
   // expected behavior.
-  auto it2 = key_to_tree_.find(treeKey);
-  EXPECT_NE(key_to_tree_.end(), it2);
-  AXTreeSourceArc* tree2 = it2->second.get();
+  AXTreeSourceArc* tree2 = key_to_tree_.begin()->second.get();
   ui::AXTreeData tree_data2;
   tree2->GetTreeData(&tree_data2);
   EXPECT_EQ(tree_data2.tree_id, test_surface.GetAXTreeId());

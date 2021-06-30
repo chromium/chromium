@@ -21,6 +21,10 @@ class Window;
 class WindowTracker;
 }  // namespace aura
 
+namespace ash {
+class ArcNotificationSurface;
+}
+
 namespace arc {
 
 class ArcAccessibilityHelperBridge;
@@ -38,14 +42,11 @@ class ArcAccessibilityTreeTracker {
   using TreeKey = std::tuple<TreeKeyType, int32_t, std::string>;
   using TreeMap = std::map<TreeKey, std::unique_ptr<AXTreeSourceArc>>;
 
-  static TreeKey KeyForInputMethod();
-  static TreeKey KeyForNotification(std::string notification_key);
-  static TreeKey KeyForTaskId(int32_t value);
-
   ArcAccessibilityTreeTracker(ArcAccessibilityHelperBridge* owner,
                               Profile* const profile,
                               const AccessibilityHelperInstanceRemoteProxy&
-                                  accessibility_helper_instance);
+                                  accessibility_helper_instance,
+                              ArcBridgeService* const arc_bridge_service);
   ~ArcAccessibilityTreeTracker();
 
   ArcAccessibilityTreeTracker(ArcAccessibilityTreeTracker&&) = delete;
@@ -70,6 +71,14 @@ class ArcAccessibilityTreeTracker {
   AXTreeSourceArc* OnAccessibilityEvent(
       const mojom::AccessibilityEventData* const event_data);
 
+  void OnNotificationSurfaceAdded(ash::ArcNotificationSurface* surface);
+
+  void OnNotificationStateChanged(
+      const std::string& notification_key,
+      const arc::mojom::AccessibilityNotificationStateType& state);
+
+  void OnAndroidVirtualKeyboardVisibilityChanged(bool visible);
+
   // To be called via mojo from Android.
   void OnToggleNativeChromeVoxArcSupport(bool enabled);
 
@@ -82,13 +91,8 @@ class ArcAccessibilityTreeTracker {
       bool enabled,
       bool processed);
 
-  bool Erase(const TreeKey& key);
-
   // Returns a tree source for the specified AXTreeID.
   AXTreeSourceArc* GetFromTreeId(ui::AXTreeID tree_id) const;
-
-  AXTreeSourceArc* GetFromKey(const TreeKey&);
-  AXTreeSourceArc* CreateFromKey(TreeKey, AXTreeSourceArc::Delegate*);
 
   const TreeMap& trees_for_test() const { return trees_; }
 
@@ -96,6 +100,12 @@ class ArcAccessibilityTreeTracker {
   class FocusChangeObserver;
   class WindowObserver;
   class AppListPrefsObserver;
+  class ArcInputMethodManagerServiceObserver;
+  class MojoConnectionObserver;
+  class ArcNotificationSurfaceManagerObserver;
+
+  AXTreeSourceArc* GetFromKey(const TreeKey&);
+  AXTreeSourceArc* CreateFromKey(TreeKey, AXTreeSourceArc::Delegate*);
 
   // Update |window_id_to_task_id_| with a given window if necessary.
   void UpdateWindowIdMapping(aura::Window* window);
@@ -110,6 +120,11 @@ class ArcAccessibilityTreeTracker {
   std::unique_ptr<FocusChangeObserver> focus_change_observer_;
   std::unique_ptr<WindowObserver> window_observer_;
   std::unique_ptr<AppListPrefsObserver> app_list_prefs_observer_;
+  std::unique_ptr<ArcInputMethodManagerServiceObserver>
+      input_manager_service_observer_;
+  std::unique_ptr<MojoConnectionObserver> connection_observer_;
+  std::unique_ptr<ArcNotificationSurfaceManagerObserver>
+      notification_surface_observer_;
 
   std::map<int32_t, int32_t> window_id_to_task_id_;
 

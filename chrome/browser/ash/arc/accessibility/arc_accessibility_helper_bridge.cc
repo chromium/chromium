@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/geometry_util.h"
+#include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
@@ -51,8 +52,6 @@ namespace {
 
 using ::ash::AccessibilityManager;
 using ::ash::AccessibilityNotificationType;
-using ::ash::ArcNotificationSurface;
-using ::ash::ArcNotificationSurfaceManager;
 using ::ash::MagnificationManager;
 
 // ClassName for toast from ARC++ R onwards.
@@ -231,7 +230,10 @@ ArcAccessibilityHelperBridge::ArcAccessibilityHelperBridge(
     : profile_(Profile::FromBrowserContext(browser_context)),
       arc_bridge_service_(arc_bridge_service),
       accessibility_helper_instance_(arc_bridge_service_),
-      tree_tracker_(this, profile_, accessibility_helper_instance_) {
+      tree_tracker_(this,
+                    profile_,
+                    accessibility_helper_instance_,
+                    arc_bridge_service_) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(
       Profile::FromBrowserContext(browser_context)->GetPrefs());
@@ -245,11 +247,6 @@ ArcAccessibilityHelperBridge::ArcAccessibilityHelperBridge(
 
   arc_bridge_service_->accessibility_helper()->SetHost(this);
   arc_bridge_service_->accessibility_helper()->AddObserver(this);
-
-  auto* arc_ime_service =
-      ArcInputMethodManagerService::GetForBrowserContext(browser_context);
-  if (arc_ime_service)
-    arc_ime_service->AddObserver(this);
 }
 
 ArcAccessibilityHelperBridge::~ArcAccessibilityHelperBridge() = default;
@@ -266,11 +263,6 @@ bool ArcAccessibilityHelperBridge::RefreshTreeIfInActiveWindow(
 void ArcAccessibilityHelperBridge::Shutdown() {
   // We do not unregister ourselves from WMHelper as an ActivationObserver
   // because it is always null at this point during teardown.
-
-  auto* arc_ime_service =
-      ArcInputMethodManagerService::GetForBrowserContext(profile_);
-  if (arc_ime_service)
-    arc_ime_service->RemoveObserver(this);
 
   arc_bridge_service_->accessibility_helper()->RemoveObserver(this);
   arc_bridge_service_->accessibility_helper()->SetHost(nullptr);
@@ -291,16 +283,6 @@ void ArcAccessibilityHelperBridge::OnConnectionReady() {
     accessibility_helper_instance_.SetExploreByTouchEnabled(
         accessibility_manager->IsSpokenFeedbackEnabled());
   }
-
-  auto* surface_manager = ArcNotificationSurfaceManager::Get();
-  if (surface_manager)
-    surface_manager->AddObserver(this);
-}
-
-void ArcAccessibilityHelperBridge::OnConnectionClosed() {
-  auto* surface_manager = ArcNotificationSurfaceManager::Get();
-  if (surface_manager)
-    surface_manager->RemoveObserver(this);
 }
 
 void ArcAccessibilityHelperBridge::OnAccessibilityEvent(
@@ -321,24 +303,8 @@ void ArcAccessibilityHelperBridge::OnAccessibilityEvent(
 void ArcAccessibilityHelperBridge::OnNotificationStateChanged(
     const std::string& notification_key,
     arc::mojom::AccessibilityNotificationStateType state) {
-  auto key = ArcAccessibilityTreeTracker::KeyForNotification(notification_key);
-  switch (state) {
-    case arc::mojom::AccessibilityNotificationStateType::SURFACE_CREATED: {
-      AXTreeSourceArc* tree_source = tree_tracker_.GetFromKey(key);
-      if (tree_source)
-        return;
-
-      tree_source = tree_tracker_.CreateFromKey(std::move(key), this);
-      UpdateTreeIdOfNotificationSurface(notification_key,
-                                        tree_source->ax_tree_id());
-      break;
-    }
-    case arc::mojom::AccessibilityNotificationStateType::SURFACE_REMOVED:
-      tree_tracker_.Erase(key);
-      UpdateTreeIdOfNotificationSurface(notification_key,
-                                        ui::AXTreeIDUnknown());
-      break;
-  }
+  tree_tracker_.OnNotificationStateChanged(std::move(notification_key),
+                                           std::move(state));
 }
 
 void ArcAccessibilityHelperBridge::OnToggleNativeChromeVoxArcSupport(
@@ -408,34 +374,9 @@ void ArcAccessibilityHelperBridge::OnTaskDestroyed(int32_t task_id) {
   tree_tracker_.OnTaskDestroyed(task_id);
 }
 
-void ArcAccessibilityHelperBridge::OnAndroidVirtualKeyboardVisibilityChanged(
-    bool visible) {
-  if (!visible)
-    tree_tracker_.Erase(ArcAccessibilityTreeTracker::KeyForInputMethod());
-}
-
 void ArcAccessibilityHelperBridge::OnNotificationSurfaceAdded(
-    ArcNotificationSurface* surface) {
-  const std::string& notification_key = surface->GetNotificationKey();
-
-  auto* const tree = tree_tracker_.GetFromKey(
-      ArcAccessibilityTreeTracker::KeyForNotification(notification_key));
-  if (!tree)
-    return;
-
-  surface->SetAXTreeId(tree->ax_tree_id());
-
-  // Dispatch ax::mojom::Event::kChildrenChanged to force AXNodeData of the
-  // notification updated. As order of OnNotificationSurfaceAdded call is not
-  // guaranteed, we are dispatching the event in both
-  // ArcAccessibilityHelperBridge and ArcNotificationContentView. The event
-  // needs to be dispatched after:
-  // 1. ax_tree_id is set to the surface
-  // 2. the surface is attached to the content view
-  if (surface->IsAttached()) {
-    surface->GetAttachedHost()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kChildrenChanged, false);
-  }
+    ash::ArcNotificationSurface* surface) {
+  tree_tracker_.OnNotificationSurfaceAdded(surface);
 }
 
 void ArcAccessibilityHelperBridge::OnWindowFocused(aura::Window* gained_focus,
@@ -580,28 +521,6 @@ void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
   tree_tracker_.OnEnabledFeatureChanged(filter_type_);
 }
 
-void ArcAccessibilityHelperBridge::UpdateTreeIdOfNotificationSurface(
-    const std::string& notification_key,
-    ui::AXTreeID tree_id) {
-  auto* surface_manager = ArcNotificationSurfaceManager::Get();
-  if (!surface_manager)
-    return;
-
-  ArcNotificationSurface* surface =
-      surface_manager->GetArcSurface(notification_key);
-  if (!surface)
-    return;
-
-  surface->SetAXTreeId(tree_id);
-
-  if (surface->IsAttached()) {
-    // Dispatch ax::mojom::Event::kChildrenChanged to force AXNodeData of the
-    // notification updated.
-    surface->GetAttachedHost()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kChildrenChanged, false);
-  }
-}
-
 void ArcAccessibilityHelperBridge::HandleFilterTypeFocusEvent(
     mojom::AccessibilityEventDataPtr event_data) {
   if (event_data.get()->node_data.size() == 1 &&
@@ -635,9 +554,9 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
     // means that user is trying to type a text in Android notification.
     // Dispatch text selection changed event to notification content view
     // as the view can take necessary actions, e.g. activate itself, etc.
-    auto* surface_manager = ArcNotificationSurfaceManager::Get();
+    auto* surface_manager = ash::ArcNotificationSurfaceManager::Get();
     if (surface_manager) {
-      ArcNotificationSurface* surface =
+      ash::ArcNotificationSurface* surface =
           surface_manager->GetArcSurface(event_data->notification_key.value());
       if (surface) {
         surface->GetAttachedHost()->NotifyAccessibilityEvent(

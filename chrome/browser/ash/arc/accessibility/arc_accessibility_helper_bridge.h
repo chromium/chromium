@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
-#include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -49,7 +48,6 @@ class ArcAccessibilityHelperBridge
       public mojom::AccessibilityHelperHost,
       public ConnectionObserver<mojom::AccessibilityHelperInstance>,
       public AXTreeSourceArc::Delegate,
-      public arc::ArcInputMethodManagerService::Observer,
       public ash::ArcNotificationSurfaceManager::Observer {
  public:
   // Builds the ArcAccessibilityHelperBridgeFactory.
@@ -76,7 +74,6 @@ class ArcAccessibilityHelperBridge
 
   // ConnectionObserver<mojom::AccessibilityHelperInstance> overrides.
   void OnConnectionReady() override;
-  void OnConnectionClosed() override;
 
   // mojom::AccessibilityHelperHost overrides.
   void OnAccessibilityEvent(
@@ -94,10 +91,9 @@ class ArcAccessibilityHelperBridge
   // This exists only to do refactoring without large test change.
   void OnTaskDestroyed(int32_t task_id);
 
-  // ArcInputMethodManagerService::Observer overrides.
-  void OnAndroidVirtualKeyboardVisibilityChanged(bool visible) override;
-
   // ArcNotificationSurfaceManager::Observer overrides.
+  // TODO(hirokisato): Remove this method once refactoring finishes.
+  // This exists only to do refactoring without large test change.
   void OnNotificationSurfaceAdded(
       ash::ArcNotificationSurface* surface) override;
   void OnNotificationSurfaceRemoved(
@@ -138,8 +134,6 @@ class ArcAccessibilityHelperBridge
   void OnAccessibilityStatusChanged(
       const ash::AccessibilityStatusEventDetails& event_details);
   void UpdateEnabledFeature();
-  void UpdateTreeIdOfNotificationSurface(const std::string& notification_key,
-                                         ui::AXTreeID tree_id);
   void HandleFilterTypeFocusEvent(mojom::AccessibilityEventDataPtr event_data);
   void HandleFilterTypeAllEvent(mojom::AccessibilityEventDataPtr event_data);
 
