@@ -11493,13 +11493,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_SIDE_PANEL_EXPERIMENT_DESCRIPTION" desc="Description for Side Panel experiment">
       Enables a browser-level side panel for a useful and persistent way to access your Reading List and Bookmarks.
     </message>
-    <!-- ChromeLabs Read Later-->
-    <message name="IDS_READ_LATER_EXPERIMENT_NAME" desc="Name for Read Later experiment">
-      Reading List
-    </message>
-    <message name="IDS_READ_LATER_EXPERIMENT_DESCRIPTION" desc="Description for Read Later experiment">
-      Right click on a tab or click the Bookmark icon to add tabs to a reading list. Access from the Bookmarks bar.
-    </message>
     <!-- ChromeLabs Tab Scrolling-->
     <message name="IDS_TAB_SCROLLING_EXPERIMENT_NAME" desc="Name for Tab Scrolling experiment">
       Tab Scrolling

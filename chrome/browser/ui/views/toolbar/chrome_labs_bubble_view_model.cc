@@ -42,13 +42,6 @@ const std::vector<LabInfo>& GetData() {
         l10n_util::GetStringUTF16(IDS_SIDE_PANEL_EXPERIMENT_DESCRIPTION),
         "chrome-labs-side-panel", version_info::Channel::DEV));
 
-    // Read Later.
-    lab_info.emplace_back(LabInfo(
-        flag_descriptions::kReadLaterFlagId,
-        l10n_util::GetStringUTF16(IDS_READ_LATER_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_READ_LATER_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-read-later", version_info::Channel::BETA));
-
     // Tab Scrolling.
     std::vector<std::u16string> tab_scrolling_variation_descriptions = {
         l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH),

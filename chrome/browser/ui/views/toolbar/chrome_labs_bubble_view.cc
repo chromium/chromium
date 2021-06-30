@@ -48,7 +48,8 @@ namespace {
 // numeric values should never be reused.
 enum class ChromeLabsSelectedLab {
   kUnspecifiedSelected = 0,
-  kReadLaterSelected = 1,
+  // kReadLaterSelected = 1,
+  // kTabSearchSelected = 2,
   kTabScrollingSelected = 3,
   kSidePanelSelected = 4,
   kMaxValue = kSidePanelSelected,
@@ -74,9 +75,7 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
   };
 
   const auto get_enum = [](const std::string& internal_name) {
-    if (internal_name == flag_descriptions::kReadLaterFlagId) {
-      return ChromeLabsSelectedLab::kReadLaterSelected;
-    } else if (internal_name == flag_descriptions::kScrollableTabStripFlagId) {
+    if (internal_name == flag_descriptions::kScrollableTabStripFlagId) {
       return ChromeLabsSelectedLab::kTabScrollingSelected;
     } else if (internal_name == flag_descriptions::kSidePanelFlagId) {
       return ChromeLabsSelectedLab::kSidePanelSelected;
