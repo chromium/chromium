@@ -6,8 +6,6 @@ component("cpp") {
   output_name = "storage_service_public"
 
   public = [
-    "bucket_id.h",
-    "bucket_info.h",
     "constants.h",
     "quota_client_callback_wrapper.h",
     "quota_error_or.h",
@@ -15,13 +13,13 @@ component("cpp") {
   ]
 
   sources = [
-    "bucket_info.cc",
     "constants.cc",
     "quota_client_callback_wrapper.cc",
   ]
 
   public_deps = [
     "//base",
+    "//components/services/storage/public/cpp/buckets",
     "//components/services/storage/public/cpp/filesystem",
     "//components/services/storage/public/mojom",
   ]

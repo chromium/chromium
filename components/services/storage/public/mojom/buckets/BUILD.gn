@@ -1,0 +1,26 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("buckets") {
+  sources = [ "bucket_id.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "storage.mojom.BucketId"
+          cpp = "::storage::BucketId"
+          nullable_is_same_type = true
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "bucket_id_mojom_traits.h" ]
+      traits_sources = [ "bucket_id_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//components/services/storage/public/cpp/buckets" ]
+    },
+  ]
+}

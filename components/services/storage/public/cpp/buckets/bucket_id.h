@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKET_ID_H_
-#define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKET_ID_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKETS_BUCKET_ID_H_
+#define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKETS_BUCKET_ID_H_
+
+#include "base/util/type_safety/id_type.h"
 
 namespace storage {
 
@@ -13,4 +15,4 @@ using BucketId = util::IdType64<class BucketTag>;
 
 }  // namespace storage
 
-#endif  // COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKET_ID_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKETS_BUCKET_ID_H_

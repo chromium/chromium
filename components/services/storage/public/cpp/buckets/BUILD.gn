@@ -1,0 +1,18 @@
+component("buckets") {
+  output_name = "storage_service_buckets_support"
+
+  public = [
+    "bucket_id.h",
+    "bucket_info.h",
+  ]
+
+  sources = [ "bucket_info.cc" ]
+
+  public_deps = [
+    "//base",
+    "//base/util/type_safety",
+    "//third_party/blink/public/common",
+  ]
+
+  defines = [ "IS_STORAGE_SERVICE_BUCKETS_SUPPORT_IMPL" ]
+}
