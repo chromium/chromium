@@ -34,6 +34,10 @@
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace network {
 namespace mojom {
 
@@ -165,7 +169,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void BindCacheStorage(
       const network::CrossOriginEmbedderPolicy&,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void BindFileSystemManager(
       const url::Origin& origin,

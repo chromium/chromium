@@ -61,6 +61,10 @@ class TimeDelta;
 class Token;
 }
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace network {
 struct CrossOriginEmbedderPolicy;
 }
@@ -474,7 +478,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) = 0;
   virtual void BindFileSystemManager(
       const url::Origin& origin,

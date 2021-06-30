@@ -542,9 +542,9 @@ void DedicatedWorkerHost::BindCacheStorage(
     GetWorkerCoepReporter()->Clone(
         coep_reporter.InitWithNewPipeAndPassReceiver());
   }
-  worker_process_host_->BindCacheStorage(
-      cross_origin_embedder_policy(), std::move(coep_reporter),
-      GetStorageKey().origin(), std::move(receiver));
+  worker_process_host_->BindCacheStorage(cross_origin_embedder_policy(),
+                                         std::move(coep_reporter),
+                                         GetStorageKey(), std::move(receiver));
 }
 
 void DedicatedWorkerHost::CreateNestedDedicatedWorker(

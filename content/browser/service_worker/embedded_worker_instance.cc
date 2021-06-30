@@ -1140,7 +1140,7 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
       return;
 
     rph->BindCacheStorage(coep, std::move(coep_reporter_remote),
-                          owner_version_->key().origin(), std::move(receiver));
+                          owner_version_->key(), std::move(receiver));
   }
   pending_cache_storage_receivers_.clear();
 }

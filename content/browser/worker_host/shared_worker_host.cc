@@ -432,10 +432,9 @@ void SharedWorkerHost::BindCacheStorage(
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
 
-  const url::Origin origin = url::Origin::Create(instance().url());
-  GetProcessHost()->BindCacheStorage(cross_origin_embedder_policy(),
-                                     std::move(coep_reporter), origin,
-                                     std::move(receiver));
+  GetProcessHost()->BindCacheStorage(
+      cross_origin_embedder_policy(), std::move(coep_reporter),
+      instance().storage_key(), std::move(receiver));
 }
 
 void SharedWorkerHost::CreateCodeCacheHost(

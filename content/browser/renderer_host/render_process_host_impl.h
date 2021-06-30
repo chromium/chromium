@@ -117,6 +117,10 @@ namespace viz {
 class GpuClient;
 }
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 class AgentSchedulingGroupHost;
 class CodeCacheHostImpl;
@@ -268,7 +272,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void BindIndexedDB(
       const url::Origin& origin,

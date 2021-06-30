@@ -8905,8 +8905,8 @@ void RenderFrameHostImpl::BindCacheStorage(
         coep_reporter_remote.InitWithNewPipeAndPassReceiver());
   }
   GetProcess()->BindCacheStorage(cross_origin_embedder_policy_,
-                                 std::move(coep_reporter_remote),
-                                 GetLastCommittedOrigin(), std::move(receiver));
+                                 std::move(coep_reporter_remote), storage_key(),
+                                 std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindInputInjectorReceiver(

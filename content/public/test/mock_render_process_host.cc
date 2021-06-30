@@ -448,7 +448,7 @@ bool MockRenderProcessHost::IsProcessLockedToSiteForTesting() {
 void MockRenderProcessHost::BindCacheStorage(
     const network::CrossOriginEmbedderPolicy&,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   cache_storage_receiver_ = std::move(receiver);
 }
