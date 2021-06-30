@@ -1974,6 +1974,16 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
                                      recursion_data.location.TransformedRect(),
                                      FloatQuad(FloatRect(recursion_data.rect)));
 
+  if (container_transform_state &&
+      RuntimeEnabledFeatures::TransformInteropEnabled() &&
+      &container_layer->GetLayoutObject() !=
+          GetLayoutObject().NearestAncestorForElement()) {
+    // Our parent *layer* is preserve-3d, but that preserve-3d doesn't
+    // apply to this layer because our element is not a child of our
+    // parent layer's element.
+    transform_state.Flatten();
+  }
+
   PhysicalOffset offset;
   if (container_transform_state)
     ConvertToLayerCoords(container_layer, offset);
