@@ -806,8 +806,14 @@ class ProfileBrowserTestWithoutDestroyProfile : public ProfileBrowserTest {
 
 // Verifies destroying regular profile will result in destruction of OTR
 // profiles.
+// TODO(crbug.com/1225252): Flakily fails on ASAN/LSAN builds
+#if defined(ADDRESS_SANITIZER)
+#define Maybe_DestroyRegularProfileBeforeOTRs DISABLE_DestroyRegularProfileBeforeOTRs
+#else
+#define Maybe_DestroyRegularProfileBeforeOTRs DestroyRegularProfileBeforeOTRs
+#endif
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
-                       DestroyRegularProfileBeforeOTRs) {
+                       Maybe_DestroyRegularProfileBeforeOTRs) {
   auto otr_profile_id1 = Profile::OTRProfileID::CreateUniqueForTesting();
   auto otr_profile_id2 = Profile::OTRProfileID::CreateUniqueForTesting();
 
