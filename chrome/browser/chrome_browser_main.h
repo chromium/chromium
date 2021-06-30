@@ -43,6 +43,8 @@ class TraceEventSystemStatsMonitor;
 
 class ChromeBrowserMainParts : public content::BrowserMainParts {
  public:
+  ChromeBrowserMainParts(const ChromeBrowserMainParts&) = delete;
+  ChromeBrowserMainParts& operator=(const ChromeBrowserMainParts&) = delete;
   ~ChromeBrowserMainParts() override;
 
   // Add additional ChromeBrowserMainExtraParts.
@@ -199,8 +201,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   base::FilePath user_data_dir_;
 
   StartupData* startup_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainParts);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_H_

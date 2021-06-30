@@ -345,9 +345,9 @@ void HandleTestParameters(const base::CommandLine& command_line) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 void AddFirstRunNewTabs(StartupBrowserCreator* browser_creator,
                         const std::vector<GURL>& new_tabs) {
-  for (auto it = new_tabs.begin(); it != new_tabs.end(); ++it) {
-    if (it->is_valid())
-      browser_creator->AddFirstRunTab(*it);
+  for (const auto& new_tab : new_tabs) {
+    if (new_tab.is_valid())
+      browser_creator->AddFirstRunTab(new_tab);
   }
 }
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -680,8 +680,8 @@ DLLEXPORT void __cdecl RelaunchChromeBrowserWithNewCommandLineIfNeeded() {
 
 int ChromeBrowserMainParts::PreEarlyInitialization() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreEarlyInitialization");
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PreEarlyInitialization();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PreEarlyInitialization();
 
   // Create BrowserProcess in PreEarlyInitialization() so that we can load
   // field trials (and all it depends upon).
@@ -715,21 +715,21 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
 
 void ChromeBrowserMainParts::PostEarlyInitialization() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostEarlyInitialization");
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PostEarlyInitialization();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PostEarlyInitialization();
 }
 
 void ChromeBrowserMainParts::ToolkitInitialized() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::ToolkitInitialized");
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->ToolkitInitialized();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->ToolkitInitialized();
 }
 
 void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateMainMessageLoop");
 
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PreCreateMainMessageLoop();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PreCreateMainMessageLoop();
 }
 
 void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
@@ -754,8 +754,8 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
   if (!device_event_log::IsInitialized())
     device_event_log::Initialize(0 /* default max entries */);
 
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PostCreateMainMessageLoop();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PostCreateMainMessageLoop();
 }
 
 int ChromeBrowserMainParts::PreCreateThreads() {
@@ -776,8 +776,8 @@ int ChromeBrowserMainParts::PreCreateThreads() {
     DCHECK(master_prefs_.get());
 #endif
 
-    for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-      chrome_extra_parts_[i]->PreCreateThreads();
+    for (auto& chrome_extra_part : chrome_extra_parts_)
+      chrome_extra_part->PreCreateThreads();
   }
 
   // Create an instance of GpuModeManager to watch gpu mode pref change.
@@ -1044,8 +1044,8 @@ void ChromeBrowserMainParts::PostCreateThreads() {
 
   tracing::SetupBackgroundTracingFieldTrial();
 
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PostCreateThreads();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PostCreateThreads();
 }
 
 int ChromeBrowserMainParts::PreMainMessageLoopRun() {
@@ -1053,8 +1053,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRun() {
 
   result_code_ = PreMainMessageLoopRunImpl();
 
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PreMainMessageLoopRun();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PreMainMessageLoopRun();
 
   return result_code_;
 }
@@ -1076,8 +1076,8 @@ void ChromeBrowserMainParts::PreProfileInit() {
   media::AudioManager::SetGlobalAppName(
       l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PreProfileInit();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PreProfileInit();
 
 #if !defined(OS_ANDROID)
   // Ephemeral profiles may have been left behind if the browser crashed.
@@ -1108,14 +1108,14 @@ void ChromeBrowserMainParts::PostProfileInit() {
   if (parsed_command_line().HasSwitch(::switches::kAutoOpenDevToolsForTabs))
     g_browser_process->CreateDevToolsAutoOpener();
 
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PostProfileInit();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PostProfileInit();
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreBrowserStart");
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PreBrowserStart();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PreBrowserStart();
 
 #if !defined(OS_ANDROID)
   // Start the tab manager here so that we give the most amount of time for the
@@ -1134,8 +1134,8 @@ void ChromeBrowserMainParts::PreBrowserStart() {
 
 void ChromeBrowserMainParts::PostBrowserStart() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostBrowserStart");
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PostBrowserStart();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PostBrowserStart();
 #if !defined(OS_ANDROID)
   // Allow ProcessSingleton to process messages.
   process_singleton_->Unlock();
@@ -1809,8 +1809,8 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 
   web_usb_detector_.reset();
 
-  for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PostMainMessageLoopRun();
+  for (auto& chrome_extra_part : chrome_extra_parts_)
+    chrome_extra_part->PostMainMessageLoopRun();
 
   // Some tests don't set parameters.ui_task, so they started translate
   // language fetch that was never completed so we need to cleanup here
