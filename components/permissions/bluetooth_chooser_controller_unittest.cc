@@ -30,6 +30,8 @@ class TestBluetoothChooserController : public BluetoothChooserController {
   void OpenHelpCenterUrl() const override {}
 };
 
+using testing::NiceMock;
+
 class BluetoothChooserControllerTest : public testing::Test {
  public:
   BluetoothChooserControllerTest()
@@ -55,7 +57,7 @@ class BluetoothChooserControllerTest : public testing::Test {
   }
 
   TestBluetoothChooserController bluetooth_chooser_controller_;
-  MockChooserControllerView mock_bluetooth_chooser_view_;
+  NiceMock<MockChooserControllerView> mock_bluetooth_chooser_view_;
   content::BluetoothChooserEvent last_event_;
   std::string last_device_id_;
 };

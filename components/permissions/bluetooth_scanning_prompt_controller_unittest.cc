@@ -12,6 +12,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using testing::NiceMock;
+
 namespace permissions {
 
 class BluetoothScanningPromptControllerTest : public testing::Test {
@@ -39,7 +41,7 @@ class BluetoothScanningPromptControllerTest : public testing::Test {
   }
 
   BluetoothScanningPromptController bluetooth_scanning_prompt_controller_;
-  MockChooserControllerView mock_bluetooth_scanning_prompt_view_;
+  NiceMock<MockChooserControllerView> mock_bluetooth_scanning_prompt_view_;
   content::BluetoothScanningPrompt::Event last_event_;
 };
 
