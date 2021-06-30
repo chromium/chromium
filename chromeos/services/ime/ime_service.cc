@@ -22,6 +22,7 @@
 #include "chromeos/services/ime/decoder/system_engine.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
 #include "chromeos/services/ime/rule_based_engine.h"
+#include "mojo/public/c/system/thunks.h"
 
 namespace chromeos {
 namespace ime {
@@ -222,6 +223,10 @@ void ImeService::SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
     callback(SIMPLE_DOWNLOAD_ERROR_OK, url_str.c_str(),
              ResolveDownloadPath(file).c_str());
   }
+}
+
+const MojoSystemThunks* ImeService::GetMojoSystemThunks() {
+  return MojoEmbedderGetSystemThunks();
 }
 
 ImeCrosDownloader* ImeService::GetDownloader() {

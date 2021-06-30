@@ -236,6 +236,8 @@ struct MojoSystemThunks {
 };
 #pragma pack(pop)
 
+MOJO_SYSTEM_EXPORT const struct MojoSystemThunks* MojoEmbedderGetSystemThunks();
+
 // A function for setting up the embedder's own system thunks. This should only
 // be called by Mojo embedder code.
 MOJO_SYSTEM_EXPORT void MojoEmbedderSetSystemThunks(

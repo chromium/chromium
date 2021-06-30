@@ -56,6 +56,12 @@
 //
 // And it's important to keep any unnecessary information out of this header.
 
+// Forward declare MojoSystemThunks to keep this file free of direct
+// dependencies on Chromium, making it easier to use this file outside of the
+// Chromium repo. When using this file, consumers should also #include their own
+// copy of the MojoSystemThunks struct definition.
+struct MojoSystemThunks;
+
 namespace chromeos {
 namespace ime {
 
@@ -189,6 +195,13 @@ class ImeCrosPlatform {
   virtual int SimpleDownloadToFileV2(const char* url,
                                      const char* file_path,
                                      SimpleDownloadCallbackV2 callback) = 0;
+
+  // Returns a pointer to the Mojo system thunks.
+  // The shared library can use this pointer for its own Mojo environment in
+  // order to communicate directly with the browser process.
+  // MojoSystemThunks has a stable ABI, hence it is safe to use it from the
+  // shared library
+  virtual const MojoSystemThunks* GetMojoSystemThunks() = 0;
 
   // TODO(https://crbug.com/837156): Provide Logger for main entry.
 };

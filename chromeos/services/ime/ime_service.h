@@ -74,6 +74,7 @@ class ImeService : public mojom::ImeService,
   void SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
                                 const std::string& url_str,
                                 const base::FilePath& file);
+  const MojoSystemThunks* GetMojoSystemThunks() override;
 
   mojo::Receiver<mojom::ImeService> receiver_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

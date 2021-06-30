@@ -490,6 +490,10 @@ MojoResult MojoSetDefaultProcessErrorHandler(
 
 }  // extern "C"
 
+const MojoSystemThunks* MojoEmbedderGetSystemThunks() {
+  return &g_thunks;
+}
+
 void MojoEmbedderSetSystemThunks(const MojoSystemThunks* thunks) {
   // Assume embedders will always use matching versions of the Mojo Core and
   // public APIs.
