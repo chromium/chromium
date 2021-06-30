@@ -5563,7 +5563,14 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
 
 // Test that the rendering timeout for newly loaded content fires when enough
 // time passes without receiving a new compositor frame.
-TEST_F(RenderWidgetHostViewAuraTest, NewContentRenderingTimeout) {
+// TODO(https://crbug.com/1225139): This test is flaky on "Linux ASan LSan Tests
+// (1)"
+#if defined(OS_LINUX)
+#define MAYBE_NewContentRenderingTimeout DISABLED_NewContentRenderingTimeout
+#else
+#define MAYBE_NewContentRenderingTimeout NewContentRenderingTimeout
+#endif
+TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
   constexpr base::TimeDelta kTimeout = base::TimeDelta::FromMicroseconds(10);
 
   InitViewForFrame(nullptr);
