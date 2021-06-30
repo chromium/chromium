@@ -94,9 +94,6 @@ const base::Feature kSettingsLandingPageRedesign{
     "SettingsLandingPageRedesign", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Hosts some content in a side panel. https://crbug.com/1149995
-const base::Feature kSidePanel{"SidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Updated managed profile sign-in popup. https://crbug.com/1141224
 const base::Feature kSyncConfirmationUpdatedText{
     "SyncConfirmationUpdatedText", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -81,7 +81,7 @@ StarView::StarView(CommandUpdater* command_updater,
   SetActive(false);
 }
 
-StarView::~StarView() {}
+StarView::~StarView() = default;
 
 void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
   View::AfterPropertyChange(key, old_value);
@@ -120,7 +120,7 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
 
 void StarView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
+  if (reading_list::switches::IsReadingListEnabled() &&
       !base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog)) {
     FeaturePromoController* feature_promo_controller =
         browser_->window()->GetFeaturePromoController();

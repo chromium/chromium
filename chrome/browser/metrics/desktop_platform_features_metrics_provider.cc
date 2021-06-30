@@ -40,9 +40,9 @@ bool AnyBrowserWindowHasName() {
 }  // namespace
 
 DesktopPlatformFeaturesMetricsProvider::
-    DesktopPlatformFeaturesMetricsProvider() {}
+    DesktopPlatformFeaturesMetricsProvider() = default;
 DesktopPlatformFeaturesMetricsProvider::
-    ~DesktopPlatformFeaturesMetricsProvider() {}
+    ~DesktopPlatformFeaturesMetricsProvider() = default;
 
 void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
@@ -55,7 +55,7 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
   UMA_HISTOGRAM_ENUMERATION("Browser.DarkModeStatus", status);
 
   // Record how many items are in the reading list.
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+  if (reading_list::switches::IsReadingListEnabled()) {
     std::vector<Profile*> profiles =
         g_browser_process->profile_manager()->GetLoadedProfiles();
     for (Profile* profile : profiles) {

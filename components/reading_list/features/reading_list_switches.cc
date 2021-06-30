@@ -5,8 +5,16 @@
 #include "components/reading_list/features/reading_list_switches.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/reading_list/features/reading_list_buildflags.h"
+
+#if !defined(OS_IOS)
+namespace features {
+// Hosts some content in a side panel. https://crbug.com/1149995
+const base::Feature kSidePanel{"SidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
+}  // namespace features
+#endif  // !defined(OS_IOS)
 
 namespace reading_list {
 namespace switches {
@@ -22,8 +30,11 @@ const base::Feature kReadLater{"ReadLater", base::FEATURE_ENABLED_BY_DEFAULT};
 bool IsReadingListEnabled() {
 #if defined(OS_IOS)
   return BUILDFLAG(ENABLE_READING_LIST);
-#else
+#elif defined(OS_ANDROID)
   return base::FeatureList::IsEnabled(kReadLater);
+#else
+  return base::FeatureList::IsEnabled(kReadLater) ||
+         base::FeatureList::IsEnabled(features::kSidePanel);
 #endif
 }
 

@@ -701,7 +701,7 @@ void PopulateChromeWebUIFrameBinders(
         task_module::mojom::TaskModuleHandler, NewTabPageUI>(map);
   }
 
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+  if (reading_list::switches::IsReadingListEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         read_later::mojom::PageHandlerFactory, ReadLaterUI>(map);
   }

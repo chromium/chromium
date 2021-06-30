@@ -408,7 +408,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   ProfileThemeUpdateServiceFactory::GetInstance();
 #endif
   ProtocolHandlerRegistryFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+  if (reading_list::switches::IsReadingListEnabled()) {
     ReadingListModelFactory::GetInstance();
 
 #if defined(OS_ANDROID)

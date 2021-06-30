@@ -64,6 +64,8 @@ extern const base::Feature kScrollableTabStripButtons;
 extern const base::Feature kSettingsLandingPageRedesign;
 #endif
 
+// TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
+// ui_features.cc. This is currently temporarily in reading_list_switches.h.
 extern const base::Feature kSidePanel;
 
 extern const base::Feature kSyncConfirmationUpdatedText;
