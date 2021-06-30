@@ -499,5 +499,49 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesThenHide) {
   EXPECT_GT(histogram->GetPercentDroppedFramePercentile(0.97), 0u);
 }
 
+// Tests that when ResetPendingFrames updates the sliding window, that the max
+// PercentDroppedFrames is also updated accordingly. (https://crbug.com/1225307)
+TEST_F(DroppedFrameCounterTest,
+       ResetPendingFramesUpdatesMaxPercentDroppedFrames) {
+  // This tests a scenario where gaps in frame production lead to having
+  // leftover frames in the sliding window for calculations of
+  // ResetPendingFrames.
+  //
+  // Testing for when those frames are sufficient to change the current maximum
+  // PercentDroppedFrames.
+  //
+  // This has been first seen in GpuCrash_InfoForDualHardwareGpus which forces
+  // a GPU crash. Introducing long periods of idle while the Renderer waits for
+  // a new GPU Process. (https://crbug.com/1164647)
+
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
+  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  SetInterval(kInterval);
+
+  // One good frame
+  SimulateFrameSequence({false}, 1);
+  // Advance 1s so that when we process the first window, we go from having
+  // enough frames in the interval, to no longer having enough.
+  AdvancetimeByIntervals(kFps);
+
+  // The first frame should fill up the sliding window. It isn't dropped, so
+  // there should be 0 dropped frames. This will pop the first reported frame.
+  // The second frame is dropped, however we are now tracking less frames than
+  // the 1s window. So we won't use it in calculations yet.
+  SimulateFrameSequence({false, true}, 1);
+  EXPECT_EQ(dropped_frame_counter_.sliding_window_max_percent_dropped(), 0u);
+
+  // Advance 1s so that we will attempt to update the window when resetting the
+  // pending frames. The pending dropped frame above should be calculated here,
+  // and both the max and 95th percentile should be updated.
+  AdvancetimeByIntervals(kFps);
+  dropped_frame_counter_.ResetPendingFrames(GetNextFrameTime());
+
+  EXPECT_EQ(dropped_frame_counter_.sliding_window_max_percent_dropped(),
+            dropped_frame_counter_.SlidingWindow95PercentilePercentDropped());
+  EXPECT_GT(dropped_frame_counter_.sliding_window_max_percent_dropped(), 0u);
+}
+
 }  // namespace
 }  // namespace cc

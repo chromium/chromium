@@ -119,6 +119,15 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
       double percent_dropped_frame = std::min(
           (dropped_frame_count_in_window_ * 100.0) / total_frames_in_window_,
           100.0);
+      // TODO(jonross): we have divergent calculations for the sliding window
+      // between here and NotifyFrameResult. We should merge them to avoid
+      // inconsistencies in calculations. (https://crbug.com/1225307)
+      if (percent_dropped_frame > sliding_window_max_percent_dropped_) {
+        time_max_delta_ = args.frame_time - time_fcp_received_;
+        sliding_window_max_percent_dropped_ = percent_dropped_frame;
+      }
+      UpdateMaxPercentDroppedFrame(percent_dropped_frame);
+
       sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame,
                                                        /*count=*/1);
     }
