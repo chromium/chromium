@@ -40,9 +40,7 @@ struct TileParameters {
 
 absl::optional<TileParameters> ComputeTileParameters(
     ENinePieceImageRule tile_rule,
-    float dst_pos,
     float dst_extent,
-    float src_pos,
     float src_extent,
     float in_scale_factor) {
   switch (tile_rule) {
@@ -50,14 +48,13 @@ absl::optional<TileParameters> ComputeTileParameters(
       float repetitions =
           std::max(1.0f, roundf(dst_extent / (src_extent * in_scale_factor)));
       float scale_factor = dst_extent / (src_extent * repetitions);
-      return TileParameters{scale_factor, src_pos * scale_factor, 0};
+      return TileParameters{scale_factor, 0, 0};
     }
     case kRepeatImageRule: {
       float scaled_tile_extent = src_extent * in_scale_factor;
       // We want to construct the phase such that the pattern is centered (when
       // stretch is not set for a particular rule).
-      float phase = src_pos * in_scale_factor;
-      phase -= (dst_extent - scaled_tile_extent) / 2;
+      float phase = (dst_extent - scaled_tile_extent) / 2;
       return TileParameters{in_scale_factor, phase, 0};
     }
     case kSpaceImageRule: {
@@ -65,10 +62,10 @@ absl::optional<TileParameters> ComputeTileParameters(
           CalculateSpaceNeeded(dst_extent, src_extent);
       if (!spacing)
         return absl::nullopt;
-      return TileParameters{1, src_pos - *spacing, *spacing};
+      return TileParameters{1, *spacing, *spacing};
     }
     case kStretchImageRule:
-      return TileParameters{in_scale_factor, src_pos * in_scale_factor, 0};
+      return TileParameters{in_scale_factor, 0, 0};
     default:
       NOTREACHED();
   }
@@ -130,12 +127,10 @@ void PaintPieces(GraphicsContext& context,
 
     // TODO(cavalcantii): see crbug.com/662513.
     absl::optional<TileParameters> h_tile = ComputeTileParameters(
-        draw_info.tile_rule.horizontal, draw_info.destination.X(),
-        draw_info.destination.Width(), draw_info.source.X(),
+        draw_info.tile_rule.horizontal, draw_info.destination.Width(),
         draw_info.source.Width(), draw_info.tile_scale.Width());
     absl::optional<TileParameters> v_tile = ComputeTileParameters(
-        draw_info.tile_rule.vertical, draw_info.destination.Y(),
-        draw_info.destination.Height(), draw_info.source.Y(),
+        draw_info.tile_rule.vertical, draw_info.destination.Height(),
         draw_info.source.Height(), draw_info.tile_scale.Height());
     if (!h_tile || !v_tile)
       continue;
@@ -149,8 +144,15 @@ void PaintPieces(GraphicsContext& context,
     ImageTilingInfo tiling_info;
     tiling_info.image_rect = draw_info.source;
     tiling_info.scale = FloatSize(h_tile->scale_factor, v_tile->scale_factor);
-    tiling_info.phase = draw_info.destination.Location() -
-                        FloatSize(h_tile->phase, v_tile->phase);
+    // The phase defines the origin of the whole image - not the image
+    // rect (see ImageTilingInfo) - so we need to adjust it to account
+    // for that.
+    FloatPoint tile_origin_in_dest_space = draw_info.source.Location();
+    tile_origin_in_dest_space.Scale(tiling_info.scale.Width(),
+                                    tiling_info.scale.Height());
+    tiling_info.phase =
+        draw_info.destination.Location() +
+        (FloatPoint(h_tile->phase, v_tile->phase) - tile_origin_in_dest_space);
     tiling_info.spacing = FloatSize(h_tile->spacing, v_tile->spacing);
 
     context.DrawImageTiled(image, draw_info.destination, tiling_info);
