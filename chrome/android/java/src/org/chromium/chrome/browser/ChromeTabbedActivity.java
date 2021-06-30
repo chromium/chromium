@@ -1319,9 +1319,22 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && (mIsAccessibilityTabSwitcherEnabled == null
                         || mIsAccessibilityTabSwitcherEnabled
                                 != DeviceClassManager.enableAccessibilityLayout())) {
-            mOverviewModeController.hideOverview(true);
-            if (getTabModelSelector().getCurrentModel().getCount() == 0) {
-                getCurrentTabCreator().launchNTP();
+            /**
+             * If Start surface homepage is showing and launching NTP will show the Start surface
+             * again, skips the calls of hideOverview() and launchNTP(). We need to check
+             * {@link ReturnToChromeExperimentsUtil#shouldShowStartSurfaceHomeAsNTP(Context,
+             * boolean, boolean)} to see whether Start surface can be shown when accessibility is
+             * enabled.
+             */
+            if (mStartSurfaceSupplier.get() == null
+                    || mStartSurfaceSupplier.get().getController().getStartSurfaceState()
+                            != StartSurfaceState.SHOWN_HOMEPAGE
+                    || !ReturnToChromeExperimentsUtil.shouldShowStartSurfaceHomeAsNTP(
+                            this, getCurrentTabModel().isIncognito(), isTablet())) {
+                mOverviewModeController.hideOverview(true);
+                if (getTabModelSelector().getCurrentModel().getCount() == 0) {
+                    getCurrentTabCreator().launchNTP();
+                }
             }
         }
         mIsAccessibilityTabSwitcherEnabled = accessibilityTabSwitcherEnabled;
