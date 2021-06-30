@@ -70,7 +70,7 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
 
   constexpr int kBorderThicknessDp = 1;
   const auto radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh);
+      views::Emphasis::kMedium);
   SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDp, radius,
                                            gfx::kPlaceholderColor));
   SetBackground(
@@ -93,8 +93,8 @@ void ResizeToggleMenu::MenuButtonView::SetSelected(bool is_selected) {
 void ResizeToggleMenu::MenuButtonView::Layout() {
   views::View::Layout();
 
-  constexpr int kIconSize = 24;
-  constexpr int kIconTopPadding = 17;
+  constexpr int kIconSize = 20;
+  constexpr int kIconTopPadding = 16;
 
   gfx::Rect content_bounds_with_padding = GetContentsBounds();
   content_bounds_with_padding.Inset(gfx::Insets(kIconTopPadding, 0));
@@ -118,16 +118,15 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   const auto* theme = GetNativeTheme();
 
   const auto foreground_color = theme->GetSystemColor(
-      is_selected_ ? ui::NativeTheme::kColorId_ProminentButtonColor
+      is_selected_ ? ui::NativeTheme::kColorId_TextOnProminentButtonColor
                    : ui::NativeTheme::kColorId_LabelEnabledColor);
   icon_view_->SetImage(gfx::CreateVectorIcon(icon_, foreground_color));
   title_->SetEnabledColor(foreground_color);
 
   const auto background_color =
-      is_selected_
-          ? theme->GetSystemColor(
-                ui::NativeTheme::kColorId_MenuItemTargetAlertBackgroundColor)
-          : SK_ColorTRANSPARENT;
+      is_selected_ ? theme->GetSystemColor(
+                         ui::NativeTheme::kColorId_ProminentButtonColor)
+                   : SK_ColorTRANSPARENT;
   background()->SetNativeControlColor(background_color);
 
   const auto border_color =
@@ -212,8 +211,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
   // Setup view.
   auto* const provider = views::LayoutProvider::Get();
   delegate_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      provider->GetInsetsMetric(views::INSETS_DIALOG),
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(16),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   const auto add_menu_button = [&delegate_view, &command_handler](

@@ -20,6 +20,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/rrect_f.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -153,18 +155,20 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(gfx::Insets(20, 24, 32, 24))
+      .SetInteriorMargin(gfx::Insets(20, 24, 24, 24))
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred,
                                    /*adjust_height_for_width=*/true));
 
-  constexpr int kLogoImageSize = 122;
+  constexpr gfx::Size kLogoImageSize(152, 126);
   AddChildView(
       views::Builder<views::ImageView>()  // Logo
-          .SetImage(gfx::CreateVectorIcon(kCompatModeSplashscreenIcon,
-                                          kLogoImageSize, background_color))
+          .SetImage(gfx::ImageSkiaOperations::ExtractSubset(
+              gfx::CreateVectorIcon(kCompatModeSplashscreenIcon,
+                                    kLogoImageSize.width(), background_color),
+              gfx::Rect(kLogoImageSize)))
           .Build());
   AddChildView(views::Builder<views::Label>()  // Header
                    .SetText(l10n_util::GetStringUTF16(
@@ -187,7 +191,6 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
           .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
           .SetHorizontalAlignment(gfx::ALIGN_CENTER)
           .SetMultiLine(true)
-          .SetProperty(views::kMarginsKey, gfx::Insets(8, 0))
           .Build());
   AddChildView(views::Builder<views::MdTextButton>()  // Close button
                    .CopyAddressTo(&close_button_)
@@ -199,7 +202,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
                    .SetCornerRadius(16)
                    .SetProminent(true)
                    .SetIsDefault(true)
-                   .SetProperty(views::kMarginsKey, gfx::Insets(12, 0, 0, 0))
+                   .SetProperty(views::kMarginsKey, gfx::Insets(20, 0, 0, 0))
                    .Build());
 
   // Setup highlight border.
@@ -216,21 +219,16 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
 ArcSplashScreenDialogView::~ArcSplashScreenDialogView() = default;
 
 gfx::Size ArcSplashScreenDialogView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
-
-  const auto max_width = views::LayoutProvider::Get()->GetDistanceMetric(
+  auto width = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   const auto* widget = GetWidget();
   if (widget && widget->parent()) {
     constexpr int kHorizontalMarginDp = 32;
-    size.set_width(
-        std::min(widget->parent()->GetWindowBoundsInScreen().width() -
-                     kHorizontalMarginDp * 2,
-                 max_width));
-  } else {
-    size.set_width(max_width);
+    width = std::min(widget->parent()->GetWindowBoundsInScreen().width() -
+                         kHorizontalMarginDp * 2,
+                     width);
   }
-  return size;
+  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void ArcSplashScreenDialogView::AddedToWidget() {
