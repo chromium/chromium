@@ -20,6 +20,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/cxx20_to_address.h"
 #include "base/strings/string_piece.h"  // For implicit conversions.
 #include "build/build_config.h"
 

@@ -63,7 +63,7 @@ namespace {
 const FormFieldData* FindFieldById(const FormData& form, base::StringPiece id) {
   auto it = base::ranges::find(form.fields, base::UTF8ToUTF16(id),
                                &FormFieldData::id_attribute);
-  return it != form.fields.end() ? base::to_address(it) : nullptr;
+  return it != form.fields.end() ? &*it : nullptr;
 }
 
 }  // namespace
