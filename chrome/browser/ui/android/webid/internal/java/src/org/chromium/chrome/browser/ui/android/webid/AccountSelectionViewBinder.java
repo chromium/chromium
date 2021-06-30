@@ -14,6 +14,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -59,16 +60,16 @@ class AccountSelectionViewBinder {
             // unnecessary flashing.
             if (avatarData == null || faviconData == null) return;
             Drawable badgedAvatar = overlayIdpFaviconOnAvatar(view, avatarData, faviconData);
-            ImageView avatarView = view.findViewById(R.id.avatar);
+            ImageView avatarView = view.findViewById(R.id.start_icon);
             avatarView.setImageDrawable(badgedAvatar);
         } else if (key == AccountProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(clickedView -> {
                 model.get(AccountProperties.ON_CLICK_LISTENER).onResult(account);
             });
         } else if (key == AccountProperties.ACCOUNT) {
-            TextView subject = view.findViewById(R.id.name);
+            TextView subject = view.findViewById(R.id.title);
             subject.setText(account.getName());
-            TextView email = view.findViewById(R.id.email);
+            TextView email = view.findViewById(R.id.description);
             email.setText(account.getEmail());
         } else {
             assert false : "Unhandled update to property:" + key;
@@ -155,10 +156,17 @@ class AccountSelectionViewBinder {
     static void bindContinueButtonView(PropertyModel model, View view, PropertyKey key) {
         if (key == ContinueButtonProperties.ON_CLICK_LISTENER
                 || key == ContinueButtonProperties.ACCOUNT) {
+            Account account = model.get(ContinueButtonProperties.ACCOUNT);
             view.setOnClickListener(clickedView -> {
-                model.get(ContinueButtonProperties.ON_CLICK_LISTENER)
-                        .onResult(model.get(ContinueButtonProperties.ACCOUNT));
+                model.get(ContinueButtonProperties.ON_CLICK_LISTENER).onResult(account);
             });
+            // Prefers to use given name if it is provided otherwise falls back to using the name.
+            String name =
+                    account.getGivenName() != null ? account.getGivenName() : account.getName();
+            String btnText = String.format(
+                    view.getContext().getString(R.string.account_selection_continue), name);
+            Button button = view.findViewById(R.id.account_selection_continue_btn);
+            button.setText(btnText);
         } else {
             assert false : "Unhandled update to property:" + key;
         }

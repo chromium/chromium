@@ -9,15 +9,11 @@
   <dimen name="account_selection_sheet_handlebar_height">4dp</dimen>
   <dimen name="account_selection_sheet_handlebar_margin">6dp</dimen>
 
-  <dimen name="account_selection_sheet_title_height">48dp</dimen>
-  <dimen name="account_selection_sheet_title_margin_bottom">16dp</dimen>
+  <dimen name="account_selection_sheet_title_height">32dp</dimen>
+  <dimen name="account_selection_sheet_title_margin_bottom">8dp</dimen>
 
   <dimen name="account_selection_sheet_item_padding_bottom">8dp</dimen>
 
-  <dimen name="account_selection_sheet_account_text_height">20dp</dimen>
-  <dimen name="account_selection_sheet_account_margin">6dp</dimen>
-  <dimen name="account_selection_avatar_size">42dp</dimen>
-  <dimen name="account_selection_favicon_size">16dp</dimen>
   <dimen name="account_selection_favicon_border_size">1dp</dimen>
 
   <dimen name="account_selection_sheet_button_margin">2dp</dimen>

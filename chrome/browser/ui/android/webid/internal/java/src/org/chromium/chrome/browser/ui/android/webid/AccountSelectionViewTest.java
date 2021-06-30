@@ -188,11 +188,11 @@ public class AccountSelectionViewTest {
     }
 
     private TextView getAccountNameAt(int index) {
-        return getAccounts().getChildAt(index).findViewById(R.id.name);
+        return getAccounts().getChildAt(index).findViewById(R.id.title);
     }
 
     private TextView getAccountEmailAt(int index) {
-        return getAccounts().getChildAt(index).findViewById(R.id.email);
+        return getAccounts().getChildAt(index).findViewById(R.id.description);
     }
 
     public static <T> T waitForEvent(T mock) {

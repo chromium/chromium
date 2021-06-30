@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -63,12 +64,14 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
                 ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY, profile,
                         GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
 
+        @Px
+        int avatar_size =
+                context.getResources().getDimensionPixelSize(R.dimen.list_item_start_icon_width);
+        @Px
+        int idp_icon_size = Math.round(avatar_size * 0.4f);
         mMediator = new AccountSelectionMediator(delegate, sheetItems, mBottomSheetController,
-                mBottomSheetContent, imageFetcher,
-                context.getResources().getDimensionPixelSize(R.dimen.account_selection_avatar_size),
-                new LargeIconBridge(profile),
-                context.getResources().getDimensionPixelSize(
-                        R.dimen.account_selection_favicon_size));
+                mBottomSheetContent, imageFetcher, avatar_size, new LargeIconBridge(profile),
+                idp_icon_size);
     }
 
     static View setupContentView(Context context, ModelList sheetItems) {
