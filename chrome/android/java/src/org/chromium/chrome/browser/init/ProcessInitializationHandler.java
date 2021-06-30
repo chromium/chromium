@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantHistoryDeletionObserver;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
 import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
 import org.chromium.chrome.browser.content_capture.ContentCaptureHistoryDeletionObserver;
@@ -254,6 +255,8 @@ public class ProcessInitializationHandler {
 
         HistoryDeletionBridge.getInstance().addObserver(new ContentCaptureHistoryDeletionObserver(
                 () -> PlatformContentCaptureController.getInstance()));
+        HistoryDeletionBridge.getInstance().addObserver(
+                new AutofillAssistantHistoryDeletionObserver());
     }
 
     /**
