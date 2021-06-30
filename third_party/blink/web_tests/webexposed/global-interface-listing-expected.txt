@@ -4502,7 +4502,6 @@ interface Headers
     method values
 interface Highlight
     attribute @@toStringTag
-    getter name
     getter priority
     getter size
     method @@iterator
@@ -4520,14 +4519,15 @@ interface HighlightRegistry
     attribute @@toStringTag
     getter size
     method @@iterator
-    method add
     method clear
     method constructor
     method delete
     method entries
     method forEach
+    method get
     method has
     method keys
+    method set
     method values
 interface History
     attribute @@toStringTag

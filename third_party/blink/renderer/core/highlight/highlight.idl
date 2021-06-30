@@ -6,8 +6,7 @@
   RuntimeEnabled = HighlightAPI,
   Exposed = Window
 ] interface Highlight {
-  constructor(CSSOMString name, AbstractRange... initRanges);
+  constructor(AbstractRange... initRanges);
   setlike<AbstractRange>;
-  readonly attribute CSSOMString name;
   attribute long priority;
 };

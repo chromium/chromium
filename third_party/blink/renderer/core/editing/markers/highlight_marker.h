@@ -16,16 +16,19 @@ class CORE_EXPORT HighlightMarker final : public DocumentMarker {
  public:
   HighlightMarker(unsigned start_offset,
                   unsigned end_offset,
+                  const String& highlight_name,
                   const Member<Highlight> highlight);
   HighlightMarker(const HighlightMarker&) = delete;
   HighlightMarker& operator=(const HighlightMarker&) = delete;
 
   MarkerType GetType() const final;
   const Highlight* GetHighlight() const { return highlight_; }
+  const AtomicString& GetHighlightName() const { return highlight_name_; }
 
   void Trace(blink::Visitor*) const override;
 
  private:
+  const AtomicString highlight_name_;
   const Member<Highlight> highlight_;
 };
 

@@ -15,10 +15,10 @@
   let r1 = new Range();
   r1.setStart(document.body, 0);
   r1.setEnd(document.body, 1);
-  let h = new Highlight("example-highlight", r1);
+  let h = new Highlight(r1);
   let r2 = new Range();
   r2.setStart(document.body, 1);
   r2.setEnd(document.body, 2);
-  CSS.highlights.add(h);
+  CSS.highlights.set("example-highlight", h);
   h.add(r2);
 </script>

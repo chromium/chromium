@@ -10,8 +10,11 @@ namespace blink {
 
 HighlightMarker::HighlightMarker(unsigned start_offset,
                                  unsigned end_offset,
+                                 const String& highlight_name,
                                  const Member<Highlight> highlight)
-    : DocumentMarker(start_offset, end_offset), highlight_(highlight) {}
+    : DocumentMarker(start_offset, end_offset),
+      highlight_name_(highlight_name),
+      highlight_(highlight) {}
 
 DocumentMarker::MarkerType HighlightMarker::GetType() const {
   return DocumentMarker::kHighlight;

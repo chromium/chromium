@@ -55,8 +55,9 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/highlight/highlight.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 
@@ -261,12 +262,14 @@ void DocumentMarkerController::AddTextFragmentMarker(
 
 void DocumentMarkerController::AddHighlightMarker(
     const EphemeralRange& range,
+    const String& highlight_name,
     const Member<Highlight> highlight) {
   DCHECK(!document_->NeedsLayoutTreeUpdate());
-  AddMarkerInternal(range, [highlight](int start_offset, int end_offset) {
-    return MakeGarbageCollected<HighlightMarker>(start_offset, end_offset,
-                                                 highlight);
-  });
+  AddMarkerInternal(
+      range, [highlight_name, highlight](int start_offset, int end_offset) {
+        return MakeGarbageCollected<HighlightMarker>(start_offset, end_offset,
+                                                     highlight_name, highlight);
+      });
 }
 
 void DocumentMarkerController::PrepareForDestruction() {
@@ -741,7 +744,7 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
 
     NameToHighlightMarkerMap::AddResult insert_result =
         name_to_last_highlight_marker_seen.insert(
-            current_highlight_marker->GetHighlight()->Name(),
+            current_highlight_marker->GetHighlightName(),
             current_highlight_marker);
 
     if (!insert_result.is_new_entry) {
@@ -768,13 +771,18 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
         name_to_highlight_marker_iterator.value.Get());
   }
 
+  HighlightRegistry* highlight_registry =
+      document_->domWindow()->Supplementable<LocalDOMWindow>::
+          RequireSupplement<HighlightRegistry>();
   std::sort(highlight_markers_not_overlapping.begin(),
             highlight_markers_not_overlapping.end(),
-            [](const Member<HighlightMarker>& marker1,
-               const Member<HighlightMarker>& marker2) {
-              return marker1->GetHighlight()->CompareOverlayStackingPosition(
+            [highlight_registry](const Member<HighlightMarker>& marker1,
+                                 const Member<HighlightMarker>& marker2) {
+              return highlight_registry->CompareOverlayStackingPosition(
+                         marker1->GetHighlightName(), marker1->GetHighlight(),
+                         marker2->GetHighlightName(),
                          marker2->GetHighlight()) ==
-                     Highlight::OverlayStackingPosition::
+                     HighlightRegistry::OverlayStackingPosition::
                          kOverlayStackingPositionBelow;
             });
 

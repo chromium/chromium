@@ -15,6 +15,6 @@
   let r = new Range();
   r.setStart(document.body, 1);
   r.setEnd(document.body, 2);
-  CSS.highlights.add(new Highlight("example-highlight", r));
+  CSS.highlights.set("example-highlight", new Highlight(r));
   r.setStart(document.body, 0);
 </script>

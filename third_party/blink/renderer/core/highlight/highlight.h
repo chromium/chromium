@@ -22,9 +22,9 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static Highlight* Create(const String&, HeapVector<Member<AbstractRange>>&);
+  static Highlight* Create(const HeapVector<Member<AbstractRange>>&);
 
-  Highlight(const String&, HeapVector<Member<AbstractRange>>&);
+  explicit Highlight(const HeapVector<Member<AbstractRange>>&);
   ~Highlight() override;
 
   void Trace(blink::Visitor*) const override;
@@ -35,20 +35,10 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
   bool hasForBinding(ScriptState*, AbstractRange*, ExceptionState&) const;
   wtf_size_t size() const;
 
-  const String& name() const { return name_; }
   const int32_t& priority() const { return priority_; }
   void setPriority(const int32_t& priority) { priority_ = priority; }
 
-  const AtomicString& Name() const { return name_; }
   bool Contains(AbstractRange*) const;
-
-  enum OverlayStackingPosition {
-    kOverlayStackingPositionBelow = -1,
-    kOverlayStackingPositionEquivalent = 0,
-    kOverlayStackingPositionAbove = 1,
-  };
-
-  int8_t CompareOverlayStackingPosition(const Highlight*) const;
 
   class IterationSource final : public HighlightSetIterable::IterationSource {
    public:
@@ -74,14 +64,21 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
     return highlight_ranges_;
   }
 
-  void SetHighlightRegistry(HighlightRegistry* highlight_registry) {
-    highlight_registry_ = highlight_registry;
-  }
+  void RegisterIn(HighlightRegistry* highlight_registry);
+  void Deregister();
 
  private:
   HeapLinkedHashSet<Member<AbstractRange>> highlight_ranges_;
   int32_t priority_ = 0;
-  AtomicString name_;
+  // Since a Highlight can be registered many times in the HighlightRegistry
+  // under different names, we need to keep track of the number of times it's
+  // present in the registry (|times_registered_|) to know when it's not
+  // registered anymore (can't be done only with |highlight_registry_|). If the
+  // Highlight is not registered anywhere then we avoid scheduling repaints in
+  // case of modifications to it.
+  // TODO(crbug.com/1225034): This is not taking into account when a Highlight
+  // is added to HighlightRegistries of multiple same-domain iframes.
+  unsigned times_registered_ = 0;
   Member<HighlightRegistry> highlight_registry_ = nullptr;
 };
 

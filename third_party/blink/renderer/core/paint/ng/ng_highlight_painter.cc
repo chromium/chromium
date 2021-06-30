@@ -361,7 +361,7 @@ void NGHighlightPainter::Paint(Phase phase) {
           Color background_color =
               HighlightPaintingUtils::HighlightBackgroundColor(
                   document, style_, node_, kPseudoIdHighlight,
-                  highlight_marker.GetHighlight()->Name());
+                  highlight_marker.GetHighlightName());
 
           PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                     fragment_item_.LocalRect(text, paint_start_offset,
@@ -384,7 +384,7 @@ void NGHighlightPainter::Paint(Phase phase) {
         const TextPaintStyle final_text_style =
             HighlightPaintingUtils::HighlightPaintingStyle(
                 document, style_, node_, kPseudoIdHighlight, text_style,
-                paint_info_, highlight_marker.GetHighlight()->Name());
+                paint_info_, highlight_marker.GetHighlightName());
 
         if (final_text_style.current_color == Color::kTransparent)
           break;

@@ -6,5 +6,5 @@
   RuntimeEnabled = HighlightAPI,
   Exposed = Window
 ] interface HighlightRegistry {
-  setlike<Highlight>;
+  maplike<DOMString, Highlight>;
 };

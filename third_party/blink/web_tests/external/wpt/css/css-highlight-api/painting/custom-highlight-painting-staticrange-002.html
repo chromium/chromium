@@ -15,7 +15,7 @@
 </style>
 <body><span>One <span id="contained">two </span>three…</span>
 <script>
-  let h = new Highlight("example-highlight");
+  let h = new Highlight();
   h.add(new StaticRange({startContainer: document.body.firstChild.childNodes[0], startOffset: 0, endContainer: document.body.firstChild.childNodes[2], endOffset: 0}));
-  CSS.highlights.add(h);
+  CSS.highlights.set("example-highlight", h);
 </script>

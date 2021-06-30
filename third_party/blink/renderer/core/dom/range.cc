@@ -1750,7 +1750,9 @@ void Range::ScheduleVisualUpdateIfInRegisteredHighlight() {
     if (HighlightRegistry* highlight_registry =
             window->Supplementable<LocalDOMWindow>::RequireSupplement<
                 HighlightRegistry>()) {
-      for (const auto& highlight : highlight_registry->GetHighlights()) {
+      for (const auto& highlight_registry_map_entry :
+           highlight_registry->GetHighlights()) {
+        const auto& highlight = highlight_registry_map_entry->highlight;
         if (highlight->Contains(this)) {
           highlight_registry->ScheduleRepaint();
           return;

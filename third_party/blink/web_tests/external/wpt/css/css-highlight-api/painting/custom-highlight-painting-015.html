@@ -3,11 +3,14 @@
 <title>CSS Highlight API Test: </title>
 <link rel="help" href="https://drafts.csswg.org/css-highlight-api-1/">
 <link rel="match" href="custom-highlight-painting-001-ref.html">
-<meta name="assert" value="::highlight overlay is painted">
+<meta name="assert" value="Unregistering only once a Highlight that was registered under different names works as it should and is still being painted.">
 <style>
-  ::highlight(example-highlight) {
-    background-color: yellow;
+  ::highlight(foo) {
+    color: red;
+  }
+  ::highlight(bar) {
     color: blue;
+    background-color: yellow;
   }
 </style>
 <body><span>One </span><span>two </span><span>three…</span>
@@ -16,5 +19,9 @@
   r.setStart(document.body, 0);
   r.setEnd(document.body, 2);
 
-  CSS.highlights.set("example-highlight", new Highlight(r));
+  let h = new Highlight(r);
+
+  CSS.highlights.set("foo", h);
+  CSS.highlights.set("bar", h);
+  CSS.highlights.delete("foo");
 </script>

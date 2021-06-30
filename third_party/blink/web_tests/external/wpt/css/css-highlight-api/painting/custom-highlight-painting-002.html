@@ -18,6 +18,7 @@
   let r = new Range();
   r.setStart(div, 0);
   r.setEnd(div, 1);
-  CSS.highlights.add(new Highlight('foo', r));
-  CSS.highlights.add(new Highlight('bar', r));
+  let h = new Highlight(r);
+  CSS.highlights.set('foo', h);
+  CSS.highlights.set('bar', h);
 </script>

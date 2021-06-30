@@ -5,21 +5,31 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_REGISTRY_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
+#include "third_party/blink/renderer/core/highlight/highlight_registry_map_entry.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
-using HighlightRegistrySetIterable = SetlikeIterable<Member<Highlight>>;
+// Using LinkedHashSet<HighlightRegistryMapEntry> to store the map entries
+// because order of insertion needs to be preserved (for iteration and breaking
+// priority ties during painting) and there's no generic LinkedHashMap. Note
+// that the hash functions for HighlightRegistryMapEntry don't allow storing
+// more than one entry with the same key (highlight name).
+using HighlightRegistryMap =
+    HeapLinkedHashSet<Member<HighlightRegistryMapEntry>,
+                      HashTraits<Member<HighlightRegistryMapEntry>>>;
+using HighlightRegistryMapIterable = Maplike<AtomicString, Member<Highlight>>;
 class LocalFrame;
 
 class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
                                       public Supplement<LocalDOMWindow>,
-                                      public HighlightRegistrySetIterable {
+                                      public HighlightRegistryMapIterable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,25 +41,36 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
 
   void Trace(blink::Visitor*) const override;
 
-  HighlightRegistry* addForBinding(ScriptState*, Highlight*, ExceptionState&);
+  HighlightRegistry* setForBinding(ScriptState*,
+                                   AtomicString,
+                                   Member<Highlight>,
+                                   ExceptionState&);
   void clearForBinding(ScriptState*, ExceptionState&);
-  bool deleteForBinding(ScriptState*, Highlight*, ExceptionState&);
-  bool hasForBinding(ScriptState*, Highlight*, ExceptionState&) const;
+  bool deleteForBinding(ScriptState*, const AtomicString&, ExceptionState&);
   wtf_size_t size() const { return highlights_.size(); }
 
-  const HeapLinkedHashSet<Member<Highlight>>& GetHighlights() const {
-    return highlights_;
-  }
+  const HighlightRegistryMap& GetHighlights() const { return highlights_; }
   void ValidateHighlightMarkers();
   void ScheduleRepaint() const;
 
+  enum OverlayStackingPosition {
+    kOverlayStackingPositionBelow = -1,
+    kOverlayStackingPositionEquivalent = 0,
+    kOverlayStackingPositionAbove = 1,
+  };
+
+  int8_t CompareOverlayStackingPosition(const AtomicString& highlight_name1,
+                                        const Highlight* highlight1,
+                                        const AtomicString& highlight_name2,
+                                        const Highlight* highlight2) const;
+
   class IterationSource final
-      : public HighlightRegistrySetIterable::IterationSource {
+      : public HighlightRegistryMapIterable::IterationSource {
    public:
     explicit IterationSource(const HighlightRegistry& highlight_registry);
 
     bool Next(ScriptState*,
-              Member<Highlight>&,
+              AtomicString&,
               Member<Highlight>&,
               ExceptionState&) override;
 
@@ -57,17 +78,31 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
 
    private:
     wtf_size_t index_;
-    HeapVector<Member<Highlight>> highlights_snapshot_;
+    HeapVector<Member<HighlightRegistryMapEntry>> highlights_snapshot_;
   };
 
  private:
-  // Keeps all the names of Highlights added to the registry (in highlights_) so
-  // it can be determined in O(1) if a name is already present.
-  HashSet<String, StringHash> registered_highlight_names_;
-  HeapLinkedHashSet<Member<Highlight>> highlights_;
+  HighlightRegistryMap highlights_;
   Member<LocalFrame> frame_;
 
-  HighlightRegistrySetIterable::IterationSource* StartIteration(
+  HighlightRegistryMap::iterator GetMapIterator(const AtomicString& key) {
+    return highlights_.find(
+        MakeGarbageCollected<HighlightRegistryMapEntry>(key));
+  }
+
+  bool GetMapEntry(ScriptState*,
+                   const AtomicString& key,
+                   Member<Highlight>& value,
+                   ExceptionState&) override {
+    auto iterator = GetMapIterator(key);
+    if (iterator == highlights_.end())
+      return false;
+
+    value = iterator->Get()->highlight;
+    return true;
+  }
+
+  HighlightRegistryMapIterable::IterationSource* StartIteration(
       ScriptState*,
       ExceptionState&) override;
 };

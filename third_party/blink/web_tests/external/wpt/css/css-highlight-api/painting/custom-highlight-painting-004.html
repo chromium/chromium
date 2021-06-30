@@ -25,9 +25,9 @@
   r2.setStart(textNode, 3);
   r2.setEnd(textNode, 9);
 
-  let h1 = new Highlight("foo", r1);
-  let h2 = new Highlight("bar", r2);
+  let h1 = new Highlight(r1);
+  let h2 = new Highlight(r2);
 
-  CSS.highlights.add(h1);
-  CSS.highlights.add(h2);
+  CSS.highlights.set("foo", h1);
+  CSS.highlights.set("bar", h2);
 </script>

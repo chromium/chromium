@@ -13,6 +13,6 @@
 <body><span>One </span><span>one-point-five </span><span>two </span><span>three…</span>
 <script>
   let r = new StaticRange({startContainer: document.body, startOffset: 0, endContainer: document.body, endOffset: 2});
-  CSS.highlights.add(new Highlight("example-highlight", r));
+  CSS.highlights.set("example-highlight", new Highlight(r));
   document.body.removeChild(document.body.children[1]);
 </script>

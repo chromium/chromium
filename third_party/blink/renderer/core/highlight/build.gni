@@ -9,4 +9,5 @@ blink_core_sources_highlight = [
   "highlight.h",
   "highlight_registry.cc",
   "highlight_registry.h",
+  "highlight_registry_map_entry.h",
 ]

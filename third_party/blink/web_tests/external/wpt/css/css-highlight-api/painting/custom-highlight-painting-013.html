@@ -15,6 +15,6 @@
   let r = new Range();
   r.setStart(document.querySelector("#first").firstChild, 0);
   r.setEnd(document.querySelector("#third").firstChild, 0);
-  CSS.highlights.add(new Highlight("example-highlight", r));
+  CSS.highlights.set("example-highlight", new Highlight(r));
   document.querySelector("#second").firstChild.textContent = "two ";
 </script>

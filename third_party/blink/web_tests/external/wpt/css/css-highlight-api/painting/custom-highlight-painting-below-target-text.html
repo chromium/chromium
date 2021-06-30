@@ -18,6 +18,6 @@
   let r = new Range();
   r.setStart(document.body.firstChild, 0);
   r.setEnd(document.body.firstChild, 7);
-  CSS.highlights.add(new Highlight("foo", r));
+  CSS.highlights.set("foo", new Highlight(r));
   window.location.href = `custom-highlight-painting-below-target-text.html#:~:text=text`;
 </script>

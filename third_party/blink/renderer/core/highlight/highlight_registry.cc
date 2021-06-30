@@ -46,7 +46,9 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   document->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::Highlight());
 
-  for (const auto& highlight : highlights_) {
+  for (const auto& highlight_registry_map_entry : highlights_) {
+    const auto& highlight_name = highlight_registry_map_entry->highlight_name;
+    const auto& highlight = highlight_registry_map_entry->highlight;
     for (const auto& abstract_range : highlight->GetRanges()) {
       if (!abstract_range->collapsed()) {
         auto* static_range = DynamicTo<StaticRange>(*abstract_range);
@@ -55,7 +57,8 @@ void HighlightRegistry::ValidateHighlightMarkers() {
           continue;
 
         EphemeralRange eph_range(abstract_range);
-        document->Markers().AddHighlightMarker(eph_range, highlight);
+        document->Markers().AddHighlightMarker(eph_range, highlight_name,
+                                               highlight);
       }
     }
   }
@@ -67,39 +70,41 @@ void HighlightRegistry::ScheduleRepaint() const {
   }
 }
 
-HighlightRegistry* HighlightRegistry::addForBinding(
-    ScriptState*,
-    Highlight* highlight,
+HighlightRegistry* HighlightRegistry::setForBinding(
+    ScriptState* script_state,
+    AtomicString highlight_name,
+    Member<Highlight> highlight,
     ExceptionState& exception_state) {
-  if (!registered_highlight_names_.insert(highlight->name()).is_new_entry) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "Cannot add a Highlight with the same name as an existing one.");
-  } else {
-    highlights_.insert(highlight);
-    highlight->SetHighlightRegistry(this);
-    ScheduleRepaint();
+  auto highlights_iterator = GetMapIterator(highlight_name);
+  if (highlights_iterator != highlights_.end()) {
+    highlights_iterator->Get()->highlight->Deregister();
+    // It's necessary to delete it and insert a new entry to the registry
+    // instead of just modifying the existing one so the insertion order is
+    // preserved.
+    highlights_.erase(highlights_iterator);
   }
-
+  highlights_.insert(MakeGarbageCollected<HighlightRegistryMapEntry>(
+      highlight_name, highlight));
+  highlight->RegisterIn(this);
+  ScheduleRepaint();
   return this;
 }
 
 void HighlightRegistry::clearForBinding(ScriptState*, ExceptionState&) {
-  registered_highlight_names_.clear();
-  for (const auto& highlight : highlights_)
-    highlight->SetHighlightRegistry(nullptr);
+  for (const auto& highlight_registry_map_entry : highlights_) {
+    highlight_registry_map_entry->highlight->Deregister();
+  }
   highlights_.clear();
   ScheduleRepaint();
 }
 
 bool HighlightRegistry::deleteForBinding(ScriptState*,
-                                         Highlight* highlight,
+                                         const AtomicString& highlight_name,
                                          ExceptionState&) {
-  auto name_iterator = registered_highlight_names_.find(highlight->name());
-  if (name_iterator != registered_highlight_names_.end()) {
-    registered_highlight_names_.erase(name_iterator);
-    highlights_.erase(highlight);
-    highlight->SetHighlightRegistry(nullptr);
+  auto highlights_iterator = GetMapIterator(highlight_name);
+  if (highlights_iterator != highlights_.end()) {
+    highlights_iterator->Get()->highlight->Deregister();
+    highlights_.erase(highlights_iterator);
     ScheduleRepaint();
     return true;
   }
@@ -107,10 +112,33 @@ bool HighlightRegistry::deleteForBinding(ScriptState*,
   return false;
 }
 
-bool HighlightRegistry::hasForBinding(ScriptState*,
-                                      Highlight* highlight,
-                                      ExceptionState&) const {
-  return highlights_.Contains(highlight);
+int8_t HighlightRegistry::CompareOverlayStackingPosition(
+    const AtomicString& highlight_name1,
+    const Highlight* highlight1,
+    const AtomicString& highlight_name2,
+    const Highlight* highlight2) const {
+  if (highlight_name1 == highlight_name2)
+    return kOverlayStackingPositionEquivalent;
+
+  if (highlight1->priority() == highlight2->priority()) {
+    for (const auto& highlight_registry_map_entry : highlights_) {
+      const auto& highlight_name = highlight_registry_map_entry->highlight_name;
+      if (highlight_name == highlight_name1) {
+        DCHECK(highlight1 == highlight_registry_map_entry->highlight);
+        return kOverlayStackingPositionBelow;
+      }
+      if (highlight_name == highlight_name2) {
+        DCHECK(highlight2 == highlight_registry_map_entry->highlight);
+        return kOverlayStackingPositionAbove;
+      }
+    }
+    NOTREACHED();
+    return kOverlayStackingPositionEquivalent;
+  }
+
+  return highlight1->priority() > highlight2->priority()
+             ? kOverlayStackingPositionAbove
+             : kOverlayStackingPositionBelow;
 }
 
 HighlightRegistry::IterationSource::IterationSource(
@@ -118,27 +146,31 @@ HighlightRegistry::IterationSource::IterationSource(
     : index_(0) {
   highlights_snapshot_.ReserveInitialCapacity(
       highlight_registry.highlights_.size());
-  for (const auto& highlight : highlight_registry.highlights_) {
-    highlights_snapshot_.push_back(highlight);
+  for (const auto& highlight_registry_map_entry :
+       highlight_registry.highlights_) {
+    highlights_snapshot_.push_back(
+        MakeGarbageCollected<HighlightRegistryMapEntry>(
+            highlight_registry_map_entry));
   }
 }
 
 bool HighlightRegistry::IterationSource::Next(ScriptState*,
-                                              Member<Highlight>& key,
+                                              AtomicString& key,
                                               Member<Highlight>& value,
                                               ExceptionState&) {
   if (index_ >= highlights_snapshot_.size())
     return false;
-  key = value = highlights_snapshot_[index_++];
+  key = highlights_snapshot_[index_]->highlight_name;
+  value = highlights_snapshot_[index_++]->highlight;
   return true;
 }
 
 void HighlightRegistry::IterationSource::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlights_snapshot_);
-  HighlightRegistrySetIterable::IterationSource::Trace(visitor);
+  HighlightRegistryMapIterable::IterationSource::Trace(visitor);
 }
 
-HighlightRegistrySetIterable::IterationSource*
+HighlightRegistryMapIterable::IterationSource*
 HighlightRegistry::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<IterationSource>(*this);
 }

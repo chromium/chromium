@@ -22,9 +22,9 @@
   let r2 = new Range();
   r2.setStart(document.body, 1);
   r2.setEnd(document.body, 3);
-  let h1 = new Highlight("example-highlight", r1);
-  let h2 = new Highlight("another-highlight", r2);
-  CSS.highlights.add(h1);
-  CSS.highlights.add(h2);
+  let h1 = new Highlight(r1);
+  let h2 = new Highlight(r2);
+  CSS.highlights.set("example-highlight", h1);
+  CSS.highlights.set("another-highlight", h2);
   r2.collapse();
 </script>
