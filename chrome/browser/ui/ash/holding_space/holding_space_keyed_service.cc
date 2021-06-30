@@ -319,6 +319,14 @@ void HoldingSpaceKeyedService::ResumeItem(const HoldingSpaceItem* item) {
     downloads_delegate_->Resume(item);
 }
 
+bool HoldingSpaceKeyedService::OpenItemWhenComplete(
+    const HoldingSpaceItem* item) {
+  // Currently it is only possible to open download type items when complete.
+  if (HoldingSpaceItem::IsDownload(item->type()) && downloads_delegate_)
+    return downloads_delegate_->OpenWhenComplete(item);
+  return false;
+}
+
 void HoldingSpaceKeyedService::Shutdown() {
   ShutdownDelegates();
 }

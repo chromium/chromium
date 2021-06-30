@@ -1379,6 +1379,11 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
                          : file_path;
             }));
 
+    // Mock `download::DownloadItem::GetOpenWhenComplete()`.
+    auto open_when_complete = std::make_unique<bool>(false);
+    ON_CALL(*mock_download_item, GetOpenWhenComplete)
+        .WillByDefault(testing::ReturnPointee(open_when_complete.get()));
+
     // Mock `download::DownloadItem::GetReceivedBytes()`.
     ON_CALL(*mock_download_item, GetReceivedBytes)
         .WillByDefault(testing::Return(received_bytes));
@@ -1398,8 +1403,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
     // Mock `download::DownloadItem::IsPaused()`.
     auto paused = std::make_unique<bool>(false);
     ON_CALL(*mock_download_item, IsPaused)
-        .WillByDefault(testing::Invoke(
-            [paused_ptr = paused.get()]() { return *paused_ptr; }));
+        .WillByDefault(testing::ReturnPointee(paused.get()));
 
     // Create a callback which can be run to set `paused` state and which
     // mirrors production behavior by notifying observers on change.
@@ -1422,6 +1426,24 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
     // Mock `download::DownloadItem::Resume()`.
     ON_CALL(*mock_download_item, Resume(/*from_user=*/testing::Eq(true)))
         .WillByDefault([set_paused]() { set_paused.Run(false); });
+
+    // Mock `download::DownloadItem::SetOpenWhenComplete()`.
+    ON_CALL(*mock_download_item, SetOpenWhenComplete)
+        .WillByDefault(
+            [callback = base::BindRepeating(
+                 [](download::MockDownloadItem* mock_download_item,
+                    std::unique_ptr<bool> open_when_complete,
+                    bool new_open_when_complete) {
+                   if (*open_when_complete != new_open_when_complete) {
+                     *open_when_complete = new_open_when_complete;
+                     mock_download_item->NotifyObserversDownloadUpdated();
+                   }
+                 },
+                 base::Unretained(mock_download_item.get()),
+                 base::Passed(std::move(open_when_complete)))](
+                bool new_open_when_complete) {
+              callback.Run(new_open_when_complete);
+            });
 
     // Notify observers of the created download.
     for (auto& observer : download_manager_observers_)
@@ -1754,6 +1776,79 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
                                                  completed_download_id));
   EXPECT_FALSE(test_api().GetHoldingSpaceItemView(download_chips,
                                                   in_progress_download_id));
+}
+
+// Verifies that opening in-progress download items works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
+                       OpenItemWhenComplete) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Force locale since strings are being verified.
+  base::ScopedLocale scoped_locale("en_US.UTF-8");
+
+  // Create an in-progress download.
+  const base::FilePath target_file_path(CreateFile());
+  auto in_progress_download =
+      CreateMockDownloadItem(download::DownloadItem::IN_PROGRESS,
+                             /*file_path=*/CreateFile(), target_file_path,
+                             /*received_bytes=*/0, /*total_bytes=*/100);
+  in_progress_download->NotifyObserversDownloadUpdated();
+
+  // Verify the item is not set to open on complete.
+  EXPECT_FALSE(in_progress_download->GetOpenWhenComplete());
+
+  // Show holding space UI.
+  test_api().Show();
+  ASSERT_TRUE(test_api().IsShowing());
+
+  // Expect a single download chip.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 1u);
+
+  // Cache pointers to the `primary_label` and `secondary_label`.
+  const auto* primary_label = static_cast<views::Label*>(
+      download_chips.front()->GetViewByID(kHoldingSpaceItemPrimaryChipLabelId));
+  const auto* secondary_label =
+      static_cast<views::Label*>(download_chips.front()->GetViewByID(
+          kHoldingSpaceItemSecondaryChipLabelId));
+
+  // The `primary_label` should be visible and should show the lossy display
+  // name of the download's target file path.
+  const auto target_file_name = target_file_path.BaseName().LossyDisplayName();
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+
+  // The `secondary_label` should also be visible and should show `0/100 B` as
+  // no bytes have been received but the total number of bytes is known.
+  EXPECT_TRUE(secondary_label->GetVisible());
+  EXPECT_EQ(secondary_label->GetText(), u"0/100 B");
+
+  // Double click the download chip to open the item. Because the underlying
+  // item is in-progress, opening should not occur immediately but should
+  // instead be queued up until download completion.
+  DoubleClick(download_chips.front());
+  EXPECT_TRUE(in_progress_download->GetOpenWhenComplete());
+
+  // The `primary_label` should still be visible and should still show the
+  // lossy display name of the download's target file path.
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+
+  // The `secondary_label` should still be visible but should have been updated
+  // to reflect that the underlying download will be opened when complete.
+  EXPECT_TRUE(secondary_label->GetVisible());
+  EXPECT_EQ(secondary_label->GetText(), u"Open when complete");
+
+  // Complete the download.
+  ON_CALL(*in_progress_download, GetState())
+      .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
+  in_progress_download->NotifyObserversDownloadUpdated();
+
+  // When no longer in progress, the `secondary_label` should be hidden.
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+  EXPECT_FALSE(secondary_label->GetVisible());
 }
 
 // Verifies that removing holding space items works as intended.

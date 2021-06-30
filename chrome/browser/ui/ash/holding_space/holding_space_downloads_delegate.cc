@@ -78,6 +78,9 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
   // invoked in direct response to an explicit user action.
   void Resume() { download_item_->Resume(/*from_user=*/true); }
 
+  // Marks the underlying `download_item_` to be opened when complete.
+  void OpenWhenComplete() { download_item_->SetOpenWhenComplete(true); }
+
   // Returns the number of bytes received for the underlying `download_item_`.
   int64_t GetReceivedBytes() const {
     return download_item_->GetReceivedBytes();
@@ -135,6 +138,13 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
     // Only in-progress download items have secondary text.
     if (!IsInProgress(download_item_))
       return absl::nullopt;
+
+    // In-progress download items which are marked to be opened when complete
+    // have a special secondary text treatment.
+    if (download_item_->GetOpenWhenComplete()) {
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_OPEN_WHEN_COMPLETE);
+    }
 
     const int64_t received_bytes = GetReceivedBytes();
     const absl::optional<int64_t> total_bytes = GetTotalBytes();
@@ -263,6 +273,19 @@ void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item) {
       return;
     }
   }
+}
+
+// TODO(crbug.com/1184438): Handle Lacros downloads.
+bool HoldingSpaceDownloadsDelegate::OpenWhenComplete(
+    const HoldingSpaceItem* item) {
+  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->GetHoldingSpaceItem() == item) {
+      in_progress_download->OpenWhenComplete();
+      return true;
+    }
+  }
+  return false;
 }
 
 void HoldingSpaceDownloadsDelegate::Init() {

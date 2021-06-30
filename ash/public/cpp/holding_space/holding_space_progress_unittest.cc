@@ -77,12 +77,9 @@ struct TestCase {
   T expected_result;
 };
 
-using BoolTestCase = TestCase<bool>;
-using OptFloatTestCase = TestCase<absl::optional<float>>;
-
 // Verifies that `HoldingSpaceProgress::GetValue()` is WAI.
 TEST_F(HoldingSpaceProgressTest, GetValue) {
-  std::vector<OptFloatTestCase> test_cases({
+  std::vector<TestCase<absl::optional<float>>> test_cases({
       {HoldingSpaceProgress(), 1.f},
       {HoldingSpaceProgress(0, 0), 1.f},
       {HoldingSpaceProgress(absl::nullopt, absl::nullopt), absl::nullopt},
@@ -98,7 +95,7 @@ TEST_F(HoldingSpaceProgressTest, GetValue) {
 
 // Verifies that `HoldingSpaceProgress::IsComplete()` is WAI.
 TEST_F(HoldingSpaceProgressTest, IsComplete) {
-  std::vector<BoolTestCase> test_cases({
+  std::vector<TestCase<bool>> test_cases({
       {HoldingSpaceProgress(), true},
       {HoldingSpaceProgress(0, 0), true},
       {HoldingSpaceProgress(absl::nullopt, absl::nullopt), false},
@@ -114,7 +111,7 @@ TEST_F(HoldingSpaceProgressTest, IsComplete) {
 
 // Verifies that `HoldingSpaceProgress::IsIndeterminate()` is WAI.
 TEST_F(HoldingSpaceProgressTest, IsIndeterminate) {
-  std::vector<BoolTestCase> test_cases({
+  std::vector<TestCase<bool>> test_cases({
       {HoldingSpaceProgress(), false},
       {HoldingSpaceProgress(0, 0), false},
       {HoldingSpaceProgress(absl::nullopt, absl::nullopt), true},
