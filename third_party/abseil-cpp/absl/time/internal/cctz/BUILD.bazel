@@ -45,7 +45,6 @@ cc_library(
     hdrs = [
         "include/cctz/civil_time.h",
     ],
-    features = ["-no_undefined"],
     textual_hdrs = ["include/cctz/civil_time_detail.h"],
     visibility = ["//visibility:public"],
     deps = ["//absl/base:config"],
@@ -75,7 +74,6 @@ cc_library(
         "include/cctz/time_zone.h",
         "include/cctz/zone_info_source.h",
     ],
-    features = ["-no_undefined"],
     linkopts = select({
         ":osx": [
             "-framework Foundation",

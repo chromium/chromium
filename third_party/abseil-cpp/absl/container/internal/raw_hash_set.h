@@ -502,6 +502,22 @@ inline size_t GrowthToLowerboundCapacity(size_t growth) {
   return growth + static_cast<size_t>((static_cast<int64_t>(growth) - 1) / 7);
 }
 
+template <class InputIter>
+size_t SelectBucketCountForIterRange(InputIter first, InputIter last,
+                                     size_t bucket_count) {
+  if (bucket_count != 0) {
+    return bucket_count;
+  }
+  using InputIterCategory =
+      typename std::iterator_traits<InputIter>::iterator_category;
+  if (std::is_base_of<std::random_access_iterator_tag,
+                      InputIterCategory>::value) {
+    return GrowthToLowerboundCapacity(
+        static_cast<size_t>(std::distance(first, last)));
+  }
+  return 0;
+}
+
 inline void AssertIsFull(ctrl_t* ctrl) {
   ABSL_HARDENING_ASSERT((ctrl != nullptr && IsFull(*ctrl)) &&
                         "Invalid operation on iterator. The element might have "
@@ -820,7 +836,8 @@ class raw_hash_set {
   raw_hash_set(InputIter first, InputIter last, size_t bucket_count = 0,
                const hasher& hash = hasher(), const key_equal& eq = key_equal(),
                const allocator_type& alloc = allocator_type())
-      : raw_hash_set(bucket_count, hash, eq, alloc) {
+      : raw_hash_set(SelectBucketCountForIterRange(first, last, bucket_count),
+                     hash, eq, alloc) {
     insert(first, last);
   }
 

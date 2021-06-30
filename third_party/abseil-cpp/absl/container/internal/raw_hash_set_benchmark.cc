@@ -254,6 +254,23 @@ void BM_CopyAssign(benchmark::State& state) {
 }
 BENCHMARK(BM_CopyAssign)->Range(128, 4096);
 
+void BM_RangeCtor(benchmark::State& state) {
+  std::random_device rd;
+  std::mt19937 rng(rd());
+  std::uniform_int_distribution<uint64_t> dist(0, ~uint64_t{});
+  std::vector<int> values;
+  const size_t desired_size = state.range(0);
+  while (values.size() < desired_size) {
+    values.emplace_back(dist(rng));
+  }
+
+  for (auto unused : state) {
+    IntTable t{values.begin(), values.end()};
+    benchmark::DoNotOptimize(t);
+  }
+}
+BENCHMARK(BM_RangeCtor)->Range(128, 65536);
+
 void BM_NoOpReserveIntTable(benchmark::State& state) {
   IntTable t;
   t.reserve(100000);
@@ -378,6 +395,12 @@ bool CodegenAbslRawHashSetInt64FindNeEnd(
   return table->find(key) != table->end();
 }
 
+auto CodegenAbslRawHashSetInt64Insert(absl::container_internal::IntTable* table,
+                                      int64_t key)
+    -> decltype(table->insert(key)) {
+  return table->insert(key);
+}
+
 bool CodegenAbslRawHashSetInt64Contains(
     absl::container_internal::IntTable* table, int64_t key) {
   return table->contains(key);
@@ -391,6 +414,7 @@ void CodegenAbslRawHashSetInt64Iterate(
 int odr =
     (::benchmark::DoNotOptimize(std::make_tuple(
          &CodegenAbslRawHashSetInt64Find, &CodegenAbslRawHashSetInt64FindNeEnd,
+         &CodegenAbslRawHashSetInt64Insert,
          &CodegenAbslRawHashSetInt64Contains,
          &CodegenAbslRawHashSetInt64Iterate)),
      1);

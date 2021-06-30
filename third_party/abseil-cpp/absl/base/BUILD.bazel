@@ -56,7 +56,6 @@ cc_library(
     srcs = ["log_severity.cc"],
     hdrs = ["log_severity.h"],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":config",
@@ -160,7 +159,6 @@ cc_library(
         "internal/low_level_alloc.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = select({
         "//absl:msvc_compiler": [],
         "//absl:clang-cl_compiler": [],
@@ -222,7 +220,6 @@ cc_library(
         "internal/unscaledcycleclock.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = select({
         "//absl:msvc_compiler": [
             "-DEFAULTLIB:advapi32.lib",
@@ -293,7 +290,6 @@ cc_library(
     srcs = ["internal/throw_delegate.cc"],
     hdrs = ["internal/throw_delegate.h"],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",
@@ -713,7 +709,6 @@ cc_library(
     srcs = ["internal/strerror.cc"],
     hdrs = ["internal/strerror.h"],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",

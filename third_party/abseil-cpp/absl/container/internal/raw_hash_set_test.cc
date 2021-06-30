@@ -627,28 +627,53 @@ TEST(Table, Contains2) {
 }
 
 int decompose_constructed;
+int decompose_copy_constructed;
+int decompose_copy_assigned;
+int decompose_move_constructed;
+int decompose_move_assigned;
 struct DecomposeType {
-  DecomposeType(int i) : i(i) {  // NOLINT
+  DecomposeType(int i = 0) : i(i) {  // NOLINT
     ++decompose_constructed;
   }
 
   explicit DecomposeType(const char* d) : DecomposeType(*d) {}
+
+  DecomposeType(const DecomposeType& other) : i(other.i) {
+    ++decompose_copy_constructed;
+  }
+  DecomposeType& operator=(const DecomposeType& other) {
+    ++decompose_copy_assigned;
+    i = other.i;
+    return *this;
+  }
+  DecomposeType(DecomposeType&& other) : i(other.i) {
+    ++decompose_move_constructed;
+  }
+  DecomposeType& operator=(DecomposeType&& other) {
+    ++decompose_move_assigned;
+    i = other.i;
+    return *this;
+  }
 
   int i;
 };
 
 struct DecomposeHash {
   using is_transparent = void;
-  size_t operator()(DecomposeType a) const { return a.i; }
+  size_t operator()(const DecomposeType& a) const { return a.i; }
   size_t operator()(int a) const { return a; }
   size_t operator()(const char* a) const { return *a; }
 };
 
 struct DecomposeEq {
   using is_transparent = void;
-  bool operator()(DecomposeType a, DecomposeType b) const { return a.i == b.i; }
-  bool operator()(DecomposeType a, int b) const { return a.i == b; }
-  bool operator()(DecomposeType a, const char* b) const { return a.i == *b; }
+  bool operator()(const DecomposeType& a, const DecomposeType& b) const {
+    return a.i == b.i;
+  }
+  bool operator()(const DecomposeType& a, int b) const { return a.i == b; }
+  bool operator()(const DecomposeType& a, const char* b) const {
+    return a.i == *b;
+  }
 };
 
 struct DecomposePolicy {
@@ -658,9 +683,9 @@ struct DecomposePolicy {
 
   template <typename T>
   static void construct(void*, DecomposeType* slot, T&& v) {
-    *slot = DecomposeType(std::forward<T>(v));
+    ::new (slot) DecomposeType(std::forward<T>(v));
   }
-  static void destroy(void*, DecomposeType*) {}
+  static void destroy(void*, DecomposeType* slot) { slot->~DecomposeType(); }
   static DecomposeType& element(slot_type* slot) { return *slot; }
 
   template <class F, class T>
@@ -675,8 +700,13 @@ void TestDecompose(bool construct_three) {
   const int one = 1;
   const char* three_p = "3";
   const auto& three = three_p;
+  const int elem_vector_count = 256;
+  std::vector<DecomposeType> elem_vector(elem_vector_count, DecomposeType{0});
+  std::iota(elem_vector.begin(), elem_vector.end(), 0);
 
-  raw_hash_set<DecomposePolicy, Hash, Eq, std::allocator<int>> set1;
+  using DecomposeSet =
+      raw_hash_set<DecomposePolicy, Hash, Eq, std::allocator<int>>;
+  DecomposeSet set1;
 
   decompose_constructed = 0;
   int expected_constructed = 0;
@@ -734,20 +764,72 @@ void TestDecompose(bool construct_three) {
     expected_constructed += construct_three;
     EXPECT_EQ(expected_constructed, decompose_constructed);
   }
+
+  decompose_copy_constructed = 0;
+  decompose_copy_assigned = 0;
+  decompose_move_constructed = 0;
+  decompose_move_assigned = 0;
+  int expected_copy_constructed = 0;
+  int expected_move_constructed = 0;
+  {  // raw_hash_set(first, last) with random-access iterators
+    DecomposeSet set2(elem_vector.begin(), elem_vector.end());
+    // Expect exactly one copy-constructor call for each element if no
+    // rehashing is done.
+    expected_copy_constructed += elem_vector_count;
+    EXPECT_EQ(expected_copy_constructed, decompose_copy_constructed);
+    EXPECT_EQ(expected_move_constructed, decompose_move_constructed);
+    EXPECT_EQ(0, decompose_move_assigned);
+    EXPECT_EQ(0, decompose_copy_assigned);
+  }
+
+  {  // raw_hash_set(first, last) with forward iterators
+    std::list<DecomposeType> elem_list(elem_vector.begin(), elem_vector.end());
+    expected_copy_constructed = decompose_copy_constructed;
+    DecomposeSet set2(elem_list.begin(), elem_list.end());
+    // Expect exactly N elements copied into set, expect at most 2*N elements
+    // moving internally for all resizing needed (for a growth factor of 2).
+    expected_copy_constructed += elem_vector_count;
+    EXPECT_EQ(expected_copy_constructed, decompose_copy_constructed);
+    expected_move_constructed += elem_vector_count;
+    EXPECT_LT(expected_move_constructed, decompose_move_constructed);
+    expected_move_constructed += elem_vector_count;
+    EXPECT_GE(expected_move_constructed, decompose_move_constructed);
+    EXPECT_EQ(0, decompose_move_assigned);
+    EXPECT_EQ(0, decompose_copy_assigned);
+    expected_copy_constructed = decompose_copy_constructed;
+    expected_move_constructed = decompose_move_constructed;
+  }
+
+  {  // insert(first, last)
+    DecomposeSet set2;
+    set2.insert(elem_vector.begin(), elem_vector.end());
+    // Expect exactly N elements copied into set, expect at most 2*N elements
+    // moving internally for all resizing needed (for a growth factor of 2).
+    const int expected_new_elements = elem_vector_count;
+    const int expected_max_element_moves = 2 * elem_vector_count;
+    expected_copy_constructed += expected_new_elements;
+    EXPECT_EQ(expected_copy_constructed, decompose_copy_constructed);
+    expected_move_constructed += expected_max_element_moves;
+    EXPECT_GE(expected_move_constructed, decompose_move_constructed);
+    EXPECT_EQ(0, decompose_move_assigned);
+    EXPECT_EQ(0, decompose_copy_assigned);
+    expected_copy_constructed = decompose_copy_constructed;
+    expected_move_constructed = decompose_move_constructed;
+  }
 }
 
 TEST(Table, Decompose) {
   TestDecompose<DecomposeHash, DecomposeEq>(false);
 
   struct TransparentHashIntOverload {
-    size_t operator()(DecomposeType a) const { return a.i; }
+    size_t operator()(const DecomposeType& a) const { return a.i; }
     size_t operator()(int a) const { return a; }
   };
   struct TransparentEqIntOverload {
-    bool operator()(DecomposeType a, DecomposeType b) const {
+    bool operator()(const DecomposeType& a, const DecomposeType& b) const {
       return a.i == b.i;
     }
-    bool operator()(DecomposeType a, int b) const { return a.i == b; }
+    bool operator()(const DecomposeType& a, int b) const { return a.i == b; }
   };
   TestDecompose<TransparentHashIntOverload, DecomposeEq>(true);
   TestDecompose<TransparentHashIntOverload, TransparentEqIntOverload>(true);

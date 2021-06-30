@@ -51,7 +51,6 @@ cc_library(
         "internal/program_name.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl/flags:__pkg__",
@@ -75,7 +74,6 @@ cc_library(
         "usage_config.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":path_util",
@@ -96,7 +94,6 @@ cc_library(
         "marshalling.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:config",
@@ -116,7 +113,6 @@ cc_library(
         "internal/commandlineflag.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:config",
@@ -133,7 +129,6 @@ cc_library(
         "commandlineflag.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":commandlineflag_internal",
@@ -175,7 +170,6 @@ cc_library(
         "reflection.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":commandlineflag",
@@ -200,7 +194,6 @@ cc_library(
         "internal/sequence_lock.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = ["//absl/base:__subpackages__"],
     deps = [
@@ -251,7 +244,6 @@ cc_library(
         "internal/usage.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl/flags:__pkg__",
@@ -281,7 +273,6 @@ cc_library(
         "usage.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":usage_internal",
@@ -300,7 +291,6 @@ cc_library(
         "parse.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    features = ["-no_undefined"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":commandlineflag",
