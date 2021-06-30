@@ -71,6 +71,9 @@ class CreditCardAccessoryControllerImpl
 
   // Pointers to cards owned by PersonalDataManager.
   std::vector<CreditCard*> cards_cache_;
+  // Virtual cards that are created based on the enrollment status of the cards
+  // returned by the PersonalDataManager.
+  std::vector<std::unique_ptr<CreditCard>> virtual_cards_cache_;
   content::WebContents* web_contents_;
   base::WeakPtr<ManualFillingController> mf_controller_;
   PersonalDataManager* const personal_data_manager_;

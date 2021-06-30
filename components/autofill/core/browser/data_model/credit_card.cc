@@ -67,6 +67,10 @@ const int kMaxNicknameLength = 25;
 constexpr int k16DigitNumberSegmentations[] = {4, 4, 4, 4};
 constexpr int k16DigitNumberSegmentationsLength = 4;
 
+// Suffix for GUID of a virtual card to differentiate it from it's corresponding
+// masked server card..
+const char kVirtualCardIdentifierSuffix[] = "_vcn";
+
 std::u16string NetworkForFill(const std::string& network) {
   if (network == kAmericanExpressCard)
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
@@ -936,6 +940,18 @@ std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
   return networkAndLastFourDigits;
 }
 
+#if defined(OS_ANDROID)
+std::u16string CreditCard::CardIdentifierStringForManualFilling() const {
+  std::u16string obfuscated_number = ObfuscatedLastFourDigits();
+  if (record_type_ == VIRTUAL_CARD) {
+    return l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
+           u" " + obfuscated_number;
+  }
+  return obfuscated_number;
+}
+#endif  // OS_ANDROID
+
 std::u16string CreditCard::CardIdentifierStringAndDescriptiveExpiration(
     const std::string& app_locale,
     std::u16string customized_nickname) const {
@@ -999,6 +1015,19 @@ bool CreditCard::HasNonEmptyValidNickname() const {
 
 std::u16string CreditCard::NicknameAndLastFourDigitsForTesting() const {
   return NicknameAndLastFourDigits();
+}
+
+// static
+std::unique_ptr<CreditCard> CreditCard::CreateVirtualCard(
+    const CreditCard& card) {
+  // Virtual cards can be created only from masked server cards.
+  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
+  auto virtual_card = std::make_unique<CreditCard>(card);
+  virtual_card->set_record_type(VIRTUAL_CARD);
+  // Add a suffix to the guid to help differentiate the virtual card from the
+  // server card.
+  virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
+  return virtual_card;
 }
 
 std::u16string CreditCard::Expiration2DigitYearAsString() const {

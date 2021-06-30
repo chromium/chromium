@@ -293,6 +293,10 @@ class CreditCard : public AutofillDataModel {
   // displaying the issuer network name.
   std::u16string CardIdentifierStringForAutofillDisplay(
       std::u16string customized_nickname = std::u16string()) const;
+#if defined(OS_ANDROID)
+  // Label for the card to be displayed in the manual filling view on Android.
+  std::u16string CardIdentifierStringForManualFilling() const;
+#endif  // OS_ANDROID
   // A label for this card formatted as 'Nickname - ****2345, expires on MM/YY'
   // if nickname experiment is turned on and nickname is available; otherwise,
   // formatted as 'IssuerNetwork - ****2345, expires on MM/YY'.
@@ -328,6 +332,10 @@ class CreditCard : public AutofillDataModel {
 
   // Should be used ONLY by tests.
   std::u16string NicknameAndLastFourDigitsForTesting() const;
+
+  // Static method to help create a virtual card from an existing `CreditCard`
+  // object.
+  static std::unique_ptr<CreditCard> CreateVirtualCard(const CreditCard& card);
 
   VirtualCardEnrollmentState virtual_card_enrollment_state() const {
     return virtual_card_enrollment_state_;

@@ -70,7 +70,8 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
 
   UserInfo user_info(data->network());
 
-  std::u16string obfuscated_number = data->ObfuscatedLastFourDigits();
+  std::u16string obfuscated_number =
+      data->CardIdentifierStringForManualFilling();
   // The `text_to_fill` field is set to an empty string as we're populating the
   // `id` of the `UserInfoField` which would be used to determine the type of
   // the card and fill the form accordingly.
@@ -180,15 +181,19 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   }
 
   CreditCard* matching_card = *card_iter;
-  if (matching_card->record_type() ==
-      CreditCard::RecordType::MASKED_SERVER_CARD) {
-    DCHECK(GetManager());
-    last_focused_field_id_ = focused_field_id;
-    GetManager()->credit_card_access_manager()->FetchCreditCard(matching_card,
-                                                                AsWeakPtr());
-  } else {
-    GetDriver()->RendererShouldFillFieldWithValue(focused_field_id,
-                                                  matching_card->number());
+  switch (matching_card->record_type()) {
+    case CreditCard::RecordType::MASKED_SERVER_CARD:
+    case CreditCard::RecordType::VIRTUAL_CARD:
+      DCHECK(GetManager());
+      last_focused_field_id_ = focused_field_id;
+      GetManager()->credit_card_access_manager()->FetchCreditCard(matching_card,
+                                                                  AsWeakPtr());
+      break;
+    case CreditCard::RecordType::LOCAL_CARD:
+    case CreditCard::RecordType::FULL_SERVER_CARD:
+      GetDriver()->RendererShouldFillFieldWithValue(focused_field_id,
+                                                    matching_card->number());
+      break;
   }
 }
 
@@ -243,6 +248,7 @@ void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
   } else {
     cards_cache_.clear();  // If cards cannot be filled, don't show them.
     cached_server_cards_.clear();
+    virtual_cards_cache_.clear();
   }
   absl::optional<AccessorySheetData> data = GetSheetData();
   if (source_observer_) {
@@ -326,9 +332,26 @@ CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
 void CreditCardAccessoryControllerImpl::FetchSuggestions() {
   if (!personal_data_manager_) {
     cards_cache_.clear();  // No data available.
+    virtual_cards_cache_.clear();
   } else {
     cards_cache_ = personal_data_manager_->GetCreditCardsToSuggest(
         /*include_server_cards=*/true);
+    // If any of the server cards are enrolled for virtual cards, then insert a
+    // virtual card suggestion right before the actual server card.
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableMerchantBoundVirtualCards)) {
+      std::vector<CreditCard*> cards_to_suggest_with_virtual_cards;
+      for (CreditCard* card : cards_cache_) {
+        if (card->virtual_card_enrollment_state() == CreditCard::ENROLLED) {
+          std::unique_ptr<CreditCard> virtual_card =
+              CreditCard::CreateVirtualCard(*card);
+          cards_to_suggest_with_virtual_cards.push_back(virtual_card.get());
+          virtual_cards_cache_.push_back(std::move(virtual_card));
+        }
+        cards_to_suggest_with_virtual_cards.push_back(card);
+      }
+      cards_cache_ = std::move(cards_to_suggest_with_virtual_cards);
+    }
   }
   if (!GetManager() || !GetManager()->credit_card_access_manager()) {
     cached_server_cards_.clear();  // No data available.
