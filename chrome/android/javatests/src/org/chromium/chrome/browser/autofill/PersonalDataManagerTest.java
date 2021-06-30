@@ -11,8 +11,9 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -22,7 +23,9 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.ValueWithStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,9 +36,13 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@Batch.SplitByFeature
 public class PersonalDataManagerTest {
-    @ClassRule
-    public static final ChromeBrowserTestRule sChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule
+    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+
+    @Rule
+    public final TestRule mFeaturesProcessorRule = new Features.InstrumentationProcessor();
 
     private AutofillTestHelper mHelper;
 
@@ -228,7 +235,11 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void testRespectVerificationStatuses() throws TimeoutException {
+    @Features.
+    EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_MORE_STRUCTURE_IN_ADDRESSES,
+            ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_MORE_STRUCTURE_IN_NAMES})
+    public void
+    testRespectVerificationStatuses() throws TimeoutException {
         AutofillProfile profileWithDifferentStatuses = new AutofillProfile("" /* guid */,
                 "" /* origin */, true,
                 new ValueWithStatus("" /* honorific prefix */, VerificationStatus.NO_STATUS),
