@@ -100,7 +100,8 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
   void ClearUserDefaults() {
     NSArray<NSString*>* keys = @[
       @"userInteractedWithNonModalPromoCount",
-      @"lastTimeUserInteractedWithFullscreenPromo"
+      @"lastTimeUserInteractedWithFullscreenPromo",
+      @"lastHTTPURLOpenTime",
     ];
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     for (NSString* key in keys) {
