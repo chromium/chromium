@@ -16,6 +16,11 @@
 namespace blink {
 
 // A class representing the key that Storage APIs use to key their storage on.
+//
+// At the moment, while we are migrating the code, StorageKey is just a wrapper
+// around an origin. More fields will be added later in order to implement a
+// finer storage partitioning. For more details, see
+// https://docs.google.com/document/d/1xd6MXcUhfnZqIe5dt2CTyCn6gEZ7nOezAEWS0W9hwbQ/edit.
 class BLINK_COMMON_EXPORT StorageKey {
  public:
   StorageKey() = default;
