@@ -52,8 +52,6 @@
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/url_loader_wrapper_impl.h"
-#include "ppapi/cpp/instance.h"
-#include "ppapi/cpp/private/pdf.h"
 #include "printing/mojom/print.mojom-shared.h"
 #include "printing/units.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -372,17 +370,16 @@ wchar_t SimplifyForSearch(wchar_t c) {
   }
 }
 
-PP_PrivateFocusObjectType GetAnnotationFocusType(
-    FPDF_ANNOTATION_SUBTYPE annot_type) {
+FocusObjectType GetAnnotationFocusType(FPDF_ANNOTATION_SUBTYPE annot_type) {
   switch (annot_type) {
     case FPDF_ANNOT_LINK:
-      return PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_LINK;
+      return FocusObjectType::kLink;
     case FPDF_ANNOT_HIGHLIGHT:
-      return PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_HIGHLIGHT;
+      return FocusObjectType::kHighlight;
     case FPDF_ANNOT_WIDGET:
-      return PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_TEXT_FIELD;
+      return FocusObjectType::kTextField;
     default:
-      return PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_NONE;
+      return FocusObjectType::kNone;
   }
 }
 
@@ -1049,9 +1046,8 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
   }
 }
 
-PP_PrivateAccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
-  PP_PrivateAccessibilityFocusInfo focus_info = {
-      PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_NONE, 0, 0};
+AccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
+  AccessibilityFocusInfo focus_info = {FocusObjectType::kNone, 0, 0};
 
   switch (focus_item_type_) {
     case FocusElementType::kNone: {
@@ -1064,12 +1060,11 @@ PP_PrivateAccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
       DCHECK(ret);
 
       if (PageIndexInBounds(page_index) && focused_annot) {
-        PP_PrivateFocusObjectType type =
+        FocusObjectType type =
             GetAnnotationFocusType(FPDFAnnot_GetSubtype(focused_annot));
         int annot_index = FPDFPage_GetAnnotIndex(pages_[page_index]->GetPage(),
                                                  focused_annot);
-        if (type != PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_NONE &&
-            annot_index >= 0) {
+        if (type != FocusObjectType::kNone && annot_index >= 0) {
           focus_info.focused_object_type = type;
           focus_info.focused_object_page_index = page_index;
           focus_info.focused_annotation_index_in_page = annot_index;
@@ -1079,8 +1074,7 @@ PP_PrivateAccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
       break;
     }
     case FocusElementType::kDocument: {
-      focus_info.focused_object_type =
-          PP_PrivateFocusObjectType::PP_PRIVATEFOCUSOBJECT_DOCUMENT;
+      focus_info.focused_object_type = FocusObjectType::kDocument;
       break;
     }
   }

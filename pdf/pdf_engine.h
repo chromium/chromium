@@ -19,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/callback.h"
-#include "ppapi/cpp/private/pdf.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -63,6 +62,7 @@ namespace chrome_pdf {
 class Thumbnail;
 class UrlLoader;
 struct AccessibilityActionData;
+struct AccessibilityFocusInfo;
 struct AccessibilityLinkInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
@@ -470,7 +470,7 @@ class PDFEngine {
   virtual void UpdateFocus(bool has_focus) = 0;
 
   // Returns the focus info of current focus item.
-  virtual PP_PrivateAccessibilityFocusInfo GetFocusInfo() = 0;
+  virtual AccessibilityFocusInfo GetFocusInfo() = 0;
 
   virtual uint32_t GetLoadedByteSize() = 0;
   virtual bool ReadLoadedBytes(uint32_t length, void* buffer) = 0;

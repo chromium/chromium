@@ -26,7 +26,6 @@
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_range.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
@@ -174,7 +173,7 @@ class PDFiumEngine : public PDFEngine,
                     uint32_t* selection_end_char_index) override;
   void KillFormFocus() override;
   void UpdateFocus(bool has_focus) override;
-  PP_PrivateAccessibilityFocusInfo GetFocusInfo() override;
+  AccessibilityFocusInfo GetFocusInfo() override;
   uint32_t GetLoadedByteSize() override;
   bool ReadLoadedBytes(uint32_t length, void* buffer) override;
   void RequestThumbnail(int page_index,
