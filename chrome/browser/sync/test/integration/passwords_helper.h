@@ -52,7 +52,7 @@ void UpdateLoginWithPrimaryKey(password_manager::PasswordStore* store,
 // CreateTestPasswordForm()).
 // TODO(treib): Rename this to make clear how specific it is.
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetLogins(
-    password_manager::PasswordStore* store);
+    password_manager::PasswordStoreInterface* store);
 
 // Returns all insecure credentials from |store|.
 std::vector<password_manager::InsecureCredential> GetAllInsecureCredentials(
@@ -60,7 +60,7 @@ std::vector<password_manager::InsecureCredential> GetAllInsecureCredentials(
 
 // Returns all logins from |store| (including blocklisted ones)
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
-    password_manager::PasswordStore* store);
+    password_manager::PasswordStoreInterface* store);
 
 // Removes the login held in |form| from the password store |store|.  This
 // method blocks until the operation is complete.

@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, MergeWithTheMostRecent) {
   EXPECT_EQ(2, GetPasswordCount(0));
   // All passwords should be the recent ones.
   for (const std::unique_ptr<PasswordForm>& form :
-       GetLogins(GetPasswordStore(0))) {
+       GetLogins(GetProfilePasswordStoreInterface(0))) {
     EXPECT_EQ(now, form->date_created);
   }
 }

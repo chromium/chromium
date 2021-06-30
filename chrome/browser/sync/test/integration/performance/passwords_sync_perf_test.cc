@@ -17,6 +17,7 @@ using passwords_helper::AddLogin;
 using passwords_helper::CreateTestPasswordForm;
 using passwords_helper::GetPasswordCount;
 using passwords_helper::GetPasswordStore;
+using passwords_helper::GetProfilePasswordStoreInterface;
 using passwords_helper::UpdateLogin;
 using sync_timing_helper::TimeUntilQuiescence;
 
@@ -71,7 +72,7 @@ void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {
 
 void PasswordsSyncPerfTest::UpdateLogins(int profile) {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> logins =
-      passwords_helper::GetLogins(GetPasswordStore(profile));
+      passwords_helper::GetLogins(GetProfilePasswordStoreInterface(profile));
   for (auto& login : logins) {
     login->password_value = base::ASCIIToUTF16(NextPassword());
     UpdateLogin(GetPasswordStore(profile), *login);

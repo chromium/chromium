@@ -209,7 +209,8 @@ void UpdateLoginWithPrimaryKey(PasswordStore* store,
   wait_event.Wait();
 }
 
-std::vector<std::unique_ptr<PasswordForm>> GetLogins(PasswordStore* store) {
+std::vector<std::unique_ptr<PasswordForm>> GetLogins(
+    PasswordStoreInterface* store) {
   EXPECT_TRUE(store);
   password_manager::PasswordFormDigest matcher_form = {
       PasswordForm::Scheme::kHtml, kFakeSignonRealm, GURL()};
@@ -218,7 +219,8 @@ std::vector<std::unique_ptr<PasswordForm>> GetLogins(PasswordStore* store) {
   return consumer.WaitForResult();
 }
 
-std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(PasswordStore* store) {
+std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(
+    PasswordStoreInterface* store) {
   EXPECT_TRUE(store);
   PasswordStoreConsumerHelper consumer;
   store->GetAllLogins(&consumer);
@@ -302,9 +304,9 @@ PasswordStoreInterface* GetAccountPasswordStoreInterface(int index) {
 
 bool ProfileContainsSamePasswordFormsAsVerifier(int index) {
   std::vector<std::unique_ptr<PasswordForm>> verifier_forms =
-      GetLogins(GetVerifierPasswordStore());
+      GetLogins(GetVerifierProfilePasswordStoreInterface());
   std::vector<std::unique_ptr<PasswordForm>> forms =
-      GetLogins(GetPasswordStore(index));
+      GetLogins(GetProfilePasswordStoreInterface(index));
   ClearSyncDateField(&forms);
 
   std::ostringstream mismatch_details_stream;
@@ -320,9 +322,9 @@ bool ProfileContainsSamePasswordFormsAsVerifier(int index) {
 
 bool ProfilesContainSamePasswordForms(int index_a, int index_b) {
   std::vector<std::unique_ptr<PasswordForm>> forms_a =
-      GetLogins(GetPasswordStore(index_a));
+      GetLogins(GetProfilePasswordStoreInterface(index_a));
   std::vector<std::unique_ptr<PasswordForm>> forms_b =
-      GetLogins(GetPasswordStore(index_b));
+      GetLogins(GetProfilePasswordStoreInterface(index_b));
   ClearSyncDateField(&forms_a);
   ClearSyncDateField(&forms_b);
 
@@ -377,11 +379,11 @@ bool AllProfilesContainSameInsecurePasswords() {
 }
 
 int GetPasswordCount(int index) {
-  return GetLogins(GetPasswordStore(index)).size();
+  return GetLogins(GetProfilePasswordStoreInterface(index)).size();
 }
 
 int GetVerifierPasswordCount() {
-  return GetLogins(GetVerifierPasswordStore()).size();
+  return GetLogins(GetVerifierProfilePasswordStoreInterface()).size();
 }
 
 PasswordForm CreateTestPasswordForm(int index) {
@@ -579,7 +581,8 @@ bool PasswordFormsChecker::IsExitConditionSatisfied(std::ostream* os) {
 
 bool PasswordFormsChecker::IsExitConditionSatisfiedImpl(std::ostream* os) {
   std::vector<std::unique_ptr<PasswordForm>> forms =
-      passwords_helper::GetLogins(passwords_helper::GetPasswordStore(index_));
+      passwords_helper::GetLogins(
+          passwords_helper::GetProfilePasswordStoreInterface(index_));
   ClearSyncDateField(&forms);
 
   std::ostringstream mismatch_details_stream;
