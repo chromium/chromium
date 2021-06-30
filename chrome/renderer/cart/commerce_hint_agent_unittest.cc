@@ -806,10 +806,10 @@ TEST(CommerceHintAgentTest, IsPurchaseByURL) {
 
 TEST(CommerceHintAgentTest, IsPurchaseByForm) {
   for (auto* str : kPurchaseText) {
-    EXPECT_TRUE(CommerceHintAgent::IsPurchase(str)) << str;
+    EXPECT_TRUE(CommerceHintAgent::IsPurchase(GURL(), str)) << str;
   }
   for (auto* str : kNotPurchaseText) {
-    EXPECT_FALSE(CommerceHintAgent::IsPurchase(str)) << str;
+    EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(), str)) << str;
   }
 }
 
@@ -877,10 +877,10 @@ float BenchmarkIsVisitCheckout(const GURL& url) {
   return elapsed_us;
 }
 
-float BenchmarkIsPurchase(base::StringPiece str) {
+float BenchmarkIsPurchase(const GURL& url, base::StringPiece str) {
   const base::TimeTicks now = base::TimeTicks::Now();
   for (int i = 0; i < kTestIterations; ++i) {
-    CommerceHintAgent::IsPurchase(str);
+    CommerceHintAgent::IsPurchase(url, str);
   }
   const base::TimeTicks end = base::TimeTicks::Now();
   float elapsed_us =
@@ -937,7 +937,7 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
   CommerceHintAgent::IsAddToCart(str);
   CommerceHintAgent::IsVisitCart(basic_url);
   CommerceHintAgent::IsVisitCheckout(basic_url);
-  CommerceHintAgent::IsPurchase(str);
+  CommerceHintAgent::IsPurchase(basic_url, str);
   for (int length = 16; length <= (1L << 20); length *= 4) {
     const GURL url("http://example.com/" + str);
 
@@ -967,9 +967,9 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
     // Without capping the length, it would take at least 2000us.
     EXPECT_LT(elapsed_us, 50.0 * slow_factor);
 
-    elapsed_us = BenchmarkIsPurchase(str);
+    elapsed_us = BenchmarkIsPurchase(basic_url, str);
     // Typical value is ~0.1us.
-    EXPECT_LT(elapsed_us, 1.0 * slow_factor);
+    EXPECT_LT(elapsed_us, 5.0 * slow_factor);
 
     elapsed_us = BenchmarkShouldSkip(str);
     // Typical value is ~10us.

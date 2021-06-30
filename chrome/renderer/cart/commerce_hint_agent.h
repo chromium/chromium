@@ -33,8 +33,8 @@ class CommerceHintAgent
   static bool IsVisitCheckout(const GURL& main_frame_url);
   // Whether the main frame URL is a purchase page.
   static bool IsPurchase(const GURL& main_frame_url);
-  // Whether the button text corresponds to a purchase.
-  static bool IsPurchase(base::StringPiece button_text);
+  // Whether the button text in a page with |url| corresponds to a purchase.
+  static bool IsPurchase(const GURL& url, base::StringPiece button_text);
   // Whether the product should be skipped, based on product name.
   static bool ShouldSkip(base::StringPiece product_name);
   // Whether the request with navigation URL as |navigation_url| and request URL

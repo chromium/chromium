@@ -59,6 +59,21 @@ constexpr base::FeatureParam<std::string> kSkipAddToCartMapping{
     // Empty JSON string.
     ""};
 
+constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
+    &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
+    // Empty JSON string.
+    ""};
+
+constexpr base::FeatureParam<std::string> kPurchaseURLPatternMapping{
+    &ntp_features::kNtpChromeCartModule, "purchase-url-pattern-mapping",
+    // Empty JSON string.
+    ""};
+
+constexpr base::FeatureParam<std::string> kPurchaseButtonPatternMapping{
+    &ntp_features::kNtpChromeCartModule, "purchase-button-pattern-mapping",
+    // Empty JSON map.
+    "{}"};
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -351,6 +366,58 @@ const std::map<std::string, std::string>& GetSkipAddToCartMapping() {
   return *skip_map;
 }
 
+const std::map<std::string, std::string>& GetCheckoutPatternMapping() {
+  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
+    const base::Value json(
+        base::JSONReader::Read(
+            kCheckoutPatternMapping.Get().empty()
+                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+                      IDR_CHECKOUT_URL_REGEX_DOMAIN_MAPPING_JSON)
+                : kCheckoutPatternMapping.Get())
+            .value());
+    DCHECK(json.is_dict());
+    std::map<std::string, std::string> map;
+    for (const auto& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second.GetString())});
+    }
+    return map;
+  }());
+  return *pattern_map;
+}
+
+const std::map<std::string, std::string>& GetPurchaseURLPatternMapping() {
+  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
+    const base::Value json(
+        base::JSONReader::Read(
+            kPurchaseURLPatternMapping.Get().empty()
+                ? ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+                      IDR_PURCHASE_URL_REGEX_DOMAIN_MAPPING_JSON)
+                : kPurchaseURLPatternMapping.Get())
+            .value());
+    DCHECK(json.is_dict());
+    std::map<std::string, std::string> map;
+    for (const auto& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second.GetString())});
+    }
+    return map;
+  }());
+  return *pattern_map;
+}
+
+const std::map<std::string, std::string>& GetPurchaseButtonPatternMapping() {
+  static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
+    const base::Value json(
+        base::JSONReader::Read(kPurchaseButtonPatternMapping.Get()).value());
+    DCHECK(json.is_dict());
+    std::map<std::string, std::string> map;
+    for (const auto& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second.GetString())});
+    }
+    return map;
+  }());
+  return *pattern_map;
+}
+
 void DetectAddToCart(content::RenderFrame* render_frame,
                      const blink::WebURLRequest& request) {
   blink::WebLocalFrame* frame = render_frame->GetWebFrame();
@@ -491,26 +558,63 @@ bool CommerceHintAgent::IsVisitCart(const GURL& url) {
 }
 
 bool CommerceHintAgent::IsVisitCheckout(const GURL& url) {
-  if (url.DomainIs(kAmazonDomain)) {
-    return base::StartsWith(url.path_piece(), "/gp/buy/spc/handlers/display");
+  const std::map<std::string, std::string>& checkout_string_map =
+      GetCheckoutPatternMapping();
+  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
+      checkout_regex_map;
+  std::string domain = eTLDPlusOne(url);
+  std::string url_string = CanonicalURL(url).substr(0, kLengthLimit);
+  if (checkout_string_map.find(domain) == checkout_string_map.end()) {
+    return PartialMatch(url_string, GetVisitCheckoutPattern());
   }
-  if (url.DomainIs(kEbayDomain)) {
-    return url.spec().find("pay.ebay.com/rgxo") != std::string::npos;
+  static re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  if (checkout_regex_map->find(domain) == checkout_regex_map->end()) {
+    checkout_regex_map->insert(
+        {domain,
+         std::make_unique<re2::RE2>(checkout_string_map.at(domain), options)});
   }
-  return PartialMatch(CanonicalURL(url).substr(0, kLengthLimit),
-                      GetVisitCheckoutPattern());
+  return PartialMatch(url_string, *checkout_regex_map->at(domain));
 }
 
 bool CommerceHintAgent::IsPurchase(const GURL& url) {
-  if (url.DomainIs(kAmazonDomain)) {
-    return base::StartsWith(
-        url.path_piece(), "/gp/buy/spc/handlers/static-submit-decoupled.html");
+  const std::map<std::string, std::string>& purchase_string_map =
+      GetPurchaseURLPatternMapping();
+  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
+      purchase_regex_map;
+  std::string domain = eTLDPlusOne(url);
+  std::string url_string = CanonicalURL(url).substr(0, kLengthLimit);
+  if (purchase_string_map.find(domain) == purchase_string_map.end()) {
+    return false;
   }
-  return false;
+  static re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  if (purchase_regex_map->find(domain) == purchase_regex_map->end()) {
+    purchase_regex_map->insert(
+        {domain,
+         std::make_unique<re2::RE2>(purchase_string_map.at(domain), options)});
+  }
+  return PartialMatch(url_string, *purchase_regex_map->at(domain));
 }
 
-bool CommerceHintAgent::IsPurchase(base::StringPiece button_text) {
-  return PartialMatch(button_text, GetPurchaseTextPattern());
+bool CommerceHintAgent::IsPurchase(const GURL& url,
+                                   base::StringPiece button_text) {
+  const std::map<std::string, std::string>& purchase_string_map =
+      GetPurchaseButtonPatternMapping();
+  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
+      purchase_regex_map;
+  std::string domain = eTLDPlusOne(url);
+  if (purchase_string_map.find(domain) == purchase_string_map.end()) {
+    return PartialMatch(button_text, GetPurchaseTextPattern());
+  }
+  static re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  if (purchase_regex_map->find(domain) == purchase_regex_map->end()) {
+    purchase_regex_map->insert(
+        {domain,
+         std::make_unique<re2::RE2>(purchase_string_map.at(domain), options)});
+  }
+  return PartialMatch(button_text, *purchase_regex_map->at(domain));
 }
 
 bool CommerceHintAgent::ShouldSkip(base::StringPiece product_name) {
@@ -692,7 +796,7 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
     return;
 
   for (const std::string& button_text : ExtractButtonTexts(form)) {
-    if (IsPurchase(button_text)) {
+    if (IsPurchase(url, button_text)) {
       RecordCommerceEvent(CommerceEvent::kPurchaseByForm);
       OnPurchase(render_frame());
       return;
