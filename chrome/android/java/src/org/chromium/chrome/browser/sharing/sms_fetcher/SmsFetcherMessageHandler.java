@@ -82,8 +82,7 @@ public class SmsFetcherMessageHandler {
                 return resources.getString(R.string.sms_fetcher_notification_title_simple_string,
                         oneTimeCode, topOrigin);
             }
-            return resources.getString(
-                    R.string.sms_fetcher_notification_title_for_embedded_frame_simple_string,
+            return resources.getString(R.string.sms_fetcher_notification_title_simple_string,
                     oneTimeCode, embeddedOrigin);
         }
         return resources.getString(
@@ -104,9 +103,7 @@ public class SmsFetcherMessageHandler {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
             if (embeddedOrigin == null) return clientName;
-            return resources.getString(
-                    R.string.sms_fetcher_notification_text_for_embedded_frame_simple_string,
-                    topOrigin, clientName);
+            return topOrigin + " · " + clientName;
         }
         return embeddedOrigin == null
                 ? resources.getString(R.string.sms_fetcher_notification_text, topOrigin)

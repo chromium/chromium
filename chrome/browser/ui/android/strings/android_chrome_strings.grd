@@ -4168,14 +4168,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Let <ph name="EMBEDDED_ORIGIN">%1$s<ex>payment.com</ex></ph> verify it's you for <ph name="TOP_ORIGIN">%2$s<ex>shopping.com</ex></ph>
       </message>
 
-      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE_SIMPLE_STRING" translateable="false" desc="Title text shown when the Android Chrome receives a ONE_TIME_CODE from an incoming SMS and ask users for permission to submit the code to ORIGIN">
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE_SIMPLE_STRING" desc="Title text shown when the Android Chrome receives a ONE_TIME_CODE from an incoming SMS and ask users for permission to submit the code to ORIGIN">
         Submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> to <ph name="ORIGIN">%2$s<ex>example.com</ex></ph>?
-      </message>
-      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE_FOR_EMBEDDED_FRAME_SIMPLE_STRING" translateable="false" desc="Title text shown when the Android Chrome receives a ONE_TIME_CODE from an incoming SMS and ask users for permission to submit the code to EMBEDDED_ORIGIN.">
-        Submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> to <ph name="EMBEDDED_ORIGIN">%2$s<ex>payment.com</ex></ph>?
-      </message>
-      <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT_FOR_EMBEDDED_FRAME_SIMPLE_STRING" translateable="false" desc="Content text shown the TOP_ORIGIN and the remote device name.">
-        <ph name="TOP_ORIGIN">%1$s<ex>shopping.com</ex></ph> <ph name="CLIENT_NAME">%2$s<ex>Zoe's Macbook</ex></ph>
       </message>
 
       <!-- Interventions -->
