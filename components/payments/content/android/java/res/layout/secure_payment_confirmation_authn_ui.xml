@@ -3,18 +3,23 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- Ignores UnusedResources since it will be used in a following patch by the
-     SPC authentication feature -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:textDirection="locale"
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/secure_payment_confirmation_authn_ui_horizontal_padding"
-    android:paddingVertical="@dimen/secure_payment_confirmation_authn_ui_vertical_padding">
+    android:paddingBottom="@dimen/secure_payment_confirmation_authn_ui_vertical_padding">
+
+    <!-- Drag handlebar -->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingVertical="@dimen/secure_payment_confirmation_authn_ui_drag_handle_spacing"
+        android:importantForAccessibility="no"
+        android:src="@drawable/drag_handlebar" />
 
     <!-- Shopping cart image -->
     <ImageView

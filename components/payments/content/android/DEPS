@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/browser_ui/bottomsheet/android",
   "+components/embedder_support/android",
   "+components/payments/content/android/jni_headers",
   "+components/webdata_services",

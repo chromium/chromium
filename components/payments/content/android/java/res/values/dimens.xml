@@ -27,6 +27,7 @@
     <dimen name="secure_payment_confirmation_authn_ui_icon_size">16dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_amount_currency_spacing">4dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_payment_icon_label_spacing">4dp</dimen>
+    <dimen name="secure_payment_confirmation_authn_ui_drag_handle_spacing">8dp</dimen>
 
     <!-- Payment minimal UI spacing -->
     <dimen name="payment_minimal_ui_amount_currency_spacing">4dp</dimen>

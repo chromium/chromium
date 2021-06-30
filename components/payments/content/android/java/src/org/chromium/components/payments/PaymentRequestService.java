@@ -16,6 +16,7 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
+import org.chromium.components.payments.spcauthn.SecurePaymentConfirmationAuthnController;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -120,6 +121,10 @@ public class PaymentRequestService
     /** The helper to create and fill the response to send to the merchant. */
     @Nullable
     private PaymentResponseHelperInterface mPaymentResponseHelper;
+
+    // mSpcAuthnUiController is null when it is closed and before it is shown.
+    @Nullable
+    private SecurePaymentConfirmationAuthnController mSpcAuthnUiController;
 
     /**
      * A mapping of the payment method names to the corresponding payment method specific data. If
@@ -847,10 +852,33 @@ public class PaymentRequestService
         mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
                 mSpec.getRawTotal().amount.value, false /*completed*/);
         if (isSecurePaymentConfirmationApplicable()) {
-            mJourneyLogger.setShown();
-            // TODO(crbug.com/1204565): Replace the auto-accept with a SPC payment UI.
-            onSecurePaymentConfirmationUiAccepted(mBrowserPaymentRequest.getSelectedPaymentApp());
-            return null;
+            assert mBrowserPaymentRequest.getSelectedPaymentApp() != null;
+            assert mSpcAuthnUiController == null;
+
+            mSpcAuthnUiController = new SecurePaymentConfirmationAuthnController();
+            boolean success = mSpcAuthnUiController.show(mWebContents,
+                    mBrowserPaymentRequest.getSelectedPaymentApp().getDrawableIcon(),
+                    mBrowserPaymentRequest.getSelectedPaymentApp().getLabel(), getRawTotal(),
+                    (response) -> {
+                        if (response) {
+                            onSecurePaymentConfirmationUiAccepted(
+                                    mBrowserPaymentRequest.getSelectedPaymentApp());
+                        } else {
+                            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                            disconnectFromClientWithDebugMessage(
+                                    ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+                        }
+
+                        mSpcAuthnUiController = null;
+                    });
+
+            if (success) {
+                mJourneyLogger.setShown();
+                return null;
+            } else {
+                mSpcAuthnUiController = null;
+                return ErrorStrings.SPC_AUTHN_UI_SUPPRESSED;
+            }
         }
         return mBrowserPaymentRequest.onShowCalledAndAppsQueriedAndDetailsFinalized(
                 mIsUserGestureShow);
@@ -1457,6 +1485,11 @@ public class PaymentRequestService
         mHasClosed = true;
 
         sShowingPaymentRequest = null;
+
+        if (mSpcAuthnUiController != null) {
+            mSpcAuthnUiController.hide();
+            mSpcAuthnUiController = null;
+        }
 
         if (mBrowserPaymentRequest != null) {
             mBrowserPaymentRequest.close();

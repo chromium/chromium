@@ -90,9 +90,9 @@ generate_jni("jni_headers") {
 
 android_resources("minimal_java_resources") {
   sources = [
+    "//components/payments/content/android/minimal_java_res/drawable-night/save_card.xml",
     "//components/payments/content/android/minimal_java_res/drawable/google_pay.xml",
     "//components/payments/content/android/minimal_java_res/drawable/save_card.xml",
-    "//components/payments/content/android/minimal_java_res/drawable/save_card_dark.xml",
     "//components/payments/content/android/minimal_java_res/values-night/colors.xml",
     "//components/payments/content/android/minimal_java_res/values/colors.xml",
   ]
@@ -182,6 +182,10 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/WebAppManifestSection.java",
     "java/src/org/chromium/components/payments/intent/IsReadyToPayServiceHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
+    "java/src/org/chromium/components/payments/spcauthn/SecurePaymentConfirmationAuthnController.java",
+    "java/src/org/chromium/components/payments/spcauthn/SecurePaymentConfirmationAuthnProperties.java",
+    "java/src/org/chromium/components/payments/spcauthn/SecurePaymentConfirmationAuthnView.java",
+    "java/src/org/chromium/components/payments/spcauthn/SecurePaymentConfirmationAuthnViewBinder.java",
   ]
   resources_package = "org.chromium.components.payments"
   deps = [
@@ -191,6 +195,7 @@ android_library("full_java") {
     ":service_java",
     "//base:base_java",
     "//components/autofill/android:autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/embedder_support/android:util_java",
     "//components/page_info/android:java",
     "//components/payments/mojom:mojom_java",

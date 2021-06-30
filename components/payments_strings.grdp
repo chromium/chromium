@@ -685,13 +685,13 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_ENROLLMENT_SHEET_CLOSED" desc="Accessibility string read when the payment credential enrollment bottom sheet is closed.">
       Secure payment credential enrollment sheet is closed
     </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_DESCRIPTION" desc="Accessibility string read when the payment credential authentication bottom sheet is opened. It describes where the users can verify their purchase.">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_DESCRIPTION" desc="Accessibility string read when the payment credential authentication bottom sheet is opened. It describes where the users can verify their purchase." formatter_data="android_java">
       Secure payment credential authentication sheet
     </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_OPENED" desc="Accessibility string read when the payment credential authentication bottom sheet is opened.">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_OPENED" desc="Accessibility string read when the payment credential authentication bottom sheet is opened." formatter_data="android_java">
       Secure payment credential authentication sheet is opened
     </message>
-    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_CLOSED" desc="Accessibility string read when the payment credential authentication bottom sheet is closed.">
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_AUTHENTICATION_SHEET_CLOSED" desc="Accessibility string read when the payment credential authentication bottom sheet is closed." formatter_data="android_java">
       Secure payment credential authentication sheet is closed
     </message>
   </if>  <!-- is_android -->

@@ -3,12 +3,10 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- Ignores VectorRaster since the icon is intentionally wider than 200dp and
-     UnusedResources since it will be used in a following patch by the SPC
-     feature. -->
+<!-- Ignores VectorRaster since the icon is intentionally wider than 200dp. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="VectorRaster,UnusedResources"
+    tools:ignore="VectorRaster"
     android:width="320dp"
     android:height="114dp"
     android:viewportWidth="320"
