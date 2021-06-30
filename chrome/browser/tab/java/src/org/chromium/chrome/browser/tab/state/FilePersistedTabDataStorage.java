@@ -26,9 +26,7 @@ import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,7 +34,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -375,16 +372,11 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         @Override
         public ByteBuffer executeSyncTask() {
             boolean success = false;
-            ByteBuffer res = null;
-            FileInputStream fileInputStream = null;
-            DataInputStream dataInputStream = null;
+            byte[] res = null;
             try {
                 long startTime = SystemClock.elapsedRealtime();
                 AtomicFile atomicFile = new AtomicFile(mFile);
-                fileInputStream = atomicFile.openRead();
-                dataInputStream = new DataInputStream(fileInputStream);
-                FileChannel channel = fileInputStream.getChannel();
-                res = channel.map(MapMode.READ_ONLY, channel.position(), channel.size());
+                res = atomicFile.readFully();
                 success = true;
                 RecordHistogram.recordTimesHistogram(
                         String.format(Locale.US, "Tabs.PersistedTabData.Storage.LoadTime.%s",
@@ -402,13 +394,10 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                                 "IOException while attempting to restore "
                                         + "%s. Details: %s",
                                 mFile, e.getMessage()));
-            } finally {
-                StreamUtil.closeQuietly(dataInputStream);
-                StreamUtil.closeQuietly(fileInputStream);
             }
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Restore." + getUmaTag(), success);
-            return res;
+            return res == null ? null : ByteBuffer.wrap(res);
         }
 
         @Override
