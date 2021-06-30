@@ -203,10 +203,8 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     if (!surface || !surface->IsInputEnabled(surface))
       return false;
 
-    gfx::Point local_point = event.location();
-    if (window->parent())
-      aura::Window::ConvertPointToTarget(window->parent(), window,
-                                         &local_point);
+    gfx::Point local_point =
+        ConvertEventLocationToWindowCoordinates(window, event);
     return surface->HitTest(local_point);
   }
 

@@ -58,11 +58,9 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     if (!surface)
       return false;
 
-    gfx::Point local_point = event.location();
+    gfx::Point local_point =
+        ConvertEventLocationToWindowCoordinates(window, event);
 
-    if (window->parent())
-      aura::Window::ConvertPointToTarget(window->parent(), window,
-                                         &local_point);
     aura::Window::ConvertPointToTarget(window, surface->window(), &local_point);
     return surface->HitTest(local_point);
   }

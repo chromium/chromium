@@ -195,12 +195,8 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   // Overridden from aura::WindowTargeter:
   bool EventLocationInsideBounds(aura::Window* window,
                                  const ui::LocatedEvent& event) const override {
-    gfx::Point local_point = event.location();
-
-    if (window->parent()) {
-      aura::Window::ConvertPointToTarget(window->parent(), window,
-                                         &local_point);
-    }
+    gfx::Point local_point =
+        ConvertEventLocationToWindowCoordinates(window, event);
 
     if (IsInResizeHandle(window, event, local_point))
       return true;

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/window_properties.h"
+#include "ash/utility/rounded_window_targeter.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
@@ -216,6 +217,9 @@ class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
     web_view()->EnableSizingFromWebContents(
         /*min_size=*/preferred_size,
         /*max_size=*/preferred_size);
+
+    GetWidget()->GetNativeWindow()->SetEventTargeter(
+        std::make_unique<ash::RoundedWindowTargeter>(current_radius_));
   }
 
  private:
