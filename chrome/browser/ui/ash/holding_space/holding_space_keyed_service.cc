@@ -7,7 +7,6 @@
 #include <set>
 
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
-#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -237,9 +236,11 @@ void HoldingSpaceKeyedService::AddDiagnosticsLog(
 void HoldingSpaceKeyedService::AddDownload(
     HoldingSpaceItem::Type type,
     const base::FilePath& download_file,
-    const HoldingSpaceProgress& progress) {
+    const HoldingSpaceProgress& progress,
+    HoldingSpaceImage::PlaceholderImageSkiaResolver
+        placeholder_image_skia_resolver) {
   DCHECK(HoldingSpaceItem::IsDownload(type));
-  AddItemOfType(type, download_file, progress);
+  AddItemOfType(type, download_file, progress, placeholder_image_skia_resolver);
 }
 
 void HoldingSpaceKeyedService::AddNearbyShare(
@@ -290,7 +291,9 @@ void HoldingSpaceKeyedService::AddItems(
 void HoldingSpaceKeyedService::AddItemOfType(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path,
-    const HoldingSpaceProgress& progress) {
+    const HoldingSpaceProgress& progress,
+    HoldingSpaceImage::PlaceholderImageSkiaResolver
+        placeholder_image_skia_resolver) {
   const GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, file_path);
   if (file_system_url.is_empty())
@@ -298,7 +301,9 @@ void HoldingSpaceKeyedService::AddItemOfType(
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
       type, file_path, file_system_url, progress,
-      base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
+      base::BindOnce(
+          &holding_space_util::ResolveImageWithPlaceholderImageSkiaResolver,
+          &thumbnail_loader_, placeholder_image_skia_resolver)));
 }
 
 void HoldingSpaceKeyedService::CancelItem(const HoldingSpaceItem* item) {

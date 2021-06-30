@@ -16,6 +16,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "ash/public/cpp/image_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
@@ -67,6 +68,11 @@ namespace ash {
 using holding_space::ScopedTestMountPoint;
 
 namespace {
+
+// Returns whether the bitmaps backing the specified `gfx::ImageSkia` are equal.
+bool BitmapsAreEqual(const gfx::ImageSkia& a, const gfx::ImageSkia& b) {
+  return gfx::BitmapsAreEqual(*a.bitmap(), *b.bitmap());
+}
 
 // Creates an empty holding space image.
 std::unique_ptr<HoldingSpaceImage> CreateTestHoldingSpaceImage(
@@ -426,16 +432,18 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   // Creates and returns a fake download item with the specified `state`,
-  // `file_path`, `received_bytes`, and `total_bytes`.
+  // `file_path`, `target_file_path`, `received_bytes`, and `total_bytes`.
   std::unique_ptr<content::FakeDownloadItem> CreateFakeDownloadItem(
       download::DownloadItem::DownloadState state,
       const base::FilePath& file_path,
+      const base::FilePath& target_file_path,
       int64_t received_bytes,
       int64_t total_bytes) {
     auto fake_download_item = std::make_unique<content::FakeDownloadItem>();
     fake_download_item->SetDummyFilePath(file_path);
     fake_download_item->SetReceivedBytes(received_bytes);
     fake_download_item->SetState(state);
+    fake_download_item->SetTargetFilePath(target_file_path);
     fake_download_item->SetTotalBytes(total_bytes);
 
     // Notify observers of the created download.
@@ -1673,6 +1681,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   // Create a fake in-progress download item and cache a function to update it.
   std::unique_ptr<content::FakeDownloadItem> fake_download_item =
       CreateFakeDownloadItem(current_state, current_path,
+                             /*target_file_path=*/base::FilePath(),
                              current_received_bytes, current_total_bytes);
   auto UpdateFakeDownloadItem = [&]() {
     fake_download_item->SetDummyFilePath(current_path);
@@ -1727,20 +1736,22 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
       ScopedTestMountPoint::CreateAndMountDownloads(profile);
   ASSERT_TRUE(downloads_mount->IsValid());
 
-  // Cache current state, file path, received bytes, and total bytes.
+  // Cache current state, file paths, received bytes, and total bytes.
   auto current_state = download::DownloadItem::IN_PROGRESS;
   base::FilePath current_path;
+  base::FilePath current_target_path;
   int64_t current_received_bytes = 0;
   int64_t current_total_bytes = 100;
 
   // Create a fake download item and cache a function to update it.
   std::unique_ptr<content::FakeDownloadItem> fake_download_item =
-      CreateFakeDownloadItem(current_state, current_path,
+      CreateFakeDownloadItem(current_state, current_path, current_target_path,
                              current_received_bytes, current_total_bytes);
   auto UpdateFakeDownloadItem = [&]() {
     fake_download_item->SetDummyFilePath(current_path);
     fake_download_item->SetReceivedBytes(current_received_bytes);
     fake_download_item->SetState(current_state);
+    fake_download_item->SetTargetFilePath(current_target_path);
     fake_download_item->SetTotalBytes(current_total_bytes);
     fake_download_item->NotifyDownloadUpdated();
   };
@@ -1749,8 +1760,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   // not yet have file path set.
   EXPECT_EQ(model->items().size(), 0u);
 
-  // Update the file path for the download.
-  current_path = downloads_mount->CreateFile(base::FilePath("tmp/temp_path"));
+  // Update the file paths for the download.
+  current_path = downloads_mount->CreateFile(base::FilePath("foo.crdownload"));
+  current_target_path = downloads_mount->CreateFile(base::FilePath("foo.png"));
   UpdateFakeDownloadItem();
 
   // Verify that a holding space item has been created.
@@ -1758,6 +1770,40 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
   EXPECT_EQ(model->items()[0]->file_path(), current_path);
   EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.f);
+
+  constexpr gfx::Size kImageSize(20, 20);
+  constexpr bool kDarkBackground = false;
+
+  // Initially the holding space image should be an empty bitmap until the
+  // thumbnail loader finishes processing the request. Note that requesting the
+  // image is what spawns the initial request.
+  gfx::ImageSkia actual_image =
+      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+  gfx::ImageSkia expected_image = image_util::CreateEmptyImage(kImageSize);
+  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+
+  ThumbnailLoader* thumbnail_loader =
+      HoldingSpaceKeyedServiceFactory::GetInstance()
+          ->GetService(GetProfile())
+          ->thumbnail_loader_for_testing();
+
+  {
+    // Wait for the `thumbnail_loader` to finish processing the request.
+    base::RunLoop run_loop;
+    thumbnail_loader->SetRequestFinishedCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+    thumbnail_loader->SetRequestFinishedCallbackForTesting(
+        base::NullCallback());
+  }
+
+  // Once the `thumbnail_loader` has finished processing the request, the image
+  // should represent the file type of the *target* file for the underlying
+  // download, not its current backing file.
+  actual_image =
+      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+  expected_image = GetIconForPath(current_target_path, kDarkBackground);
+  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
 
   // Update the total bytes for the download.
   current_total_bytes = -1;
@@ -1787,7 +1833,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
 
   // Complete the download.
   current_state = download::DownloadItem::COMPLETE;
-  current_path = downloads_mount->CreateFile(base::FilePath("tmp/final_path"));
+  current_path = current_target_path;
   current_received_bytes = current_total_bytes;
   UpdateFakeDownloadItem();
 
@@ -1798,16 +1844,19 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   // Create a new download.
   current_state = download::DownloadItem::IN_PROGRESS;
   current_path = base::FilePath();
+  current_target_path = base::FilePath();
   current_received_bytes = 0;
-  fake_download_item = CreateFakeDownloadItem(
-      current_state, current_path, current_received_bytes, current_total_bytes);
+  fake_download_item =
+      CreateFakeDownloadItem(current_state, current_path, current_target_path,
+                             current_received_bytes, current_total_bytes);
 
   // Verify that no holding space item has been created since the download does
   // not yet have file path set.
   EXPECT_EQ(model->items().size(), 0u);
 
-  // Update the file path and received bytes for the download.
-  current_path = downloads_mount->CreateFile(base::FilePath("tmp/temp_path2"));
+  // Update the file paths and received bytes for the download.
+  current_path = downloads_mount->CreateFile(base::FilePath("bar.crdownload"));
+  current_target_path = downloads_mount->CreateFile(base::FilePath("bar.zip"));
   current_received_bytes = 50;
   UpdateFakeDownloadItem();
 
@@ -1817,9 +1866,35 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   EXPECT_EQ(model->items()[0]->file_path(), current_path);
   EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.5f);
 
+  // Initially the holding space image should be an empty bitmap until the
+  // `thumbnail_loader` finishes processing the request. Note that requesting
+  // the image is what spawns the initial request.
+  actual_image =
+      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+  expected_image = image_util::CreateEmptyImage(kImageSize);
+  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+
+  {
+    // Wait for the `thumbnail_loader` to finish processing the request.
+    base::RunLoop run_loop;
+    thumbnail_loader->SetRequestFinishedCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+    thumbnail_loader->SetRequestFinishedCallbackForTesting(
+        base::NullCallback());
+  }
+
+  // Once the `thumbnail_loader` has finished processing the request, the image
+  // should represent the file type of the *target* file for the underlying
+  // download, not its current backing file.
+  actual_image =
+      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+  expected_image = GetIconForPath(current_target_path, kDarkBackground);
+  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+
   // Complete the download.
   current_state = download::DownloadItem::COMPLETE;
-  current_path = downloads_mount->CreateFile(base::FilePath("tmp/final_path2"));
+  current_path = current_target_path;
   current_received_bytes = current_total_bytes;
   UpdateFakeDownloadItem();
 
@@ -1828,6 +1903,14 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
   EXPECT_EQ(model->items()[0]->file_path(), current_path);
   EXPECT_TRUE(model->items()[0]->progress().IsComplete());
+
+  // The image should still be representative of the file type of the *target*
+  // file for the underlying download which by this point is actually the same
+  // file path as the backing file path.
+  actual_image =
+      model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+  expected_image = GetIconForPath(current_target_path, kDarkBackground);
+  EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
 }
 
 // Base class for tests which verify adding items to holding space works as

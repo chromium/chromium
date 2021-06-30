@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/scoped_observation.h"
@@ -94,7 +95,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   void AddDownload(
       HoldingSpaceItem::Type type,
       const base::FilePath& download_path,
-      const HoldingSpaceProgress& progress = HoldingSpaceProgress());
+      const HoldingSpaceProgress& progress = HoldingSpaceProgress(),
+      HoldingSpaceImage::PlaceholderImageSkiaResolver
+          placeholder_image_skia_resolver = base::NullCallback());
 
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
@@ -119,7 +122,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   void AddItemOfType(
       HoldingSpaceItem::Type type,
       const base::FilePath& file_path,
-      const HoldingSpaceProgress& progress = HoldingSpaceProgress());
+      const HoldingSpaceProgress& progress = HoldingSpaceProgress(),
+      HoldingSpaceImage::PlaceholderImageSkiaResolver
+          placeholder_image_skia_resolver = base::NullCallback());
 
   // Attempts to cancel/pause/resume the specified holding space `item`.
   void CancelItem(const HoldingSpaceItem* item);

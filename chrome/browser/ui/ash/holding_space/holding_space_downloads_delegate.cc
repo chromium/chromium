@@ -92,6 +92,13 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
     return download_item_->GetFullPath();
   }
 
+  // Returns the target file path associated with the underlying
+  // `download_item_`. NOTE: The target file path may be empty before a target
+  // file path has been picked.
+  const base::FilePath& GetTargetFilePath() const {
+    return download_item_->GetTargetFilePath();
+  }
+
   // Returns the current progress of the underlying `download_item_`.
   HoldingSpaceProgress GetProgress() const {
     if (IsComplete(download_item_))
@@ -121,6 +128,26 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
   // has yet been associated with the in-progress download.
   const HoldingSpaceItem* GetHoldingSpaceItem() const {
     return holding_space_item_;
+  }
+
+  // Returns a placeholder resolver which creates a placeholder corresponding
+  // to the file type of the associated *target* file path, rather than the
+  // *backing* file path, when a thumbnail cannot be generated.
+  HoldingSpaceImage::PlaceholderImageSkiaResolver
+  GetPlaceholderImageSkiaResolver() const {
+    return base::BindRepeating(
+        [](const base::WeakPtr<InProgressDownload>& in_progress_download,
+           const base::FilePath& file_path, const gfx::Size& size,
+           const absl::optional<bool>& dark_background,
+           const absl::optional<bool>& is_folder) {
+          return HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver()
+              .Run(in_progress_download &&
+                           IsInProgress(in_progress_download->download_item_)
+                       ? in_progress_download->GetTargetFilePath()
+                       : file_path,
+                   size, dark_background, is_folder);
+        },
+        weak_factory_.GetWeakPtr());
   }
 
   // Returns the text to display for the underlying `download_item`.
@@ -217,6 +244,8 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>
       download_item_observation_{this};
+
+  base::WeakPtrFactory<InProgressDownload> weak_factory_{this};
 };
 
 // HoldingSpaceDownloadsDelegate -----------------------------------------------
@@ -452,9 +481,10 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
 
   // Create.
   if (!item) {
-    service()->AddDownload(HoldingSpaceItem::Type::kDownload,
-                           in_progress_download->GetFilePath(),
-                           in_progress_download->GetProgress());
+    service()->AddDownload(
+        HoldingSpaceItem::Type::kDownload, in_progress_download->GetFilePath(),
+        in_progress_download->GetProgress(),
+        in_progress_download->GetPlaceholderImageSkiaResolver());
     in_progress_download->SetHoldingSpaceItem(
         item = model()->GetItem(HoldingSpaceItem::Type::kDownload,
                                 in_progress_download->GetFilePath()));
