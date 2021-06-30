@@ -13,6 +13,8 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -28,15 +30,16 @@ namespace chrome_test_util {
 
 namespace {
 
-// Starts forgetting all identities from the ChromeIdentity services.
+// Starts forgetting all identities from the ChromeAccountManagerService.
 //
 // Note: Forgetting an identity is a asynchronous operation. This function does
 // not wait for the forget identity operation to finish.
-void StartForgetAllIdentities(PrefService* pref_service) {
+void StartForgetAllIdentities(ChromeBrowserState* browser_state) {
+  ChromeAccountManagerService* account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  NSArray* identities_to_remove = account_manager_service->GetAllIdentities();
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  NSArray* identities_to_remove =
-      [NSArray arrayWithArray:identity_service->GetAllIdentities(pref_service)];
   for (ChromeIdentity* identity in identities_to_remove) {
     identity_service->ForgetIdentity(identity, ^(NSError* error) {
       if (error) {
@@ -94,7 +97,7 @@ void SignOutAndClearIdentities() {
 
     // Once the browser was signed out, start clearing all identities from the
     // ChromeIdentityService.
-    StartForgetAllIdentities(browser_state->GetPrefs());
+    StartForgetAllIdentities(browser_state);
   }
 }
 
