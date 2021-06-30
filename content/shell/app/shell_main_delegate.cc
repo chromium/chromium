@@ -310,11 +310,14 @@ void ShellMainDelegate::InitializeResourceBundle() {
     global_descriptors->Set(kShellPakDescriptor, pak_fd, pak_region);
   }
   DCHECK_GE(pak_fd, 0);
-  // This is clearly wrong. See crbug.com/330930
-  ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(base::File(pak_fd),
-                                                          pak_region);
+  // TODO(crbug.com/330930): A better way to prevent fdsan error from a double
+  // close is to refactor GlobalDescriptors.{Get,MaybeGet} to return
+  // "const base::File&" rather than fd itself.
+  base::File android_pak_file(pak_fd);
+  ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(
+      android_pak_file.Duplicate(), pak_region);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
-      base::File(pak_fd), pak_region, ui::SCALE_FACTOR_100P);
+      std::move(android_pak_file), pak_region, ui::SCALE_FACTOR_100P);
 #elif defined(OS_MAC)
   ui::ResourceBundle::InitSharedInstanceWithPakPath(GetResourcesPakFilePath());
 #else
