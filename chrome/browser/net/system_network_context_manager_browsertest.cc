@@ -327,8 +327,14 @@ class SystemNetworkContextManagerStubResolverBrowsertest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(https://crbug.com/1225151): flaky
+#if defined(OS_WIN)
+#define MAYBE_StubResolverConfig DISABLED_StubResolverConfig
+#else
+#define MAYBE_StubResolverConfig StubResolverConfig
+#endif
 IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerStubResolverBrowsertest,
-                       StubResolverConfig) {
+                       MAYBE_StubResolverConfig) {
   RunStubResolverConfigTests(GetParam());
 }
 
