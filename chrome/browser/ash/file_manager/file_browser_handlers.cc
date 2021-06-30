@@ -243,7 +243,7 @@ FileBrowserHandlerExecutor::SetupFileAccessPermissions(
     // Grant access to this particular file to target extension. This will
     // ensure that the target extension can access only this FS entry and
     // prevent from traversing FS hierarchy upward.
-    backend->GrantFileAccessToExtension(handler_extension->id(), virtual_path);
+    backend->GrantFileAccessToOrigin(handler_extension->origin(), virtual_path);
 
     // Output values.
     FileDefinition file_definition;

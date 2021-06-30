@@ -37,7 +37,6 @@
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "url/origin.h"
 
 namespace chromeos {
 namespace {
@@ -238,16 +237,17 @@ bool FileSystemBackend::IsAccessAllowed(
   if (!CanHandleURL(url))
     return false;
 
+  const url::Origin origin = url.origin();
   // If there is no origin set, then it's an internal access.
-  if (url.origin().opaque())
+  if (origin.opaque())
     return true;
 
   // The chrome://file-manager can access its filesystem origin.
-  if (url.origin().GetURL() == ash::file_manager::kChromeUIFileManagerURL) {
+  if (origin.GetURL() == ash::file_manager::kChromeUIFileManagerURL) {
     return true;
   }
 
-  const std::string& extension_id = url.origin().host();
+  const std::string& extension_id = origin.host();
   if (url.type() == storage::kFileSystemTypeRestrictedLocal) {
     for (size_t i = 0; i < base::size(kOemAccessibleExtensions); ++i) {
       if (extension_id == kOemAccessibleExtensions[i])
@@ -255,12 +255,12 @@ bool FileSystemBackend::IsAccessAllowed(
     }
   }
 
-  return file_access_permissions_->HasAccessPermission(extension_id,
+  return file_access_permissions_->HasAccessPermission(origin,
                                                        url.virtual_path());
 }
 
-void FileSystemBackend::GrantFileAccessToExtension(
-    const std::string& extension_id,
+void FileSystemBackend::GrantFileAccessToOrigin(
+    const url::Origin& origin,
     const base::FilePath& virtual_path) {
   std::string id;
   storage::FileSystemType type;
@@ -274,12 +274,11 @@ void FileSystemBackend::GrantFileAccessToExtension(
     return;
   }
 
-  file_access_permissions_->GrantAccessPermission(extension_id, virtual_path);
+  file_access_permissions_->GrantAccessPermission(origin, virtual_path);
 }
 
-void FileSystemBackend::RevokeAccessForExtension(
-    const std::string& extension_id) {
-  file_access_permissions_->RevokePermissions(extension_id);
+void FileSystemBackend::RevokeAccessForOrigin(const url::Origin& origin) {
+  file_access_permissions_->RevokePermissions(origin);
 }
 
 std::vector<base::FilePath> FileSystemBackend::GetRootDirectories() const {

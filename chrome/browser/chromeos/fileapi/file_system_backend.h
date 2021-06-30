@@ -19,6 +19,7 @@
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "url/origin.h"
 
 class Profile;
 
@@ -138,9 +139,9 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
   // storage::ExternalFileSystemBackend overrides.
   bool IsAccessAllowed(const storage::FileSystemURL& url) const override;
   std::vector<base::FilePath> GetRootDirectories() const override;
-  void GrantFileAccessToExtension(const std::string& extension_id,
-                                  const base::FilePath& virtual_path) override;
-  void RevokeAccessForExtension(const std::string& extension_id) override;
+  void GrantFileAccessToOrigin(const url::Origin& origin,
+                               const base::FilePath& virtual_path) override;
+  void RevokeAccessForOrigin(const url::Origin& origin) override;
   bool GetVirtualPath(const base::FilePath& filesystem_path,
                       base::FilePath* virtual_path) const override;
   void GetRedirectURLForContents(const storage::FileSystemURL& url,

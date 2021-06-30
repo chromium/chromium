@@ -1154,8 +1154,8 @@ void ExtensionService::PostDeactivateExtension(
       util::GetStoragePartitionForExtensionId(extension->id(), profile_)
           ->GetFileSystemContext();
   if (filesystem_context && filesystem_context->external_backend()) {
-    filesystem_context->external_backend()->RevokeAccessForExtension(
-        extension->id());
+    filesystem_context->external_backend()->RevokeAccessForOrigin(
+        extension->origin());
   }
 #endif
 

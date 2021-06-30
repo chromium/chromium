@@ -57,8 +57,8 @@ class TempFileSystem {
 
     // Grant the test extension the ability to access the just created
     // file system.
-    file_system_context_->external_backend()->GrantFileAccessToExtension(
-        appURL_.host(), base::FilePath(name_));
+    file_system_context_->external_backend()->GrantFileAccessToOrigin(
+        origin_, base::FilePath(name_));
     return true;
   }
 

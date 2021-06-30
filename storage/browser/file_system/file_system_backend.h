@@ -20,6 +20,7 @@
 #include "storage/browser/file_system/open_file_system_mode.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -167,12 +168,11 @@ class ExternalFileSystemBackend : public FileSystemBackend {
   // provider. This list is used to set appropriate child process file access
   // permissions.
   virtual std::vector<base::FilePath> GetRootDirectories() const = 0;
-  // Grants access to |virtual_path| from |origin_url|.
-  virtual void GrantFileAccessToExtension(
-      const std::string& extension_id,
-      const base::FilePath& virtual_path) = 0;
-  // Revokes file access from extension identified with |extension_id|.
-  virtual void RevokeAccessForExtension(const std::string& extension_id) = 0;
+  // Grants access to |virtual_path| from |origin| URL.
+  virtual void GrantFileAccessToOrigin(const url::Origin& origin,
+                                       const base::FilePath& virtual_path) = 0;
+  // Revokes file access from origin identified with |origin|.
+  virtual void RevokeAccessForOrigin(const url::Origin& origin) = 0;
   // Gets virtual path by known filesystem path. Returns false when filesystem
   // path is not exposed by this provider.
   virtual bool GetVirtualPath(const base::FilePath& file_system_path,

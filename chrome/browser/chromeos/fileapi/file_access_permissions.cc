@@ -12,7 +12,7 @@ FileAccessPermissions::FileAccessPermissions() {}
 
 FileAccessPermissions::~FileAccessPermissions() {}
 
-void FileAccessPermissions::GrantAccessPermission(const std::string& origin,
+void FileAccessPermissions::GrantAccessPermission(const url::Origin& origin,
                                                   const base::FilePath& path) {
   DCHECK(!path.empty());
   base::AutoLock locker(lock_);
@@ -20,7 +20,7 @@ void FileAccessPermissions::GrantAccessPermission(const std::string& origin,
 }
 
 bool FileAccessPermissions::HasAccessPermission(
-    const std::string& origin,
+    const url::Origin& origin,
     const base::FilePath& path) const {
   base::AutoLock locker(lock_);
   PathAccessMap::const_iterator path_map_iter = path_map_.find(origin);
@@ -41,10 +41,9 @@ bool FileAccessPermissions::HasAccessPermission(
   return false;
 }
 
-void FileAccessPermissions::RevokePermissions(
-    const std::string& extension_id) {
+void FileAccessPermissions::RevokePermissions(const url::Origin& origin) {
   base::AutoLock locker(lock_);
-  path_map_.erase(extension_id);
+  path_map_.erase(origin);
 }
 
 }  // namespace chromeos

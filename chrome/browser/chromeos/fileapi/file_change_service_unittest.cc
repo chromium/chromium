@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -26,6 +27,7 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/mock_blob_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/origin.h"
 
 namespace chromeos {
 
@@ -116,10 +118,8 @@ class TempFileSystem {
             name_, storage::kFileSystemTypeLocal,
             storage::FileSystemMountOption(), temp_dir_.GetPath()));
 
-    GetFileSystemContext(profile_)
-        ->external_backend()
-        ->GrantFileAccessToExtension(file_manager::kFileManagerAppId,
-                                     base::FilePath(name_));
+    GetFileSystemContext(profile_)->external_backend()->GrantFileAccessToOrigin(
+        file_manager::util::GetFilesAppOrigin(), base::FilePath(name_));
   }
 
   // Synchronously creates the file specified by `url`.

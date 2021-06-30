@@ -23,6 +23,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -57,12 +58,13 @@ class ScopedExternalMountPoint {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         name_, storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         temp_dir_.GetPath());
-    file_manager::util::GetFileSystemContextForSourceURL(
-        profile, extensions::Extension::GetBaseURLFromExtensionId(
-                     file_manager::kImageLoaderExtensionId))
+    GURL image_loader_url = extensions::Extension::GetBaseURLFromExtensionId(
+        file_manager::kImageLoaderExtensionId);
+    file_manager::util::GetFileSystemContextForSourceURL(profile,
+                                                         image_loader_url)
         ->external_backend()
-        ->GrantFileAccessToExtension(file_manager::kImageLoaderExtensionId,
-                                     base::FilePath(name_));
+        ->GrantFileAccessToOrigin(url::Origin::Create(image_loader_url),
+                                  base::FilePath(name_));
   }
 
   ~ScopedExternalMountPoint() {

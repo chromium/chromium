@@ -62,13 +62,12 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   }
 
   // Grant the caller right rights to crack URLs based on the virtual path.
-  const GURL origin = source_url().GetOrigin();
-  const std::string origin_id = origin.host();
-  backend->GrantFileAccessToExtension(origin_id, fd.virtual_path);
+  const url::Origin origin = url::Origin::Create(source_url());
+  backend->GrantFileAccessToOrigin(origin, fd.virtual_path);
 
   // Convert volume's mount path to an EntryDefinition.
   file_manager::util::ConvertFileDefinitionToEntryDefinition(
-      file_system_context, url::Origin::Create(origin), fd,
+      file_system_context, origin, fd,
       base::BindOnce(
           &FileManagerPrivateInternalGetVolumeRootFunction::OnRequestDone,
           this));

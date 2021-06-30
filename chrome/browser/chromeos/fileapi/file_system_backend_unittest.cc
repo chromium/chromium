@@ -13,9 +13,11 @@
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
 
@@ -122,6 +124,8 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
       mount_points.get(), system_mount_points.get());
 
   std::string extension("ddammdhioacbehjngdmkjcjbnfginlla");
+  url::Origin origin = url::Origin::Create(
+      extensions::Extension::GetBaseURLFromExtensionId(extension));
 
   // Initialize mount points.
   ASSERT_TRUE(system_mount_points->RegisterFileSystem(
@@ -139,8 +143,7 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "removable/foo", mount_points.get())));
 
-  backend.GrantFileAccessToExtension(extension,
-                                      base::FilePath(FPL("removable/foo")));
+  backend.GrantFileAccessToOrigin(origin, base::FilePath(FPL("removable/foo")));
   EXPECT_TRUE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "removable/foo", mount_points.get())));
   EXPECT_FALSE(backend.IsAccessAllowed(
@@ -150,8 +153,7 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "system/foo", system_mount_points.get())));
 
-  backend.GrantFileAccessToExtension(extension,
-                                      base::FilePath(FPL("system/foo")));
+  backend.GrantFileAccessToOrigin(origin, base::FilePath(FPL("system/foo")));
   EXPECT_TRUE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "system/foo", system_mount_points.get())));
   EXPECT_FALSE(backend.IsAccessAllowed(
@@ -166,7 +168,7 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "test_/foo", mount_points.get())));
 
-  backend.RevokeAccessForExtension(extension);
+  backend.RevokeAccessForOrigin(origin);
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "removable/foo", mount_points.get())));
 }

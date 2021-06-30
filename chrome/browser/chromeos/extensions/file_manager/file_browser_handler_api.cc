@@ -334,12 +334,12 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
   external_backend->GetVirtualPath(full_path, &file_definition.virtual_path);
   DCHECK(!file_definition.virtual_path.empty());
 
-  // Grant access to this particular file to target extension. This will
-  // ensure that the target extension can access only this FS entry and
+  // Grant access to this particular file to the caller with the given origin.
+  // This will ensure that the caller can access only this FS entry and
   // prevent from traversing FS hierarchy upward.
-  const std::string& origin_id = extension_id_or_file_app_id();
-  external_backend->GrantFileAccessToExtension(origin_id,
-                                               file_definition.virtual_path);
+  const url::Origin caller_origin = url::Origin::Create(source_url());
+  external_backend->GrantFileAccessToOrigin(caller_origin,
+                                            file_definition.virtual_path);
 
   // Grant access to the selected file to target extensions render view process.
   content::ChildProcessSecurityPolicy::GetInstance()->GrantCreateReadWriteFile(
@@ -348,7 +348,7 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
   file_manager::util::ConvertFileDefinitionToEntryDefinition(
       file_manager::util::GetFileSystemContextForSourceURL(profile,
                                                            source_url()),
-      url::Origin::Create(source_url().GetOrigin()), file_definition,
+      caller_origin, file_definition,
       base::BindOnce(
           &FileBrowserHandlerInternalSelectFileFunction::RespondEntryDefinition,
           this));

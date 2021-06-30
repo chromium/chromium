@@ -58,8 +58,8 @@ void ScopedTestMountPoint::Mount(Profile* profile) {
       temp_dir_.GetPath());
   file_manager::util::GetFileManagerFileSystemContext(profile)
       ->external_backend()
-      ->GrantFileAccessToExtension(file_manager::kFileManagerAppId,
-                                   base::FilePath(name_));
+      ->GrantFileAccessToOrigin(file_manager::util::GetFilesAppOrigin(),
+                                base::FilePath(name_));
   if (file_manager::VolumeManager::Get(profile_)) {
     file_manager::VolumeManager::Get(profile_)->AddVolumeForTesting(  // IN-TEST
         temp_dir_.GetPath(), volume_type_, chromeos::DEVICE_TYPE_UNKNOWN,
