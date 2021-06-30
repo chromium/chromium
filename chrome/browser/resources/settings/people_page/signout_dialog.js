@@ -17,7 +17,7 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -85,9 +85,9 @@ export class SettingsSignoutDialogElement extends
     // <if expr="not chromeos">
     ProfileInfoBrowserProxyImpl.getInstance().getProfileStatsCount();
     // </if>
-    window.setTimeout(() => {
+    microTask.run(() => {
       this.$.dialog.showModal();
-    }, 0);
+    });
   }
 
   /**
