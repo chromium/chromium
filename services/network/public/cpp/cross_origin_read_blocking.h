@@ -329,20 +329,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
   static bool IsBlockableScheme(const GURL& frame_origin);
   FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, IsBlockableScheme);
 
-  // Returns whether there's a valid CORS header for frame_origin.  This is
-  // simliar to CrossOriginAccessControl::passesAccessControlCheck(), but we use
-  // sites as our security domain, not origins.
-  // TODO(dsjang): this must be improved to be more accurate to the actual CORS
-  // specification. For now, this works conservatively, allowing XSDs that are
-  // not allowed by actual CORS rules by ignoring 1) credentials and 2)
-  // methods. Preflight requests don't matter here since they are not used to
-  // decide whether to block a response or not on the client side.
-  // TODO(crbug.com/736308) Remove this check once the kOutOfBlinkCors feature
-  // is shipped.
-  static bool IsValidCorsHeaderSet(const url::Origin& frame_origin,
-                                   const std::string& access_control_origin);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, IsValidCorsHeaderSet);
-
   static SniffingResult SniffForHTML(base::StringPiece data);
   static SniffingResult SniffForXML(base::StringPiece data);
   static SniffingResult SniffForJSON(base::StringPiece data);

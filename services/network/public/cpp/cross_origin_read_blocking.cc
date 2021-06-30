@@ -27,7 +27,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
-#include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -386,30 +385,6 @@ bool CrossOriginReadBlocking::IsBlockableScheme(const GURL& url) {
 }
 
 // static
-bool CrossOriginReadBlocking::IsValidCorsHeaderSet(
-    const url::Origin& frame_origin,
-    const std::string& access_control_origin) {
-  // Many websites are sending back "\"*\"" instead of "*". This is
-  // non-standard practice, and not supported by Chrome. Refer to
-  // CrossOriginAccessControl::passesAccessControlCheck().
-
-  // Note that "null" offers no more protection than "*" because it matches any
-  // unique origin, such as data URLs. Any origin can thus access it, so don't
-  // bother trying to block this case.
-
-  // TODO(dsjang): * is not allowed for the response from a request
-  // with cookies. This allows for more than what the renderer will
-  // eventually be able to receive, so we won't see illegal cross-site
-  // documents allowed by this. We have to find a way to see if this
-  // response is from a cookie-tagged request or not in the future.
-  if (access_control_origin == "*" || access_control_origin == "null")
-    return true;
-
-  return frame_origin.IsSameOriginWith(
-      url::Origin::Create(GURL(access_control_origin)));
-}
-
-// static
 // This function is a slight modification of |net::SniffForHTML|.
 SniffingResult CrossOriginReadBlocking::SniffForHTML(StringPiece data) {
   // The content sniffers used by Chrome and Firefox are using "<!--" as one of
@@ -715,9 +690,13 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
     // Create a new Origin with a unique internal identifier so we can pretend
     // the request is cross-origin.
     url::Origin cross_origin_request_initiator = url::Origin();
+    // kNoCors is used (instead of passing `request_mode`) to also cover CORS
+    // requests with the CORB Protection heuristics and UMAs.  Using kNoCors
+    // simulates an attacker requesting "seems-sensitive" subresources from a
+    // script tag.
     BlockingDecision would_protect_based_on_headers = ShouldBlockBasedOnHeaders(
-        request_mode, request_url, cross_origin_request_initiator, response,
-        canonical_mime_type_);
+        mojom::RequestMode::kNoCors, request_url,
+        cross_origin_request_initiator, response, canonical_mime_type_);
     corb_protection_logging_needs_sniffing_ =
         (would_protect_based_on_headers ==
          BlockingDecision::kNeedToSniffMore) &&
@@ -755,7 +734,6 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // The checks in this method are ordered to rule out blocking in most cases as
   // quickly as possible.  Checks that are likely to lead to returning false or
   // that are inexpensive should be near the top.
-  url::Origin target_origin = url::Origin::Create(request_url);
 
   // Extract the `initiator` of the request, allowing requests with no
   // initiator.  (Such requests are browser-initiated and therefore trustworthy;
@@ -766,6 +744,7 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
   const url::Origin& initiator = request_initiator.value();
 
   // Don't block same-origin documents.
+  url::Origin target_origin = url::Origin::Create(request_url);
   if (initiator.IsSameOriginWith(target_origin))
     return kAllow;
 
@@ -775,32 +754,17 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
   if (!IsBlockableScheme(target_origin.GetURL()))
     return kAllow;
 
-  // Allow the response through if this is a CORS request and the response has
-  // valid CORS headers.
+  // Only apply CORB to `no-cors` requests.
   //
-  // TODO(https://crbug.com/920634): Once OOR-CORS uses only trustworthy inputs
-  // (in particular `request_initiator` and `isolated_world_origin`), CORB
-  // should only apply to `no-cors` requests (and therefore the following
-  // `switch` statement can be replaced with returning `kAllow` is the mode is
-  // different from `kNoCors`).
-  switch (request_mode) {
-    case mojom::RequestMode::kNavigate:
-    case mojom::RequestMode::kNoCors:
-    case mojom::RequestMode::kSameOrigin:
-      break;
-
-    case mojom::RequestMode::kCors:
-    case mojom::RequestMode::kCorsWithForcedPreflight:
-      std::string cors_header;
-      response.headers->GetNormalizedHeader("access-control-allow-origin",
-                                            &cors_header);
-      if (IsValidCorsHeaderSet(initiator, cors_header))
-        return kAllow;
-
-      // At this point we know that the response is 1) cross-origin from the
-      // initiator, 2) in CORS mode, 3) without valid ACAO header.
-      break;
-  }
+  // CORB doesn't need to block kNavigate requests because results of these are
+  // OOPIF-isolated (note that network::CorsURLLoaderFactory::IsValidRequest
+  // validates that only the Browser process can initiate requests in kNavigate
+  // mode).
+  //
+  // CORB doesn't need to work with kSameOrigin, kCors, nor
+  // kCorsWithForcedPreflight modes, because these are covered by OOR-CORS.
+  if (request_mode != mojom::RequestMode::kNoCors)
+    return kAllow;
 
   // Requests from foo.example.com will consult foo.example.com's service worker
   // first (if one has been registered).  The service worker can handle requests
@@ -830,43 +794,6 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // Some types (e.g. ZIP) are protected without any confirmation sniffing.
   if (canonical_mime_type == MimeType::kNeverSniffed)
     return kBlock;
-
-  // CORS is currently implemented in the renderer process, so it's useful for
-  // CORB to filter failed "cors" mode fetches to avoid leaking the responses to
-  // the renderer when possible (e.g., depending on MIME type and sniffing).
-  // This will eventually be fixed with OOR-CORS.
-  //
-  // In the mean time, we can try to filter a few additional failed CORS
-  // fetches, treating the Cross-Origin-Resource-Policy (CORP) header as an
-  // opt-in to CORB.  CORP headers are enforced elsewhere and normally only
-  // apply to "no-cors" mode fetches.  If such a header happens to be on the
-  // response during other fetch modes, and if the same-origin and
-  // IsValidCorsHeaderSet checks above have failed (and thus the request will
-  // fail in the renderer), then we can let CORB filter the response without
-  // caring about MIME type or sniffing.
-  //
-  // To make CrossOriginResourcePolicy::IsBlocked apply to all fetch modes in
-  // this case and not just "no-cors", we pass kNoCors as a hard-coded value.
-  // This does not affect the usual enforcement of CORP headers.
-  //
-  // TODO(https://crbug.com/920634): Once OOR-CORS uses only trustworthy inputs
-  // (in particular `request_initiator` and `isolated_world_origin`), CORB
-  // should only apply to `no-cors` requests (and therefore there will be no
-  // need to consult CORP below, because the check below only helps with CORS
-  // modes / because CORP already independently applies-to/blocks `no-cors`
-  // requests).
-  constexpr mojom::RequestMode kOverreachingRequestMode =
-      mojom::RequestMode::kNoCors;
-  // COEP is not supported when OOR-CORS is disabled.
-  if (CrossOriginResourcePolicy::IsBlocked(
-          request_url, request_url, request_initiator, response,
-          kOverreachingRequestMode, network::mojom::RequestDestination::kEmpty,
-          CrossOriginEmbedderPolicy(),
-          /*reporter=*/nullptr)) {
-    // Ignore mime types and/or sniffing and have CORB block all responses with
-    // COR*P* header.
-    return kBlock;
-  }
 
   // If this is a partial response, sniffing is not possible, so allow the
   // response if it's not a protected mime type.

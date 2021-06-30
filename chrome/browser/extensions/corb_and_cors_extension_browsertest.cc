@@ -321,9 +321,9 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
       const content::WebContentsConsoleObserver& console_observer,
       const std::string& actual_fetch_result,
       const std::string& expected_fetch_result_prefix) {
-    // Verify that CORB sniffing allowed the response.
-    VerifyFetchFromContentScriptWasAllowedByCorb(histograms,
-                                                 true /* expecting_sniffing */);
+    // Verify that CORB allowed the response.
+    VerifyFetchFromContentScriptWasAllowedByCorb(
+        histograms, false /* expecting_sniffing */);
 
     // Verify that the response body was blocked by CORS.
     EXPECT_EQ(kCorsErrorWhenFetching, actual_fetch_result);
@@ -721,7 +721,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     std::string fetch_result = PopString(&queue);
 
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
-    VerifyFetchFromContentScriptWasBlockedByCorb(histograms);
+    VerifyFetchFromContentScriptWasAllowedByCorb(
+        histograms, false /* expecting_sniffing */);
     VerifyFetchWasBlockedByCors(console_observer);
   }
 }
@@ -776,7 +777,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify that the fetch was blocked by CORS.
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
-    VerifyFetchFromContentScriptWasBlockedByCorb(histograms);
+    VerifyFetchFromContentScriptWasAllowedByCorb(
+        histograms, false /* expecting_sniffing */);
     VerifyFetchWasBlockedByCors(console_observer);
   }
 }
@@ -831,8 +833,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify that the fetch was blocked by CORS.
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
-    VerifyFetchFromContentScriptWasAllowedByCorb(histograms,
-                                                 true /* expecting_sniffing */);
+    VerifyFetchFromContentScriptWasAllowedByCorb(
+        histograms, false /* expecting_sniffing */);
     VerifyFetchWasBlockedByCors(console_observer);
   }
 }
@@ -1091,10 +1093,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
   VerifyFetchWasBlockedByCors(console_observer);
 
-  // Verify that the fetch was allowed by CORB (because the response sniffed as
-  // didn't sniff as html/xml/json).
+  // Verify that the fetch was allowed by CORB (because CORB doesn't apply to
+  // CORS requests).
   VerifyFetchFromContentScriptWasAllowedByCorb(histograms,
-                                               true /* expecting_sniffing */);
+                                               false /* expecting_sniffing */);
 }
 
 // Tests that same-origin fetches (same-origin relative to the webpage the

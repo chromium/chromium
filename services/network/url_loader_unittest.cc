@@ -3868,47 +3868,6 @@ TEST_F(URLLoaderTest, HttpAuthResponseHeadersAvailable) {
   EXPECT_EQ(auth_required_headers->response_code(), 401);
 }
 
-// This simulates plugins without universal access, like PNaCl. These make
-// cross-origin fetches with CORS, and we expect CORB to block them.
-TEST_F(URLLoaderTest, CorbEffectiveWithCors) {
-  int kResourceType = 1;
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server()->GetURL("/hello.html"));
-  request.resource_type = kResourceType;
-  request.mode = mojom::RequestMode::kCors;
-  request.request_initiator = url::Origin::Create(GURL("http://foo.com/"));
-
-  base::RunLoop delete_run_loop;
-  mojo::PendingRemote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
-  mojom::URLLoaderFactoryParams params;
-  url_loader = std::make_unique<URLLoader>(
-      context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_context_client */,
-      DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader.InitWithNewPipeAndPassReceiver(), 0, request,
-      client()->CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
-      /*coep_reporter=*/nullptr, 0 /* request_id */,
-      0 /* keepalive_request_size */, false /* require_network_isolation_key */,
-      resource_scheduler_client(), nullptr, nullptr /* header_client */,
-      nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-      kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */,
-      mojo::NullRemote() /* url_loader_network_observer */,
-      /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
-
-  client()->RunUntilResponseBodyArrived();
-  std::string body = ReadBody();
-
-  client()->RunUntilComplete();
-
-  delete_run_loop.Run();
-
-  // Blocked because this is a cross-origin request made with a CORS request
-  // header, but without a valid CORS response header.
-  ASSERT_EQ(std::string(), body);
-}
-
 // This simulates a renderer that _pretends_ to be proxying requests for PDF
 // plugin (when browser didn't _actually_ confirm that Flash or PDF are hosted
 // by the given process via AddAllowedRequestInitiatorForPlugin).  We should
@@ -6580,7 +6539,8 @@ TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnReceivingHeaders) {
       net::MockRead(net::SYNCHRONOUS, 1,
                     "HTTP/1.1 200 OK\r\n"
                     "Connection: keep-alive\r\n"
-                    "Cross-Origin-Resource-Policy: same-origin\r\n"
+                    "Content-Type: text/html\r\n"
+                    "X-Content-Type-Options: nosniff\r\n"
                     "Content-Length: 23\r\n\r\n"),
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
@@ -6593,7 +6553,7 @@ TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnReceivingHeaders) {
       url::Origin::Create(GURL("http://other-origin.test/"));
 
   ResourceRequest request = CreateResourceRequest("GET", url);
-  request.mode = mojom::RequestMode::kCors;
+  request.mode = mojom::RequestMode::kNoCors;
   request.request_initiator = initiator;
   std::string body;
   EXPECT_EQ(net::OK, LoadRequest(request, &body));
@@ -6670,7 +6630,7 @@ TEST_F(URLLoaderMockSocketTest, CorbClosesSocketOnSniffingMimeType) {
       url::Origin::Create(GURL("http://other-origin.test/"));
 
   ResourceRequest request = CreateResourceRequest("GET", url);
-  request.mode = mojom::RequestMode::kCors;
+  request.mode = mojom::RequestMode::kNoCors;
   request.request_initiator = initiator;
   std::string body;
   EXPECT_EQ(net::OK, LoadRequest(request, &body));

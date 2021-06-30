@@ -211,7 +211,7 @@ const TestScenario kScenarios[] = {
 
     // Allowed responses (without sniffing):
     {
-        "Allowed: Same-site XHR to HTML",
+        "Allowed: Same-origin XHR to HTML",
         __LINE__,
         "http://www.a.com/resource.html",           // target_url
         "http://www.a.com/",                        // initiator_origin
@@ -637,7 +637,7 @@ const TestScenario kScenarios[] = {
         0,                                // verdict_packet
     },
     {
-        "Allowed: Same-site XHR to a filesystem URI",
+        "Allowed: Same-origin XHR to a filesystem URI",
         __LINE__,
         "filesystem:http://www.a.com/file.html",    // target_url
         "http://www.a.com/",                        // initiator_origin
@@ -652,7 +652,7 @@ const TestScenario kScenarios[] = {
         kVerdictPacketForHeadersBasedVerdict,       // verdict_packet
     },
     {
-        "Allowed: Same-site XHR to a blob URI",
+        "Allowed: Same-origin XHR to a blob URI",
         __LINE__,
         "blob:http://www.a.com/guid-goes-here",     // target_url
         "http://www.a.com/",                        // initiator_origin
@@ -768,11 +768,11 @@ const TestScenario kScenarios[] = {
         kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
     },
 
-    // Blocked responses due to sniffing:
+    // CORB only applies to `no-cors` responses.
     {
-        "Blocked: Cross-origin XHR to HTML with wrong CORS (okay same-site)",
+        "Allowed: CORB N/A for CORS requests: Cross-site XHR + same-site CORS",
         // Note that initiator_origin is cross-origin, but same-site in relation
-        // to the CORS response.
+        // to the CORS response (the Access-Control-Allow-Origin header).
         __LINE__,
         "http://www.b.com/resource.html",  // target_url
         "http://foo.example.com/",         // initiator_origin
@@ -785,9 +785,46 @@ const TestScenario kScenarios[] = {
         true,                                       // resource_is_sensitive
         CrossOriginProtectionDecision::
             kBlockedAfterSniffing,  // protection_decision
-        Verdict::kBlock,            // verdict
+        Verdict::kAllow,            // verdict
         0,                          // verdict_packet
     },
+    {
+        "Allowed: CORB N/A for CORS requests: Cross-site XHR with wrong CORS",
+        __LINE__,
+        "http://www.b.com/resource.html",  // target_url
+        "http://www.a.com/",               // initiator_origin
+        "HTTP/1.1 200 OK\n"
+        "Access-Control-Allow-Origin: http://example.com",  // response_headers
+        "text/html",                                // response_content_type
+        MimeType::kHtml,                            // canonical_mime_type
+        MimeTypeBucket::kProtected,                 // mime_type_bucket
+        {"<hTmL><head>this should sniff as HTML"},  // packets
+        true,                                       // resource_is_sensitive
+        CrossOriginProtectionDecision::
+            kBlockedAfterSniffing,  // protection_decision
+        Verdict::kAllow,            // verdict
+        0,                          // verdict_packet
+    },
+    {
+        "Allowed: CORB N/A for CORS requests: JSON parser-breaker + wrong CORS",
+        __LINE__,
+        "http://www.b.com/resource.html",  // target_url
+        "http://www.a.com/",               // initiator_origin
+        "HTTP/1.1 200 OK\n"
+        "Access-Control-Allow-Origin: http://example.com\n"
+        "X-Content-Type-Options: nosniff",  // response_headers
+        "application/javascript",           // response_content_type
+        MimeType::kOthers,                  // canonical_mime_type
+        MimeTypeBucket::kPublic,            // mime_type_bucket
+        {")]}'\n[true, false]"},            // packets
+        true,                               // resource_is_sensitive
+        CrossOriginProtectionDecision::
+            kBlockedAfterSniffing,  // protection_decision
+        Verdict::kAllow,            // verdict
+        0,                          // verdict_packet
+    },
+
+    // Blocked responses due to sniffing:
     {
         "Blocked: Cross-site XHR to HTML without CORS",
         __LINE__,
@@ -936,23 +973,6 @@ const TestScenario kScenarios[] = {
         1,                          // verdict_packet
     },
     {
-        "Blocked: Cross-site XHR to HTML with wrong CORS",
-        __LINE__,
-        "http://www.b.com/resource.html",  // target_url
-        "http://www.a.com/",               // initiator_origin
-        "HTTP/1.1 200 OK\n"
-        "Access-Control-Allow-Origin: http://example.com",  // response_headers
-        "text/html",                                // response_content_type
-        MimeType::kHtml,                            // canonical_mime_type
-        MimeTypeBucket::kProtected,                 // mime_type_bucket
-        {"<hTmL><head>this should sniff as HTML"},  // packets
-        true,                                       // resource_is_sensitive
-        CrossOriginProtectionDecision::
-            kBlockedAfterSniffing,  // protection_decision
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
-    },
-    {
         "Blocked: Cross-site fetch HTML from NaCl without CORS response",
         __LINE__,
         "http://www.b.com/plugin.html",             // target_url
@@ -1016,25 +1036,6 @@ const TestScenario kScenarios[] = {
             kBlockedAfterSniffing,  // protection_decision
         Verdict::kBlock,            // verdict
         1,                          // verdict_packet
-    },
-    {
-        "Blocked: JSON object + mismatching CORS with parser-breaker labeled "
-        "as JavaScript",
-        __LINE__,
-        "http://www.b.com/resource.html",  // target_url
-        "http://www.a.com/",               // initiator_origin
-        "HTTP/1.1 200 OK\n"
-        "Access-Control-Allow-Origin: http://example.com\n"
-        "X-Content-Type-Options: nosniff",  // response_headers
-        "application/javascript",           // response_content_type
-        MimeType::kOthers,                  // canonical_mime_type
-        MimeTypeBucket::kPublic,            // mime_type_bucket
-        {")]}'\n[true, false]"},            // packets
-        true,                               // resource_is_sensitive
-        CrossOriginProtectionDecision::
-            kBlockedAfterSniffing,  // protection_decision
-        Verdict::kBlock,            // verdict
-        0,                          // verdict_packet
     },
     {
         "Blocked: Cross-site XHR to a filesystem URI",
@@ -1157,7 +1158,7 @@ const TestScenario kScenarios[] = {
         kVerdictPacketForHeadersBasedVerdict,  // verdict_packet
     },
     {
-        "Allowed after sniffing: cross-origin 204 response with no data",
+        "Allowed after sniffing: cross-site 204 response with no data",
         __LINE__,
         "http://a.com/resource.html",              // target_url
         "http://b.com/",                           // initiator_origin
@@ -1482,8 +1483,7 @@ const TestScenario kScenarios[] = {
     // request cross-site and so needs no sniffing. We don't want the protection
     // logging to be triggered a second time after the sniffing.
     {
-        "Sensitive, CORB needs sniffing (so verdict_packet > -1) but the CORB "
-        "protection stats block based on headers",
+        "Sensitive, CORB and CORB protection stats need sniffing",
         __LINE__,
         "http://www.a.com/resource.html",  // target_url
         "http://www.foo.a.com/",           // initiator_origin
@@ -1496,9 +1496,10 @@ const TestScenario kScenarios[] = {
         MimeTypeBucket::kProtected,                 // mime_type_bucket
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        CrossOriginProtectionDecision::kBlock,      // protection_decision
-        Verdict::kBlock,                            // verdict
-        0,                                          // verdict_packet
+        CrossOriginProtectionDecision::
+            kBlockedAfterSniffing,  // protection_decision
+        Verdict::kBlock,            // verdict
+        0,                          // verdict_packet
     },
 
     // Response with an unknown MIME type.
@@ -1782,7 +1783,7 @@ const TestScenario kScenarios[] = {
         0,                          // verdict_packet
     },
     {
-        "Cache heuristic with nosniff header but protection decision != kBlock",
+        "Cache heuristic with nosniff header and protection decision == kBlock",
         __LINE__,
         "http://a.com/resource.html",  // target_url
         "http://a.com/",               // initiator_origin
@@ -1796,7 +1797,7 @@ const TestScenario kScenarios[] = {
         MimeTypeBucket::kProtected,                 // mime_type_bucket
         {"<html><head>this should sniff as HTML"},  // packets
         true,                                       // resource_is_sensitive
-        CrossOriginProtectionDecision::kAllow,      // protection_decision
+        CrossOriginProtectionDecision::kBlock,      // protection_decision
         Verdict::kAllow,                            // verdict
         kVerdictPacketForHeadersBasedVerdict,       // verdict_packet
     },
@@ -2247,24 +2248,6 @@ TEST(CrossOriginReadBlockingTest, IsBlockableScheme) {
   EXPECT_FALSE(CrossOriginReadBlocking::IsBlockableScheme(about_url));
   EXPECT_TRUE(CrossOriginReadBlocking::IsBlockableScheme(http_url));
   EXPECT_TRUE(CrossOriginReadBlocking::IsBlockableScheme(https_url));
-}
-
-TEST(CrossOriginReadBlockingTest, IsValidCorsHeaderSet) {
-  url::Origin frame_origin = url::Origin::Create(GURL("http://www.google.com"));
-
-  EXPECT_TRUE(CrossOriginReadBlocking::IsValidCorsHeaderSet(frame_origin, "*"));
-  EXPECT_FALSE(
-      CrossOriginReadBlocking::IsValidCorsHeaderSet(frame_origin, "\"*\""));
-  EXPECT_FALSE(CrossOriginReadBlocking::IsValidCorsHeaderSet(
-      frame_origin, "http://mail.google.com"));
-  EXPECT_TRUE(CrossOriginReadBlocking::IsValidCorsHeaderSet(
-      frame_origin, "http://www.google.com"));
-  EXPECT_FALSE(CrossOriginReadBlocking::IsValidCorsHeaderSet(
-      frame_origin, "https://www.google.com"));
-  EXPECT_FALSE(CrossOriginReadBlocking::IsValidCorsHeaderSet(
-      frame_origin, "http://yahoo.com"));
-  EXPECT_FALSE(CrossOriginReadBlocking::IsValidCorsHeaderSet(frame_origin,
-                                                             "www.google.com"));
 }
 
 TEST(CrossOriginReadBlockingTest, SniffForHTML) {
