@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_CLIPBOARD_UTILITIES_H_
 
 #include "build/build_config.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -45,6 +46,8 @@ CORE_EXPORT void ReplaceNewlinesWithWindowsStyleNewlines(String&);
 CORE_EXPORT void ReplaceNBSPWithSpace(String&);
 CORE_EXPORT String ConvertURIListToURL(const String& uri_list);
 CORE_EXPORT String URLToImageMarkup(const KURL&, const String& title);
+CORE_EXPORT String PNGToImageMarkup(const mojo_base::BigBuffer& png_data);
+// TODO(crbug.com/1223849): Remove this method once `ReadImage()` is removed.
 CORE_EXPORT String BitmapToImageMarkup(const SkBitmap& bitmap);
 
 }  // namespace blink

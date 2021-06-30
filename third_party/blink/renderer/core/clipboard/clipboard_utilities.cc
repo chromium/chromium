@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/escape.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -93,6 +94,18 @@ String URLToImageMarkup(const KURL& url, const String& title) {
   return builder.ToString();
 }
 
+String PNGToImageMarkup(const mojo_base::BigBuffer& png_data) {
+  if (!png_data.size())
+    return String();
+
+  StringBuilder markup;
+  markup.Append("<img src=\"data:image/png;base64,");
+  markup.Append(Base64Encode(png_data));
+  markup.Append("\" alt=\"\"/>");
+  return markup.ToString();
+}
+
+// TODO(crbug.com/1223849): Remove this method once `ReadImage()` is removed.
 String BitmapToImageMarkup(const SkBitmap& bitmap) {
   if (bitmap.isNull())
     return String();

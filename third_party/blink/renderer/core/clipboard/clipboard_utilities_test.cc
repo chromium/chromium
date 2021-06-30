@@ -4,9 +4,14 @@
 
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 
+#include "base/containers/span.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace blink {
 
@@ -41,6 +46,30 @@ TEST(ClipboardUtilitiesTest, URLToImageMarkupEmbeddedNull) {
       URLToImageMarkup(
           KURL(NullURL(), String(kURLWithNull, sizeof(kURLWithNull) - 1)),
           String(kTitleWithNull, sizeof(kTitleWithNull) - 1)));
+}
+
+TEST(ClipboardUtilitiesTest, PNGToImageMarkupEmpty) {
+  EXPECT_TRUE(PNGToImageMarkup(mojo_base::BigBuffer()).IsNull());
+}
+
+TEST(ClipboardUtilitiesTest, PNGToImageMarkup) {
+  SkBitmap bitmap;
+  bitmap.allocPixels(SkImageInfo::MakeN32Premul(10, 5));
+  SkPixmap pixmap;
+  bitmap.peekPixels(&pixmap);
+
+  // Set encoding options to favor speed over size.
+  SkPngEncoder::Options options;
+  options.fZLibLevel = 1;
+  options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
+
+  Vector<uint8_t> png_data;
+  EXPECT_TRUE(ImageEncoder::Encode(&png_data, pixmap, options));
+
+  mojo_base::BigBuffer png = base::as_bytes(base::make_span(png_data));
+  EXPECT_EQ(
+      R"HTML(<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAADElEQVQYGWNgGEYAAADNAAGVVebMAAAAAElFTkSuQmCC" alt=""/>)HTML",
+      PNGToImageMarkup(png));
 }
 
 TEST(ClipboardUtilitiesTest, BitmapToImageMarkupEmpty) {

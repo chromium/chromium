@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -189,8 +190,14 @@ SkBitmap SystemClipboard::ReadImage(mojom::ClipboardBuffer buffer) {
 
 String SystemClipboard::ReadImageAsImageMarkup(
     mojom::blink::ClipboardBuffer buffer) {
-  SkBitmap bitmap = ReadImage(buffer);
-  return BitmapToImageMarkup(bitmap);
+  // TODO(crbug.com/1223849): Remove check once `ReadImage()` is removed.
+  if (RuntimeEnabledFeatures::ClipboardReadPngEnabled()) {
+    mojo_base::BigBuffer png_data = ReadPng(buffer);
+    return PNGToImageMarkup(png_data);
+  } else {
+    SkBitmap bitmap = ReadImage(buffer);
+    return BitmapToImageMarkup(bitmap);
+  }
 }
 
 void SystemClipboard::WriteImageWithTag(Image* image,
