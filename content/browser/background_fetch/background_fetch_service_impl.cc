@@ -16,6 +16,7 @@
 #include "content/browser/background_fetch/background_fetch_registration_notifier.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -82,9 +83,7 @@ void BackgroundFetchServiceImpl::CreateForFrame(
           WrapRefCounted(static_cast<StoragePartitionImpl*>(
                              render_process_host->GetStoragePartition())
                              ->GetBackgroundFetchContext()),
-          // TODO(https://crbug.com/1199077): Pass directly the document's
-          // StorageKey when we will have it.
-          blink::StorageKey(render_frame_host->GetLastCommittedOrigin()),
+          static_cast<RenderFrameHostImpl*>(render_frame_host)->storage_key(),
           render_frame_host->GetFrameTreeNodeId(), std::move(wc_getter),
           std::move(receiver)));
 }
