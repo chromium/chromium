@@ -554,8 +554,11 @@ void MediaStreamVideoTrack::AddSink(
   AddSinkInternal(&sinks_, sink);
   frame_deliverer_->AddCallback(sink, callback);
   secure_tracker_.Add(sink, is_secure == MediaStreamVideoSink::IsSecure::kYes);
-  if (uses_alpha == MediaStreamVideoSink::UsesAlpha::kDefault)
+  if (uses_alpha == MediaStreamVideoSink::UsesAlpha::kDefault) {
     alpha_using_sinks_.insert(sink);
+  } else if (uses_alpha == MediaStreamVideoSink::UsesAlpha::kNo) {
+    alpha_discarding_sinks_.insert(sink);
+  }
   // Request source to deliver a frame because a new sink is added.
   if (!source_)
     return;
@@ -563,7 +566,11 @@ void MediaStreamVideoTrack::AddSink(
   RequestRefreshFrame();
   source_->UpdateCapturingLinkSecure(this,
                                      secure_tracker_.is_capturing_secure());
-  source_->SetCanDiscardAlpha(alpha_using_sinks_.IsEmpty());
+  // Alpha can't be discarded if any sink uses alpha, or if the only sinks
+  // connected are kDependsOnOtherSinks.
+  const bool can_discard_alpha =
+      alpha_using_sinks_.IsEmpty() && !alpha_discarding_sinks_.IsEmpty();
+  source_->SetCanDiscardAlpha(can_discard_alpha);
   if (is_screencast_)
     StartTimerForRequestingFrames();
 }
@@ -582,6 +589,7 @@ void MediaStreamVideoTrack::RemoveSink(WebMediaStreamSink* sink) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   RemoveSinkInternal(&sinks_, sink);
   alpha_using_sinks_.erase(sink);
+  alpha_discarding_sinks_.erase(sink);
   frame_deliverer_->RemoveCallback(sink);
   secure_tracker_.Remove(sink);
   if (!source_)
@@ -589,7 +597,10 @@ void MediaStreamVideoTrack::RemoveSink(WebMediaStreamSink* sink) {
   UpdateSourceHasConsumers();
   source_->UpdateCapturingLinkSecure(this,
                                      secure_tracker_.is_capturing_secure());
-  source_->SetCanDiscardAlpha(alpha_using_sinks_.IsEmpty());
+  const bool can_discard_alpha =
+      sinks_.IsEmpty() ||
+      (alpha_using_sinks_.IsEmpty() && !alpha_discarding_sinks_.IsEmpty());
+  source_->SetCanDiscardAlpha(can_discard_alpha);
   // Restart the timer with existing sinks.
   if (is_screencast_)
     StartTimerForRequestingFrames();

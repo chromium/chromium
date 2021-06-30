@@ -36,8 +36,10 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSink : public WebMediaStreamSink {
 
   // UsesAlpha indicates if this MediaStreamVideoSink might use its source's
   // alpha channel (if the source has one). This should be kDefault unless it is
-  // guaranteed that the alpha channel of |track| will be ignored.
-  enum class UsesAlpha { kDefault, kNo };
+  // guaranteed that the alpha channel of |track| will be ignored. If
+  // kDependsOnOtherSinks is used, the sink will not receive alpha if all other
+  // sinks do not use alpha.
+  enum class UsesAlpha { kDefault, kDependsOnOtherSinks, kNo };
 
  protected:
   MediaStreamVideoSink();

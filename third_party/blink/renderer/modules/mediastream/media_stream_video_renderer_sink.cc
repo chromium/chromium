@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -159,6 +161,11 @@ void MediaStreamVideoRendererSink::Start() {
       CrossThreadBindOnce(&FrameDeliverer::Start,
                           WTF::CrossThreadUnretained(frame_deliverer_.get())));
 
+  auto uses_alpha =
+      base::FeatureList::IsEnabled(features::kAllowDropAlphaForMediaStream)
+          ? MediaStreamVideoSink::UsesAlpha::kDependsOnOtherSinks
+          : MediaStreamVideoSink::UsesAlpha::kDefault;
+
   MediaStreamVideoSink::ConnectToTrack(
       WebMediaStreamTrack(video_component_.Get()),
       // This callback is run on IO thread. It is safe to use base::Unretained
@@ -168,8 +175,7 @@ void MediaStreamVideoRendererSink::Start() {
           &FrameDeliverer::OnVideoFrame,
           WTF::CrossThreadUnretained(frame_deliverer_.get()))),
       // Local display video rendering is considered a secure link.
-      MediaStreamVideoSink::IsSecure::kYes,
-      MediaStreamVideoSink::UsesAlpha::kDefault);
+      MediaStreamVideoSink::IsSecure::kYes, uses_alpha);
 
   if (video_component_->Source()->GetReadyState() ==
           MediaStreamSource::kReadyStateEnded ||
