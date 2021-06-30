@@ -256,8 +256,7 @@ class VP9VaapiVideoEncoderDelegateTest
   MOCK_METHOD0(OnError, void());
 
  protected:
-  void InitializeVP9VaapiVideoEncoderDelegate(BitrateControl bitrate_control,
-                                              size_t num_spatial_layers,
+  void InitializeVP9VaapiVideoEncoderDelegate(size_t num_spatial_layers,
                                               size_t num_temporal_layers);
   void EncodeConstantQuantizationParameterSequence(
       bool is_keyframe,
@@ -266,9 +265,7 @@ class VP9VaapiVideoEncoderDelegateTest
           expected_ref_frames_used,
       absl::optional<uint8_t> expected_temporal_layer_id = absl::nullopt,
       absl::optional<uint8_t> expected_spatial_layer_id = absl::nullopt);
-  void UpdateRatesTest(BitrateControl bitrate_control,
-                       size_t num_spatial_layers,
-                       size_t num_temporal_layers);
+  void UpdateRatesTest(size_t num_spatial_layers, size_t num_temporal_layers);
 
  private:
   std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob> CreateEncodeJob(
@@ -277,7 +274,6 @@ class VP9VaapiVideoEncoderDelegateTest
       const scoped_refptr<VP9Picture>& picture);
   void UpdateRatesSequence(const VideoBitrateAllocation& bitrate_allocation,
                            uint32_t framerate,
-                           BitrateControl bitrate_control,
                            size_t num_spatial_layers,
                            size_t num_temporal_layers);
 
@@ -321,13 +317,10 @@ VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
 }
 
 void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
-    BitrateControl bitrate_control,
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
   auto config = kDefaultVideoEncodeAcceleratorConfig;
   auto ave_config = kDefaultVaapiVideoEncoderDelegateConfig;
-  ave_config.bitrate_control = bitrate_control;
-  ASSERT_EQ(bitrate_control, BitrateControl::kConstantQuantizationParameter);
 
   auto rate_ctrl = std::make_unique<MockVP9RateControl>();
   mock_rate_ctrl_ = rate_ctrl.get();
@@ -426,14 +419,12 @@ void VP9VaapiVideoEncoderDelegateTest::
 void VP9VaapiVideoEncoderDelegateTest::UpdateRatesSequence(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,
-    BitrateControl bitrate_control,
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
   ASSERT_TRUE(encoder_->current_params_.bitrate_allocation !=
                   bitrate_allocation ||
               encoder_->current_params_.framerate != framerate);
 
-  ASSERT_EQ(bitrate_control, BitrateControl::kConstantQuantizationParameter);
   EXPECT_CALL(*mock_rate_ctrl_,
               UpdateRateControl(MatchRtcConfigWithRates(
                   encoder_->visible_size_, bitrate_allocation, framerate,
@@ -445,18 +436,15 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesSequence(
 }
 
 void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
-    BitrateControl bitrate_control,
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
   ASSERT_TRUE(num_temporal_layers <= VP9SVCLayers::kMaxSupportedTemporalLayers);
   const auto update_rates_and_encode =
-      [this, bitrate_control, num_spatial_layers, num_temporal_layers](
+      [this, num_spatial_layers, num_temporal_layers](
           bool is_key_pic, const VideoBitrateAllocation& bitrate_allocation,
           uint32_t framerate) {
-        UpdateRatesSequence(bitrate_allocation, framerate, bitrate_control,
-                            num_spatial_layers, num_temporal_layers);
-        ASSERT_EQ(bitrate_control,
-                  BitrateControl::kConstantQuantizationParameter);
+        UpdateRatesSequence(bitrate_allocation, framerate, num_spatial_layers,
+                            num_temporal_layers);
 
         for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
           const bool is_keyframe = is_key_pic && sid == 0;
@@ -502,55 +490,22 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
 }
 
 struct VP9VaapiVideoEncoderDelegateTestParam {
-  VP9VaapiVideoEncoderDelegateTest::BitrateControl bitrate_control;
   size_t num_spatial_layers;
   size_t num_temporal_layers;
 } kTestCasesForVP9VaapiVideoEncoderDelegateTest[] = {
-    // {VP9VaapiVideoEncoderDelegateTest::BitrateControl, num_spatial_layers,
-    // num_temporal_layers}
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     1u, 1u},
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     1u, 2u},
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     1u, 3u},
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     2u, 1u},
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     2u, 2u},
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     2u, 3u},
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     3u, 1u},
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     3u, 2u},
-    {VP9VaapiVideoEncoderDelegateTest::BitrateControl::
-         kConstantQuantizationParameter,
-     3u, 3u},
+    {1u, 1u}, {1u, 2u}, {1u, 3u}, {2u, 1u}, {2u, 2u},
+    {2u, 3u}, {3u, 1u}, {3u, 2u}, {3u, 3u},
 };
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, Initialize) {
-  InitializeVP9VaapiVideoEncoderDelegate(GetParam().bitrate_control,
-                                         GetParam().num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(GetParam().num_spatial_layers,
                                          GetParam().num_temporal_layers);
 }
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, EncodeWithSoftwareBitrateControl) {
-  const auto& bitrate_control = GetParam().bitrate_control;
-  if (bitrate_control != BitrateControl::kConstantQuantizationParameter)
-    GTEST_SKIP() << "Test only for with software bitrate control";
-
   const size_t num_spatial_layers = GetParam().num_spatial_layers;
   const size_t num_temporal_layers = GetParam().num_temporal_layers;
-  InitializeVP9VaapiVideoEncoderDelegate(bitrate_control, num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
                                          num_temporal_layers);
 
   constexpr size_t kEncodeFrames = 20;
@@ -571,13 +526,9 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, EncodeWithSoftwareBitrateControl) {
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest,
        ForceKeyFrameWithSoftwareBitrateControl) {
-  const auto& bitrate_control = GetParam().bitrate_control;
-  if (bitrate_control != BitrateControl::kConstantQuantizationParameter)
-    GTEST_SKIP() << "Test only for with software bitrate control";
-
   const size_t num_spatial_layers = GetParam().num_spatial_layers;
   const size_t num_temporal_layers = GetParam().num_temporal_layers;
-  InitializeVP9VaapiVideoEncoderDelegate(bitrate_control, num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
                                          num_temporal_layers);
   constexpr size_t kNumKeyFrames = 3;
   constexpr size_t kKeyFrameInterval = 20;
@@ -598,12 +549,11 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest,
 }
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, UpdateRates) {
-  const auto& bitrate_control = GetParam().bitrate_control;
   const size_t num_spatial_layers = GetParam().num_spatial_layers;
   const size_t num_temporal_layers = GetParam().num_temporal_layers;
-  InitializeVP9VaapiVideoEncoderDelegate(bitrate_control, num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
                                          num_temporal_layers);
-  UpdateRatesTest(bitrate_control, num_spatial_layers, num_temporal_layers);
+  UpdateRatesTest(num_spatial_layers, num_temporal_layers);
 }
 
 // TODO(crbug.com/1186051): Add the test case to activate and deactivate spatial

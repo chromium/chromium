@@ -366,11 +366,7 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
 void VP9VaapiVideoEncoderDelegate::BitrateControlUpdate(
     uint64_t encoded_chunk_size_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!rate_ctrl_) {
-    DLOG(ERROR) << __func__ << "() is called when no bitrate controller exists";
-    return;
-  }
+  CHECK(rate_ctrl_);
 
   DVLOGF(4) << "|encoded_chunk_size_bytes|=" << encoded_chunk_size_bytes;
   rate_ctrl_->PostEncodeUpdate(encoded_chunk_size_bytes);
@@ -394,8 +390,7 @@ bool VP9VaapiVideoEncoderDelegate::ApplyPendingUpdateRates() {
       !svc_layers_->MaybeUpdateActiveLayer(&current_params_.bitrate_allocation))
     return false;
 
-  if (!rate_ctrl_)
-    return true;
+  CHECK(rate_ctrl_);
 
   const size_t num_temporal_layers =
       svc_layers_ ? svc_layers_->num_temporal_layers() : 1u;
@@ -475,9 +470,7 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
     }
   }
 
-  if (!rate_ctrl_)
-    return;
-
+  CHECK(rate_ctrl_);
   libvpx::VP9FrameParamsQpRTC frame_params{};
   frame_params.frame_type =
       keyframe ? FRAME_TYPE::KEY_FRAME : FRAME_TYPE::INTER_FRAME;
