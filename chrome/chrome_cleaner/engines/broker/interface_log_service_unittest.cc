@@ -208,7 +208,6 @@ TEST_F(InterfaceLogServiceTest, LogAndRecoverTest) {
         break;
       default:
         FAIL() << "Invalid state " << state;
-        break;
     }
   }
   EXPECT_EQ(state, kReadingCalls);

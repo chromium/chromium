@@ -58,14 +58,11 @@ SafeBrowsingMetricsCollector::EventType GetEventTypeFromThreatSource(
     case ThreatSource::REMOTE:
       return SafeBrowsingMetricsCollector::EventType::
           DATABASE_INTERSTITIAL_BYPASS;
-      break;
     case ThreatSource::CLIENT_SIDE_DETECTION:
       return SafeBrowsingMetricsCollector::EventType::CSD_INTERSTITIAL_BYPASS;
-      break;
     case ThreatSource::REAL_TIME_CHECK:
       return SafeBrowsingMetricsCollector::EventType::
           REAL_TIME_INTERSTITIAL_BYPASS;
-      break;
     default:
       NOTREACHED() << "Unexpected threat source.";
       return SafeBrowsingMetricsCollector::EventType::

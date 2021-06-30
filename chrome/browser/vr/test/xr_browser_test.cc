@@ -400,10 +400,8 @@ void XrBrowserTestBase::EndTest(content::WebContents* web_contents) {
       FAIL() << "JavaScript testharness failed with reason: "
              << RunJavaScriptAndExtractStringOrFail("resultString",
                                                     web_contents);
-      break;
     case XrBrowserTestBase::TestStatus::STATUS_RUNNING:
       FAIL() << "Attempted to end test in C++ without finishing in JavaScript.";
-      break;
     default:
       FAIL() << "Received unknown test status.";
   }

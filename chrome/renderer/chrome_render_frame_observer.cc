@@ -605,17 +605,14 @@ bool ChromeRenderFrameObserver::NeedsEncodeImage(
   switch (image_format) {
     case chrome::mojom::ImageFormat::PNG:
       return !base::EqualsCaseInsensitiveASCII(image_extension, kPngExtension);
-      break;
     case chrome::mojom::ImageFormat::JPEG:
       return !base::EqualsCaseInsensitiveASCII(image_extension, kJpgExtension);
-      break;
     case chrome::mojom::ImageFormat::ORIGINAL:
       return !base::EqualsCaseInsensitiveASCII(image_extension,
                                                kGifExtension) &&
              !base::EqualsCaseInsensitiveASCII(image_extension,
                                                kJpgExtension) &&
              !base::EqualsCaseInsensitiveASCII(image_extension, kPngExtension);
-      break;
   }
 
   // Should never hit this code since all cases were handled above.

@@ -81,14 +81,12 @@ double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
     case metrics::CallStackProfileParams::GPU_PROCESS:
     case metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS:
       return 1.0;
-      break;
 
     case metrics::CallStackProfileParams::RENDERER_PROCESS:
       // Run the profiler in all renderer processes if the browser test mode is
       // enabled, otherwise run in 20% of the processes to collect roughly as
       // many profiles for renderer processes as browser processes.
       return browser_test_mode_enabled() ? 1.0 : 0.2;
-      break;
 
     default:
       return 0.0;

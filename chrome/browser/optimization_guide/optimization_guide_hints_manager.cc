@@ -255,7 +255,6 @@ bool ShouldIgnoreNewlyRegisteredOptimizationType(
     default:
       return false;
   }
-  return false;
 }
 
 // Reads component file and parses it into a Configuration proto. Should not be

@@ -312,7 +312,6 @@ internal::ResultCode FillAntiVirusProductsFromWMI(
       default:
         // unknown state.
         return internal::ResultCode::kProductStateInvalid;
-        break;
     }
 
     base::win::ScopedVariant display_name;

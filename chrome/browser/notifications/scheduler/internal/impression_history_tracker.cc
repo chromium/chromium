@@ -285,7 +285,6 @@ void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory(
       default:
         // The user didn't interact with the notification yet.
         continue;
-        break;
     }
   }
 

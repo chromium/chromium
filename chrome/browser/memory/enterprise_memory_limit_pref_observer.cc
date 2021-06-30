@@ -53,8 +53,9 @@ EnterpriseMemoryLimitPrefObserver::~EnterpriseMemoryLimitPrefObserver() {
 bool EnterpriseMemoryLimitPrefObserver::PlatformIsSupported() {
 #if defined(OS_WIN) || defined(OS_MAC)
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 // static

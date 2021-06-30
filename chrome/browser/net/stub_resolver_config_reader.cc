@@ -240,9 +240,9 @@ bool StubResolverConfigReader::ShouldDisableDohForManaged() {
 bool StubResolverConfigReader::ShouldDisableDohForParentalControls() {
 #if defined(OS_WIN)
   return ShouldDisableDohForWindowsParentalControls();
-#endif
-
+#else
   return false;
+#endif
 }
 
 void StubResolverConfigReader::OnParentalControlsDelayTimer() {

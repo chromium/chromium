@@ -42,19 +42,16 @@ absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> GetSyncOutcome(
       return enterprise_account
                  ? ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSync
                  : ProfileMetrics::ProfileAddSignInFlowOutcome::kConsumerSync;
-      break;
     case LoginUIService::CONFIGURE_SYNC_FIRST:
       return enterprise_account ? ProfileMetrics::ProfileAddSignInFlowOutcome::
                                       kEnterpriseSyncSettings
                                 : ProfileMetrics::ProfileAddSignInFlowOutcome::
                                       kConsumerSyncSettings;
-      break;
     case LoginUIService::ABORT_SYNC:
       return enterprise_account ? ProfileMetrics::ProfileAddSignInFlowOutcome::
                                       kEnterpriseSigninOnly
                                 : ProfileMetrics::ProfileAddSignInFlowOutcome::
                                       kConsumerSigninOnly;
-      break;
     case LoginUIService::UI_CLOSED:
       // The metric is recorded elsewhere.
       return absl::nullopt;

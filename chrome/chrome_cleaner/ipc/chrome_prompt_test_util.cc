@@ -219,10 +219,8 @@ void MockChromePromptResponder::ReadRequests(
       } break;
       case ChromePromptRequest::kRemoveExtensions:
         FAIL() << "RemoveExtensions is deprecated and unsupported.";
-        break;
       default:
         FAIL() << "Unhandled ChromePromptRequest " << request.request_case();
-        break;
     }
   }
 }

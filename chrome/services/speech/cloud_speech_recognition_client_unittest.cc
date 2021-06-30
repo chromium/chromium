@@ -320,7 +320,6 @@ void CloudSpeechRecognitionClientUnitTest::ProvideMockStringResponseDownstream(
     }
 
     FAIL() << "Mojo write failed unexpectedly with result:" << result;
-    return;
   }
 
   // Flush the mojo pipe.

@@ -183,7 +183,6 @@ void MockRenderViewContextMenu::RemoveMenuItem(int command_id) {
   if (new_end == old_end) {
     FAIL() << "Menu observer is trying to remove a menu item it doesn't own."
            << " command_id: " << command_id;
-    return;
   }
 
   items_.erase(new_end, old_end);
@@ -200,14 +199,12 @@ void MockRenderViewContextMenu::RemoveSeparatorBeforeMenuItem(int command_id) {
     FAIL() << "Menu observer is trying to remove a separator before a "
               "non-existent item."
            << " command_id: " << command_id;
-    return;
   }
 
   if (iter == items_.begin()) {
     FAIL() << "Menu observer is trying to remove a separator before a "
               "the first menu item."
            << " command_id: " << command_id;
-    return;
   }
 
   items_.erase(iter - 1);

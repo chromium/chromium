@@ -375,7 +375,6 @@ TEST_P(ChromeCleanerRunnerTest, WithMockCleanerProcess) {
       break;
     default:
       FAIL() << "Invalid crash point";
-      break;
   }
 
   // If the prompt was shown, validate its contents.

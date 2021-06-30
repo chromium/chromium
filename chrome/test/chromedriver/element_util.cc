@@ -377,14 +377,13 @@ Status FindElement(int interval_ms,
       if (only_one) {
         *value = std::move(temp);
         return Status(kOk);
-      } else {
-        base::ListValue* result;
-        if (!temp->GetAsList(&result))
-          return Status(kUnknownError, "script returns unexpected result");
-        if (result->GetSize() > 0U) {
-          *value = std::move(temp);
-          return Status(kOk);
-        }
+      }
+      base::ListValue* result;
+      if (!temp->GetAsList(&result))
+        return Status(kUnknownError, "script returns unexpected result");
+      if (result->GetSize() > 0U) {
+        *value = std::move(temp);
+        return Status(kOk);
       }
     }
 
@@ -392,15 +391,13 @@ Status FindElement(int interval_ms,
       if (only_one) {
         return Status(kNoSuchElement, "Unable to locate element: {\"method\":\""
          + strategy + "\",\"selector\":\"" + target + "\"}");
-      } else {
-        *value = std::make_unique<base::ListValue>();
-        return Status(kOk);
       }
+      *value = std::make_unique<base::ListValue>();
+      return Status(kOk);
     }
+
     base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(interval_ms));
   }
-
-  return Status(kUnknownError);
 }
 
 Status GetActiveElement(Session* session,

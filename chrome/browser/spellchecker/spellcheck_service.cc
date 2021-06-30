@@ -318,9 +318,9 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   return GetSupportedAcceptLanguageCodeGenericOnly(supported_language_full_tag,
                                                    accept_languages);
 
-#endif  // defined(OS_WIN)
-
+#else
   return supported_accept_language;
+#endif  // defined(OS_WIN)
 }
 
 #if defined(OS_WIN)

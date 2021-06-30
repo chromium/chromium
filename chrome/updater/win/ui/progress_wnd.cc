@@ -258,7 +258,6 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
         case States::STATE_COMPLETE_ERROR:
           return CompleteWnd::OnClickedButton(notify_code, id, wnd_ctl,
                                               handled);
-          break;
         default:
           NOTREACHED();
       }

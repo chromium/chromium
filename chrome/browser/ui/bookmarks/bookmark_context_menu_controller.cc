@@ -70,7 +70,6 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
         default:
           return nullptr;
       }
-      break;
     case BOOKMARK_LAUNCH_LOCATION_APP_MENU:
       switch (disposition) {
         case WindowOpenDisposition::NEW_BACKGROUND_TAB:

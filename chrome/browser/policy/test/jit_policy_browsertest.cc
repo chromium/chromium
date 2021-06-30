@@ -90,11 +90,9 @@ bool JITPolicyTest::DetermineExpectedResultForDefault() {
   switch (GetParam()) {
     case DISABLED_BY_DEFAULT:
       return true;
-      break;
     case ENABLED_BY_DEFAULT:
     case NOT_SET:
       return false;
-      break;
   }
 }
 
