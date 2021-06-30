@@ -835,7 +835,7 @@ def _bootstrap_properties(ctx):
                         },
                         "ref": settings.ref,
                     },
-                    "properties_file": "infra/config/generated/builders/{}".format(properties_file),
+                    "properties_file": "infra/config/generated/{}".format(properties_file),
                     "exe": builder.exe,
                 },
             })
