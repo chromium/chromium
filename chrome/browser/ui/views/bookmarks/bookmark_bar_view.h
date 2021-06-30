@@ -316,6 +316,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
                              const bookmarks::BookmarkNodeData& data,
                              DropLocation* location);
 
+  // Marks the current drop as invalid and cancels the menu. Used when the
+  // model is mutated and a drop is in progress.
+  void InvalidateDrop();
+
   // Returns the node corresponding to |sender|, which is one of the
   // |bookmark_buttons_|.
   const bookmarks::BookmarkNode* GetNodeForSender(View* sender) const;
@@ -389,6 +393,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
                    const bool copy,
                    const ui::DropTargetEvent& event,
                    ui::mojom::DragOperation& output_drag_op);
+
+  int GetDropLocationModelIndexForTesting() const;
 
   // Needed to react to kShowAppsShortcutInBookmarkBar changes.
   PrefChangeRegistrar profile_pref_registrar_;

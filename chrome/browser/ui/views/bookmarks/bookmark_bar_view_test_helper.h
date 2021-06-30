@@ -28,6 +28,10 @@ class BookmarkBarViewTestHelper {
     return bbv_->managed_bookmarks_button_;
   }
 
+  int GetDropLocationModelIndexForTesting() {
+    return bbv_->GetDropLocationModelIndexForTesting();
+  }
+
  private:
   BookmarkBarView* bbv_;
 

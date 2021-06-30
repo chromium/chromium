@@ -107,18 +107,19 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     }
   }
 
+  BookmarkModel* model() {
+    return BookmarkModelFactory::GetForBrowserContext(profile());
+  }
+
   void WaitForBookmarkModelToLoad() {
-    bookmarks::test::WaitForBookmarkModelToLoad(
-        BookmarkModelFactory::GetForBrowserContext(profile()));
+    bookmarks::test::WaitForBookmarkModelToLoad(model());
   }
 
   // Adds nodes to the bookmark bar node from |string|. See
   // bookmarks::test::AddNodesFromModelString() for details on |string|.
   void AddNodesToBookmarkBarFromModelString(const std::string& string) {
-    BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(profile());
-    bookmarks::test::AddNodesFromModelString(model, model->bookmark_bar_node(),
-                                             string);
+    bookmarks::test::AddNodesFromModelString(
+        model(), model()->bookmark_bar_node(), string);
   }
 
   // Creates the model, blocking until it loads, then creates the
@@ -281,7 +282,6 @@ TEST_F(BookmarkBarViewTest, OverflowVisibility) {
 // Verifies buttons get added correctly when BookmarkBarView is created after
 // the model and the model has nodes.
 TEST_F(BookmarkBarViewTest, ButtonsDynamicallyAddedAfterModelHasNodes) {
-  EXPECT_TRUE(BookmarkModelFactory::GetForBrowserContext(profile())->loaded());
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
@@ -306,7 +306,6 @@ TEST_F(BookmarkBarViewTest, ButtonsDynamicallyAddedAfterModelHasNodes) {
 
 // Verifies buttons are added as the model and size change.
 TEST_F(BookmarkBarViewTest, ButtonsDynamicallyAdded) {
-  EXPECT_TRUE(BookmarkModelFactory::GetForBrowserContext(profile())->loaded());
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
   SizeUntilButtonsVisible(1);
@@ -337,31 +336,29 @@ TEST_F(BookmarkBarViewTest, AddNodesWhenBarAlreadySized) {
 
 // Various assertions for removing nodes.
 TEST_F(BookmarkBarViewTest, RemoveNode) {
-  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile());
-  const BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
   SizeUntilButtonsVisible(1);
   EXPECT_EQ(2u, test_helper_->GetBookmarkButtonCount());
 
   // Remove the 2nd node, should still only have 1 visible.
-  model->Remove(bookmark_bar_node->children()[1].get());
+  model()->Remove(bookmark_bar_node->children()[1].get());
   EXPECT_EQ("a", GetStringForVisibleButtons());
 
   // Remove the first node, should force a new button (for the 'c' node).
-  model->Remove(bookmark_bar_node->children()[0].get());
+  model()->Remove(bookmark_bar_node->children()[0].get());
   ASSERT_EQ("c", GetStringForVisibleButtons());
 }
 
 // Assertions for moving a node on the bookmark bar.
 TEST_F(BookmarkBarViewTest, MoveNode) {
-  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile());
-  const BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
   // Move 'c' first resulting in 'c a b d e f'.
-  model->Move(bookmark_bar_node->children()[2].get(), bookmark_bar_node, 0);
+  model()->Move(bookmark_bar_node->children()[2].get(), bookmark_bar_node, 0);
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
   // Make enough room for 1 node.
@@ -369,55 +366,54 @@ TEST_F(BookmarkBarViewTest, MoveNode) {
   EXPECT_EQ("c", GetStringForVisibleButtons());
 
   // Move 'f' first, resulting in 'f c a b d e'.
-  model->Move(bookmark_bar_node->children()[5].get(), bookmark_bar_node, 0);
+  model()->Move(bookmark_bar_node->children()[5].get(), bookmark_bar_node, 0);
   SizeUntilButtonsVisible(2);
   EXPECT_EQ("f c", GetStringForVisibleButtons());
 
   // Move 'f' to the end, resulting in 'c a b d e f'.
-  model->Move(bookmark_bar_node->children()[0].get(), bookmark_bar_node, 6);
+  model()->Move(bookmark_bar_node->children()[0].get(), bookmark_bar_node, 6);
   SizeUntilButtonsVisible(2);
   EXPECT_EQ("c a", GetStringForVisibleButtons());
 
   // Move 'c' after 'a', resulting in 'a c b d e f'.
-  model->Move(bookmark_bar_node->children()[0].get(), bookmark_bar_node, 2);
+  model()->Move(bookmark_bar_node->children()[0].get(), bookmark_bar_node, 2);
   SizeUntilButtonsVisible(2);
   EXPECT_EQ("a c", GetStringForVisibleButtons());
 }
 
 // Assertions for changing the title of a node.
 TEST_F(BookmarkBarViewTest, ChangeTitle) {
-  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile());
-  const BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
-  model->SetTitle(bookmark_bar_node->children()[0].get(), u"a1");
+  model()->SetTitle(bookmark_bar_node->children()[0].get(), u"a1");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
   // Make enough room for 1 node.
   SizeUntilButtonsVisible(1);
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model->SetTitle(bookmark_bar_node->children()[1].get(), u"b1");
+  model()->SetTitle(bookmark_bar_node->children()[1].get(), u"b1");
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model->SetTitle(bookmark_bar_node->children()[5].get(), u"f1");
+  model()->SetTitle(bookmark_bar_node->children()[5].get(), u"f1");
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model->SetTitle(bookmark_bar_node->children()[3].get(), u"d1");
+  model()->SetTitle(bookmark_bar_node->children()[3].get(), u"d1");
 
   // Make the second button visible, changes the title of the first to something
   // really long and make sure the second button hides.
   SizeUntilButtonsVisible(2);
   EXPECT_EQ("a1 b1", GetStringForVisibleButtons());
-  model->SetTitle(bookmark_bar_node->children()[0].get(),
-                  u"a_really_long_title");
+  model()->SetTitle(bookmark_bar_node->children()[0].get(),
+                    u"a_really_long_title");
   EXPECT_LE(1u, test_helper_->GetBookmarkButtonCount());
 
   // Change the title back and make sure the 2nd button is visible again. Don't
   // use GetStringForVisibleButtons() here as more buttons may have been
   // created.
-  model->SetTitle(bookmark_bar_node->children()[0].get(), u"a1");
+  model()->SetTitle(bookmark_bar_node->children()[0].get(), u"a1");
   ASSERT_LE(2u, test_helper_->GetBookmarkButtonCount());
   EXPECT_TRUE(test_helper_->GetBookmarkButton(0)->GetVisible());
   EXPECT_TRUE(test_helper_->GetBookmarkButton(1)->GetVisible());
@@ -429,7 +425,6 @@ TEST_F(BookmarkBarViewTest, ChangeTitle) {
 }
 
 TEST_F(BookmarkBarViewTest, DropCallbackTest) {
-  EXPECT_TRUE(BookmarkModelFactory::GetForBrowserContext(profile())->loaded());
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
@@ -454,9 +449,27 @@ TEST_F(BookmarkBarViewTest, DropCallbackTest) {
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
 }
 
-TEST_F(BookmarkBarViewTest, DropCallback_InvalidatePtrTest) {
-  EXPECT_TRUE(BookmarkModelFactory::GetForBrowserContext(profile())->loaded());
+TEST_F(BookmarkBarViewTest, MutateModelDuringDrag) {
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  SizeUntilButtonsVisible(7);
+  EXPECT_EQ(6u, test_helper_->GetBookmarkButtonCount());
 
+  gfx::Point drop_loc;
+  views::View::ConvertPointToScreen(test_helper_->GetBookmarkButton(5),
+                                    &drop_loc);
+  ui::OSExchangeData drop_data;
+  drop_data.SetURL(GURL("http://www.chromium.org/"), std::u16string(u"z"));
+  ui::DropTargetEvent target_event(drop_data, gfx::PointF(drop_loc),
+                                   gfx::PointF(drop_loc),
+                                   ui::DragDropTypes::DRAG_COPY);
+  ASSERT_TRUE(bookmark_bar_view()->CanDrop(drop_data));
+  bookmark_bar_view()->OnDragUpdated(target_event);
+  EXPECT_NE(-1, test_helper_->GetDropLocationModelIndexForTesting());
+  model()->Remove(model()->bookmark_bar_node()->children()[4].get());
+  EXPECT_EQ(-1, test_helper_->GetDropLocationModelIndexForTesting());
+}
+
+TEST_F(BookmarkBarViewTest, DropCallback_InvalidatePtrTest) {
   SizeUntilButtonsVisible(7);
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
@@ -506,9 +519,8 @@ TEST_F(BookmarkBarViewTest, ManagedShowAppsShortcutInBookmarksBar) {
 TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   widget()->Show();
 
-  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile());
-  bookmarks::test::AddNodesFromModelString(model, model->bookmark_bar_node(),
-                                           "a b");
+  bookmarks::test::AddNodesFromModelString(model(),
+                                           model()->bookmark_bar_node(), "a b");
   SizeUntilButtonsVisible(1);
   ASSERT_EQ(1u, test_helper_->GetBookmarkButtonCount());
 

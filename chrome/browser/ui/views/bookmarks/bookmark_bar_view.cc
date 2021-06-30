@@ -903,7 +903,7 @@ void BookmarkBarView::ViewHierarchyChanged(
 void BookmarkBarView::PaintChildren(const views::PaintInfo& paint_info) {
   View::PaintChildren(paint_info);
 
-  if (drop_info_.get() && drop_info_->valid &&
+  if (drop_info_ && drop_info_->valid &&
       drop_info_->location.operation != DragOperation::kNone &&
       drop_info_->location.index.has_value() &&
       drop_info_->location.button_type != DROP_OVERFLOW &&
@@ -1034,8 +1034,6 @@ void BookmarkBarView::OnDragExited() {
   // NOTE: we don't hide the menu on exit as it's possible the user moved the
   // mouse over the menu, which triggers an exit on us.
 
-  drop_info_->valid = false;
-
   if (drop_info_->location.index.has_value()) {
     // TODO(sky): optimize the paint region.
     SchedulePaint();
@@ -1049,7 +1047,7 @@ DragOperation BookmarkBarView::OnPerformDrop(const ui::DropTargetEvent& event) {
   if (bookmark_drop_menu_)
     bookmark_drop_menu_->Cancel();
 
-  if (!drop_info_.get() ||
+  if (!drop_info_ || !drop_info_->valid ||
       drop_info_->location.operation == DragOperation::kNone)
     return DragOperation::kNone;
 
@@ -1072,7 +1070,7 @@ views::View::DropCallback BookmarkBarView::GetDropCallback(
   if (bookmark_drop_menu_)
     bookmark_drop_menu_->Cancel();
 
-  if (!drop_info_.get() ||
+  if (!drop_info_ || !drop_info_->valid ||
       drop_info_->location.operation == DragOperation::kNone)
     return base::NullCallback();
 
@@ -1172,6 +1170,12 @@ void BookmarkBarView::BookmarkNodeMoved(BookmarkModel* model,
                                         size_t old_index,
                                         const BookmarkNode* new_parent,
                                         size_t new_index) {
+  // It is extremely rare for the model to mutate during a drop. Rather than
+  // trying to validate the location (which may no longer be valid), this takes
+  // the simple route of marking the drop as invalid. If the user moves the
+  // mouse/touch-device, the location will update accordingly.
+  InvalidateDrop();
+
   bool was_throbbing =
       throbbing_view_ &&
       throbbing_view_ == DetermineViewToThrobFromRemove(old_parent, old_index);
@@ -1192,6 +1196,9 @@ void BookmarkBarView::BookmarkNodeMoved(BookmarkModel* model,
 void BookmarkBarView::BookmarkNodeAdded(BookmarkModel* model,
                                         const BookmarkNode* parent,
                                         size_t index) {
+  // See comment in BookmarkNodeMoved() for details on this.
+  InvalidateDrop();
+
   if (BookmarkNodeAddedImpl(model, parent, index))
     LayoutAndPaint();
 
@@ -1203,6 +1210,9 @@ void BookmarkBarView::BookmarkNodeRemoved(BookmarkModel* model,
                                           size_t old_index,
                                           const BookmarkNode* node,
                                           const std::set<GURL>& removed_urls) {
+  // See comment in BookmarkNodeMoved() for details on this.
+  InvalidateDrop();
+
   // Close the menu if the menu is showing for the deleted node.
   if (bookmark_menu_ && bookmark_menu_->node() == node)
     bookmark_menu_->Cancel();
@@ -1215,6 +1225,9 @@ void BookmarkBarView::BookmarkNodeRemoved(BookmarkModel* model,
 void BookmarkBarView::BookmarkAllUserNodesRemoved(
     BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
+  // See comment in BookmarkNodeMoved() for details on this.
+  InvalidateDrop();
+
   UpdateOtherAndManagedButtonsVisibility();
 
   StopThrobbing(true);
@@ -1239,6 +1252,9 @@ void BookmarkBarView::BookmarkNodeChanged(BookmarkModel* model,
 
 void BookmarkBarView::BookmarkNodeChildrenReordered(BookmarkModel* model,
                                                     const BookmarkNode* node) {
+  // See comment in BookmarkNodeMoved() for details on this.
+  InvalidateDrop();
+
   if (node != model->bookmark_bar_node())
     return;  // We only care about reordering of the bookmark bar node.
 
@@ -1863,6 +1879,16 @@ void BookmarkBarView::CalculateDropLocation(
   }
 }
 
+void BookmarkBarView::InvalidateDrop() {
+  if (drop_info_ && drop_info_->valid) {
+    drop_info_->valid = false;
+    SchedulePaint();
+  }
+  if (bookmark_drop_menu_)
+    bookmark_drop_menu_->Cancel();
+  StopShowFolderDropMenuTimer();
+}
+
 const BookmarkNode* BookmarkBarView::GetNodeForSender(View* sender) const {
   const auto i =
       std::find(bookmark_buttons_.cbegin(), bookmark_buttons_.cend(), sender);
@@ -2114,6 +2140,13 @@ void BookmarkBarView::PerformDrop(const bookmarks::BookmarkNodeData data,
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
   output_drag_op = chrome::DropBookmarks(browser_->profile(), data, parent_node,
                                          index, copy);
+}
+
+int BookmarkBarView::GetDropLocationModelIndexForTesting() const {
+  return (drop_info_ && drop_info_->valid &&
+          drop_info_->location.index.has_value())
+             ? *(drop_info_->location.index)
+             : -1;
 }
 
 BEGIN_METADATA(BookmarkBarView, views::AccessiblePaneView)
