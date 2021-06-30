@@ -75,18 +75,21 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   void GetStorageKeyUsage(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetOriginUsageCallback callback) override;
-  void GetStorageKeys(
-      storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) override;
+      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback)
+      override;
+  void GetStorageKeys(storage::mojom::CacheStorageOwner owner,
+                      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback
+                          callback) override;
   void GetStorageKeysForHost(
       const std::string& host,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetOriginsForHostCallback callback) override;
+      storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback)
+      override;
   void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::DeleteOriginDataCallback callback) override;
+      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback)
+      override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             storage::mojom::CacheStorageOwner owner) override;
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
@@ -130,7 +133,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   void DeleteStorageKeyDidClose(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
+      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
       std::unique_ptr<LegacyCacheStorage> cache_storage,
       int64_t origin_size);
 

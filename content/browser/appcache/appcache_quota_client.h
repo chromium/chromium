@@ -13,26 +13,29 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "components/services/storage/public/cpp/origin_quota_client.h"
+#include "components/services/storage/public/cpp/storage_key_quota_client.h"
 #include "content/browser/appcache/appcache_storage.h"
 #include "content/common/content_export.h"
 #include "net/base/completion_repeating_callback.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_task.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
-#include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 class AppCacheQuotaClientTest;
 class AppCacheServiceImpl;
 class AppCacheStorageImpl;
 
-// An OriginQuotaClient implementation to integrate the appcache service
-// with the quota management system. The OriginQuotaClient interface is
+// An StorageKeyQuotaClient implementation to integrate the appcache service
+// with the quota management system. The StorageKeyQuotaClient interface is
 // used on the IO thread by the quota manager. This class deletes
 // itself when both the quota manager and the appcache service have
 // been destroyed.
-class AppCacheQuotaClient : public storage::OriginQuotaClient {
+class AppCacheQuotaClient : public storage::StorageKeyQuotaClient {
  public:
   using RequestQueue = base::circular_deque<base::OnceClosure>;
 
@@ -41,18 +44,18 @@ class AppCacheQuotaClient : public storage::OriginQuotaClient {
 
   ~AppCacheQuotaClient() override;
 
-  // storage::OriginQuotaClient method overrides.
-  void GetOriginUsage(const url::Origin& origin,
-                      blink::mojom::StorageType type,
-                      GetOriginUsageCallback callback) override;
-  void GetOriginsForType(blink::mojom::StorageType type,
-                         GetOriginsForTypeCallback callback) override;
-  void GetOriginsForHost(blink::mojom::StorageType type,
-                         const std::string& host,
-                         GetOriginsForHostCallback callback) override;
-  void DeleteOriginData(const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        DeleteOriginDataCallback callback) override;
+  // storage::StorageKeyQuotaClient method overrides.
+  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
+                          blink::mojom::StorageType type,
+                          GetStorageKeyUsageCallback callback) override;
+  void GetStorageKeysForType(blink::mojom::StorageType type,
+                             GetStorageKeysForTypeCallback callback) override;
+  void GetStorageKeysForHost(blink::mojom::StorageType type,
+                             const std::string& host,
+                             GetStorageKeysForHostCallback callback) override;
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type,
+                            DeleteStorageKeyDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
@@ -64,9 +67,9 @@ class AppCacheQuotaClient : public storage::OriginQuotaClient {
   friend class AppCacheServiceImpl;  // for NotifyServiceDestroyed
   friend class AppCacheStorageImpl;  // for NotifyStorageReady
 
-  void DidDeleteAppCachesForOrigin(int rv);
-  void GetOriginsHelper(const std::string& opt_host,
-                        GetOriginsForTypeCallback callback);
+  void DidDeleteAppCachesForStorageKey(int rv);
+  void GetStorageKeysHelper(const std::string& opt_host,
+                            GetStorageKeysForTypeCallback callback);
   void ProcessPendingRequests();
   void DeletePendingRequests();
   net::CancelableCompletionRepeatingCallback* GetServiceDeleteCallback();
@@ -89,7 +92,7 @@ class AppCacheQuotaClient : public storage::OriginQuotaClient {
 
   // And once it's ready, we can only handle one delete request at a time,
   // so we queue up additional requests while one is in already in progress.
-  DeleteOriginDataCallback current_delete_request_callback_;
+  DeleteStorageKeyDataCallback current_delete_request_callback_;
   std::unique_ptr<net::CancelableCompletionRepeatingCallback>
       service_delete_callback_;
 

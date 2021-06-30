@@ -22,8 +22,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-using blink::mojom::QuotaStatusCode;
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::QuotaStatusCode;
+using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -40,49 +41,49 @@ void DidGetGlobalUsage(bool* done,
   *unlimited_usage_out = unlimited_usage;
 }
 
-// TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient is
-// migrated to use StorageKey instead of Origin.
 class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
  public:
   UsageTrackerTestQuotaClient() = default;
 
-  void GetOriginUsage(const url::Origin& origin,
-                      StorageType type,
-                      GetOriginUsageCallback callback) override {
+  void GetStorageKeyUsage(const StorageKey& storage_key,
+                          StorageType type,
+                          GetStorageKeyUsageCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
-    int64_t usage = GetUsage(origin);
+    int64_t usage = GetUsage(storage_key);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), usage));
   }
 
-  void GetOriginsForType(StorageType type,
-                         GetOriginsForTypeCallback callback) override {
+  void GetStorageKeysForType(StorageType type,
+                             GetStorageKeysForTypeCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
-    std::vector<url::Origin> origins;
-    for (const auto& origin_usage_pair : origin_usage_map_)
-      origins.push_back(origin_usage_pair.first);
+    std::vector<StorageKey> storage_keys;
+    for (const auto& storage_key_usage_pair : storage_key_usage_map_)
+      storage_keys.push_back(storage_key_usage_pair.first);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(origins)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(storage_keys)));
   }
 
-  void GetOriginsForHost(StorageType type,
-                         const std::string& host,
-                         GetOriginsForHostCallback callback) override {
+  void GetStorageKeysForHost(StorageType type,
+                             const std::string& host,
+                             GetStorageKeysForHostCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
-    std::vector<url::Origin> origins;
-    for (const auto& origin_usage_pair : origin_usage_map_) {
-      if (origin_usage_pair.first.host() == host)
-        origins.push_back(origin_usage_pair.first);
+    std::vector<StorageKey> storage_keys;
+    for (const auto& storage_key_usage_pair : storage_key_usage_map_) {
+      if (storage_key_usage_pair.first.origin().host() == host)
+        storage_keys.push_back(storage_key_usage_pair.first);
     }
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(origins)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(storage_keys)));
   }
 
-  void DeleteOriginData(const url::Origin& origin,
-                        StorageType type,
-                        DeleteOriginDataCallback callback) override {
+  void DeleteStorageKeyData(const StorageKey& storage_key,
+                            StorageType type,
+                            DeleteStorageKeyDataCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
-    origin_usage_map_.erase(origin);
+    storage_key_usage_map_.erase(storage_key);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), QuotaStatusCode::kOk));
   }
@@ -92,23 +93,23 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
     std::move(callback).Run();
   }
 
-  int64_t GetUsage(const url::Origin& origin) {
-    auto it = origin_usage_map_.find(origin);
-    if (it == origin_usage_map_.end())
+  int64_t GetUsage(const StorageKey& storage_key) {
+    auto it = storage_key_usage_map_.find(storage_key);
+    if (it == storage_key_usage_map_.end())
       return 0;
     return it->second;
   }
 
-  void SetUsage(const url::Origin& origin, int64_t usage) {
-    origin_usage_map_[origin] = usage;
+  void SetUsage(const StorageKey& storage_key, int64_t usage) {
+    storage_key_usage_map_[storage_key] = usage;
   }
 
-  int64_t UpdateUsage(const url::Origin& origin, int64_t delta) {
-    return origin_usage_map_[origin] += delta;
+  int64_t UpdateUsage(const StorageKey& storage_key, int64_t delta) {
+    return storage_key_usage_map_[storage_key] += delta;
   }
 
  private:
-  std::map<url::Origin, int64_t> origin_usage_map_;
+  std::map<StorageKey, int64_t> storage_key_usage_map_;
 
   DISALLOW_COPY_AND_ASSIGN(UsageTrackerTestQuotaClient);
 };
@@ -142,16 +143,16 @@ class UsageTrackerTest : public testing::Test {
     *done = true;
   }
 
-  void UpdateUsage(const blink::StorageKey& storage_key, int64_t delta) {
-    quota_client_->UpdateUsage(storage_key.origin(), delta);
+  void UpdateUsage(const StorageKey& storage_key, int64_t delta) {
+    quota_client_->UpdateUsage(storage_key, delta);
     usage_tracker_.UpdateUsageCache(QuotaClientType::kFileSystem, storage_key,
                                     delta);
     base::RunLoop().RunUntilIdle();
   }
 
-  void UpdateUsageWithoutNotification(const blink::StorageKey& storage_key,
+  void UpdateUsageWithoutNotification(const StorageKey& storage_key,
                                       int64_t delta) {
-    quota_client_->UpdateUsage(storage_key.origin(), delta);
+    quota_client_->UpdateUsage(storage_key, delta);
   }
 
   void GetGlobalUsage(int64_t* usage, int64_t* unlimited_usage) {
@@ -177,7 +178,7 @@ class UsageTrackerTest : public testing::Test {
     return std::make_pair(usage, std::move(usage_breakdown));
   }
 
-  void GrantUnlimitedStoragePolicy(const blink::StorageKey& storage_key) {
+  void GrantUnlimitedStoragePolicy(const StorageKey& storage_key) {
     if (!storage_policy_->IsStorageUnlimited(storage_key.origin().GetURL())) {
       storage_policy_->AddUnlimited(storage_key.origin().GetURL());
       storage_policy_->NotifyGranted(storage_key.origin(),
@@ -185,7 +186,7 @@ class UsageTrackerTest : public testing::Test {
     }
   }
 
-  void RevokeUnlimitedStoragePolicy(const blink::StorageKey& storage_key) {
+  void RevokeUnlimitedStoragePolicy(const StorageKey& storage_key) {
     if (storage_policy_->IsStorageUnlimited(storage_key.origin().GetURL())) {
       storage_policy_->RemoveUnlimited(storage_key.origin().GetURL());
       storage_policy_->NotifyRevoked(storage_key.origin(),
@@ -193,8 +194,7 @@ class UsageTrackerTest : public testing::Test {
     }
   }
 
-  void SetUsageCacheEnabled(const blink::StorageKey& storage_key,
-                            bool enabled) {
+  void SetUsageCacheEnabled(const StorageKey& storage_key, bool enabled) {
     usage_tracker_.SetUsageCacheEnabled(QuotaClientType::kFileSystem,
                                         storage_key, enabled);
   }
@@ -225,8 +225,8 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
   EXPECT_EQ(0, usage);
   EXPECT_EQ(0, unlimited_usage);
 
-  const blink::StorageKey storage_key =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  const StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://example.com");
   const std::string& host = storage_key.origin().host();
 
   UpdateUsage(storage_key, 100);
@@ -262,8 +262,8 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   blink::mojom::UsageBreakdownPtr host_usage_breakdown_expected =
       blink::mojom::UsageBreakdown::New();
 
-  const blink::StorageKey storage_key =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  const StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://example.com");
   const std::string& host = storage_key.origin().host();
 
   UpdateUsage(storage_key, 100);
@@ -318,15 +318,14 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
 }
 
 TEST_F(UsageTrackerTest, GlobalUsageUnlimitedUncached) {
-  const blink::StorageKey kNormal =
-      blink::StorageKey::CreateFromStringForTesting("http://normal");
-  const blink::StorageKey kUnlimited =
-      blink::StorageKey::CreateFromStringForTesting("http://unlimited");
-  const blink::StorageKey kNonCached =
-      blink::StorageKey::CreateFromStringForTesting("http://non_cached");
-  const blink::StorageKey kNonCachedUnlimited =
-      blink::StorageKey::CreateFromStringForTesting(
-          "http://non_cached-unlimited");
+  const StorageKey kNormal =
+      StorageKey::CreateFromStringForTesting("http://normal");
+  const StorageKey kUnlimited =
+      StorageKey::CreateFromStringForTesting("http://unlimited");
+  const StorageKey kNonCached =
+      StorageKey::CreateFromStringForTesting("http://non_cached");
+  const StorageKey kNonCachedUnlimited =
+      StorageKey::CreateFromStringForTesting("http://non_cached-unlimited");
 
   GrantUnlimitedStoragePolicy(kUnlimited);
   GrantUnlimitedStoragePolicy(kNonCachedUnlimited);
@@ -355,12 +354,12 @@ TEST_F(UsageTrackerTest, GlobalUsageUnlimitedUncached) {
 }
 
 TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostCachedInit) {
-  const blink::StorageKey kStorageKey1 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com");
-  const blink::StorageKey kStorageKey2 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com:8080");
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://example.com");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://example.com:8080");
   ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
-      << "The test assumes that the two origins have the same host";
+      << "The test assumes that the two storage keys have the same host";
 
   UpdateUsageWithoutNotification(kStorageKey1, 100);
   UpdateUsageWithoutNotification(kStorageKey2, 200);
@@ -369,25 +368,25 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostCachedInit) {
   int64_t unlimited_usage = 0;
   // GetGlobalUsage() takes different code paths on the first call and on
   // subsequent calls. This test covers the code path used by the first call.
-  // Therefore, we introduce the origins before the first call.
+  // Therefore, we introduce the storage_keys before the first call.
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(100 + 200, total_usage);
   EXPECT_EQ(0, unlimited_usage);
 }
 
-TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostCachedUpdate) {
-  const blink::StorageKey kStorageKey1 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com");
-  const blink::StorageKey kStorageKey2 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com:8080");
+TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostCachedUpdate) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://example.com");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://example.com:8080");
   ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
-      << "The test assumes that the two origins have the same host";
+      << "The test assumes that the two storage keys have the same host";
 
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
   // GetGlobalUsage() takes different code paths on the first call and on
   // subsequent calls. This test covers the code path used by subsequent calls.
-  // Therefore, we introduce the origins after the first call.
+  // Therefore, we introduce the storage keys after the first call.
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(0, total_usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -400,13 +399,13 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostCachedUpdate) {
   EXPECT_EQ(0, unlimited_usage);
 }
 
-TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostUncachedInit) {
-  const blink::StorageKey kStorageKey1 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com");
-  const blink::StorageKey kStorageKey2 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com:8080");
+TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostUncachedInit) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://example.com");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://example.com:8080");
   ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
-      << "The test assumes that the two origins have the same host";
+      << "The test assumes that the two storage keys have the same host";
 
   SetUsageCacheEnabled(kStorageKey1, false);
   SetUsageCacheEnabled(kStorageKey2, false);
@@ -418,25 +417,25 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostUncachedInit) {
   int64_t unlimited_usage = 0;
   // GetGlobalUsage() takes different code paths on the first call and on
   // subsequent calls. This test covers the code path used by the first call.
-  // Therefore, we introduce the origins before the first call.
+  // Therefore, we introduce the storage keys before the first call.
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(100 + 200, total_usage);
   EXPECT_EQ(0, unlimited_usage);
 }
 
-TEST_F(UsageTrackerTest, GlobalUsageMultipleOriginsPerHostUncachedUpdate) {
-  const blink::StorageKey kStorageKey1 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com");
-  const blink::StorageKey kStorageKey2 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com:8080");
+TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostUncachedUpdate) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://example.com");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://example.com:8080");
   ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
-      << "The test assumes that the two origins have the same host";
+      << "The test assumes that the two storage keys have the same host";
 
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
   // GetGlobalUsage() takes different code paths on the first call and on
   // subsequent calls. This test covers the code path used by subsequent calls.
-  // Therefore, we introduce the origins after the first call.
+  // Therefore, we introduce the storage keys after the first call.
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(0, total_usage);
   EXPECT_EQ(0, unlimited_usage);

@@ -26,7 +26,9 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -247,7 +249,7 @@ void ServiceWorkerRegistry::FindRegistrationForId(
 void ServiceWorkerRegistry::FindRegistrationForIdOnly(
     int64_t registration_id,
     FindRegistrationCallback callback) {
-  FindRegistrationForIdInternal(registration_id, /*origin=*/absl::nullopt,
+  FindRegistrationForIdInternal(registration_id, /*key=*/absl::nullopt,
                                 std::move(callback));
 }
 
@@ -265,7 +267,7 @@ void ServiceWorkerRegistry::GetRegistrationsForStorageKey(
 
 void ServiceWorkerRegistry::GetStorageUsageForStorageKey(
     const blink::StorageKey& key,
-    GetStorageUsageForOriginCallback callback) {
+    GetStorageUsageForStorageKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed, 0);
@@ -658,14 +660,14 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrationsByKeyPrefix(
       key_prefix);
 }
 
-void ServiceWorkerRegistry::GetRegisteredOrigins(
-    GetRegisteredOriginsCallback callback) {
+void ServiceWorkerRegistry::GetRegisteredStorageKeys(
+    GetRegisteredStorageKeysCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), std::vector<url::Origin>());
+      std::move(callback), std::vector<blink::StorageKey>());
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetRegisteredStorageKeys,
-      base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredOrigins,
+      base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredStorageKeys,
                      weak_factory_.GetWeakPtr(), std::move(wrapped_callback)));
 }
 
@@ -710,9 +712,9 @@ void ServiceWorkerRegistry::Start() {
                           weak_factory_.GetWeakPtr()),
       GetIOThreadTaskRunner({}), special_storage_policy_);
 
-  GetRegisteredOrigins(
-      base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup,
-                     weak_factory_.GetWeakPtr()));
+  GetRegisteredStorageKeys(base::BindOnce(
+      &ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartup,
+      weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRegistry::FindRegistrationForIdInternal(
@@ -1169,7 +1171,7 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
 }
 
 void ServiceWorkerRegistry::DidGetStorageUsageForStorageKey(
-    GetStorageUsageForOriginCallback callback,
+    GetStorageUsageForStorageKeyCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     int64_t usage) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1420,16 +1422,11 @@ void ServiceWorkerRegistry::DidDeleteAndStartOver(
   std::move(callback).Run(DatabaseStatusToStatusCode(status));
 }
 
-void ServiceWorkerRegistry::DidGetRegisteredOrigins(
-    GetRegisteredOriginsCallback callback,
+void ServiceWorkerRegistry::DidGetRegisteredStorageKeys(
+    GetRegisteredStorageKeysCallback callback,
     const std::vector<blink::StorageKey>& keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<url::Origin> origins;
-  origins.reserve(keys.size());
-  for (const auto& key : keys) {
-    origins.push_back(key.origin());
-  }
-  std::move(callback).Run(std::move(origins));
+  std::move(callback).Run(keys);
 }
 
 void ServiceWorkerRegistry::DidPerformStorageCleanup(
@@ -1447,10 +1444,15 @@ void ServiceWorkerRegistry::DidApplyPolicyUpdates(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-void ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup(
-    const std::vector<url::Origin>& origins) {
+void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartup(
+    const std::vector<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(special_storage_policy_);
+  std::vector<url::Origin> origins;
+  origins.reserve(storage_keys.size());
+  for (const blink::StorageKey& storage_key : storage_keys) {
+    origins.push_back(storage_key.origin());
+  }
   storage_policy_observer_->StartTrackingOrigins(origins);
 }
 

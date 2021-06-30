@@ -33,8 +33,9 @@ namespace content {
 
 namespace {
 
-std::vector<url::Origin> DoGetOrigins(const base::FilePath& native_io_root) {
-  std::vector<url::Origin> result;
+std::vector<blink::StorageKey> DoGetStorageKeys(
+    const base::FilePath& native_io_root) {
+  std::vector<blink::StorageKey> result;
   // If the NativeIO directory wasn't created yet, there's no file to report.
   if (!base::PathExists(native_io_root))
     return result;
@@ -45,25 +46,26 @@ std::vector<url::Origin> DoGetOrigins(const base::FilePath& native_io_root) {
   for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
        file_path = file_enumerator.Next()) {
     // If the directory name has a non-ASCII character, `file_path` will be the
-    // empty string. This indicates corruption as any origin creates an
+    // empty string. This indicates corruption as any storage key creates an
     // ASCII-only directory name, so those directories are ignored.
     std::string directory_name = file_path.BaseName().MaybeAsASCII();
     if (directory_name == "")
       continue;
-    url::Origin origin = storage::GetOriginFromIdentifier(directory_name);
-    result.push_back(std::move(origin));
+    blink::StorageKey storage_key =
+        blink::StorageKey(storage::GetOriginFromIdentifier(directory_name));
+    result.push_back(std::move(storage_key));
   }
   return result;
 }
 
-int64_t DoGetOriginUsage(const base::FilePath& origin_root) {
-  // Returns 0 if `origin_root` does not exist.
-  return base::ComputeDirectorySize(origin_root);
+int64_t DoGetStorageKeyUsage(const base::FilePath& storage_key_root) {
+  // Returns 0 if `storage_key_root` does not exist.
+  return base::ComputeDirectorySize(storage_key_root);
 }
 
-std::map<url::Origin, int64_t> DoGetOriginUsageMap(
+std::map<blink::StorageKey, int64_t> DoGetStorageKeyUsageMap(
     const base::FilePath& native_io_root) {
-  std::map<url::Origin, int64_t> result;
+  std::map<blink::StorageKey, int64_t> result;
 
   // If the NativeIO directory wasn't created yet, there's no file to report.
   if (!base::PathExists(native_io_root))
@@ -75,16 +77,17 @@ std::map<url::Origin, int64_t> DoGetOriginUsageMap(
   for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
        file_path = file_enumerator.Next()) {
     // If the directory name has a non-ASCII character, `file_path` will be the
-    // empty string. This indicates corruption as any origin creates an
+    // empty string. This indicates corruption as any storage key creates an
     // ASCII-only directory name, so those directories are ignored.
     std::string directory_name = file_path.BaseName().MaybeAsASCII();
     if (directory_name == "")
       continue;
-    url::Origin origin = storage::GetOriginFromIdentifier(directory_name);
+    blink::StorageKey storage_key =
+        blink::StorageKey(storage::GetOriginFromIdentifier(directory_name));
     int64_t usage = base::ComputeDirectorySize(file_path);
-    auto inserted = result.insert(std::make_pair(origin, usage));
+    auto inserted = result.insert(std::make_pair(storage_key, usage));
     DCHECK(inserted.second)
-        << "Origins in NativeIO's directory should have a unique folder.";
+        << "StorageKeys in NativeIO's directory should have a unique folder.";
   }
   return result;
 }
@@ -124,36 +127,37 @@ NativeIOManager::~NativeIOManager() {
 }
 
 void NativeIOManager::BindReceiver(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
     mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = hosts_.find(origin);
+  auto it = hosts_.find(storage_key);
   if (it == hosts_.end()) {
     // This feature should only be exposed to potentially trustworthy origins
     // (https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy).
     // Notably this includes the https and chrome-extension schemes, among
     // others.
-    if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+    if (!network::IsOriginPotentiallyTrustworthy(storage_key.origin())) {
       std::move(bad_message_callback)
           .Run("Called NativeIO from an insecure context");
       return;
     }
 
-    base::FilePath origin_root_path = RootPathForOrigin(origin);
-    DCHECK(origin_root_path.empty() || root_path_.IsParent(origin_root_path))
-        << "Per-origin data should be in a sub-directory of NativeIO/ for "
+    base::FilePath storage_key_root_path = RootPathForStorageKey(storage_key);
+    DCHECK(storage_key_root_path.empty() ||
+           root_path_.IsParent(storage_key_root_path))
+        << "Per-storage-key data should be in a sub-directory of NativeIO/ for "
         << "non-incognito mode ";
 
     bool insert_succeeded;
     std::tie(it, insert_succeeded) = hosts_.emplace(
-        origin,
-        std::make_unique<NativeIOHost>(origin, std::move(origin_root_path),
+        storage_key, std::make_unique<NativeIOHost>(
+                         storage_key.origin(), std::move(storage_key_root_path),
 #if defined(OS_MAC)
-                                       allow_set_length_ipc_,
+                         allow_set_length_ipc_,
 #endif  // defined(OS_MAC)
-                                       this));
+                         this));
     DCHECK(insert_succeeded);
   }
 
@@ -168,17 +172,19 @@ void NativeIOManager::OnHostReceiverDisconnect(NativeIOHost* host) {
 void NativeIOManager::MaybeDeleteHost(NativeIOHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(host != nullptr);
-  DCHECK(hosts_.count(host->origin()) > 0);
-  DCHECK_EQ(hosts_[host->origin()].get(), host);
+
+  const blink::StorageKey& storage_key = blink::StorageKey(host->origin());
+  DCHECK(hosts_.count(storage_key) > 0);
+  DCHECK_EQ(hosts_[storage_key].get(), host);
 
   if (!host->has_empty_receiver_set() || host->delete_all_data_in_progress())
     return;
 
-  hosts_.erase(host->origin());
+  hosts_.erase(storage_key);
 }
 
-void NativeIOManager::OnDeleteOriginDataCompleted(
-    storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
+void NativeIOManager::OnDeleteStorageKeyDataCompleted(
+    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
     base::File::Error result,
     NativeIOHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -189,38 +195,38 @@ void NativeIOManager::OnDeleteOriginDataCompleted(
   std::move(callback).Run(quota_result);
 }
 
-void NativeIOManager::DeleteOriginData(
-    const url::Origin& origin,
-    storage::mojom::QuotaClient::DeleteOriginDataCallback callback) {
-  auto it = hosts_.find(origin);
+void NativeIOManager::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
+    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) {
+  auto it = hosts_.find(storage_key);
   if (it == hosts_.end()) {
     // TODO(rstz): Consider turning these checks into DCHECKS when NativeIO is
     // no longer bundled with the Filesystem API during data removal.
-    if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+    if (!network::IsOriginPotentiallyTrustworthy(storage_key.origin())) {
       std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
       return;
     }
-    base::FilePath origin_root_path = RootPathForOrigin(origin);
-    if (origin_root_path.empty()) {
-      // NativeIO is not supported for the origin, no data can be deleted.
+    base::FilePath storage_key_root_path = RootPathForStorageKey(storage_key);
+    if (storage_key_root_path.empty()) {
+      // NativeIO is not supported for the storage key, no data can be deleted.
       std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
       return;
     }
 
-    DCHECK(root_path_.IsParent(origin_root_path))
-        << "Per-origin data should be in a sub-directory of NativeIO/";
+    DCHECK(root_path_.IsParent(storage_key_root_path))
+        << "Per-storage-key data should be in a sub-directory of NativeIO/";
 
     bool insert_succeeded;
-    // Create a NativeIOHost so that future API calls for the origin are queued
-    // behind the data deletion. This should not meaningfully slow down the
-    // removal process.
+    // Create a NativeIOHost so that future API calls for the storage key are
+    // queued behind the data deletion. This should not meaningfully slow down
+    // the removal process.
     std::tie(it, insert_succeeded) = hosts_.emplace(
-        origin,
-        std::make_unique<NativeIOHost>(origin, std::move(origin_root_path),
+        storage_key, std::make_unique<NativeIOHost>(
+                         storage_key.origin(), std::move(storage_key_root_path),
 #if defined(OS_MAC)
-                                       allow_set_length_ipc_,
+                         allow_set_length_ipc_,
 #endif  // defined(OS_MAC)
-                                       this));
+                         this));
     DCHECK(insert_succeeded);
   }
 
@@ -228,13 +234,13 @@ void NativeIOManager::DeleteOriginData(
   // NativeIOHost. So, the unretained NativeIOManager is guaranteed to outlive
   // the  NativeIOHost and the closure that it uses.
   it->second->DeleteAllData(
-      base::BindOnce(&NativeIOManager::OnDeleteOriginDataCompleted,
+      base::BindOnce(&NativeIOManager::OnDeleteStorageKeyDataCompleted,
                      base::Unretained(this), std::move(callback)));
 }
 
-void NativeIOManager::GetOriginsForType(
+void NativeIOManager::GetStorageKeysForType(
     blink::mojom::StorageType type,
-    storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) {
+    storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback) {
   if (type != blink::mojom::StorageType::kTemporary) {
     std::move(callback).Run({});
     return;
@@ -253,14 +259,14 @@ void NativeIOManager::GetOriginsForType(
           // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       },
-      base::BindOnce(&DoGetOrigins, root_path_),
-      base::BindOnce(&NativeIOManager::DidGetOriginsForType,
+      base::BindOnce(&DoGetStorageKeys, root_path_),
+      base::BindOnce(&NativeIOManager::DidGetStorageKeysForType,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
-void NativeIOManager::GetOriginsForHost(
+void NativeIOManager::GetStorageKeysForHost(
     blink::mojom::StorageType type,
     const std::string& host,
-    storage::mojom::QuotaClient::GetOriginsForHostCallback callback) {
+    storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback) {
   if (type != blink::mojom::StorageType::kTemporary) {
     std::move(callback).Run({});
     return;
@@ -280,22 +286,22 @@ void NativeIOManager::GetOriginsForHost(
           // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       },
-      base::BindOnce(&DoGetOrigins, root_path_),
-      base::BindOnce(&NativeIOManager::DidGetOriginsForHost,
+      base::BindOnce(&DoGetStorageKeys, root_path_),
+      base::BindOnce(&NativeIOManager::DidGetStorageKeysForHost,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(host)));
 }
 
-void NativeIOManager::GetOriginUsage(
-    const url::Origin& origin,
+void NativeIOManager::GetStorageKeyUsage(
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
-    storage::mojom::QuotaClient::GetOriginUsageCallback callback) {
+    storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback) {
   if (type != blink::mojom::StorageType::kTemporary) {
     std::move(callback).Run(0);
     return;
   }
 
-  base::FilePath origin_root = RootPathForOrigin(origin);
+  base::FilePath storage_key_root = RootPathForStorageKey(storage_key);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -311,13 +317,14 @@ void NativeIOManager::GetOriginUsage(
           // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       },
-      base::BindOnce(&DoGetOriginUsage, origin_root),
-      base::BindOnce(&NativeIOManager::DidGetOriginUsage,
+      base::BindOnce(&DoGetStorageKeyUsage, storage_key_root),
+      base::BindOnce(&NativeIOManager::DidGetStorageKeyUsage,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void NativeIOManager::GetOriginUsageMap(
-    base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback) {
+void NativeIOManager::GetStorageKeyUsageMap(
+    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+        callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {
@@ -331,50 +338,54 @@ void NativeIOManager::GetOriginUsageMap(
           // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
       },
-      base::BindOnce(&DoGetOriginUsageMap, root_path_),
-      base::BindOnce(&NativeIOManager::DidGetOriginUsageMap,
+      base::BindOnce(&DoGetStorageKeyUsageMap, root_path_),
+      base::BindOnce(&NativeIOManager::DidGetStorageKeyUsageMap,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void NativeIOManager::DidGetOriginsForType(
-    storage::mojom::QuotaClient::GetOriginsForTypeCallback callback,
-    std::vector<url::Origin> origins) {
-  std::move(callback).Run(origins);
+void NativeIOManager::DidGetStorageKeysForType(
+    storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
+    std::vector<blink::StorageKey> storage_keys) {
+  std::move(callback).Run(storage_keys);
 }
 
-void NativeIOManager::DidGetOriginsForHost(
-    storage::mojom::QuotaClient::GetOriginsForTypeCallback callback,
+void NativeIOManager::DidGetStorageKeysForHost(
+    storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
     const std::string& host,
-    std::vector<url::Origin> origins) {
-  std::vector<url::Origin> out_origins;
-  for (const url::Origin& origin : origins) {
-    if (host == origin.host())
-      out_origins.push_back(origin);
+    std::vector<blink::StorageKey> storage_keys) {
+  std::vector<blink::StorageKey> out_storage_keys;
+  for (const blink::StorageKey& storage_key : storage_keys) {
+    if (host == storage_key.origin().host())
+      out_storage_keys.push_back(storage_key);
   }
-  std::move(callback).Run(std::move(out_origins));
+  std::move(callback).Run(std::move(out_storage_keys));
 }
 
-void NativeIOManager::DidGetOriginUsage(
-    storage::mojom::QuotaClient::GetOriginUsageCallback callback,
+void NativeIOManager::DidGetStorageKeyUsage(
+    storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback,
     int64_t usage) {
   std::move(callback).Run(usage);
 }
 
-void NativeIOManager::DidGetOriginUsageMap(
-    base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback,
-    std::map<url::Origin, int64_t> usage_map) {
+void NativeIOManager::DidGetStorageKeyUsageMap(
+    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+        callback,
+    std::map<blink::StorageKey, int64_t> usage_map) {
   std::move(callback).Run(usage_map);
 }
 
-base::FilePath NativeIOManager::RootPathForOrigin(const url::Origin& origin) {
+base::FilePath NativeIOManager::RootPathForStorageKey(
+    const blink::StorageKey& storage_key) {
   // TODO(pwnall): Implement in-memory files instead of bouncing in incognito.
   if (root_path_.empty())
     return root_path_;
 
-  std::string origin_identifier = storage::GetIdentifierFromOrigin(origin);
-  base::FilePath origin_path = root_path_.AppendASCII(origin_identifier);
-  DCHECK(root_path_.IsParent(origin_path));
-  return origin_path;
+  std::string storage_key_identifier =
+      storage::GetIdentifierFromOrigin(storage_key.origin());
+  base::FilePath storage_key_path =
+      root_path_.AppendASCII(storage_key_identifier);
+  DCHECK(root_path_.IsParent(storage_key_path));
+  return storage_key_path;
 }
 
 // static

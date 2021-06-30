@@ -840,7 +840,7 @@ class StoragePartitionImplTest : public testing::Test {
       mojo::MakeSelfOwnedReceiver(
           std::make_unique<storage::MockQuotaClient>(
               quota_manager_->proxy(),
-              base::span<const storage::MockOriginData>(),
+              base::span<const storage::MockStorageKeyData>(),
               storage::QuotaClientType::kFileSystem),
           quota_client.InitWithNewPipeAndPassReceiver());
       quota_manager_->proxy()->RegisterClient(

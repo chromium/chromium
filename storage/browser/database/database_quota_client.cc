@@ -24,10 +24,12 @@
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -40,78 +42,82 @@ DatabaseQuotaClient::~DatabaseQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void DatabaseQuotaClient::GetOriginUsage(const url::Origin& origin,
-                                         StorageType type,
-                                         GetOriginUsageCallback callback) {
+void DatabaseQuotaClient::GetStorageKeyUsage(
+    const StorageKey& storage_key,
+    StorageType type,
+    GetStorageKeyUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   DCHECK_EQ(type, StorageType::kTemporary);
 
   OriginInfo info;
-  if (db_tracker_.GetOriginInfo(GetIdentifierFromOrigin(origin), &info)) {
+  if (db_tracker_.GetOriginInfo(GetIdentifierFromOrigin(storage_key.origin()),
+                                &info)) {
     std::move(callback).Run(info.TotalSize());
   } else {
     std::move(callback).Run(0);
   }
 }
 
-void DatabaseQuotaClient::GetOriginsForType(
+void DatabaseQuotaClient::GetStorageKeysForType(
     StorageType type,
-    GetOriginsForTypeCallback callback) {
+    GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   DCHECK_EQ(type, StorageType::kTemporary);
 
-  std::vector<url::Origin> all_origins;
+  std::vector<StorageKey> all_storage_keys;
   std::vector<std::string> origin_identifiers;
   if (db_tracker_.GetAllOriginIdentifiers(&origin_identifiers)) {
-    all_origins.reserve(origin_identifiers.size());
+    all_storage_keys.reserve(origin_identifiers.size());
     for (const auto& identifier : origin_identifiers)
-      all_origins.push_back(GetOriginFromIdentifier(identifier));
+      all_storage_keys.emplace_back(
+          StorageKey(GetOriginFromIdentifier(identifier)));
   }
-  std::move(callback).Run(all_origins);
+  std::move(callback).Run(all_storage_keys);
 }
 
-void DatabaseQuotaClient::GetOriginsForHost(
+void DatabaseQuotaClient::GetStorageKeysForHost(
     StorageType type,
     const std::string& host,
-    GetOriginsForHostCallback callback) {
+    GetStorageKeysForHostCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   DCHECK_EQ(type, StorageType::kTemporary);
 
-  std::vector<url::Origin> host_origins;
+  std::vector<StorageKey> host_storage_keys;
   // In the vast majority of cases, this vector will end up with exactly one
-  // origin. The origin will be https://host or http://host.
-  host_origins.reserve(1);
+  // storage key. The storage key will be https://host or http://host.
+  host_storage_keys.reserve(1);
 
   std::vector<std::string> origin_identifiers;
   if (db_tracker_.GetAllOriginIdentifiers(&origin_identifiers)) {
     for (const auto& identifier : origin_identifiers) {
-      url::Origin origin = GetOriginFromIdentifier(identifier);
-      if (host == origin.host())
-        host_origins.push_back(std::move(origin));
+      StorageKey storage_key = StorageKey(GetOriginFromIdentifier(identifier));
+      if (host == storage_key.origin().host())
+        host_storage_keys.push_back(std::move(storage_key));
     }
   }
-  std::move(callback).Run(host_origins);
+  std::move(callback).Run(host_storage_keys);
 }
 
-void DatabaseQuotaClient::DeleteOriginData(const url::Origin& origin,
-                                           StorageType type,
-                                           DeleteOriginDataCallback callback) {
+void DatabaseQuotaClient::DeleteStorageKeyData(
+    const StorageKey& storage_key,
+    StorageType type,
+    DeleteStorageKeyDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   DCHECK_EQ(type, StorageType::kTemporary);
 
   db_tracker_.DeleteDataForOrigin(
-      origin, base::BindOnce(
-                  [](DeleteOriginDataCallback callback, int result) {
-                    std::move(callback).Run(
-                        (result == net::OK)
-                            ? blink::mojom::QuotaStatusCode::kOk
-                            : blink::mojom::QuotaStatusCode::kUnknown);
-                  },
-                  std::move(callback)));
+      storage_key.origin(),
+      base::BindOnce(
+          [](DeleteStorageKeyDataCallback callback, int result) {
+            std::move(callback).Run(
+                (result == net::OK) ? blink::mojom::QuotaStatusCode::kOk
+                                    : blink::mojom::QuotaStatusCode::kUnknown);
+          },
+          std::move(callback)));
 }
 
 void DatabaseQuotaClient::PerformStorageCleanup(

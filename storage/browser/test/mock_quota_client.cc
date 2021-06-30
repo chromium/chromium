@@ -16,64 +16,65 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
 
 MockQuotaClient::MockQuotaClient(
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
-    base::span<const MockOriginData> mock_data,
+    base::span<const MockStorageKeyData> mock_data,
     QuotaClientType client_type)
     : quota_manager_proxy_(std::move(quota_manager_proxy)),
       client_type_(client_type),
       mock_time_counter_(0) {
-  for (const MockOriginData& mock_origin_data : mock_data) {
-    // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
-    origin_data_[{url::Origin::Create(GURL(mock_origin_data.origin)),
-                  mock_origin_data.type}] = mock_origin_data.usage;
+  for (const MockStorageKeyData& mock_storage_key_data : mock_data) {
+    storage_key_data_[{blink::StorageKey::CreateFromStringForTesting(
+                           mock_storage_key_data.origin),
+                       mock_storage_key_data.type}] =
+        mock_storage_key_data.usage;
   }
 }
 
 MockQuotaClient::~MockQuotaClient() = default;
 
-void MockQuotaClient::AddOriginAndNotify(const url::Origin& origin,
-                                         blink::mojom::StorageType storage_type,
-                                         int64_t size) {
-  DCHECK(origin_data_.find({origin, storage_type}) == origin_data_.end());
+void MockQuotaClient::AddStorageKeyAndNotify(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType storage_type,
+    int64_t size) {
+  DCHECK(storage_key_data_.find({storage_key, storage_type}) ==
+         storage_key_data_.end());
   DCHECK_GE(size, 0);
-  origin_data_[{origin, storage_type}] = size;
+  storage_key_data_[{storage_key, storage_type}] = size;
   quota_manager_proxy_->NotifyStorageModified(
-      client_type_, blink::StorageKey(origin), storage_type, size,
-      IncrementMockTime());
+      client_type_, storage_key, storage_type, size, IncrementMockTime());
 }
 
-void MockQuotaClient::ModifyOriginAndNotify(
-    const url::Origin& origin,
+void MockQuotaClient::ModifyStorageKeyAndNotify(
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType storage_type,
     int64_t delta) {
-  auto it = origin_data_.find({origin, storage_type});
-  DCHECK(it != origin_data_.end());
+  auto it = storage_key_data_.find({storage_key, storage_type});
+  DCHECK(it != storage_key_data_.end());
   it->second += delta;
   DCHECK_GE(it->second, 0);
 
   // TODO(tzik): Check quota to prevent usage exceed
   quota_manager_proxy_->NotifyStorageModified(
-      client_type_, blink::StorageKey(origin), storage_type, delta,
-      IncrementMockTime());
+      client_type_, storage_key, storage_type, delta, IncrementMockTime());
 }
 
-void MockQuotaClient::TouchAllOriginsAndNotify() {
-  for (const auto& origin_type : origin_data_) {
+void MockQuotaClient::TouchAllStorageKeysAndNotify() {
+  for (const auto& storage_key_type : storage_key_data_) {
     quota_manager_proxy_->NotifyStorageModified(
-        client_type_, blink::StorageKey(origin_type.first.first),
-        origin_type.first.second, 0, IncrementMockTime());
+        client_type_, storage_key_type.first.first,
+        storage_key_type.first.second, 0, IncrementMockTime());
   }
 }
 
-void MockQuotaClient::AddOriginToErrorSet(const url::Origin& origin,
-                                          blink::mojom::StorageType type) {
-  error_origins_.insert(std::make_pair(origin, type));
+void MockQuotaClient::AddStorageKeyToErrorSet(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type) {
+  error_storage_keys_.insert(std::make_pair(storage_key, type));
 }
 
 base::Time MockQuotaClient::IncrementMockTime() {
@@ -81,38 +82,41 @@ base::Time MockQuotaClient::IncrementMockTime() {
   return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
 }
 
-void MockQuotaClient::GetOriginUsage(const url::Origin& origin,
-                                     blink::mojom::StorageType type,
-                                     GetOriginUsageCallback callback) {
+void MockQuotaClient::GetStorageKeyUsage(const blink::StorageKey& storage_key,
+                                         blink::mojom::StorageType type,
+                                         GetStorageKeyUsageCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&MockQuotaClient::RunGetOriginUsage,
-                                weak_factory_.GetWeakPtr(), origin, type,
+      FROM_HERE, base::BindOnce(&MockQuotaClient::RunGetStorageKeyUsage,
+                                weak_factory_.GetWeakPtr(), storage_key, type,
                                 std::move(callback)));
 }
 
-void MockQuotaClient::GetOriginsForType(blink::mojom::StorageType type,
-                                        GetOriginsForTypeCallback callback) {
+void MockQuotaClient::GetStorageKeysForType(
+    blink::mojom::StorageType type,
+    GetStorageKeysForTypeCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&MockQuotaClient::RunGetOriginsForType,
+      base::BindOnce(&MockQuotaClient::RunGetStorageKeysForType,
                      weak_factory_.GetWeakPtr(), type, std::move(callback)));
 }
 
-void MockQuotaClient::GetOriginsForHost(blink::mojom::StorageType type,
-                                        const std::string& host,
-                                        GetOriginsForHostCallback callback) {
+void MockQuotaClient::GetStorageKeysForHost(
+    blink::mojom::StorageType type,
+    const std::string& host,
+    GetStorageKeysForHostCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&MockQuotaClient::RunGetOriginsForHost,
+      FROM_HERE, base::BindOnce(&MockQuotaClient::RunGetStorageKeysForHost,
                                 weak_factory_.GetWeakPtr(), type, host,
                                 std::move(callback)));
 }
 
-void MockQuotaClient::DeleteOriginData(const url::Origin& origin,
-                                       blink::mojom::StorageType type,
-                                       DeleteOriginDataCallback callback) {
+void MockQuotaClient::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    DeleteStorageKeyDataCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&MockQuotaClient::RunDeleteOriginData,
-                                weak_factory_.GetWeakPtr(), origin, type,
+      FROM_HERE, base::BindOnce(&MockQuotaClient::RunDeleteStorageKeyData,
+                                weak_factory_.GetWeakPtr(), storage_key, type,
                                 std::move(callback)));
 }
 
@@ -122,58 +126,62 @@ void MockQuotaClient::PerformStorageCleanup(
   std::move(callback).Run();
 }
 
-void MockQuotaClient::RunGetOriginUsage(const url::Origin& origin,
-                                        blink::mojom::StorageType type,
-                                        GetOriginUsageCallback callback) {
-  auto it = origin_data_.find(std::make_pair(origin, type));
-  if (it == origin_data_.end()) {
+void MockQuotaClient::RunGetStorageKeyUsage(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    GetStorageKeyUsageCallback callback) {
+  auto it = storage_key_data_.find(std::make_pair(storage_key, type));
+  if (it == storage_key_data_.end()) {
     std::move(callback).Run(0);
   } else {
     std::move(callback).Run(it->second);
   }
 }
 
-void MockQuotaClient::RunGetOriginsForType(blink::mojom::StorageType type,
-                                           GetOriginsForTypeCallback callback) {
-  std::vector<url::Origin> origins;
-  for (const auto& origin_type_usage : origin_data_) {
-    if (type == origin_type_usage.first.second)
-      origins.push_back(origin_type_usage.first.first);
+void MockQuotaClient::RunGetStorageKeysForType(
+    blink::mojom::StorageType type,
+    GetStorageKeysForTypeCallback callback) {
+  std::vector<blink::StorageKey> storage_keys;
+  for (const auto& storage_key_type_usage : storage_key_data_) {
+    if (type == storage_key_type_usage.first.second)
+      storage_keys.push_back(storage_key_type_usage.first.first);
   }
-  std::move(callback).Run(std::move(origins));
+  std::move(callback).Run(std::move(storage_keys));
 }
 
-void MockQuotaClient::RunGetOriginsForHost(blink::mojom::StorageType type,
-                                           const std::string& host,
-                                           GetOriginsForHostCallback callback) {
-  std::vector<url::Origin> origins;
-  for (const auto& origin_type_usage : origin_data_) {
-    if (type == origin_type_usage.first.second &&
-        host == origin_type_usage.first.first.host()) {
-      origins.push_back(origin_type_usage.first.first);
+void MockQuotaClient::RunGetStorageKeysForHost(
+    blink::mojom::StorageType type,
+    const std::string& host,
+    GetStorageKeysForHostCallback callback) {
+  std::vector<blink::StorageKey> storage_keys;
+  for (const auto& storage_key_type_usage : storage_key_data_) {
+    if (type == storage_key_type_usage.first.second &&
+        host == storage_key_type_usage.first.first.origin().host()) {
+      storage_keys.push_back(storage_key_type_usage.first.first);
     }
   }
-  std::move(callback).Run(std::move(origins));
+  std::move(callback).Run(std::move(storage_keys));
 }
 
-void MockQuotaClient::RunDeleteOriginData(
-    const url::Origin& origin,
+void MockQuotaClient::RunDeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType storage_type,
-    DeleteOriginDataCallback callback) {
-  auto error_it = error_origins_.find(std::make_pair(origin, storage_type));
-  if (error_it != error_origins_.end()) {
+    DeleteStorageKeyDataCallback callback) {
+  auto error_it =
+      error_storage_keys_.find(std::make_pair(storage_key, storage_type));
+  if (error_it != error_storage_keys_.end()) {
     std::move(callback).Run(
         blink::mojom::QuotaStatusCode::kErrorInvalidModification);
     return;
   }
 
-  auto it = origin_data_.find(std::make_pair(origin, storage_type));
-  if (it != origin_data_.end()) {
+  auto it = storage_key_data_.find(std::make_pair(storage_key, storage_type));
+  if (it != storage_key_data_.end()) {
     int64_t delta = it->second;
     quota_manager_proxy_->NotifyStorageModified(
-        client_type_, blink::StorageKey(origin), storage_type, -delta,
+        client_type_, blink::StorageKey(storage_key), storage_type, -delta,
         base::Time::Now());
-    origin_data_.erase(it);
+    storage_key_data_.erase(it);
   }
 
   std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);

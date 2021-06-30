@@ -9,9 +9,9 @@ component("cpp") {
     "bucket_id.h",
     "bucket_info.h",
     "constants.h",
-    "origin_quota_client.h",
     "quota_client_callback_wrapper.h",
     "quota_error_or.h",
+    "storage_key_quota_client.h",
   ]
 
   sources = [

@@ -256,8 +256,8 @@ void ServiceWorkerContextWrapper::InitInternal(
       core_observer_list_.get(), this);
 
   if (storage_partition_) {
-    context()->registry()->GetRegisteredOrigins(base::BindOnce(
-        &ServiceWorkerContextWrapper::DidGetRegisteredOrigins, this));
+    context()->registry()->GetRegisteredStorageKeys(base::BindOnce(
+        &ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys, this));
   }
 }
 
@@ -1763,9 +1763,10 @@ void ServiceWorkerContextWrapper::WaitForRegistrationsInitializedForTest() {
   loop.Run();
 }
 
-void ServiceWorkerContextWrapper::DidGetRegisteredOrigins(
-    const std::vector<url::Origin>& origins) {
-  registered_origins_.insert(origins.begin(), origins.end());
+void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
+    const std::vector<blink::StorageKey>& storage_keys) {
+  for (const blink::StorageKey& storage_key : storage_keys)
+    registered_origins_.insert(storage_key.origin());
   registrations_initialized_ = true;
   if (on_registrations_initialized_)
     std::move(on_registrations_initialized_).Run();

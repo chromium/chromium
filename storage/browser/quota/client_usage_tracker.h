@@ -79,19 +79,17 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
 
   struct AccumulateInfo;
 
-  // TODO(crbug.com/1215208): Migrate to use StorageKey when QuotaClient is
-  // migrated to use StorageKey instead of Origin.
-  void DidGetStorageKeysForGlobalUsage(GlobalUsageCallback callback,
-                                       const std::vector<url::Origin>& origins);
+  void DidGetStorageKeysForGlobalUsage(
+      GlobalUsageCallback callback,
+      const std::vector<blink::StorageKey>& storage_keys);
   void AccumulateHostUsage(AccumulateInfo* info,
                            GlobalUsageCallback& callback,
                            int64_t limited_usage,
                            int64_t unlimited_usage);
 
-  // TODO(crbug.com/1215208): Migrate to use StorageKey when QuotaClient is
-  // migrated to use StorageKey instead of Origin.
-  void DidGetStorageKeysForHostUsage(const std::string& host,
-                                     const std::vector<url::Origin>& origins);
+  void DidGetStorageKeysForHostUsage(
+      const std::string& host,
+      const std::vector<blink::StorageKey>& storage_keys);
 
   void GetUsageForStorageKeys(
       const std::string& host,

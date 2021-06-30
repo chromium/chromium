@@ -5,7 +5,7 @@
 module storage.mojom;
 
 import "third_party/blink/public/mojom/quota/quota_types.mojom";
-import "url/mojom/origin.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 
 // Interface between each storage API and the quota manager.
 //
@@ -17,23 +17,25 @@ import "url/mojom/origin.mojom";
 // currently lives in the browser process, and will eventually move to the
 // Storage Service process.
 interface QuotaClient {
-  // Returns the amount of data stored in the storage specified by `origin` and
-  // `type`.
-  GetOriginUsage(url.mojom.Origin origin, blink.mojom.StorageType type)
+  // Returns the amount of data stored in the storage specified by `storage_key`
+  // and `type`.
+  GetStorageKeyUsage(blink.mojom.StorageKey storage_key,
+                     blink.mojom.StorageType type)
       => (int64 usage);
 
-  // Returns a list of origins that have data in the `type` storage.
-  GetOriginsForType(blink.mojom.StorageType type)
-      => (array<url.mojom.Origin> origins);
+  // Returns a list of storage keys that have data in the `type` storage.
+  GetStorageKeysForType(blink.mojom.StorageType type)
+      => (array<blink.mojom.StorageKey> storage_keys);
 
-  // Returns a list of origins that match the `host` and have data in the `type`
-  // storage.
-  GetOriginsForHost(blink.mojom.StorageType type, string host)
-      => (array<url.mojom.Origin> origins);
+  // Returns a list of storage keys that match the `host` and have data in the
+  // `type` storage.
+  GetStorageKeysForHost(blink.mojom.StorageType type, string host)
+      => (array<blink.mojom.StorageKey> storage_keys);
 
-  // Returns after all data belonging to `origin` in the `type` storage has been
-  // deleted.
-  DeleteOriginData(url.mojom.Origin origin, blink.mojom.StorageType type)
+  // Returns after all data belonging to `storage_key` in the `type` storage
+  // has been deleted.
+  DeleteStorageKeyData(blink.mojom.StorageKey storage_key, 
+                       blink.mojom.StorageType type)
       => (blink.mojom.QuotaStatusCode status);
 
   // An opportunity to perform a cleanup step after major deletions.

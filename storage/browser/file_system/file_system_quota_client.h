@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/public/cpp/origin_quota_client.h"
+#include "components/services/storage/public/cpp/storage_key_quota_client.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -21,9 +21,9 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace url {
-class Origin;
-}
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
@@ -32,7 +32,7 @@ class FileSystemContext;
 // All of the public methods of this class are called by the quota manager
 // (except for the constructor/destructor).
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
-    : public OriginQuotaClient {
+    : public StorageKeyQuotaClient {
  public:
   explicit FileSystemQuotaClient(FileSystemContext* file_system_context);
   ~FileSystemQuotaClient() override;
@@ -41,21 +41,21 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   FileSystemQuotaClient& operator=(const FileSystemQuotaClient&) = delete;
 
   // QuotaClient methods.
-  void GetOriginUsage(const url::Origin& origin,
-                      blink::mojom::StorageType type,
-                      GetOriginUsageCallback callback) override;
-  void GetOriginsForType(blink::mojom::StorageType type,
-                         GetOriginsForTypeCallback callback) override;
-  void GetOriginsForHost(blink::mojom::StorageType type,
-                         const std::string& host,
-                         GetOriginsForHostCallback callback) override;
-  void DeleteOriginData(const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        DeleteOriginDataCallback callback) override;
+  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
+                          blink::mojom::StorageType type,
+                          GetStorageKeyUsageCallback callback) override;
+  void GetStorageKeysForType(blink::mojom::StorageType type,
+                             GetStorageKeysForTypeCallback callback) override;
+  void GetStorageKeysForHost(blink::mojom::StorageType type,
+                             const std::string& host,
+                             GetStorageKeysForHostCallback callback) override;
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type,
+                            DeleteStorageKeyDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
-  // Converts FileSystemType |type| to/from the StorageType |storage_type| that
+  // Converts FileSystemType `type` to/from the StorageType `storage_type` that
   // is used for the unified quota system.
   // (Basically this naively maps TEMPORARY storage type to TEMPORARY filesystem
   // type, PERSISTENT storage type to PERSISTENT filesystem type and vice

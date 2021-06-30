@@ -589,8 +589,8 @@ class QuotaManagerImpl::StorageKeyDataDeleter : public QuotaTask {
             "browsing_data", "QuotaManagerImpl::StorageKeyDataDeleter",
             ++tracing_id, "client_type", client_type, "storage_key",
             storage_key_.Serialize());
-        client->DeleteOriginData(
-            storage_key_.origin(), type_,
+        client->DeleteStorageKeyData(
+            storage_key_, type_,
             base::BindOnce(&StorageKeyDataDeleter::DidDeleteStorageKeyData,
                            weak_factory_.GetWeakPtr(), tracing_id));
       } else {
@@ -674,9 +674,9 @@ class QuotaManagerImpl::HostDataDeleter : public QuotaTask {
     remaining_clients_ = manager()->client_types_[type_].size();
 
     for (const auto& client_and_type : manager()->client_types_[type_]) {
-      client_and_type.first->GetOriginsForHost(
+      client_and_type.first->GetStorageKeysForHost(
           type_, host_,
-          base::BindOnce(&HostDataDeleter::DidGetOriginsForHost,
+          base::BindOnce(&HostDataDeleter::DidGetStorageKeysForHost,
                          weak_factory_.GetWeakPtr()));
     }
   }
@@ -697,13 +697,10 @@ class QuotaManagerImpl::HostDataDeleter : public QuotaTask {
   }
 
  private:
-  // TODO(crbug.com/1215208): Change to take StorageKey when the QuotaClient is
-  // migrated to use StorageKey.
-  void DidGetOriginsForHost(const std::vector<url::Origin>& origins) {
+  void DidGetStorageKeysForHost(const std::vector<StorageKey>& storage_keys) {
     DCHECK_GT(remaining_clients_, 0U);
 
-    for (const auto& origin : origins)
-      storage_keys_.insert(StorageKey(origin));
+    storage_keys_.insert(storage_keys.begin(), storage_keys.end());
 
     if (--remaining_clients_ == 0) {
       if (!storage_keys_.empty())

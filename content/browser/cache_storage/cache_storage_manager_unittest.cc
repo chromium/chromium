@@ -2342,9 +2342,9 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
     run_loop->Quit();
   }
 
-  void OriginsCallback(base::RunLoop* run_loop,
-                       const std::vector<url::Origin>& origins) {
-    callback_origins_ = origins;
+  void StorageKeysCallback(base::RunLoop* run_loop,
+                           const std::vector<blink::StorageKey>& storage_keys) {
+    callback_storage_keys_ = storage_keys;
     run_loop->Quit();
   }
 
@@ -2356,8 +2356,8 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
 
   int64_t QuotaGetStorageKeyUsage(const blink::StorageKey& storage_key) {
     base::RunLoop loop;
-    quota_client_->GetOriginUsage(
-        storage_key.origin(), StorageType::kTemporary,
+    quota_client_->GetStorageKeyUsage(
+        storage_key, StorageType::kTemporary,
         base::BindOnce(&CacheStorageQuotaClientTest::QuotaUsageCallback,
                        base::Unretained(this), base::Unretained(&loop)));
     loop.Run();
@@ -2366,28 +2366,28 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
 
   size_t QuotaGetStorageKeysForType() {
     base::RunLoop loop;
-    quota_client_->GetOriginsForType(
+    quota_client_->GetStorageKeysForType(
         StorageType::kTemporary,
-        base::BindOnce(&CacheStorageQuotaClientTest::OriginsCallback,
+        base::BindOnce(&CacheStorageQuotaClientTest::StorageKeysCallback,
                        base::Unretained(this), base::Unretained(&loop)));
     loop.Run();
-    return callback_origins_.size();
+    return callback_storage_keys_.size();
   }
 
   size_t QuotaGetStorageKeysForHost(const std::string& host) {
     base::RunLoop loop;
-    quota_client_->GetOriginsForHost(
+    quota_client_->GetStorageKeysForHost(
         StorageType::kTemporary, host,
-        base::BindOnce(&CacheStorageQuotaClientTest::OriginsCallback,
+        base::BindOnce(&CacheStorageQuotaClientTest::StorageKeysCallback,
                        base::Unretained(this), base::Unretained(&loop)));
     loop.Run();
-    return callback_origins_.size();
+    return callback_storage_keys_.size();
   }
 
   bool QuotaDeleteStorageKeyData(const blink::StorageKey& storage_key) {
     base::RunLoop loop;
-    quota_client_->DeleteOriginData(
-        storage_key.origin(), StorageType::kTemporary,
+    quota_client_->DeleteStorageKeyData(
+        storage_key, StorageType::kTemporary,
         base::BindOnce(&CacheStorageQuotaClientTest::DeleteStorageKeyCallback,
                        base::Unretained(this), base::Unretained(&loop)));
     loop.Run();
@@ -2398,7 +2398,7 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
 
   blink::mojom::QuotaStatusCode callback_status_;
   int64_t callback_quota_usage_ = 0;
-  std::vector<url::Origin> callback_origins_;
+  std::vector<blink::StorageKey> callback_storage_keys_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CacheStorageQuotaClientTest);
@@ -2458,9 +2458,9 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaGetStorageKeysForHost) {
            "foo"));
   EXPECT_EQ(3u, QuotaGetStorageKeysForHost("example.com"));
   EXPECT_EQ(1u, QuotaGetStorageKeysForHost("example2.com"));
-  EXPECT_THAT(
-      callback_origins_,
-      testing::Contains(url::Origin::Create(GURL("http://example2.com"))));
+  EXPECT_THAT(callback_storage_keys_,
+              testing::Contains(blink::StorageKey::CreateFromStringForTesting(
+                  "http://example2.com")));
   EXPECT_EQ(0u, QuotaGetStorageKeysForHost("unknown.com"));
 }
 

@@ -8,7 +8,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -23,56 +22,54 @@ CacheStorageQuotaClient::~CacheStorageQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void CacheStorageQuotaClient::GetOriginUsage(const url::Origin& origin,
-                                             blink::mojom::StorageType type,
-                                             GetOriginUsageCallback callback) {
+void CacheStorageQuotaClient::GetStorageKeyUsage(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    GetStorageKeyUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  blink::StorageKey key{origin};
-
-  if (!CacheStorageManager::IsValidQuotaStorageKey(key)) {
+  if (!CacheStorageManager::IsValidQuotaStorageKey(storage_key)) {
     std::move(callback).Run(0);
     return;
   }
 
-  cache_manager_->GetStorageKeyUsage(key, owner_, std::move(callback));
+  cache_manager_->GetStorageKeyUsage(storage_key, owner_, std::move(callback));
 }
 
-void CacheStorageQuotaClient::GetOriginsForType(
+void CacheStorageQuotaClient::GetStorageKeysForType(
     blink::mojom::StorageType type,
-    GetOriginsForTypeCallback callback) {
+    GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
   cache_manager_->GetStorageKeys(owner_, std::move(callback));
 }
 
-void CacheStorageQuotaClient::GetOriginsForHost(
+void CacheStorageQuotaClient::GetStorageKeysForHost(
     blink::mojom::StorageType type,
     const std::string& host,
-    GetOriginsForHostCallback callback) {
+    GetStorageKeysForHostCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
   cache_manager_->GetStorageKeysForHost(host, owner_, std::move(callback));
 }
 
-void CacheStorageQuotaClient::DeleteOriginData(
-    const url::Origin& origin,
+void CacheStorageQuotaClient::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
-    DeleteOriginDataCallback callback) {
+    DeleteStorageKeyDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  blink::StorageKey key{origin};
-
-  if (!CacheStorageManager::IsValidQuotaStorageKey(key)) {
+  if (!CacheStorageManager::IsValidQuotaStorageKey(storage_key)) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
 
-  cache_manager_->DeleteStorageKeyData(key, owner_, std::move(callback));
+  cache_manager_->DeleteStorageKeyData(storage_key, owner_,
+                                       std::move(callback));
 }
 
 void CacheStorageQuotaClient::PerformStorageCleanup(

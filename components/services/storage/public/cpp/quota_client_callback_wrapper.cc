@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace storage {
@@ -25,47 +26,47 @@ QuotaClientCallbackWrapper::~QuotaClientCallbackWrapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void QuotaClientCallbackWrapper::GetOriginUsage(
-    const url::Origin& origin,
+void QuotaClientCallbackWrapper::GetStorageKeyUsage(
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
-    GetOriginUsageCallback callback) {
+    GetStorageKeyUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetOriginUsage(
-      origin, type,
+  wrapped_client_->GetStorageKeyUsage(
+      storage_key, type,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
 }
 
-void QuotaClientCallbackWrapper::GetOriginsForType(
+void QuotaClientCallbackWrapper::GetStorageKeysForType(
     blink::mojom::StorageType type,
-    GetOriginsForTypeCallback callback) {
+    GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetOriginsForType(
+  wrapped_client_->GetStorageKeysForType(
       type, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                std::move(callback), std::vector<url::Origin>()));
+                std::move(callback), std::vector<blink::StorageKey>()));
 }
 
-void QuotaClientCallbackWrapper::GetOriginsForHost(
+void QuotaClientCallbackWrapper::GetStorageKeysForHost(
     blink::mojom::StorageType type,
     const std::string& host,
-    GetOriginsForHostCallback callback) {
+    GetStorageKeysForHostCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetOriginsForHost(
+  wrapped_client_->GetStorageKeysForHost(
       type, host,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                  std::vector<url::Origin>()));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), std::vector<blink::StorageKey>()));
 }
 
-void QuotaClientCallbackWrapper::DeleteOriginData(
-    const url::Origin& origin,
+void QuotaClientCallbackWrapper::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
-    DeleteOriginDataCallback callback) {
+    DeleteStorageKeyDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->DeleteOriginData(
-      origin, type,
+  wrapped_client_->DeleteStorageKeyData(
+      storage_key, type,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback), blink::mojom::QuotaStatusCode::kErrorAbort));
 }

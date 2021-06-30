@@ -26,11 +26,13 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 namespace storage {
 namespace {
@@ -69,52 +71,53 @@ class FileSystemQuotaClientTest : public testing::Test {
     return file_system_context_.get();
   }
 
-  void GetOriginUsageAsync(storage::mojom::QuotaClient& quota_client,
-                           const std::string& origin_url,
-                           StorageType type) {
-    quota_client.GetOriginUsage(
-        url::Origin::Create(GURL(origin_url)), type,
+  void GetStorageKeyUsageAsync(storage::mojom::QuotaClient& quota_client,
+                               const std::string& origin_url,
+                               StorageType type) {
+    quota_client.GetStorageKeyUsage(
+        StorageKey::CreateFromStringForTesting(origin_url), type,
         base::BindOnce(&FileSystemQuotaClientTest::OnGetUsage,
                        weak_factory_.GetWeakPtr()));
   }
 
-  int64_t GetOriginUsage(storage::mojom::QuotaClient& quota_client,
-                         const std::string& origin_url,
-                         StorageType type) {
-    GetOriginUsageAsync(quota_client, origin_url, type);
+  int64_t GetStorageKeyUsage(storage::mojom::QuotaClient& quota_client,
+                             const std::string& origin_url,
+                             StorageType type) {
+    GetStorageKeyUsageAsync(quota_client, origin_url, type);
     base::RunLoop().RunUntilIdle();
     return usage_;
   }
 
-  const std::vector<url::Origin>& GetOriginsForType(
+  const std::vector<StorageKey>& GetStorageKeysForType(
       storage::mojom::QuotaClient& quota_client,
       StorageType type) {
-    origins_.clear();
-    quota_client.GetOriginsForType(
-        type, base::BindOnce(&FileSystemQuotaClientTest::OnGetOrigins,
+    storage_keys_.clear();
+    quota_client.GetStorageKeysForType(
+        type, base::BindOnce(&FileSystemQuotaClientTest::OnGetStorageKeys,
                              weak_factory_.GetWeakPtr()));
     base::RunLoop().RunUntilIdle();
-    return origins_;
+    return storage_keys_;
   }
 
-  const std::vector<url::Origin>& GetOriginsForHost(
+  const std::vector<StorageKey>& GetStorageKeysForHost(
       storage::mojom::QuotaClient& quota_client,
       StorageType type,
       const std::string& host) {
-    origins_.clear();
-    quota_client.GetOriginsForHost(
+    storage_keys_.clear();
+    quota_client.GetStorageKeysForHost(
         type, host,
-        base::BindOnce(&FileSystemQuotaClientTest::OnGetOrigins,
+        base::BindOnce(&FileSystemQuotaClientTest::OnGetStorageKeys,
                        weak_factory_.GetWeakPtr()));
     base::RunLoop().RunUntilIdle();
-    return origins_;
+    return storage_keys_;
   }
 
-  void RunAdditionalOriginUsageTask(storage::mojom::QuotaClient& quota_client,
-                                    const std::string& origin_url,
-                                    StorageType type) {
-    quota_client.GetOriginUsage(
-        url::Origin::Create(GURL(origin_url)), type,
+  void RunAdditionalStorageKeyUsageTask(
+      storage::mojom::QuotaClient& quota_client,
+      const std::string& origin_url,
+      StorageType type) {
+    quota_client.GetStorageKeyUsage(
+        StorageKey::CreateFromStringForTesting(origin_url), type,
         base::BindOnce(&FileSystemQuotaClientTest::OnGetAdditionalUsage,
                        weak_factory_.GetWeakPtr()));
   }
@@ -168,8 +171,8 @@ class FileSystemQuotaClientTest : public testing::Test {
           // create it later, this will fail due to a quota mismatch.  If we
           // call this before we create the root, it succeeds, but hasn't
           // actually created the cache.
-          ASSERT_EQ(0, GetOriginUsage(quota_client, files[i].origin_url,
-                                      files[i].type));
+          ASSERT_EQ(0, GetStorageKeyUsage(quota_client, files[i].origin_url,
+                                          files[i].type));
         }
       } else {
         ASSERT_TRUE(CreateFileSystemFile(path, files[i].size,
@@ -199,13 +202,13 @@ class FileSystemQuotaClientTest : public testing::Test {
     return file_paths_cost;
   }
 
-  void DeleteOriginData(FileSystemQuotaClient* quota_client,
-                        const std::string& origin,
-                        StorageType type) {
+  void DeleteStorageKeyData(FileSystemQuotaClient* quota_client,
+                            const std::string& origin,
+                            StorageType type) {
     deletion_status_ = blink::mojom::QuotaStatusCode::kUnknown;
-    quota_client->DeleteOriginData(
-        url::Origin::Create(GURL(origin)), type,
-        base::BindOnce(&FileSystemQuotaClientTest::OnDeleteOrigin,
+    quota_client->DeleteStorageKeyData(
+        StorageKey::CreateFromStringForTesting(origin), type,
+        base::BindOnce(&FileSystemQuotaClientTest::OnDeleteStorageKey,
                        weak_factory_.GetWeakPtr()));
   }
 
@@ -219,15 +222,15 @@ class FileSystemQuotaClientTest : public testing::Test {
  private:
   void OnGetUsage(int64_t usage) { usage_ = usage; }
 
-  void OnGetOrigins(const std::vector<url::Origin>& origins) {
-    origins_ = origins;
+  void OnGetStorageKeys(const std::vector<StorageKey>& storage_keys) {
+    storage_keys_ = storage_keys;
   }
 
   void OnGetAdditionalUsage(int64_t usage_unused) {
     ++additional_callback_count_;
   }
 
-  void OnDeleteOrigin(blink::mojom::QuotaStatusCode status) {
+  void OnDeleteStorageKey(blink::mojom::QuotaStatusCode status) {
     deletion_status_ = status;
   }
 
@@ -236,7 +239,7 @@ class FileSystemQuotaClientTest : public testing::Test {
   scoped_refptr<FileSystemContext> file_system_context_;
   int64_t usage_ = 0;
   int additional_callback_count_ = 0;
-  std::vector<url::Origin> origins_;
+  std::vector<StorageKey> storage_keys_;
   blink::mojom::QuotaStatusCode deletion_status_ =
       blink::mojom::QuotaStatusCode::kUnknown;
   base::WeakPtrFactory<FileSystemQuotaClientTest> weak_factory_{this};
@@ -245,7 +248,7 @@ class FileSystemQuotaClientTest : public testing::Test {
 TEST_F(FileSystemQuotaClientTest, NoFileSystemTest) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
 
-  EXPECT_EQ(0, GetOriginUsage(quota_client, kDummyURL1, kTemporary));
+  EXPECT_EQ(0, GetStorageKeyUsage(quota_client, kDummyURL1, kTemporary));
 }
 
 TEST_F(FileSystemQuotaClientTest, NoFileTest) {
@@ -257,7 +260,7 @@ TEST_F(FileSystemQuotaClientTest, NoFileTest) {
   InitializeOriginFiles(quota_client, kFiles, base::size(kFiles));
 
   for (int i = 0; i < 2; i++) {
-    EXPECT_EQ(0, GetOriginUsage(quota_client, kDummyURL1, kTemporary));
+    EXPECT_EQ(0, GetStorageKeyUsage(quota_client, kDummyURL1, kTemporary));
   }
 }
 
@@ -273,7 +276,7 @@ TEST_F(FileSystemQuotaClientTest, OneFileTest) {
 
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(4921 + file_paths_cost,
-              GetOriginUsage(quota_client, kDummyURL1, kTemporary));
+              GetStorageKeyUsage(quota_client, kDummyURL1, kTemporary));
   }
 }
 
@@ -290,7 +293,7 @@ TEST_F(FileSystemQuotaClientTest, TwoFilesTest) {
 
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(10310 + 41 + file_paths_cost,
-              GetOriginUsage(quota_client, kDummyURL1, kTemporary));
+              GetStorageKeyUsage(quota_client, kDummyURL1, kTemporary));
   }
 }
 
@@ -308,7 +311,7 @@ TEST_F(FileSystemQuotaClientTest, EmptyFilesTest) {
 
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(file_paths_cost,
-              GetOriginUsage(quota_client, kDummyURL1, kTemporary));
+              GetStorageKeyUsage(quota_client, kDummyURL1, kTemporary));
   }
 }
 
@@ -326,7 +329,7 @@ TEST_F(FileSystemQuotaClientTest, SubDirectoryTest) {
 
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(11921 + 4814 + file_paths_cost,
-              GetOriginUsage(quota_client, kDummyURL1, kTemporary));
+              GetStorageKeyUsage(quota_client, kDummyURL1, kTemporary));
   }
 }
 
@@ -352,9 +355,9 @@ TEST_F(FileSystemQuotaClientTest, MultiTypeTest) {
 
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(133 + 14 + file_paths_cost_temporary,
-              GetOriginUsage(quota_client, kDummyURL1, kTemporary));
+              GetStorageKeyUsage(quota_client, kDummyURL1, kTemporary));
     EXPECT_EQ(193 + 9 + file_paths_cost_persistent,
-              GetOriginUsage(quota_client, kDummyURL1, kPersistent));
+              GetStorageKeyUsage(quota_client, kDummyURL1, kPersistent));
   }
 }
 
@@ -394,13 +397,13 @@ TEST_F(FileSystemQuotaClientTest, MultiDomainTest) {
 
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(1331 + 134 + file_paths_cost_temporary1,
-              GetOriginUsage(quota_client, kDummyURL1, kTemporary));
+              GetStorageKeyUsage(quota_client, kDummyURL1, kTemporary));
     EXPECT_EQ(1903 + 19 + file_paths_cost_persistent1,
-              GetOriginUsage(quota_client, kDummyURL1, kPersistent));
+              GetStorageKeyUsage(quota_client, kDummyURL1, kPersistent));
     EXPECT_EQ(1319 + 113 + file_paths_cost_temporary2,
-              GetOriginUsage(quota_client, kDummyURL2, kTemporary));
+              GetStorageKeyUsage(quota_client, kDummyURL2, kTemporary));
     EXPECT_EQ(2013 + 18 + file_paths_cost_persistent2,
-              GetOriginUsage(quota_client, kDummyURL2, kPersistent));
+              GetStorageKeyUsage(quota_client, kDummyURL2, kPersistent));
   }
 }
 
@@ -417,24 +420,24 @@ TEST_F(FileSystemQuotaClientTest, GetUsage_MultipleTasks) {
 
   // Dispatching three GetUsage tasks.
   set_additional_callback_count(0);
-  GetOriginUsageAsync(quota_client, kDummyURL1, kTemporary);
-  RunAdditionalOriginUsageTask(quota_client, kDummyURL1, kTemporary);
-  RunAdditionalOriginUsageTask(quota_client, kDummyURL1, kTemporary);
+  GetStorageKeyUsageAsync(quota_client, kDummyURL1, kTemporary);
+  RunAdditionalStorageKeyUsageTask(quota_client, kDummyURL1, kTemporary);
+  RunAdditionalStorageKeyUsageTask(quota_client, kDummyURL1, kTemporary);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(11 + 22 + file_paths_cost, usage());
   EXPECT_EQ(2, additional_callback_count());
 
   // Once more, in a different order.
   set_additional_callback_count(0);
-  RunAdditionalOriginUsageTask(quota_client, kDummyURL1, kTemporary);
-  GetOriginUsageAsync(quota_client, kDummyURL1, kTemporary);
-  RunAdditionalOriginUsageTask(quota_client, kDummyURL1, kTemporary);
+  RunAdditionalStorageKeyUsageTask(quota_client, kDummyURL1, kTemporary);
+  GetStorageKeyUsageAsync(quota_client, kDummyURL1, kTemporary);
+  RunAdditionalStorageKeyUsageTask(quota_client, kDummyURL1, kTemporary);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(11 + 22 + file_paths_cost, usage());
   EXPECT_EQ(2, additional_callback_count());
 }
 
-TEST_F(FileSystemQuotaClientTest, GetOriginsForType) {
+TEST_F(FileSystemQuotaClientTest, GetStorageKeysForType) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const TestFile kFiles[] = {
       {true, "", 0, kDummyURL1, kTemporary},
@@ -443,19 +446,21 @@ TEST_F(FileSystemQuotaClientTest, GetOriginsForType) {
   };
   InitializeOriginFiles(quota_client, kFiles, base::size(kFiles));
 
-  std::vector<url::Origin> origins =
-      GetOriginsForType(quota_client, kTemporary);
-  EXPECT_EQ(2U, origins.size());
-  EXPECT_THAT(origins,
-              testing::Contains(url::Origin::Create(GURL(kDummyURL1))));
-  EXPECT_THAT(origins,
-              testing::Contains(url::Origin::Create(GURL(kDummyURL2))));
+  std::vector<StorageKey> storage_keys =
+      GetStorageKeysForType(quota_client, kTemporary);
+  EXPECT_EQ(2U, storage_keys.size());
   EXPECT_THAT(
-      origins,
-      testing::Not(testing::Contains(url::Origin::Create(GURL(kDummyURL3)))));
+      storage_keys,
+      testing::Contains(StorageKey::CreateFromStringForTesting(kDummyURL1)));
+  EXPECT_THAT(
+      storage_keys,
+      testing::Contains(StorageKey::CreateFromStringForTesting(kDummyURL2)));
+  EXPECT_THAT(storage_keys,
+              testing::Not(testing::Contains(
+                  StorageKey::CreateFromStringForTesting(kDummyURL3))));
 }
 
-TEST_F(FileSystemQuotaClientTest, GetOriginsForHost) {
+TEST_F(FileSystemQuotaClientTest, GetStorageKeysForHost) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   const char* kURL1 = "http://foo.com/";
   const char* kURL2 = "https://foo.com/";
@@ -469,16 +474,23 @@ TEST_F(FileSystemQuotaClientTest, GetOriginsForHost) {
   };
   InitializeOriginFiles(quota_client, kFiles, base::size(kFiles));
 
-  std::vector<url::Origin> origins =
-      GetOriginsForHost(quota_client, kTemporary, "foo.com");
-  EXPECT_EQ(3U, origins.size());
-  EXPECT_THAT(origins, testing::Contains(url::Origin::Create(GURL(kURL1))));
-  EXPECT_THAT(origins, testing::Contains(url::Origin::Create(GURL(kURL2))));
-  EXPECT_THAT(origins, testing::Contains(url::Origin::Create(GURL(kURL3))));
-  EXPECT_THAT(origins, testing::Not(testing::Contains(url::Origin::Create(
-                           GURL(kURL4)))));  // Different host.
-  EXPECT_THAT(origins, testing::Not(testing::Contains(url::Origin::Create(
-                           GURL(kURL5)))));  // Different type.
+  std::vector<StorageKey> storage_keys =
+      GetStorageKeysForHost(quota_client, kTemporary, "foo.com");
+  EXPECT_EQ(3U, storage_keys.size());
+  EXPECT_THAT(storage_keys,
+              testing::Contains(StorageKey::CreateFromStringForTesting(kURL1)));
+  EXPECT_THAT(storage_keys,
+              testing::Contains(StorageKey::CreateFromStringForTesting(kURL2)));
+  EXPECT_THAT(storage_keys,
+              testing::Contains(StorageKey::CreateFromStringForTesting(kURL3)));
+  EXPECT_THAT(
+      storage_keys,
+      testing::Not(testing::Contains(
+          StorageKey::CreateFromStringForTesting(kURL4))));  // Different host.
+  EXPECT_THAT(
+      storage_keys,
+      testing::Not(testing::Contains(
+          StorageKey::CreateFromStringForTesting(kURL5))));  // Different type.
 }
 
 TEST_F(FileSystemQuotaClientTest, DeleteOriginTest) {
@@ -516,32 +528,33 @@ TEST_F(FileSystemQuotaClientTest, DeleteOriginTest) {
       ComputeFilePathsCostForOriginAndType(kFiles, base::size(kFiles),
                                            "https://bar.com/", kPersistent);
 
-  DeleteOriginData(&quota_client, "http://foo.com/", kTemporary);
+  DeleteStorageKeyData(&quota_client, "http://foo.com/", kTemporary);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, status());
 
-  DeleteOriginData(&quota_client, "http://bar.com/", kPersistent);
+  DeleteStorageKeyData(&quota_client, "http://bar.com/", kPersistent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, status());
 
-  DeleteOriginData(&quota_client, "http://buz.com/", kTemporary);
+  DeleteStorageKeyData(&quota_client, "http://buz.com/", kTemporary);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, status());
 
-  EXPECT_EQ(0, GetOriginUsage(quota_client, "http://foo.com/", kTemporary));
-  EXPECT_EQ(0, GetOriginUsage(quota_client, "http://bar.com/", kPersistent));
-  EXPECT_EQ(0, GetOriginUsage(quota_client, "http://buz.com/", kTemporary));
+  EXPECT_EQ(0, GetStorageKeyUsage(quota_client, "http://foo.com/", kTemporary));
+  EXPECT_EQ(0,
+            GetStorageKeyUsage(quota_client, "http://bar.com/", kPersistent));
+  EXPECT_EQ(0, GetStorageKeyUsage(quota_client, "http://buz.com/", kTemporary));
 
   EXPECT_EQ(2 + file_paths_cost_temporary_foo_https,
-            GetOriginUsage(quota_client, "https://foo.com/", kTemporary));
+            GetStorageKeyUsage(quota_client, "https://foo.com/", kTemporary));
   EXPECT_EQ(4 + file_paths_cost_persistent_foo,
-            GetOriginUsage(quota_client, "http://foo.com/", kPersistent));
+            GetStorageKeyUsage(quota_client, "http://foo.com/", kPersistent));
   EXPECT_EQ(8 + file_paths_cost_temporary_bar,
-            GetOriginUsage(quota_client, "http://bar.com/", kTemporary));
+            GetStorageKeyUsage(quota_client, "http://bar.com/", kTemporary));
   EXPECT_EQ(32 + file_paths_cost_persistent_bar_https,
-            GetOriginUsage(quota_client, "https://bar.com/", kPersistent));
+            GetStorageKeyUsage(quota_client, "https://bar.com/", kPersistent));
   EXPECT_EQ(64 + file_paths_cost_temporary_bar_https,
-            GetOriginUsage(quota_client, "https://bar.com/", kTemporary));
+            GetStorageKeyUsage(quota_client, "https://bar.com/", kTemporary));
 }
 
 }  // namespace storage

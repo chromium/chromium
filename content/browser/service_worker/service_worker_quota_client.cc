@@ -18,21 +18,22 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
-using blink::mojom::StorageType;
-using storage::mojom::QuotaClient;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
+using ::storage::mojom::QuotaClient;
 
 namespace content {
 namespace {
-void ReportToQuotaStatus(QuotaClient::DeleteOriginDataCallback callback,
+void ReportToQuotaStatus(QuotaClient::DeleteStorageKeyDataCallback callback,
                          blink::ServiceWorkerStatusCode status) {
   std::move(callback).Run((status == blink::ServiceWorkerStatusCode::kOk)
                               ? blink::mojom::QuotaStatusCode::kOk
                               : blink::mojom::QuotaStatusCode::kUnknown);
 }
 
-void FindUsageForOrigin(QuotaClient::GetOriginUsageCallback callback,
-                        blink::ServiceWorkerStatusCode status,
-                        int64_t usage) {
+void FindUsageForStorageKey(QuotaClient::GetStorageKeyUsageCallback callback,
+                            blink::ServiceWorkerStatusCode status,
+                            int64_t usage) {
   std::move(callback).Run(usage);
 }
 }  // namespace
@@ -45,52 +46,53 @@ ServiceWorkerQuotaClient::~ServiceWorkerQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ServiceWorkerQuotaClient::GetOriginUsage(const url::Origin& origin,
-                                              StorageType type,
-                                              GetOriginUsageCallback callback) {
+void ServiceWorkerQuotaClient::GetStorageKeyUsage(
+    const blink::StorageKey& storage_key,
+    StorageType type,
+    GetStorageKeyUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
   context_->registry()->GetStorageUsageForStorageKey(
-      blink::StorageKey(origin),
-      base::BindOnce(&FindUsageForOrigin, std::move(callback)));
+      storage_key,
+      base::BindOnce(&FindUsageForStorageKey, std::move(callback)));
 }
 
-void ServiceWorkerQuotaClient::GetOriginsForType(
+void ServiceWorkerQuotaClient::GetStorageKeysForType(
     StorageType type,
-    GetOriginsForTypeCallback callback) {
+    GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  context_->registry()->GetRegisteredOrigins(std::move(callback));
+  context_->registry()->GetRegisteredStorageKeys(std::move(callback));
 }
 
-void ServiceWorkerQuotaClient::GetOriginsForHost(
+void ServiceWorkerQuotaClient::GetStorageKeysForHost(
     StorageType type,
     const std::string& host,
-    GetOriginsForHostCallback callback) {
+    GetStorageKeysForHostCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  context_->registry()->GetRegisteredOrigins(base::BindOnce(
-      [](const std::string& host, GetOriginsForTypeCallback callback,
-         const std::vector<url::Origin>& all_origins) {
-        std::vector<url::Origin> host_origins;
-        for (auto& origin : all_origins) {
-          if (host != origin.host())
+  context_->registry()->GetRegisteredStorageKeys(base::BindOnce(
+      [](const std::string& host, GetStorageKeysForTypeCallback callback,
+         const std::vector<blink::StorageKey>& all_storage_keys) {
+        std::vector<blink::StorageKey> host_storage_keys;
+        for (auto& storage_key : all_storage_keys) {
+          if (host != storage_key.origin().host())
             continue;
-          host_origins.push_back(origin);
+          host_storage_keys.push_back(storage_key);
         }
-        std::move(callback).Run(host_origins);
+        std::move(callback).Run(host_storage_keys);
       },
       host, std::move(callback)));
 }
 
-void ServiceWorkerQuotaClient::DeleteOriginData(
-    const url::Origin& origin,
+void ServiceWorkerQuotaClient::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
     StorageType type,
-    DeleteOriginDataCallback callback) {
+    DeleteStorageKeyDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, StorageType::kTemporary);
-  context_->DeleteForOrigin(
-      origin, base::BindOnce(&ReportToQuotaStatus, std::move(callback)));
+  context_->DeleteForStorageKey(
+      storage_key, base::BindOnce(&ReportToQuotaStatus, std::move(callback)));
 }
 
 void ServiceWorkerQuotaClient::PerformStorageCleanup(

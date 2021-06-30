@@ -18,6 +18,10 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "url/origin.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 class FileSystemContext;
 }
@@ -118,7 +122,7 @@ class FileSystemHelper : public base::RefCountedThreadSafe<FileSystemHelper> {
   void AppendNativeIOInfoToFileSystemInfo(
       FetchCallback callback,
       const std::list<FileSystemInfo>& file_system_info_list,
-      std::map<url::Origin, int64_t> native_io_usage_map);
+      std::map<blink::StorageKey, int64_t> native_io_usage_map);
 
   // Returns the file task runner for the |filesystem_context_|.
   base::SequencedTaskRunner* file_task_runner();

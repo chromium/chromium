@@ -124,7 +124,7 @@ class QuotaManagerImplTest : public testing::Test {
   }
 
   MockQuotaClient* CreateAndRegisterClient(
-      base::span<const MockOriginData> mock_data,
+      base::span<const MockStorageKeyData> mock_data,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType> storage_types) {
     auto mock_quota_client = std::make_unique<storage::MockQuotaClient>(
@@ -271,8 +271,8 @@ class QuotaManagerImplTest : public testing::Test {
                                   StorageType type) {
     DCHECK(client);
     quota_status_ = QuotaStatusCode::kUnknown;
-    client->DeleteOriginData(
-        storage_key.origin(), type,
+    client->DeleteStorageKeyData(
+        storage_key, type,
         base::BindOnce(&QuotaManagerImplTest::StatusCallback,
                        weak_factory_.GetWeakPtr()));
   }
@@ -586,13 +586,13 @@ class QuotaManagerImplTest : public testing::Test {
 };
 
 TEST_F(QuotaManagerImplTest, GetUsageInfo) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 10},
       {"http://foo.com:8080/", kTemp, 15},
       {"http://bar.com/", kTemp, 20},
       {"http://bar.com/", kPerm, 50},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"https://foo.com/", kTemp, 30},
       {"https://foo.com:8081/", kTemp, 35},
       {"http://bar.com/", kPerm, 40},
@@ -663,7 +663,7 @@ TEST_F(QuotaManagerImplTest, GetBucket) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 10},
       {"http://foo.com/", kPerm, 80},
   };
@@ -722,7 +722,7 @@ TEST_F(QuotaManagerImplTest, GetUsage_NoClient) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_EmptyClient) {
-  CreateAndRegisterClient(base::span<MockOriginData>(),
+  CreateAndRegisterClient(base::span<MockStorageKeyData>(),
                           QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
@@ -757,7 +757,7 @@ TEST_F(QuotaManagerImplTest, GetUsage_EmptyClient) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_MultiStorageKeys) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 10}, {"http://foo.com:8080/", kTemp, 20},
       {"http://bar.com/", kTemp, 5},  {"https://bar.com/", kTemp, 7},
       {"http://baz.com/", kTemp, 30}, {"http://foo.com/", kPerm, 40},
@@ -788,13 +788,13 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_MultiStorageKeys) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_MultipleClients) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://bar.com/", kTemp, 2},
       {"http://bar.com/", kPerm, 4},
       {"http://unlimited/", kPerm, 8},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"https://foo.com/", kTemp, 128},
       {"http://example.com/", kPerm, 256},
       {"http://unlimited/", kTemp, 512},
@@ -852,14 +852,14 @@ TEST_F(QuotaManagerImplTest, GetUsage_MultipleClients) {
 TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
   blink::mojom::UsageBreakdown usage_breakdown_expected =
       blink::mojom::UsageBreakdown();
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://foo.com/", kPerm, 80},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com/", kTemp, 4},
   };
-  static const MockOriginData kData3[] = {
+  static const MockStorageKeyData kData3[] = {
       {"http://foo.com/", kTemp, 8},
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
@@ -928,7 +928,7 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_NoClient) {
 TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultiStorageKeys) {
   blink::mojom::UsageBreakdown usage_breakdown_expected =
       blink::mojom::UsageBreakdown();
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 10}, {"http://foo.com:8080/", kTemp, 20},
       {"http://bar.com/", kTemp, 5},  {"https://bar.com/", kTemp, 7},
       {"http://baz.com/", kTemp, 30}, {"http://foo.com/", kPerm, 40},
@@ -955,13 +955,13 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultiStorageKeys) {
 TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultipleClients) {
   blink::mojom::UsageBreakdown usage_breakdown_expected =
       blink::mojom::UsageBreakdown();
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://bar.com/", kTemp, 2},
       {"http://bar.com/", kPerm, 4},
       {"http://unlimited/", kPerm, 8},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"https://foo.com/", kTemp, 128},
       {"http://example.com/", kPerm, 256},
       {"http://unlimited/", kTemp, 512},
@@ -1008,7 +1008,7 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultipleClients) {
 }
 
 void QuotaManagerImplTest::GetUsage_WithModifyTestBody(const StorageType type) {
-  const MockOriginData data[] = {
+  const MockStorageKeyData data[] = {
       {"http://foo.com/", type, 10},
       {"http://foo.com:1/", type, 20},
   };
@@ -1020,12 +1020,10 @@ void QuotaManagerImplTest::GetUsage_WithModifyTestBody(const StorageType type) {
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20, usage());
 
-  client->ModifyOriginAndNotify(ToStorageKey("http://foo.com/").origin(), type,
-                                30);
-  client->ModifyOriginAndNotify(ToStorageKey("http://foo.com:1/").origin(),
-                                type, -5);
-  client->AddOriginAndNotify(ToStorageKey("https://foo.com/").origin(), type,
-                             1);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://foo.com/"), type, 30);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://foo.com:1/"), type,
+                                    -5);
+  client->AddStorageKeyAndNotify(ToStorageKey("https://foo.com/"), type, 1);
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), type);
   task_environment_.RunUntilIdle();
@@ -1033,8 +1031,7 @@ void QuotaManagerImplTest::GetUsage_WithModifyTestBody(const StorageType type) {
   EXPECT_EQ(10 + 20 + 30 - 5 + 1, usage());
   int foo_usage = usage();
 
-  client->AddOriginAndNotify(ToStorageKey("http://bar.com/").origin(), type,
-                             40);
+  client->AddStorageKeyAndNotify(ToStorageKey("http://bar.com/"), type, 40);
   GetUsageAndQuotaForWebApps(ToStorageKey("http://bar.com/"), type);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
@@ -1051,7 +1048,7 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsage_WithModify) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_WithAdditionalTasks) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 10},
       {"http://foo.com:8080/", kTemp, 20},
       {"http://bar.com/", kTemp, 13},
@@ -1085,7 +1082,7 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_WithAdditionalTasks) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_NukeManager) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 10},
       {"http://foo.com:8080/", kTemp, 20},
       {"http://bar.com/", kTemp, 13},
@@ -1115,7 +1112,7 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_NukeManager) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Overbudget) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://usage1/", kTemp, 1},
       {"http://usage10/", kTemp, 10},
       {"http://usage200/", kTemp, 200},
@@ -1153,7 +1150,7 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Overbudget) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Unlimited) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://usage10/", kTemp, 10},
       {"http://usage50/", kTemp, 50},
       {"http://unlimited/", kTemp, 4000},
@@ -1281,7 +1278,7 @@ TEST_F(QuotaManagerImplTest, StorageKeyInUse) {
 }
 
 TEST_F(QuotaManagerImplTest, GetAndSetPerststentHostQuota) {
-  CreateAndRegisterClient(base::span<MockOriginData>(),
+  CreateAndRegisterClient(base::span<MockStorageKeyData>(),
                           QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
@@ -1313,7 +1310,7 @@ TEST_F(QuotaManagerImplTest, GetAndSetPerststentHostQuota) {
 
 TEST_F(QuotaManagerImplTest, GetAndSetPersistentUsageAndQuota) {
   GetStorageCapacity();
-  CreateAndRegisterClient(base::span<MockOriginData>(),
+  CreateAndRegisterClient(base::span<MockStorageKeyData>(),
                           QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kPersistent});
@@ -1347,7 +1344,7 @@ TEST_F(QuotaManagerImplTest, GetAndSetPersistentUsageAndQuota) {
 }
 
 TEST_F(QuotaManagerImplTest, GetQuotaLowAvailableDiskSpace) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 100000},
       {"http://unlimited/", kTemp, 4000000},
   };
@@ -1374,7 +1371,7 @@ TEST_F(QuotaManagerImplTest, GetQuotaLowAvailableDiskSpace) {
 }
 
 TEST_F(QuotaManagerImplTest, GetSyncableQuota) {
-  CreateAndRegisterClient(base::span<MockOriginData>(),
+  CreateAndRegisterClient(base::span<MockStorageKeyData>(),
                           QuotaClientType::kFileSystem,
                           {blink::mojom::StorageType::kTemporary,
                            blink::mojom::StorageType::kSyncable});
@@ -1399,7 +1396,7 @@ TEST_F(QuotaManagerImplTest, GetSyncableQuota) {
 }
 
 TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_MultiStorageKeys) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kPerm, 10},  {"http://foo.com:8080/", kPerm, 20},
       {"https://foo.com/", kPerm, 13}, {"https://foo.com:8081/", kPerm, 19},
       {"http://bar.com/", kPerm, 5},   {"https://bar.com/", kPerm, 7},
@@ -1422,7 +1419,7 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsage_WithModify) {
 }
 
 TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_WithAdditionalTasks) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kPerm, 10},
       {"http://foo.com:8080/", kPerm, 20},
       {"http://bar.com/", kPerm, 13},
@@ -1452,7 +1449,7 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_WithAdditionalTasks) {
 }
 
 TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_NukeManager) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kPerm, 10},
       {"http://foo.com:8080/", kPerm, 20},
       {"http://bar.com/", kPerm, 13},
@@ -1475,7 +1472,7 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_NukeManager) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_Simple) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kPerm, 1},       {"http://foo.com:1/", kPerm, 20},
       {"http://bar.com/", kTemp, 300},     {"https://buz.com/", kTemp, 4000},
       {"http://buz.com/", kTemp, 50000},   {"http://bar.com:1/", kPerm, 600000},
@@ -1505,7 +1502,7 @@ TEST_F(QuotaManagerImplTest, GetUsage_Simple) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kPerm, 1},       {"http://foo.com:1/", kPerm, 20},
       {"http://bar.com/", kTemp, 300},     {"https://buz.com/", kTemp, 4000},
       {"http://buz.com/", kTemp, 50000},   {"http://bar.com:1/", kPerm, 600000},
@@ -1522,8 +1519,8 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
   EXPECT_EQ(usage(), 1 + 20 + 600000);
   EXPECT_EQ(0, unlimited_usage());
 
-  client->ModifyOriginAndNotify(ToStorageKey("http://foo.com/").origin(), kPerm,
-                                80000000);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://foo.com/"), kPerm,
+                                    80000000);
 
   GetGlobalUsage(kPerm);
   task_environment_.RunUntilIdle();
@@ -1535,8 +1532,7 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
   EXPECT_EQ(usage(), 300 + 4000 + 50000 + 7000000);
   EXPECT_EQ(0, unlimited_usage());
 
-  client->ModifyOriginAndNotify(ToStorageKey("http://foo.com/").origin(), kTemp,
-                                1);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://foo.com/"), kTemp, 1);
 
   GetGlobalUsage(kTemp);
   task_environment_.RunUntilIdle();
@@ -1547,8 +1543,8 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 4000 + 50000);
 
-  client->ModifyOriginAndNotify(ToStorageKey("http://buz.com/").origin(), kTemp,
-                                900000000);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://buz.com/"), kTemp,
+                                    900000000);
 
   GetHostUsageWithBreakdown("buz.com", kTemp);
   task_environment_.RunUntilIdle();
@@ -1556,7 +1552,7 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteStorageKey) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://foo.com:1/", kTemp, 20},
       {"http://foo.com/", kPerm, 300},
@@ -1604,13 +1600,13 @@ TEST_F(QuotaManagerImplTest, GetStorageCapacity) {
 }
 
 TEST_F(QuotaManagerImplTest, EvictStorageKeyData) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://foo.com:1/", kTemp, 20},
       {"http://foo.com/", kPerm, 300},
       {"http://bar.com/", kTemp, 4000},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com/", kTemp, 50000}, {"http://foo.com:1/", kTemp, 6000},
       {"http://foo.com/", kPerm, 700},   {"https://foo.com/", kTemp, 80},
       {"http://bar.com/", kTemp, 9},
@@ -1634,11 +1630,11 @@ TEST_F(QuotaManagerImplTest, EvictStorageKeyData) {
   task_environment_.RunUntilIdle();
   int64_t predelete_host_pers = usage();
 
-  for (const MockOriginData& data : kData1) {
+  for (const MockStorageKeyData& data : kData1) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
-  for (const MockOriginData& data : kData2) {
+  for (const MockStorageKeyData& data : kData2) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
@@ -1671,7 +1667,7 @@ TEST_F(QuotaManagerImplTest, EvictStorageKeyData) {
 
 TEST_F(QuotaManagerImplTest, EvictStorageKeyDataHistogram) {
   const StorageKey kStorageKey = ToStorageKey("http://foo.com/");
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 1},
   };
 
@@ -1694,7 +1690,7 @@ TEST_F(QuotaManagerImplTest, EvictStorageKeyDataHistogram) {
   histograms.ExpectTotalCount(
       QuotaManagerImpl::kEvictedOriginDaysSinceAccessHistogram, 1);
 
-  client->AddOriginAndNotify(kStorageKey.origin(), kTemp, 100);
+  client->AddStorageKeyAndNotify(kStorageKey, kTemp, 100);
 
   // Change the use count of the storage key.
   quota_manager_impl()->NotifyStorageAccessed(kStorageKey, kTemp,
@@ -1717,7 +1713,7 @@ TEST_F(QuotaManagerImplTest, EvictStorageKeyDataHistogram) {
 }
 
 TEST_F(QuotaManagerImplTest, EvictStorageKeyDataWithDeletionError) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://foo.com:1/", kTemp, 20},
       {"http://foo.com/", kPerm, 300},
@@ -1741,11 +1737,11 @@ TEST_F(QuotaManagerImplTest, EvictStorageKeyDataWithDeletionError) {
   task_environment_.RunUntilIdle();
   int64_t predelete_host_pers = usage();
 
-  for (const MockOriginData& data : kData)
+  for (const MockStorageKeyData& data : kData)
     NotifyStorageAccessed(ToStorageKey(data.origin), data.type);
   task_environment_.RunUntilIdle();
 
-  client->AddOriginToErrorSet(ToStorageKey("http://foo.com/").origin(), kTemp);
+  client->AddStorageKeyToErrorSet(ToStorageKey("http://foo.com/"), kTemp);
 
   for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted + 1;
        ++i) {
@@ -1800,7 +1796,7 @@ TEST_F(QuotaManagerImplTest, EvictStorageKeyDataWithDeletionError) {
 }
 
 TEST_F(QuotaManagerImplTest, GetEvictionRoundInfo) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://foo.com:1/", kTemp, 20},
       {"http://foo.com/", kPerm, 300},
@@ -1831,7 +1827,7 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataNoClients) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 1},
   };
   CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
@@ -1884,13 +1880,13 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://foo.com:1/", kTemp, 20},
       {"http://foo.com/", kPerm, 300},
       {"http://bar.com/", kTemp, 4000},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com/", kTemp, 50000}, {"http://foo.com:1/", kTemp, 6000},
       {"http://foo.com/", kPerm, 700},   {"https://foo.com/", kTemp, 80},
       {"http://bar.com/", kTemp, 9},
@@ -1970,13 +1966,13 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kPerm, 1},
       {"http://foo.com:1/", kPerm, 10},
       {"http://foo.com/", kTemp, 100},
       {"http://bar.com/", kPerm, 1000},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com/", kTemp, 10000},
       {"http://foo.com:1/", kTemp, 100000},
       {"https://foo.com/", kTemp, 1000000},
@@ -2071,13 +2067,13 @@ TEST_F(QuotaManagerImplTest, DeleteStorageKeyDataNoClients) {
 // Single-run DeleteStorageKeyData cases must be well covered by
 // EvictStorageKeyData tests.
 TEST_F(QuotaManagerImplTest, DeleteStorageKeyDataMultiple) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
       {"http://foo.com:1/", kTemp, 20},
       {"http://foo.com/", kPerm, 300},
       {"http://bar.com/", kTemp, 4000},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com/", kTemp, 50000}, {"http://foo.com:1/", kTemp, 6000},
       {"http://foo.com/", kPerm, 700},   {"https://foo.com/", kTemp, 80},
       {"http://bar.com/", kTemp, 9},
@@ -2109,11 +2105,11 @@ TEST_F(QuotaManagerImplTest, DeleteStorageKeyDataMultiple) {
   task_environment_.RunUntilIdle();
   const int64_t predelete_bar_pers = usage();
 
-  for (const MockOriginData& data : kData1) {
+  for (const MockStorageKeyData& data : kData1) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
-  for (const MockOriginData& data : kData2) {
+  for (const MockStorageKeyData& data : kData2) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
@@ -2166,13 +2162,13 @@ TEST_F(QuotaManagerImplTest, DeleteStorageKeyDataMultiple) {
 
 TEST_F(QuotaManagerImplTest,
        DeleteStorageKeyDataMultipleClientsDifferentTypes) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kPerm, 1},
       {"http://foo.com:1/", kPerm, 10},
       {"http://foo.com/", kTemp, 100},
       {"http://bar.com/", kPerm, 1000},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com/", kTemp, 10000},
       {"http://foo.com:1/", kTemp, 100000},
       {"https://foo.com/", kTemp, 1000000},
@@ -2208,11 +2204,11 @@ TEST_F(QuotaManagerImplTest,
   task_environment_.RunUntilIdle();
   const int64_t predelete_bar_pers = usage();
 
-  for (const MockOriginData& data : kData1) {
+  for (const MockStorageKeyData& data : kData1) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
-  for (const MockOriginData& data : kData2) {
+  for (const MockStorageKeyData& data : kData2) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
@@ -2266,7 +2262,7 @@ TEST_F(QuotaManagerImplTest,
 }
 
 TEST_F(QuotaManagerImplTest, GetCachedStorageKeys) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://a.com/", kTemp, 1},
       {"http://a.com:1/", kTemp, 20},
       {"http://b.com/", kPerm, 300},
@@ -2304,14 +2300,14 @@ TEST_F(QuotaManagerImplTest, GetCachedStorageKeys) {
   storage_keys = GetCachedStorageKeys(kTemp);
   EXPECT_EQ(3U, storage_keys.size());
 
-  for (const MockOriginData& data : kData) {
+  for (const MockStorageKeyData& data : kData) {
     if (data.type == kTemp)
       EXPECT_TRUE(base::Contains(storage_keys, ToStorageKey(data.origin)));
   }
 }
 
 TEST_F(QuotaManagerImplTest, NotifyAndLRUStorageKey) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://a.com/", kTemp, 0},  {"http://a.com:1/", kTemp, 0},
       {"https://a.com/", kTemp, 0}, {"http://b.com/", kPerm, 0},  // persistent
       {"http://c.com/", kTemp, 0},
@@ -2348,7 +2344,7 @@ TEST_F(QuotaManagerImplTest, NotifyAndLRUStorageKey) {
 }
 
 TEST_F(QuotaManagerImplTest, GetLRUStorageKeyWithStorageKeyInUse) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://a.com/", kTemp, 0},  {"http://a.com:1/", kTemp, 0},
       {"https://a.com/", kTemp, 0}, {"http://b.com/", kPerm, 0},  // persistent
       {"http://c.com/", kTemp, 0},
@@ -2401,7 +2397,7 @@ TEST_F(QuotaManagerImplTest, GetLRUStorageKeyWithStorageKeyInUse) {
 }
 
 TEST_F(QuotaManagerImplTest, GetStorageKeysModifiedBetween) {
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://a.com/", kTemp, 0},  {"http://a.com:1/", kTemp, 0},
       {"https://a.com/", kTemp, 0}, {"http://b.com/", kPerm, 0},  // persistent
       {"http://c.com/", kTemp, 0},
@@ -2417,24 +2413,19 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysModifiedBetween) {
   EXPECT_EQ(modified_storage_keys_type(), kTemp);
 
   base::Time time1 = client->IncrementMockTime();
-  client->ModifyOriginAndNotify(ToStorageKey("http://a.com/").origin(), kTemp,
-                                10);
-  client->ModifyOriginAndNotify(ToStorageKey("http://a.com:1/").origin(), kTemp,
-                                10);
-  client->ModifyOriginAndNotify(ToStorageKey("http://b.com/").origin(), kPerm,
-                                10);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://a.com/"), kTemp, 10);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://a.com:1/"), kTemp, 10);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://b.com/"), kPerm, 10);
   base::Time time2 = client->IncrementMockTime();
-  client->ModifyOriginAndNotify(ToStorageKey("https://a.com/").origin(), kTemp,
-                                10);
-  client->ModifyOriginAndNotify(ToStorageKey("http://c.com/").origin(), kTemp,
-                                10);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("https://a.com/"), kTemp, 10);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://c.com/"), kTemp, 10);
   base::Time time3 = client->IncrementMockTime();
 
   GetStorageKeysModifiedBetween(kTemp, time1, base::Time::Max());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(4U, modified_storage_keys().size());
   EXPECT_EQ(modified_storage_keys_type(), kTemp);
-  for (const MockOriginData& data : kData) {
+  for (const MockStorageKeyData& data : kData) {
     if (data.type == kTemp)
       EXPECT_EQ(1U, modified_storage_keys().count(ToStorageKey(data.origin)));
   }
@@ -2448,8 +2439,7 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysModifiedBetween) {
   EXPECT_TRUE(modified_storage_keys().empty());
   EXPECT_EQ(modified_storage_keys_type(), kTemp);
 
-  client->ModifyOriginAndNotify(ToStorageKey("http://a.com/").origin(), kTemp,
-                                10);
+  client->ModifyStorageKeyAndNotify(ToStorageKey("http://a.com/"), kTemp, 10);
 
   GetStorageKeysModifiedBetween(kTemp, time3, base::Time::Max());
   task_environment_.RunUntilIdle();
@@ -2528,16 +2518,16 @@ TEST_F(QuotaManagerImplTest, QuotaForEmptyHost) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleStorageKey) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com/", kTemp, 2},
   };
-  static const MockOriginData kData3[] = {
+  static const MockStorageKeyData kData3[] = {
       {"http://foo.com/", kTemp, 4},
   };
-  static const MockOriginData kData4[] = {
+  static const MockStorageKeyData kData4[] = {
       {"http://foo.com/", kTemp, 8},
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
@@ -2583,16 +2573,16 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleStorageKey) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleHost) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com:1111/", kTemp, 1},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com:2222/", kTemp, 2},
   };
-  static const MockOriginData kData3[] = {
+  static const MockStorageKeyData kData3[] = {
       {"http://foo.com:3333/", kTemp, 4},
   };
-  static const MockOriginData kData4[] = {
+  static const MockStorageKeyData kData4[] = {
       {"http://foo.com:4444/", kTemp, 8},
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
@@ -2634,16 +2624,16 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleHost) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleStorageKey) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com/", kTemp, 2},
   };
-  static const MockOriginData kData3[] = {
+  static const MockStorageKeyData kData3[] = {
       {"http://foo.com/", kTemp, 4},
   };
-  static const MockOriginData kData4[] = {
+  static const MockStorageKeyData kData4[] = {
       {"http://foo.com/", kTemp, 8},
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
@@ -2677,16 +2667,16 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleStorageKey) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleHost) {
-  static const MockOriginData kData1[] = {
+  static const MockStorageKeyData kData1[] = {
       {"http://foo.com:1111/", kTemp, 1},
   };
-  static const MockOriginData kData2[] = {
+  static const MockStorageKeyData kData2[] = {
       {"http://foo.com:2222/", kTemp, 2},
   };
-  static const MockOriginData kData3[] = {
+  static const MockStorageKeyData kData3[] = {
       {"http://foo.com:3333/", kTemp, 4},
   };
-  static const MockOriginData kData4[] = {
+  static const MockStorageKeyData kData4[] = {
       {"http://foo.com:4444/", kTemp, 8},
   };
   CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
@@ -2721,7 +2711,7 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleHost) {
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Incognito) {
   ResetQuotaManagerImpl(true);
 
-  static const MockOriginData kData[] = {
+  static const MockStorageKeyData kData[] = {
       {"http://foo.com/", kTemp, 10},
       {"http://foo.com/", kPerm, 80},
   };

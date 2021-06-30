@@ -20,9 +20,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -32,7 +32,7 @@ class NativeIOHost;
 //
 // Each StoragePartition owns exactly one instance of this class. This class
 // creates and destroys NativeIOHost instances to meet the demands for NativeIO
-// from different origins.
+// from different storage keys.
 //
 // This class is not thread-safe, and all access to an instance must happen on
 // the same sequence.
@@ -58,51 +58,52 @@ class CONTENT_EXPORT NativeIOManager {
   NativeIOManager(const NativeIOManager&) = delete;
   NativeIOManager& operator=(const NativeIOManager&) = delete;
 
-  // Binds `receiver` to the NativeIOHost serving `origin`.
+  // Binds `receiver` to the NativeIOHost serving `storage_key`.
   //
-  // `receiver` must belong to a frame or worker serving `origin`.
-  void BindReceiver(const url::Origin& origin,
+  // `receiver` must belong to a frame or worker serving `storage_key`.
+  void BindReceiver(const blink::StorageKey& storage_key,
                     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
                     mojo::ReportBadMessageCallback bad_message_callback);
 
-  // Removes an origin's data and closes any open files.
-  void DeleteOriginData(
-      const url::Origin& origin,
-      storage::mojom::QuotaClient::DeleteOriginDataCallback callback);
+  // Removes an storage key's data and closes any open files.
+  void DeleteStorageKeyData(
+      const blink::StorageKey& storage_key,
+      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback);
 
-  // Computes all origins with data for a given type.
-  void GetOriginsForType(
+  // Computes all storage keys with data for a given type.
+  void GetStorageKeysForType(
       blink::mojom::StorageType type,
-      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback);
+      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback);
 
-  // Computes all origins with data for a given hostname.
-  void GetOriginsForHost(
+  // Computes all storage keys with data for a given hostname.
+  void GetStorageKeysForHost(
       blink::mojom::StorageType type,
       const std::string& host,
-      storage::mojom::QuotaClient::GetOriginsForHostCallback callback);
+      storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback);
 
-  // Computes the amount of bytes for the given origin.
+  // Computes the amount of bytes for the given storage key.
   //
-  // This method walks the origin's entire directory and is therefore not
+  // This method walks the storage key's entire directory and is therefore not
   // particularly speedy.
   // TODO(rstz): Consider a caching mechanism to improve performance.
-  void GetOriginUsage(
-      const url::Origin& origin,
+  void GetStorageKeyUsage(
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
-      storage::mojom::QuotaClient::GetOriginUsageCallback callback);
+      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback);
 
-  // Computes the amount of bytes for all origins.
+  // Computes the amount of bytes for all storage keys.
   //
-  // This method walks the origin's entire directory and is therefore not
+  // This method walks the storage key's entire directory and is therefore not
   // particularly speedy.
   // TODO(rstz): Consider a caching mechanism to improve performance.
-  void GetOriginUsageMap(
-      base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback);
+  void GetStorageKeyUsageMap(
+      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+          callback);
 
-  // Computes the path to the directory storing an origin's NativeIO files.
+  // Computes the path to the directory storing an storage key's NativeIO files.
   //
-  // Returns an empty path if the origin isn't supported for NativeIO.
-  base::FilePath RootPathForOrigin(const url::Origin& origin);
+  // Returns an empty path if the storage key isn't supported for NativeIO.
+  base::FilePath RootPathForStorageKey(const blink::StorageKey& storage_key);
 
   // Computes the path to the directory storing a profile's NativeIO files.
   static base::FilePath GetNativeIORootPath(const base::FilePath& profile_root);
@@ -119,11 +120,11 @@ class CONTENT_EXPORT NativeIOManager {
   // NativeIOHost.
   void OnHostReceiverDisconnect(NativeIOHost* host);
 
-  // Callback function when DeleteOriginData has completed.
+  // Callback function when DeleteStorageKeyData has completed.
   //
   // `host` must be owned by this manager.
-  void OnDeleteOriginDataCompleted(
-      storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
+  void OnDeleteStorageKeyDataCompleted(
+      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
       base::File::Error result,
       NativeIOHost* host);
 
@@ -139,26 +140,27 @@ class CONTENT_EXPORT NativeIOManager {
   // `host` must be owned by this manager.
   void MaybeDeleteHost(NativeIOHost* host);
 
-  // Called after the I/O part of GetOriginsForType() completed.
-  void DidGetOriginsForType(
-      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback,
-      std::vector<url::Origin> origins);
+  // Called after the I/O part of GetStorageKeysForType() completed.
+  void DidGetStorageKeysForType(
+      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
+      std::vector<blink::StorageKey> storage_keys);
 
-  // Called after the I/O part of GetOriginsForHost() completed.
-  void DidGetOriginsForHost(
-      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback,
+  // Called after the I/O part of GetStorageKeysForHost() completed.
+  void DidGetStorageKeysForHost(
+      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
       const std::string& host,
-      std::vector<url::Origin> origins);
+      std::vector<blink::StorageKey> storage_keys);
 
-  // Called after the I/O part of GetOriginUsage() completed.
-  void DidGetOriginUsage(
-      storage::mojom::QuotaClient::GetOriginUsageCallback callback,
+  // Called after the I/O part of GetStorageKeyUsage() completed.
+  void DidGetStorageKeyUsage(
+      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback,
       int64_t usage);
 
-  // Called after the I/O part of GetOriginUsageMap() completed.
-  void DidGetOriginUsageMap(
-      base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback,
-      std::map<url::Origin, int64_t> usage_map);
+  // Called after the I/O part of GetStorageKeyUsageMap() completed.
+  void DidGetStorageKeyUsageMap(
+      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+          callback,
+      std::map<blink::StorageKey, int64_t> usage_map);
 
   // Points to the root directory for NativeIO files.
   //
@@ -174,7 +176,7 @@ class CONTENT_EXPORT NativeIOManager {
 
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
-  std::map<url::Origin, std::unique_ptr<NativeIOHost>> hosts_;
+  std::map<blink::StorageKey, std::unique_ptr<NativeIOHost>> hosts_;
 
   NativeIOQuotaClient quota_client_;
 

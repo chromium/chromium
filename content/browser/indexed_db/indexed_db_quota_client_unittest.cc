@@ -28,10 +28,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 // Declared to shorten the line lengths.
 static const StorageType kTemp = StorageType::kTemporary;
@@ -41,14 +41,16 @@ namespace content {
 // Base class for our test fixtures.
 class IndexedDBQuotaClientTest : public testing::Test {
  public:
-  const url::Origin kOriginA;
-  const url::Origin kOriginB;
-  const url::Origin kOriginOther;
+  const StorageKey kStorageKeyA;
+  const StorageKey kStorageKeyB;
+  const StorageKey kStorageKeyOther;
 
   IndexedDBQuotaClientTest()
-      : kOriginA(url::Origin::Create(GURL("http://host"))),
-        kOriginB(url::Origin::Create(GURL("http://host:8000"))),
-        kOriginOther(url::Origin::Create(GURL("http://other"))) {
+      : kStorageKeyA(StorageKey::CreateFromStringForTesting("http://host")),
+        kStorageKeyB(
+            StorageKey::CreateFromStringForTesting("http://host:8000")),
+        kStorageKeyOther(
+            StorageKey::CreateFromStringForTesting("http://other")) {
     CreateTempDir();
     auto quota_manager = base::MakeRefCounted<storage::MockQuotaManager>(
         /*in_memory=*/false, temp_dir_.GetPath(),
@@ -77,61 +79,62 @@ class IndexedDBQuotaClientTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  static int64_t GetOriginUsage(storage::mojom::QuotaClient& client,
-                                const url::Origin& origin,
-                                StorageType type) {
+  static int64_t GetStorageKeyUsage(storage::mojom::QuotaClient& client,
+                                    const StorageKey& storage_key,
+                                    StorageType type) {
     int result = -1;
     base::RunLoop loop;
-    client.GetOriginUsage(origin, type,
-                          base::BindLambdaForTesting([&](int64_t usage) {
-                            result = usage;
-                            loop.Quit();
-                          }));
+    client.GetStorageKeyUsage(storage_key, type,
+                              base::BindLambdaForTesting([&](int64_t usage) {
+                                result = usage;
+                                loop.Quit();
+                              }));
     loop.Run();
     EXPECT_GT(result, -1);
     return result;
   }
 
-  static std::vector<url::Origin> GetOriginsForType(
+  static std::vector<StorageKey> GetStorageKeysForType(
       storage::mojom::QuotaClient& client,
       StorageType type) {
-    std::vector<url::Origin> result;
+    std::vector<StorageKey> result;
     base::RunLoop loop;
-    client.GetOriginsForType(type,
-                             base::BindLambdaForTesting(
-                                 [&](const std::vector<url::Origin>& origins) {
-                                   result = origins;
-                                   loop.Quit();
-                                 }));
+    client.GetStorageKeysForType(
+        type, base::BindLambdaForTesting(
+                  [&](const std::vector<StorageKey>& storage_keys) {
+                    result = storage_keys;
+                    loop.Quit();
+                  }));
     loop.Run();
     return result;
   }
 
-  static std::vector<url::Origin> GetOriginsForHost(
+  static std::vector<StorageKey> GetStorageKeysForHost(
       storage::mojom::QuotaClient& client,
       StorageType type,
       const std::string& host) {
-    std::vector<url::Origin> result;
+    std::vector<StorageKey> result;
     base::RunLoop loop;
-    client.GetOriginsForHost(type, host,
-                             base::BindLambdaForTesting(
-                                 [&](const std::vector<url::Origin>& origins) {
-                                   result = origins;
-                                   loop.Quit();
-                                 }));
+    client.GetStorageKeysForHost(
+        type, host,
+        base::BindLambdaForTesting(
+            [&](const std::vector<StorageKey>& storage_keys) {
+              result = storage_keys;
+              loop.Quit();
+            }));
     loop.Run();
     return result;
   }
 
-  static blink::mojom::QuotaStatusCode DeleteOriginData(
+  static blink::mojom::QuotaStatusCode DeleteStorageKeyData(
       storage::mojom::QuotaClient& client,
-      const url::Origin& origin,
+      const StorageKey& storage_key,
       StorageType type) {
     blink::mojom::QuotaStatusCode result =
         blink::mojom::QuotaStatusCode::kUnknown;
     base::RunLoop loop;
-    client.DeleteOriginData(
-        origin, type,
+    client.DeleteStorageKeyData(
+        storage_key, type,
         base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode code) {
           result = code;
           loop.Quit();
@@ -147,24 +150,25 @@ class IndexedDBQuotaClientTest : public testing::Test {
     ASSERT_TRUE(base::WriteFile(path, junk));
   }
 
-  void AddFakeIndexedDB(const url::Origin& origin, int size) {
-    base::FilePath file_path_origin;
+  void AddFakeIndexedDB(const StorageKey& storage_key, int size) {
+    base::FilePath file_path_storage_key;
     {
       base::RunLoop run_loop;
       idb_context()->GetFilePathForTesting(
-          blink::StorageKey(origin),
+          blink::StorageKey(storage_key),
           base::BindLambdaForTesting([&](const base::FilePath& path) {
-            file_path_origin = path;
+            file_path_storage_key = path;
             run_loop.Quit();
           }));
       run_loop.Run();
     }
-    if (!base::CreateDirectory(file_path_origin)) {
+    if (!base::CreateDirectory(file_path_storage_key)) {
       LOG(ERROR) << "failed to base::CreateDirectory "
-                 << file_path_origin.value();
+                 << file_path_storage_key.value();
     }
-    file_path_origin = file_path_origin.Append(FILE_PATH_LITERAL("fake_file"));
-    SetFileSizeTo(file_path_origin, size);
+    file_path_storage_key =
+        file_path_storage_key.Append(FILE_PATH_LITERAL("fake_file"));
+    SetFileSizeTo(file_path_storage_key, size);
 
     {
       base::RunLoop run_loop;
@@ -182,67 +186,71 @@ class IndexedDBQuotaClientTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(IndexedDBQuotaClientTest);
 };
 
-TEST_F(IndexedDBQuotaClientTest, GetOriginUsage) {
+TEST_F(IndexedDBQuotaClientTest, GetStorageKeyUsage) {
   IndexedDBQuotaClient client(*idb_context());
 
-  AddFakeIndexedDB(kOriginA, 6);
-  AddFakeIndexedDB(kOriginB, 3);
-  EXPECT_EQ(6, GetOriginUsage(client, kOriginA, kTemp));
-  EXPECT_EQ(3, GetOriginUsage(client, kOriginB, kTemp));
+  AddFakeIndexedDB(kStorageKeyA, 6);
+  AddFakeIndexedDB(kStorageKeyB, 3);
+  EXPECT_EQ(6, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
+  EXPECT_EQ(3, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 
-  AddFakeIndexedDB(kOriginA, 1000);
-  EXPECT_EQ(1000, GetOriginUsage(client, kOriginA, kTemp));
-  EXPECT_EQ(3, GetOriginUsage(client, kOriginB, kTemp));
+  AddFakeIndexedDB(kStorageKeyA, 1000);
+  EXPECT_EQ(1000, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
+  EXPECT_EQ(3, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 }
 
-TEST_F(IndexedDBQuotaClientTest, GetOriginsForHost) {
+TEST_F(IndexedDBQuotaClientTest, GetStorageKeysForHost) {
   IndexedDBQuotaClient client(*idb_context());
 
-  EXPECT_EQ(kOriginA.host(), kOriginB.host());
-  EXPECT_NE(kOriginA.host(), kOriginOther.host());
+  EXPECT_EQ(kStorageKeyA.origin().host(), kStorageKeyB.origin().host());
+  EXPECT_NE(kStorageKeyA.origin().host(), kStorageKeyOther.origin().host());
 
-  std::vector<url::Origin> origins =
-      GetOriginsForHost(client, kTemp, kOriginA.host());
-  EXPECT_TRUE(origins.empty());
+  std::vector<StorageKey> storage_keys =
+      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
+  EXPECT_TRUE(storage_keys.empty());
 
-  AddFakeIndexedDB(kOriginA, 1000);
-  origins = GetOriginsForHost(client, kTemp, kOriginA.host());
-  EXPECT_EQ(origins.size(), 1ul);
-  EXPECT_THAT(origins, testing::Contains(kOriginA));
+  AddFakeIndexedDB(kStorageKeyA, 1000);
+  storage_keys =
+      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
+  EXPECT_EQ(storage_keys.size(), 1ul);
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
 
-  AddFakeIndexedDB(kOriginB, 1000);
-  origins = GetOriginsForHost(client, kTemp, kOriginA.host());
-  EXPECT_EQ(origins.size(), 2ul);
-  EXPECT_THAT(origins, testing::Contains(kOriginA));
-  EXPECT_THAT(origins, testing::Contains(kOriginB));
+  AddFakeIndexedDB(kStorageKeyB, 1000);
+  storage_keys =
+      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
+  EXPECT_EQ(storage_keys.size(), 2ul);
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyB));
 
-  EXPECT_TRUE(GetOriginsForHost(client, kTemp, kOriginOther.host()).empty());
+  EXPECT_TRUE(
+      GetStorageKeysForHost(client, kTemp, kStorageKeyOther.origin().host())
+          .empty());
 }
 
-TEST_F(IndexedDBQuotaClientTest, GetOriginsForType) {
+TEST_F(IndexedDBQuotaClientTest, GetStorageKeysForType) {
   IndexedDBQuotaClient client(*idb_context());
 
-  EXPECT_TRUE(GetOriginsForType(client, kTemp).empty());
+  EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
 
-  AddFakeIndexedDB(kOriginA, 1000);
-  std::vector<url::Origin> origins = GetOriginsForType(client, kTemp);
-  EXPECT_EQ(origins.size(), 1ul);
-  EXPECT_THAT(origins, testing::Contains(kOriginA));
+  AddFakeIndexedDB(kStorageKeyA, 1000);
+  std::vector<StorageKey> storage_keys = GetStorageKeysForType(client, kTemp);
+  EXPECT_EQ(storage_keys.size(), 1ul);
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
 }
 
-TEST_F(IndexedDBQuotaClientTest, DeleteOrigin) {
+TEST_F(IndexedDBQuotaClientTest, DeleteStorageKey) {
   IndexedDBQuotaClient client(*idb_context());
 
-  AddFakeIndexedDB(kOriginA, 1000);
-  AddFakeIndexedDB(kOriginB, 50);
-  EXPECT_EQ(1000, GetOriginUsage(client, kOriginA, kTemp));
-  EXPECT_EQ(50, GetOriginUsage(client, kOriginB, kTemp));
+  AddFakeIndexedDB(kStorageKeyA, 1000);
+  AddFakeIndexedDB(kStorageKeyB, 50);
+  EXPECT_EQ(1000, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
+  EXPECT_EQ(50, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 
   blink::mojom::QuotaStatusCode delete_status =
-      DeleteOriginData(client, kOriginA, kTemp);
+      DeleteStorageKeyData(client, kStorageKeyA, kTemp);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, delete_status);
-  EXPECT_EQ(0, GetOriginUsage(client, kOriginA, kTemp));
-  EXPECT_EQ(50, GetOriginUsage(client, kOriginB, kTemp));
+  EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
+  EXPECT_EQ(50, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 }
 
 }  // namespace content

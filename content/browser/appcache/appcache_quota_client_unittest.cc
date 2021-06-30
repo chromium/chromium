@@ -18,13 +18,14 @@
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 // Declared to shorten the line lengths.
 static const StorageType kTemp = StorageType::kTemporary;
@@ -32,97 +33,99 @@ static const StorageType kTemp = StorageType::kTemporary;
 // Base class for our test fixtures.
 class AppCacheQuotaClientTest : public testing::Test {
  public:
-  const url::Origin kOriginA;
-  const url::Origin kOriginB;
-  const url::Origin kOriginOther;
+  const StorageKey kStorageKeyA;
+  const StorageKey kStorageKeyB;
+  const StorageKey kStorageKeyOther;
 
   AppCacheQuotaClientTest()
-      : kOriginA(url::Origin::Create(GURL("http://host"))),
-        kOriginB(url::Origin::Create(GURL("http://host:8000"))),
-        kOriginOther(url::Origin::Create(GURL("http://other"))) {}
+      : kStorageKeyA(StorageKey::CreateFromStringForTesting("http://host")),
+        kStorageKeyB(
+            StorageKey::CreateFromStringForTesting("http://host:8000")),
+        kStorageKeyOther(
+            StorageKey::CreateFromStringForTesting("http://other")) {}
 
-  int64_t GetOriginUsage(storage::mojom::QuotaClient& client,
-                         const url::Origin& origin,
-                         StorageType type) {
+  int64_t GetStorageKeyUsage(storage::mojom::QuotaClient& client,
+                             const StorageKey& storage_key,
+                             StorageType type) {
     usage_ = -1;
-    AsyncGetOriginUsage(client, origin, type);
+    AsyncGetStorageKeyUsage(client, storage_key, type);
     base::RunLoop().RunUntilIdle();
     return usage_;
   }
 
-  const std::vector<url::Origin>& GetOriginsForType(
+  const std::vector<StorageKey>& GetStorageKeysForType(
       storage::mojom::QuotaClient& client,
       StorageType type) {
-    origins_.clear();
-    AsyncGetOriginsForType(client, type);
+    storage_keys_.clear();
+    AsyncGetStorageKeysForType(client, type);
     base::RunLoop().RunUntilIdle();
-    return origins_;
+    return storage_keys_;
   }
 
-  const std::vector<url::Origin>& GetOriginsForHost(
+  const std::vector<StorageKey>& GetStorageKeysForHost(
       storage::mojom::QuotaClient& client,
       StorageType type,
       const std::string& host) {
-    origins_.clear();
-    AsyncGetOriginsForHost(client, type, host);
+    storage_keys_.clear();
+    AsyncGetStorageKeysForHost(client, type, host);
     base::RunLoop().RunUntilIdle();
-    return origins_;
+    return storage_keys_;
   }
 
-  blink::mojom::QuotaStatusCode DeleteOriginData(
+  blink::mojom::QuotaStatusCode DeleteStorageKeyData(
       storage::mojom::QuotaClient& client,
       StorageType type,
-      const url::Origin& origin) {
+      const StorageKey& storage_key) {
     delete_status_ = blink::mojom::QuotaStatusCode::kUnknown;
-    AsyncDeleteOriginData(client, type, origin);
+    AsyncDeleteStorageKeyData(client, type, storage_key);
     base::RunLoop().RunUntilIdle();
     return delete_status_;
   }
 
-  void AsyncGetOriginUsage(storage::mojom::QuotaClient& client,
-                           const url::Origin& origin,
-                           StorageType type) {
+  void AsyncGetStorageKeyUsage(storage::mojom::QuotaClient& client,
+                               const StorageKey& storage_key,
+                               StorageType type) {
     // Unretained usage is safe because this test owns a TaskEnvironment. No
     // tasks will be executed after the test completes.
-    client.GetOriginUsage(
-        origin, type,
-        base::BindOnce(&AppCacheQuotaClientTest::OnGetOriginUsageComplete,
+    client.GetStorageKeyUsage(
+        storage_key, type,
+        base::BindOnce(&AppCacheQuotaClientTest::OnGetStorageKeyUsageComplete,
                        base::Unretained(this)));
   }
 
-  void AsyncGetOriginsForType(storage::mojom::QuotaClient& client,
-                              StorageType type) {
+  void AsyncGetStorageKeysForType(storage::mojom::QuotaClient& client,
+                                  StorageType type) {
     // Unretained usage is safe because this test owns a TaskEnvironment. No
     // tasks will be executed after the test completes.
-    client.GetOriginsForType(
-        type, base::BindOnce(&AppCacheQuotaClientTest::OnGetOriginsComplete,
+    client.GetStorageKeysForType(
+        type, base::BindOnce(&AppCacheQuotaClientTest::OnGetStorageKeysComplete,
                              base::Unretained(this)));
   }
 
-  void AsyncGetOriginsForHost(storage::mojom::QuotaClient& client,
-                              StorageType type,
-                              const std::string& host) {
+  void AsyncGetStorageKeysForHost(storage::mojom::QuotaClient& client,
+                                  StorageType type,
+                                  const std::string& host) {
     // Unretained usage is safe because this test owns a TaskEnvironment. No
     // tasks will be executed after the test completes.
-    client.GetOriginsForHost(
+    client.GetStorageKeysForHost(
         type, host,
-        base::BindOnce(&AppCacheQuotaClientTest::OnGetOriginsComplete,
+        base::BindOnce(&AppCacheQuotaClientTest::OnGetStorageKeysComplete,
                        base::Unretained(this)));
   }
 
-  void AsyncDeleteOriginData(storage::mojom::QuotaClient& client,
-                             StorageType type,
-                             const url::Origin& origin) {
+  void AsyncDeleteStorageKeyData(storage::mojom::QuotaClient& client,
+                                 StorageType type,
+                                 const StorageKey& storage_key) {
     // Unretained usage is safe because this test owns a TaskEnvironment. No
     // tasks will be executed after the test completes.
-    client.DeleteOriginData(
-        origin, type,
-        base::BindOnce(&AppCacheQuotaClientTest::OnDeleteOriginDataComplete,
+    client.DeleteStorageKeyData(
+        storage_key, type,
+        base::BindOnce(&AppCacheQuotaClientTest::OnDeleteStorageKeyDataComplete,
                        base::Unretained(this)));
   }
 
-  void SetUsageMapEntry(const url::Origin& origin, int64_t usage) {
-    mock_service_.storage()->usage_map_[origin] = usage;
+  void SetUsageMapEntry(const StorageKey& storage_key, int64_t usage) {
+    mock_service_.storage()->usage_map_[storage_key.origin()] = usage;
   }
 
   std::unique_ptr<AppCacheQuotaClient> CreateClient() {
@@ -142,29 +145,29 @@ class AppCacheQuotaClientTest : public testing::Test {
   }
 
  protected:
-  void OnGetOriginUsageComplete(int64_t usage) {
-    ++num_get_origin_usage_completions_;
+  void OnGetStorageKeyUsageComplete(int64_t usage) {
+    ++num_get_storage_key_usage_completions_;
     usage_ = usage;
   }
 
-  void OnGetOriginsComplete(const std::vector<url::Origin>& origins) {
-    ++num_get_origins_completions_;
-    origins_ = origins;
+  void OnGetStorageKeysComplete(const std::vector<StorageKey>& storage_keys) {
+    ++num_get_storage_keys_completions_;
+    storage_keys_ = storage_keys;
   }
 
-  void OnDeleteOriginDataComplete(blink::mojom::QuotaStatusCode status) {
-    ++num_delete_origins_completions_;
+  void OnDeleteStorageKeyDataComplete(blink::mojom::QuotaStatusCode status) {
+    ++num_delete_storage_keys_completions_;
     delete_status_ = status;
   }
 
   BrowserTaskEnvironment task_environment_;
   int64_t usage_ = 0;
-  std::vector<url::Origin> origins_;
+  std::vector<StorageKey> storage_keys_;
   blink::mojom::QuotaStatusCode delete_status_ =
       blink::mojom::QuotaStatusCode::kUnknown;
-  int num_get_origin_usage_completions_ = 0;
-  int num_get_origins_completions_ = 0;
-  int num_delete_origins_completions_ = 0;
+  int num_get_storage_key_usage_completions_ = 0;
+  int num_get_storage_keys_completions_ = 0;
+  int num_delete_storage_keys_completions_ = 0;
   MockAppCacheService mock_service_;
 };
 
@@ -178,8 +181,8 @@ TEST_F(AppCacheQuotaClientTest, BasicCreateDestroy) {
 TEST_F(AppCacheQuotaClientTest, QuotaManagerDestroyedInCallback) {
   auto client = CreateClient();
   Call_NotifyStorageReady(*client);
-  client->DeleteOriginData(
-      kOriginA, kTemp,
+  client->DeleteStorageKeyData(
+      kStorageKeyA, kTemp,
       base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode) {
         Call_OnMojoDisconnect(*client);
       }));
@@ -190,11 +193,13 @@ TEST_F(AppCacheQuotaClientTest, EmptyService) {
   auto client = CreateClient();
   Call_NotifyStorageReady(*client);
 
-  EXPECT_EQ(0, GetOriginUsage(*client, kOriginA, kTemp));
-  EXPECT_TRUE(GetOriginsForType(*client, kTemp).empty());
-  EXPECT_TRUE(GetOriginsForHost(*client, kTemp, kOriginA.host()).empty());
+  EXPECT_EQ(0, GetStorageKeyUsage(*client, kStorageKeyA, kTemp));
+  EXPECT_TRUE(GetStorageKeysForType(*client, kTemp).empty());
+  EXPECT_TRUE(
+      GetStorageKeysForHost(*client, kTemp, kStorageKeyA.origin().host())
+          .empty());
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteOriginData(*client, kTemp, kOriginA));
+            DeleteStorageKeyData(*client, kTemp, kStorageKeyA));
 
   Call_NotifyServiceDestroyed(*client);
   Call_OnMojoDisconnect(*client);
@@ -205,85 +210,89 @@ TEST_F(AppCacheQuotaClientTest, NoService) {
   Call_NotifyStorageReady(*client);
   Call_NotifyServiceDestroyed(*client);
 
-  EXPECT_EQ(0, GetOriginUsage(*client, kOriginA, kTemp));
-  EXPECT_TRUE(GetOriginsForType(*client, kTemp).empty());
-  EXPECT_TRUE(GetOriginsForHost(*client, kTemp, kOriginA.host()).empty());
+  EXPECT_EQ(0, GetStorageKeyUsage(*client, kStorageKeyA, kTemp));
+  EXPECT_TRUE(GetStorageKeysForType(*client, kTemp).empty());
+  EXPECT_TRUE(
+      GetStorageKeysForHost(*client, kTemp, kStorageKeyA.origin().host())
+          .empty());
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kErrorAbort,
-            DeleteOriginData(*client, kTemp, kOriginA));
+            DeleteStorageKeyData(*client, kTemp, kStorageKeyA));
 
   Call_OnMojoDisconnect(*client);
 }
 
-TEST_F(AppCacheQuotaClientTest, GetOriginUsage) {
+TEST_F(AppCacheQuotaClientTest, GetStorageKeyUsage) {
   auto client = CreateClient();
   Call_NotifyStorageReady(*client);
 
-  SetUsageMapEntry(kOriginA, 1000);
-  EXPECT_EQ(1000, GetOriginUsage(*client, kOriginA, kTemp));
-  EXPECT_EQ(0, GetOriginUsage(*client, kOriginB, kTemp));
+  SetUsageMapEntry(kStorageKeyA, 1000);
+  EXPECT_EQ(1000, GetStorageKeyUsage(*client, kStorageKeyA, kTemp));
+  EXPECT_EQ(0, GetStorageKeyUsage(*client, kStorageKeyB, kTemp));
 
   Call_NotifyServiceDestroyed(*client);
   Call_OnMojoDisconnect(*client);
 }
 
-TEST_F(AppCacheQuotaClientTest, GetOriginsForHost) {
+TEST_F(AppCacheQuotaClientTest, GetStorageKeysForHost) {
   auto client = CreateClient();
   Call_NotifyStorageReady(*client);
 
-  EXPECT_EQ(kOriginA.host(), kOriginB.host());
-  EXPECT_NE(kOriginA.host(), kOriginOther.host());
+  EXPECT_EQ(kStorageKeyA.origin().host(), kStorageKeyB.origin().host());
+  EXPECT_NE(kStorageKeyA.origin().host(), kStorageKeyOther.origin().host());
 
-  std::vector<url::Origin> origins =
-      GetOriginsForHost(*client, kTemp, kOriginA.host());
-  EXPECT_TRUE(origins.empty());
+  std::vector<StorageKey> storage_keys =
+      GetStorageKeysForHost(*client, kTemp, kStorageKeyA.origin().host());
+  EXPECT_TRUE(storage_keys.empty());
 
-  SetUsageMapEntry(kOriginA, 1000);
-  SetUsageMapEntry(kOriginB, 10);
-  SetUsageMapEntry(kOriginOther, 500);
+  SetUsageMapEntry(kStorageKeyA, 1000);
+  SetUsageMapEntry(kStorageKeyB, 10);
+  SetUsageMapEntry(kStorageKeyOther, 500);
 
-  origins = GetOriginsForHost(*client, kTemp, kOriginA.host());
-  EXPECT_EQ(2ul, origins.size());
-  EXPECT_THAT(origins, testing::Contains(kOriginA));
-  EXPECT_THAT(origins, testing::Contains(kOriginB));
+  storage_keys =
+      GetStorageKeysForHost(*client, kTemp, kStorageKeyA.origin().host());
+  EXPECT_EQ(2ul, storage_keys.size());
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyB));
 
-  origins = GetOriginsForHost(*client, kTemp, kOriginOther.host());
-  EXPECT_EQ(1ul, origins.size());
-  EXPECT_THAT(origins, testing::Contains(kOriginOther));
+  storage_keys =
+      GetStorageKeysForHost(*client, kTemp, kStorageKeyOther.origin().host());
+  EXPECT_EQ(1ul, storage_keys.size());
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyOther));
 
   Call_NotifyServiceDestroyed(*client);
   Call_OnMojoDisconnect(*client);
 }
 
-TEST_F(AppCacheQuotaClientTest, GetOriginsForType) {
+TEST_F(AppCacheQuotaClientTest, GetStorageKeysForType) {
   auto client = CreateClient();
   Call_NotifyStorageReady(*client);
 
-  EXPECT_TRUE(GetOriginsForType(*client, kTemp).empty());
+  EXPECT_TRUE(GetStorageKeysForType(*client, kTemp).empty());
 
-  SetUsageMapEntry(kOriginA, 1000);
-  SetUsageMapEntry(kOriginB, 10);
+  SetUsageMapEntry(kStorageKeyA, 1000);
+  SetUsageMapEntry(kStorageKeyB, 10);
 
-  std::vector<url::Origin> origins = GetOriginsForType(*client, kTemp);
-  EXPECT_EQ(2ul, origins.size());
-  EXPECT_THAT(origins, testing::Contains(kOriginA));
-  EXPECT_THAT(origins, testing::Contains(kOriginB));
+  std::vector<StorageKey> storage_keys = GetStorageKeysForType(*client, kTemp);
+  EXPECT_EQ(2ul, storage_keys.size());
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyB));
 
   Call_NotifyServiceDestroyed(*client);
   Call_OnMojoDisconnect(*client);
 }
 
-TEST_F(AppCacheQuotaClientTest, DeleteOriginData) {
+TEST_F(AppCacheQuotaClientTest, DeleteStorageKeyData) {
   auto client = CreateClient();
   Call_NotifyStorageReady(*client);
 
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteOriginData(*client, kTemp, kOriginA));
+            DeleteStorageKeyData(*client, kTemp, kStorageKeyA));
   EXPECT_EQ(1, mock_service_.delete_called_count());
 
   mock_service_.set_mock_delete_appcaches_for_origin_result(
       net::ERR_ABORTED);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kErrorAbort,
-            DeleteOriginData(*client, kTemp, kOriginA));
+            DeleteStorageKeyData(*client, kTemp, kStorageKeyA));
   EXPECT_EQ(2, mock_service_.delete_called_count());
 
   Call_OnMojoDisconnect(*client);
@@ -293,39 +302,39 @@ TEST_F(AppCacheQuotaClientTest, DeleteOriginData) {
 TEST_F(AppCacheQuotaClientTest, PendingRequests) {
   auto client = CreateClient();
 
-  SetUsageMapEntry(kOriginA, 1000);
-  SetUsageMapEntry(kOriginB, 10);
-  SetUsageMapEntry(kOriginOther, 500);
+  SetUsageMapEntry(kStorageKeyA, 1000);
+  SetUsageMapEntry(kStorageKeyB, 10);
+  SetUsageMapEntry(kStorageKeyOther, 500);
 
   // Queue up some requests.
-  AsyncGetOriginUsage(*client, kOriginA, kTemp);
-  AsyncGetOriginUsage(*client, kOriginB, kTemp);
-  AsyncGetOriginsForType(*client, kTemp);
-  AsyncGetOriginsForType(*client, kTemp);
-  AsyncGetOriginsForHost(*client, kTemp, kOriginA.host());
-  AsyncGetOriginsForHost(*client, kTemp, kOriginOther.host());
-  AsyncDeleteOriginData(*client, kTemp, kOriginA);
-  AsyncDeleteOriginData(*client, kTemp, kOriginB);
+  AsyncGetStorageKeyUsage(*client, kStorageKeyA, kTemp);
+  AsyncGetStorageKeyUsage(*client, kStorageKeyB, kTemp);
+  AsyncGetStorageKeysForType(*client, kTemp);
+  AsyncGetStorageKeysForType(*client, kTemp);
+  AsyncGetStorageKeysForHost(*client, kTemp, kStorageKeyA.origin().host());
+  AsyncGetStorageKeysForHost(*client, kTemp, kStorageKeyOther.origin().host());
+  AsyncDeleteStorageKeyData(*client, kTemp, kStorageKeyA);
+  AsyncDeleteStorageKeyData(*client, kTemp, kStorageKeyB);
 
-  EXPECT_EQ(0, num_get_origin_usage_completions_);
-  EXPECT_EQ(0, num_get_origins_completions_);
-  EXPECT_EQ(0, num_delete_origins_completions_);
+  EXPECT_EQ(0, num_get_storage_key_usage_completions_);
+  EXPECT_EQ(0, num_get_storage_keys_completions_);
+  EXPECT_EQ(0, num_delete_storage_keys_completions_);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, num_get_origin_usage_completions_);
-  EXPECT_EQ(0, num_get_origins_completions_);
-  EXPECT_EQ(0, num_delete_origins_completions_);
+  EXPECT_EQ(0, num_get_storage_key_usage_completions_);
+  EXPECT_EQ(0, num_get_storage_keys_completions_);
+  EXPECT_EQ(0, num_delete_storage_keys_completions_);
 
   // Pending requests should get serviced when the appcache is ready.
   Call_NotifyStorageReady(*client);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, num_get_origin_usage_completions_);
-  EXPECT_EQ(4, num_get_origins_completions_);
-  EXPECT_EQ(2, num_delete_origins_completions_);
+  EXPECT_EQ(2, num_get_storage_key_usage_completions_);
+  EXPECT_EQ(4, num_get_storage_keys_completions_);
+  EXPECT_EQ(2, num_delete_storage_keys_completions_);
 
   // They should be serviced in order requested.
   EXPECT_EQ(10, usage_);
-  EXPECT_EQ(1ul, origins_.size());
-  EXPECT_THAT(origins_, testing::Contains(kOriginOther));
+  EXPECT_EQ(1ul, storage_keys_.size());
+  EXPECT_THAT(storage_keys_, testing::Contains(kStorageKeyOther));
 
   Call_NotifyServiceDestroyed(*client);
   Call_OnMojoDisconnect(*client);
@@ -334,33 +343,33 @@ TEST_F(AppCacheQuotaClientTest, PendingRequests) {
 TEST_F(AppCacheQuotaClientTest, DestroyServiceWithPending) {
   auto client = CreateClient();
 
-  SetUsageMapEntry(kOriginA, 1000);
-  SetUsageMapEntry(kOriginB, 10);
-  SetUsageMapEntry(kOriginOther, 500);
+  SetUsageMapEntry(kStorageKeyA, 1000);
+  SetUsageMapEntry(kStorageKeyB, 10);
+  SetUsageMapEntry(kStorageKeyOther, 500);
 
   // Queue up some requests prior to being ready.
-  AsyncGetOriginUsage(*client, kOriginA, kTemp);
-  AsyncGetOriginUsage(*client, kOriginB, kTemp);
-  AsyncGetOriginsForType(*client, kTemp);
-  AsyncGetOriginsForType(*client, kTemp);
-  AsyncGetOriginsForHost(*client, kTemp, kOriginA.host());
-  AsyncGetOriginsForHost(*client, kTemp, kOriginOther.host());
-  AsyncDeleteOriginData(*client, kTemp, kOriginA);
-  AsyncDeleteOriginData(*client, kTemp, kOriginB);
+  AsyncGetStorageKeyUsage(*client, kStorageKeyA, kTemp);
+  AsyncGetStorageKeyUsage(*client, kStorageKeyB, kTemp);
+  AsyncGetStorageKeysForType(*client, kTemp);
+  AsyncGetStorageKeysForType(*client, kTemp);
+  AsyncGetStorageKeysForHost(*client, kTemp, kStorageKeyA.origin().host());
+  AsyncGetStorageKeysForHost(*client, kTemp, kStorageKeyOther.origin().host());
+  AsyncDeleteStorageKeyData(*client, kTemp, kStorageKeyA);
+  AsyncDeleteStorageKeyData(*client, kTemp, kStorageKeyB);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, num_get_origin_usage_completions_);
-  EXPECT_EQ(0, num_get_origins_completions_);
-  EXPECT_EQ(0, num_delete_origins_completions_);
+  EXPECT_EQ(0, num_get_storage_key_usage_completions_);
+  EXPECT_EQ(0, num_get_storage_keys_completions_);
+  EXPECT_EQ(0, num_delete_storage_keys_completions_);
 
   // Kill the service.
   Call_NotifyServiceDestroyed(*client);
 
   // All should have been aborted and called completion.
-  EXPECT_EQ(2, num_get_origin_usage_completions_);
-  EXPECT_EQ(4, num_get_origins_completions_);
-  EXPECT_EQ(2, num_delete_origins_completions_);
+  EXPECT_EQ(2, num_get_storage_key_usage_completions_);
+  EXPECT_EQ(4, num_get_storage_keys_completions_);
+  EXPECT_EQ(2, num_delete_storage_keys_completions_);
   EXPECT_EQ(0, usage_);
-  EXPECT_TRUE(origins_.empty());
+  EXPECT_TRUE(storage_keys_.empty());
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kErrorAbort, delete_status_);
 
   Call_OnMojoDisconnect(*client);
@@ -369,23 +378,23 @@ TEST_F(AppCacheQuotaClientTest, DestroyServiceWithPending) {
 TEST_F(AppCacheQuotaClientTest, DestroyQuotaManagerWithPending) {
   auto client = CreateClient();
 
-  SetUsageMapEntry(kOriginA, 1000);
-  SetUsageMapEntry(kOriginB, 10);
-  SetUsageMapEntry(kOriginOther, 500);
+  SetUsageMapEntry(kStorageKeyA, 1000);
+  SetUsageMapEntry(kStorageKeyB, 10);
+  SetUsageMapEntry(kStorageKeyOther, 500);
 
   // Queue up some requests prior to being ready.
-  AsyncGetOriginUsage(*client, kOriginA, kTemp);
-  AsyncGetOriginUsage(*client, kOriginB, kTemp);
-  AsyncGetOriginsForType(*client, kTemp);
-  AsyncGetOriginsForType(*client, kTemp);
-  AsyncGetOriginsForHost(*client, kTemp, kOriginA.host());
-  AsyncGetOriginsForHost(*client, kTemp, kOriginOther.host());
-  AsyncDeleteOriginData(*client, kTemp, kOriginA);
-  AsyncDeleteOriginData(*client, kTemp, kOriginB);
+  AsyncGetStorageKeyUsage(*client, kStorageKeyA, kTemp);
+  AsyncGetStorageKeyUsage(*client, kStorageKeyB, kTemp);
+  AsyncGetStorageKeysForType(*client, kTemp);
+  AsyncGetStorageKeysForType(*client, kTemp);
+  AsyncGetStorageKeysForHost(*client, kTemp, kStorageKeyA.origin().host());
+  AsyncGetStorageKeysForHost(*client, kTemp, kStorageKeyOther.origin().host());
+  AsyncDeleteStorageKeyData(*client, kTemp, kStorageKeyA);
+  AsyncDeleteStorageKeyData(*client, kTemp, kStorageKeyB);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, num_get_origin_usage_completions_);
-  EXPECT_EQ(0, num_get_origins_completions_);
-  EXPECT_EQ(0, num_delete_origins_completions_);
+  EXPECT_EQ(0, num_get_storage_key_usage_completions_);
+  EXPECT_EQ(0, num_get_storage_keys_completions_);
+  EXPECT_EQ(0, num_delete_storage_keys_completions_);
 
   // Kill the quota manager.
   Call_OnMojoDisconnect(*client);
@@ -393,9 +402,9 @@ TEST_F(AppCacheQuotaClientTest, DestroyQuotaManagerWithPending) {
 
   // Callbacks should be deleted and not called.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, num_get_origin_usage_completions_);
-  EXPECT_EQ(0, num_get_origins_completions_);
-  EXPECT_EQ(0, num_delete_origins_completions_);
+  EXPECT_EQ(0, num_get_storage_key_usage_completions_);
+  EXPECT_EQ(0, num_get_storage_keys_completions_);
+  EXPECT_EQ(0, num_delete_storage_keys_completions_);
 
   Call_NotifyServiceDestroyed(*client);
 }
@@ -405,20 +414,20 @@ TEST_F(AppCacheQuotaClientTest, DestroyWithDeleteInProgress) {
   Call_NotifyStorageReady(*client);
 
   // Start an async delete.
-  AsyncDeleteOriginData(*client, kTemp, kOriginB);
-  EXPECT_EQ(0, num_delete_origins_completions_);
+  AsyncDeleteStorageKeyData(*client, kTemp, kStorageKeyB);
+  EXPECT_EQ(0, num_delete_storage_keys_completions_);
 
   // Kill the service.
   Call_NotifyServiceDestroyed(*client);
 
   // Should have been aborted.
-  EXPECT_EQ(1, num_delete_origins_completions_);
+  EXPECT_EQ(1, num_delete_storage_keys_completions_);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kErrorAbort, delete_status_);
 
   // A real completion callback from the service should
   // be dropped if it comes in after NotifyServiceDestroyed.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, num_delete_origins_completions_);
+  EXPECT_EQ(1, num_delete_storage_keys_completions_);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kErrorAbort, delete_status_);
 
   Call_OnMojoDisconnect(*client);

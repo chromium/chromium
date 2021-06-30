@@ -8,7 +8,10 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/common/content_export.h"
-#include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -25,16 +28,16 @@ class CONTENT_EXPORT NativeIOContext
   NativeIOContext(const NativeIOContext&) = delete;
   NativeIOContext& operator=(const NativeIOContext&) = delete;
 
-  // Removes an origin's data and closes any open files. Must be called on the
-  // UI thread.
-  virtual void DeleteOriginData(
-      const url::Origin& origin,
-      storage::mojom::QuotaClient::DeleteOriginDataCallback callback) = 0;
+  // Removes an storage key's data and closes any open files. Must be called on
+  // the UI thread.
+  virtual void DeleteStorageKeyData(
+      const blink::StorageKey& storage_key,
+      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) = 0;
 
-  // Returns the usage in bytes for all origins. Must be called on the
+  // Returns the usage in bytes for all storage keys. Must be called on the
   // UI thread.
-  virtual void GetOriginUsageMap(
-      base::OnceCallback<void(const std::map<url::Origin, int64_t>)>
+  virtual void GetStorageKeyUsageMap(
+      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
           callback) = 0;
 
  protected:

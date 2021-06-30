@@ -22,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 
 namespace content {
@@ -299,12 +300,12 @@ class ServiceWorkerRegistryTest : public testing::Test {
     content::RunAllTasksUntilIdle();
   }
 
-  std::vector<url::Origin> GetRegisteredOrigins() {
-    std::vector<url::Origin> result;
+  std::vector<blink::StorageKey> GetRegisteredStorageKeys() {
+    std::vector<blink::StorageKey> result;
     base::RunLoop loop;
-    registry()->GetRegisteredOrigins(base::BindLambdaForTesting(
-        [&](const std::vector<url::Origin>& origins) {
-          result = origins;
+    registry()->GetRegisteredStorageKeys(base::BindLambdaForTesting(
+        [&](const std::vector<blink::StorageKey>& storage_keys) {
+          result = storage_keys;
           loop.Quit();
         }));
     loop.Run();
@@ -554,7 +555,7 @@ class ServiceWorkerRegistryTest : public testing::Test {
 TEST_F(ServiceWorkerRegistryTest, RegisteredStorageKeyCount) {
   {
     base::HistogramTester histogram_tester;
-    EXPECT_TRUE(GetRegisteredOrigins().empty());
+    EXPECT_TRUE(GetRegisteredStorageKeys().empty());
     histogram_tester.ExpectUniqueSample(
         "ServiceWorker.RegisteredStorageKeyCount", 0, 1);
   }
@@ -587,7 +588,7 @@ TEST_F(ServiceWorkerRegistryTest, RegisteredStorageKeyCount) {
 
   {
     base::HistogramTester histogram_tester;
-    EXPECT_EQ(3UL, GetRegisteredOrigins().size());
+    EXPECT_EQ(3UL, GetRegisteredStorageKeys().size());
     histogram_tester.ExpectUniqueSample(
         "ServiceWorker.RegisteredStorageKeyCount", 3, 1);
   }
@@ -595,7 +596,7 @@ TEST_F(ServiceWorkerRegistryTest, RegisteredStorageKeyCount) {
   // Re-initializing shouldn't re-record the histogram.
   {
     base::HistogramTester histogram_tester;
-    EXPECT_EQ(3UL, GetRegisteredOrigins().size());
+    EXPECT_EQ(3UL, GetRegisteredStorageKeys().size());
     histogram_tester.ExpectTotalCount("ServiceWorker.RegisteredStorageKeyCount",
                                       0);
   }
@@ -1349,16 +1350,14 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
 
   const GURL kScope1("https://www.example.com/scope/");
   const GURL kScriptUrl1("https://www.example.com/script.js");
-  const auto kOrigin1(url::Origin::Create(kScope1));
-  const blink::StorageKey kKey1(kOrigin1);
+  const blink::StorageKey kKey1(url::Origin::Create(kScope1));
   scoped_refptr<ServiceWorkerRegistration> registration1 =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope1, kScriptUrl1,
                                                 /*resource_id=*/1);
 
   const GURL kScope2("https://www2.example.com/scope/foo");
   const GURL kScriptUrl2("https://www2.example.com/foo/script.js");
-  const auto kOrigin2(url::Origin::Create(kScope2));
-  const blink::StorageKey kKey2(kOrigin2);
+  const blink::StorageKey kKey2(url::Origin::Create(kScope2));
   scoped_refptr<ServiceWorkerRegistration> registration2 =
       CreateServiceWorkerRegistrationAndVersion(context(), kScope2, kScriptUrl2,
                                                 /*resource_id=*/2);
@@ -1393,13 +1392,13 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
     EXPECT_EQ(inflight_call_count(), 0U);
   }
 
-  // Get registered origins
+  // Get registered storage keys.
   {
     base::RunLoop loop;
-    registry()->GetRegisteredOrigins(base::BindLambdaForTesting(
-        [&](const std::vector<url::Origin>& origins) {
-          EXPECT_THAT(origins,
-                      testing::UnorderedElementsAreArray({kOrigin1, kOrigin2}));
+    registry()->GetRegisteredStorageKeys(base::BindLambdaForTesting(
+        [&](const std::vector<blink::StorageKey>& storage_keys) {
+          EXPECT_THAT(storage_keys,
+                      testing::UnorderedElementsAreArray({kKey1, kKey2}));
           loop.Quit();
         }));
 
@@ -1906,9 +1905,9 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
 TEST_F(ServiceWorkerRegistryTest, DestroyRegistryDuringInflightCall) {
   {
     base::RunLoop loop;
-    registry()->GetRegisteredOrigins(base::BindLambdaForTesting(
-        [&](const std::vector<url::Origin>& origins) {
-          EXPECT_TRUE(origins.empty());
+    registry()->GetRegisteredStorageKeys(base::BindLambdaForTesting(
+        [&](const std::vector<blink::StorageKey>& storage_keys) {
+          EXPECT_TRUE(storage_keys.empty());
           loop.Quit();
         }));
     SimulateRestart();

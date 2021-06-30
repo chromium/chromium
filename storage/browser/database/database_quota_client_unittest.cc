@@ -32,6 +32,7 @@
 #include "storage/common/database/database_identifier.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -93,7 +94,7 @@ class MockDatabaseTracker : public DatabaseTracker {
   }
 
   void AddMockDatabase(const url::Origin& origin, const char* name, int size) {
-    MockOriginInfo& info = mock_origin_infos_[origin];
+    MockStorageKeyInfo& info = mock_origin_infos_[origin];
     info.set_origin(GetIdentifierFromOrigin(origin));
     info.AddMockDatabase(base::ASCIIToUTF16(name), size);
   }
@@ -106,7 +107,7 @@ class MockDatabaseTracker : public DatabaseTracker {
   ~MockDatabaseTracker() override = default;
 
  private:
-  class MockOriginInfo : public OriginInfo {
+  class MockStorageKeyInfo : public OriginInfo {
    public:
     void set_origin(const std::string& origin_identifier) {
       origin_identifier_ = origin_identifier;
@@ -121,20 +122,23 @@ class MockDatabaseTracker : public DatabaseTracker {
 
   int delete_called_count_ = 0;
   bool async_delete_ = false;
-  std::map<url::Origin, MockOriginInfo> mock_origin_infos_;
+  std::map<url::Origin, MockStorageKeyInfo> mock_origin_infos_;
 };
 
 // Base class for our test fixtures.
 class DatabaseQuotaClientTest : public testing::Test {
  public:
-  const url::Origin kOriginA;
-  const url::Origin kOriginB;
-  const url::Origin kOriginOther;
+  const blink::StorageKey kStorageKeyA;
+  const blink::StorageKey kStorageKeyB;
+  const blink::StorageKey kStorageKeyOther;
 
   DatabaseQuotaClientTest()
-      : kOriginA(url::Origin::Create(GURL("http://host"))),
-        kOriginB(url::Origin::Create(GURL("http://host:8000"))),
-        kOriginOther(url::Origin::Create(GURL("http://other"))),
+      : kStorageKeyA(
+            blink::StorageKey::CreateFromStringForTesting("http://host")),
+        kStorageKeyB(
+            blink::StorageKey::CreateFromStringForTesting("http://host:8000")),
+        kStorageKeyOther(
+            blink::StorageKey::CreateFromStringForTesting("http://other")),
         mock_tracker_(base::MakeRefCounted<MockDatabaseTracker>()) {}
 
   void TearDown() override {
@@ -147,61 +151,62 @@ class DatabaseQuotaClientTest : public testing::Test {
     run_loop.Run();
   }
 
-  static int64_t GetOriginUsage(mojom::QuotaClient& client,
-                                const url::Origin& origin,
-                                blink::mojom::StorageType type) {
+  static int64_t GetStorageKeyUsage(mojom::QuotaClient& client,
+                                    const blink::StorageKey& storage_key,
+                                    blink::mojom::StorageType type) {
     int result = -1;
     base::RunLoop loop;
-    client.GetOriginUsage(origin, type,
-                          base::BindLambdaForTesting([&](int64_t usage) {
-                            result = usage;
-                            loop.Quit();
-                          }));
+    client.GetStorageKeyUsage(storage_key, type,
+                              base::BindLambdaForTesting([&](int64_t usage) {
+                                result = usage;
+                                loop.Quit();
+                              }));
     loop.Run();
     EXPECT_GT(result, -1);
     return result;
   }
 
-  static std::vector<url::Origin> GetOriginsForType(
+  static std::vector<blink::StorageKey> GetStorageKeysForType(
       mojom::QuotaClient& client,
       blink::mojom::StorageType type) {
-    std::vector<url::Origin> result;
+    std::vector<blink::StorageKey> result;
     base::RunLoop loop;
-    client.GetOriginsForType(type,
-                             base::BindLambdaForTesting(
-                                 [&](const std::vector<url::Origin>& origins) {
-                                   result = origins;
-                                   loop.Quit();
-                                 }));
+    client.GetStorageKeysForType(
+        type, base::BindLambdaForTesting(
+                  [&](const std::vector<blink::StorageKey>& storage_keys) {
+                    result = storage_keys;
+                    loop.Quit();
+                  }));
     loop.Run();
     return result;
   }
 
-  static std::vector<url::Origin> GetOriginsForHost(
+  static std::vector<blink::StorageKey> GetStorageKeysForHost(
       mojom::QuotaClient& client,
       blink::mojom::StorageType type,
       const std::string& host) {
-    std::vector<url::Origin> result;
+    std::vector<blink::StorageKey> result;
     base::RunLoop loop;
-    client.GetOriginsForHost(type, host,
-                             base::BindLambdaForTesting(
-                                 [&](const std::vector<url::Origin>& origins) {
-                                   result = origins;
-                                   loop.Quit();
-                                 }));
+    client.GetStorageKeysForHost(
+        type, host,
+        base::BindLambdaForTesting(
+            [&](const std::vector<blink::StorageKey>& storage_keys) {
+              result = storage_keys;
+              loop.Quit();
+            }));
     loop.Run();
     return result;
   }
 
-  static blink::mojom::QuotaStatusCode DeleteOriginData(
+  static blink::mojom::QuotaStatusCode DeleteStorageKeyData(
       mojom::QuotaClient& client,
       blink::mojom::StorageType type,
-      const url::Origin& origin) {
+      const blink::StorageKey& storage_key) {
     blink::mojom::QuotaStatusCode result =
         blink::mojom::QuotaStatusCode::kUnknown;
     base::RunLoop loop;
-    client.DeleteOriginData(
-        origin, type,
+    client.DeleteStorageKeyData(
+        storage_key, type,
         base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode code) {
           result = code;
           loop.Quit();
@@ -215,63 +220,68 @@ class DatabaseQuotaClientTest : public testing::Test {
   base::WeakPtrFactory<DatabaseQuotaClientTest> weak_factory_{this};
 };
 
-TEST_F(DatabaseQuotaClientTest, GetOriginUsage) {
+TEST_F(DatabaseQuotaClientTest, GetStorageKeyUsage) {
   DatabaseQuotaClient client(*mock_tracker_);
 
-  EXPECT_EQ(0, GetOriginUsage(client, kOriginA, kTemp));
+  EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
 
-  mock_tracker_->AddMockDatabase(kOriginA, "fooDB", 1000);
-  EXPECT_EQ(1000, GetOriginUsage(client, kOriginA, kTemp));
+  mock_tracker_->AddMockDatabase(kStorageKeyA.origin(), "fooDB", 1000);
+  EXPECT_EQ(1000, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
 
-  EXPECT_EQ(0, GetOriginUsage(client, kOriginB, kTemp));
+  EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
 }
 
-TEST_F(DatabaseQuotaClientTest, GetOriginsForHost) {
+TEST_F(DatabaseQuotaClientTest, GetStorageKeysForHost) {
   DatabaseQuotaClient client(*mock_tracker_);
 
-  EXPECT_EQ(kOriginA.host(), kOriginB.host());
-  EXPECT_NE(kOriginA.host(), kOriginOther.host());
+  EXPECT_EQ(kStorageKeyA.origin().host(), kStorageKeyB.origin().host());
+  EXPECT_NE(kStorageKeyA.origin().host(), kStorageKeyOther.origin().host());
 
-  std::vector<url::Origin> origins =
-      GetOriginsForHost(client, kTemp, kOriginA.host());
-  EXPECT_TRUE(origins.empty());
+  std::vector<blink::StorageKey> storage_keys =
+      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
+  EXPECT_TRUE(storage_keys.empty());
 
-  mock_tracker_->AddMockDatabase(kOriginA, "fooDB", 1000);
-  origins = GetOriginsForHost(client, kTemp, kOriginA.host());
-  EXPECT_EQ(origins.size(), 1ul);
-  EXPECT_THAT(origins, testing::Contains(kOriginA));
+  mock_tracker_->AddMockDatabase(kStorageKeyA.origin(), "fooDB", 1000);
+  storage_keys =
+      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
+  EXPECT_EQ(storage_keys.size(), 1ul);
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
 
-  mock_tracker_->AddMockDatabase(kOriginB, "barDB", 1000);
-  origins = GetOriginsForHost(client, kTemp, kOriginA.host());
-  EXPECT_EQ(origins.size(), 2ul);
-  EXPECT_THAT(origins, testing::Contains(kOriginA));
-  EXPECT_THAT(origins, testing::Contains(kOriginB));
+  mock_tracker_->AddMockDatabase(kStorageKeyB.origin(), "barDB", 1000);
+  storage_keys =
+      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
+  EXPECT_EQ(storage_keys.size(), 2ul);
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyB));
 
-  EXPECT_TRUE(GetOriginsForHost(client, kTemp, kOriginOther.host()).empty());
+  EXPECT_TRUE(
+      GetStorageKeysForHost(client, kTemp, kStorageKeyOther.origin().host())
+          .empty());
 }
 
-TEST_F(DatabaseQuotaClientTest, GetOriginsForType) {
+TEST_F(DatabaseQuotaClientTest, GetStorageKeysForType) {
   DatabaseQuotaClient client(*mock_tracker_);
 
-  EXPECT_TRUE(GetOriginsForType(client, kTemp).empty());
+  EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
 
-  mock_tracker_->AddMockDatabase(kOriginA, "fooDB", 1000);
-  std::vector<url::Origin> origins = GetOriginsForType(client, kTemp);
-  EXPECT_EQ(origins.size(), 1ul);
-  EXPECT_THAT(origins, testing::Contains(kOriginA));
+  mock_tracker_->AddMockDatabase(kStorageKeyA.origin(), "fooDB", 1000);
+  std::vector<blink::StorageKey> storage_keys =
+      GetStorageKeysForType(client, kTemp);
+  EXPECT_EQ(storage_keys.size(), 1ul);
+  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
 }
 
-TEST_F(DatabaseQuotaClientTest, DeleteOriginData) {
+TEST_F(DatabaseQuotaClientTest, DeleteStorageKeyData) {
   DatabaseQuotaClient client(*mock_tracker_);
 
   mock_tracker_->set_async_delete(false);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteOriginData(client, kTemp, kOriginA));
+            DeleteStorageKeyData(client, kTemp, kStorageKeyA));
   EXPECT_EQ(1, mock_tracker_->delete_called_count());
 
   mock_tracker_->set_async_delete(true);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteOriginData(client, kTemp, kOriginA));
+            DeleteStorageKeyData(client, kTemp, kStorageKeyA));
   EXPECT_EQ(2, mock_tracker_->delete_called_count());
 }
 

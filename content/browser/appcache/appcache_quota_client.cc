@@ -15,10 +15,13 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/quota/quota_client_type.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+#include "url/origin.h"
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 namespace content {
 namespace {
@@ -66,9 +69,10 @@ void AppCacheQuotaClient::OnMojoDisconnect() {
   }
 }
 
-void AppCacheQuotaClient::GetOriginUsage(const url::Origin& origin,
-                                         StorageType type,
-                                         GetOriginUsageCallback callback) {
+void AppCacheQuotaClient::GetStorageKeyUsage(
+    const StorageKey& storage_key,
+    StorageType type,
+    GetStorageKeyUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
   DCHECK(!callback.is_null());
@@ -82,8 +86,8 @@ void AppCacheQuotaClient::GetOriginUsage(const url::Origin& origin,
     // base::Unretained usage is safe here because the callbacks are stored
     // in a collection owned by this object.
     pending_batch_requests_.push_back(base::BindOnce(
-        &AppCacheQuotaClient::GetOriginUsage, base::Unretained(this), origin,
-        type, std::move(callback)));
+        &AppCacheQuotaClient::GetStorageKeyUsage, base::Unretained(this),
+        storage_key, type, std::move(callback)));
     return;
   }
 
@@ -91,50 +95,51 @@ void AppCacheQuotaClient::GetOriginUsage(const url::Origin& origin,
       FROM_HERE,
       base::BindOnce(
           [](base::WeakPtr<AppCacheServiceImpl> service,
-             const url::Origin& origin) -> int64_t {
+             const StorageKey& storage_key) -> int64_t {
             if (!service)
               return 0;
 
             const std::map<url::Origin, int64_t>& map =
                 service->storage()->usage_map();
-            auto it = map.find(origin);
+            auto it = map.find(storage_key.origin());
             if (it == map.end())
               return 0;
 
             return it->second;
           },
-          service_, origin),
+          service_, storage_key),
       std::move(callback));
 }
 
-void AppCacheQuotaClient::GetOriginsForType(
+void AppCacheQuotaClient::GetStorageKeysForType(
     StorageType type,
-    GetOriginsForTypeCallback callback) {
+    GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
   DCHECK(!callback.is_null());
 
-  GetOriginsHelper(std::string(), std::move(callback));
+  GetStorageKeysHelper(std::string(), std::move(callback));
 }
 
-void AppCacheQuotaClient::GetOriginsForHost(
+void AppCacheQuotaClient::GetStorageKeysForHost(
     StorageType type,
     const std::string& host,
-    GetOriginsForHostCallback callback) {
+    GetStorageKeysForHostCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
   DCHECK(!callback.is_null());
 
   if (host.empty()) {
-    std::move(callback).Run(std::vector<url::Origin>());
+    std::move(callback).Run(std::vector<StorageKey>());
     return;
   }
-  GetOriginsHelper(host, std::move(callback));
+  GetStorageKeysHelper(host, std::move(callback));
 }
 
-void AppCacheQuotaClient::DeleteOriginData(const url::Origin& origin,
-                                           StorageType type,
-                                           DeleteOriginDataCallback callback) {
+void AppCacheQuotaClient::DeleteStorageKeyData(
+    const StorageKey& storage_key,
+    StorageType type,
+    DeleteStorageKeyDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
   DCHECK(!callback.is_null());
@@ -148,8 +153,8 @@ void AppCacheQuotaClient::DeleteOriginData(const url::Origin& origin,
     // base::Unretained usage is safe here because the callbacks are stored
     // in a collection owned by this object.
     pending_serial_requests_.push_back(base::BindOnce(
-        &AppCacheQuotaClient::DeleteOriginData, base::Unretained(this), origin,
-        type, std::move(callback)));
+        &AppCacheQuotaClient::DeleteStorageKeyData, base::Unretained(this),
+        storage_key, type, std::move(callback)));
     return;
   }
 
@@ -157,7 +162,7 @@ void AppCacheQuotaClient::DeleteOriginData(const url::Origin& origin,
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&AppCacheServiceImpl::DeleteAppCachesForOrigin, service_,
-                     origin,
+                     storage_key.origin(),
                      base::BindOnce(&RunDeleteOnIO, FROM_HERE,
                                     GetServiceDeleteCallback()->callback())));
 }
@@ -172,7 +177,7 @@ void AppCacheQuotaClient::PerformStorageCleanup(
   std::move(callback).Run();
 }
 
-void AppCacheQuotaClient::DidDeleteAppCachesForOrigin(int rv) {
+void AppCacheQuotaClient::DidDeleteAppCachesForStorageKey(int rv) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Finish the request by calling our callers callback.
@@ -185,13 +190,14 @@ void AppCacheQuotaClient::DidDeleteAppCachesForOrigin(int rv) {
   RunFront(&pending_serial_requests_);
 }
 
-void AppCacheQuotaClient::GetOriginsHelper(const std::string& opt_host,
-                                           GetOriginsForTypeCallback callback) {
+void AppCacheQuotaClient::GetStorageKeysHelper(
+    const std::string& opt_host,
+    GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   if (service_is_destroyed_) {
-    std::move(callback).Run(std::vector<url::Origin>());
+    std::move(callback).Run(std::vector<StorageKey>());
     return;
   }
 
@@ -199,7 +205,7 @@ void AppCacheQuotaClient::GetOriginsHelper(const std::string& opt_host,
     // base::Unretained usage is safe here because the callbacks are stored
     // in a collection owned by this object.
     pending_batch_requests_.push_back(
-        base::BindOnce(&AppCacheQuotaClient::GetOriginsHelper,
+        base::BindOnce(&AppCacheQuotaClient::GetStorageKeysHelper,
                        base::Unretained(this), opt_host, std::move(callback)));
     return;
   }
@@ -209,15 +215,15 @@ void AppCacheQuotaClient::GetOriginsHelper(const std::string& opt_host,
       base::BindOnce(
           [](base::WeakPtr<AppCacheServiceImpl> service,
              const std::string& opt_host) {
-            std::vector<url::Origin> origins;
+            std::vector<StorageKey> storage_keys;
             if (!service)
-              return origins;
+              return storage_keys;
 
             for (const auto& pair : service->storage()->usage_map()) {
               if (opt_host.empty() || pair.first.host() == opt_host)
-                origins.push_back(pair.first);
+                storage_keys.emplace_back(blink::StorageKey(pair.first));
             }
-            return origins;
+            return storage_keys;
           },
           service_, opt_host),
       std::move(callback));
@@ -252,7 +258,7 @@ AppCacheQuotaClient::GetServiceDeleteCallback() {
     service_delete_callback_ =
         std::make_unique<net::CancelableCompletionRepeatingCallback>(
             base::BindRepeating(
-                &AppCacheQuotaClient::DidDeleteAppCachesForOrigin,
+                &AppCacheQuotaClient::DidDeleteAppCachesForStorageKey,
                 base::Unretained(this)));
   }
   return service_delete_callback_.get();

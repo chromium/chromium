@@ -21,15 +21,14 @@
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
 
 namespace storage {
 
 class QuotaManagerProxy;
 
-// TODO(crbug.com/1215208): Change to MockStorageKeyData.
-struct MockOriginData {
+struct MockStorageKeyData {
   const char* origin;
   blink::mojom::StorageType type;
   int64_t usage;
@@ -39,59 +38,60 @@ struct MockOriginData {
 class MockQuotaClient : public mojom::QuotaClient {
  public:
   MockQuotaClient(scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
-                  base::span<const MockOriginData> mock_data,
+                  base::span<const MockStorageKeyData> mock_data,
                   QuotaClientType client_type);
 
   ~MockQuotaClient() override;
 
   // To add or modify mock data in this client.
-  void AddOriginAndNotify(const url::Origin& origin,
-                          blink::mojom::StorageType type,
-                          int64_t size);
-  void ModifyOriginAndNotify(const url::Origin& origin,
-                             blink::mojom::StorageType type,
-                             int64_t delta);
-  void TouchAllOriginsAndNotify();
+  void AddStorageKeyAndNotify(const blink::StorageKey& storage_key,
+                              blink::mojom::StorageType type,
+                              int64_t size);
+  void ModifyStorageKeyAndNotify(const blink::StorageKey& storage_key,
+                                 blink::mojom::StorageType type,
+                                 int64_t delta);
+  void TouchAllStorageKeysAndNotify();
 
-  void AddOriginToErrorSet(const url::Origin& origin,
-                           blink::mojom::StorageType type);
+  void AddStorageKeyToErrorSet(const blink::StorageKey& storage_key,
+                               blink::mojom::StorageType type);
 
   base::Time IncrementMockTime();
 
   // QuotaClient.
-  void GetOriginUsage(const url::Origin& origin,
-                      blink::mojom::StorageType type,
-                      GetOriginUsageCallback callback) override;
-  void GetOriginsForType(blink::mojom::StorageType type,
-                         GetOriginsForTypeCallback callback) override;
-  void GetOriginsForHost(blink::mojom::StorageType type,
-                         const std::string& host,
-                         GetOriginsForHostCallback callback) override;
-  void DeleteOriginData(const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        DeleteOriginDataCallback callback) override;
+  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
+                          blink::mojom::StorageType type,
+                          GetStorageKeyUsageCallback callback) override;
+  void GetStorageKeysForType(blink::mojom::StorageType type,
+                             GetStorageKeysForTypeCallback callback) override;
+  void GetStorageKeysForHost(blink::mojom::StorageType type,
+                             const std::string& host,
+                             GetStorageKeysForHostCallback callback) override;
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type,
+                            DeleteStorageKeyDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
  private:
-  void RunGetOriginUsage(const url::Origin& origin,
-                         blink::mojom::StorageType type,
-                         GetOriginUsageCallback callback);
-  void RunGetOriginsForType(blink::mojom::StorageType type,
-                            GetOriginsForTypeCallback callback);
-  void RunGetOriginsForHost(blink::mojom::StorageType type,
-                            const std::string& host,
-                            GetOriginsForTypeCallback callback);
-  void RunDeleteOriginData(const url::Origin& origin,
-                           blink::mojom::StorageType type,
-                           DeleteOriginDataCallback callback);
+  void RunGetStorageKeyUsage(const blink::StorageKey& storage_key,
+                             blink::mojom::StorageType type,
+                             GetStorageKeyUsageCallback callback);
+  void RunGetStorageKeysForType(blink::mojom::StorageType type,
+                                GetStorageKeysForTypeCallback callback);
+  void RunGetStorageKeysForHost(blink::mojom::StorageType type,
+                                const std::string& host,
+                                GetStorageKeysForTypeCallback callback);
+  void RunDeleteStorageKeyData(const blink::StorageKey& storage_key,
+                               blink::mojom::StorageType type,
+                               DeleteStorageKeyDataCallback callback);
 
   const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
   const QuotaClientType client_type_;
 
-  std::map<std::pair<url::Origin, blink::mojom::StorageType>, int64_t>
-      origin_data_;
-  std::set<std::pair<url::Origin, blink::mojom::StorageType>> error_origins_;
+  std::map<std::pair<blink::StorageKey, blink::mojom::StorageType>, int64_t>
+      storage_key_data_;
+  std::set<std::pair<blink::StorageKey, blink::mojom::StorageType>>
+      error_storage_keys_;
 
   int mock_time_counter_;
 

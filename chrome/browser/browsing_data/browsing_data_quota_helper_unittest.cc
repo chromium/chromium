@@ -70,9 +70,10 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
                        weak_factory_.GetWeakPtr()));
   }
 
-  void RegisterClient(base::span<const storage::MockOriginData> origin_data) {
+  void RegisterClient(
+      base::span<const storage::MockStorageKeyData> storage_key_data) {
     auto mock_quota_client = std::make_unique<storage::MockQuotaClient>(
-        quota_manager_->proxy(), origin_data,
+        quota_manager_->proxy(), storage_key_data,
         storage::QuotaClientType::kFileSystem);
     storage::MockQuotaClient* mock_quota_client_ptr = mock_quota_client.get();
 
@@ -84,7 +85,7 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
         {blink::mojom::StorageType::kTemporary,
          blink::mojom::StorageType::kPersistent,
          blink::mojom::StorageType::kSyncable});
-    mock_quota_client_ptr->TouchAllOriginsAndNotify();
+    mock_quota_client_ptr->TouchAllStorageKeysAndNotify();
   }
 
   void SetPersistentHostQuota(const std::string& host, int64_t quota) {
@@ -144,7 +145,7 @@ TEST_F(BrowsingDataQuotaHelperTest, Empty) {
 }
 
 TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
-  static const storage::MockOriginData kOrigins[] = {
+  static const storage::MockStorageKeyData kStorageKeys[] = {
       {"http://example.com/", StorageType::kTemporary, 1},
       {"https://example.com/", StorageType::kTemporary, 10},
       {"http://example.com/", StorageType::kPersistent, 100},
@@ -152,7 +153,7 @@ TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
       {"http://example2.com/", StorageType::kTemporary, 1000},
   };
 
-  RegisterClient(kOrigins);
+  RegisterClient(kStorageKeys);
   StartFetching();
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(fetching_completed());
@@ -165,7 +166,7 @@ TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
 }
 
 TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
-  static const storage::MockOriginData kOrigins[] = {
+  static const storage::MockStorageKeyData kStorageKeys[] = {
       {"http://example.com/", StorageType::kTemporary, 1},
       {"https://example.com/", StorageType::kTemporary, 10},
       {"http://example.com/", StorageType::kPersistent, 100},
@@ -181,7 +182,7 @@ TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
        100000},
   };
 
-  RegisterClient(kOrigins);
+  RegisterClient(kStorageKeys);
   StartFetching();
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(fetching_completed());
