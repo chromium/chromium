@@ -23,7 +23,7 @@
 #include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"

@@ -314,7 +314,6 @@ test("components_unittests") {
       "//components/safe_browsing/content/browser/web_ui:unit_tests",
       "//components/safe_browsing/core/browser:token_fetcher_unit_tests",
       "//components/safe_browsing/core/browser/realtime:unit_tests",
-      "//components/safe_browsing/core/common:unit_tests",
       "//components/safety_check:unit_tests",
       "//components/security_interstitials/content:unit_tests",
       "//components/security_state/content:unit_tests",
@@ -502,13 +501,13 @@ test("components_unittests") {
   if (safe_browsing_mode == 1) {
     deps += [
       "//components/safe_browsing/content/renderer:websocket_sb_handshake_throttle_unittest",
-      "//components/safe_browsing/core:features_unittest",
       "//components/safe_browsing/core:ping_manager_unittest",
       "//components/safe_browsing/core:verdict_cache_manager_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
       "//components/safe_browsing/core/browser/db:unit_tests_local_db",
       "//components/safe_browsing/core/browser/db:v4_test_util",
       "//components/safe_browsing/core/browser/sync:unittests",
+      "//components/safe_browsing/core/common:unit_tests",
     ]
   } else if (safe_browsing_mode == 2) {
     deps += [ "//components/safe_browsing/android:unit_tests_mobile" ]

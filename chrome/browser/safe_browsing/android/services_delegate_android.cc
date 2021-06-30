@@ -12,7 +12,7 @@
 #include "chrome/browser/safe_browsing/telemetry/telemetry_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"

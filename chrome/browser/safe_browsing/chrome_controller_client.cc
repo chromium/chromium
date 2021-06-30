@@ -5,7 +5,7 @@
 #include "chrome/browser/safe_browsing/chrome_controller_client.h"
 
 #include "base/feature_list.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "extensions/buildflags/buildflags.h"

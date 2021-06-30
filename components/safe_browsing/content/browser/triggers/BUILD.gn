@@ -20,9 +20,9 @@ source_set("triggers") {
     "//base:base",
     "//components/prefs",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
     "//net",
   ]
 }
@@ -35,7 +35,7 @@ source_set("trigger_throttler") {
   deps = [
     "//base",
     "//components/prefs",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
   ]
 }
@@ -61,8 +61,8 @@ source_set("ad_sampler_trigger") {
     ":trigger_util",
     ":triggers",
     "//base:base",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
     "//content/public/browser",
   ]
 }
@@ -78,8 +78,8 @@ source_set("suspicious_site_trigger") {
     "//base:base",
     "//components/history/core/browser:browser",
     "//components/prefs:prefs",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
     "//content/public/browser",
     "//net:net",
   ]
@@ -104,9 +104,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser:browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
     "//components/subresource_filter/content/browser:test_support",
     "//content/public/browser:browser",
     "//content/test:test_support",

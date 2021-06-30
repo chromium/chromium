@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_FEATURES_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_FEATURES_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_
 
 #include <stddef.h>
 
@@ -152,4 +152,4 @@ bool GetShouldFillOldPhishGuardProto();
 std::string GetClientSideDetectionTag();
 
 }  // namespace safe_browsing
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_FEATURES_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

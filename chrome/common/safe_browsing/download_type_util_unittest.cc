@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {

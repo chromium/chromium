@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "net/base/net_errors.h"
 
 namespace safe_browsing {

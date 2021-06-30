@@ -11,7 +11,6 @@ source_set("browser") {
     "url_checker_delegate.h",
   ]
   deps = [
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/realtime:policy_engine",

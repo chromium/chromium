@@ -13,7 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"

@@ -9,7 +9,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/triggers/mock_trigger_manager.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"

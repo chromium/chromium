@@ -245,7 +245,6 @@ test("weblayer_browsertests") {
       "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:client_side_model_loader",
       "//components/safe_browsing/content/common:interfaces",
-      "//components/safe_browsing/core:features",
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common/proto:client_model_proto",

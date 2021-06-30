@@ -7,7 +7,7 @@ include_rules = [
   "+components/security_state",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/common/safe_browsing_prefs.h",
-  "+components/safe_browsing/core/features.h",
+  "+components/safe_browsing/core/common/features.h",
   "+components/signin/public",
   "+components/sync/base",
   "+components/sync/driver",

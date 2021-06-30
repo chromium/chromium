@@ -61,7 +61,6 @@ include_rules = [
   "+components/safe_browsing/android",
   "+components/safe_browsing/core",
   "+components/safe_browsing/core/common",
-  "+components/safe_browsing/core/features.h",
   "+components/security_interstitials",
   "+components/security_state/content/content_utils.h",
   "+components/security_state/core/security_state.h",

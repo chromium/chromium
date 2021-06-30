@@ -8,7 +8,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace {

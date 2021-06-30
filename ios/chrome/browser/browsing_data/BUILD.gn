@@ -47,7 +47,7 @@ source_set("browsing_data") {
     "//components/open_from_clipboard",
     "//components/password_manager/core/browser",
     "//components/prefs",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
     "//components/sessions",
     "//components/signin/ios/browser",
     "//components/translate/core/browser:browser",

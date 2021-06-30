@@ -17,7 +17,6 @@ source_set("password_protection") {
     "//base",
     "//components/history/core/browser",
     "//components/password_manager/core/browser",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser/db:allowlist_checker_client",

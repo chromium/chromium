@@ -37,8 +37,8 @@ if (safe_browsing_mode == 1) {
     ]
     deps = [
       "//base",
-      "//components/safe_browsing/core:features",
       "//components/safe_browsing/core:file_type_policies",
+      "//components/safe_browsing/core/common",
     ]
     public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
   }
@@ -54,8 +54,8 @@ if (safe_browsing_mode == 1) {
       ":download_type_util",
       "//base",
       "//base:i18n",
-      "//components/safe_browsing/core:features",
       "//components/safe_browsing/core:file_type_policies",
+      "//components/safe_browsing/core/common",
       "//third_party/unrar:unrar",
     ]
 
@@ -150,7 +150,7 @@ source_set("safe_browsing") {
       ":binary_feature_extractor",
       ":download_type_util",
       ":rar_analyzer",
-      "//components/safe_browsing/core:features",
+      "//components/safe_browsing/core/common",
     ]
 
     public_deps = [

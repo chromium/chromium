@@ -14,7 +14,6 @@ source_set("renderer") {
     deps = [
       "//base",
       "//components/safe_browsing/content/common:interfaces",
-      "//components/safe_browsing/core:features",
       "//components/safe_browsing/core/common:common",
       "//content/public/renderer",
       "//ipc",
@@ -35,7 +34,6 @@ source_set("throttles") {
   deps = [
     "//base:base",
     "//components/safe_browsing/content/common:interfaces",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common:interfaces",
     "//content/public/common:common",

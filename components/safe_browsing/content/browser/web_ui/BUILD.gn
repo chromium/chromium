@@ -18,7 +18,6 @@ static_library("web_ui") {
     "//components/resources:components_scaled_resources_grit",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser:safe_browsing_service",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser/db:v4_local_database_manager",

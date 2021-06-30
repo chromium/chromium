@@ -11,8 +11,8 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/features.h"
 
 namespace safe_browsing {
 const size_t kAdSamplerTriggerDefaultQuota = 10;

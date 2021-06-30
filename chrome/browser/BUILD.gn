@@ -2146,7 +2146,6 @@ static_library("browser") {
     "//components/safe_browsing/content/browser:safe_browsing_service",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/content/browser/web_ui",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/realtime:policy_engine",

@@ -13,9 +13,9 @@ static_library("safe_browsing_prefs") {
   ]
 
   deps = [
+    ":common",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
-    "//components/safe_browsing/core:features",
     "//net:net",
   ]
 
@@ -41,11 +41,13 @@ source_set("safe_browsing_policy_handler") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "features_unittest.cc",
     "safe_browsing_policy_handler_unittest.cc",
     "safe_browsing_prefs_unittest.cc",
   ]
 
   deps = [
+    ":common",
     ":safe_browsing_policy_handler",
     ":safe_browsing_prefs",
     "//base:base",
@@ -53,7 +55,6 @@ source_set("unit_tests") {
     "//components/policy/core/browser:browser",
     "//components/policy/core/browser:test_support",
     "//components/prefs:test_support",
-    "//components/safe_browsing/core:features",
     "//testing/gtest",
     "//url:url",
   ]
@@ -69,6 +70,8 @@ source_set("unit_tests") {
 
 source_set("common") {
   sources = [
+    "features.cc",
+    "features.h",
     "safebrowsing_constants.cc",
     "safebrowsing_constants.h",
     "safebrowsing_switches.cc",
@@ -84,8 +87,9 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//components/policy/core/browser:browser",
     "//components/prefs:prefs",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/variations",
     "//crypto:crypto",
     "//ipc",
     "//net",

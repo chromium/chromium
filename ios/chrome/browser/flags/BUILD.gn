@@ -32,7 +32,7 @@ source_set("flags") {
     "//components/payments/core",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
     "//components/search_provider_logos",
     "//components/security_state/core",
     "//components/send_tab_to_self",

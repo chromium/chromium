@@ -48,7 +48,6 @@ source_set("renderer") {
     "//components/resources",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/content/renderer:throttles",
-    "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common",
     "//components/security_interstitials/content/renderer:security_interstitial_page_controller",
     "//components/security_interstitials/core",

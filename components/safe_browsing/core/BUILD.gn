@@ -4,30 +4,6 @@
 
 import("//components/safe_browsing/buildflags.gni")
 
-static_library("features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-
-  deps = [
-    "//base:base",
-    "//components/safe_browsing:buildflags",
-    "//components/variations",
-  ]
-}
-
-source_set("features_unittest") {
-  testonly = true
-  sources = [ "features_unittest.cc" ]
-
-  deps = [
-    ":features",
-    "//base/test:test_support",
-    "//testing/gtest:gtest",
-  ]
-}
-
 static_library("ping_manager") {
   sources = [
     "ping_manager.cc",

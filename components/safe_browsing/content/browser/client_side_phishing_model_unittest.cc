@@ -18,8 +18,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
-#include "components/safe_browsing/core/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

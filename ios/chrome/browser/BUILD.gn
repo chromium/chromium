@@ -207,7 +207,7 @@ source_set("browser_impl") {
     "//components/network_time",
     "//components/open_from_clipboard",
     "//components/prefs",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
     "//components/sessions",
     "//components/translate/core/browser",
     "//components/ukm",
