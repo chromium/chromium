@@ -128,6 +128,28 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
   WebContentsImpl* contents() const {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
+
+  void LoadDataWithBaseURL(const GURL& base_url,
+                           const std::string& data,
+                           const GURL& history_url,
+                           const std::string& title,
+                           bool use_load_data_as_string_with_base_url) {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    TitleWatcher title_watcher(shell()->web_contents(),
+                               base::UTF8ToUTF16(title));
+    if (use_load_data_as_string_with_base_url) {
+#if defined(OS_ANDROID)
+      shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
+#else
+      NOTREACHED();
+#endif
+    } else {
+      shell()->LoadDataWithBaseURL(history_url, data, base_url);
+    }
+    same_tab_observer.Wait();
+    std::u16string actual_title = title_watcher.WaitAndGetTitle();
+    EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
+  }
 };
 
 class NavigationControllerBrowserTest
@@ -188,44 +210,6 @@ class NavigationControllerBrowserTest
     capturer.Wait();
     EXPECT_TRUE(capturer.is_same_document());
   }
-
-  void LoadDataWithBaseURL(const GURL& base_url,
-                           const std::string& data,
-                           const GURL& history_url,
-                           const std::string& title,
-                           bool use_load_data_as_string_with_base_url) {
-    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-    TitleWatcher title_watcher(shell()->web_contents(),
-                               base::UTF8ToUTF16(title));
-    if (use_load_data_as_string_with_base_url) {
-#if defined(OS_ANDROID)
-      shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
-#else
-      NOTREACHED();
-#endif
-    } else {
-      shell()->LoadDataWithBaseURL(history_url, data, base_url);
-    }
-    same_tab_observer.Wait();
-    std::u16string actual_title = title_watcher.WaitAndGetTitle();
-    EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
-  }
-
-  // We need to run two versions of these LoadDataWithBaseURL tests, but we
-  // can't subclass and parameterize NavigationControllerBrowserTest because
-  // it's already parameterized for RenderDocument.
-  // TODO(rakina): Once the RenderDocument parameters are removed, change these
-  // to actual parameterized tests instead.
-  void RunLoadDataWithInvalidBaseURL(
-      bool use_load_data_as_string_with_base_url);
-  void RunLoadDataWithBlockedURL(bool use_load_data_as_string_with_base_url);
-  void RunLoadDataWithBlockedURLAndInvalidBaseURL(
-      bool use_load_data_as_string_with_base_url);
-  void RunLoadDataWithBaseURL(bool use_load_data_as_string_with_base_url,
-                              bool base_url_empty,
-                              bool history_url_empty);
-  void RunLoadDataWithBaseURLThenJavaScriptURLThenSameDocumentNavigation(
-      bool use_load_data_as_string_with_base_url);
 
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
@@ -299,15 +283,59 @@ void ExpectReferrerWithDefaultPolicy(NavigationEntry* entry, const GURL& url) {
       url);
 }
 
+class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
+    : public NavigationControllerBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<std::string /* render_document_level */,
+                     bool /* use_load_data_as_string_with_base_url */,
+                     bool /* base_url_empty */,
+                     bool /* history_url_empty */>> {
+ public:
+  LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest() {
+    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
+                                       std::get<0>(GetParam()));
+  }
+
+  // Provides meaningful param names instead of /0, /1, ...
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    std::string render_document_level;
+    bool use_load_data_as_string_with_base_url;
+    bool base_url_empty;
+    bool history_url_empty;
+    std::tie(render_document_level, use_load_data_as_string_with_base_url,
+             base_url_empty, history_url_empty) = info.param;
+    return base::StringPrintf(
+        "%s_%s_%s_%s",
+        GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
+        use_load_data_as_string_with_base_url ? "AsString" : "Normal",
+        base_url_empty ? "BaseURLEmpty" : "BaseURLSet",
+        history_url_empty ? "HistoryURLEmpty" : "HistoryURLSet");
+  }
+
+ protected:
+  bool use_load_data_as_string_with_base_url() {
+    return std::get<1>(GetParam());
+  }
+  bool base_url_empty() { return std::get<2>(GetParam()); }
+  bool history_url_empty() { return std::get<3>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_render_document_;
+};
+
 // Verifies that the base, history, and data URLs for LoadDataWithBaseURL end up
 // in the expected parts of the NavigationEntry in each stage of navigation, and
 // that we don't kill the renderer on reload.  See https://crbug.com/522567.
 // Having the base/history URLs as empty might affect things like which URLs are
 // used in the NavigationEntries.
-void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
-    bool use_load_data_as_string_with_base_url,
-    bool base_url_empty,
-    bool history_url_empty) {
+IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
+                       LoadDataWithBaseURLThenReload) {
+#if !defined(OS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url())
+    return;
+#endif
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -323,17 +351,17 @@ void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
   const std::string data_header = "data:text/html;charset=utf-8,";
   const std::string data = "<html><body>foo</body></html>";
   const GURL data_url = GURL(data_header + data);
-  const GURL base_url = base_url_empty ? GURL() : GURL("http://baseurl");
+  const GURL base_url = base_url_empty() ? GURL() : GURL("http://baseurl");
   const GURL history_url =
-      history_url_empty ? GURL() : GURL("http://historyurl");
+      history_url_empty() ? GURL() : GURL("http://historyurl");
   const GURL commit_url =
-      use_load_data_as_string_with_base_url ? GURL(data_header) : data_url;
+      use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
   // 1) Load data, but don't commit yet.
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-  if (use_load_data_as_string_with_base_url) {
+  if (use_load_data_as_string_with_base_url()) {
 #if defined(OS_ANDROID)
     shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
 #else
@@ -350,11 +378,11 @@ void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
   // base_url_for_data_url_ will always be set to |base_url|.
   // The virtual URL will be |history_url|, unless it's empty, in which case
   // we'll fall back to the URL used for the commit.
-  GURL virtual_url = history_url_empty ? commit_url : history_url;
+  GURL virtual_url = history_url_empty() ? commit_url : history_url;
   EXPECT_EQ(virtual_url, pending_entry->GetVirtualURL());
   // The history URL in the NavigationEntry will always be set to the virtual
   // URL, unless the base URL is empty.
-  GURL history_url_for_data_url = base_url_empty ? GURL() : virtual_url;
+  GURL history_url_for_data_url = base_url_empty() ? GURL() : virtual_url;
   EXPECT_EQ(history_url_for_data_url, pending_entry->GetHistoryURLForDataURL());
 
   // 2) Let the navigation commit.
@@ -384,7 +412,7 @@ void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
   // TODO(https://crbug.com/1171237): Should we use the commit/history URL
   // instead?
   EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
-  GURL url_in_redirect_chain = base_url_empty ? commit_url : base_url;
+  GURL url_in_redirect_chain = base_url_empty() ? commit_url : base_url;
   EXPECT_EQ(entry->GetRedirectChain()[0], url_in_redirect_chain);
 
   // The original request URL for loadDataWithBaseURL navigations will be the
@@ -417,63 +445,6 @@ void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
   // No referrer since this is a browser-initiated navigation.
   ExpectReferrerWithDefaultPolicy(entry, GURL());
 }
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, LoadDataWithBaseURL) {
-  RunLoadDataWithBaseURL(false /* use_load_data_as_string_with_base_url */,
-                         false /* base_url_empty */,
-                         false /* history_url_empty */);
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithEmptyBaseURL) {
-  RunLoadDataWithBaseURL(false /* use_load_data_as_string_with_base_url */,
-                         true /* base_url_empty */,
-                         false /* history_url_empty */);
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithEmptyHistoryURL) {
-  RunLoadDataWithBaseURL(false /* use_load_data_as_string_with_base_url */,
-                         false /* base_url_empty */,
-                         true /* history_url_empty */);
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithEmptyBaseAndHistoryURL) {
-  RunLoadDataWithBaseURL(false /* use_load_data_as_string_with_base_url */,
-                         true /* base_url_empty */,
-                         true /* history_url_empty */);
-}
-
-#if defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataAsStringWithBaseURL) {
-  RunLoadDataWithBaseURL(true /* use_load_data_as_string_with_base_url */,
-                         false /* base_url_empty */,
-                         false /* history_url_empty */);
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataAsStringWithEmptyBaseURL) {
-  RunLoadDataWithBaseURL(true /* use_load_data_as_string_with_base_url */,
-                         true /* base_url_empty */,
-                         false /* history_url_empty */);
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataAsStringWithEmptyHistoryRL) {
-  RunLoadDataWithBaseURL(true /* use_load_data_as_string_with_base_url */,
-                         false /* base_url_empty */,
-                         true /* history_url_empty */);
-}
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataAsStringWithEmptyBaseAndHistoryURL) {
-  RunLoadDataWithBaseURL(true /* use_load_data_as_string_with_base_url */,
-                         true /* base_url_empty */,
-                         true /* history_url_empty */);
-}
-#endif
 
 // Verify which page loads when going back to a LoadDataWithBaseURL entry.
 // See https://crbug.com/612196.
@@ -589,13 +560,48 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(shell()->web_contents()->GetMainFrame()->IsRenderFrameLive());
 }
 
+class LoadDataWithBaseURLBrowserTest
+    : public NavigationControllerBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<std::string /* render_document_level */,
+                     bool /* use_load_data_as_string_with_base_url */>> {
+ public:
+  LoadDataWithBaseURLBrowserTest() {
+    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
+                                       std::get<0>(GetParam()));
+  }
+
+  // Provides meaningful param names instead of /0, /1, ...
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    std::string render_document_level;
+    bool use_load_data_as_string_with_base_url;
+    std::tie(render_document_level, use_load_data_as_string_with_base_url) =
+        info.param;
+    return base::StringPrintf(
+        "%s_%s",
+        GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
+        use_load_data_as_string_with_base_url ? "AsString" : "Normal");
+  }
+
+ protected:
+  bool use_load_data_as_string_with_base_url() {
+    return std::get<1>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_render_document_;
+};
+
 // Tests that navigating with LoadDataWithBaseURL succeeds even when the base
 // URL given is invalid.
-// Note that this is a function that is called from the actual tests below,
-// essentially doing manual parameterization because we can't subclass and add
-// more parameters to the already parameterized NavigationControllerBrowserTest.
-void NavigationControllerBrowserTest::RunLoadDataWithInvalidBaseURL(
-    bool use_load_data_as_string_with_base_url) {
+IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
+                       LoadDataWithInvalidBaseURL) {
+#if !defined(OS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url())
+    return;
+#endif
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -615,7 +621,7 @@ void NavigationControllerBrowserTest::RunLoadDataWithInvalidBaseURL(
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
   LoadDataWithBaseURL(base_url, data, history_url, title,
-                      use_load_data_as_string_with_base_url);
+                      use_load_data_as_string_with_base_url());
 
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
@@ -643,23 +649,9 @@ void NavigationControllerBrowserTest::RunLoadDataWithInvalidBaseURL(
   const GURL push_state_url =
       GURL("data:text/html;charset=utf-8," + data + "#foo");
   EXPECT_EQ(
-      use_load_data_as_string_with_base_url ? history_url : push_state_url,
+      use_load_data_as_string_with_base_url() ? history_url : push_state_url,
       contents()->GetMainFrame()->GetLastCommittedURL());
 }
-
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithInvalidBaseURL) {
-  RunLoadDataWithInvalidBaseURL(
-      false /* use_load_data_as_string_with_base_url */);
-}
-
-#if defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataAsStringWithInvalidBaseURL) {
-  RunLoadDataWithInvalidBaseURL(
-      true /* use_load_data_as_string_with_base_url */);
-}
-#endif
 
 // ContentBrowserClient that blocks normal commits to any URL in
 // VerifyDidCommitParams.
@@ -680,11 +672,13 @@ class BlockAllCommitContentBrowserClient : public TestContentBrowserClient {
 
 // Tests that navigating with LoadDataWithBaseURL succeeds even when the data
 // URL is typically blocked by an embedder.
-// Note that this is a function that is called from the actual tests below,
-// essentially doing manual parameterization because we can't subclass and add
-// more parameters to the already parameterized NavigationControllerBrowserTest.
-void NavigationControllerBrowserTest::RunLoadDataWithBlockedURL(
-    bool use_load_data_as_string_with_base_url) {
+IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
+                       LoadDataWithBlockedDataURL) {
+#if !defined(OS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url())
+    return;
+#endif
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -707,10 +701,10 @@ void NavigationControllerBrowserTest::RunLoadDataWithBlockedURL(
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
   LoadDataWithBaseURL(base_url, data, history_url, title,
-                      use_load_data_as_string_with_base_url);
+                      use_load_data_as_string_with_base_url());
 
   const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
-  const GURL commit_url = use_load_data_as_string_with_base_url
+  const GURL commit_url = use_load_data_as_string_with_base_url()
                               ? GURL("data:text/html;charset=utf-8,")
                               : data_url;
 
@@ -773,26 +767,15 @@ void NavigationControllerBrowserTest::RunLoadDataWithBlockedURL(
   SetBrowserClientForTesting(old_client);
 }
 
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithBlockedURL) {
-  RunLoadDataWithBlockedURL(false /* use_load_data_as_string_with_base_url */);
-}
-
-#if defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataAsStringWithBlockedURL) {
-  RunLoadDataWithBlockedURL(true /* use_load_data_as_string_with_base_url */);
-}
-#endif
-
 // Tests that same-document navigations after a LoadDataWithBaseURL to a blocked
 // URL and an invalid base_url succeeds.
-// Note that this is a function that is called from the actual tests below,
-// essentially doing manual parameterization because we can't subclass and add
-// more parameters to the already parameterized NavigationControllerBrowserTest.
-void NavigationControllerBrowserTest::
-    RunLoadDataWithBlockedURLAndInvalidBaseURL(
-        bool use_load_data_as_string_with_base_url) {
+IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
+                       LoadDataWithBlockedDataURLAndInvalidBaseURL) {
+#if !defined(OS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url())
+    return;
+#endif
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -818,7 +801,7 @@ void NavigationControllerBrowserTest::
   ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&content_browser_client);
   LoadDataWithBaseURL(base_url, data, history_url, title,
-                      use_load_data_as_string_with_base_url);
+                      use_load_data_as_string_with_base_url());
 
   // The navigation succeeds even though the base URL is invalid.
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
@@ -826,7 +809,7 @@ void NavigationControllerBrowserTest::
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(use_load_data_as_string_with_base_url ? history_url : data_url,
+  EXPECT_EQ(use_load_data_as_string_with_base_url() ? history_url : data_url,
             contents()->GetMainFrame()->GetLastCommittedURL());
 
   {
@@ -840,35 +823,24 @@ void NavigationControllerBrowserTest::
   EXPECT_EQ(2, controller.GetEntryCount());
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(use_load_data_as_string_with_base_url ? history_url.spec()
-                                                  : (data_url.spec() + "#foo"),
+  EXPECT_EQ(use_load_data_as_string_with_base_url()
+                ? history_url.spec()
+                : (data_url.spec() + "#foo"),
             contents()->GetMainFrame()->GetLastCommittedURL().spec());
 
   SetBrowserClientForTesting(old_client);
 }
 
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithBlockedURLAndInvalidBaseURL) {
-  RunLoadDataWithBlockedURLAndInvalidBaseURL(
-      false /* use_load_data_as_string_with_base_url */);
-}
-
-#if defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataAsStringWithBlockedURLAndInvalidBaseURL) {
-  RunLoadDataWithBlockedURLAndInvalidBaseURL(
-      true /* use_load_data_as_string_with_base_url */);
-}
-#endif
-
 // Checks that a browser-initiated same-document navigation after a javascript:
 // URL navigation on a page which has a valid base URL preserves the base URL.
-// Note that this is a function that is called from the actual tests below,
-// essentially doing manual parameterization because we can't subclass and add
-// more parameters to the already parameterized NavigationControllerBrowserTest.
-void NavigationControllerBrowserTest::
-    RunLoadDataWithBaseURLThenJavaScriptURLThenSameDocumentNavigation(
-        bool use_load_data_as_string_with_base_url) {
+IN_PROC_BROWSER_TEST_P(
+    LoadDataWithBaseURLBrowserTest,
+    LoadDataWithBaseURLThenJavaScriptURLThenSameDocumentNavigation) {
+#if !defined(OS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url())
+    return;
+#endif
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -890,13 +862,13 @@ void NavigationControllerBrowserTest::
       title.c_str());
   const GURL data_url = GURL(data_header + data);
   const GURL commit_url =
-      use_load_data_as_string_with_base_url ? GURL(data_header) : data_url;
+      use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
 
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
   LoadDataWithBaseURL(base_url, data, history_url, title,
-                      use_load_data_as_string_with_base_url);
+                      use_load_data_as_string_with_base_url());
 
   // Verify the last committed NavigationEntry.
   EXPECT_EQ(1, controller.GetEntryCount());
@@ -919,7 +891,7 @@ void NavigationControllerBrowserTest::
   EXPECT_TRUE(ExecJs(root, R"(window.location = 'javascript:"foo"';)"));
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_EQ(
-      use_load_data_as_string_with_base_url ? GURL(data_header) : data_url,
+      use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url,
       root->current_url());
   EXPECT_EQ("foo", EvalJs(shell(), "document.body.innerHTML"));
   EXPECT_EQ("GET", contents()->GetMainFrame()->last_http_method());
@@ -965,22 +937,6 @@ void NavigationControllerBrowserTest::
   EXPECT_EQ(commit_url, contents()->GetMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(start_dsn, entry->GetFrameEntry(root)->document_sequence_number());
 }
-
-IN_PROC_BROWSER_TEST_P(
-    NavigationControllerBrowserTest,
-    LoadDataWithBaseURLThenJavaScriptURLThenSameDocumentNavigation) {
-  RunLoadDataWithBaseURLThenJavaScriptURLThenSameDocumentNavigation(
-      false /* use_load_data_as_string_with_base_url */);
-}
-
-#if defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_P(
-    NavigationControllerBrowserTest,
-    LoadDataAsStringWithBaseURLThenJavaScriptURLThenSameDocumentNavigation) {
-  RunLoadDataWithBaseURLThenJavaScriptURLThenSameDocumentNavigation(
-      true /* use_load_data_as_string_with_base_url */);
-}
-#endif
 
 // Tests that LoadDataWithBaseURL navigations that failed will commit an error
 // page and correctly classified as an error page navigation.
@@ -17628,4 +17584,18 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool()),
     InitialEmptyDocNavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()),
+    LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoadDataWithBaseURLBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    LoadDataWithBaseURLBrowserTest::DescribeParams);
 }  // namespace content
