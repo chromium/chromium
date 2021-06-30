@@ -486,6 +486,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Session.WebStates.ArchivedDataWithRootObjectTime" units="ms"
+    expires_after="2022-04-10">
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The time needed to convert iOS session webState data into something that can
+    be written to a file. It's recorded every time the file is written to
+    storage, which happens on page loads, tab changes and app backgrounding. The
+    time does not include the file writing.
+  </summary>
+</histogram>
+
 <histogram name="Session.WebStates.ForwardItemsCountAfterNavigation"
     units="items" expires_after="2020-12-01">
   <obsolete>

@@ -252,9 +252,12 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   @try {
     NSError* error = nil;
     size_t previous_cert_policy_bytes = web::GetCertPolicyBytesEncoded();
+    base::TimeTicks start_time = base::TimeTicks::Now();
     NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
                                                 requiringSecureCoding:NO
                                                                 error:&error];
+    UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
+                      base::TimeTicks::Now() - start_time);
     if (!sessionData || error) {
       DLOG(WARNING) << "Error serializing session for path: "
                     << base::SysNSStringToUTF8(sessionPath) << ": "
