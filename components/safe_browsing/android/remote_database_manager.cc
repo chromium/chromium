@@ -255,6 +255,13 @@ RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   return is_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
 }
 
+bool RemoteSafeBrowsingDatabaseManager::CheckUrlForAccuracyTips(
+    const GURL& url,
+    Client* client) {
+  NOTREACHED();
+  return true;
+}
+
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,
     Client* client) {

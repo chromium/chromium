@@ -22,6 +22,9 @@ namespace safe_browsing {
 // them to the ExperimentalFeaturesList below to start displaying their status
 // on the chrome://safe-browsing page.
 
+const base::Feature kAccuracyTipsFeature{"AccuracyTips",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kAdSamplerTriggerFeature{"SafeBrowsingAdSamplerTrigger",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -46,6 +49,9 @@ extern const base::Feature kClientSideDetectionModelHighMemoryTag{
 
 const base::Feature kClientSideDetectionReferrerChain{
     "ClientSideDetectionReferrerChain", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kFileAnalysisMimeTypeSniff{
+    "FileAnalysisMimeTypeSniff", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionWithToken{
     "SafeBrowsingCSDRequestWithToken", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -133,8 +139,6 @@ const base::Feature kVisualFeaturesInPasswordProtectionAndroid{
 const base::Feature kVisualFeaturesSizes{"VisualFeaturesSizes",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kFileAnalysisMimeTypeSniff{
-    "FileAnalysisMimeTypeSniff", base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should
@@ -145,6 +149,7 @@ constexpr struct {
   // True if the feature's state should be listed on chrome://safe-browsing.
   bool show_state;
 } kExperimentalFeatures[]{
+    {&kAccuracyTipsFeature, true},
     {&kAdSamplerTriggerFeature, false},
     {&kBetterTelemetryAcrossReports, true},
     {&kClientSideDetectionForAndroid, true},

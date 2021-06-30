@@ -17,6 +17,7 @@ static_library("accuracy_tips") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/safe_browsing/core/common",
     "//content/public/browser",
   ]
 }
@@ -32,6 +33,7 @@ source_set("unit_tests") {
   deps = [
     ":accuracy_tips",
     "//base/test:test_support",
+    "//components/safe_browsing/core/common",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

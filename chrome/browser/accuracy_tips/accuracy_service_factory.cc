@@ -9,8 +9,8 @@
 #include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
-#include "components/accuracy_tips/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 
 // static
 accuracy_tips::AccuracyService* AccuracyServiceFactory::GetForProfile(
@@ -33,7 +33,7 @@ AccuracyServiceFactory::~AccuracyServiceFactory() = default;
 // BrowserContextKeyedServiceFactory:
 KeyedService* AccuracyServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
-  DCHECK(base::FeatureList::IsEnabled(accuracy_tips::kAccuracyTipsFeature));
+  DCHECK(base::FeatureList::IsEnabled(safe_browsing::kAccuracyTipsFeature));
   auto ui = std::make_unique<ChromeAccuracyTipUI>();
   return new accuracy_tips::AccuracyService(std::move(ui));
 }

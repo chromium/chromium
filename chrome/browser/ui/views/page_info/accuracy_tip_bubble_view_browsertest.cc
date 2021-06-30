@@ -22,7 +22,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
-#include "components/accuracy_tips/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/views/test/widget_test.h"
@@ -46,7 +46,7 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(accuracy_tips::kAccuracyTipsFeature);
+    feature_list_.InitAndEnableFeature(safe_browsing::kAccuracyTipsFeature);
 
     // Disable "close on deactivation" since there seems to be an issue with
     // windows losing focus during tests.

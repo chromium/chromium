@@ -7,13 +7,9 @@
 
 #include "base/metrics/field_trial_params.h"
 
-namespace base {
-struct Feature;
-}  // namespace base
-
 namespace accuracy_tips {
 
-extern const base::Feature kAccuracyTipsFeature;
+// Additional parameters for safe_browsing::kAccuracyTipsFeature.
 extern const base::FeatureParam<std::string> kSampleUrl;
 
 }  // namespace accuracy_tips

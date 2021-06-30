@@ -6,13 +6,11 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace accuracy_tips {
 
-const base::Feature kAccuracyTipsFeature{"AccuracyTips",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::FeatureParam<std::string> kSampleUrl{&kAccuracyTipsFeature,
-                                                 "sampleUrl", ""};
+const base::FeatureParam<std::string> kSampleUrl{
+    &safe_browsing::kAccuracyTipsFeature, "sampleUrl", ""};
 
 }  // namespace accuracy_tips

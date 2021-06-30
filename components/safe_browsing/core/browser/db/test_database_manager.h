@@ -43,6 +43,7 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
                                                 Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
+  bool CheckUrlForAccuracyTips(const GURL& url, Client* client) override;
   bool MatchDownloadAllowlistString(const std::string& str) override;
   bool MatchDownloadAllowlistUrl(const GURL& url) override;
   bool MatchMalwareIP(const std::string& ip_address) override;

@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
-#include "components/accuracy_tips/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/page_visibility_state.h"
@@ -19,7 +19,7 @@ namespace accuracy_tips {
 // static
 bool AccuracyWebContentsObserver::IsEnabled(
     content::WebContents* web_contents) {
-  return base::FeatureList::IsEnabled(kAccuracyTipsFeature) &&
+  return base::FeatureList::IsEnabled(safe_browsing::kAccuracyTipsFeature) &&
          !web_contents->GetBrowserContext()->IsOffTheRecord();
 }
 

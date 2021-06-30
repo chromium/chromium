@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/accuracy_tips/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +32,8 @@ class AccuracyServiceTest : public ::testing::Test {
 
   void SetUp() override {
     feature_list.InitAndEnableFeatureWithParameters(
-        kAccuracyTipsFeature, {{kSampleUrl.name, "https://badurl.com"}});
+        safe_browsing::kAccuracyTipsFeature,
+        {{kSampleUrl.name, "https://badurl.com"}});
     auto ui = std::make_unique<testing::StrictMock<MockAccuracyTipUI>>();
     ui_ = ui.get();
     service_ = std::make_unique<AccuracyService>(std::move(ui));

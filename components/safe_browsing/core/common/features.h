@@ -19,6 +19,9 @@ class ListValue;
 namespace safe_browsing {
 // Features list, in alphabetical order.
 
+// Controls whether accuracy tips should be enabled.
+extern const base::Feature kAccuracyTipsFeature;
+
 // Controls various parameters related to occasionally collecting ad samples,
 // for example to control how often collection should occur.
 extern const base::Feature kAdSamplerTriggerFeature;
@@ -57,6 +60,16 @@ extern const base::Feature kClientSideDetectionReferrerChain;
 // Browsing users.
 extern const base::Feature kClientSideDetectionWithToken;
 
+// Controls whether the delayed warning experiment is enabled.
+extern const base::Feature kDelayedWarnings;
+// True if mouse clicks should undelay the warnings immediately when delayed
+// warnings feature is enabled.
+extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
+
+// This gates mime type sniffing for DLP file support until the mime type list
+// and implementation are validated experimentally.
+extern const base::Feature kFileAnalysisMimeTypeSniff;
+
 // Enable GAIA password protection for signed-in users.
 extern const base::Feature kPasswordProtectionForSignedInUsers;
 
@@ -94,6 +107,12 @@ extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 // Controls whether the referrer chain is attached to real time requests.
 extern const base::Feature kRealTimeUrlLookupReferrerChain;
 
+// Status of the SimplifiedUrlDisplay experiments. This does not control the
+// individual experiments, those are controlled by their own feature flags.
+// The feature is only set by Finch so that we can differentiate between
+// default and control groups of the experiment.
+extern const base::Feature kSimplifiedUrlDisplay;
+
 // Specifies which non-resource HTML Elements to collect based on their tag and
 // attributes. It's a single param containing a comma-separated list of pairs.
 // For example: "tag1,id,tag1,height,tag2,foo" - this will collect elements with
@@ -123,22 +142,6 @@ extern const base::Feature kVisualFeaturesInPasswordProtectionAndroid;
 // checked for the final size of the visual features and the minimum size of
 // the screen.
 extern const base::Feature kVisualFeaturesSizes;
-
-// Controls whether the delayed warning experiment is enabled.
-extern const base::Feature kDelayedWarnings;
-// True if mouse clicks should undelay the warnings immediately when delayed
-// warnings feature is enabled.
-extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
-
-// Status of the SimplifiedUrlDisplay experiments. This does not control the
-// individual experiments, those are controlled by their own feature flags.
-// The feature is only set by Finch so that we can differentiate between
-// default and control groups of the experiment.
-extern const base::Feature kSimplifiedUrlDisplay;
-
-// This gates mime type sniffing for DLP file support until the mime type list
-// and implementation are validated experimentally.
-extern const base::Feature kFileAnalysisMimeTypeSniff;
 
 base::ListValue GetFeatureStatusList();
 

@@ -295,6 +295,9 @@ enum ThreatType {
 
   // Safe list to ship hashes of known safe URL expressions.
   HIGH_CONFIDENCE_ALLOWLIST = 16;
+
+  // List of URLs that should show an accuracy tip.
+  ACCURACY_TIPS = 17;
 }
 
 // Types of platforms.

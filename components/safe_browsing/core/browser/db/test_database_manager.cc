@@ -81,6 +81,12 @@ bool TestSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   return true;
 }
 
+bool TestSafeBrowsingDatabaseManager::CheckUrlForAccuracyTips(const GURL& url,
+                                                              Client* client) {
+  NOTIMPLEMENTED();
+  return true;
+}
+
 AsyncMatch TestSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
     const GURL& url,
     Client* client) {

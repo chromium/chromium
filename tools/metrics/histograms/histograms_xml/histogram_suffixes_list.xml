@@ -16624,6 +16624,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="ChromeExtMalware" label=""/>
   <suffix name="ChromeUrlClientIncident" label=""/>
   <suffix name="IpMalware" label=""/>
+  <suffix name="UrlAccuracyTips" label=""/>
   <suffix name="UrlBilling" label=""/>
   <suffix name="UrlCsdAllowlist" label=""/>
   <suffix name="UrlCsdDownloadAllowlist" label=""/>

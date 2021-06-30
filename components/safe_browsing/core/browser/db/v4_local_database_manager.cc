@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
@@ -25,6 +26,8 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
+
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -83,6 +86,9 @@ ListInfos GetListInfos() {
   const bool kSyncAlways = true;
   const bool kSyncNever = false;
 
+  const bool kAccuracyTipsEnabled =
+      base::FeatureList::IsEnabled(kAccuracyTipsFeature);
+
   return ListInfos({
       ListInfo(kSyncOnDesktopBuilds, "IpMalware.store", GetIpMalwareId(),
                SB_THREAT_TYPE_UNUSED),
@@ -117,6 +123,9 @@ ListInfos GetListInfos() {
                "UrlHighConfidenceAllowlist.store",
                GetUrlHighConfidenceAllowlistId(),
                SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST),
+      ListInfo(kSyncOnChromeDesktopBuilds && kAccuracyTipsEnabled,
+               "UrlAccuracyTips.store", GetUrlAccuracyTipsId(),
+               SB_THREAT_TYPE_ACCURACY_TIPS),
   });
   // NOTE(vakh): IMPORTANT: Please make sure that the server already supports
   // any list before adding it to this list otherwise the prefix updates break
@@ -313,7 +322,7 @@ V4LocalDatabaseManager::PendingCheck::PendingCheck(
   full_hash_threat_types.assign(full_hashes.size(), SB_THREAT_TYPE_SAFE);
 }
 
-V4LocalDatabaseManager::PendingCheck::~PendingCheck() {}
+V4LocalDatabaseManager::PendingCheck::~PendingCheck() = default;
 
 // static
 const V4LocalDatabaseManager*
@@ -525,6 +534,22 @@ AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
       stores_to_check, std::vector<GURL>(1, url));
 
   return HandleAllowlistCheck(std::move(check));
+}
+
+bool V4LocalDatabaseManager::CheckUrlForAccuracyTips(const GURL& url,
+                                                     Client* client) {
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
+
+  StoresToCheck stores_to_check({GetUrlAccuracyTipsId()});
+  if (!AreAnyStoresAvailableNow(stores_to_check) || !CanCheckUrl(url)) {
+    return true;
+  }
+
+  std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
+      client, ClientCallbackType::CHECK_ACCURACY_TIPS, stores_to_check,
+      std::vector<GURL>(1, url));
+
+  return HandleCheck(std::move(check));
 }
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
@@ -1070,6 +1095,15 @@ void V4LocalDatabaseManager::RespondToClient(
       check->client->OnCheckExtensionsResult(unsafe_extension_ids);
       break;
     }
+
+    case ClientCallbackType::CHECK_ACCURACY_TIPS: {
+      DCHECK_EQ(1u, check->urls.size());
+      bool should_show_accuracy_tip =
+          check->most_severe_threat_type == SB_THREAT_TYPE_ACCURACY_TIPS;
+      check->client->OnCheckUrlForAccuracyTip(should_show_accuracy_tip);
+      break;
+    }
+
     case ClientCallbackType::CHECK_OTHER:
       NOTREACHED() << "Unexpected client_callback_type encountered";
   }
