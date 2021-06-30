@@ -1509,9 +1509,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)showConsistencyPromoFromViewController:
             (UIViewController*)baseViewController
                                            URL:(const GURL&)url {
-  // Do not display the web sign-in promo if there are no identities on the
-  // device or if a sign-in is in progress.
-  if (self.signinCoordinator)
+  // Do not display the web sign-in promo if there is any UI on the screen.
+  if (self.signinCoordinator || self.isSettingsViewPresented)
     return;
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController

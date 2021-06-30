@@ -6,6 +6,9 @@
 #define COMPONENTS_SIGNIN_IOS_BROWSER_MANAGE_ACCOUNTS_DELEGATE_H_
 
 class GURL;
+namespace web {
+class WebState;
+}
 
 @protocol ManageAccountsDelegate<NSObject>
 
@@ -24,7 +27,8 @@ class GURL;
 // property with signin::kMobileIdentityConsistency enabled.
 // |url| is the continuation URL received from the server. If it is valid,
 // then this delegate should navigate to |url|.
-- (void)onShowConsistencyPromo:(const GURL&)url;
+- (void)onShowConsistencyPromo:(const GURL&)url
+                      webState:(web::WebState*)webState;
 
 // Called when the user taps on go incognito button in a Google web property.
 // |url| is the continuation URL received from the server. If it is valid,

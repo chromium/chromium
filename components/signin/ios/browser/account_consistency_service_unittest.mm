@@ -466,7 +466,8 @@ TEST_F(AccountConsistencyServiceTest, ChromeShowConsistencyPromo) {
 
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
+  [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()
+                                                           webState:nullptr];
 
   NSDictionary* headers = [NSDictionary dictionaryWithObject:@"args=unused"
                                                       forKey:@"X-Auto-Login"];
@@ -488,7 +489,8 @@ TEST_F(AccountConsistencyServiceTest,
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
+  [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()
+                                                           webState:nullptr];
 
   NSDictionary* headers = [NSDictionary dictionaryWithObject:@"args=unused"
                                                       forKey:@"X-Auto-Login"];
@@ -513,7 +515,8 @@ TEST_F(AccountConsistencyServiceTest,
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[delegate expect] onAddAccount];
-  [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
+  [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()
+                                                           webState:nullptr];
 
   EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
                                         signin::GAIA_SERVICE_TYPE_ADDSESSION));
@@ -760,7 +763,8 @@ TEST_F(AccountConsistencyServiceTest,
   websignin_feature_list.InitAndEnableFeature(signin::kMICEWebSignIn);
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
+  [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()
+                                                           webState:nullptr];
 
   NSDictionary* headers = [NSDictionary dictionaryWithObject:@"args=unused"
                                                       forKey:@"X-Auto-Login"];
