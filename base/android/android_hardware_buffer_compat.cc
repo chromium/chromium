@@ -64,8 +64,8 @@ bool AndroidHardwareBufferCompat::IsSupportAvailable() {
 
 // static
 AndroidHardwareBufferCompat& AndroidHardwareBufferCompat::GetInstance() {
-  static base::NoDestructor<AndroidHardwareBufferCompat> compat;
-  return *compat;
+  static AndroidHardwareBufferCompat compat;
+  return compat;
 }
 
 void AndroidHardwareBufferCompat::Allocate(const AHardwareBuffer_Desc* desc,

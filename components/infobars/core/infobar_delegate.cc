@@ -4,7 +4,6 @@
 
 #include "components/infobars/core/infobar_delegate.h"
 
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -33,8 +32,8 @@ int InfoBarDelegate::GetIconId() const {
 }
 
 const gfx::VectorIcon& InfoBarDelegate::GetVectorIcon() const {
-  static base::NoDestructor<gfx::VectorIcon> empty_icon;
-  return *empty_icon;
+  static gfx::VectorIcon empty_icon;
+  return empty_icon;
 }
 
 gfx::Image InfoBarDelegate::GetIcon() const {

@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -70,9 +69,9 @@ void VideoInputDevicesEnumerated(base::OnceClosure quit_closure,
 // Id used to identify the capture session between renderer and
 // video_capture_host. This is an arbitrary value.
 const base::UnguessableToken& DeviceId() {
-  static const base::NoDestructor<base::UnguessableToken> device_id(
+  static const base::UnguessableToken device_id(
       base::UnguessableToken::Deserialize(555, 555));
-  return *device_id;
+  return device_id;
 }
 
 }  // namespace

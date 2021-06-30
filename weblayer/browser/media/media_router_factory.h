@@ -5,12 +5,8 @@
 #ifndef WEBLAYER_BROWSER_MEDIA_MEDIA_ROUTER_FACTORY_H_
 #define WEBLAYER_BROWSER_MEDIA_MEDIA_ROUTER_FACTORY_H_
 
+#include "base/no_destructor.h"
 #include "components/media_router/browser/media_router_factory.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace content {
 class BrowserContext;

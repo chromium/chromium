@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_base_export.h"
@@ -66,7 +65,7 @@ class AX_BASE_EXPORT AXTreeID {
   explicit AXTreeID(const std::string& string);
 
   friend struct mojo::UnionTraits<ax::mojom::AXTreeIDDataView, ui::AXTreeID>;
-  friend class base::NoDestructor<AXTreeID>;
+  friend AX_BASE_EXPORT const AXTreeID& AXTreeIDUnknown();
   friend void swap(AXTreeID& first, AXTreeID& second);
 
   ax::mojom::AXTreeIDType type_;
@@ -82,7 +81,7 @@ AX_BASE_EXPORT std::ostream& operator<<(std::ostream& stream,
                                         const AXTreeID& value);
 
 // The value to use when an AXTreeID is unknown.
-AX_BASE_EXPORT extern const AXTreeID& AXTreeIDUnknown();
+AX_BASE_EXPORT const AXTreeID& AXTreeIDUnknown();
 
 }  // namespace ui
 

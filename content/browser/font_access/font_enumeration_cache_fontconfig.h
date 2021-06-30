@@ -5,15 +5,11 @@
 #ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_FONTCONFIG_H_
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_FONTCONFIG_H_
 
+#include "base/no_destructor.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/common/content_export.h"
 
 using blink::mojom::FontEnumerationStatus;
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace content {
 

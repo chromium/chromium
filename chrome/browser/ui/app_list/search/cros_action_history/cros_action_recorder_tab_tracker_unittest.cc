@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"

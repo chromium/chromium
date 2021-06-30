@@ -4,7 +4,6 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/no_destructor.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/update_service_internal_proxy.h"
 #include "chrome/updater/win/update_service_proxy.h"
@@ -22,8 +21,8 @@ class WRLModuleInitializer {
   }
 
   static const WRLModuleInitializer& Get() {
-    static const base::NoDestructor<WRLModuleInitializer> module;
-    return *module;
+    static const WRLModuleInitializer module;
+    return module;
   }
 };
 

@@ -12,6 +12,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/base_export.h"
+#include "base/no_destructor.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -25,9 +26,6 @@
 namespace base {
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-template <typename>
-class NoDestructor;
-
 namespace internal {
 
 // Represents allocator that contains memory for data-like objects (that don't
@@ -53,7 +51,7 @@ class BASE_EXPORT NonScannableAllocator final {
   void EnablePCScan();
 
  private:
-  template <typename>
+  template <typename, typename>
   friend class base::NoDestructor;
 
   NonScannableAllocator();

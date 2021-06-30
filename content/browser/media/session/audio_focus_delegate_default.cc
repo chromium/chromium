@@ -5,7 +5,6 @@
 #include "content/browser/media/session/audio_focus_delegate.h"
 
 #include "base/bind.h"
-#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"
@@ -32,9 +31,8 @@ base::UnguessableToken GetAudioFocusGroupId(MediaSessionImpl* session) {
   // Use a shared audio focus group id for the whole browser. This will means
   // that tabs will share audio focus if the enforcement mode is set to
   // kSingleGroup.
-  static const base::NoDestructor<base::UnguessableToken> token(
-      base::UnguessableToken::Create());
-  return *token;
+  static const base::UnguessableToken token(base::UnguessableToken::Create());
+  return token;
 }
 
 // AudioFocusDelegateDefault is the default implementation of

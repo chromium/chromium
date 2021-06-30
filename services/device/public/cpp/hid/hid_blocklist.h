@@ -5,12 +5,8 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_HID_HID_BLOCKLIST_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_HID_HID_BLOCKLIST_H_
 
+#include "base/no_destructor.h"
 #include "services/device/public/mojom/hid.mojom.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 namespace device {
 

@@ -5,13 +5,11 @@
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-using base::NoDestructor;
 using content::BrowserThread;
 
 namespace android_webview {
@@ -27,50 +25,45 @@ VisibilityMetricsLogger::CreateHistogramForDurationTracking(const char* name,
 }
 
 base::HistogramBase* VisibilityMetricsLogger::GetGlobalVisibilityHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.Visibility.Global",
-          static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
-  return *histogram;
+  static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
+      "Android.WebView.Visibility.Global",
+      static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
+  return histogram;
 }
 
 base::HistogramBase*
 VisibilityMetricsLogger::GetPerWebViewVisibilityHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.Visibility.PerWebView",
-          static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
-  return *histogram;
+  static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
+      "Android.WebView.Visibility.PerWebView",
+      static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
+  return histogram;
 }
 
 base::HistogramBase*
 VisibilityMetricsLogger::GetGlobalOpenWebVisibilityHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.WebViewOpenWebVisible.Global",
-          static_cast<int>(
-              VisibilityMetricsLogger::WebViewOpenWebVisibility::kMaxValue)));
-  return *histogram;
+  static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
+      "Android.WebView.WebViewOpenWebVisible.Global",
+      static_cast<int>(
+          VisibilityMetricsLogger::WebViewOpenWebVisibility::kMaxValue)));
+  return histogram;
 }
 
 base::HistogramBase*
 VisibilityMetricsLogger::GetPerWebViewOpenWebVisibilityHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.WebViewOpenWebVisible.PerWebView",
-          static_cast<int>(
-              VisibilityMetricsLogger::WebViewOpenWebVisibility::kMaxValue)));
-  return *histogram;
+  static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
+      "Android.WebView.WebViewOpenWebVisible.PerWebView",
+      static_cast<int>(
+          VisibilityMetricsLogger::WebViewOpenWebVisibility::kMaxValue)));
+  return histogram;
 }
 
 base::HistogramBase*
 VisibilityMetricsLogger::GetOpenWebVisibileScreenPortionHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.WebViewOpenWebVisible.ScreenPortion",
-          static_cast<int>(VisibilityMetricsLogger::
-                               WebViewOpenWebScreenPortion::kMaxValue)));
-  return *histogram;
+  static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
+      "Android.WebView.WebViewOpenWebVisible.ScreenPortion",
+      static_cast<int>(
+          VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kMaxValue)));
+  return histogram;
 }
 
 VisibilityMetricsLogger::VisibilityMetricsLogger() {

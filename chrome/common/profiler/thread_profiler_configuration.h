@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <string>
 
+#include "base/no_destructor.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -15,8 +16,6 @@
 
 namespace base {
 class CommandLine;
-template <typename>
-class NoDestructor;
 }  // namespace base
 
 class ThreadProfilerPlatformConfiguration;

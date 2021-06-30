@@ -7,13 +7,9 @@
 
 #include <set>
 
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 class ThumbnailImage;
 

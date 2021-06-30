@@ -282,25 +282,23 @@ class OzonePlatformWayland : public OzonePlatform {
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
-    static base::NoDestructor<OzonePlatform::PlatformRuntimeProperties>
-        properties;
+    static OzonePlatform::PlatformRuntimeProperties properties;
     if (connection_) {
-      properties->supports_server_side_window_decorations =
+      properties.supports_server_side_window_decorations =
           (connection_->xdg_decoration_manager_v1() != nullptr);
     }
-    return *properties;
+    return properties;
   }
 
   const InitializedHostProperties& GetInitializedHostProperties() override {
-    static base::NoDestructor<OzonePlatform::InitializedHostProperties>
-        properties;
+    static OzonePlatform::InitializedHostProperties properties;
     static bool initialized = false;
     if (!initialized) {
-      properties->supports_overlays =
+      properties.supports_overlays =
           ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
       initialized = true;
     }
-    return *properties;
+    return properties;
   }
 
   void AddInterfaces(mojo::BinderMap* binders) override {

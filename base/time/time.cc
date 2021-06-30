@@ -17,7 +17,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/third_party/nspr/prtime.h"
 #include "base/time/time_override.h"
@@ -334,11 +333,11 @@ TimeTicks TimeTicks::Now() {
 
 // static
 TimeTicks TimeTicks::UnixEpoch() {
-  static const NoDestructor<TimeTicks> epoch([]() {
+  static const TimeTicks epoch([]() {
     return subtle::TimeTicksNowIgnoringOverride() -
            (subtle::TimeNowIgnoringOverride() - Time::UnixEpoch());
   }());
-  return *epoch;
+  return epoch;
 }
 
 TimeTicks TimeTicks::SnappedToNextTick(TimeTicks tick_phase,

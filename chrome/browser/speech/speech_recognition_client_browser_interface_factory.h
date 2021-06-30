@@ -5,14 +5,10 @@
 #ifndef CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CLIENT_BROWSER_INTERFACE_FACTORY_H_
 #define CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CLIENT_BROWSER_INTERFACE_FACTORY_H_
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
-
-namespace base {
-template <class T>
-class NoDestructor;
-}  // namespace base
 
 namespace speech {
 class SpeechRecognitionClientBrowserInterface;

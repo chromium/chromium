@@ -9,14 +9,10 @@
 
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/threading/simple_thread.h"
 #include "content/browser/sandbox_ipc_linux.h"
 #include "content/common/content_export.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace content {
 

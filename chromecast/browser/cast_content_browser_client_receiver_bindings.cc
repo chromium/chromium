@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -171,10 +170,8 @@ void CastContentBrowserClient::CreateMediaService(
   mojo_media_client->SetVideoGeometrySetterService(
       video_geometry_setter_service_.get());
 
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<::media::MediaService>>
-      service;
-  service->emplace(std::move(mojo_media_client), std::move(receiver));
+  static base::SequenceLocalStorageSlot<::media::MediaService> service;
+  service.emplace(std::move(mojo_media_client), std::move(receiver));
 }
 
 void CastContentBrowserClient::CreateVideoGeometrySetterServiceOnMediaThread() {

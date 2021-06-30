@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/deferred_sequenced_task_runner.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
@@ -109,10 +108,10 @@ void LaunchAudioServiceInProcess(
       base::BindOnce(
           [](media::AudioManager* audio_manager,
              mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
-            static base::NoDestructor<
-                base::SequenceLocalStorageSlot<std::unique_ptr<audio::Service>>>
+            static base::SequenceLocalStorageSlot<
+                std::unique_ptr<audio::Service>>
                 service;
-            service->GetOrCreateValue() = audio::CreateEmbeddedService(
+            service.GetOrCreateValue() = audio::CreateEmbeddedService(
                 audio_manager, std::move(receiver));
           },
           BrowserMainLoop::GetAudioManager(), std::move(receiver)));
@@ -162,10 +161,10 @@ audio::mojom::AudioService& GetAudioService() {
   // any sequence, but to limit the lifetime of this Remote to the lifetime of
   // UI-thread sequence. This is to support re-creation after task environment
   // shutdown and reinitialization e.g. between unit tests.
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<mojo::Remote<audio::mojom::AudioService>>>
+  static base::SequenceLocalStorageSlot<
+      mojo::Remote<audio::mojom::AudioService>>
       remote_slot;
-  auto& remote = remote_slot->GetOrCreateValue();
+  auto& remote = remote_slot.GetOrCreateValue();
   if (!remote)
     LaunchAudioService(&remote);
   return *remote.get();

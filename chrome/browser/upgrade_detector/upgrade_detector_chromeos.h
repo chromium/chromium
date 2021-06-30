@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
@@ -17,8 +18,6 @@
 class PrefRegistrySimple;
 namespace base {
 class Clock;
-template <typename T>
-class NoDestructor;
 class TickClock;
 }  // namespace base
 

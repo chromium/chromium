@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
 #include "content/browser/service_sandbox_type.h"
@@ -154,8 +153,8 @@ ServiceMap<T>& GetServiceMap() {
   // objects to that of the UI-thread sequence. This ensures the Remotes are
   // destroyed when the task environment is torn down and reinitialized, e.g.,
   // between unit tests.
-  static base::NoDestructor<base::SequenceLocalStorageSlot<ServiceMap<T>>> slot;
-  return slot->GetOrCreateValue();
+  static base::SequenceLocalStorageSlot<ServiceMap<T>> slot;
+  return slot.GetOrCreateValue();
 }
 
 // Erases the service instance identified by `key`.

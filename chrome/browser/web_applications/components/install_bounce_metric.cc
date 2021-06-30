@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/components/install_bounce_metric.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -16,8 +15,8 @@
 namespace {
 
 absl::optional<base::Time>& GetTimeOverride() {
-  static base::NoDestructor<absl::optional<base::Time>> g_time_override;
-  return *g_time_override;
+  static absl::optional<base::Time> time_override;
+  return time_override;
 }
 
 base::Time GetTime() {

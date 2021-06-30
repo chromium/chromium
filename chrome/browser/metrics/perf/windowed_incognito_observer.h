@@ -6,16 +6,12 @@
 #define CHROME_BROWSER_METRICS_PERF_WINDOWED_INCOGNITO_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 class Browser;
-
-namespace base {
-template <class T>
-class NoDestructor;
-}  // namespace base
 
 namespace metrics {
 

@@ -176,8 +176,8 @@ using FrameImplMap =
     base::small_map<std::map<content::WebContents*, FrameImpl*>>;
 
 FrameImplMap& WebContentsToFrameImplMap() {
-  static base::NoDestructor<FrameImplMap> frame_impl_map;
-  return *frame_impl_map;
+  static FrameImplMap frame_impl_map;
+  return frame_impl_map;
 }
 
 content::PermissionType FidlPermissionTypeToContentPermissionType(

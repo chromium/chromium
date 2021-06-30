@@ -5,7 +5,6 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 #include "base/macros.h"
-#include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
 
 namespace blink {
@@ -62,17 +61,15 @@ bool BrowserInterfaceBrokerProxy::SetBinderForTesting(
 }
 
 BrowserInterfaceBrokerProxy& GetEmptyBrowserInterfaceBroker() {
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<BrowserInterfaceBrokerProxy>>
-      proxy_slot;
-  if (!proxy_slot->GetValuePointer()) {
-    auto& proxy = proxy_slot->GetOrCreateValue();
+  static base::SequenceLocalStorageSlot<BrowserInterfaceBrokerProxy> proxy_slot;
+  if (!proxy_slot.GetValuePointer()) {
+    auto& proxy = proxy_slot.GetOrCreateValue();
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote;
     ignore_result(remote.InitWithNewPipeAndPassReceiver());
     proxy.Bind(std::move(remote), base::ThreadTaskRunnerHandle::Get());
   }
 
-  return proxy_slot->GetOrCreateValue();
+  return proxy_slot.GetOrCreateValue();
 }
 
 }  // namespace blink

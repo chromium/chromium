@@ -156,12 +156,11 @@ google_breakpad::CustomClientInfo* GetCustomInfo(
     }
   }
 
-  static base::NoDestructor<google_breakpad::CustomClientInfo>
-      custom_client_info;
-  custom_client_info->entries = &custom_entries->front();
-  custom_client_info->count = custom_entries->size();
+  static google_breakpad::CustomClientInfo custom_client_info;
+  custom_client_info.entries = &custom_entries->front();
+  custom_client_info.count = custom_entries->size();
 
-  return custom_client_info.get();
+  return &custom_client_info;
 }
 
 }  // namespace

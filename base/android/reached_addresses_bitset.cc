@@ -7,7 +7,6 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/check_op.h"
-#include "base/no_destructor.h"
 
 namespace base {
 namespace android {
@@ -25,9 +24,9 @@ std::atomic<uint32_t> g_text_bitfield[kTextBitfieldSize];
 // static
 ReachedAddressesBitset* ReachedAddressesBitset::GetTextBitset() {
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  static base::NoDestructor<ReachedAddressesBitset> text_bitset(
-      kStartOfText, kEndOfText, g_text_bitfield, kTextBitfieldSize);
-  return text_bitset.get();
+  static ReachedAddressesBitset text_bitset(kStartOfText, kEndOfText,
+                                            g_text_bitfield, kTextBitfieldSize);
+  return &text_bitset;
 #else
   return nullptr;
 #endif

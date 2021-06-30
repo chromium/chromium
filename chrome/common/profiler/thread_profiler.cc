@@ -282,8 +282,7 @@ void ThreadProfiler::SetAuxUnwinderFactory(
 void ThreadProfiler::StartOnChildThread(CallStackProfileParams::Thread thread) {
   // The profiler object is stored in a SequenceLocalStorageSlot on child
   // threads to give it the same lifetime as the threads.
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>>
+  static base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>
       child_thread_profiler_sequence_local_storage;
 
   if (!ThreadProfilerConfiguration::Get()
@@ -291,7 +290,7 @@ void ThreadProfiler::StartOnChildThread(CallStackProfileParams::Thread thread) {
     return;
   }
 
-  child_thread_profiler_sequence_local_storage->emplace(
+  child_thread_profiler_sequence_local_storage.emplace(
       new ThreadProfiler(thread, base::ThreadTaskRunnerHandle::Get()));
 }
 

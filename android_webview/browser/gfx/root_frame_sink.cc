@@ -7,7 +7,6 @@
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
-#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -18,8 +17,8 @@ namespace android_webview {
 namespace {
 
 viz::FrameSinkId AllocateParentSinkId() {
-  static base::NoDestructor<viz::FrameSinkIdAllocator> allocator(0u);
-  return allocator->NextFrameSinkId();
+  static viz::FrameSinkIdAllocator allocator(0u);
+  return allocator.NextFrameSinkId();
 }
 
 }  // namespace

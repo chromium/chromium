@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -23,14 +22,15 @@ namespace {
 const int kMaxLowEntropySize = 8000;
 
 // Generates a new non-identifying entropy source used to seed persistent
-// activities. Using a NoDestructor so that the new low entropy source value
-// will only be generated on first access. And thus, even though we may write
-// the new low entropy source value to prefs multiple times, it stays the same
+// activities. Make it static so that the new low entropy source value will
+// only be generated on first access. And thus, even though we may write the
+// new low entropy source value to prefs multiple times, it stays the same
 // value.
 int GenerateLowEntropySource() {
-  static const base::NoDestructor<int> low_entropy_source(
-      [] { return base::RandInt(0, kMaxLowEntropySize - 1); }());
-  return *low_entropy_source;
+  static const int low_entropy_source =
+      base::RandInt(0, kMaxLowEntropySize - 1);
+  ;
+  return low_entropy_source;
 }
 
 // Generates a new non-identifying low entropy source using the same method
@@ -38,9 +38,10 @@ int GenerateLowEntropySource() {
 // used for statistical validation, and *not* for randomization or experiment
 // assignment.
 int GeneratePseudoLowEntropySource() {
-  static const base::NoDestructor<int> pseudo_low_entropy_source(
-      [] { return base::RandInt(0, kMaxLowEntropySize - 1); }());
-  return *pseudo_low_entropy_source;
+  static const int pseudo_low_entropy_source =
+      base::RandInt(0, kMaxLowEntropySize - 1);
+  ;
+  return pseudo_low_entropy_source;
 }
 
 }  // namespace

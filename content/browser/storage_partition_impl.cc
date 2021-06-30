@@ -154,19 +154,19 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemoteStorage() {
   // NOTE: This use of sequence-local storage is only to ensure that the Remote
   // only lives as long as the UI-thread sequence, since the UI-thread sequence
   // may be torn down and reinitialized e.g. between unit tests.
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      mojo::Remote<storage::mojom::StorageService>>>
+  static base::SequenceLocalStorageSlot<
+      mojo::Remote<storage::mojom::StorageService>>
       remote_slot;
-  return remote_slot->GetOrCreateValue();
+  return remote_slot.GetOrCreateValue();
 }
 
 void RunInProcessStorageService(
     mojo::PendingReceiver<storage::mojom::StorageService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      std::unique_ptr<storage::StorageServiceImpl>>>
+  static base::SequenceLocalStorageSlot<
+      std::unique_ptr<storage::StorageServiceImpl>>
       service_storage_slot;
-  service_storage_slot->GetOrCreateValue() =
+  service_storage_slot.GetOrCreateValue() =
       std::make_unique<storage::StorageServiceImpl>(std::move(receiver),
                                                     /*io_task_runner=*/nullptr);
 }

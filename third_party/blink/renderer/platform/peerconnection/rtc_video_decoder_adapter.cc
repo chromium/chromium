@@ -93,10 +93,10 @@ class DecoderCounter {
 };
 
 DecoderCounter* GetDecoderCounter() {
-  static base::NoDestructor<DecoderCounter> s_counter;
+  static DecoderCounter s_counter;
   // Note that this will init only in the first call in the ctor, so it's still
   // single threaded.
-  return s_counter.get();
+  return &s_counter;
 }
 
 void FinishWait(base::WaitableEvent* waiter, bool* result_out, bool result) {

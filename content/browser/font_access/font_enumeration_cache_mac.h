@@ -6,16 +6,12 @@
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_MAC_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/task_runner.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/common/content_export.h"
 
 using blink::mojom::FontEnumerationStatus;
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace content {
 

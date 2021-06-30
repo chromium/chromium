@@ -8,12 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 namespace crashpad {
 class CrashReportDatabase;

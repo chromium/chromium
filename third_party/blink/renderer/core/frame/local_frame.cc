@@ -289,9 +289,9 @@ class BackForwardCacheBufferLimitTracker {
 };
 
 BackForwardCacheBufferLimitTracker& GetBackForwardCacheBufferLimitTracker() {
-  static base::NoDestructor<BackForwardCacheBufferLimitTracker>
+  static BackForwardCacheBufferLimitTracker
       back_forward_cache_buffer_limit_tracker;
-  return *back_forward_cache_buffer_limit_tracker;
+  return back_forward_cache_buffer_limit_tracker;
 }
 
 inline float ParentPageZoomFactor(LocalFrame* frame) {

@@ -8,7 +8,6 @@
 #include <iostream>
 
 #include "base/check.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
@@ -108,9 +107,8 @@ std::ostream& operator<<(std::ostream& stream, const AXTreeID& value) {
 }
 
 const AXTreeID& AXTreeIDUnknown() {
-  static const base::NoDestructor<AXTreeID> ax_tree_id_unknown(
-      ax::mojom::AXTreeIDType::kUnknown);
-  return *ax_tree_id_unknown;
+  static const AXTreeID ax_tree_id_unknown(ax::mojom::AXTreeIDType::kUnknown);
+  return ax_tree_id_unknown;
 }
 
 }  // namespace ui

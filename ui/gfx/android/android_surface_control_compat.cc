@@ -15,7 +15,6 @@
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
@@ -133,8 +132,8 @@ uint64_t g_agb_required_usage_bits = AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
 struct SurfaceControlMethods {
  public:
   static const SurfaceControlMethods& Get() {
-    static const base::NoDestructor<SurfaceControlMethods> instance;
-    return *instance;
+    static const SurfaceControlMethods instance;
+    return instance;
   }
 
   SurfaceControlMethods() {

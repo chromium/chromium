@@ -28,7 +28,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -132,12 +131,13 @@ void FixWindowStackingAccordingToGlobalMru(aura::Window* window_to_fix) {
 
 // Returns Jan 1, 2010 00:00:00 as a base::Time object in the local timezone.
 base::Time GetLocalEpoch() {
-  static base::NoDestructor<base::Time> local_epoch;
-  if (local_epoch->is_null()) {
+  static const base::Time local_epoch = [] {
+    base::Time local_epoch;
     ignore_result(base::Time::FromLocalExploded({2010, 1, 5, 1, 0, 0, 0, 0},
-                                                local_epoch.get()));
-  }
-  return *local_epoch;
+                                                &local_epoch));
+    return local_epoch;
+  }();
+  return local_epoch;
 }
 
 // Used to temporarily turn off the automatic window positioning while windows
