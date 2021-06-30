@@ -9,10 +9,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"

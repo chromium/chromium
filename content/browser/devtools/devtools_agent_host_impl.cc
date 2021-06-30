@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list.h"
-#include "base/stl_util.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/devtools_stream_file.h"
 #include "content/browser/devtools/forwarding_agent_host.h"

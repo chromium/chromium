@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/audio_service.h"

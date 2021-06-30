@@ -5,8 +5,8 @@
 #include "content/test/web_contents_observer_consistency_checker.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"

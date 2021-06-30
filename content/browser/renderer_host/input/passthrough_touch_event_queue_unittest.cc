@@ -11,10 +11,10 @@
 
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"

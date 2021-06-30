@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/threading/platform_thread.h"

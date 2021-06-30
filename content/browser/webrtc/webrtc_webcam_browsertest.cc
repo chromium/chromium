@@ -5,7 +5,7 @@
 #include "content/browser/webrtc/webrtc_webcam_browsertest.h"
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"

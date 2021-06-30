@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/barrier_closure.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "content/browser/background_fetch/storage/image_helpers.h"
 #include "content/browser/content_index/content_index.pb.h"

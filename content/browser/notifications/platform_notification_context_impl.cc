@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/notifications/blink_notification_service_impl.h"
 #include "content/browser/notifications/notification_database.h"
