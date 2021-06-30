@@ -160,8 +160,12 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   virtual void AddObserver(ColorModeObserver* observer) = 0;
   virtual void RemoveObserver(ColorModeObserver* observer) = 0;
 
-  // True if pref |kDarkModeEnabled| is true, which means the current color mode
-  // is dark.
+  // True if the current color mode is DARK. The default color mode is LIGHT if
+  // the DarkLightMode feature is enabled. And it can be changed through pref
+  // `kDarkModeEnabled`. But the default color mode is DARK if the
+  // DarkLightMode feature is disabled. And it can be overridden by
+  // ScopedLightModeAsDefault. See `override_light_mode_as_default_` for more
+  // details.
   virtual bool IsDarkModeEnabled() const = 0;
 
  protected:
