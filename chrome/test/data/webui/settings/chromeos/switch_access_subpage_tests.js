@@ -333,4 +333,23 @@ suite('ManageAccessibilityPageTests', function() {
     assertTrue(!!setPreviousData);
     assertEquals(0, Object.keys(setPreviousData.value).length);
   });
+
+  test(
+      'Setup guide starts automatically if no switches are assigned',
+      async () => {
+        loadTimeData.overrideValues({
+          showSwitchAccessSetupGuide: true,
+        });
+
+        initPage();
+        // Normally on startup, the browser proxy calls a C++ function,
+        // which then fires an event that calls this function.
+        page.onAssignmentsChanged_({select: [], next: [], previous: []});
+        Polymer.dom.flush();
+        await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
+
+        const setupDialog =
+            page.$$('settings-switch-access-setup-guide-dialog');
+        assertTrue(!!setupDialog);
+      });
 });

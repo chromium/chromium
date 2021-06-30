@@ -281,6 +281,14 @@ Polymer({
     this.selectAssignments_ = value[SwitchAccessCommand.SELECT];
     this.nextAssignments_ = value[SwitchAccessCommand.NEXT];
     this.previousAssignments_ = value[SwitchAccessCommand.PREVIOUS];
+
+    // Any complete assignment will have at least one switch assigned to SELECT.
+    // If this method is called with no SELECT switches, then the page has just
+    // loaded, and we should open the setup guide.
+    if (Object.keys(this.selectAssignments_).length === 0 &&
+        this.showSetupGuide_) {
+      this.openSetupGuide_();
+    }
   },
 
   /**
