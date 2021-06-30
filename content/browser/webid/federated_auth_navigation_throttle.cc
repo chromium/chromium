@@ -17,11 +17,38 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
+
+namespace {
+
+// Determines if the source and destination would need special permission to
+// get access to 1st party state in each other's contexts. Currently this only
+// determines if they are same-site based on the public suffix list, but later
+// should account for other considerations such as first-party sets or
+// enterprise policies.
+// Returns true if the source and destination would need permission. Both
+// arguments must be absolute URLs.
+bool AreCookieIsolatedPrincipals(url::Origin src_origin,
+                                 url::Origin dest_origin) {
+  if (src_origin.scheme() != dest_origin.scheme()) {
+    return true;
+  }
+
+  if (!net::registry_controlled_domains::SameDomainOrHost(
+          src_origin, dest_origin,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<NavigationThrottle>
@@ -54,7 +81,11 @@ FederatedAuthNavigationThrottle::WillStartRequest() {
   if (headers.HasHeader(kSecWebIdCsrfHeader))
     return NavigationThrottle::PROCEED;
 
-  if (IsFederationRequest(navigation_url)) {
+  const auto initiator_origin = navigation_handle()->GetInitiatorOrigin();
+  url::Origin navigation_origin = url::Origin::Create(navigation_url);
+
+  if (IsFederationRequest(navigation_url) && initiator_origin &&
+      AreCookieIsolatedPrincipals(*initiator_origin, navigation_origin)) {
     net::GetValueForKeyInQuery(navigation_url, "redirect_uri", &redirect_uri_);
 
     // Permission dialog is skipped if this RP/IdP pair already have the
@@ -64,10 +95,9 @@ FederatedAuthNavigationThrottle::WillStartRequest() {
             ->GetWebContents()
             ->GetBrowserContext()
             ->GetFederatedIdentityRequestPermissionContext();
-    const auto initiator_origin = navigation_handle()->GetInitiatorOrigin();
-    if (request_permission_delegate && initiator_origin &&
-        request_permission_delegate->HasRequestPermission(
-            *initiator_origin, url::Origin::Create(navigation_url))) {
+    if (request_permission_delegate &&
+        request_permission_delegate->HasRequestPermission(*initiator_origin,
+                                                          navigation_origin)) {
       RedirectUriData::Set(navigation_handle()->GetWebContents(),
                            redirect_uri_);
       return NavigationThrottle::PROCEED;

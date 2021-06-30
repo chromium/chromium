@@ -12,8 +12,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "content/browser/webid/id_token_request_callback_data.h"
+#include "content/browser/webid/test/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -55,74 +56,6 @@ constexpr char kIdpForbiddenHeader[] = "Sec-WebID-CSRF";
 constexpr char kIdToken[] = "[not a real token]";
 constexpr char kIdpEndpointTokenResponse[] =
     "{\"id_token\": \"[not a real token]\"}";
-
-// This fakes the request dialogs to always provide user consent.
-// Tests that need to vary the responses or set test expectations should use
-// MockIdentityRequestDialogController.
-// This also fakes an IdP sign-in page until tests can be set up to
-// verify the FederatedAuthResponse mechanics.
-class FakeIdentityRequestDialogController
-    : public content::IdentityRequestDialogController {
- public:
-  FakeIdentityRequestDialogController(
-      UserApproval initial_permission_response,
-      UserApproval token_exchange_permission_response)
-      : initial_permission_response_(initial_permission_response),
-        token_exchange_permission_response_(
-            token_exchange_permission_response) {}
-
-  ~FakeIdentityRequestDialogController() override = default;
-
-  FakeIdentityRequestDialogController(
-      const FakeIdentityRequestDialogController&) = delete;
-  FakeIdentityRequestDialogController& operator=(
-      const FakeIdentityRequestDialogController&) = delete;
-
-  void ShowInitialPermissionDialog(WebContents*,
-                                   const GURL&,
-                                   PermissionDialogMode mode,
-                                   InitialApprovalCallback callback) override {
-    std::move(callback).Run(initial_permission_response_);
-  }
-
-  void ShowIdProviderWindow(WebContents*,
-                            WebContents* idp_web_contents,
-                            const GURL&,
-                            IdProviderWindowClosedCallback callback) override {
-    close_idp_window_callback_ = std::move(callback);
-    auto* request_callback_data =
-        IdTokenRequestCallbackData::Get(idp_web_contents);
-    EXPECT_TRUE(request_callback_data);
-
-    // TODO(kenrb, majidvp): This is faking the IdP response which in reality
-    // comes from the navigator.id.provide() API call. We should instead load
-    // the IdP page in the new WebContents and that API's behavior.
-    auto rp_done_callback = request_callback_data->TakeDoneCallback();
-    IdTokenRequestCallbackData::Remove(idp_web_contents);
-    EXPECT_TRUE(rp_done_callback);
-    std::move(rp_done_callback).Run(kIdToken);
-  }
-
-  void CloseIdProviderWindow() override {
-    std::move(close_idp_window_callback_).Run();
-  }
-
-  void ShowTokenExchangePermissionDialog(
-      content::WebContents*,
-      const GURL&,
-      TokenExchangeApprovalCallback callback) override {
-    std::move(callback).Run(token_exchange_permission_response_);
-  }
-
- private:
-  // User action on the initial IdP tracking permission prompt.
-  UserApproval initial_permission_response_ = UserApproval::kApproved;
-
-  // User action on the token exchange permission prompt.
-  UserApproval token_exchange_permission_response_ = UserApproval::kApproved;
-
-  base::OnceClosure close_idp_window_callback_;
-};
 
 // This class implements the IdP logic, and responds to requests sent to the
 // test HTTP server.
@@ -280,7 +213,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
       IdentityRequestDialogController::UserApproval initial_permission_response,
       IdentityRequestDialogController::UserApproval token_exchange_response) {
     auto controller = std::make_unique<FakeIdentityRequestDialogController>(
-        initial_permission_response, token_exchange_response);
+        initial_permission_response, token_exchange_response, kIdToken);
     test_browser_client_->SetIdentityRequestDialogController(
         std::move(controller));
   }
@@ -339,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, InitialPermissionDeclined) {
   EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
 }
 
-// Simulate the user declining tot share the ID token after it has been
+// Simulate the user declining to share the ID token after it has been
 // provided.
 // TODO(kenrb): Add a variant of this test that denies approval when the token
 // has been provided from the idp_endpoint. Currently the permission prompt does

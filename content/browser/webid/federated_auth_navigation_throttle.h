@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -19,7 +20,8 @@ class NavigationHandle;
 // Used to delay a navigation while the browser gathers the user's
 // awareness / permission of the tracking risks involved in third party
 // federated identity flows.
-class FederatedAuthNavigationThrottle : public NavigationThrottle {
+class CONTENT_EXPORT FederatedAuthNavigationThrottle
+    : public NavigationThrottle {
  public:
   explicit FederatedAuthNavigationThrottle(NavigationHandle* handle);
   ~FederatedAuthNavigationThrottle() override;
@@ -31,12 +33,12 @@ class FederatedAuthNavigationThrottle : public NavigationThrottle {
   static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
       NavigationHandle* handle);
 
- private:
   // NavigationThrottle implementation:
   NavigationThrottle::ThrottleCheckResult WillStartRequest() override;
   NavigationThrottle::ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
+ private:
   void OnSigninApproved(IdentityRequestDialogController::UserApproval approval);
   void OnTokenProvisionApproved(
       IdentityRequestDialogController::UserApproval approval);
