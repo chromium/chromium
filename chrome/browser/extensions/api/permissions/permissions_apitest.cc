@@ -35,6 +35,11 @@ using ContextType = ExtensionBrowserTest::ContextType;
 
 class ExperimentalApiTest : public ExtensionApiTest {
  public:
+  ExperimentalApiTest() = default;
+  ~ExperimentalApiTest() override = default;
+  ExperimentalApiTest(const ExperimentalApiTest&) = delete;
+  ExperimentalApiTest& operator=(const ExperimentalApiTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kEnableExperimentalExtensionApis);
@@ -43,6 +48,11 @@ class ExperimentalApiTest : public ExtensionApiTest {
 
 class PermissionsApiTest : public ExtensionApiTest {
  public:
+  PermissionsApiTest() = default;
+  ~PermissionsApiTest() override = default;
+  PermissionsApiTest(const PermissionsApiTest&) = delete;
+  PermissionsApiTest& operator=(const PermissionsApiTest&) = delete;
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -52,6 +62,14 @@ class PermissionsApiTest : public ExtensionApiTest {
 class PermissionsApiTestWithContextType
     : public PermissionsApiTest,
       public testing::WithParamInterface<ContextType> {
+ public:
+  PermissionsApiTestWithContextType() = default;
+  ~PermissionsApiTestWithContextType() override = default;
+  PermissionsApiTestWithContextType(const PermissionsApiTestWithContextType&) =
+      delete;
+  PermissionsApiTestWithContextType& operator=(
+      const PermissionsApiTestWithContextType&) = delete;
+
  protected:
   bool RunTest(const char* extension_name) {
     return RunExtensionTest(

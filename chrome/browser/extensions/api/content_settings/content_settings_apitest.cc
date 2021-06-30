@@ -50,7 +50,12 @@ using ContextType = ExtensionApiTest::ContextType;
 
 class ExtensionContentSettingsApiTest : public ExtensionApiTest {
  public:
-  ExtensionContentSettingsApiTest() : profile_(nullptr) {}
+  ExtensionContentSettingsApiTest() = default;
+  ~ExtensionContentSettingsApiTest() override = default;
+  ExtensionContentSettingsApiTest(const ExtensionContentSettingsApiTest&) =
+      delete;
+  ExtensionContentSettingsApiTest& operator=(
+      const ExtensionContentSettingsApiTest&) = delete;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -219,7 +224,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
   }
 
  private:
-  Profile* profile_;
+  Profile* profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
@@ -227,6 +232,14 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
 class ExtensionContentSettingsApiTestWithContextType
     : public ExtensionContentSettingsApiTest,
       public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionContentSettingsApiTestWithContextType() = default;
+  ~ExtensionContentSettingsApiTestWithContextType() override = default;
+  ExtensionContentSettingsApiTestWithContextType(
+      const ExtensionContentSettingsApiTestWithContextType&) = delete;
+  ExtensionContentSettingsApiTestWithContextType& operator=(
+      const ExtensionContentSettingsApiTestWithContextType&) = delete;
+
  protected:
   bool RunLazyTest(const char* extension_name) {
     return RunExtensionTest(

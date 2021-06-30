@@ -103,6 +103,13 @@ constexpr char kPersistentExtensionId[] = "cmgkkmeeoiceijkpmaabbmpgnkpaaela";
 class ExtensionContextMenuBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
+  ExtensionContextMenuBrowserTest() = default;
+  ~ExtensionContextMenuBrowserTest() override = default;
+  ExtensionContextMenuBrowserTest(const ExtensionContextMenuBrowserTest&) =
+      delete;
+  ExtensionContextMenuBrowserTest& operator=(
+      const ExtensionContextMenuBrowserTest&) = delete;
+
   // Returns the active WebContents.
   WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -260,6 +267,12 @@ class ExtensionContextMenuLazyTest
     : public ExtensionContextMenuBrowserTest,
       public testing::WithParamInterface<ContextType> {
  public:
+  ExtensionContextMenuLazyTest() = default;
+  ~ExtensionContextMenuLazyTest() override = default;
+  ExtensionContextMenuLazyTest(const ExtensionContextMenuLazyTest&) = delete;
+  ExtensionContextMenuLazyTest& operator=(const ExtensionContextMenuLazyTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     ExtensionContextMenuBrowserTest::SetUpOnMainThread();
     // Set shorter delays to prevent test timeouts.

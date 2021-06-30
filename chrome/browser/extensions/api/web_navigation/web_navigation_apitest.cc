@@ -199,7 +199,9 @@ class WebNavigationApiTest : public ExtensionApiTest {
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&HandleTestRequest));
   }
-  ~WebNavigationApiTest() override {}
+  ~WebNavigationApiTest() override = default;
+  WebNavigationApiTest(const WebNavigationApiTest&) = delete;
+  WebNavigationApiTest& operator=(const WebNavigationApiTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
@@ -215,9 +217,6 @@ class WebNavigationApiTest : public ExtensionApiTest {
     // with deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebNavigationApiTest);
 };
 
 class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
@@ -240,6 +239,14 @@ using ContextType = extensions::ExtensionBrowserTest::ContextType;
 class WebNavigationApiTestWithContextType
     : public WebNavigationApiTest,
       public testing::WithParamInterface<ContextType> {
+ public:
+  WebNavigationApiTestWithContextType() = default;
+  ~WebNavigationApiTestWithContextType() override = default;
+  WebNavigationApiTestWithContextType(
+      const WebNavigationApiTestWithContextType&) = delete;
+  WebNavigationApiTestWithContextType& operator=(
+      const WebNavigationApiTestWithContextType&) = delete;
+
  protected:
   bool RunTest(const char* name,
                bool allow_in_incognito = false) WARN_UNUSED_RESULT {

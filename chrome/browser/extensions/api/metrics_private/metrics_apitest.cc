@@ -137,6 +137,11 @@ class ExtensionMetricsApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
+  ExtensionMetricsApiTest() = default;
+  ~ExtensionMetricsApiTest() override = default;
+  ExtensionMetricsApiTest(const ExtensionMetricsApiTest&) = delete;
+  ExtensionMetricsApiTest& operator=(const ExtensionMetricsApiTest&) = delete;
+
   bool RunComponentTest(const char* extension_name) {
     return RunExtensionTest(
         extension_name, {},

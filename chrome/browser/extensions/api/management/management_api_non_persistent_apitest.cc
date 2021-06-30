@@ -24,6 +24,14 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class ManagementApiNonPersistentApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
+ public:
+  ManagementApiNonPersistentApiTest() = default;
+  ~ManagementApiNonPersistentApiTest() override = default;
+  ManagementApiNonPersistentApiTest(const ManagementApiNonPersistentApiTest&) =
+      delete;
+  ManagementApiNonPersistentApiTest& operator=(
+      const ManagementApiNonPersistentApiTest&) = delete;
+
  protected:
   const Extension* LoadNonPersistentExtension(const char* relative_path) {
     return LoadExtension(

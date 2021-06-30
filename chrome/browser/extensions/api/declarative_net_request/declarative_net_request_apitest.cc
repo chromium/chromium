@@ -24,6 +24,10 @@ class DeclarativeNetRequestAPItest
       public testing::WithParamInterface<ContextType> {
  public:
   DeclarativeNetRequestAPItest() = default;
+  ~DeclarativeNetRequestAPItest() override = default;
+  DeclarativeNetRequestAPItest(const DeclarativeNetRequestAPItest&) = delete;
+  DeclarativeNetRequestAPItest& operator=(const DeclarativeNetRequestAPItest&) =
+      delete;
 
  protected:
   // ExtensionApiTest override.

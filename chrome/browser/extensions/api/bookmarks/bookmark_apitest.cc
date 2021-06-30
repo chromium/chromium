@@ -28,6 +28,11 @@ using ContextType = ExtensionApiTest::ContextType;
 
 class BookmarksApiTest : public ExtensionApiTest,
                          public testing::WithParamInterface<ContextType> {
+ public:
+  BookmarksApiTest() = default;
+  ~BookmarksApiTest() override = default;
+  BookmarksApiTest(const BookmarksApiTest&) = delete;
+  BookmarksApiTest& operator=(const BookmarksApiTest&) = delete;
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,

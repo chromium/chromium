@@ -34,12 +34,25 @@ namespace {
 using ContextType = ExtensionApiTest::ContextType;
 
 class NativeMessagingApiTestBase : public ExtensionApiTest {
+ public:
+  NativeMessagingApiTestBase() = default;
+  ~NativeMessagingApiTestBase() override = default;
+  NativeMessagingApiTestBase(const NativeMessagingApiTestBase&) = delete;
+  NativeMessagingApiTestBase& operator=(const NativeMessagingApiTestBase&) =
+      delete;
+
  protected:
   extensions::ScopedTestNativeMessagingHost test_host_;
 };
 
 class NativeMessagingApiTest : public NativeMessagingApiTestBase,
                                public testing::WithParamInterface<ContextType> {
+ public:
+  NativeMessagingApiTest() = default;
+  ~NativeMessagingApiTest() override = default;
+  NativeMessagingApiTest(const NativeMessagingApiTest&) = delete;
+  NativeMessagingApiTest& operator=(const NativeMessagingApiTest&) = delete;
+
  protected:
   bool RunTest(const char* extension_name) {
     if (GetParam() == ContextType::kPersistentBackground)

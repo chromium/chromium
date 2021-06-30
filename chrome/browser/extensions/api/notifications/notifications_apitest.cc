@@ -116,6 +116,11 @@ enum class WindowState {
 
 class NotificationsApiTest : public extensions::ExtensionApiTest {
  public:
+  NotificationsApiTest() = default;
+  ~NotificationsApiTest() override = default;
+  NotificationsApiTest(const NotificationsApiTest&) = delete;
+  NotificationsApiTest& operator=(const NotificationsApiTest&) = delete;
+
   const Extension* LoadExtensionAndWait(
       const std::string& test_name) {
     base::FilePath extdir = test_data_dir_.AppendASCII(test_name);
@@ -224,6 +229,14 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 class NotificationsApiTestWithBackgroundType
     : public NotificationsApiTest,
       public testing::WithParamInterface<ContextType> {
+ public:
+  NotificationsApiTestWithBackgroundType() = default;
+  ~NotificationsApiTestWithBackgroundType() override = default;
+  NotificationsApiTestWithBackgroundType(
+      const NotificationsApiTestWithBackgroundType&) = delete;
+  NotificationsApiTestWithBackgroundType& operator=(
+      const NotificationsApiTestWithBackgroundType&) = delete;
+
  protected:
   bool RunTest(const char* name) {
     return RunExtensionTest(

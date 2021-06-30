@@ -17,6 +17,12 @@ namespace extensions {
 using ContextType = ExtensionApiTest::ContextType;
 
 class ExecuteScriptApiTestBase : public ExtensionApiTest {
+ public:
+  ExecuteScriptApiTestBase() = default;
+  ~ExecuteScriptApiTestBase() override = default;
+  ExecuteScriptApiTestBase(const ExecuteScriptApiTestBase&) = delete;
+  ExecuteScriptApiTestBase& operator=(const ExecuteScriptApiTestBase&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -29,6 +35,12 @@ class ExecuteScriptApiTestBase : public ExtensionApiTest {
 
 class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
                              public testing::WithParamInterface<ContextType> {
+ public:
+  ExecuteScriptApiTest() = default;
+  ~ExecuteScriptApiTest() override = default;
+  ExecuteScriptApiTest(const ExecuteScriptApiTest&) = delete;
+  ExecuteScriptApiTest& operator=(const ExecuteScriptApiTest&) = delete;
+
  protected:
   bool RunTest(const char* extension_name, bool allow_file_access = false) {
     return RunExtensionTest(

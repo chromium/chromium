@@ -20,6 +20,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ReadFromDocument) {
 
 class CookiesApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {
+ public:
+  CookiesApiTest() = default;
+  ~CookiesApiTest() override = default;
+  CookiesApiTest(const CookiesApiTest&) = delete;
+  CookiesApiTest& operator=(const CookiesApiTest&) = delete;
+
  protected:
   bool RunTest(const char* extension_name,
                bool allow_in_incognito = false,

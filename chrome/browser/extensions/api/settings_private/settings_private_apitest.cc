@@ -50,8 +50,10 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class SettingsPrivateApiTest : public ExtensionApiTest,
                                public testing::WithParamInterface<ContextType> {
  public:
-  SettingsPrivateApiTest() {}
-  ~SettingsPrivateApiTest() override {}
+  SettingsPrivateApiTest() = default;
+  ~SettingsPrivateApiTest() override = default;
+  SettingsPrivateApiTest(const SettingsPrivateApiTest&) = delete;
+  SettingsPrivateApiTest& operator=(const SettingsPrivateApiTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
@@ -85,8 +87,6 @@ class SettingsPrivateApiTest : public ExtensionApiTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsPrivateApiTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

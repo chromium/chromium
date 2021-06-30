@@ -130,6 +130,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
 class NonPersistentExtensionTabsTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
+ public:
+  NonPersistentExtensionTabsTest() = default;
+  ~NonPersistentExtensionTabsTest() override = default;
+  NonPersistentExtensionTabsTest(const NonPersistentExtensionTabsTest&) =
+      delete;
+  NonPersistentExtensionTabsTest& operator=(
+      const NonPersistentExtensionTabsTest&) = delete;
+
  protected:
   const Extension* LoadNonPersistentExtension(const char* relative_path) {
     return LoadExtension(

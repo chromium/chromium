@@ -28,6 +28,11 @@
 
 class ExtensionApiTabTest : public extensions::ExtensionApiTest {
  public:
+  ExtensionApiTabTest() = default;
+  ~ExtensionApiTabTest() override = default;
+  ExtensionApiTabTest(const ExtensionApiTabTest&) = delete;
+  ExtensionApiTabTest& operator=(const ExtensionApiTabTest&) = delete;
+
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");

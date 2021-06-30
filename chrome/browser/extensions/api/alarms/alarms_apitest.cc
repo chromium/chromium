@@ -20,6 +20,11 @@ using ContextType = ExtensionApiTest::ContextType;
 class AlarmsApiTest : public ExtensionApiTest,
                       public testing::WithParamInterface<ContextType> {
  public:
+  AlarmsApiTest() = default;
+  ~AlarmsApiTest() override = default;
+  AlarmsApiTest& operator=(const AlarmsApiTest&) = delete;
+  AlarmsApiTest(const AlarmsApiTest&) = delete;
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");

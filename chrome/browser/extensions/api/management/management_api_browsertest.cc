@@ -43,6 +43,14 @@ namespace test_utils = extension_function_test_utils;
 namespace extensions {
 
 class ExtensionManagementApiBrowserTest : public ExtensionBrowserTest {
+ public:
+  ExtensionManagementApiBrowserTest() = default;
+  ~ExtensionManagementApiBrowserTest() override = default;
+  ExtensionManagementApiBrowserTest(const ExtensionManagementApiBrowserTest&) =
+      delete;
+  ExtensionManagementApiBrowserTest& operator=(
+      const ExtensionManagementApiBrowserTest&) = delete;
+
  protected:
   bool CrashEnabledExtension(const std::string& extension_id) {
     ExtensionHost* background_host =
@@ -63,6 +71,14 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class ExtensionManagementApiTestWithBackgroundType
     : public ExtensionManagementApiBrowserTest,
       public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionManagementApiTestWithBackgroundType() = default;
+  ~ExtensionManagementApiTestWithBackgroundType() override = default;
+  ExtensionManagementApiTestWithBackgroundType(
+      const ExtensionManagementApiTestWithBackgroundType&) = delete;
+  ExtensionManagementApiTestWithBackgroundType& operator=(
+      const ExtensionManagementApiTestWithBackgroundType&) = delete;
+
  protected:
   const Extension* LoadExtensionWithParamOptions(const base::FilePath& path) {
     return LoadExtension(path, {.load_as_service_worker =

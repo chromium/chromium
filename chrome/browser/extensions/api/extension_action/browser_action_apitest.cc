@@ -104,8 +104,10 @@ void VerifyIconsMatch(const gfx::Image& bar_rendering,
 
 class BrowserActionApiTest : public ExtensionApiTest {
  public:
-  BrowserActionApiTest() {}
-  ~BrowserActionApiTest() override {}
+  BrowserActionApiTest() = default;
+  ~BrowserActionApiTest() override = default;
+  BrowserActionApiTest(const BrowserActionApiTest&) = delete;
+  BrowserActionApiTest& operator=(const BrowserActionApiTest&) = delete;
 
   void TearDownOnMainThread() override {
     // Clean up the test util first, so that any created UI properly removes
@@ -133,8 +135,6 @@ class BrowserActionApiTest : public ExtensionApiTest {
 
  private:
   std::unique_ptr<ExtensionActionTestHelper> browser_action_test_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionApiTest);
 };
 
 // Canvas tests rely on the harness producing pixel output in order to read back
@@ -154,6 +154,14 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class BrowserActionApiTestWithContextType
     : public BrowserActionApiTest,
       public testing::WithParamInterface<ContextType> {
+ public:
+  BrowserActionApiTestWithContextType() = default;
+  ~BrowserActionApiTestWithContextType() override = default;
+  BrowserActionApiTestWithContextType(
+      const BrowserActionApiTestWithContextType&) = delete;
+  BrowserActionApiTestWithContextType& operator=(
+      const BrowserActionApiTestWithContextType&) = delete;
+
  protected:
   const extensions::Extension* LoadExtensionWithParamOptions(
       const base::FilePath& path) {
