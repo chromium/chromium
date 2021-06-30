@@ -114,12 +114,14 @@ class CONTENT_EXPORT StoragePartitionId {
   const StoragePartitionConfig& config() const { return config_; }
 
   bool operator==(const StoragePartitionId& rhs) const {
-    return id_ == rhs.id_;
+    return config_ == rhs.config_;
   }
   bool operator!=(const StoragePartitionId& rhs) const {
-    return id_ != rhs.id_;
+    return config_ != rhs.config_;
   }
-  bool operator<(const StoragePartitionId& rhs) const { return id_ < rhs.id_; }
+  bool operator<(const StoragePartitionId& rhs) const {
+    return config_ < rhs.config_;
+  }
 
   // String representation of this object for debug logging purposes.
   std::string ToString() const;
@@ -127,14 +129,10 @@ class CONTENT_EXPORT StoragePartitionId {
  private:
   std::string id_;
 
-  // Config generated with the same information used to generate `id_`.
+  // Config generated with the same information used to generate |id_|.
   // Currently this field is being used to determine if we can replace the
-  // string representation with a StoragePartitionConfig. This field is
-  // intentionally left out of the comparison operators because we want equality
-  // and less-than to work the exact same way they did before this field was
-  // added. This field is only intended to be used by code in
-  // NavigationControllerImpl to establish whether it is safe to change the
-  // StoragePartitionId representation.
+  // string representation with a StoragePartitionConfig, and |id_| is ignored
+  // in favor of |config_|, but the results are expected to be equivalent.
   StoragePartitionConfig config_;
 };
 

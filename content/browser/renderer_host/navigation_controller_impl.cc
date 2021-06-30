@@ -40,7 +40,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
@@ -2580,10 +2579,10 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
 
     // Verify that the config we generated now matches the one that
     // was generated when the namespace was added to the map.
-    DCHECK_EQ(partition_config, it->first.config());
     if (partition_config != it->first.config()) {
       LogStoragePartitionIdCrashKeys(it->first, partition_id);
     }
+    CHECK_EQ(partition_config, it->first.config());
 
     return it->second.get();
   }
@@ -4034,10 +4033,10 @@ void NavigationControllerImpl::OnStoragePartitionIdAdded(
   auto it = partition_config_to_id_map_.insert(
       std::make_pair(partition_id.config(), partition_id));
   bool successful_insert = it.second;
-  DCHECK(successful_insert);
   if (!successful_insert) {
     LogStoragePartitionIdCrashKeys(it.first->second, partition_id);
   }
+  CHECK(successful_insert);
 }
 
 void NavigationControllerImpl::LogStoragePartitionIdCrashKeys(
@@ -4052,8 +4051,6 @@ void NavigationControllerImpl::LogStoragePartitionIdCrashKeys(
       base::debug::AllocateCrashKeyString("new_partition_id",
                                           base::debug::CrashKeySize::Size256),
       new_partition_id.ToString());
-
-  base::debug::DumpWithoutCrashing();
 }
 
 std::vector<mojom::AppHistoryEntryPtr>
