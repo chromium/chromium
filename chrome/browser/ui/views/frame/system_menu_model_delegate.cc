@@ -98,10 +98,10 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
     trs->LoadTabsFromLastSession();
     if (!trs->entries().empty()) {
       if (trs->entries().front()->type == sessions::TabRestoreService::WINDOW) {
-        string_id = IDS_RESTORE_WINDOW;
+        string_id = IDS_REOPEN_WINDOW;
       } else if (trs->entries().front()->type ==
                  sessions::TabRestoreService::GROUP) {
-        string_id = IDS_RESTORE_GROUP;
+        string_id = IDS_REOPEN_GROUP;
       }
     }
   }

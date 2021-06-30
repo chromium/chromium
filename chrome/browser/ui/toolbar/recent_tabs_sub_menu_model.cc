@@ -586,7 +586,7 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
       std::make_unique<ui::SimpleMenuModel>(this);
   const int restore_all_command_id = GetAndIncrementNextMenuID();
   window_model->AddItemWithStringIdAndIcon(
-      restore_all_command_id, IDS_RESTORE_ALL_TABS,
+      restore_all_command_id, IDS_RESTORE_WINDOW,
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
   local_window_items_.emplace(restore_all_command_id, window.id);
 
@@ -648,7 +648,7 @@ RecentTabsSubMenuModel::CreateGroupSubMenuModel(
       std::make_unique<ui::SimpleMenuModel>(this);
   const int command_id = GetAndIncrementNextMenuID();
   group_model->AddItemWithStringIdAndIcon(
-      command_id, IDS_RESTORE_ALL_TABS,
+      command_id, IDS_RESTORE_GROUP,
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
   local_group_items_.emplace(command_id, group.id);
   for (auto& tab : group.tabs) {

@@ -1249,11 +1249,17 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_RESTORE_TAB" desc="The text label of the Restore Tab menu item">
           R&amp;eopen closed tab
         </message>
-        <message name="IDS_RESTORE_WINDOW" desc="The text label of the Restore Window menu item">
+        <message name="IDS_REOPEN_WINDOW" desc="The text label of the Reopen Closed Window menu item">
           R&amp;eopen closed window
         </message>
-        <message name="IDS_RESTORE_GROUP" desc="The text label of the Restore Group menu item">
+        <message name="IDS_REOPEN_GROUP" desc="The text label of the Reopen Closed Group menu item">
           Reopen closed group
+        </message>
+        <message name="IDS_RESTORE_WINDOW" desc="The text label of the Restore Window menu item">
+          &amp;Restore window
+        </message>
+        <message name="IDS_RESTORE_GROUP" desc="The text label of the Restore Group menu item">
+          &amp;Restore group
         </message>
         <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;window...
@@ -1290,11 +1296,17 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_RESTORE_TAB" desc="In Title Case: The text label of the Restore Tab menu item">
           R&amp;eopen Closed Tab
         </message>
-        <message name="IDS_RESTORE_WINDOW" desc="In Title Case: The text label of the Restore Window menu item">
+        <message name="IDS_REOPEN_WINDOW" desc="In Title Case: The text label of the Reopen Closed Window menu item">
           R&amp;eopen Closed Window
         </message>
-        <message name="IDS_RESTORE_GROUP" desc="In Title Case: The text label of the Restore Group menu item">
+        <message name="IDS_REOPEN_GROUP" desc="In Title Case: The text label of the Reopen Closed Group menu item">
           Reopen Closed Group
+        </message>
+        <message name="IDS_RESTORE_WINDOW" desc="In Title Case: The text label of the Restore Window menu item">
+          &amp;Restore Window
+        </message>
+        <message name="IDS_RESTORE_GROUP" desc="In Title Case: The text label of the Restore Group menu item">
+          &amp;Restore Group
         </message>
         <message name="IDS_NAME_WINDOW" desc="In Title Case: The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;Window...
