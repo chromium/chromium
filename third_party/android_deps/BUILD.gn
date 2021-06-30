@@ -1265,6 +1265,13 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("com_google_android_play_core_java") {
+    aar_path = "libs/com_google_android_play_core/core-1.10.0.aar"
+    info_path =
+        "libs/com_google_android_play_core/com_google_android_play_core.info"
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("google_firebase_firebase_iid_java") {
     aar_path = "libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
     info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
