@@ -335,43 +335,6 @@ bool LocaleNotChanged(const std::string& pref_locale,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool IsDeviceAccountSignedIn(const Profile* const profile) {
-  const crosapi::mojom::BrowserInitParams* const init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
-  // We will need to check for the presence of the Device Account in a few lines
-  // below but for Guest and Managed Guest Sessions, "Device Account" is
-  // meaningless. Hence, we don't need any further checks. Early exit here.
-  if (init_params->session_type == crosapi::mojom::SessionType::kGuestSession ||
-      init_params->session_type ==
-          crosapi::mojom::SessionType::kPublicSession) {
-    return true;
-  }
-
-  if (init_params->device_mode != crosapi::mojom::DeviceMode::kConsumer &&
-      init_params->device_mode != crosapi::mojom::DeviceMode::kEnterprise) {
-    return true;
-  }
-
-  // Ash did not send any value, not even an empty string. This can only happen
-  // if we have an old version of Ash. Early exit.
-  if (!init_params->device_account_gaia_id.has_value())
-    return true;
-
-  // Profile must have the Device Account signed in. This is a temporary check
-  // until this is guaranteed via go/cros-dent-1-lacros.
-  ProfileAttributesStorage& profile_attributes_storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage.GetProfileAttributesWithPath(
-          profile->GetPath());
-  if (!entry) {
-    return false;
-  }
-  return entry->GetGAIAId() == init_params->device_account_gaia_id;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 // static
@@ -944,24 +907,9 @@ bool ProfileImpl::IsOffTheRecord() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ProfileImpl::IsMainProfile() const {
   // Profile must be at "Default" path.
-  if (GetBaseName().value() != chrome::kInitialProfile)
-    return false;
-
-  // Until go/cros-dent-1-lacros is launched, the user could have signed into
-  // `this` Lacros Profile with a different account than the "Device Account"
-  // used to sign into Ash. We need to return `false` in this case in spite of
-  // the fact that this may mean that Lacros does not have _any_ Main Profile.
-  // This is acceptable because the check for `IsMainProfile` is done by
-  // sensitive services like Policy and Certs and we do not want to expose the
-  // Device Account's certs to non-Device Accounts (Think of the case when the
-  // Device Account has sensitive Enterprise SSL client certs).
-  // TODO(sinhak): Remove this after launching go/cros-dent-1-lacros.
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
-  if (!init_params->use_new_account_manager)
-    return IsDeviceAccountSignedIn(this);
-
-  return true;
+  // `IdentityManager' will guarantee that the Chrome OS Device Account is
+  // signed into `this' Profile, if it's the Main Profile.
+  return GetBaseName().value() == chrome::kInitialProfile;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

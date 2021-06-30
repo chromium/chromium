@@ -1195,67 +1195,18 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ProfileBrowserTest,
     IsMainProfileReturnsTrueForMainProfileInRegularSessions) {
-  // Setup.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  const std::string kFakePrimaryUsername = "user@example.com";
-  const std::string kFakeGaiaId = "fake-gaia-id";
-  ProfileAttributesStorage& profile_attributes_storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
   const base::FilePath profile_path =
       browser()->profile()->GetPath().DirName().Append(chrome::kInitialProfile);
-  // Emulates a fake sign-in with `kFakeGaiaId`.
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage.GetProfileAttributesWithPath(profile_path);
-  ASSERT_TRUE(entry);
-  entry->SetAuthInfo(kFakeGaiaId, base::UTF8ToUTF16(kFakePrimaryUsername),
-                     /*is_consented_primary_account=*/false);
-
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      crosapi::mojom::BrowserInitParams::New();
-  init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
-  init_params->device_mode = crosapi::mojom::DeviceMode::kConsumer;
-  init_params->device_account_gaia_id = kFakeGaiaId;
-  chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
-      std::move(init_params));
-
-  // Test.
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(profile_path);
   EXPECT_TRUE(profile->IsMainProfile());
 }
 
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
-                       IsMainProfileReturnsTrueForOTRProfileInRegularSessions) {
-  // Setup.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  const std::string kFakePrimaryUsername = "user@example.com";
-  const std::string kFakeGaiaId = "fake-gaia-id";
-  ProfileAttributesStorage& profile_attributes_storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+IN_PROC_BROWSER_TEST_F(
+    ProfileBrowserTest,
+    IsMainProfileReturnsFalseForOTRProfileInRegularSessions) {
   const base::FilePath profile_path =
       browser()->profile()->GetPath().DirName().Append(chrome::kInitialProfile);
-  // Emulates a fake sign-in with `kFakeGaiaId`.
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage.GetProfileAttributesWithPath(profile_path);
-  ASSERT_TRUE(entry);
-  entry->SetAuthInfo(kFakeGaiaId, base::UTF8ToUTF16(kFakePrimaryUsername),
-                     /*is_consented_primary_account=*/false);
-
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      crosapi::mojom::BrowserInitParams::New();
-  init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
-  init_params->device_mode = crosapi::mojom::DeviceMode::kConsumer;
-  init_params->device_account_gaia_id = kFakeGaiaId;
-  chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
-      std::move(init_params));
-
-  // Test.
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(profile_path);
   EXPECT_FALSE(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
