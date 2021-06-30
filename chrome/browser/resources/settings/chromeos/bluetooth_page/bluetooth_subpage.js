@@ -586,7 +586,7 @@ Polymer({
     this.bluetoothPrivate.forgetDevice(device.address, () => {
       if (chrome.runtime.lastError) {
         console.error(
-            'Error forgetting: ' + device.name + ': ' +
+            'Error forgetting bluetooth device: ' +
             chrome.runtime.lastError.message);
       }
     });
