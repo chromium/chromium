@@ -12,6 +12,7 @@
 #include "base/win/windows_types.h"
 #include "base/win/wmi.h"
 #include "net/base/network_interfaces.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Those headers need defines from windows_types.h, thus have to come after it.
 #include <iphlpapi.h>      // NOLINT(build/include_order)

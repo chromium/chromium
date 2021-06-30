@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/containers/cxx20_erase_list.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"

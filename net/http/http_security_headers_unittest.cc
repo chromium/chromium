@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/base64.h"
+#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "crypto/sha2.h"
 #include "net/base/host_port_pair.h"
