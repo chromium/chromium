@@ -58,12 +58,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
   // TODO(crbug.com/1194709): Add these to crosapi::mojom::AppController:
-  void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                LoadIconCallback callback);
   content::WebContents* Launch(const std::string& app_id,
                                int32_t event_flags,
                                apps::mojom::LaunchSource launch_source,
@@ -102,6 +96,11 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void UnpauseApp(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,
                     GetMenuModelCallback callback) override;
+  void LoadIcon(const std::string& app_id,
+                apps::mojom::IconKeyPtr icon_key,
+                apps::mojom::IconType icon_type,
+                int32_t size_hint_in_dip,
+                LoadIconCallback callback) override;
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;

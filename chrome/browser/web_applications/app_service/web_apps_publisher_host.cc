@@ -120,11 +120,10 @@ void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
                                     apps::mojom::IconKeyPtr icon_key,
                                     apps::mojom::IconType icon_type,
                                     int32_t size_hint_in_dip,
-                                    bool allow_placeholder_icon,
                                     LoadIconCallback callback) {
-  publisher_helper().LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
-                              size_hint_in_dip, allow_placeholder_icon,
-                              std::move(callback));
+  publisher_helper().LoadIcon(
+      app_id, std::move(icon_key), std::move(icon_type), size_hint_in_dip,
+      /*allow_placeholder_icon=*/false, std::move(callback));
 }
 
 content::WebContents* WebAppsPublisherHost::Launch(

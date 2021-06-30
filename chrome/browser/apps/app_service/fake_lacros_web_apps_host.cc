@@ -107,4 +107,11 @@ void FakeLacrosWebAppsHost::GetMenuModel(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
+void FakeLacrosWebAppsHost::LoadIcon(const std::string& app_id,
+                                     apps::mojom::IconKeyPtr icon_key,
+                                     apps::mojom::IconType icon_type,
+                                     int32_t size_hint_in_dip,
+                                     LoadIconCallback callback) {
+  NOTIMPLEMENTED();
+}
 }  // namespace apps

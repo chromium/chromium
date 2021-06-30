@@ -37,6 +37,11 @@ class FakeLacrosWebAppsHost : public crosapi::mojom::AppController {
   void UnpauseApp(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,
                     GetMenuModelCallback callback) override;
+  void LoadIcon(const std::string& app_id,
+                apps::mojom::IconKeyPtr icon_key,
+                apps::mojom::IconType icon_type,
+                int32_t size_hint_in_dip,
+                LoadIconCallback callback) override;
 
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 };

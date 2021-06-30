@@ -94,6 +94,11 @@ mojom("mojom") {
           cpp = "::apps::mojom::IconValuePtr"
           move_only = true
         },
+        {
+          mojom = "crosapi.mojom.IconKey"
+          cpp = "::apps::mojom::IconKeyPtr"
+          move_only = true
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",

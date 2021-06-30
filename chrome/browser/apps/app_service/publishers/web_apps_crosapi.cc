@@ -87,10 +87,8 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
                               int32_t size_hint_in_dip,
                               bool allow_placeholder_icon,
                               LoadIconCallback callback) {
-  // TODO(crbug.com/1144877): Implement this.
-  apps::mojom::IconValuePtr icon = apps::mojom::IconValue::New();
-  icon->icon_type = apps::mojom::IconType::kStandard;
-  std::move(callback).Run(std::move(icon));
+  controller_->LoadIcon(app_id, std::move(icon_key), icon_type,
+                        size_hint_in_dip, std::move(callback));
 }
 
 void WebAppsCrosapi::Launch(const std::string& app_id,
