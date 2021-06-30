@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -385,7 +386,13 @@ void TestDiceTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
   NOTREACHED();
 }
 
-IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, BasicSignin) {
+// TODO(https://crbug.com/936663): flaky
+#if defined(OS_WIN)
+#define MAYBE_BasicSignin DISABLED_BasicSignin
+#else
+#define MAYBE_BasicSignin BasicSignin
+#endif
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, MAYBE_BasicSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
@@ -405,7 +412,13 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, BasicSignin) {
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 }
 
-IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, UndoSignin) {
+// TODO(https://crbug.com/936663): flaky
+#if defined(OS_WIN)
+#define MAYBE_UndoSignin DISABLED_UndoSignin
+#else
+#define MAYBE_UndoSignin UndoSignin
+#endif
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, MAYBE_UndoSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
@@ -429,7 +442,13 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, UndoSignin) {
 // Regression test for https://crbug.com/1061459
 // Start a new signing flow while the existing one is hanging on a policy
 // request.
-IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
+// TODO(https://crbug.com/936663): flaky
+#if defined(OS_WIN)
+#define MAYBE_ConcurrentSignin DISABLED_ConcurrentSignin
+#else
+#define MAYBE_ConcurrentSignin ConcurrentSignin
+#endif
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, MAYBE_ConcurrentSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   set_policy_hanging(true);
