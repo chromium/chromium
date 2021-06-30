@@ -2910,6 +2910,7 @@ if (enable_arcore) {
     deps += [
       "//components/webxr/android:ar_java",
       "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+      "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
     ]
 
     _libarcore_dir = get_label_info(

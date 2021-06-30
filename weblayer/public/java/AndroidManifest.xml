@@ -23,6 +23,21 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+    <!-- Augmented reality support.
+         A note to clients: for AR to work, there must be manifest entries present for
+         com.google.ar.core and com.google.ar.core.min_apk_version. These can be merged
+         from the arcore client library or added manually. If being added manually,
+         the following is recommended:
+
+           <meta-data android:name="com.google.ar.core"
+                      android:value="optional" />
+           <meta-data android:name="com.google.ar.core.min_apk_version"
+                      android:value="1" />
+    -->
+    <queries>
+        <package android:name="com.google.ar.core" />
+    </queries>
+
     <application>
         <!-- The following service entries exist in order to allow us to
              start more than one sandboxed process. -->

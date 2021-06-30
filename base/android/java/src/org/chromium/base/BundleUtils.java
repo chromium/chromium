@@ -206,8 +206,13 @@ public final class BundleUtils {
 
             // SplitCompat is installed on the application context, so check there for library paths
             // which were added to that ClassLoader.
-            path = ((BaseDexClassLoader) ContextUtils.getApplicationContext().getClassLoader())
-                           .findLibrary(libraryName);
+            ClassLoader classLoader = ContextUtils.getApplicationContext().getClassLoader();
+            // In WebLayer, the class loader will be a WrappedClassLoader.
+            if (classLoader instanceof BaseDexClassLoader) {
+                path = ((BaseDexClassLoader) classLoader).findLibrary(libraryName);
+            } else if (classLoader instanceof WrappedClassLoader) {
+                path = ((WrappedClassLoader) classLoader).findLibrary(libraryName);
+            }
             if (path != null) {
                 return path;
             }

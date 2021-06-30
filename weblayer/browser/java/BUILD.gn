@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//weblayer/variables.gni")
 
@@ -107,6 +108,7 @@ android_library("base_module_java") {
     "//components/embedder_support/android:application_java",
     "//content/public/android:content_java",
   ]
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   # Needed for android.webkit.WebViewFactory
@@ -295,6 +297,14 @@ android_library("java") {
     "//url:gurl_java",
     "//url:origin_java",
   ]
+
+  if (enable_arcore) {
+    deps += [
+      "//components/webxr/android:ar_java",
+      "//components/webxr/android:ar_java_interfaces",
+    ]
+  }
+
   srcjar_deps = [
     ":generated_enums",
     ":resource_id_javagen",

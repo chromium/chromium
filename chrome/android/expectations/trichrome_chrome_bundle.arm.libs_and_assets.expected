@@ -1,4 +1,3 @@
-apk_path=lib/armeabi-v7a/libarcore_sdk_c.so, compress=False, alignment=4096
 apk_path=lib/armeabi-v7a/libchromium_android_linker.so, compress=False, alignment=4096
 apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4

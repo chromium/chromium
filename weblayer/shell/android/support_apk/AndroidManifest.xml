@@ -19,4 +19,9 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application android:label="WebLayer support">
+        <!-- AR (Augmented Reality) support. -->
+        <meta-data android:name="com.google.ar.core" android:value="optional" />
+    </application>
 </manifest>

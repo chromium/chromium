@@ -9,6 +9,11 @@ android_aar_prebuilt("com_google_ar_core_java") {
   info_path = "core-1.22.0.info"
   extract_native_libraries = true
 
+  # Don't merge the manifest by default so we can exclude it for targets like
+  # WebView. Note that you can still include the manifest changes by adding a
+  # dependency on "com_google_ar_core_java__ignored_manifest".
+  ignore_manifest = true
+
   ignore_proguard_configs = true
   proguard_configs = [ "proguard.txt" ]
 }

@@ -368,12 +368,14 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         deps += invoker.deps
       }
 
-      if (_is_bundle_module && invoker.is_base_module && enable_arcore) {
+      if (_is_bundle_module && invoker.is_base_module && enable_arcore &&
+          is_monochrome) {
         # AR DFM is disabled - set the loadable_modules /
         # secondary_abi_loadable_modules to what would be brought in by the
         # module. The AR Java will be brought in by the chrome_bundle target.
-        # This needs to happen for monochrome & trichrome builds of base module
-        # if ARCore is enabled.
+        # This needs to happen for monochrome builds of base module if ARCore is
+        # enabled. For Trichrome, the native library is added to
+        # TrichromeLibrary.apk so it's not needed here.
         _libarcore_dir = get_label_info(
                              "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
                              "target_out_dir") + "/com_google_ar_core_java/jni"
@@ -415,6 +417,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         if (enable_arcore) {
           deps += [
             "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+            "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
           ]
         }
 
