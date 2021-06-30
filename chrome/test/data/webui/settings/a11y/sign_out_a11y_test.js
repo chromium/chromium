@@ -21,9 +21,9 @@ const settingsUi = document.createElement('settings-ui');
 document.body.appendChild(settingsUi);
 flush();
 
-const peoplePage = settingsUi.$$('settings-main')
-                       .$$('settings-basic-page')
-                       .$$('settings-people-page');
+const peoplePage = settingsUi.shadowRoot.querySelector('settings-main')
+                       .shadowRoot.querySelector('settings-basic-page')
+                       .shadowRoot.querySelector('settings-people-page');
 assertTrue(!!peoplePage);
 
 simulateSyncStatus({
@@ -40,7 +40,8 @@ browserProxy.getSyncStatus()
       // Navigate to the sign out dialog.
       flush();
 
-      parent = peoplePage.$$('settings-sync-account-control');
+      parent =
+          peoplePage.shadowRoot.querySelector('settings-sync-account-control');
       parent.syncStatus = {
         firstSetupInProgress: false,
         signedIn: true,
@@ -52,7 +53,7 @@ browserProxy.getSyncStatus()
       return waitBeforeNextRender(parent);
     })
     .then(() => {
-      const disconnectButton = parent.$$('#turn-off');
+      const disconnectButton = parent.shadowRoot.querySelector('#turn-off');
       assertTrue(!!disconnectButton);
       disconnectButton.click();
       document.dispatchEvent(new CustomEvent('a11y-setup-complete'));

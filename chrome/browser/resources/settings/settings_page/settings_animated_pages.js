@@ -19,50 +19,70 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, dom, DomIf, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dom, DomIf, html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 
-Polymer({
-  is: 'settings-animated-pages',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const SettingsAnimatedPagesElementBase =
+    mixinBehaviors([RouteObserverBehavior], PolymerElement);
 
-  behaviors: [RouteObserverBehavior],
+/** @polymer */
+class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
+  static get is() {
+    return 'settings-animated-pages';
+  }
 
-  properties: {
-    /**
-     * Routes with this section activate this element. For instance, if this
-     * property is 'search', and currentRoute.section is also set to 'search',
-     * this element will display the subpage in currentRoute.subpage.
-     *
-     * The section name must match the name specified in route.js.
-     */
-    section: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * A Map specifying which element should be focused when exiting a subpage.
-     * The key of the map holds a Route path, and the value holds
-     * either a query selector that identifies the desired element, an element
-     * or a function to be run when a neon-animation-finish event is handled.
-     * @type {?Map<string, (string|Element|Function)>}
-     */
-    focusConfig: Object,
-  },
+  static get properties() {
+    return {
+      /**
+       * Routes with this section activate this element. For instance, if this
+       * property is 'search', and currentRoute.section is also set to 'search',
+       * this element will display the subpage in currentRoute.subpage.
+       *
+       * The section name must match the name specified in route.js.
+       */
+      section: String,
 
-  /**
-   * The last "previous" route reported by the router.
-   * @private {?Route}
-   */
-  previousRoute_: null,
+      /**
+       * A Map specifying which element should be focused when exiting a
+       * subpage. The key of the map holds a Route path, and the value holds
+       * either a query selector that identifies the desired element, an element
+       * or a function to be run when a neon-animation-finish event is handled.
+       * @type {?Map<string, (string|Element|Function)>}
+       */
+      focusConfig: Object,
+    };
+  }
 
-  /** @override */
-  created() {
+  constructor() {
+    super();
+
     // Observe the light DOM so we know when it's ready.
     this.lightDomObserver_ =
         dom(this).observeNodes(this.lightDomChanged_.bind(this));
-  },
+
+    /**
+     * The last "previous" route reported by the router.
+     * @private {?Route}
+     */
+    this.previousRoute_ = null;
+
+    /** @private {boolean} */
+    this.lightDomReady_ = false;
+
+    /** @private {?{oldRoute: ?Route, newRoute: Route}} */
+    this.queuedRouteChange_ = null;
+  }
 
   /**
    * @param {!Event} e
@@ -132,7 +152,7 @@ Polymer({
       }
       handler();
     }
-  },
+  }
 
   /**
    * Called initially once the effective children are ready.
@@ -146,7 +166,7 @@ Polymer({
     this.lightDomReady_ = true;
     dom(this).unobserveNodes(this.lightDomObserver_);
     this.runQueuedRouteChange_();
-  },
+  }
 
   /**
    * Calls currentRouteChanged with the deferred route change info.
@@ -156,10 +176,12 @@ Polymer({
     if (!this.queuedRouteChange_) {
       return;
     }
-    this.async(this.currentRouteChanged.bind(
-        this, this.queuedRouteChange_.newRoute,
-        this.queuedRouteChange_.oldRoute));
-  },
+
+    microTask.run(() => {
+      this.currentRouteChanged(
+          this.queuedRouteChange_.newRoute, this.queuedRouteChange_.oldRoute);
+    });
+  }
 
   /** @protected */
   currentRouteChanged(newRoute, oldRoute) {
@@ -170,7 +192,7 @@ Polymer({
     } else {
       this.$.animatedPages.selected = 'default';
     }
-  },
+  }
 
   /**
    * Selects the subpage specified by |newRoute|.
@@ -181,14 +203,14 @@ Polymer({
   switchToSubpage_(newRoute, oldRoute) {
     // Don't manipulate the light DOM until it's ready.
     if (!this.lightDomReady_) {
-      this.queuedRouteChange_ = this.queuedRouteChange_ || {oldRoute: oldRoute};
+      this.queuedRouteChange_ = this.queuedRouteChange_ || {oldRoute, newRoute};
       this.queuedRouteChange_.newRoute = newRoute;
       return;
     }
 
     this.ensureSubpageInstance_();
     this.$.animatedPages.selected = newRoute.path;
-  },
+  }
 
   /**
    * Ensures that the template enclosing the subpage is stamped.
@@ -242,5 +264,8 @@ Polymer({
     // Render synchronously so neon-animated-pages can select the subpage.
     domIf.if = true;
     domIf.render();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsAnimatedPagesElement.is, SettingsAnimatedPagesElement);

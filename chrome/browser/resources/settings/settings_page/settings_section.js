@@ -16,43 +16,49 @@
  *    </settings-section>
  */
 
-// eslint-disable-next-line prefer-const
 import '//resources/cr_elements/shared_vars_css.m.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'settings-section',
+/** @polymer */
+export class SettingsSectionElement extends PolymerElement {
+  static get is() {
+    return 'settings-section';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The section name should match a name specified in route.js. The
-     * MainPageBehavior will expand this section if this section name matches
-     * currentRoute.section.
-     */
-    section: String,
+  static get properties() {
+    return {
+      /**
+       * The section name should match a name specified in route.js. The
+       * MainPageBehavior will expand this section if this section name matches
+       * currentRoute.section.
+       */
+      section: String,
 
-    /**
-     * Title for the section header. Initialize so we can use the
-     * getTitleHiddenStatus_ method for accessibility.
-     */
-    pageTitle: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Title for the section header. Initialize so we can use the
+       * getTitleHiddenStatus_ method for accessibility.
+       */
+      pageTitle: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * A CSS attribute used for temporarily hiding a SETTINGS-SECTION for the
-     * purposes of searching.
-     */
-    hiddenBySearch: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-  },
+      /**
+       * A CSS attribute used for temporarily hiding a SETTINGS-SECTION for the
+       * purposes of searching.
+       */
+      hiddenBySearch: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+    };
+  }
 
   /**
    * Get the value to which to set the aria-hidden attribute of the section
@@ -64,9 +70,11 @@ Polymer({
    */
   getTitleHiddenStatus_() {
     return this.pageTitle ? false : 'true';
-  },
+  }
 
   focus() {
-    this.$$('.title').focus();
+    this.shadowRoot.querySelector('.title').focus();
   }
-});
+}
+
+customElements.define(SettingsSectionElement.is, SettingsSectionElement);

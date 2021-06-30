@@ -10,6 +10,7 @@ import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {MinimumRoutes, Route, Router} from '../router.js';
+import {SettingsSectionElement} from './settings_section.js';
 // clang-format on
 
   /**

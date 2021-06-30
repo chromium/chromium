@@ -7,6 +7,7 @@
 // #import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {ensureLazyLoaded} from '../ensure_lazy_loaded.m.js';
 // #import {Route, Router, MinimumRoutes} from '../../router.js';
+// #import {SettingsSectionElement} from '../../settings_page/settings_section.js';
 // clang-format on
 
 cr.define('settings', function() {

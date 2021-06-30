@@ -30,10 +30,10 @@ const whenReady = new Promise((resolve) => {
   // the URL set above) once the settings-ui element is attached
   settingsUi.addEventListener('settings-section-expanded', () => {
     // Passwords section should be loaded before setup is complete.
-    passwordsSection = settingsUi.$$('settings-main')
-                           .$$('settings-basic-page')
-                           .$$('settings-autofill-page')
-                           .$$('passwords-section');
+    passwordsSection = settingsUi.shadowRoot.querySelector('settings-main')
+                           .shadowRoot.querySelector('settings-basic-page')
+                           .shadowRoot.querySelector('settings-autofill-page')
+                           .shadowRoot.querySelector('passwords-section');
     assertTrue(!!passwordsSection);
 
     assertEquals(passwordManager, passwordsSection.passwordManager_);

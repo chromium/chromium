@@ -55,6 +55,7 @@ js_library("settings_subpage") {
     "//ui/webui/resources/cr_elements:find_shortcut_behavior",
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",
