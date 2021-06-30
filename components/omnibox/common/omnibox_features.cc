@@ -263,6 +263,10 @@ const base::Feature kOmniboxPedalsBatch3{"OmniboxPedalsBatch3",
 const base::Feature kOmniboxPedalsDefaultIconColored{
     "OmniboxPedalsDefaultIconColored", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature that enables loading synonyms from the translation console.
+const base::Feature kOmniboxPedalsTranslationConsole{
+    "OmniboxPedalsTranslationConsole", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to enable the keyword search button.
 const base::Feature kOmniboxKeywordSearchButton{
     "OmniboxKeywordSearchButton", enabled_by_default_desktop_only};

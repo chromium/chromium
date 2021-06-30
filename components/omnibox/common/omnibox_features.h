@@ -68,6 +68,7 @@ extern const base::Feature kOmniboxPedalsBatch2;
 extern const base::Feature kOmniboxPedalsBatch2NonEnglish;
 extern const base::Feature kOmniboxPedalsBatch3;
 extern const base::Feature kOmniboxPedalsDefaultIconColored;
+extern const base::Feature kOmniboxPedalsTranslationConsole;
 extern const base::Feature kOmniboxKeywordSearchButton;
 extern const base::Feature kOmniboxRefinedFocusState;
 extern const base::Feature kWebUIOmniboxPopup;

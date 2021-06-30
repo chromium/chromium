@@ -507,6 +507,9 @@
   "components/components_strings.grd": {
     "messages": [2760],
   },
+  "components/omnibox/resources/omnibox_pedal_synonyms.grd": {
+    "messages": [2770],
+  },
   "components/omnibox/resources/omnibox_resources.grd": {
     "includes": [2780],
   },

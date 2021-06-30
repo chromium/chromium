@@ -620,6 +620,11 @@ bool OmniboxFieldTrial::IsPedalsDefaultIconColored() {
       omnibox::kOmniboxPedalsDefaultIconColored);
 }
 
+bool OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled() {
+  return base::FeatureList::IsEnabled(
+      omnibox::kOmniboxPedalsTranslationConsole);
+}
+
 bool OmniboxFieldTrial::IsKeywordSearchButtonEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxKeywordSearchButton);
 }

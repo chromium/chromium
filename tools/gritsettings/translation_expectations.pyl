@@ -88,6 +88,15 @@
       "components/policy/resources/policy_templates.grd",
     ],
   },
+  # The omnibox_pedal_synonyms are translated only into a subset of the languages.
+  "omnibox_pedal_synonyms_grd": {
+    "languages": [
+      "ar", "es-419", "fr", "ja", "zh-TW",
+    ],
+    "files": [
+      "components/omnibox/resources/omnibox_pedal_synonyms.grd",
+    ],
+  },
   # Grd files that contain <message> or <translations> elements, but that
   # shouldn't be translated as part of the normal translation process. Each
   # entry needs an explanation for why it shouldn't be translated.

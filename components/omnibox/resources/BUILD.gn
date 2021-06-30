@@ -12,3 +12,11 @@ grit("omnibox_resources") {
     outputs += [ "omnibox_resources_$locale.pak" ]
   }
 }
+
+grit("omnibox_pedal_synonyms") {
+  source = "omnibox_pedal_synonyms.grd"
+  outputs = [ "grit/omnibox_pedal_synonyms.h" ]
+  foreach(locale, locales_with_pseudolocales) {
+    outputs += [ "omnibox_pedal_synonyms_$locale.pak" ]
+  }
+}

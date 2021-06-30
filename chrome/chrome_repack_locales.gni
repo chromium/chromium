@@ -60,9 +60,14 @@ template("chrome_repack_locales") {
 
     # Omnibox resources are currently desktop-only, but this may change.
     if (!is_android) {
-      source_patterns +=
-          [ "${root_gen_dir}/components/omnibox/resources/omnibox_resources_" ]
-      deps += [ "//components/omnibox/resources:omnibox_resources" ]
+      source_patterns += [
+        "${root_gen_dir}/components/omnibox/resources/omnibox_pedal_synonyms_",
+        "${root_gen_dir}/components/omnibox/resources/omnibox_resources_",
+      ]
+      deps += [
+        "//components/omnibox/resources:omnibox_pedal_synonyms",
+        "//components/omnibox/resources:omnibox_resources",
+      ]
     }
     if (is_chromeos_ash) {
       source_patterns += [

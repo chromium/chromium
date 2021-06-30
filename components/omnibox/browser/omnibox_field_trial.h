@@ -371,6 +371,10 @@ bool IsPedalsBatch3Enabled();
 // Returns true if the default icon used for Pedal buttons should be colored.
 bool IsPedalsDefaultIconColored();
 
+// Returns true if the Pedals synonyms should be loaded from the translation
+// console.
+bool IsPedalsTranslationConsoleEnabled();
+
 // Returns true if the keyword button and suggestion button row features are
 // enabled.
 bool IsKeywordSearchButtonEnabled();

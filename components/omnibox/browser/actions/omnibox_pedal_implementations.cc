@@ -13,6 +13,8 @@
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/resources/grit/omnibox_pedal_synonyms.h"
 #include "components/strings/grit/components_strings.h"
 
 // This carefully simplifies preprocessor condition usage below.
@@ -43,18 +45,21 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() override {
     return {
-        // TODO(orinj): Gather the fixed structures and reference l10n strings
-        // once available (ideally in a new omnibox_pedal_synonyms.grdp file).
-        // Here is an example of how this Pedal could be structured:
-        // { true, true,
-        // IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_CLEAR_REQUIRED,
-        // },
-        // { true, true,
-        // IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_DATA_REQUIRED,
-        // },
-        // { false, true,
-        // IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_CHROME_OPTIONAL,
-        // },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_ONE_REQUIRED_CLEAR,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_ONE_REQUIRED_DATA,
+        },
+        {
+            false,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_GROUP_ONE_OPTIONAL_CHROME,
+        },
     };
   }
 

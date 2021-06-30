@@ -323,15 +323,13 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     if (!url->empty()) {
       pedal->SetNavigationUrl(GURL(*url));
     }
-    std::vector<OmniboxPedal::SynonymGroupSpec> specs =
-        pedal->SpecifySynonymGroups();
-    if (specs.empty()) {
+    if (!OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
       for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
         // Note, group JSON values are preprocessed by the data generation tool.
         pedal->AddSynonymGroup(LoadSynonymGroupValue(group_value));
       }
     } else {
-      for (const auto& spec : specs) {
+      for (const auto& spec : pedal->SpecifySynonymGroups()) {
         // Note, group strings are not preprocessed; they are the raw outputs
         // from translators in the localization pipeline, so we need to remove
         // ignore group sequences and validate remaining data.
