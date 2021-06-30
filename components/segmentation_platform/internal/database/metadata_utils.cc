@@ -10,7 +10,6 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
-#include "components/segmentation_platform/internal/segmentation_platform_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -108,12 +107,17 @@ bool HasFreshResults(const proto::SegmentInfo& segment_info) {
   if (!segment_info.has_prediction_result())
     return false;
 
+  DCHECK(segment_info.has_model_metadata());
+  const proto::SegmentationModelMetadata& metadata =
+      segment_info.model_metadata();
+
   base::Time last_result_timestamp =
       base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromMicroseconds(
           segment_info.prediction_result().timestamp_us()));
+  base::TimeDelta result_ttl =
+      metadata.result_time_to_live() * GetTimeUnit(metadata);
 
-  return base::Time::Now() - last_result_timestamp <
-         features::GetMinDelayForModelRerun();
+  return base::Time::Now() - last_result_timestamp < result_ttl;
 }
 
 base::TimeDelta GetTimeUnit(

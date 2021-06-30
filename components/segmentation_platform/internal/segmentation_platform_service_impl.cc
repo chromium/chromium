@@ -29,6 +29,7 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
+#include "components/segmentation_platform/public/config.h"
 
 using optimization_guide::proto::OptimizationTarget;
 
@@ -47,7 +48,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     const base::FilePath& storage_dir,
     PrefService* pref_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    base::Clock* clock)
+    base::Clock* clock,
+    std::unique_ptr<Config> config)
     : SegmentationPlatformServiceImpl(
           db_provider->GetDB<proto::SegmentInfo>(
               leveldb_proto::ProtoDbType::SEGMENT_INFO_DATABASE,
@@ -64,7 +66,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           model_provider,
           pref_service,
           task_runner,
-          clock) {}
+          clock,
+          std::move(config)) {}
 
 SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SegmentInfo>>
@@ -75,7 +78,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     PrefService* pref_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    base::Clock* clock) {
+    base::Clock* clock,
+    std::unique_ptr<Config> config)
+    : config_(std::move(config)) {
   // Construct databases.
   segment_info_database_ =
       std::make_unique<SegmentInfoDatabase>(std::move(segment_db));
@@ -96,16 +101,10 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_info_database_.get(), segmentation_result_prefs_.get(),
-      kAdaptiveToolbarSegmentationKey);
+      config_.get());
 
-  // A hardcoded list of segment IDs known to the segmentation platform.
-  std::vector<optimization_guide::proto::OptimizationTarget> segment_ids = {
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
-  };
   model_execution_manager_ = CreateModelExecutionManager(
-      model_provider, task_runner, segment_ids, clock,
+      model_provider, task_runner, config_->segment_ids, clock,
       segment_info_database_.get(), signal_database_.get(),
       std::make_unique<FeatureAggregatorImpl>());
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
@@ -176,6 +175,7 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
   if (!init_success)
     return;
 
+  signal_filter_processor_->OnSignalListUpdated();
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
       true /*expired_only*/);
 }

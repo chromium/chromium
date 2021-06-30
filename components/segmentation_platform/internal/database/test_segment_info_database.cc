@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -51,8 +52,19 @@ void TestSegmentInfoDatabase::Initialize(SuccessCallback callback) {
 }
 
 void TestSegmentInfoDatabase::GetAllSegmentInfo(
-    AllSegmentInfoCallback callback) {
+    MultipleSegmentInfoCallback callback) {
   std::move(callback).Run(segment_infos_);
+}
+
+void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
+    const std::vector<OptimizationTarget>& segment_ids,
+    MultipleSegmentInfoCallback callback) {
+  std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>> result;
+  for (const auto& pair : segment_infos_) {
+    if (base::Contains(segment_ids, pair.first))
+      result.emplace_back(pair);
+  }
+  std::move(callback).Run(result);
 }
 
 void TestSegmentInfoDatabase::GetSegmentInfo(OptimizationTarget segment_id,

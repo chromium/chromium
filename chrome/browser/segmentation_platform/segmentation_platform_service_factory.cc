@@ -13,11 +13,13 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
+#include "components/segmentation_platform/public/config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -68,7 +70,7 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
 
   auto* service = new SegmentationPlatformServiceImpl(
       optimization_guide, db_provider, storage_dir, profile->GetPrefs(),
-      task_runner, clock);
+      task_runner, clock, GetSegmentationPlatformConfig());
 
   service->SetUserData(kSegmentationPlatformProfileObserverKey,
                        std::make_unique<SegmentationPlatformProfileObserver>(

@@ -9,21 +9,21 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
-#include "components/segmentation_platform/internal/segmentation_platform_features.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
+#include "components/segmentation_platform/public/config.h"
 
 namespace segmentation_platform {
 
 SegmentSelectorImpl::SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
                                          SegmentationResultPrefs* result_prefs,
-                                         const std::string& segmentation_key)
+                                         Config* config)
     : segment_database_(segment_database),
       result_prefs_(result_prefs),
-      segmentation_key_(segmentation_key),
+      config_(config),
       initialized_(false) {
   // Read selected segment from prefs.
   const auto& selected_segment =
-      result_prefs_->ReadSegmentationResultFromPref(segmentation_key_);
+      result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
   if (selected_segment.has_value()) {
     selected_segment_last_session_.segment = selected_segment->segment_id;
     selected_segment_last_session_.is_ready = true;
@@ -34,7 +34,8 @@ SegmentSelectorImpl::~SegmentSelectorImpl() = default;
 
 void SegmentSelectorImpl::Initialize(base::OnceClosure callback) {
   // Read model results from DB.
-  segment_database_->GetAllSegmentInfo(
+  segment_database_->GetSegmentInfoForSegments(
+      config_->segment_ids,
       base::BindOnce(&SegmentSelectorImpl::ReadScoresFromLastSession,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -69,8 +70,10 @@ void SegmentSelectorImpl::OnSegmentUsed(OptimizationTarget segment_id) {
 
 void SegmentSelectorImpl::OnModelExecutionCompleted(
     OptimizationTarget segment_id) {
-  segment_database_->GetAllSegmentInfo(base::BindOnce(
-      &SegmentSelectorImpl::FindBestSegment, weak_ptr_factory_.GetWeakPtr()));
+  segment_database_->GetSegmentInfoForSegments(
+      config_->segment_ids,
+      base::BindOnce(&SegmentSelectorImpl::FindBestSegment,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SegmentSelectorImpl::set_model_execution_scheduler(
@@ -96,7 +99,7 @@ void SegmentSelectorImpl::FindBestSegment(
       continue;
 
     DCHECK(info.prediction_result().has_result());
-    int score = ConvertToDiscreteScore(id, segmentation_key_,
+    int score = ConvertToDiscreteScore(id, config_->segmentation_key,
                                        info.prediction_result().result(),
                                        info.model_metadata());
     if (score > max_score) {
@@ -113,14 +116,14 @@ void SegmentSelectorImpl::FindBestSegment(
 void SegmentSelectorImpl::UpdateSelectedSegment(
     OptimizationTarget new_selection) {
   const auto& previous_selection =
-      result_prefs_->ReadSegmentationResultFromPref(segmentation_key_);
+      result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
 
   bool skip_updating_prefs = false;
   if (previous_selection.has_value()) {
-    skip_updating_prefs = new_selection == previous_selection->segment_id ||
-                          (previous_selection->selection_time +
-                               features::GetSegmentSelectionTTL() >
-                           base::Time::Now());
+    skip_updating_prefs =
+        new_selection == previous_selection->segment_id ||
+        (previous_selection->selection_time + config_->segment_selection_ttl >
+         base::Time::Now());
     // TODO(shaktisahu): Use segment selection inertia.
   }
 
@@ -133,7 +136,7 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
     updated_selection = absl::make_optional<SelectedSegment>(new_selection);
     updated_selection->selection_time = base::Time::Now();
   }
-  result_prefs_->SaveSegmentationResultToPref(segmentation_key_,
+  result_prefs_->SaveSegmentationResultToPref(config_->segmentation_key,
                                               updated_selection);
 }
 

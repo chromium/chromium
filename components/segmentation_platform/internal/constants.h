@@ -7,9 +7,6 @@
 
 namespace segmentation_platform {
 
-// The key to be used to find discrete mapping for adaptive toolbar feature.
-extern const char kAdaptiveToolbarSegmentationKey[];
-
 // The path to the pref storing the segmentation result.
 extern const char kSegmentationResultPref[];
 

@@ -1487,6 +1487,8 @@ static_library("browser") {
     "security_events/security_event_sync_bridge.h",
     "security_events/security_event_sync_bridge_impl.cc",
     "security_events/security_event_sync_bridge_impl.h",
+    "segmentation_platform/segmentation_platform_config.cc",
+    "segmentation_platform/segmentation_platform_config.h",
     "segmentation_platform/segmentation_platform_profile_observer.cc",
     "segmentation_platform/segmentation_platform_profile_observer.h",
     "segmentation_platform/segmentation_platform_service_factory.cc",
