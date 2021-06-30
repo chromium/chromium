@@ -1207,8 +1207,8 @@ bool NavigationSimulatorImpl::SimulateBrowserInitiatedStart() {
 }
 
 bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
-  mojom::BeginNavigationParamsPtr begin_params =
-      mojom::BeginNavigationParams::New(
+  blink::mojom::BeginNavigationParamsPtr begin_params =
+      blink::mojom::BeginNavigationParams::New(
           initiator_frame_host_
               ? absl::make_optional(initiator_frame_host_->GetFrameToken())
               : absl::nullopt,
@@ -1232,8 +1232,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   common_params->transition = transition_;
   common_params->navigation_type =
       PageTransitionCoreTypeIs(transition_, ui::PAGE_TRANSITION_RELOAD)
-          ? mojom::NavigationType::RELOAD
-          : mojom::NavigationType::DIFFERENT_DOCUMENT;
+          ? blink::mojom::NavigationType::RELOAD
+          : blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->has_user_gesture = has_user_gesture_;
   common_params->should_check_main_world_csp = should_check_main_world_csp_;
   common_params->should_replace_current_entry = should_replace_current_entry_;
@@ -1345,9 +1345,9 @@ bool NavigationSimulatorImpl::DidCreateNewEntry() {
     return false;
   }
   if (request_ && (request_->common_params().navigation_type ==
-                       mojom::NavigationType::RESTORE ||
+                       blink::mojom::NavigationType::RESTORE ||
                    request_->common_params().navigation_type ==
-                       mojom::NavigationType::RESTORE_WITH_POST)) {
+                       blink::mojom::NavigationType::RESTORE_WITH_POST)) {
     return false;
   }
 

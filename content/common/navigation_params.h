@@ -6,12 +6,14 @@
 #define CONTENT_COMMON_NAVIGATION_PARAMS_H_
 
 #include "content/common/content_export.h"
-#include "content/common/navigation_params.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 
 namespace content {
 
-CONTENT_EXPORT mojom::CommonNavigationParamsPtr CreateCommonNavigationParams();
-CONTENT_EXPORT mojom::CommitNavigationParamsPtr CreateCommitNavigationParams();
+CONTENT_EXPORT blink::mojom::CommonNavigationParamsPtr
+CreateCommonNavigationParams();
+CONTENT_EXPORT blink::mojom::CommitNavigationParamsPtr
+CreateCommitNavigationParams();
 
 }  // namespace content
 

@@ -5,7 +5,6 @@
 module content.mojom;
 
 import "content/common/frame_messages.mojom";
-import "content/common/navigation_params.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
@@ -13,6 +12,7 @@ import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
@@ -218,8 +218,8 @@ interface NavigationClient {
   // TODO(crbug.com/783506): Replace devtools navigation token with the generic
   // navigation token that can be passed from renderer to the browser.
   CommitNavigation(
-      CommonNavigationParams common_params,
-      CommitNavigationParams request_params,
+      blink.mojom.CommonNavigationParams common_params,
+      blink.mojom.CommitNavigationParams request_params,
       network.mojom.URLResponseHead response_head,
       handle<data_pipe_consumer>? response_body,
       network.mojom.URLLoaderClientEndpoints? url_loader_client_endpoints,
@@ -243,8 +243,8 @@ interface NavigationClient {
   // also be provided by the browser as a means for the renderer to load
   // subresources where applicable.
   CommitFailedNavigation(
-      CommonNavigationParams common_params,
-      CommitNavigationParams request_params,
+      blink.mojom.CommonNavigationParams common_params,
+      blink.mojom.CommitNavigationParams request_params,
       bool has_stale_copy_in_cache,
       int32 error_code,
       int32 extended_error_code,

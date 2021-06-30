@@ -21,7 +21,10 @@ executable("ipc_fuzzer") {
   ]
   deps = [
     "//base/util/type_safety",
+    "//components/viz/common",
     "//printing/mojom:mojom_shared_cpp_sources",
+    "//services/device/public/mojom:mojom_headers",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
     "//tools/ipc_fuzzer/message_lib:ipc_message_lib",
   ]
   public_deps = [ "//ipc" ]

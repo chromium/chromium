@@ -18,6 +18,7 @@
 #include "content/app/mojo/mojo_init.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/frame.mojom.h"
+#include "content/common/navigation_params.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -759,9 +761,9 @@ void RenderViewTest::ChangeFocusToNull(const blink::WebDocument& document) {
 }
 
 void RenderViewTest::Reload(const GURL& url) {
-  auto common_params = mojom::CommonNavigationParams::New(
+  auto common_params = blink::mojom::CommonNavigationParams::New(
       url, absl::nullopt, blink::mojom::Referrer::New(),
-      ui::PAGE_TRANSITION_LINK, mojom::NavigationType::RELOAD,
+      ui::PAGE_TRANSITION_LINK, blink::mojom::NavigationType::RELOAD,
       blink::NavigationDownloadPolicy(), false, GURL(), GURL(),
       blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(), "GET",
       nullptr, network::mojom::SourceLocation::New(),
@@ -894,10 +896,10 @@ void RenderViewTest::GoToOffset(int offset,
       webview->HistoryBackListCount() + webview->HistoryForwardListCount() + 1;
   int pending_offset = offset + webview->HistoryBackListCount();
 
-  auto common_params = mojom::CommonNavigationParams::New(
+  auto common_params = blink::mojom::CommonNavigationParams::New(
       url, absl::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_FORWARD_BACK,
-      mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT,
+      blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT,
       blink::NavigationDownloadPolicy(), false, GURL(), GURL(),
       blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(), "GET",
       nullptr, network::mojom::SourceLocation::New(),
@@ -907,7 +909,7 @@ void RenderViewTest::GoToOffset(int offset,
       false /* is_history_navigation_in_new_child_frame */,
       base::TimeTicks() /* input_start */);
   auto commit_params = CreateCommitNavigationParams();
-  commit_params->page_state = state;
+  commit_params->page_state = state.ToEncodedData();
   commit_params->nav_entry_id = pending_offset + 1;
   commit_params->pending_history_list_offset = pending_offset;
   commit_params->current_history_list_offset = webview->HistoryBackListCount();

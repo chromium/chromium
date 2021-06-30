@@ -224,12 +224,12 @@ blink::mojom::FrameReplicationStatePtr ReconstructReplicationStateForTesting(
 
 // Returns mojom::CommonNavigationParams for a normal navigation to a data: url,
 // with navigation_start set to Now() plus the given offset.
-mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
+blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
     TimeDelta navigation_start_offset) {
   auto params = CreateCommonNavigationParams();
   params->url = GURL("data:text/html,<div>Page</div>");
   params->navigation_start = base::TimeTicks::Now() + navigation_start_offset;
-  params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  params->navigation_type = blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   params->transition = ui::PAGE_TRANSITION_TYPED;
   return params;
 }
@@ -270,8 +270,9 @@ class MockedLocalFrameHostInterceptorTestRenderFrame : public TestRenderFrame {
   std::unique_ptr<MockedLocalFrameHostInterceptor> local_frame_host_;
 };
 
-mojom::CommitNavigationParamsPtr DummyCommitNavigationParams() {
-  mojom::CommitNavigationParamsPtr params = CreateCommitNavigationParams();
+blink::mojom::CommitNavigationParamsPtr DummyCommitNavigationParams() {
+  blink::mojom::CommitNavigationParamsPtr params =
+      CreateCommitNavigationParams();
   params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   return params;
 }
@@ -344,15 +345,16 @@ class RenderViewImplTest : public RenderViewTest {
     web_view_->EnableDeviceEmulation(params);
   }
 
-  void GoToOffsetWithParams(int offset,
-                            const blink::PageState& state,
-                            mojom::CommonNavigationParamsPtr common_params,
-                            mojom::CommitNavigationParamsPtr commit_params) {
+  void GoToOffsetWithParams(
+      int offset,
+      const blink::PageState& state,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params) {
     EXPECT_TRUE(common_params->transition & ui::PAGE_TRANSITION_FORWARD_BACK);
     blink::WebView* webview = web_view_;
     int pending_offset = offset + webview->HistoryBackListCount();
 
-    commit_params->page_state = state;
+    commit_params->page_state = state.ToEncodedData();
     commit_params->nav_entry_id = pending_offset + 1;
     commit_params->pending_history_list_offset = pending_offset;
     commit_params->current_history_list_offset =
@@ -734,7 +736,8 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   // An http url will trigger a resource load so cannot be used here.
   auto common_params = CreateCommonNavigationParams();
   common_params->url = GURL("data:text/html,<div>Page</div>");
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->method = "POST";
 
@@ -813,7 +816,8 @@ class RenderViewImplUpdateTitleTest : public RenderViewImplTest {
 TEST_F(RenderViewImplUpdateTitleTest, MAYBE_OnNavigationLoadDataWithBaseURL) {
   auto common_params = CreateCommonNavigationParams();
   common_params->url = GURL("data:text/html,");
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->base_url_for_data_url = GURL("about:blank");
   common_params->history_url_for_data_url = GURL("about:blank");
@@ -1197,7 +1201,8 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   // Navigate to other page, which triggers the swap in.
   auto common_params = CreateCommonNavigationParams();
   common_params->url = GURL("data:text/html,<div>Page</div>");
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
 
   provisional_frame->Navigate(std::move(common_params),
@@ -2094,7 +2099,8 @@ TEST_F(RenderViewImplTest, DroppedNavigationStaysInViewSourceMode) {
   // Start a load that will reach provisional state synchronously,
   // but won't complete synchronously.
   auto common_params = CreateCommonNavigationParams();
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->url = GURL("data:text/html,test data");
   frame()->Navigate(std::move(common_params), DummyCommitNavigationParams());
 
@@ -2496,7 +2502,8 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
   // Navigate the frame only.
   auto common_params = CreateCommonNavigationParams();
   common_params->url = GURL("data:text/html,world");
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->navigation_start = base::TimeTicks::Now();
   auto commit_params = DummyCommitNavigationParams();
@@ -2620,7 +2627,8 @@ class RendererErrorPageTest : public RenderViewImplTest {
 
 TEST_F(RendererErrorPageTest, RegularError) {
   auto common_params = CreateCommonNavigationParams();
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->url = GURL("http://example.com/error-page");
   TestRenderFrame* main_frame = static_cast<TestRenderFrame*>(frame());
   main_frame->NavigateWithError(
@@ -2755,7 +2763,7 @@ TEST_F(RenderViewImplTest, NavigationStartForReload) {
   auto common_params = CreateCommonNavigationParams();
   common_params->url = GURL(url_string);
   common_params->navigation_type =
-      mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
+      blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
   common_params->transition = ui::PAGE_TRANSITION_RELOAD;
 
   // The browser navigation_start should not be used because beforeunload will
@@ -2786,7 +2794,7 @@ TEST_F(RenderViewImplTest, NavigationStartForSameProcessHistoryNavigation) {
       GURL("data:text/html;charset=utf-8,<div id=pagename>Page B</div>");
   common_params_back->transition = ui::PAGE_TRANSITION_FORWARD_BACK;
   common_params_back->navigation_type =
-      mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
+      blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
   GoToOffsetWithParams(-1, back_state, common_params_back.Clone(),
                        DummyCommitNavigationParams());
   NavigationState* navigation_state = NavigationState::FromDocumentLoader(
@@ -2802,7 +2810,7 @@ TEST_F(RenderViewImplTest, NavigationStartForSameProcessHistoryNavigation) {
       GURL("data:text/html;charset=utf-8,<div id=pagename>Page C</div>");
   common_params_forward->transition = ui::PAGE_TRANSITION_FORWARD_BACK;
   common_params_forward->navigation_type =
-      mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
+      blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
   GoToOffsetWithParams(1, forward_state, common_params_forward.Clone(),
                        DummyCommitNavigationParams());
   navigation_state = NavigationState::FromDocumentLoader(
@@ -2815,11 +2823,12 @@ TEST_F(RenderViewImplTest, NavigationStartForCrossProcessHistoryNavigation) {
   auto common_params = MakeCommonNavigationParams(-TimeDelta::FromSeconds(1));
   common_params->transition = ui::PAGE_TRANSITION_FORWARD_BACK;
   common_params->navigation_type =
-      mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
+      blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
 
   auto commit_params = DummyCommitNavigationParams();
   commit_params->page_state = blink::PageState::CreateForTesting(
-      common_params->url, false, nullptr, nullptr);
+                                  common_params->url, false, nullptr, nullptr)
+                                  .ToEncodedData();
   commit_params->nav_entry_id = 42;
   commit_params->pending_history_list_offset = 1;
   commit_params->current_history_list_offset = 0;
@@ -2892,7 +2901,8 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
   commit_params->current_history_list_offset = 1;
   commit_params->current_history_list_length = 2;
   auto common_params = CreateCommonNavigationParams();
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->should_replace_current_entry = true;
   frame()->Navigate(std::move(common_params), std::move(commit_params));
 
@@ -2917,7 +2927,8 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
   commit_params->pending_history_list_offset = 12;
   commit_params->nav_entry_id = 777;
   auto common_params = CreateCommonNavigationParams();
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->should_replace_current_entry = true;
   frame()->Navigate(std::move(common_params), std::move(commit_params));
 

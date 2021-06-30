@@ -254,7 +254,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->destination = request_info.begin_params->request_destination;
 
   if (ui::PageTransitionIsWebTriggerable(
-          request_info.common_params->transition)) {
+          ui::PageTransitionFromInt(request_info.common_params->transition))) {
     new_request->trusted_params->has_user_activation =
         request_info.common_params->has_user_gesture;
   } else {

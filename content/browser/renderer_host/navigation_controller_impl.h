@@ -32,6 +32,11 @@
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
+
+namespace blink {
+struct NavigationDownloadPolicy;
+}  // namespace blink
 
 namespace content {
 class FrameTree;
@@ -672,13 +677,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Used by PopulateAppHistoryEntryVectors to initialize a single vector.
   enum class Direction { kForward, kBack };
-  std::vector<mojom::AppHistoryEntryPtr> PopulateSingleAppHistoryEntryVector(
-      Direction direction,
-      int entry_index,
-      const url::Origin& pending_origin,
-      FrameTreeNode* node,
-      SiteInstance* site_instance,
-      int64_t previous_item_sequence_number);
+  std::vector<blink::mojom::AppHistoryEntryPtr>
+  PopulateSingleAppHistoryEntryVector(Direction direction,
+                                      int entry_index,
+                                      const url::Origin& pending_origin,
+                                      FrameTreeNode* node,
+                                      SiteInstance* site_instance,
+                                      int64_t previous_item_sequence_number);
   // Helper for NavigateToAppHistoryKey(). Ensures that we only navigate to
   // |target_entry| if it matches |current_entry|'s origin and site instance, as
   // well as having |app_history_key| as its key.

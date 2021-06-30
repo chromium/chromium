@@ -19,7 +19,6 @@
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -31,7 +30,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/origin.h"
+
+namespace blink {
+struct FramePolicy;
+}  // namespace blink
 
 namespace content {
 
@@ -190,16 +194,16 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Helper functions to construct NavigationParameters for a navigation to this
   // NavigationEntry.
-  mojom::CommonNavigationParamsPtr ConstructCommonNavigationParams(
+  blink::mojom::CommonNavigationParamsPtr ConstructCommonNavigationParams(
       const FrameNavigationEntry& frame_entry,
       const scoped_refptr<network::ResourceRequestBody>& post_body,
       const GURL& dest_url,
       blink::mojom::ReferrerPtr dest_referrer,
-      mojom::NavigationType navigation_type,
+      blink::mojom::NavigationType navigation_type,
       blink::PreviewsState previews_state,
       base::TimeTicks navigation_start,
       base::TimeTicks input_start);
-  mojom::CommitNavigationParamsPtr ConstructCommitNavigationParams(
+  blink::mojom::CommitNavigationParamsPtr ConstructCommitNavigationParams(
       const FrameNavigationEntry& frame_entry,
       const GURL& original_url,
       const absl::optional<url::Origin>& origin_to_commit,

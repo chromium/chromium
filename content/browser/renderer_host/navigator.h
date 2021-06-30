@@ -13,7 +13,6 @@
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/navigation_controller.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,6 +20,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 
 class GURL;
@@ -172,8 +172,8 @@ class CONTENT_EXPORT Navigator {
   // BeginNavigation IPC from the renderer.
   void OnBeginNavigation(
       FrameTreeNode* frame_tree_node,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::BeginNavigationParamsPtr begin_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::BeginNavigationParamsPtr begin_params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       scoped_refptr<PrefetchedSignedExchangeCache>
@@ -217,7 +217,7 @@ class CONTENT_EXPORT Navigator {
   // pending NavigationEntry to be used. Either null or a new one owned
   // NavigationController.
   NavigationEntryImpl* GetNavigationEntryForRendererInitiatedNavigation(
-      const mojom::CommonNavigationParams& common_params,
+      const blink::mojom::CommonNavigationParams& common_params,
       FrameTreeNode* frame_tree_node);
 
   // Called to record the time it took to execute beforeunload handlers for

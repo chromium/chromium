@@ -36,7 +36,6 @@
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_params.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -62,6 +61,7 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/origin.h"
 
@@ -190,8 +190,8 @@ class CONTENT_EXPORT NavigationRequest
   // CreateRendererInitiated.
   static std::unique_ptr<NavigationRequest> CreateBrowserInitiated(
       FrameTreeNode* frame_tree_node,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
       bool was_opener_suppressed,
       const blink::LocalFrameToken* initiator_frame_token,
@@ -211,8 +211,8 @@ class CONTENT_EXPORT NavigationRequest
   static std::unique_ptr<NavigationRequest> CreateRendererInitiated(
       FrameTreeNode* frame_tree_node,
       NavigationEntryImpl* entry,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::BeginNavigationParamsPtr begin_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::BeginNavigationParamsPtr begin_params,
       int current_history_list_offset,
       int current_history_list_length,
       bool override_user_agent,
@@ -254,7 +254,8 @@ class CONTENT_EXPORT NavigationRequest
 
   // If |type| is a reload, returns the equivalent ReloadType. Otherwise returns
   // ReloadType::NONE.
-  static ReloadType NavigationTypeToReloadType(mojom::NavigationType type);
+  static ReloadType NavigationTypeToReloadType(
+      blink::mojom::NavigationType type);
 
   ~NavigationRequest() override;
 
@@ -363,15 +364,15 @@ class CONTENT_EXPORT NavigationRequest
   // The NavigationRequest can be deleted while BeginNavigation() is called.
   void BeginNavigation();
 
-  const mojom::CommonNavigationParams& common_params() const {
+  const blink::mojom::CommonNavigationParams& common_params() const {
     return *common_params_;
   }
 
-  const mojom::BeginNavigationParams& begin_params() const {
+  const blink::mojom::BeginNavigationParams& begin_params() const {
     return *begin_params_;
   }
 
-  const mojom::CommitNavigationParams& commit_params() const {
+  const blink::mojom::CommitNavigationParams& commit_params() const {
     return *commit_params_;
   }
 
@@ -387,12 +388,12 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   void set_app_history_back_entries(
-      std::vector<mojom::AppHistoryEntryPtr> entries) {
+      std::vector<blink::mojom::AppHistoryEntryPtr> entries) {
     commit_params_->app_history_back_entries = std::move(entries);
   }
 
   void set_app_history_forward_entries(
-      std::vector<mojom::AppHistoryEntryPtr> entries) {
+      std::vector<blink::mojom::AppHistoryEntryPtr> entries) {
     commit_params_->app_history_forward_entries = std::move(entries);
   }
 
@@ -754,7 +755,7 @@ class CONTENT_EXPORT NavigationRequest
   // IsLoadDataWithBaseURL() should use
   // IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer() instead.
   static bool IsLoadDataWithBaseURL(
-      const mojom::CommonNavigationParams& common_params);
+      const blink::mojom::CommonNavigationParams& common_params);
 
   // Returns true if the navigation is treated as a loadDataWithBaseURL
   // navigation in the renderer, different than other data: URL navigation.
@@ -936,9 +937,9 @@ class CONTENT_EXPORT NavigationRequest
 
   NavigationRequest(
       FrameTreeNode* frame_tree_node,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::BeginNavigationParamsPtr begin_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::BeginNavigationParamsPtr begin_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
       bool from_begin_navigation,
       bool is_synchronous_renderer_commit,
@@ -1422,9 +1423,9 @@ class CONTENT_EXPORT NavigationRequest
   // time (i.e. before we actually kick off the navigation).
   // |commit_params_->is_browser_initiated| will always be true for history
   // navigations, even if they began in the renderer using the history API.
-  mojom::CommonNavigationParamsPtr common_params_;
-  mojom::BeginNavigationParamsPtr begin_params_;
-  mojom::CommitNavigationParamsPtr commit_params_;
+  blink::mojom::CommonNavigationParamsPtr common_params_;
+  blink::mojom::BeginNavigationParamsPtr begin_params_;
+  blink::mojom::CommitNavigationParamsPtr commit_params_;
   bool same_origin_ = false;
 
   // Stores the NavigationUIData for this navigation until the NavigationHandle

@@ -15,7 +15,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -24,6 +23,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -88,8 +88,8 @@ bool PassesTimingAllowCheck(
 // always be allowed, even for cross-origin frames. Oops.
 bool AllowTimingDetailsForParent(
     const url::Origin& parent_origin,
-    const mojom::CommonNavigationParams& common_params,
-    const mojom::CommitNavigationParams& commit_params,
+    const blink::mojom::CommonNavigationParams& common_params,
+    const blink::mojom::CommitNavigationParams& commit_params,
     const network::mojom::URLResponseHead& response_head) {
   bool response_tainting_not_basic = false;
   bool tainted_origin_flag = false;
@@ -118,8 +118,8 @@ bool AllowTimingDetailsForParent(
 // that any changes are synced between both copies.
 blink::mojom::ResourceTimingInfoPtr GenerateResourceTiming(
     const url::Origin& parent_origin,
-    const mojom::CommonNavigationParams& common_params,
-    const mojom::CommitNavigationParams& commit_params,
+    const blink::mojom::CommonNavigationParams& common_params,
+    const blink::mojom::CommitNavigationParams& commit_params,
     const network::mojom::URLResponseHead& response_head) {
   // TODO(dcheng): There should be a Blink helper for populating the timing info
   // that's exposed in //third_party/blink/common. This would allow a lot of the
@@ -194,8 +194,8 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ObjectNavigationFallbackBodyLoader)
 // static
 void ObjectNavigationFallbackBodyLoader::CreateAndStart(
     NavigationRequest& navigation_request,
-    const mojom::CommonNavigationParams& common_params,
-    const mojom::CommitNavigationParams& commit_params,
+    const blink::mojom::CommonNavigationParams& common_params,
+    const blink::mojom::CommitNavigationParams& commit_params,
     const network::mojom::URLResponseHead& response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,

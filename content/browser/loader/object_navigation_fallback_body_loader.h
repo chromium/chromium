@@ -17,6 +17,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 
 namespace network {
@@ -28,11 +29,6 @@ class URLResponseHead;
 namespace content {
 
 class NavigationRequest;
-
-namespace mojom {
-class CommitNavigationParams;
-class CommonNavigationParams;
-}  // namespace mojom
 
 // Helper to read body of an <object> navigation that failed with an HTTP error.
 // Per https://whatwg.org/C/iframe-embed-object.html#the-object-element, the
@@ -78,8 +74,8 @@ class ObjectNavigationFallbackBodyLoader
   // response body is successfully loaded.
   static void CreateAndStart(
       NavigationRequest& navigation_request,
-      const mojom::CommonNavigationParams& common_params,
-      const mojom::CommitNavigationParams& commit_params,
+      const blink::mojom::CommonNavigationParams& common_params,
+      const blink::mojom::CommitNavigationParams& commit_params,
       const network::mojom::URLResponseHead& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,

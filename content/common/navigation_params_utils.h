@@ -5,31 +5,31 @@
 #ifndef CONTENT_COMMON_NAVIGATION_PARAMS_UTILS_H_
 #define CONTENT_COMMON_NAVIGATION_PARAMS_UTILS_H_
 
-#include "content/common/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 
 namespace content {
 
 class NavigationTypeUtils {
  public:
-  static bool IsReload(mojom::NavigationType value) {
-    return value == mojom::NavigationType::RELOAD ||
-           value == mojom::NavigationType::RELOAD_BYPASSING_CACHE ||
-           value == mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
+  static bool IsReload(blink::mojom::NavigationType value) {
+    return value == blink::mojom::NavigationType::RELOAD ||
+           value == blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE ||
+           value == blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
   }
 
-  static bool IsSameDocument(mojom::NavigationType value) {
-    return value == mojom::NavigationType::SAME_DOCUMENT ||
-           value == mojom::NavigationType::HISTORY_SAME_DOCUMENT;
+  static bool IsSameDocument(blink::mojom::NavigationType value) {
+    return value == blink::mojom::NavigationType::SAME_DOCUMENT ||
+           value == blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT;
   }
 
-  static bool IsHistory(mojom::NavigationType value) {
-    return value == mojom::NavigationType::HISTORY_SAME_DOCUMENT ||
-           value == mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
+  static bool IsHistory(blink::mojom::NavigationType value) {
+    return value == blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT ||
+           value == blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
   }
 
-  static bool IsRestore(mojom::NavigationType value) {
-    return value == mojom::NavigationType::RESTORE ||
-           value == mojom::NavigationType::RESTORE_WITH_POST;
+  static bool IsRestore(blink::mojom::NavigationType value) {
+    return value == blink::mojom::NavigationType::RESTORE ||
+           value == blink::mojom::NavigationType::RESTORE_WITH_POST;
   }
 };
 

@@ -4,11 +4,13 @@
 
 #include "content/browser/renderer_host/navigation_request_info.h"
 
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+
 namespace content {
 
 NavigationRequestInfo::NavigationRequestInfo(
-    mojom::CommonNavigationParamsPtr common_params,
-    mojom::BeginNavigationParamsPtr begin_params,
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    blink::mojom::BeginNavigationParamsPtr begin_params,
     const net::IsolationInfo& isolation_info,
     bool is_main_frame,
     bool are_ancestors_secure,
