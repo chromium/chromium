@@ -10,15 +10,25 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
 namespace {
-class PlaceholderTransferringOptimizer
-    : public WritableStreamTransferringOptimizer {
+
+class TransferringOptimizer : public WritableStreamTransferringOptimizer {
+ public:
+  explicit TransferringOptimizer(
+      scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker)
+      : source_broker_(std::move(source_broker)) {}
   UnderlyingSinkBase* PerformInProcessOptimization(
       ScriptState* script_state) override {
     RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableVideoWorker);
-    return nullptr;
+    return MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSink>(
+        source_broker_);
   }
+
+ private:
+  const scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker_;
 };
+
 }  // namespace
 
 MediaStreamVideoTrackUnderlyingSink::MediaStreamVideoTrackUnderlyingSink(
@@ -32,6 +42,8 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::start(
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  source_broker_->OnClientStarted();
+  is_connected_ = true;
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -74,7 +86,7 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::abort(
     ScriptValue reason,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  source_broker_->StopSource();
+  Disconnect();
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -82,14 +94,23 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  source_broker_->StopSource();
+  Disconnect();
   return ScriptPromise::CastUndefined(script_state);
 }
 
 std::unique_ptr<WritableStreamTransferringOptimizer>
 MediaStreamVideoTrackUnderlyingSink::GetTransferringOptimizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<PlaceholderTransferringOptimizer>();
+  return std::make_unique<TransferringOptimizer>(source_broker_);
+}
+
+void MediaStreamVideoTrackUnderlyingSink::Disconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_connected_)
+    return;
+
+  source_broker_->OnClientStopped();
+  is_connected_ = false;
 }
 
 }  // namespace blink
