@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
     ":color_mode_select_test",
     ":file_type_select_test",
     ":loading_page_test",
+    ":multi_page_scan_test",
     ":page_size_select_test",
     ":resolution_select_test",
     ":scan_done_section_test",
@@ -50,6 +51,14 @@ js_library("loading_page_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/scanning/resources:loading_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("multi_page_scan_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:multi_page_scan",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

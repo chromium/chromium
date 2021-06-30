@@ -177,52 +177,50 @@
     </div>
     <div id="rightPanel">
       <h1 id="appTitle">[[i18n('appTitle')]]</h1>
-      <div id="settingsSection" hidden="[[showDoneSection_]]">
+      <div id="settingsSection" hidden="[[!showScanSettings_]]">
         <div id="container" show-bottom-shadow>
-          <template is="dom-if" if="[[!showDoneSection_]]">
-            <scanner-select id="scannerSelect" scanners="[[scanners_]]"
+          <scanner-select id="scannerSelect" scanners="[[scanners_]]"
+              disabled="[[settingsDisabled_]]"
+              selected-scanner-id="{{selectedScannerId}}"
+              last-used-scanner-id="[[lastUsedScannerId_]]"
+              scanner-info-map="[[scannerInfoMap_]]"></scanner-select>
+          <source-select id="sourceSelect" options="[[capabilities_.sources]]"
+              disabled="[[settingsDisabled_]]"
+              selected-option="{{selectedSource}}"></source-select>
+          <scan-to-select id="scanToSelect"
+              disabled="[[settingsDisabled_]]"
+              selected-file-path="{{selectedFilePath}}"
+              selected-folder="{{selectedFolder}}">
+          </scan-to-select>
+          <file-type-select id="fileTypeSelect"
+              disabled="[[settingsDisabled_]]"
+              selected-file-type="{{selectedFileType}}"></file-type-select>
+          <multi-page-checkbox id="multiPageCheckbox" hidden="[[!showMultiPageCheckbox_]]"
+              multi-page-scan-checked="{{multiPageScanChecked}}">
+          </multi-page-checkbox>
+          <div id="more-settings-line-separator"></div>
+          <cr-button id="moreSettingsButton" on-click="toggleClicked_"
+              aria-expanded="[[opened_]]">
+            <span>[[i18n('moreSettings')]]</span>
+            <iron-icon icon="[[arrowIconDirection_]]"></iron-icon>
+          </cr-button>
+          <iron-collapse id="collapse" opened="{{opened_}}">
+            <color-mode-select id="colorModeSelect"
+                options="[[capabilities_.colorModes]]"
                 disabled="[[settingsDisabled_]]"
-                selected-scanner-id="{{selectedScannerId}}"
-                last-used-scanner-id="[[lastUsedScannerId_]]"
-                scanner-info-map="[[scannerInfoMap_]]"></scanner-select>
-            <source-select id="sourceSelect" options="[[capabilities_.sources]]"
+                selected-option="{{selectedColorMode}}">
+            </color-mode-select>
+            <page-size-select id="pageSizeSelect"
+                options="[[selectedSourcePageSizes_]]"
                 disabled="[[settingsDisabled_]]"
-                selected-option="{{selectedSource}}"></source-select>
-            <scan-to-select id="scanToSelect"
+                selected-option="{{selectedPageSize}}">
+            </page-size-select>
+            <resolution-select id="resolutionSelect"
+                options="[[capabilities_.resolutions]]"
                 disabled="[[settingsDisabled_]]"
-                selected-file-path="{{selectedFilePath}}"
-                selected-folder="{{selectedFolder}}">
-            </scan-to-select>
-            <file-type-select id="fileTypeSelect"
-                disabled="[[settingsDisabled_]]"
-                selected-file-type="{{selectedFileType}}"></file-type-select>
-            <multi-page-checkbox id="multiPageCheckbox" hidden="[[!showMultiPageCheckbox_]]"
-                multi-page-scan-checked="{{multiPageScanChecked}}">
-            </multi-page-checkbox>
-            <div id="more-settings-line-separator"></div>
-            <cr-button id="moreSettingsButton" on-click="toggleClicked_"
-                aria-expanded="[[opened_]]">
-              <span>[[i18n('moreSettings')]]</span>
-              <iron-icon icon="[[arrowIconDirection_]]"></iron-icon>
-            </cr-button>
-            <iron-collapse id="collapse" opened="{{opened_}}">
-              <color-mode-select id="colorModeSelect"
-                  options="[[capabilities_.colorModes]]"
-                  disabled="[[settingsDisabled_]]"
-                  selected-option="{{selectedColorMode}}">
-              </color-mode-select>
-              <page-size-select id="pageSizeSelect"
-                  options="[[selectedSourcePageSizes_]]"
-                  disabled="[[settingsDisabled_]]"
-                  selected-option="{{selectedPageSize}}">
-              </page-size-select>
-              <resolution-select id="resolutionSelect"
-                  options="[[capabilities_.resolutions]]"
-                  disabled="[[settingsDisabled_]]"
-                  selected-option="{{selectedResolution}}">
-              </resolution-select>
-            </iron-collapse>
-          </template>
+                selected-option="{{selectedResolution}}">
+            </resolution-select>
+          </iron-collapse>
         </div>
         <div class="scan-button-container">
           <cr-button id="scanButton" class="action-button" on-click="onScanClick_"
@@ -244,6 +242,9 @@
             selected-folder="[[selectedFolder]]"
             selected-file-type="[[selectedFileType]]">
         </scan-done-section>
+      </template>
+      <template is="dom-if" if="[[showMultiPageScan_]]">
+        <multi-page-scan page-number="[[pageNumber_]]"></multi-page-scan>
       </template>
     </div>
   </div>

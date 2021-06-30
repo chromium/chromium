@@ -16,6 +16,7 @@ export const AppState = {
   DONE: 6,
   CANCELING: 7,
   NO_SCANNERS: 8,
+  MULTI_PAGE_NEXT_ACTION: 9,
 };
 
 /**

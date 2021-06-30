@@ -684,6 +684,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_TEXT" desc="The description for the checkbox that starts a multi-page scan job. This checkbox allows users to scan multiple pages from their scanner into a new PDF file.">
         Scan multiple pages to one PDF
       </message>
+      <message name="IDS_SCANNING_APP_SAVE_BUTTON_LABEL" desc="The label for the button to save a scan to a PDF file">
+        Save
+      </message>
+      <message name="IDS_SCANNING_APP_MULTI_PAGE_SCAN_INSTRUCTIONS_TEXT" desc="The text instructions for a multi-page scan job to tell the user to scan another page from their scanner.">
+        Place another page on the scanner and select Scan to add page.
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

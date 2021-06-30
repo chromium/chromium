@@ -651,6 +651,37 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify a multi-page scan job can be initiated.
+  test('MultiPageScan', () => {
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.selectedSource = PLATEN;
+          scanningApp.selectedFileType = FileType.PDF.toString();
+          return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
+        })
+        .then(() => {
+          scanningApp.multiPageScanChecked = true;
+        })
+        .then(() => {
+          const scanButton = scanningApp.$$('#scanButton');
+          assertEquals('Scan page 1', scanButton.textContent.trim());
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (
+              scanningApp.$$('#scanPreview').$$('#scannedImages'))));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('multi-page-scan'))));
+        });
+  });
+
   // Verify the correct message is shown in the scan failed dialog based on the
   // error type.
   test('ScanResults', () => {

@@ -17,6 +17,7 @@ import './color_mode_select.js';
 import './file_type_select.js';
 import './loading_page.js';
 import './multi_page_checkbox.js';
+import './multi_page_scan.js';
 import './page_size_select.js';
 import './resolution_select.js';
 import './scan_done_section.js';
@@ -342,6 +343,18 @@ Polymer({
 
     /** @private {string} */
     scanButtonText_: String,
+
+    /** @private {boolean} */
+    showScanSettings_: {
+      type: Boolean,
+      value: true,
+    },
+
+    /** @private {boolean} */
+    showMultiPageScan_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   observers:
@@ -421,6 +434,9 @@ Polymer({
         this.appState_ === AppState.CANCELING);
     const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
     this.push('objectUrls_', URL.createObjectURL(blob));
+    if (this.multiPageScanChecked) {
+      this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
+    }
   },
 
   /**
@@ -695,6 +711,9 @@ Polymer({
       case (AppState.NO_SCANNERS):
         assert(this.appState_ === AppState.GETTING_SCANNERS);
         break;
+      case (AppState.MULTI_PAGE_NEXT_ACTION):
+        assert(this.appState_ === AppState.SCANNING);
+        break;
     }
 
     this.appState_ = newState;
@@ -709,6 +728,9 @@ Polymer({
         this.appState_ === AppState.CANCELING;
     this.cancelButtonDisabled_ = this.appState_ === AppState.CANCELING;
     this.showDoneSection_ = this.appState_ === AppState.DONE;
+    this.showMultiPageScan_ =
+        this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION;
+    this.showScanSettings_ = !this.showDoneSection_ && !this.showMultiPageScan_;
 
     // Need to wait for elements to render after updating their disabled and
     // hidden attributes before they can be focused.

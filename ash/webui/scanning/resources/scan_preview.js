@@ -102,7 +102,8 @@ Polymer({
 
   /** @private */
   onAppStateChange_() {
-    this.showScannedImages_ = this.appState === AppState.DONE;
+    this.showScannedImages_ = this.appState === AppState.DONE ||
+        this.appState === AppState.MULTI_PAGE_NEXT_ACTION;
     this.showScanProgress_ = this.appState === AppState.SCANNING;
     this.showCancelingProgress_ = this.appState === AppState.CANCELING;
     this.showHelperText_ = !this.showScanProgress_ &&
