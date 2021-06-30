@@ -19,7 +19,6 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
 namespace content {
 
@@ -141,7 +140,7 @@ bool VerifyOpenURLParams(SiteInstance* site_instance,
 
 bool VerifyBeginNavigationCommonParams(
     SiteInstance* site_instance,
-    blink::mojom::CommonNavigationParams* common_params) {
+    mojom::CommonNavigationParams* common_params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(site_instance);
   DCHECK(common_params);
@@ -164,8 +163,7 @@ bool VerifyBeginNavigationCommonParams(
   }
 
   // Verify |transition| is webby.
-  if (!PageTransitionIsWebTriggerable(
-          ui::PageTransitionFromInt(common_params->transition))) {
+  if (!PageTransitionIsWebTriggerable(common_params->transition)) {
     bad_message::ReceivedBadMessage(
         process, bad_message::RFHI_BEGIN_NAVIGATION_NON_WEBBY_TRANSITION);
     return false;

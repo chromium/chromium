@@ -75,6 +75,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/debug_utils.h"
 #include "content/common/navigation_params.h"
+#include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/common/state_transitions.h"
 #include "content/public/browser/browser_context.h"
@@ -124,7 +125,6 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/net/ip_address_space_util.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
@@ -135,7 +135,6 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
@@ -208,30 +207,30 @@ NavigationURLScheme GetScheme(const GURL& url) {
 // Returns the net load flags to use based on the navigation type.
 // TODO(clamy): Remove the blink code that sets the caching flags.
 void UpdateLoadFlagsWithCacheFlags(int* load_flags,
-                                   blink::mojom::NavigationType navigation_type,
+                                   mojom::NavigationType navigation_type,
                                    bool is_post) {
   switch (navigation_type) {
-    case blink::mojom::NavigationType::RELOAD:
-    case blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL:
+    case mojom::NavigationType::RELOAD:
+    case mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL:
       *load_flags |= net::LOAD_VALIDATE_CACHE;
       break;
-    case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
+    case mojom::NavigationType::RELOAD_BYPASSING_CACHE:
       *load_flags |= net::LOAD_BYPASS_CACHE;
       break;
-    case blink::mojom::NavigationType::RESTORE:
+    case mojom::NavigationType::RESTORE:
       *load_flags |= net::LOAD_SKIP_CACHE_VALIDATION;
       break;
-    case blink::mojom::NavigationType::RESTORE_WITH_POST:
+    case mojom::NavigationType::RESTORE_WITH_POST:
       *load_flags |=
           net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
       break;
-    case blink::mojom::NavigationType::SAME_DOCUMENT:
-    case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
+    case mojom::NavigationType::SAME_DOCUMENT:
+    case mojom::NavigationType::DIFFERENT_DOCUMENT:
       if (is_post)
         *load_flags |= net::LOAD_VALIDATE_CACHE;
       break;
-    case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
-    case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+    case mojom::NavigationType::HISTORY_SAME_DOCUMENT:
+    case mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
       if (is_post) {
         *load_flags |=
             net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
@@ -287,7 +286,7 @@ bool NeedsHTTPOrigin(net::HttpRequestHeaders* headers,
 void AddAdditionalRequestHeaders(
     net::HttpRequestHeaders* headers,
     const GURL& url,
-    blink::mojom::NavigationType navigation_type,
+    mojom::NavigationType navigation_type,
     ui::PageTransition transition,
     BrowserContext* browser_context,
     const std::string& method,
@@ -464,7 +463,7 @@ void RecordStartToCommitMetrics(base::TimeTicks navigation_start_time,
 void RecordReadyToCommitMetrics(
     RenderFrameHostImpl* old_rfh,
     RenderFrameHostImpl* new_rfh,
-    const blink::mojom::CommonNavigationParams& common_params,
+    const mojom::CommonNavigationParams& common_params,
     base::TimeTicks ready_to_commit_time,
     NavigationRequest::OriginAgentClusterEndResult
         origin_agent_cluster_end_result) {
@@ -525,20 +524,18 @@ void RecordReadyToCommitMetrics(
 
   // Navigation.IsSameProcess
   {
-    ui::PageTransition transition =
-        ui::PageTransitionFromInt(common_params.transition);
     UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameProcess", is_same_process);
-    if (transition & ui::PAGE_TRANSITION_FORWARD_BACK) {
+    if (common_params.transition & ui::PAGE_TRANSITION_FORWARD_BACK) {
       UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameProcess.BackForward",
                             is_same_process);
-    } else if (ui::PageTransitionCoreTypeIs(transition,
+    } else if (ui::PageTransitionCoreTypeIs(common_params.transition,
                                             ui::PAGE_TRANSITION_RELOAD)) {
       UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameProcess.Reload", is_same_process);
-    } else if (ui::PageTransitionIsNewNavigation(transition)) {
+    } else if (ui::PageTransitionIsNewNavigation(common_params.transition)) {
       UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameProcess.NewNavigation",
                             is_same_process);
     } else {
-      NOTREACHED() << "Invalid page transition: " << transition;
+      NOTREACHED() << "Invalid page transition: " << common_params.transition;
     }
   }
 
@@ -547,24 +544,26 @@ void RecordReadyToCommitMetrics(
     constexpr absl::optional<bool> kIsBackground = absl::nullopt;
     base::TimeDelta delta =
         ready_to_commit_time - common_params.navigation_start;
-    ui::PageTransition transition =
-        ui::PageTransitionFromInt(common_params.transition);
 
-    LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2", transition,
-                                    kIsBackground, delta);
+    LOG_NAVIGATION_TIMING_HISTOGRAM(
+        "TimeToReadyToCommit2", common_params.transition, kIsBackground, delta);
     if (is_main_frame) {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.MainFrame",
-                                      transition, kIsBackground, delta);
+                                      common_params.transition, kIsBackground,
+                                      delta);
     } else {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.Subframe",
-                                      transition, kIsBackground, delta);
+                                      common_params.transition, kIsBackground,
+                                      delta);
     }
     if (is_same_process) {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.SameProcess",
-                                      transition, kIsBackground, delta);
+                                      common_params.transition, kIsBackground,
+                                      delta);
     } else {
       LOG_NAVIGATION_TIMING_HISTOGRAM("TimeToReadyToCommit2.CrossProcess",
-                                      transition, kIsBackground, delta);
+                                      common_params.transition, kIsBackground,
+                                      delta);
     }
   }
 
@@ -580,20 +579,19 @@ void RecordReadyToCommitMetrics(
 // This is currently used when:
 // 1) Restarting a same-document navigation as cross-document.
 // 2) Failing a navigation and committing an error page.
-blink::mojom::NavigationType ConvertToCrossDocumentType(
-    blink::mojom::NavigationType type) {
+mojom::NavigationType ConvertToCrossDocumentType(mojom::NavigationType type) {
   switch (type) {
-    case blink::mojom::NavigationType::SAME_DOCUMENT:
-      return blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
-    case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
-      return blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
-    case blink::mojom::NavigationType::RELOAD:
-    case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
-    case blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL:
-    case blink::mojom::NavigationType::RESTORE:
-    case blink::mojom::NavigationType::RESTORE_WITH_POST:
-    case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
-    case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
+    case mojom::NavigationType::SAME_DOCUMENT:
+      return mojom::NavigationType::DIFFERENT_DOCUMENT;
+    case mojom::NavigationType::HISTORY_SAME_DOCUMENT:
+      return mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
+    case mojom::NavigationType::RELOAD:
+    case mojom::NavigationType::RELOAD_BYPASSING_CACHE:
+    case mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL:
+    case mojom::NavigationType::RESTORE:
+    case mojom::NavigationType::RESTORE_WITH_POST:
+    case mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+    case mojom::NavigationType::DIFFERENT_DOCUMENT:
       return type;
   }
 }
@@ -669,7 +667,7 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
   DCHECK(navigation_request);
 
   // Check if this is loadDataWithBaseUrl (which needs special treatment).
-  const blink::mojom::CommonNavigationParams& common_params =
+  const mojom::CommonNavigationParams& common_params =
       navigation_request->common_params();
   if (NavigationRequest::IsLoadDataWithBaseURL(common_params)) {
     // A (potentially attacker-controlled) renderer process should not be able
@@ -806,8 +804,8 @@ int EstimateHistoryOffset(NavigationController& controller,
 // static
 std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     FrameTreeNode* frame_tree_node,
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     bool browser_initiated,
     bool was_opener_suppressed,
     const blink::LocalFrameToken* initiator_frame_token,
@@ -836,7 +834,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
             bundle_info->render_process_id()));
   }
 
-  auto navigation_params = blink::mojom::BeginNavigationParams::New(
+  auto navigation_params = mojom::BeginNavigationParams::New(
       base::OptionalFromPtr(initiator_frame_token), extra_headers,
       net::LOAD_NORMAL, false /* skip_service_worker */,
       blink::mojom::RequestContextType::LOCATION, destination,
@@ -852,7 +850,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
-      blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE) {
+      mojom::NavigationType::RELOAD_BYPASSING_CACHE) {
     navigation_params->load_flags |= net::LOAD_BYPASS_CACHE;
     navigation_params->skip_service_worker = true;
   }
@@ -910,8 +908,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
 std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
     FrameTreeNode* frame_tree_node,
     NavigationEntryImpl* entry,
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::BeginNavigationParamsPtr begin_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::BeginNavigationParamsPtr begin_params,
     int current_history_list_offset,
     int current_history_list_length,
     bool override_user_agent,
@@ -928,15 +926,15 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   //   are initiated by a javascript script.
   DCHECK(NavigationTypeUtils::IsReload(common_params->navigation_type) ||
          common_params->navigation_type ==
-             blink::mojom::NavigationType::DIFFERENT_DOCUMENT);
+             mojom::NavigationType::DIFFERENT_DOCUMENT);
 
   begin_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
   // TODO(clamy): See if the navigation start time should be measured in the
   // renderer and sent to the browser instead of being measured here.
-  blink::mojom::CommitNavigationParamsPtr commit_params =
-      blink::mojom::CommitNavigationParams::New(
+  mojom::CommitNavigationParamsPtr commit_params =
+      mojom::CommitNavigationParams::New(
           absl::nullopt, network::mojom::WebSandboxFlags(), override_user_agent,
           /*redirects=*/std::vector<GURL>(),
           /*redirect_response=*/
@@ -945,7 +943,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*post_content_type=*/std::string(), common_params->url,
           common_params->method,
           /*can_load_local_resources=*/false,
-          /*page_state=*/std::string(),
+          /*page_state=*/blink::PageState(),
           /*nav_entry_id=*/0,
           /*subframe_unique_names=*/base::flat_map<std::string, bool>(),
           /*intended_as_new_entry=*/false,
@@ -956,7 +954,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*was_discarded=*/false,
           /*is_view_source=*/false,
           /*should_clear_history_list=*/false,
-          /*navigation_timing=*/blink::mojom::NavigationTiming::New(),
+          /*navigation_timing=*/mojom::NavigationTiming::New(),
           /*appcache_host_id=*/absl::nullopt,
           blink::mojom::WasActivatedOption::kUnknown,
           /*navigation_token=*/base::UnguessableToken::Create(),
@@ -977,11 +975,10 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_browsing_instance=*/false,
           /*old_page_info=*/nullptr, /*http_response_code=*/-1,
-          std::vector<blink::mojom::
-                          AppHistoryEntryPtr>() /* app_history_back_entries */,
           std::vector<
-              blink::mojom::
-                  AppHistoryEntryPtr>() /* app_history_forward_entries */,
+              mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
+          std::vector<
+              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */,
           /*early_hints_preloaded_resources=*/
           std::vector<GURL>());
 
@@ -1038,14 +1035,14 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   TRACE_EVENT0("navigation", "NavigationRequest::CreateForCommit");
   // TODO(clamy): Improve the *NavigationParams and *CommitParams to avoid
   // copying so many parameters here.
-  blink::mojom::CommonNavigationParamsPtr common_params =
-      blink::mojom::CommonNavigationParams::New(
+  mojom::CommonNavigationParamsPtr common_params =
+      mojom::CommonNavigationParams::New(
           url,
           // TODO(nasko): Investigate better value to pass for
           // |initiator_origin|.
           origin, std::move(referrer), transition,
-          is_same_document ? blink::mojom::NavigationType::SAME_DOCUMENT
-                           : blink::mojom::NavigationType::DIFFERENT_DOCUMENT,
+          is_same_document ? mojom::NavigationType::SAME_DOCUMENT
+                           : mojom::NavigationType::DIFFERENT_DOCUMENT,
           blink::NavigationDownloadPolicy(), should_replace_current_entry,
           GURL() /* base_url_for_data_url*/,
           GURL() /* history_url_for_data_url */,
@@ -1066,22 +1063,21 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   // by navigations that went through the browser (e.g. page_state is only
   // set in CommitNavigationParams of history navigations) or these values are
   // not used by the browser after commit.
-  blink::mojom::CommitNavigationParamsPtr commit_params =
-      blink::mojom::CommitNavigationParams::New(
+  mojom::CommitNavigationParamsPtr commit_params =
+      mojom::CommitNavigationParams::New(
           origin, network::mojom::WebSandboxFlags(), is_overriding_user_agent,
           redirects, std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(),
           std::string() /* redirect_response */, original_url,
           method /* original_method */, false /* can_load_local_resources */,
-          std::string(), 0 /* nav_entry_id*/,
+          blink::PageState(), 0 /* nav_entry_id*/,
           base::flat_map<std::string, bool>() /* subframe_unique_names */,
           false /* intended_as_new_entry */,
           -1 /* pending_history_list_offset */,
           -1 /* current_history_list_offset */,
           -1 /* current_history_list_length */, false /* was_discard */,
           false /* is_view_source */, false /* should_clear_history_list */,
-          blink::mojom::NavigationTiming::New(),
-          absl::nullopt /* appcache_host_id */,
+          mojom::NavigationTiming::New(), absl::nullopt /* appcache_host_id */,
           blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create() /* navigation_token */,
           std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),
@@ -1100,14 +1096,13 @@ NavigationRequest::CreateForSynchronousRendererCommit(
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
           http_response_code,
-          std::vector<blink::mojom::
-                          AppHistoryEntryPtr>() /* app_history_back_entries */,
           std::vector<
-              blink::mojom::
-                  AppHistoryEntryPtr>() /* app_history_forward_entries */,
+              mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
+          std::vector<
+              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */,
           std::vector<GURL>() /* early_hints_preloaded_resources */);
-  blink::mojom::BeginNavigationParamsPtr begin_params =
-      blink::mojom::BeginNavigationParams::New();
+  mojom::BeginNavigationParamsPtr begin_params =
+      mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
       frame_tree_node, std::move(common_params), std::move(begin_params),
       std::move(commit_params), false /* browser_initiated */,
@@ -1147,9 +1142,9 @@ int64_t NavigationRequest::unique_id_counter_ = 0;
 
 NavigationRequest::NavigationRequest(
     FrameTreeNode* frame_tree_node,
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::BeginNavigationParamsPtr begin_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::BeginNavigationParamsPtr begin_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     bool browser_initiated,
     bool from_begin_navigation,
     bool is_synchronous_renderer_commit,
@@ -1309,10 +1304,9 @@ NavigationRequest::NavigationRequest(
       // verify that other cases which require a |source_site_instance_| indeed
       // have one with a DCHECK below.
       if (common_params_->is_history_navigation_in_new_child_frame ||
+          common_params_->navigation_type == mojom::NavigationType::RESTORE ||
           common_params_->navigation_type ==
-              blink::mojom::NavigationType::RESTORE ||
-          common_params_->navigation_type ==
-              blink::mojom::NavigationType::RESTORE_WITH_POST ||
+              mojom::NavigationType::RESTORE_WITH_POST ||
           was_opener_suppressed) {
         SetSourceSiteInstanceToInitiatorIfNeeded();
       }
@@ -1337,12 +1331,9 @@ NavigationRequest::NavigationRequest(
   if (source_site_instance_) {
     bool is_renderer_initiated = !browser_initiated;
     Referrer referrer(*common_params_->referrer);
-    ui::PageTransition transition =
-        ui::PageTransitionFromInt(common_params_->transition);
     GetContentClient()->browser()->OverrideNavigationParams(
-        source_site_instance_.get(), &transition, &is_renderer_initiated,
-        &referrer, &common_params_->initiator_origin);
-    common_params_->transition = transition;
+        source_site_instance_.get(), &common_params_->transition,
+        &is_renderer_initiated, &referrer, &common_params_->initiator_origin);
     common_params_->referrer =
         blink::mojom::Referrer::New(referrer.url, referrer.policy);
     browser_initiated = !is_renderer_initiated;
@@ -1355,7 +1346,7 @@ NavigationRequest::NavigationRequest(
                                 common_params_->method == "POST");
 
   // Add necessary headers that may not be present in the
-  // blink::mojom::BeginNavigationParams.
+  // mojom::BeginNavigationParams.
   if (entry) {
     // TODO(altimin, crbug.com/933147): Remove this logic after we are done
     // with implementing back-forward cache.
@@ -1396,10 +1387,10 @@ NavigationRequest::NavigationRequest(
     headers.AddHeadersFromString(begin_params_->headers);
     AddAdditionalRequestHeaders(
         &headers, common_params_->url, common_params_->navigation_type,
-        ui::PageTransitionFromInt(common_params_->transition),
-        controller->GetBrowserContext(), common_params_->method,
-        GetUserAgentOverride(), common_params_->initiator_origin,
-        common_params_->referrer.get(), frame_tree_node);
+        common_params_->transition, controller->GetBrowserContext(),
+        common_params_->method, GetUserAgentOverride(),
+        common_params_->initiator_origin, common_params_->referrer.get(),
+        frame_tree_node);
 
     if (begin_params_->is_form_submission) {
       if (commit_params_->is_browser_initiated &&
@@ -1550,8 +1541,7 @@ void NavigationRequest::BeginNavigation() {
           frame_tree_node_->frame_tree_node_id(),
           commit_params_->is_browser_initiated, commit_params_->original_url,
           commit_params_->original_method, common_params_->has_user_gesture,
-          false, frame_tree_node_->IsMainFrame(),
-          ui::PageTransitionFromInt(common_params_->transition),
+          false, frame_tree_node_->IsMainFrame(), common_params_->transition,
           &should_override_url_loading)) {
     // A Java exception was thrown by the embedding application; we
     // need to return from this task. Specifically, it's not safe from
@@ -1900,7 +1890,7 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
   // but the renderer thinks there's a different document loaded. Where did
   // this navigation come from?
   if (common_params_->navigation_type ==
-      blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT) {
+      mojom::NavigationType::HISTORY_SAME_DOCUMENT) {
     CaptureTraceForNavigationDebugScenario(
         DebugScenario::kDebugSameDocNavigationDocIdMismatch);
   }
@@ -1968,11 +1958,8 @@ void NavigationRequest::ResetStateForSiteInstanceChange() {
 
   // Reset any existing PageState with a non-empty, clean PageState, so that old
   // attacker-controlled state is not pulled into the new process.
-  blink::PageState page_state =
-      blink::PageState::CreateFromEncodedData(commit_params_->page_state);
-  if (page_state.IsValid())
-    commit_params_->page_state =
-        blink::PageState::CreateFromURL(GetURL()).ToEncodedData();
+  if (commit_params_->page_state.IsValid())
+    commit_params_->page_state = blink::PageState::CreateFromURL(GetURL());
 
   // Any previously computed origin to commit is no longer valid (e.g., an
   // opaque origin for an error page).
@@ -2089,7 +2076,7 @@ void NavigationRequest::OnRequestRedirected(
 
   // Reset the page state as it can no longer be used at commit time since the
   // navigation was redirected.
-  commit_params_->page_state = std::string();
+  commit_params_->page_state = blink::PageState();
 
   // A request was made. Record it before we decide to block this response for
   // a reason or another.
@@ -2105,8 +2092,7 @@ void NavigationRequest::OnRequestRedirected(
           redirect_info.new_method,
           // Redirects are always not counted as from user gesture.
           false, true, frame_tree_node_->IsMainFrame(),
-          ui::PageTransitionFromInt(common_params_->transition),
-          &should_override_url_loading)) {
+          common_params_->transition, &should_override_url_loading)) {
     // A Java exception was thrown by the embedding application; we
     // need to return from this task. Specifically, it's not safe from
     // this point on to make any JNI calls.
@@ -3847,7 +3833,7 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
           ->controller()
           .GetBackForwardCache()
           .CanPotentiallyStorePageLater(old_frame_host);
-  commit_params_->old_page_info = blink::mojom::OldPageInfo::New();
+  commit_params_->old_page_info = mojom::OldPageInfo::New();
   commit_params_->old_page_info->routing_id_for_old_main_frame =
       old_frame_host->GetRoutingID();
   auto* page_lifecycle_state_manager =
@@ -5123,8 +5109,7 @@ void NavigationRequest::DidCommitNavigation(
   // Record metrics for the time it took to commit the navigation if it was to
   // another document without error.
   if (!IsSameDocument() && state_ != DID_COMMIT_ERROR_PAGE) {
-    ui::PageTransition transition =
-        ui::PageTransitionFromInt(common_params_->transition);
+    ui::PageTransition transition = common_params_->transition;
     absl::optional<bool> is_background =
         render_frame_host_->GetProcess()->IsProcessBackgrounded();
 
@@ -5372,7 +5357,7 @@ bool NavigationRequest::WasEarlyHintsPreloadLinkHeaderReceived() {
 
 // static
 bool NavigationRequest::IsLoadDataWithBaseURL(
-    const blink::mojom::CommonNavigationParams& common_params) {
+    const mojom::CommonNavigationParams& common_params) {
   // TODO(https://crbug.com/1223394): This should probably check if the
   // navigation is happening on a main frame too, since subframe history
   // navigations can have a non-empty `base_url_for_data_url` (since it will use
@@ -5619,7 +5604,7 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   DCHECK_EQ(params->method, common_params().method);
   params->item_sequence_number = frame_entry_item_sequence_number_;
   params->document_sequence_number = frame_entry_document_sequence_number_;
-  params->transition = ui::PageTransitionFromInt(common_params().transition);
+  params->transition = common_params().transition;
   params->history_list_was_cleared = false;
   params->request_id = GetGlobalRequestID().request_id;
 
@@ -5636,8 +5621,7 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCacheRestore() {
   // Add bfcache-specific provisional load params:
   params->did_create_new_entry = false;
   DCHECK_EQ(params->origin, commit_params().origin_to_commit.value());
-  params->page_state =
-      blink::PageState::CreateFromEncodedData(commit_params().page_state);
+  params->page_state = commit_params().page_state;
   return params;
 }
 
@@ -5810,7 +5794,7 @@ bool NavigationRequest::HasUserGesture() {
 }
 
 ui::PageTransition NavigationRequest::GetPageTransition() {
-  return ui::PageTransitionFromInt(common_params().transition);
+  return common_params().transition;
 }
 
 NavigationUIData* NavigationRequest::GetNavigationUIData() {
@@ -6037,12 +6021,12 @@ NavigationRequest* NavigationRequest::From(NavigationHandle* handle) {
 
 // static
 ReloadType NavigationRequest::NavigationTypeToReloadType(
-    blink::mojom::NavigationType type) {
-  if (type == blink::mojom::NavigationType::RELOAD)
+    mojom::NavigationType type) {
+  if (type == mojom::NavigationType::RELOAD)
     return ReloadType::NORMAL;
-  if (type == blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE)
+  if (type == mojom::NavigationType::RELOAD_BYPASSING_CACHE)
     return ReloadType::BYPASSING_CACHE;
-  if (type == blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL)
+  if (type == mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL)
     return ReloadType::ORIGINAL_REQUEST_URL;
   return ReloadType::NONE;
 }
@@ -6484,7 +6468,7 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
   // Reloads and history navigations have special handling and don't need to
   // set |common_params_->should_replace_current_entry|.
   if (common_params_->navigation_type !=
-      blink::mojom::NavigationType::DIFFERENT_DOCUMENT) {
+      mojom::NavigationType::DIFFERENT_DOCUMENT) {
     return false;
   }
   // Form submissions to the same url should not replace.

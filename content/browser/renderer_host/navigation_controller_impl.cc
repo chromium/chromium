@@ -101,7 +101,6 @@
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "url/url_constants.h"
 
@@ -336,31 +335,29 @@ void CopyReplacedNavigationEntryDataIfPreviouslyEmpty(
   output_entry->set_replaced_entry_data(data);
 }
 
-blink::mojom::NavigationType GetNavigationType(
-    const GURL& old_url,
-    const GURL& new_url,
-    ReloadType reload_type,
-    NavigationEntryImpl* entry,
-    const FrameNavigationEntry& frame_entry,
-    bool has_pending_cross_document_commit,
-    bool is_currently_error_page,
-    bool is_same_document_history_load) {
+mojom::NavigationType GetNavigationType(const GURL& old_url,
+                                        const GURL& new_url,
+                                        ReloadType reload_type,
+                                        NavigationEntryImpl* entry,
+                                        const FrameNavigationEntry& frame_entry,
+                                        bool has_pending_cross_document_commit,
+                                        bool is_currently_error_page,
+                                        bool is_same_document_history_load) {
   // Reload navigations
   switch (reload_type) {
     case ReloadType::NORMAL:
-      return blink::mojom::NavigationType::RELOAD;
+      return mojom::NavigationType::RELOAD;
     case ReloadType::BYPASSING_CACHE:
-      return blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE;
+      return mojom::NavigationType::RELOAD_BYPASSING_CACHE;
     case ReloadType::ORIGINAL_REQUEST_URL:
-      return blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
+      return mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
     case ReloadType::NONE:
       break;  // Fall through to rest of function.
   }
 
   if (entry->IsRestored()) {
-    return entry->GetHasPostData()
-               ? blink::mojom::NavigationType::RESTORE_WITH_POST
-               : blink::mojom::NavigationType::RESTORE;
+    return entry->GetHasPostData() ? mojom::NavigationType::RESTORE_WITH_POST
+                                   : mojom::NavigationType::RESTORE;
   }
 
   const bool can_be_same_document =
@@ -376,8 +373,8 @@ blink::mojom::NavigationType GetNavigationType(
   // History navigations.
   if (frame_entry.page_state().IsValid()) {
     return can_be_same_document && is_same_document_history_load
-               ? blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT
-               : blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
+               ? mojom::NavigationType::HISTORY_SAME_DOCUMENT
+               : mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
   }
   DCHECK(!is_same_document_history_load);
 
@@ -407,8 +404,8 @@ blink::mojom::NavigationType GetNavigationType(
   // mojom::CommitResult::RestartCrossDocument.
 
   return can_be_same_document && is_same_doc
-             ? blink::mojom::NavigationType::SAME_DOCUMENT
-             : blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+             ? mojom::NavigationType::SAME_DOCUMENT
+             : mojom::NavigationType::DIFFERENT_DOCUMENT;
 }
 
 // Adjusts the original input URL if needed, to get the URL to actually load and
@@ -434,8 +431,7 @@ void ValidateRequestMatchesEntry(NavigationRequest* request,
   if (request->frame_tree_node()->IsMainFrame()) {
     DCHECK_EQ(request->browser_initiated(), !entry->is_renderer_initiated());
     DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
-        ui::PageTransitionFromInt(request->common_params().transition),
-        entry->GetTransitionType()));
+        request->common_params().transition, entry->GetTransitionType()));
   }
   DCHECK_EQ(request->commit_params().should_clear_history_list,
             entry->should_clear_history_list());
@@ -2083,7 +2079,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
   NavigationEntryImpl::UpdatePolicy update_policy =
       NavigationEntryImpl::UpdatePolicy::kUpdate;
   if (request->common_params().navigation_type ==
-          blink::mojom::NavigationType::DIFFERENT_DOCUMENT &&
+          mojom::NavigationType::DIFFERENT_DOCUMENT &&
       last_committed_frame_entry &&
       last_committed_frame_entry->url() != params.url &&
       !was_on_initial_empty_document) {
@@ -3439,7 +3435,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       node->render_manager()->HasPendingCommitForCrossDocumentNavigation();
   bool is_currently_error_page = node->current_frame_host()->is_error_page();
 
-  blink::mojom::NavigationType navigation_type = GetNavigationType(
+  mojom::NavigationType navigation_type = GetNavigationType(
       /*old_url=*/node->current_url(),
       /*new_url=*/url_to_load, reload_type, entry, *frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
@@ -3456,8 +3452,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   const GURL& history_url_for_data_url =
       params.base_url_for_data_url.is_empty() ? GURL() : virtual_url;
-  blink::mojom::CommonNavigationParamsPtr common_params =
-      blink::mojom::CommonNavigationParams::New(
+  mojom::CommonNavigationParamsPtr common_params =
+      mojom::CommonNavigationParams::New(
           url_to_load, params.initiator_origin,
           blink::mojom::Referrer::New(params.referrer.url,
                                       params.referrer.policy),
@@ -3473,22 +3469,21 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           false /* is_history_navigation_in_new_child_frame */,
           params.input_start);
 
-  blink::mojom::CommitNavigationParamsPtr commit_params =
-      blink::mojom::CommitNavigationParams::New(
+  mojom::CommitNavigationParamsPtr commit_params =
+      mojom::CommitNavigationParams::New(
           frame_entry->committed_origin(), network::mojom::WebSandboxFlags(),
           override_user_agent, params.redirect_chain,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(),
           std::string() /* post_content_type */, common_params->url,
           common_params->method, params.can_load_local_resources,
-          frame_entry->page_state().ToEncodedData(), entry->GetUniqueID(),
+          frame_entry->page_state(), entry->GetUniqueID(),
           entry->GetSubframeUniqueNames(node), true /* intended_as_new_entry */,
           -1 /* pending_history_list_offset */,
           params.should_clear_history_list ? -1 : GetLastCommittedEntryIndex(),
           params.should_clear_history_list ? 0 : GetEntryCount(),
           false /* was_discarded */, is_view_source_mode,
-          params.should_clear_history_list,
-          blink::mojom::NavigationTiming::New(),
+          params.should_clear_history_list, mojom::NavigationTiming::New(),
           absl::nullopt /* appcache_host_id */,
           blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create() /* navigation_token */,
@@ -3508,11 +3503,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
           -1 /* http_response_code */,
-          std::vector<blink::mojom::
-                          AppHistoryEntryPtr>() /* app_history_back_entries */,
           std::vector<
-              blink::mojom::
-                  AppHistoryEntryPtr>() /* app_history_forward_entries */,
+              mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
+          std::vector<
+              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */,
           std::vector<GURL>() /* early_hints_preloaded_resources */);
 #if defined(OS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
@@ -3616,7 +3610,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   bool is_currently_error_page =
       frame_tree_node->current_frame_host()->is_error_page();
 
-  blink::mojom::NavigationType navigation_type = GetNavigationType(
+  mojom::NavigationType navigation_type = GetNavigationType(
       /*old_url=*/frame_tree_node->current_url(),
       /*new_url=*/dest_url, reload_type, entry, *frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
@@ -3634,7 +3628,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   }
 
   // Create the NavigationParams based on |entry| and |frame_entry|.
-  blink::mojom::CommonNavigationParamsPtr common_params =
+  mojom::CommonNavigationParamsPtr common_params =
       entry->ConstructCommonNavigationParams(
           *frame_entry, request_body, dest_url,
           blink::mojom::Referrer::New(dest_referrer.url, dest_referrer.policy),
@@ -3646,7 +3640,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   // TODO(clamy): |intended_as_new_entry| below should always be false once
   // Reload no longer leads to this being called for a pending NavigationEntry
   // of index -1.
-  blink::mojom::CommitNavigationParamsPtr commit_params =
+  mojom::CommitNavigationParamsPtr commit_params =
       entry->ConstructCommitNavigationParams(
           *frame_entry, common_params->url, origin_to_commit,
           common_params->method, entry->GetSubframeUniqueNames(frame_tree_node),
@@ -3742,7 +3736,7 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
 
   FrameTreeNode* node = rfhi->frame_tree_node();
 
-  blink::mojom::CommonNavigationParamsPtr common_params =
+  mojom::CommonNavigationParamsPtr common_params =
       CreateCommonNavigationParams();
   // |url| might be empty, such as when LoadPostCommitErrorPage happens before
   // the frame actually committed (e.g. iframe with "src" set to a
@@ -3750,7 +3744,7 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
   // case, as the renderer will only think a page is an error page if it has a
   // non-empty unreachable URL.
   common_params->url = url.is_empty() ? GURL("about:blank") : url;
-  blink::mojom::CommitNavigationParamsPtr commit_params =
+  mojom::CommitNavigationParamsPtr commit_params =
       CreateCommitNavigationParams();
   commit_params->original_url = common_params->url;
 
@@ -4062,7 +4056,7 @@ void NavigationControllerImpl::LogStoragePartitionIdCrashKeys(
   base::debug::DumpWithoutCrashing();
 }
 
-std::vector<blink::mojom::AppHistoryEntryPtr>
+std::vector<mojom::AppHistoryEntryPtr>
 NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
     Direction direction,
     int entry_index,
@@ -4070,7 +4064,7 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
     FrameTreeNode* node,
     SiteInstance* site_instance,
     int64_t previous_item_sequence_number) {
-  std::vector<blink::mojom::AppHistoryEntryPtr> entries;
+  std::vector<mojom::AppHistoryEntryPtr> entries;
   int offset = direction == Direction::kForward ? 1 : -1;
   for (int i = entry_index + offset; i >= 0 && i < GetEntryCount();
        i += offset) {
@@ -4087,11 +4081,10 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
     if (blink::DecodePageState(frame_entry->page_state().ToEncodedData(),
                                &exploded_page_state)) {
       blink::ExplodedFrameState frame_state = exploded_page_state.top;
-      blink::mojom::AppHistoryEntryPtr entry =
-          blink::mojom::AppHistoryEntry::New(
-              frame_state.app_history_key.value_or(std::u16string()),
-              frame_state.app_history_id.value_or(std::u16string()),
-              frame_state.url_string.value_or(std::u16string()));
+      mojom::AppHistoryEntryPtr entry = mojom::AppHistoryEntry::New(
+          frame_state.app_history_key.value_or(std::u16string()),
+          frame_state.app_history_id.value_or(std::u16string()),
+          frame_state.url_string.value_or(std::u16string()));
       DCHECK(pending_origin.CanBeDerivedFrom(GURL(entry->url)));
       entries.push_back(std::move(entry));
       previous_item_sequence_number = frame_entry->item_sequence_number();

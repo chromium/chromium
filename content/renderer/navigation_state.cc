@@ -20,8 +20,8 @@ NavigationState::~NavigationState() {
 
 // static
 std::unique_ptr<NavigationState> NavigationState::Create(
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     mojom::NavigationClient::CommitNavigationCallback commit_callback,
     std::unique_ptr<NavigationClient> navigation_client,
     bool was_initiated_in_this_frame) {
@@ -67,8 +67,8 @@ void NavigationState::RunCommitNavigationCallback(
 }
 
 NavigationState::NavigationState(
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     bool is_for_synchronous_commit,
     mojom::NavigationClient::CommitNavigationCallback commit_callback,
     std::unique_ptr<NavigationClient> navigation_client,

@@ -11,7 +11,7 @@
 
 #include <vector>
 
-#include "content/common/content_export.h"
+#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,7 +20,6 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
@@ -73,7 +72,7 @@ namespace devtools_instrumentation {
 
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
-    blink::mojom::BeginNavigationParams* begin_params,
+    mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
     absl::optional<std::vector<net::SourceStream::SourceType>>*
         devtools_accepted_stream_types);

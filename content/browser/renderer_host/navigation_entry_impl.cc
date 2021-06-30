@@ -33,7 +33,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "ui/gfx/text_elider.h"
 
@@ -787,13 +786,13 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   return copy;
 }
 
-blink::mojom::CommonNavigationParamsPtr
+mojom::CommonNavigationParamsPtr
 NavigationEntryImpl::ConstructCommonNavigationParams(
     const FrameNavigationEntry& frame_entry,
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     const GURL& dest_url,
     blink::mojom::ReferrerPtr dest_referrer,
-    blink::mojom::NavigationType navigation_type,
+    mojom::NavigationType navigation_type,
     blink::PreviewsState previews_state,
     base::TimeTicks navigation_start,
     base::TimeTicks input_start) {
@@ -803,7 +802,7 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
 
   // TODO(https://crbug.com/1223394): Stop setting `base_url_for_data_url` and
   // `history_url_for_data_url` for subframe history navigations.
-  return blink::mojom::CommonNavigationParams::New(
+  return mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), std::move(dest_referrer),
       GetTransitionType(), navigation_type, download_policy,
       // It's okay to pass false for `should_replace_entry` because we never
@@ -819,7 +818,7 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       false /* is_history_navigation_in_new_child_frame */, input_start);
 }
 
-blink::mojom::CommitNavigationParamsPtr
+mojom::CommitNavigationParamsPtr
 NavigationEntryImpl::ConstructCommitNavigationParams(
     const FrameNavigationEntry& frame_entry,
     const GURL& original_url,
@@ -855,19 +854,18 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     current_length_to_send = 0;
   }
 
-  blink::mojom::CommitNavigationParamsPtr commit_params =
-      blink::mojom::CommitNavigationParams::New(
+  mojom::CommitNavigationParamsPtr commit_params =
+      mojom::CommitNavigationParams::New(
           origin_to_commit, network::mojom::WebSandboxFlags(),
           GetIsOverridingUserAgent(), redirects,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(), std::string(), original_url,
-          original_method, GetCanLoadLocalResources(),
-          frame_entry.page_state().ToEncodedData(), GetUniqueID(),
-          subframe_unique_names, intended_as_new_entry, pending_offset_to_send,
-          current_offset_to_send, current_length_to_send, false,
-          IsViewSourceMode(), should_clear_history_list(),
-          blink::mojom::NavigationTiming::New(), absl::nullopt,
-          blink::mojom::WasActivatedOption::kUnknown,
+          original_method, GetCanLoadLocalResources(), frame_entry.page_state(),
+          GetUniqueID(), subframe_unique_names, intended_as_new_entry,
+          pending_offset_to_send, current_offset_to_send,
+          current_length_to_send, false, IsViewSourceMode(),
+          should_clear_history_list(), mojom::NavigationTiming::New(),
+          absl::nullopt, blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create(),
           std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>(),
 #if defined(OS_ANDROID)
@@ -883,11 +881,10 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
           -1 /* http_response_code */,
-          std::vector<blink::mojom::
-                          AppHistoryEntryPtr>() /* app_history_back_entries */,
           std::vector<
-              blink::mojom::
-                  AppHistoryEntryPtr>() /* app_history_forward_entries */,
+              mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
+          std::vector<
+              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */,
           std::vector<GURL>() /* early_hints_preloaded_resources */);
 #if defined(OS_ANDROID)
   if (NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {

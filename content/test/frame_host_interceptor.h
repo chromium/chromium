@@ -13,7 +13,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 
 namespace content {
 
@@ -45,8 +44,8 @@ class FrameHostInterceptor : public WebContentsObserver {
   // original messages and just forwards them to the original implementation).
   virtual bool WillDispatchBeginNavigation(
       RenderFrameHost* render_frame_host,
-      blink::mojom::CommonNavigationParamsPtr* common_params,
-      blink::mojom::BeginNavigationParamsPtr* begin_params,
+      mojom::CommonNavigationParamsPtr* common_params,
+      mojom::BeginNavigationParamsPtr* begin_params,
       mojo::PendingRemote<blink::mojom::BlobURLToken>* blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>*
           navigation_client);

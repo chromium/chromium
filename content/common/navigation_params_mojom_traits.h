@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_NAVIGATION_PARAMS_MOJOM_TRAITS_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_NAVIGATION_PARAMS_MOJOM_TRAITS_H_
+#ifndef CONTENT_COMMON_NAVIGATION_PARAMS_MOJOM_TRAITS_H_
+#define CONTENT_COMMON_NAVIGATION_PARAMS_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 
 namespace mojo {
@@ -25,4 +24,4 @@ struct CloneTraits<blink::mojom::PrefetchedSignedExchangeInfoPtr, true> {
 
 }  // namespace mojo
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_NAVIGATION_PARAMS_MOJOM_TRAITS_H_
+#endif  // CONTENT_COMMON_NAVIGATION_PARAMS_MOJOM_TRAITS_H_

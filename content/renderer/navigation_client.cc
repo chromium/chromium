@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "content/renderer/render_frame_impl.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -20,8 +19,8 @@ NavigationClient::NavigationClient(RenderFrameImpl* render_frame)
 NavigationClient::~NavigationClient() {}
 
 void NavigationClient::CommitNavigation(
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -51,8 +50,8 @@ void NavigationClient::CommitNavigation(
 }
 
 void NavigationClient::CommitFailedNavigation(
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     bool has_stale_copy_in_cache,
     int error_code,
     int extended_error_code,

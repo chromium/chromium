@@ -164,6 +164,7 @@
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params.h"
+#include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
@@ -245,7 +246,6 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
-#include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -267,7 +267,6 @@
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -733,7 +732,7 @@ void OnDataURLRetrieved(
 // "redemption" or "signing" (as opposed to "issuance"), the parent's frame
 // needs to have the trust-token-redemption Permissions Policy feature enabled.
 bool ParentNeedsTrustTokenPermissionsPolicy(
-    const blink::mojom::BeginNavigationParams& begin_params) {
+    const mojom::BeginNavigationParams& begin_params) {
   if (!begin_params.trust_token_params)
     return false;
 
@@ -756,7 +755,7 @@ bool ParentNeedsTrustTokenPermissionsPolicy(
 network::mojom::TrustTokenRedemptionPolicy
 DetermineWhetherToForbidTrustTokenRedemption(
     const RenderFrameHostImpl* parent,
-    const blink::mojom::CommitNavigationParams& commit_params,
+    const mojom::CommitNavigationParams& commit_params,
     const url::Origin& subframe_origin) {
   // For main frame loads, the frame's permissions policy is determined entirely
   // by response headers, which are provided by the renderer.
@@ -1210,21 +1209,21 @@ class RenderFrameHostImpl::DroppedInterfaceRequestLogger
 };
 
 struct PendingNavigation {
-  blink::mojom::CommonNavigationParamsPtr common_params;
-  blink::mojom::BeginNavigationParamsPtr begin_navigation_params;
+  mojom::CommonNavigationParamsPtr common_params;
+  mojom::BeginNavigationParamsPtr begin_navigation_params;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
   mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client;
 
   PendingNavigation(
-      blink::mojom::CommonNavigationParamsPtr common_params,
-      blink::mojom::BeginNavigationParamsPtr begin_navigation_params,
+      mojom::CommonNavigationParamsPtr common_params,
+      mojom::BeginNavigationParamsPtr begin_navigation_params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client);
 };
 
 PendingNavigation::PendingNavigation(
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::BeginNavigationParamsPtr begin_navigation_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::BeginNavigationParamsPtr begin_navigation_params,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client)
     : common_params(std::move(common_params)),
@@ -6404,8 +6403,8 @@ void RenderFrameHostImpl::GetKeepAliveHandleFactory(
 
 // TODO(ahemery): Move checks to mojo bad message reporting.
 void RenderFrameHostImpl::BeginNavigation(
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::BeginNavigationParamsPtr begin_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::BeginNavigationParamsPtr begin_params,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
@@ -6431,8 +6430,7 @@ void RenderFrameHostImpl::BeginNavigation(
 
   DCHECK(navigation_client.is_valid());
 
-  blink::mojom::CommonNavigationParamsPtr validated_params =
-      common_params.Clone();
+  mojom::CommonNavigationParamsPtr validated_params = common_params.Clone();
   if (!VerifyBeginNavigationCommonParams(GetSiteInstance(), &*validated_params))
     return;
 
@@ -7150,8 +7148,8 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
 
 void RenderFrameHostImpl::CommitNavigation(
     NavigationRequest* navigation_request,
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -7644,8 +7642,8 @@ void RenderFrameHostImpl::CommitNavigation(
 
 void RenderFrameHostImpl::FailedNavigation(
     NavigationRequest* navigation_request,
-    const blink::mojom::CommonNavigationParams& common_params,
-    const blink::mojom::CommitNavigationParams& commit_params,
+    const mojom::CommonNavigationParams& common_params,
+    const mojom::CommitNavigationParams& commit_params,
     bool has_stale_copy_in_cache,
     int error_code,
     int extended_error_code,
@@ -8226,8 +8224,8 @@ void RenderFrameHostImpl::GrantFileAccessFromResourceRequestBody(
 }
 
 void RenderFrameHostImpl::UpdatePermissionsForNavigation(
-    const blink::mojom::CommonNavigationParams& common_params,
-    const blink::mojom::CommitNavigationParams& commit_params) {
+    const mojom::CommonNavigationParams& common_params,
+    const mojom::CommitNavigationParams& commit_params) {
   // Browser plugin guests are not allowed to navigate outside web-safe schemes,
   // so do not grant them the ability to commit additional URLs.
   if (!GetProcess()->IsForGuestsOnly()) {
@@ -8248,10 +8246,8 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // access again.  Abuse is prevented, because the files listed in the page
   // state are validated earlier, when they are received from the renderer (in
   // RenderFrameHostImpl::CanAccessFilesOfPageState).
-  blink::PageState page_state =
-      blink::PageState::CreateFromEncodedData(commit_params.page_state);
-  if (page_state.IsValid())
-    GrantFileAccessFromPageState(page_state);
+  if (commit_params.page_state.IsValid())
+    GrantFileAccessFromPageState(commit_params.page_state);
 
   // We may be here after transferring navigation to a different renderer
   // process.  In this case, we need to ensure that the new renderer retains
@@ -10158,8 +10154,8 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
 void RenderFrameHostImpl::SendCommitNavigation(
     mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -10189,8 +10185,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
 void RenderFrameHostImpl::SendCommitFailedNavigation(
     mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,
-    blink::mojom::CommonNavigationParamsPtr common_params,
-    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::CommonNavigationParamsPtr common_params,
+    mojom::CommitNavigationParamsPtr commit_params,
     bool has_stale_copy_in_cache,
     int32_t error_code,
     int32_t extended_error_code,
@@ -10755,9 +10751,8 @@ bool CalculateShouldReplaceCurrentEntry(
       NavigationTypeUtils::IsHistory(request->common_params().navigation_type);
   const bool is_reload =
       NavigationTypeUtils::IsReload(request->common_params().navigation_type);
-  const bool has_valid_page_state = (blink::PageState::CreateFromEncodedData(
-                                         request->commit_params().page_state)
-                                         .IsValid());
+  const bool has_valid_page_state =
+      (request->commit_params().page_state.IsValid());
   const bool is_error_page = (request->GetNetErrorCode() != net::OK);
 
   // The navigation URL used by the renderer during commit time before finishing
@@ -11079,9 +11074,7 @@ void RenderFrameHostImpl::
       "VerifyDidCommit", "is_history",
       NavigationTypeUtils::IsHistory(request->common_params().navigation_type));
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "has_valid_page_state",
-                        blink::PageState::CreateFromEncodedData(
-                            request->commit_params().page_state)
-                            .IsValid());
+                        request->commit_params().page_state.IsValid());
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "has_gesture",
                         request->HasUserGesture());

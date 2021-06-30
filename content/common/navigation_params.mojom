@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module blink.mojom;
+module content.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -29,7 +29,15 @@ import "third_party/blink/public/mojom/permissions_policy/permissions_policy.moj
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-import "third_party/blink/public/mojom/conversions/conversions.mojom";
+
+[Native]
+struct Impression;
+
+[Native]
+struct PageState;
+
+[Native]
+enum PageTransition;
 
 enum NavigationType {
   // Reload the page, validating only cache entry for the main resource.
@@ -155,7 +163,9 @@ struct CommonNavigationParams {
   blink.mojom.Referrer referrer;
 
   // The type of transition.
-  int32 transition;
+  //
+  // [Native] enums are by default initialized to 0 (i.e. PAGE_TRANSITION_LINK).
+  PageTransition transition;
 
   // Type of navigation.
   NavigationType navigation_type = DIFFERENT_DOCUMENT;
@@ -324,9 +334,8 @@ struct CommitNavigationParams {
   // resources.
   bool can_load_local_resources = false;
 
-  // Encoded version of blink::PageState, opaque history state (received by
-  // UpdateState Mojo message).
-  string page_state;
+  // Opaque history state (received by UpdateState Mojo message).
+  PageState page_state;
 
   // For browser-initiated navigations, this is the unique id of the
   // NavigationEntry being navigated to. (For renderer-initiated navigations it

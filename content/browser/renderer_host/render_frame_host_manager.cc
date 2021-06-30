@@ -2975,8 +2975,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
   scoped_refptr<SiteInstance> dest_site_instance = GetSiteInstanceForNavigation(
       request->GetUrlInfo(), web_exposed_isolation_info,
       request->GetSourceSiteInstance(), request->dest_site_instance(),
-      candidate_site_instance,
-      ui::PageTransitionFromInt(request->common_params().transition),
+      candidate_site_instance, request->common_params().transition,
       request->state() >= NavigationRequest::CANCELING, is_reload,
       request->IsSameDocument(),
       request->GetRestoreType() == RestoreType::kRestored,

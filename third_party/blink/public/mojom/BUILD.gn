@@ -871,9 +871,6 @@ mojom("mojom_core") {
     "messaging/transferable_message.mojom",
     "messaging/user_activation_snapshot.mojom",
 
-    # Depends on frame_policy.mojom.
-    "navigation/navigation_params.mojom",
-
     # Depends on transferable_message.mojom.
     "portal/portal.mojom",
 
