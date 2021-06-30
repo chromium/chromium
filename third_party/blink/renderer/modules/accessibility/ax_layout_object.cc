@@ -735,6 +735,7 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
     cursor.MoveToNextInlineLeafOnLine();
     if (cursor) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
+      DCHECK(runner_layout_object);
       AXObject* result =
           ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
       result = GetDeepestAXChildInLayoutTree(result, true);
@@ -759,16 +760,15 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
   if (!ax_result)
     return nullptr;
 
-#if DCHECK_IS_ON()
-  if (!ax_object.AXObjectCache().IsAriaOwned(&ax_object)) {
-    DCHECK_NE(ax_result->ParentObject(), &ax_object)
-        << "NextOnLine() must not point to a child of the current object. "
-           "Because inline objects without try to return a result from their "
-           "parents, using a descendant can cause a previous position to be "
-           "reused, which appears as a loop in the nextOnLine data, and "
-           "can cause an infinite loop in consumers of the nextOnLine data";
+  if (!ax_object.AXObjectCache().IsAriaOwned(&ax_object) &&
+      ax_result->ParentObject() == &ax_object) {
+    // NextOnLine() must not point to a child of the current object.
+    // Because inline objects try to return a result from their
+    // parents, using a descendant can cause a previous position to be
+    // reused, which appears as a loop in the nextOnLine data, and
+    // can cause an infinite loop in consumers of the nextOnLine data.
+    return nullptr;
   }
-#endif
 
   return ax_result;
 }
@@ -782,6 +782,8 @@ AXObject* AXLayoutObject::NextOnLine() const {
     NOTREACHED();
     return nullptr;
   }
+
+  DCHECK(GetLayoutObject());
 
   if (GetLayoutObject()->IsBoxListMarkerIncludingNG()) {
     // A list marker should be followed by a list item on the same line.
@@ -884,6 +886,7 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
     cursor.MoveToPreviousInlineLeafOnLine();
     if (cursor) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
+      DCHECK(runner_layout_object);
       AXObject* result =
           ax_object.AXObjectCache().GetOrCreate(runner_layout_object);
       result = GetDeepestAXChildInLayoutTree(result, false);
@@ -909,16 +912,15 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
   if (!ax_result)
     return nullptr;
 
-#if DCHECK_IS_ON()
-  if (!ax_object.AXObjectCache().IsAriaOwned(&ax_object)) {
-    DCHECK_NE(ax_result->ParentObject(), &ax_object)
-        << "PreviousOnLine() must not point to a child of the current object. "
-           "Because inline objects without try to return a result from their "
-           "parents, using a descendant can cause a previous position to be "
-           "reused, which appears as a loop in the previousOnLine data, and "
-           "can cause an infinite loop in consumers of the previousOnLine data";
+  if (!ax_object.AXObjectCache().IsAriaOwned(&ax_object) &&
+      ax_result->ParentObject() == &ax_object) {
+    // PreviousOnLine() must not point to a child of the current object.
+    // Because inline objects without try to return a result from their
+    // parents, using a descendant can cause a previous position to be
+    // reused, which appears as a loop in the previousOnLine data, and
+    // can cause an infinite loop in consumers of the previousOnLine data.
+    return nullptr;
   }
-#endif
 
   return ax_result;
 }
@@ -932,6 +934,8 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
     NOTREACHED();
     return nullptr;
   }
+
+  DCHECK(GetLayoutObject());
 
   AXObject* previous_sibling = AccessibilityIsIncludedInTree()
                                    ? PreviousSiblingIncludingIgnored()

@@ -6,13 +6,9 @@
 # crbug.com/1138028 tracks the removal of these failure expectations
 
 # Crashes
-editing/execCommand/delete-image-in-anchor.html [ CRASH ]
-external/wpt/css/CSS2/normal-flow/block-in-inline-remove-002.xht [ CRASH ]
-external/wpt/css/CSS2/normal-flow/block-in-inline-remove-004.xht [ CRASH ]
 external/wpt/css/css-display/display-contents-shadow-dom-1.html [ CRASH ]
 external/wpt/html/semantics/embedded-content/image-maps/image-map-processing-model/hash-name-reference.html [ CRASH ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/disable_controls_reposition.html [ CRASH ]
-fast/css/counters/counter-traverse-object-crash.html [ CRASH ]
 fast/forms/color-scheme/suggestion-picker/date-suggestion-picker-appearance.html [ CRASH ]
 fast/forms/color-scheme/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ CRASH ]
 fast/forms/color-scheme/suggestion-picker/month-suggestion-picker-appearance.html [ CRASH ]
