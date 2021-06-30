@@ -953,9 +953,6 @@ const base::FeatureParam<std::string>
     kBackgroundTracingPerformanceMark_AllowList{
         &kBackgroundTracingPerformanceMark, "allow_list", ""};
 
-const base::Feature kCLSM90Improvements{"CLSM90Improvements",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // New compositing algorithm. See renderer/core/paint/README.md.
 const base::Feature kCompositeAfterPaint{"CompositeAfterPaint",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
