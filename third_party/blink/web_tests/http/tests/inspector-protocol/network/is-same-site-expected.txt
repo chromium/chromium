@@ -1,0 +1,132 @@
+Verifies that same site requests are marked as such
+requests[
+    [0] : {
+        headers : {
+            Referer : http://127.0.0.1:8000/inspector-protocol/network/resources/same-site-iframe.html
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : Low
+        isSameSite : true
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://127.0.0.1:8000/inspector-protocol/network/resources/relative.png
+    }
+    [1] : {
+        headers : {
+            Referer : http://127.0.0.1:8000/inspector-protocol/network/resources/same-site-root.html
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : Low
+        isSameSite : true
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://127.0.0.1:8000/inspector-protocol/network/resources/root-relative-image.png
+    }
+    [2] : {
+        headers : {
+            Referer : http://127.0.0.1:8000/inspector-protocol/network/resources/same-site-root.html
+            Upgrade-Insecure-Requests : 1
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : VeryHigh
+        isSameSite : true
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://127.0.0.1:8000/inspector-protocol/network/resources/same-site-iframe.html
+    }
+    [3] : {
+        headers : {
+            Upgrade-Insecure-Requests : 1
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : VeryHigh
+        isSameSite : true
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://127.0.0.1:8000/inspector-protocol/network/resources/same-site-root.html
+    }
+    [4] : {
+        headers : {
+            Referer : http://127.0.0.1:8000/inspector-protocol/network/resources/same-site-iframe.html
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : Low
+        isSameSite : true
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://127.0.0.1:8000/root.png
+    }
+    [5] : {
+        headers : {
+            Referer : http://devtools.oopif.test:8000/
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : Low
+        isSameSite : false
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://127.0.0.1:8000/root.png
+    }
+    [6] : {
+        headers : {
+            Referer : http://127.0.0.1:8000/
+            User-Agent : <string>
+        }
+        initialPriority : Low
+        isSameSite : false
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://devtools.oopif.test:8000/external-image.png
+    }
+    [7] : {
+        headers : {
+            Referer : http://devtools.oopif.test:8000/inspector-protocol/network/resources/same-site-iframe.html
+            User-Agent : <string>
+        }
+        initialPriority : Low
+        isSameSite : false
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://devtools.oopif.test:8000/inspector-protocol/network/resources/relative.png
+    }
+    [8] : {
+        headers : {
+            Referer : http://127.0.0.1:8000/
+            Upgrade-Insecure-Requests : 1
+            User-Agent : <string>
+        }
+        initialPriority : VeryHigh
+        isSameSite : false
+        method : GET
+        mixedContentType : none
+        referrerPolicy : strict-origin-when-cross-origin
+        url : http://devtools.oopif.test:8000/inspector-protocol/network/resources/same-site-iframe.html
+    }
+]
+

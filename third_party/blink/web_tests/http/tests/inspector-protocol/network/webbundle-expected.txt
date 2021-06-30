@@ -17,6 +17,7 @@ requestWillBeSent[
                 sec-ch-ua-platform : "Unknown"
             }
             initialPriority : VeryHigh
+            isSameSite : true
             method : GET
             mixedContentType : none
             referrerPolicy : strict-origin-when-cross-origin
@@ -47,6 +48,7 @@ requestWillBeSent[
                 sec-ch-ua-platform : "Unknown"
             }
             initialPriority : High
+            isSameSite : true
             method : GET
             mixedContentType : none
             referrerPolicy : strict-origin-when-cross-origin
@@ -74,6 +76,7 @@ requestWillBeSent[
                 User-Agent : <string>
             }
             initialPriority : High
+            isSameSite : false
             method : GET
             mixedContentType : none
             referrerPolicy : strict-origin-when-cross-origin
