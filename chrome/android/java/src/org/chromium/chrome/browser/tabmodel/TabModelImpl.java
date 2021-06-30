@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -464,12 +463,7 @@ public class TabModelImpl extends TabModelJniBridge {
             return;
         }
 
-        // TODO(meiliang): This is a band-aid fix, should remove after LayoutManager is able to
-        // manage the Grid Tab Switcher.
-        // Disable animation if GridTabSwitcher or TabGroup is enabled.
-        boolean animate = !TabUiFeatureUtilities.isGridTabSwitcherEnabled();
-
-        closeAllTabs(animate, false, true);
+        closeAllTabs(false, false, true);
     }
 
     /**

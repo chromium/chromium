@@ -48,7 +48,7 @@ public class TabGroupUtils {
             @Nullable BottomSheetController bottomSheetController) {
         // For tab group, all three IPHs are valid. For conditional tab strip, the only valid IPH
         // below is TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE.
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+        if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled(view.getContext())
                 && !(TabUiFeatureUtilities.isConditionalTabStripEnabled()
                         && featureName.equals(
                                 FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE))) {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import android.content.Context;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -171,16 +172,18 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                     && shouldShowItem(ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, delegate)) {
                 if (TabUiFeatureUtilities.showContextMenuOpenNewTabInGroupItemFirst()) {
                     menu.add(Menu.NONE, ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, Menu.NONE,
-                                getResourceIdForMenuItem(
+                                getResourceIdForMenuItem(associatedView.getContext(),
                                         ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP))
                             .setOnMenuItemClickListener(listener);
-                    menu.add(Menu.NONE, itemId, Menu.NONE, getResourceIdForMenuItem(itemId))
+                    menu.add(Menu.NONE, itemId, Menu.NONE,
+                                getResourceIdForMenuItem(associatedView.getContext(), itemId))
                             .setOnMenuItemClickListener(listener);
                 } else {
-                    menu.add(Menu.NONE, itemId, Menu.NONE, getResourceIdForMenuItem(itemId))
+                    menu.add(Menu.NONE, itemId, Menu.NONE,
+                                getResourceIdForMenuItem(associatedView.getContext(), itemId))
                             .setOnMenuItemClickListener(listener);
                     menu.add(Menu.NONE, ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, Menu.NONE,
-                                getResourceIdForMenuItem(
+                                getResourceIdForMenuItem(associatedView.getContext(),
                                         ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP))
                             .setOnMenuItemClickListener(listener);
                 }
@@ -188,7 +191,8 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                 continue;
             }
 
-            menu.add(Menu.NONE, itemId, Menu.NONE, getResourceIdForMenuItem(itemId))
+            menu.add(Menu.NONE, itemId, Menu.NONE,
+                        getResourceIdForMenuItem(associatedView.getContext(), itemId))
                     .setOnMenuItemClickListener(listener);
             hasItems = true;
         }
@@ -281,11 +285,12 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
 
     /**
      * Returns resource id of a string that should be displayed for menu item with given item id.
+     * @param context The activity context.
      */
-    protected @StringRes int getResourceIdForMenuItem(@ContextMenuItemId int id) {
+    protected @StringRes int getResourceIdForMenuItem(Context context, @ContextMenuItemId int id) {
         switch (id) {
             case ContextMenuItemId.OPEN_IN_NEW_TAB:
-                return (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                return (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)
                                && TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()
                                && mNavigationDelegate.isOpenInNewTabInGroupEnabled())
                         ? R.string.contextmenu_open_in_new_tab_group

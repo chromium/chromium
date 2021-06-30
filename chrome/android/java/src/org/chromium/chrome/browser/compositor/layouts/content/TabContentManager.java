@@ -132,7 +132,7 @@ public class TabContentManager {
             String commandLineSwitch) {
         int val = -1;
         // TODO(crbug/959054): Convert this to Finch config.
-        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled()) {
+        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(context)) {
             // With Grid Tab Switcher, we can greatly reduce the capacity of thumbnail cache.
             // See crbug.com/959054 for more details.
             if (resourceId == R.integer.default_thumbnail_cache_size) val = 2;
@@ -210,7 +210,7 @@ public class TabContentManager {
 
         boolean useApproximationThumbnails =
                 !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-        boolean saveJpegThumbnails = TabUiFeatureUtilities.isGridTabSwitcherEnabled();
+        boolean saveJpegThumbnails = TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext);
 
         mNativeTabContentManager = TabContentManagerJni.get().init(TabContentManager.this,
                 mFullResThumbnailsMaxSize, approximationCacheSize, compressionQueueMaxSize,

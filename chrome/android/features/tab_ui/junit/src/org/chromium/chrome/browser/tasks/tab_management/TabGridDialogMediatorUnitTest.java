@@ -40,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -192,7 +193,8 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(mEditable).when(mTitleTextView).getText();
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mEditable).toString();
 
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
+        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                    ContextUtils.getApplicationContext())) {
             mTabSelectionEditorController = null;
         }
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
@@ -218,7 +220,9 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void setupTabGroupsContinuation_flagEnabled() {
-        assertThat(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(), equalTo(true));
+        assertThat(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                           ContextUtils.getApplicationContext()),
+                equalTo(true));
         // Setup editable title.
         assertThat(mMediator.getKeyboardVisibilityListenerForTesting(),
                 instanceOf(KeyboardVisibilityDelegate.KeyboardVisibilityListener.class));
@@ -237,7 +241,9 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void setupTabGroupsContinuation_flagDisabled() {
-        assertThat(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(), equalTo(false));
+        assertThat(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                           ContextUtils.getApplicationContext()),
+                equalTo(false));
 
         assertThat(mMediator.getKeyboardVisibilityListenerForTesting(), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER), equalTo(null));

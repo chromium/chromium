@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -48,6 +49,9 @@ public class IncognitoTabSnapshotControllerTest {
     @Mock
     LayoutManagerChrome mLayoutManager;
 
+    @Mock
+    Context mContext;
+
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
@@ -60,7 +64,8 @@ public class IncognitoTabSnapshotControllerTest {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
         doReturn(mParams).when(mWindow).getAttributes();
 
-        mController = spy(new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector));
+        mController = spy(
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector));
         doReturn(true).when(mController).isShowingIncognito();
         mController.updateIncognitoState();
         verify(mWindow, never()).addFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -72,7 +77,8 @@ public class IncognitoTabSnapshotControllerTest {
         mParams.flags = 0;
         doReturn(mParams).when(mWindow).getAttributes();
 
-        mController = spy(new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector));
+        mController = spy(
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector));
         doReturn(false).when(mController).isShowingIncognito();
         mController.updateIncognitoState();
         verify(mWindow, never()).addFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -84,7 +90,8 @@ public class IncognitoTabSnapshotControllerTest {
         mParams.flags = 0;
         doReturn(mParams).when(mWindow).getAttributes();
 
-        mController = spy(new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector));
+        mController = spy(
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector));
         doReturn(true).when(mController).isShowingIncognito();
         mController.updateIncognitoState();
         verify(mWindow, atLeastOnce()).addFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -95,7 +102,8 @@ public class IncognitoTabSnapshotControllerTest {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
         doReturn(mParams).when(mWindow).getAttributes();
 
-        mController = spy(new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector));
+        mController = spy(
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector));
         doReturn(false).when(mController).isShowingIncognito();
         mController.updateIncognitoState();
         verify(mWindow, atLeastOnce()).clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -103,7 +111,8 @@ public class IncognitoTabSnapshotControllerTest {
 
     @Test
     public void testIsShowingIncognito_IncognitoModel_NotInOverviewMode() {
-        mController = new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector);
+        mController =
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector);
         mController.setInOverViewMode(false);
         doReturn(mTabModel).when(mSelector).getCurrentModel();
         doReturn(true).when(mTabModel).isIncognito();
@@ -114,7 +123,8 @@ public class IncognitoTabSnapshotControllerTest {
 
     @Test
     public void testIsShowingIncognito_IncognitoModel_InOverviewMode() {
-        mController = new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector);
+        mController =
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector);
         mController.setInOverViewMode(true);
         doReturn(mTabModel).when(mSelector).getCurrentModel();
         doReturn(true).when(mTabModel).isIncognito();
@@ -125,7 +135,8 @@ public class IncognitoTabSnapshotControllerTest {
 
     @Test
     public void testIsShowingIncognito_NormalModel_WithIncognitoTab_GridTabSwitcher() {
-        mController = spy(new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector));
+        mController = spy(
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector));
         mController.setInOverViewMode(true);
 
         doReturn(mTabModel).when(mSelector).getCurrentModel();
@@ -138,7 +149,8 @@ public class IncognitoTabSnapshotControllerTest {
 
     @Test
     public void testIsShowingIncognito_NormalModel_WithIncognitoTab() {
-        mController = spy(new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector));
+        mController = spy(
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector));
         mController.setInOverViewMode(true);
 
         doReturn(mTabModel).when(mSelector).getCurrentModel();
@@ -151,7 +163,8 @@ public class IncognitoTabSnapshotControllerTest {
 
     @Test
     public void testIsShowingIncognito_NormalModel_NoIncognitoTab() {
-        mController = spy(new IncognitoTabSnapshotController(mWindow, mLayoutManager, mSelector));
+        mController = spy(
+                new IncognitoTabSnapshotController(mContext, mWindow, mLayoutManager, mSelector));
         mController.setInOverViewMode(true);
 
         doReturn(mTabModel).when(mSelector).getCurrentModel();

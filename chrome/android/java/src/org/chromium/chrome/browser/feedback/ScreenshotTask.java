@@ -164,7 +164,7 @@ public final class ScreenshotTask implements ScreenshotSource {
         // will snapshot the last active tab instead of the current screen if we try to use it.
         if (chromeActivity.isInOverviewMode()
                 && (StartSurfaceConfiguration.isStartSurfaceEnabled()
-                        || TabUiFeatureUtilities.isGridTabSwitcherEnabled())) {
+                        || TabUiFeatureUtilities.isGridTabSwitcherEnabled(chromeActivity))) {
             return false;
         }
 

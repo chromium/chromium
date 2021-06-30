@@ -104,7 +104,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabContentManager, browserControlsStateProvider, tabCreatorManager,
                 menuOrKeyboardActionController, containerView, shareDelegateSupplier,
                 multiWindowModeStateDispatcher, scrimCoordinator,
-                TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()
+                TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)
                                 && SysUtils.isLowEndDevice()
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID,
@@ -194,8 +194,10 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     }
 
     @Override
-    public TabSuggestions createTabSuggestions(@NonNull TabModelSelector tabModelSelector,
+    public TabSuggestions createTabSuggestions(@NonNull Context context,
+            @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        return new TabSuggestionsOrchestrator(tabModelSelector, activityLifecycleDispatcher);
+        return new TabSuggestionsOrchestrator(
+                context, tabModelSelector, activityLifecycleDispatcher);
     }
 }

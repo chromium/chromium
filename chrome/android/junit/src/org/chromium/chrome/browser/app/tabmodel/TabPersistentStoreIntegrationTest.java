@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.res.Resources;
 import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
@@ -97,6 +98,8 @@ public class TabPersistentStoreIntegrationTest {
     private TabModelJniBridge.Natives mTabModelJniBridgeJni;
     @Mock
     private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
+    @Mock
+    private Resources mResources;
 
     private PausedExecutorService mExecutor = new PausedExecutorService();
 
@@ -108,6 +111,9 @@ public class TabPersistentStoreIntegrationTest {
         // Create TabPersistentStore and TabModelSelectorImpl through orchestrator like
         // ChromeActivity does.
         when(mChromeActivity.isInMultiWindowMode()).thenReturn(false);
+        when(mChromeActivity.getResources()).thenReturn(mResources);
+        when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
+                .thenReturn(1);
         when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mChromeTabCreator);
         mOrchestrator = new TabbedModeTabModelOrchestrator();
         mOrchestrator.createTabModels(

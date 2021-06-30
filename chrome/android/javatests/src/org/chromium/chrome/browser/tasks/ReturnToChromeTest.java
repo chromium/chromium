@@ -147,8 +147,9 @@ public class ReturnToChromeTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertFalse(ReturnToChromeExperimentsUtil
-                                                      .shouldShowStartSurfaceAsTheHomePage()));
+                        -> Assert.assertFalse(
+                                ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
+                                        mActivityTestRule.getActivity())));
 
         Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
 
@@ -182,8 +183,9 @@ public class ReturnToChromeTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertFalse(ReturnToChromeExperimentsUtil
-                                                      .shouldShowStartSurfaceAsTheHomePage()));
+                        -> Assert.assertFalse(
+                                ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
+                                        mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
             Assert.assertFalse(
@@ -219,7 +221,8 @@ public class ReturnToChromeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertTrue(ReturnToChromeExperimentsUtil
-                                                     .shouldShowStartSurfaceAsTheHomePageNoTabs()));
+                                                     .shouldShowStartSurfaceAsTheHomePageNoTabs(
+                                                             mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
             Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
@@ -252,8 +255,9 @@ public class ReturnToChromeTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertTrue(ReturnToChromeExperimentsUtil
-                                                     .shouldShowStartSurfaceAsTheHomePage()));
+                        -> Assert.assertTrue(
+                                ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
+                                        mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
             Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());

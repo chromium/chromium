@@ -61,21 +61,21 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
     private long mNextPrefetchTime;
     private int mMinTimeBetweenPrefetchesMs = MIN_TIME_BETWEEN_PREFETCHES_DEFAULT_MS;
 
-    public TabSuggestionsOrchestrator(
-            TabModelSelector selector, ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        this(selector, activityLifecycleDispatcher,
+    public TabSuggestionsOrchestrator(Context context, TabModelSelector selector,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+        this(context, selector, activityLifecycleDispatcher,
                 ContextUtils.getApplicationContext().getSharedPreferences(
                         SHARED_PREFERENCES_ID, Context.MODE_PRIVATE));
     }
 
     @VisibleForTesting
-    TabSuggestionsOrchestrator(TabModelSelector selector,
+    TabSuggestionsOrchestrator(Context context, TabModelSelector selector,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             SharedPreferences sharedPreferences) {
         mTabModelSelector = selector;
         mTabSuggestionsFetchers = new LinkedList<>();
         mTabSuggestionsFetchers.add(new TabSuggestionsClientFetcher());
-        mTabSuggestionsFetchers.add(new TabSuggestionsServerFetcher());
+        mTabSuggestionsFetchers.add(new TabSuggestionsServerFetcher(context));
         mTabSuggestionsObservers = new ObserverList<>();
         mTabContextObserver = new TabContextObserver(selector) {
             @Override

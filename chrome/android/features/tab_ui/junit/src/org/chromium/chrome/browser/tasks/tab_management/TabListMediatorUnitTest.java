@@ -50,6 +50,7 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -246,7 +247,7 @@ public class TabListMediatorUnitTest {
     @Mock
     Bitmap mFaviconBitmap;
     @Mock
-    Activity mContext;
+    Activity mActivity;
     @Mock
     TabListMediator.TabActionListener mOpenGroupActionListener;
     @Mock
@@ -286,6 +287,8 @@ public class TabListMediatorUnitTest {
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
     @Mock
     EndpointFetcher.Natives mEndpointFetcherJniMock;
+    @Mock
+    private Resources mResources;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -315,6 +318,10 @@ public class TabListMediatorUnitTest {
         mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
         // Ensure native pointer is initialized
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+
+        when(mActivity.getResources()).thenReturn(mResources);
+        when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
+                .thenReturn(1);
 
         mTab1Domain = TAB1_URL.getHost().replace("www.", "");
         mTab2Domain = TAB2_URL.getHost().replace("www.", "");
@@ -372,7 +379,7 @@ public class TabListMediatorUnitTest {
         doReturn(mOpenGroupActionListener)
                 .when(mGridCardOnClickListenerProvider)
                 .openTabGridDialog(any(Tab.class));
-        doNothing().when(mContext).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
+        doNothing().when(mActivity).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
         doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT)
                 .when(mGridLayoutManager)
@@ -392,7 +399,7 @@ public class TabListMediatorUnitTest {
 
         mModel = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, false, null, mGridCardOnClickListenerProvider, null, null,
                 getClass().getSimpleName(), UiType.CLOSABLE);
@@ -441,7 +448,7 @@ public class TabListMediatorUnitTest {
 
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
 
-        when(mTitleProvider.getTitle(PseudoTab.fromTab(mTab1))).thenReturn(NEW_TITLE);
+        when(mTitleProvider.getTitle(mActivity, PseudoTab.fromTab(mTab1))).thenReturn(NEW_TITLE);
         mTabObserverCaptor.getValue().onTitleUpdated(mTab1);
 
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(NEW_TITLE));
@@ -2170,7 +2177,7 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
-        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
@@ -2195,7 +2202,7 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
-        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
@@ -2340,7 +2347,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void testListObserver_OnItemRangeInserted() {
         PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
-        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
@@ -2358,7 +2365,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void testListObserver_OnItemRangeRemoved() {
         PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
-        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
@@ -2622,21 +2629,21 @@ public class TabListMediatorUnitTest {
                 String num = invocation.getArgument(2);
                 return String.format("Close %s group with %s tabs.", title, num);
             })
-                    .when(mContext)
+                    .when(mActivity)
                     .getString(anyInt(), anyString(), anyString());
 
             doAnswer(invocation -> {
                 String num = invocation.getArgument(1);
                 return String.format("Close tab group with %s tabs.", num);
             })
-                    .when(mContext)
+                    .when(mActivity)
                     .getString(anyInt(), anyString());
         } else {
             doAnswer(invocation -> {
                 String title = invocation.getArgument(1);
                 return String.format("Close %s, tab.", title);
             })
-                    .when(mContext)
+                    .when(mActivity)
                     .getString(anyInt(), anyString());
         }
     }
@@ -2647,14 +2654,14 @@ public class TabListMediatorUnitTest {
             String num = invocation.getArgument(2);
             return String.format("Expand %s tab group with %s tabs.", title, num);
         })
-                .when(mContext)
+                .when(mActivity)
                 .getString(anyInt(), anyString(), anyString());
 
         doAnswer(invocation -> {
             String num = invocation.getArgument(1);
             return String.format("Expand tab group with %s tabs.", num);
         })
-                .when(mContext)
+                .when(mActivity)
                 .getString(anyInt(), anyString());
     }
 
@@ -2708,7 +2715,7 @@ public class TabListMediatorUnitTest {
         TabImpl tab = TabUiUnitTestUtils.prepareTab(id, title, url);
         when(tab.getView()).thenReturn(mock(View.class));
         doReturn(true).when(tab).isIncognito();
-        when(mTitleProvider.getTitle(PseudoTab.fromTab(tab))).thenReturn(title);
+        when(mTitleProvider.getTitle(mActivity, PseudoTab.fromTab(tab))).thenReturn(title);
         return tab;
     }
 
@@ -2758,7 +2765,7 @@ public class TabListMediatorUnitTest {
         // TODO(crbug.com/1058196): avoid re-instanciate TabListMediator by using annotation.
         CachedFeatureFlags.setForTesting(TAB_GROUPS_ANDROID, true);
 
-        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, actionOnRelatedTabs, null, null, handler, null,
                 getClass().getSimpleName(), uiType);

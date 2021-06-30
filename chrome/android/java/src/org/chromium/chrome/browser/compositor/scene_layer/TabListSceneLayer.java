@@ -161,7 +161,7 @@ public class TabListSceneLayer extends SceneLayer {
     protected int getTabListBackgroundColor(Context context) {
         int colorId = R.color.default_bg_color;
 
-        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled()) {
+        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(context)) {
             if (mTabModelSelector != null && mTabModelSelector.isIncognitoSelected()) {
                 colorId = R.color.default_bg_color_dark;
             } else {

@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -27,6 +28,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -57,10 +60,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private int mCurrentActionState = ItemTouchHelper.ACTION_STATE_IDLE;
     private RecyclerView mRecyclerView;
     private Profile mProfile;
+    private Context mContext;
 
-    public TabGridItemTouchHelperCallback(TabListModel tabListModel,
-            TabModelSelector tabModelSelector, TabListMediator.TabActionListener tabClosedListener,
-            TabListMediator.TabGridDialogHandler tabGridDialogHandler, String componentName,
+    public TabGridItemTouchHelperCallback(Context context, TabListModel tabListModel,
+            TabModelSelector tabModelSelector, TabActionListener tabClosedListener,
+            TabGridDialogHandler tabGridDialogHandler, String componentName,
             boolean actionsOnAllRelatedTabs) {
         super(0, 0);
         mModel = tabListModel;
@@ -69,6 +73,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mComponentName = componentName;
         mActionsOnAllRelatedTabs = actionsOnAllRelatedTabs;
         mTabGridDialogHandler = tabGridDialogHandler;
+        mContext = context;
     }
 
     /**
@@ -187,7 +192,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             RecordUserAction.record("TabGrid.Drag.Start." + mComponentName);
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
             mIsSwipingToDismiss = false;
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+            if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
                 mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
             }
 
@@ -296,7 +301,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         }
         mCurrentActionState = actionState;
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mActionsOnAllRelatedTabs) {
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) return;
+            if (!TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) return;
             int prev_hovered = mHoveredTabIndex;
             mHoveredTabIndex = TabListRecyclerView.getHoveredTabIndex(
                     recyclerView, viewHolder.itemView, dX, dY, mMergeThreshold);

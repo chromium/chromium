@@ -181,7 +181,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                     }
                 }
                 if (type == TabSelectionType.FROM_CLOSE) return;
-                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
                         && getTabsToShowForId(lastId).contains(tab)) {
                     return;
                 }
@@ -200,7 +200,8 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                 // The strip should hide when users close the second-to-last tab in strip. The
                 // tabCountToHide for group is 1 because tab group status is updated with this
                 // closure before this method is called.
-                int tabCountToHide = TabUiFeatureUtilities.isTabGroupsAndroidEnabled() ? 1 : 2;
+                int tabCountToHide =
+                        TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext) ? 1 : 2;
                 List<Tab> tabList = getTabsToShowForId(tab.getId());
                 if (tabList.size() == tabCountToHide) {
                     resetTabStripWithRelatedTabsForId(Tab.INVALID_TAB_ID);
@@ -308,7 +309,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
             }
         };
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
             mTabGroupModelFilterObserver = new EmptyTabGroupModelFilterObserver() {
                 @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
@@ -395,7 +396,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
 
     private void setupToolbarButtons() {
         View.OnClickListener leftButtonOnClickListener;
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
             // For tab group, the left button is to show the tab grid dialog.
             leftButtonOnClickListener = view -> {
                 Tab currentTab = mTabModelSelector.getCurrentTab();
@@ -422,7 +423,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         View.OnClickListener rightButtonOnClickListener = view -> {
             Tab parentTabToAttach = null;
             Tab currentTab = mTabModelSelector.getCurrentTab();
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
                 List<Tab> relatedTabs = getTabsToShowForId(currentTab.getId());
 
                 assert relatedTabs.size() > 0;

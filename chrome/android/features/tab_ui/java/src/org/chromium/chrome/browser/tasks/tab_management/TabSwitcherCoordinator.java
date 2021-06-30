@@ -176,8 +176,8 @@ public class TabSwitcherCoordinator
         mMultiThumbnailCardProvider =
                 new MultiThumbnailCardProvider(activity, tabContentManager, tabModelSelector);
 
-        PseudoTab.TitleProvider titleProvider = tab -> {
-            int numRelatedTabs = PseudoTab.getRelatedTabs(tab, tabModelSelector).size();
+        PseudoTab.TitleProvider titleProvider = (context, tab) -> {
+            int numRelatedTabs = PseudoTab.getRelatedTabs(context, tab, tabModelSelector).size();
             if (numRelatedTabs == 1) return tab.getTitle();
             return activity.getResources().getQuantityString(
                     R.plurals.bottom_tab_grid_title_placeholder, numRelatedTabs, numRelatedTabs);
@@ -191,7 +191,7 @@ public class TabSwitcherCoordinator
                 mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);
 
         if (TabUiFeatureUtilities.isLaunchPolishEnabled()
-                && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
+                && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)) {
             mMediator.addOverviewModeObserver(new OverviewModeObserver() {
                 @Override
                 public void startedShowing() {}
@@ -234,7 +234,7 @@ public class TabSwitcherCoordinator
                     }
                 });
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)) {
             mTabGridDialogCoordinator = new TabGridDialogCoordinator(activity, tabModelSelector,
                     tabContentManager, tabCreatorManager, mCoordinatorView, this, mMediator,
                     this::getTabGridDialogAnimationSourceView, shareDelegateSupplier,
@@ -299,7 +299,7 @@ public class TabSwitcherCoordinator
 
         mMultiThumbnailCardProvider.initWithNative();
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)) {
             mUndoGroupSnackbarController =
                     new UndoGroupSnackbarController(context, mTabModelSelector, snackbarManager);
         } else {
@@ -308,8 +308,8 @@ public class TabSwitcherCoordinator
 
         if (mMode == TabListCoordinator.TabListMode.GRID) {
             if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)) {
-                mTabSuggestionsOrchestrator =
-                        new TabSuggestionsOrchestrator(mTabModelSelector, mLifecycleDispatcher);
+                mTabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
+                        context, mTabModelSelector, mLifecycleDispatcher);
                 TabSuggestionMessageService tabSuggestionMessageService =
                         new TabSuggestionMessageService(context, mTabModelSelector,
                                 mTabSelectionEditorCoordinator.getController());
@@ -323,7 +323,7 @@ public class TabSwitcherCoordinator
                         new NewTabTileCoordinator(mTabModelSelector, mTabCreatorManager);
             }
 
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)
                     && !TabSwitcherMediator.isShowingTabsInMRUOrder()) {
                 mTabGridIphDialogCoordinator =
                         new TabGridIphDialogCoordinator(context, mContainer, modalDialogManager);
@@ -614,7 +614,7 @@ public class TabSwitcherCoordinator
 
     private boolean shouldRegisterMessageItemType() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)
-                || (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                || (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mRootView.getContext())
                         && !TabSwitcherMediator.isShowingTabsInMRUOrder());
     }
 

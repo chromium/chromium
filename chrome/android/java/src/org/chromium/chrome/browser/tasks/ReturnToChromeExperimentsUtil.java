@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -12,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -353,12 +353,13 @@ public final class ReturnToChromeExperimentsUtil {
     /**
      * Check whether we should show Start Surface as the home page. This is used for all cases
      * except initial tab creation, which uses {@link
-     * #shouldShowStartSurfaceAsTheHomePageNoTabs()}.
+     * #shouldShowStartSurfaceAsTheHomePageNoTabs(Context)}.
      *
      * @return Whether Start Surface should be shown as the home page.
+     * @param context The activity context
      */
-    public static boolean shouldShowStartSurfaceAsTheHomePage() {
-        return shouldShowStartSurfaceAsTheHomePageNoTabs()
+    public static boolean shouldShowStartSurfaceAsTheHomePage(Context context) {
+        return shouldShowStartSurfaceAsTheHomePageNoTabs(context)
                 && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
     }
 
@@ -366,23 +367,26 @@ public final class ReturnToChromeExperimentsUtil {
      * @return Whether we should show Start Surface as the home page on phone. Start surface
      *         hasn't been enabled on tablet yet.
      */
-    public static boolean shouldShowStartSurfaceAsTheHomePageOnPhone(boolean isTablet) {
-        return !isTablet && shouldShowStartSurfaceAsTheHomePage();
+    public static boolean shouldShowStartSurfaceAsTheHomePageOnPhone(
+            Context context, boolean isTablet) {
+        return !isTablet && shouldShowStartSurfaceAsTheHomePage(context);
     }
 
     /**
      * @return Whether Start Surface should be shown as NTP.
      */
-    public static boolean shouldShowStartSurfaceHomeAsNTP(boolean incognito, boolean isTablet) {
-        return !incognito && shouldShowStartSurfaceAsTheHomePageOnPhone(isTablet);
+    public static boolean shouldShowStartSurfaceHomeAsNTP(
+            Context context, boolean incognito, boolean isTablet) {
+        return !incognito && shouldShowStartSurfaceAsTheHomePageOnPhone(context, isTablet);
     }
 
     /**
      * Check whether we should show Start Surface as the home page for initial tab creation.
      *
      * @return Whether Start Surface should be shown as the home page.
+     * @param context The activity context.
      */
-    public static boolean shouldShowStartSurfaceAsTheHomePageNoTabs() {
+    public static boolean shouldShowStartSurfaceAsTheHomePageNoTabs(Context context) {
         // When creating initial tab, i.e. cold start without restored tabs, we should only show
         // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
         // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
@@ -390,9 +394,8 @@ public final class ReturnToChromeExperimentsUtil {
         return StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled()
                 && (TextUtils.isEmpty(homePageUrl)
                         || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl))
-                && !shouldHideStartSurfaceWithAccessibilityOn()
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                        ContextUtils.getApplicationContext());
+                && !shouldHideStartSurfaceWithAccessibilityOn(context)
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**
@@ -400,25 +403,27 @@ public final class ReturnToChromeExperimentsUtil {
      *         NTP is shown as homepage. Also, when time threshold is reached, grid tab switcher or
      *         overview list layout is shown instead of start surface.
      */
-    public static boolean shouldHideStartSurfaceWithAccessibilityOn() {
+    public static boolean shouldHideStartSurfaceWithAccessibilityOn(Context context) {
         // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && !(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY.getValue()
-                        && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
+                        && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context));
     }
 
     /**
+     *
+     * @param context The activity context.
      * @param tabModelSelector The tab model selector.
      * @return the total tab count, and works before native initialization.
      */
-    public static int getTotalTabCount(TabModelSelector tabModelSelector) {
+    public static int getTotalTabCount(Context context, TabModelSelector tabModelSelector) {
         if ((CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
                     || CachedFeatureFlags.isEnabled(
                             ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP))
                 && !tabModelSelector.isTabStateInitialized()) {
             List<PseudoTab> allTabs;
             try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                allTabs = PseudoTab.getAllPseudoTabsFromStateFile();
+                allTabs = PseudoTab.getAllPseudoTabsFromStateFile(context);
             }
             return allTabs != null ? allTabs.size() : 0;
         }
