@@ -151,8 +151,9 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // service always fails to start and the restart cycle happens infinitely.
   int connection_error_retry_count_;
 
-  // Indicates if a module is currently being inspected asynchronously.
-  bool is_inspecting_module_;
+  // Indicates if a module is currently being inspected asynchronously by the
+  // UtilWin service.
+  bool is_waiting_on_util_win_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
