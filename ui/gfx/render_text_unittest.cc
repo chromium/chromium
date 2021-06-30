@@ -6213,6 +6213,26 @@ TEST_F(RenderTextTest, AppleSpecificPrivateUseCharacterReplacement) {
 #endif
 }
 
+TEST_F(RenderTextTest, MicrosoftSpecificPrivateUseCharacterReplacement) {
+  const char16_t* allowed_codepoints[] = {
+      u"\uF093", u"\uF094", u"\uF095", u"\uF096", u"\uF108",
+      u"\uF109", u"\uF10A", u"\uF10B", u"\uF10C", u"\uF10D",
+      u"\uF10E", u"\uEECA", u"\uEDE3"};
+  for (auto* codepoint : allowed_codepoints) {
+    RenderText* render_text = GetRenderText();
+    render_text->SetText(codepoint);
+#if defined(OS_WIN)
+    if (base::win::GetVersion() >= base::win::Version::WIN10) {
+      EXPECT_EQ(codepoint, render_text->GetDisplayText());
+    } else {
+      EXPECT_EQ(u"\uFFFD", render_text->GetDisplayText());
+    }
+#else
+    EXPECT_EQ(u"\uFFFD", render_text->GetDisplayText());
+#endif
+  }
+}
+
 TEST_F(RenderTextTest, InvalidSurrogateCharacterReplacement) {
   // Text with invalid surrogates (surrogates low 0xDC00 and high 0xD800).
   RenderText* render_text = GetRenderText();
