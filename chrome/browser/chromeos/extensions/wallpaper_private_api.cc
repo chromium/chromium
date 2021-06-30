@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper_controller.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -50,6 +51,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/strings/grit/app_locale_settings.h"
+#include "url/gurl.h"
 
 using base::Value;
 namespace wallpaper_base = extensions::api::wallpaper;
@@ -326,11 +328,12 @@ WallpaperPrivateSetWallpaperIfExistsFunction::Run() {
   }
 
   WallpaperControllerClientImpl::Get()->SetOnlineWallpaperIfExists(
-      GetUserFromBrowserContext(browser_context())->GetAccountId(), asset_id,
-      params->url, params->collection_id,
-      wallpaper_api_util::GetLayoutEnum(
-          wallpaper_base::ToString(params->layout)),
-      params->preview_mode,
+      ash::OnlineWallpaperParams(
+          GetUserFromBrowserContext(browser_context())->GetAccountId(),
+          asset_id, GURL(params->url), params->collection_id,
+          wallpaper_api_util::GetLayoutEnum(
+              wallpaper_base::ToString(params->layout)),
+          params->preview_mode),
       base::BindOnce(&WallpaperPrivateSetWallpaperIfExistsFunction::
                          OnSetOnlineWallpaperIfExistsCallback,
                      this));
@@ -363,12 +366,14 @@ ExtensionFunction::ResponseAction WallpaperPrivateSetWallpaperFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   WallpaperControllerClientImpl::Get()->SetOnlineWallpaperFromData(
-      GetUserFromBrowserContext(browser_context())->GetAccountId(),
+      ash::OnlineWallpaperParams(
+          GetUserFromBrowserContext(browser_context())->GetAccountId(),
+          /*asset_id=*/absl::nullopt, GURL(params->url),
+          /*collection_id=*/std::string(),
+          wallpaper_api_util::GetLayoutEnum(
+              wallpaper_base::ToString(params->layout)),
+          params->preview_mode),
       std::string(params->wallpaper.begin(), params->wallpaper.end()),
-      params->url,
-      wallpaper_api_util::GetLayoutEnum(
-          wallpaper_base::ToString(params->layout)),
-      params->preview_mode,
       base::BindOnce(
           &WallpaperPrivateSetWallpaperFunction::OnSetWallpaperCallback, this));
   return RespondLater();

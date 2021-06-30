@@ -5,39 +5,45 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_INFO_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_INFO_H_
 
+#include <string>
+
+#include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
-struct WallpaperInfo {
-  WallpaperInfo()
-      : layout(WALLPAPER_LAYOUT_CENTER), type(WALLPAPER_TYPE_COUNT) {}
+struct ASH_PUBLIC_EXPORT WallpaperInfo {
+  WallpaperInfo();
+
+  WallpaperInfo(const std::string& in_location,
+                const absl::optional<uint64_t>& in_asset_id,
+                const std::string& in_collection_id,
+                WallpaperLayout in_layout,
+                WallpaperType in_type,
+                const base::Time& in_date);
 
   WallpaperInfo(const std::string& in_location,
                 WallpaperLayout in_layout,
                 WallpaperType in_type,
-                const base::Time& in_date)
-      : location(in_location),
-        layout(in_layout),
-        type(in_type),
-        date(in_date) {}
+                const base::Time& in_date);
 
-  ~WallpaperInfo() {}
+  WallpaperInfo(const WallpaperInfo& other);
 
-  bool operator==(const WallpaperInfo& other) const {
-    return (location == other.location) && (layout == other.layout) &&
-           (type == other.type);
-  }
+  WallpaperInfo& operator=(const WallpaperInfo& other);
 
-  bool operator!=(const WallpaperInfo& other) const {
-    return !(*this == other);
-  }
+  bool operator==(const WallpaperInfo& other) const;
+
+  bool operator!=(const WallpaperInfo& other) const;
+
+  ~WallpaperInfo();
 
   // Either file name of migrated wallpaper including first directory level
   // (corresponding to user wallpaper_files_id) or online wallpaper URL.
   std::string location;
+  absl::optional<uint64_t> asset_id;
+  std::string collection_id;
   WallpaperLayout layout;
   WallpaperType type;
   base::Time date;

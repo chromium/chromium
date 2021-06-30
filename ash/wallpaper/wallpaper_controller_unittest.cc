@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/online_wallpaper_params.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
@@ -255,6 +256,14 @@ void RunAllTasksUntilIdle() {
 std::unique_ptr<base::DictionaryValue> CreateWallpaperInfoDict(
     WallpaperInfo info) {
   auto wallpaper_info_dict = std::make_unique<base::DictionaryValue>();
+  if (info.asset_id.has_value()) {
+    wallpaper_info_dict->SetString(
+        WallpaperControllerImpl::kNewWallpaperAssetIdNodeName,
+        base::NumberToString(info.asset_id.value()));
+  }
+  wallpaper_info_dict->SetString(
+      WallpaperControllerImpl::kNewWallpaperCollectionIdNodeName,
+      info.collection_id);
   wallpaper_info_dict->SetString(
       WallpaperControllerImpl::kNewWallpaperDateNodeName,
       base::NumberToString(info.date.ToInternalValue()));
@@ -571,8 +580,10 @@ class WallpaperControllerTest : public AshTestBase {
       bool save_file,
       bool preview_mode,
       WallpaperControllerImpl::SetOnlineWallpaperCallback callback) {
-    const WallpaperControllerImpl::OnlineWallpaperParams params = {
-        account_id, url, layout, preview_mode};
+    const OnlineWallpaperParams params = {
+        account_id, /*asset_id=*/absl::nullopt,
+        GURL(url),  collection_id,
+        layout,     preview_mode};
     controller_->OnOnlineWallpaperDecoded(params, save_file,
                                           std::move(callback), image);
   }
@@ -1024,8 +1035,9 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperIfExists(
-      account_id_1, kAssetId, kDummyUrl, kDummyCollectionId, layout,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
+                            kDummyCollectionId, layout,
+                            /*preview_mode=*/false),
       base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_FALSE(file_exists);
         run_loop->Quit();
@@ -1037,8 +1049,11 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   // successfully.
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, /*image_data=*/std::string(), kDummyUrl, layout,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(account_id_1, /*asset_id=*/absl::nullopt,
+                            GURL(kDummyUrl),
+                            /*collection_id=*/std::string(), layout,
+                            /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
@@ -1067,8 +1082,9 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   ClearWallpaperCount();
   run_loop = std::make_unique<base::RunLoop>();
   controller_->SetOnlineWallpaperIfExists(
-      account_id_1, kAssetId, kDummyUrl, kDummyCollectionId, layout,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
+                            kDummyCollectionId, layout,
+                            /*preview_mode=*/false),
       base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_TRUE(file_exists);
         run_loop->Quit();
@@ -1095,9 +1111,11 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperFromDataSavesFile) {
   // Set an online wallpaper with image data.
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, /*image_data=*/std::string(), kDummyUrl,
-      WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(
+          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
+          /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+          /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
 
@@ -1123,9 +1141,11 @@ TEST_F(WallpaperControllerTest,
   // Set an online wallpaper with image data. Verify that the wallpaper is set
   // successfully.
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, /*image_data=*/std::string(), kDummyUrl,
-      WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(
+          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
+          /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+          /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
   // Verify that the user wallpaper info is updated.
@@ -1141,9 +1161,11 @@ TEST_F(WallpaperControllerTest,
   SimulateUserLogin(kUser2);
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, /*image_data=*/std::string(), kDummyUrl2,
-      WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(
+          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl2),
+          /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+          /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
@@ -1166,8 +1188,9 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
   auto run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
   controller_->SetOnlineWallpaper(
-      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId, layout,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
+                            kDummyCollectionId, layout,
+                            /*preview_mode=*/false),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_TRUE(success);
         run_loop->Quit();
@@ -1178,7 +1201,8 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
   // Verify that the user wallpaper info is updated.
   WallpaperInfo wallpaper_info;
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
-  WallpaperInfo expected_wallpaper_info(kDummyUrl, layout, ONLINE,
+  WallpaperInfo expected_wallpaper_info(kDummyUrl, kAssetId, kDummyCollectionId,
+                                        layout, ONLINE,
                                         base::Time::Now().LocalMidnight());
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
   // Verify that wallpaper & collection metrics are logged.
@@ -1627,8 +1651,11 @@ TEST_F(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, std::string() /*image_data=*/, kDummyUrl,
-      WALLPAPER_LAYOUT_CENTER, /*preview_mode=*/false,
+      OnlineWallpaperParams(
+          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
+          /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER,
+          /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_FALSE(success);
         run_loop->Quit();
@@ -1688,9 +1715,11 @@ TEST_F(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, std::string() /*image_data=*/, kDummyUrl,
-      WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(
+          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
+          /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+          /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_FALSE(success);
         run_loop->Quit();
@@ -1725,8 +1754,11 @@ TEST_F(WallpaperControllerTest, VerifyWallpaperCache) {
 
   // Verify |SetOnlineWallpaperFromData| updates wallpaper cache for |user1|.
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, /*image_data=*/std::string(), kDummyUrl,
-      WALLPAPER_LAYOUT_CENTER, /*preview_mode=*/false,
+      OnlineWallpaperParams(
+          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
+          /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER,
+          /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_TRUE(
@@ -1959,8 +1991,11 @@ TEST_F(WallpaperControllerTest, UpdateCustomWallpaperLayout) {
   image = CreateImage(640, 480, kWallpaperColor);
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, /*image_data=*/std::string(), kDummyUrl, layout,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(account_id_1, /*asset_id=*/absl::nullopt,
+                            GURL(kDummyUrl),
+                            /*collection_id=*/std::string(), layout,
+                            /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
@@ -2499,7 +2534,8 @@ TEST_F(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   EXPECT_EQ(online_wallpaper_color, GetWallpaperColor());
   // Verify that the user wallpaper info is now updated to the online wallpaper
   // info.
-  WallpaperInfo online_wallpaper_info(kDummyUrl, layout, ONLINE,
+  WallpaperInfo online_wallpaper_info(kDummyUrl, /*in_asset_id=*/absl::nullopt,
+                                      kDummyCollectionId, layout, ONLINE,
                                       base::Time::Now().LocalMidnight());
   EXPECT_TRUE(
       controller_->GetUserWallpaperInfo(account_id_1, &user_wallpaper_info));
@@ -2689,8 +2725,9 @@ TEST_F(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
   EXPECT_EQ(0, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
   // However, the user wallpaper info should already be updated to the new info.
-  WallpaperInfo synced_online_wallpaper_info(kDummyUrl2, layout, ONLINE,
-                                             base::Time::Now().LocalMidnight());
+  WallpaperInfo synced_online_wallpaper_info(
+      kDummyUrl2, /*in_asset_id=*/absl::nullopt, kDummyCollectionId, layout,
+      ONLINE, base::Time::Now().LocalMidnight());
   EXPECT_TRUE(
       controller_->GetUserWallpaperInfo(account_id_1, &user_wallpaper_info));
   EXPECT_EQ(user_wallpaper_info, synced_online_wallpaper_info);
@@ -3154,9 +3191,11 @@ TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedOnline) {
   // successfully.
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      account_id_1, /*image_data=*/std::string(), kDummyUrl,
-      WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false,
+      OnlineWallpaperParams(
+          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
+          /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+          /*preview_mode=*/false),
+      /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
 

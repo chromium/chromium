@@ -13,6 +13,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/public/cpp/online_wallpaper_params.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/wallpaper_controller.h"
@@ -37,7 +38,6 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 
-class GURL;
 class PrefRegistrySimple;
 
 namespace base {
@@ -90,6 +90,8 @@ class ASH_EXPORT WallpaperControllerImpl
   static const char kOriginalWallpaperSubDir[];
 
   // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
+  static const char kNewWallpaperAssetIdNodeName[];
+  static const char kNewWallpaperCollectionIdNodeName[];
   static const char kNewWallpaperDateNodeName[];
   static const char kNewWallpaperLayoutNodeName[];
   static const char kNewWallpaperLocationNodeName[];
@@ -244,25 +246,12 @@ class ASH_EXPORT WallpaperControllerImpl
                           WallpaperLayout layout,
                           const gfx::ImageSkia& image,
                           bool preview_mode) override;
-  void SetOnlineWallpaper(const AccountId& account_id,
-                          const absl::optional<uint64_t>& asset_id,
-                          const GURL& url,
-                          const std::string& collection_id,
-                          WallpaperLayout layout,
-                          bool preview_mode,
+  void SetOnlineWallpaper(const OnlineWallpaperParams& params,
                           SetOnlineWallpaperCallback callback) override;
-  void SetOnlineWallpaperIfExists(const AccountId& account_id,
-                                  const absl::optional<uint64_t>& asset_id,
-                                  const std::string& url,
-                                  const std::string& collection_id,
-                                  WallpaperLayout layout,
-                                  bool preview_mode,
+  void SetOnlineWallpaperIfExists(const OnlineWallpaperParams& params,
                                   SetOnlineWallpaperCallback callback) override;
-  void SetOnlineWallpaperFromData(const AccountId& account_id,
+  void SetOnlineWallpaperFromData(const OnlineWallpaperParams& params,
                                   const std::string& image_data,
-                                  const std::string& url,
-                                  WallpaperLayout layout,
-                                  bool preview_mode,
                                   SetOnlineWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            const std::string& wallpaper_files_id,
@@ -381,13 +370,6 @@ class ASH_EXPORT WallpaperControllerImpl
   struct CachedDefaultWallpaper {
     gfx::ImageSkia image;
     base::FilePath file_path;
-  };
-
-  struct OnlineWallpaperParams {
-    AccountId account_id;
-    std::string url;
-    WallpaperLayout layout;
-    bool preview_mode;
   };
 
   // Update a Wallpaper for |root_window|.
@@ -589,9 +571,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnPrefChanged();
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
-  void OnAttemptSetOnlineWallpaper(const AccountId& account_id,
-                                   WallpaperInfo info,
-                                   bool preview_mode,
+  void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
                                    SetOnlineWallpaperCallback callback,
                                    bool success);
   constexpr bool IsWallpaperTypeSyncable(WallpaperType type);

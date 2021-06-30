@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -100,11 +101,21 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
                                 const SkBitmap* bitmap,
                                 base::File::Error error);
 
+  void OnGetOnlineImageAttribution(const uint64_t& asset_id,
+                                   const GURL& gurl,
+                                   GetCurrentWallpaperCallback callback,
+                                   bool success,
+                                   const std::string& collection_id,
+                                   const std::vector<backdrop::Image>& images);
+
   std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;
 
   std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
       wallpaper_images_info_fetcher_;
+
+  std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
+      wallpaper_attribution_info_fetcher_;
 
   std::unique_ptr<ash::ThumbnailLoader> thumbnail_loader_;
 
@@ -125,7 +136,8 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;
 
-  // Used for interacting with local filesystem.
+  // Used for interacting with local filesystem and fetching online image
+  // attribution.
   base::WeakPtrFactory<ChromePersonalizationAppUiDelegate>
       backend_weak_ptr_factory_{this};
 };

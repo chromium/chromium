@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 
 class AccountId;
-class GURL;
 
 namespace gfx {
 class ImageSkia;
@@ -80,21 +80,17 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                   const gfx::ImageSkia& image,
                                   bool preview_mode) = 0;
 
-  // Sets the wallpaper at |asset_id|, |url| and |collection_id| as the active
-  // wallpaper for the user at |account_id|. The first time this is called, will
-  // download the wallpaper and cache on disk. Subsequent calls with the same
-  // url will use the stored wallpaper. If |preview_mode| is true, the visible
+  // Sets the wallpaper at |params.asset_id|, |params.url| and
+  // |params.collection_id| as the active wallpaper for the user at
+  // |params.account_id|. The first time this is called, will download the
+  // wallpaper and cache on disk. Subsequent calls with the same url will use
+  // the stored wallpaper. If |params.preview_mode| is true, the visible
   // background wallpaper will change, but that change will not be persisted in
   // preferences. Call |ConfirmPreviewMode| or |CancelPreviewMode| to finalize.
   // |callback| is required and will be called after the image is fetched (from
   // network or disk) and decoded.
   using SetOnlineWallpaperCallback = base::OnceCallback<void(bool success)>;
-  virtual void SetOnlineWallpaper(const AccountId& account_id,
-                                  const absl::optional<uint64_t>& asset_id,
-                                  const GURL& url,
-                                  const std::string& collection_id,
-                                  WallpaperLayout layout,
-                                  bool preview_mode,
+  virtual void SetOnlineWallpaper(const OnlineWallpaperParams& params,
                                   SetOnlineWallpaperCallback callback) = 0;
 
   // Deprecated. Use |SetOnlineWallpaper| instead because it will handle
@@ -103,43 +99,22 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // wallpaper file corresponding to |url| already exists in local file system
   // (i.e. |SetOnlineWallpaperFromData| was called earlier with the same |url|),
   // returns true and sets wallpaper for the user, otherwise returns false.
-  // |account_id|: The user's account id.
-  // |asset_id|: The unique identifier of the wallpaper. if present,
-  // it is logged for wallpaper metric.
-  // |url|: The wallpaper url.
-  // |collection_id|: The wallpaper collection id .e.g. city_for_chromebook.
-  // |layout|: The layout of the wallpaper, used for wallpaper resizing.
-  // |preview_mode|: If true, show the wallpaper immediately but doesn't change
-  //                 the user wallpaper info until |ConfirmPreviewWallpaper| is
-  //                 called.
+  // |params|: The parameters of the online wallpaper.
   // Responds with true if the wallpaper file exists in local file system.
   virtual void SetOnlineWallpaperIfExists(
-      const AccountId& account_id,
-      const absl::optional<uint64_t>& asset_id,
-      const std::string& url,
-      const std::string& collection_id,
-      WallpaperLayout layout,
-      bool preview_mode,
+      const OnlineWallpaperParams& params,
       SetOnlineWallpaperCallback callback) = 0;
 
   // Sets wallpaper from the Chrome OS wallpaper picker and saves the wallpaper
   // to local file system. After this, |SetOnlineWallpaperIfExists| will return
-  // true for the same |url|, so that there's no need to provide |image_data|
-  // when the same wallpaper needs to be set again or for another user.
-  // |account_id|: The user's account id.
-  // |url|: The wallpaper url.
-  // |layout|: The layout of the wallpaper, used for wallpaper resizing.
-  // |preview_mode|: If true, show the wallpaper immediately but doesn't change
-  //                 the user wallpaper info until |ConfirmPreviewWallpaper| is
-  //                 called.
+  // true for the same |params.url|, so that there's no need to provide
+  // |image_data| when the same wallpaper needs to be set again or for another
+  // user. |params|: The parameters of the online wallpaper.
   // Responds with true if the wallpaper is set successfully (i.e. no decoding
   // error etc.).
   virtual void SetOnlineWallpaperFromData(
-      const AccountId& account_id,
+      const OnlineWallpaperParams& params,
       const std::string& image_data,
-      const std::string& url,
-      WallpaperLayout layout,
-      bool preview_mode,
       SetOnlineWallpaperCallback callback) = 0;
 
   // Sets the user's wallpaper to be the default wallpaper. Note: different user

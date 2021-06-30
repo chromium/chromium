@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 
+#include "ash/public/cpp/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "base/notreached.h"
@@ -60,33 +61,20 @@ void TestWallpaperController::SetCustomWallpaper(
 }
 
 void TestWallpaperController::SetOnlineWallpaper(
-    const AccountId& account_id,
-    const absl::optional<uint64_t>& asset_id,
-    const GURL& url,
-    const std::string& collection_id,
-    ash::WallpaperLayout layout,
-    bool preview_mode,
+    const ash::OnlineWallpaperParams& params,
     SetOnlineWallpaperCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void TestWallpaperController::SetOnlineWallpaperIfExists(
-    const AccountId& account_id,
-    const absl::optional<uint64_t>& asset_id,
-    const std::string& url,
-    const std::string& collection_id,
-    ash::WallpaperLayout layout,
-    bool preview_mode,
+    const ash::OnlineWallpaperParams& params,
     SetOnlineWallpaperCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void TestWallpaperController::SetOnlineWallpaperFromData(
-    const AccountId& account_id,
+    const ash::OnlineWallpaperParams& params,
     const std::string& image_data,
-    const std::string& url,
-    ash::WallpaperLayout layout,
-    bool preview_mode,
     SetOnlineWallpaperCallback callback) {
   NOTIMPLEMENTED();
 }

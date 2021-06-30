@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/online_wallpaper_params.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"
@@ -305,47 +306,31 @@ void WallpaperControllerClientImpl::SetCustomWallpaper(
 }
 
 void WallpaperControllerClientImpl::SetOnlineWallpaper(
-    const AccountId& account_id,
-    const absl::optional<uint64_t>& asset_id,
-    const GURL& url,
-    const std::string& collection_id,
-    ash::WallpaperLayout layout,
-    bool preview_mode,
+    const ash::OnlineWallpaperParams& params,
     ash::WallpaperController::SetOnlineWallpaperCallback callback) {
-  if (!IsKnownUser(account_id))
+  if (!IsKnownUser(params.account_id))
     return;
 
-  wallpaper_controller_->SetOnlineWallpaper(account_id, asset_id, url,
-                                            collection_id, layout, preview_mode,
-                                            std::move(callback));
+  wallpaper_controller_->SetOnlineWallpaper(params, std::move(callback));
 }
 
 void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(
-    const AccountId& account_id,
-    const absl::optional<uint64_t>& asset_id,
-    const std::string& url,
-    const std::string& collection_id,
-    ash::WallpaperLayout layout,
-    bool preview_mode,
+    const ash::OnlineWallpaperParams& params,
     ash::WallpaperController::SetOnlineWallpaperCallback callback) {
-  if (!IsKnownUser(account_id))
+  if (!IsKnownUser(params.account_id))
     return;
-  wallpaper_controller_->SetOnlineWallpaperIfExists(
-      account_id, asset_id, url, collection_id, layout, preview_mode,
-      std::move(callback));
+  wallpaper_controller_->SetOnlineWallpaperIfExists(params,
+                                                    std::move(callback));
 }
 
 void WallpaperControllerClientImpl::SetOnlineWallpaperFromData(
-    const AccountId& account_id,
+    const ash::OnlineWallpaperParams& params,
     const std::string& image_data,
-    const std::string& url,
-    ash::WallpaperLayout layout,
-    bool preview_mode,
     ash::WallpaperController::SetOnlineWallpaperCallback callback) {
-  if (!IsKnownUser(account_id))
+  if (!IsKnownUser(params.account_id))
     return;
-  wallpaper_controller_->SetOnlineWallpaperFromData(
-      account_id, image_data, url, layout, preview_mode, std::move(callback));
+  wallpaper_controller_->SetOnlineWallpaperFromData(params, image_data,
+                                                    std::move(callback));
 }
 
 void WallpaperControllerClientImpl::SetCustomizedDefaultWallpaperPaths(
