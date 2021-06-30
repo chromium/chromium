@@ -165,7 +165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.AppNotificationBadgingPref" enum="Boolean"
-    expires_after="2021-08-11">
+    expires_after="2022-01-30">
   <owner>mmourgos@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
