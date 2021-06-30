@@ -268,12 +268,11 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
   // update selected button status here.
   UpdateSelectedButton();
 
+  auto_close_closure_.Reset(base::BindOnce(&ResizeToggleMenu::CloseBubble,
+                                           weak_ptr_factory_.GetWeakPtr()));
   constexpr auto kAutoCloseDelay = base::TimeDelta::FromSeconds(2);
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ResizeToggleMenu::CloseBubble,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kAutoCloseDelay);
+      FROM_HERE, auto_close_closure_.callback(), kAutoCloseDelay);
 }
 
 void ResizeToggleMenu::CloseBubble() {

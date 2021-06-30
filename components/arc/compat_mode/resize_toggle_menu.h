@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/cancelable_callback.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/arc/compat_mode/resize_util.h"
 #include "ui/views/controls/button/button.h"
@@ -91,6 +92,8 @@ class ResizeToggleMenu : public views::WidgetObserver {
 
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       widget_observations_{this};
+
+  base::CancelableOnceClosure auto_close_closure_;
 
   // Store only for testing.
   views::Widget* bubble_widget_{nullptr};

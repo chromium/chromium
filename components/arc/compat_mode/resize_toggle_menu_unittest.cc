@@ -56,6 +56,11 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
 
 class ResizeToggleMenuTest : public views::ViewsTestBase {
  public:
+  ResizeToggleMenuTest()
+      : views::ViewsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~ResizeToggleMenuTest() override = default;
+
   // Overridden from test::Test.
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -72,7 +77,8 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
   }
 
   bool IsMenuRunning() {
-    return resize_toggle_menu_->bubble_widget_->IsVisible();
+    return resize_toggle_menu_->bubble_widget_ &&
+           resize_toggle_menu_->bubble_widget_->IsVisible();
   }
 
   // Re-show the menu. This might close the running menu if any.
@@ -207,6 +213,34 @@ TEST_F(ResizeToggleMenuTest, TestButtonStateChangeWithoutBoundsChange) {
   EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
   EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
   EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+}
+
+// Test that the menu is closed with delay when the button is clicked.
+TEST_F(ResizeToggleMenuTest, TestDelayedAutoClose) {
+  EXPECT_TRUE(IsMenuRunning());
+
+  ClickButton(ResizeCompatMode::kPhone);
+  EXPECT_TRUE(IsMenuRunning());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_TRUE(IsMenuRunning());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_FALSE(IsMenuRunning());
+}
+
+// Test that the delayed auto close is canceled when another button is clicked.
+TEST_F(ResizeToggleMenuTest, TestDelayedAutoCloseCancel) {
+  EXPECT_TRUE(IsMenuRunning());
+
+  ClickButton(ResizeCompatMode::kPhone);
+  EXPECT_TRUE(IsMenuRunning());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_TRUE(IsMenuRunning());
+  ClickButton(ResizeCompatMode::kTablet);
+  EXPECT_TRUE(IsMenuRunning());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_TRUE(IsMenuRunning());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_FALSE(IsMenuRunning());
 }
 
 }  // namespace arc
