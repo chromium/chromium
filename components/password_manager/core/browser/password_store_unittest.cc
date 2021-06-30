@@ -203,8 +203,7 @@ class PasswordStoreTest : public testing::Test {
     // PasswordReuseDetector, so it should be mocked.
     OSCryptMocker::SetUp();
 
-    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled,
-                                    features::kSyncingCompromisedCredentials},
+    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
                                    {});
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);

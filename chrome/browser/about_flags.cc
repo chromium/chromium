@@ -7009,12 +7009,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kClearCrossSiteCrossBrowsingContextGroupWindowName)},
 
-    {"sync-compromised-credentials",
-     flag_descriptions::kSyncingCompromisedCredentialsName,
-     flag_descriptions::kSyncingCompromisedCredentialsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kSyncingCompromisedCredentials)},
-
     {"autofill-enable-offer-notification",
      flag_descriptions::kAutofillEnableOfferNotificationName,
      flag_descriptions::kAutofillEnableOfferNotificationDescription, kOsAll,
