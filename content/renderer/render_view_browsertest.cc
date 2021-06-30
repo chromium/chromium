@@ -2891,7 +2891,10 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
   auto commit_params = DummyCommitNavigationParams();
   commit_params->current_history_list_offset = 1;
   commit_params->current_history_list_length = 2;
-  frame()->Navigate(CreateCommonNavigationParams(), std::move(commit_params));
+  auto common_params = CreateCommonNavigationParams();
+  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->should_replace_current_entry = true;
+  frame()->Navigate(std::move(common_params), std::move(commit_params));
 
   // The current history list in RenderView is updated.
   EXPECT_EQ(1, webview->HistoryBackListCount());
@@ -2913,7 +2916,10 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
   commit_params->current_history_list_length = 25;
   commit_params->pending_history_list_offset = 12;
   commit_params->nav_entry_id = 777;
-  frame()->Navigate(CreateCommonNavigationParams(), std::move(commit_params));
+  auto common_params = CreateCommonNavigationParams();
+  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->should_replace_current_entry = true;
+  frame()->Navigate(std::move(common_params), std::move(commit_params));
 
   // The current history list in RenderView is updated.
   EXPECT_EQ(12, webview->HistoryBackListCount());

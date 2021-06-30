@@ -7410,45 +7410,6 @@ TEST_F(WebFrameTest, ReloadIframe) {
   EXPECT_EQ(mojom::FetchCacheMode::kDefault, new_child_client->GetCacheMode());
 }
 
-class TestSameDocumentWebFrameClient
-    : public frame_test_helpers::TestWebFrameClient {
- public:
-  TestSameDocumentWebFrameClient() : frame_load_type_reload_seen_(false) {}
-  ~TestSameDocumentWebFrameClient() override = default;
-
-  // frame_test_helpers::TestWebFrameClient:
-  void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
-    if (info->frame_load_type == WebFrameLoadType::kReload)
-      frame_load_type_reload_seen_ = true;
-    TestWebFrameClient::BeginNavigation(std::move(info));
-  }
-
-  bool FrameLoadTypeReloadSeen() const { return frame_load_type_reload_seen_; }
-
- private:
-  bool frame_load_type_reload_seen_;
-};
-
-TEST_F(WebFrameTest, NavigateToSame) {
-  RegisterMockedHttpURLLoad("navigate_to_same.html");
-  TestSameDocumentWebFrameClient client;
-  frame_test_helpers::WebViewHelper web_view_helper;
-  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
-      base_url_ + "navigate_to_same.html", &client);
-  web_view->SetHistoryListFromNavigation(0, 1);
-  EXPECT_FALSE(client.FrameLoadTypeReloadSeen());
-
-  auto* local_frame =
-      To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
-  FrameLoadRequest frame_request(
-      nullptr, ResourceRequest(local_frame->GetDocument()->Url()));
-  local_frame->Loader().StartNavigation(frame_request);
-  frame_test_helpers::PumpPendingRequestsForFrameToLoad(
-      web_view_helper.LocalMainFrame());
-
-  EXPECT_TRUE(client.FrameLoadTypeReloadSeen());
-}
-
 class TestMainFrameIntersectionChanged
     : public frame_test_helpers::TestWebFrameClient {
  public:

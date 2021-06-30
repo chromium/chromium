@@ -6474,6 +6474,20 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
   // Form submissions to the same url should not replace.
   if (begin_params_->is_form_submission)
     return false;
+
+  // If the initiating frame is cross-origin to the target frame, do not
+  // replace. Replacing in this case can be used to guess the exact current url
+  // of a cross-origin frame, see https://crbug.com/1208614. Exempt error pages
+  // from this rule so that we don't leave an error page in the back/forward
+  // list if a cross-origin iframe happens to successfully re-naivgate a frame
+  // that had previously failed.
+  if (!frame_tree_node_->current_frame_host()->is_error_page() &&
+      common_params_->initiator_origin &&
+      !common_params_->initiator_origin->IsSameOriginWith(
+          frame_tree_node_->current_origin())) {
+    return false;
+  }
+
   // Otherwise, replace current entry.
   return true;
 }

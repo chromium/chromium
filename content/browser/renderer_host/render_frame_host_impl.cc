@@ -10796,10 +10796,11 @@ bool CalculateShouldReplaceCurrentEntry(
   // -- Now we have all the information we need to determine the final value of
   // should_replace_current_entry.
   if (same_document_params) {
-    // If this is a history API navigation (pushState, replaceState), the
-    // NavigationRequest will be constructed at commit time, so the value from
-    // CommonNavigationParams must be correct.
-    if (same_document_params->is_history_api_navigation) {
+    // If this is a synchronous renderer commit (a same-document navigation
+    // initiated by a same-process frame), the NavigationRequest will be
+    // constructed at commit time, so the value from  CommonNavigationParams
+    // must be correct.
+    if (request->is_synchronous_renderer_commit()) {
       return result;
     }
     // DocumentLoader::UpdateForSameDocumentNavigation() sets the "replace" bit
@@ -10809,9 +10810,13 @@ bool CalculateShouldReplaceCurrentEntry(
     // - We know if it's classified as kBackForward through
     // |will_be_classified_as_back_forward_navigation|
     // - Same-URL navigations will be converted into kReplaceCurrentItem in
-    // DocumentLoader::CommitSameDocumentNavigationInternal().
+    // DocumentLoader::CommitSameDocumentNavigation() if renderer-initiated and
+    // not triggered by a cross-origin window.
+    bool is_same_origin_request =
+        request->GetInitiatorOrigin() &&
+        request->GetInitiatorOrigin()->IsSameOriginWith(node->current_origin());
     result |= (will_be_classified_as_back_forward_navigation ||
-               previous_url == original_url);
+               (previous_url == original_url && is_same_origin_request));
   } else {
     if (is_error_page) {
       // For error page commits: reloads, history, and same-url navigations will

@@ -402,6 +402,10 @@ class CONTENT_EXPORT NavigationRequest
 
   FrameTreeNode* frame_tree_node() const { return frame_tree_node_; }
 
+  bool is_synchronous_renderer_commit() const {
+    return is_synchronous_renderer_commit_;
+  }
+
   SiteInstanceImpl* dest_site_instance() const {
     return dest_site_instance_.get();
   }

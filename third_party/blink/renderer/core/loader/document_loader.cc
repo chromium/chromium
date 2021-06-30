@@ -1341,6 +1341,13 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                       is_synchronously_committed, triggering_event_info,
                       std::move(extra_data)));
   } else {
+    // Treat a navigation to the same url as replacing only if it did not
+    // originate from a cross-origin iframe. If |is_synchronously_committed| is
+    // false, the browser process already enforced this policy.
+    if (is_synchronously_committed && !IsBackForwardLoadType(frame_load_type) &&
+        history_item_ && url == history_item_->Url()) {
+      frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+    }
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, client_redirect_policy,
         has_transient_user_activation, initiator_origin,
@@ -1370,8 +1377,6 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
                               mojom::blink::TriggeringEventInfo::kNotFromEvent
                           ? kWebNavigationTypeLinkClicked
                           : kWebNavigationTypeOther);
-    if (history_item_ && url == history_item_->Url())
-      frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
 
   // If we have a client navigation for a different document, a fragment

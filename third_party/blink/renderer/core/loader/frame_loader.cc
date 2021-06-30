@@ -452,9 +452,6 @@ void FrameLoader::DidFinishSameDocumentNavigation(
 
 WebFrameLoadType FrameLoader::DetermineFrameLoadType(
     const KURL& url,
-    const AtomicString& http_method,
-    bool has_origin_window,
-    bool is_client_reload,
     const KURL& failing_url,
     WebFrameLoadType frame_load_type) {
   // TODO(dgozman): this method is rewriting the load type, which makes it hard
@@ -477,13 +474,6 @@ WebFrameLoadType FrameLoader::DetermineFrameLoadType(
   }
   if (frame_load_type != WebFrameLoadType::kStandard)
     return frame_load_type;
-
-  if (url == document_loader_->UrlForHistory()) {
-    if (http_method == http_names::kPOST)
-      return WebFrameLoadType::kStandard;
-    if (!has_origin_window || is_client_reload)
-      return WebFrameLoadType::kReload;
-  }
 
   if (failing_url == document_loader_->UrlForHistory() &&
       document_loader_->LoadType() == WebFrameLoadType::kReload)
@@ -644,10 +634,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
-  frame_load_type = DetermineFrameLoadType(
-      resource_request.Url(), resource_request.HttpMethod(), origin_window,
-      request.ClientRedirectReason() == ClientNavigationReason::kReload, KURL(),
-      frame_load_type);
+  frame_load_type =
+      DetermineFrameLoadType(resource_request.Url(), KURL(), frame_load_type);
 
   bool same_document_navigation =
       request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
@@ -961,9 +949,8 @@ void FrameLoader::CommitNavigation(
     frame_owner->CancelPendingLazyLoad();
 
   navigation_params->frame_load_type = DetermineFrameLoadType(
-      navigation_params->url, navigation_params->http_method,
-      false /* has_origin_window */, false /* is_client_reload */,
-      navigation_params->unreachable_url, navigation_params->frame_load_type);
+      navigation_params->url, navigation_params->unreachable_url,
+      navigation_params->frame_load_type);
 
   // Note: we might actually classify this navigation as same document
   // right here in the following circumstances:
