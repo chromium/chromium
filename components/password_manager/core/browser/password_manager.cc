@@ -78,12 +78,21 @@ namespace {
 // already.
 using Logger = autofill::SavePasswordProgressLogger;
 
-bool AreAllFieldsEmpty(const FormData& form_data) {
+bool AreChangePasswordFieldsEmpty(const FormData& form_data,
+                                  const PasswordForm& parsed_form) {
+  const std::u16string& old_password = parsed_form.password_element;
+  const std::u16string& new_password = parsed_form.new_password_element;
+  const std::u16string& confirmation_password =
+      parsed_form.confirmation_password_element;
   for (const auto& field : form_data.fields) {
-    if (!field.value.empty())
+    if (!field.value.empty() &&
+        (field.name == new_password ||
+         (!old_password.empty() && field.name == old_password) ||
+         (!confirmation_password.empty() &&
+          field.name == confirmation_password))) {
       return false;
+    }
   }
-
   return true;
 }
 
@@ -903,7 +912,8 @@ void PasswordManager::OnPasswordFormsRendered(
     for (const FormData& form_data : visible_forms_data_) {
       if (submitted_manager->IsEqualToSubmittedForm(form_data)) {
         if (submitted_manager->IsPossibleChangePasswordFormWithoutUsername() &&
-            AreAllFieldsEmpty(form_data)) {
+            AreChangePasswordFieldsEmpty(
+                form_data, *submitted_manager->GetSubmittedForm())) {
           continue;
         }
         submitted_manager->GetMetricsRecorder()->LogSubmitFailed();

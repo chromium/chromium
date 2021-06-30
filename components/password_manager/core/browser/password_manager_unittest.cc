@@ -517,10 +517,17 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
     return form;
   }
 
-  // Create a sign-up FormData that only has a new password field.
-  FormData MakeFormDataWithOnlyNewPasswordField() {
+  // Create a sign-up FormData that has username and new password fields.
+  FormData MakeSignUpFormData() {
     FormData form_data = MakeSimpleFormData();
     form_data.fields[1].autocomplete_attribute = "new-password";
+    return form_data;
+  }
+
+  // Create a FormData that only has a new password field.
+  FormData MakeFormDataWithOnlyNewPasswordField() {
+    FormData form_data = MakeSignUpFormData();
+    form_data.fields.erase(std::begin(form_data.fields));
     return form_data;
   }
 
@@ -669,7 +676,7 @@ TEST_P(PasswordManagerTest, FormSubmitWithOnlyNewPasswordField) {
 TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmitEmptyStore) {
   // Test that generated passwords are stored without asking the user.
   std::vector<FormData> observed;
-  FormData form_data(MakeFormDataWithOnlyNewPasswordField());
+  FormData form_data(MakeSignUpFormData());
   observed.push_back(form_data);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
@@ -1239,37 +1246,72 @@ TEST_P(PasswordManagerTest, FillPasswordsOnDisabledManager) {
   manager()->OnPasswordFormsParsed(&driver_, observed);
 }
 
-TEST_P(PasswordManagerTest, PasswordFormReappearance) {
+TEST_P(PasswordManagerTest, LoginFormReappearance) {
   // If the password form reappears after submit, PasswordManager should deduce
   // that the login failed and not offer saving.
   std::vector<FormData> observed;
-  FormData login_form_data(MakeSimpleFormData());
-  observed.push_back(login_form_data);
-  EXPECT_CALL(*store_, GetLogins(_, _))
+  FormData form_data(MakeSimpleFormData());
+  observed.push_back(form_data);
+  EXPECT_CALL(*store_, GetLogins)
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
-      .WillRepeatedly(Return(true));
-  OnPasswordFormSubmitted(login_form_data);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
 
   observed.clear();
-  // Simulate form reapperance with different path in url and different renderer
-  // ids.
-  FormData failed_login_form_data = login_form_data;
-  failed_login_form_data.unique_renderer_id.value() += 1000;
-  failed_login_form_data.url =
+  // Simulate form reapperance with different path in url and different
+  // renderer ids.
+  FormData form_data_after_navigation = form_data;
+  form_data_after_navigation.unique_renderer_id.value() += 1000;
+  form_data_after_navigation.url =
       GURL("https://accounts.google.com/login/error?redirect_after_login");
-  observed.push_back(failed_login_form_data);
+  for (auto& field : form_data_after_navigation.fields)
+    field.value = u"";
+  observed.push_back(form_data_after_navigation);
 
   // A PasswordForm appears, and is visible in the layout:
   // No expected calls to the PasswordStore...
-  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
   EXPECT_CALL(client_, AutomaticPasswordSave).Times(0);
-  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
-  EXPECT_CALL(*store_, UpdateLogin(_)).Times(0);
-  EXPECT_CALL(*store_, UpdateLoginWithPrimaryKey(_, _)).Times(0);
+  EXPECT_CALL(*store_, AddLogin).Times(0);
+  EXPECT_CALL(*store_, UpdateLogin).Times(0);
+  EXPECT_CALL(*store_, UpdateLoginWithPrimaryKey).Times(0);
+
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+}
+
+TEST_P(PasswordManagerTest, ChangePasswordFormReappearance) {
+  // If a change password form reappears, it can mean a successful submisision.
+  std::vector<FormData> observed;
+  FormData form_data(MakeFormDataWithOnlyNewPasswordField());
+  observed.push_back(form_data);
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  observed.clear();
+  // Simulate form reapperance with different path in url and different
+  // renderer ids.
+  FormData form_data_after_navigation = form_data;
+  form_data_after_navigation.unique_renderer_id.value() += 1000;
+  form_data_after_navigation.url =
+      GURL("https://accounts.google.com/login/error?redirect_after_login");
+  for (auto& field : form_data_after_navigation.fields)
+    field.value = u"";
+  observed.push_back(form_data_after_navigation);
+
+  // Reappeared change password form is a signal of a possibly successful
+  // submission and the user should be prompted to save/update the password.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr);
+  EXPECT_CALL(client_, AutomaticPasswordSave).Times(0);
+
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
 }
@@ -1883,7 +1925,7 @@ TEST_P(PasswordManagerTest, SaveFormFetchedAfterSubmit) {
 
 TEST_P(PasswordManagerTest, PasswordGeneration_FailedSubmission) {
   std::vector<FormData> observed;
-  FormData form_data(MakeFormDataWithOnlyNewPasswordField());
+  FormData form_data(MakeSignUpFormData());
   observed.push_back(form_data);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
@@ -1912,7 +1954,7 @@ TEST_P(PasswordManagerTest, PasswordGeneration_FailedSubmission) {
 // it should stay treated as a generated password.
 TEST_P(PasswordManagerTest, PasswordGenerationPasswordEdited_FailedSubmission) {
   std::vector<FormData> observed;
-  FormData form_data(MakeFormDataWithOnlyNewPasswordField());
+  FormData form_data(MakeSignUpFormData());
   observed.push_back(form_data);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
@@ -1947,7 +1989,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPasswordEdited_FailedSubmission) {
 TEST_P(PasswordManagerTest,
        PasswordGenerationNoLongerGeneratedPasswordNotForceSaved_FailedSubmit) {
   std::vector<FormData> observed;
-  FormData form_data(MakeFormDataWithOnlyNewPasswordField());
+  FormData form_data(MakeSignUpFormData());
   observed.push_back(form_data);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
@@ -1982,7 +2024,7 @@ TEST_P(PasswordManagerTest,
 TEST_P(PasswordManagerTest,
        PasswordGenerationNoLongerGeneratedPasswordNotForceSaved) {
   std::vector<FormData> observed;
-  FormData form_data(MakeFormDataWithOnlyNewPasswordField());
+  FormData form_data(MakeSignUpFormData());
   observed.push_back(form_data);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
@@ -2016,7 +2058,7 @@ TEST_P(PasswordManagerTest,
 
 TEST_P(PasswordManagerTest, PasswordGenerationUsernameChanged) {
   std::vector<FormData> observed;
-  FormData form_data(MakeFormDataWithOnlyNewPasswordField());
+  FormData form_data(MakeSignUpFormData());
   observed.push_back(form_data);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
@@ -2100,7 +2142,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword_NoFormManager) {
   base::HistogramTester histogram_tester;
 
   // The user accepts a generated password.
-  FormData form_data(MakeFormDataWithOnlyNewPasswordField());
+  FormData form_data(MakeSignUpFormData());
   EXPECT_CALL(*store_, AddLogin(_)).Times(0);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
