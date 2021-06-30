@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class WebGLTexture;
+
 class OVRMultiview2 final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 

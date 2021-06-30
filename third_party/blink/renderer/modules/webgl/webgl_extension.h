@@ -29,11 +29,13 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class WebGLExtension;
+class WebGLRenderingContextBase;
 
 class WebGLExtensionScopedContext final {
   STACK_ALLOCATED();

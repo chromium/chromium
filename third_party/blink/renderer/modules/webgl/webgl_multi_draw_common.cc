@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_int32arrayallowshared_longsequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_uint32arrayallowshared_unsignedlongsequence.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 

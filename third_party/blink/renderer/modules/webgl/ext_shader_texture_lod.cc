@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webgl/ext_shader_texture_lod.h"
 
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+
 namespace blink {
 
 EXTShaderTextureLOD::EXTShaderTextureLOD(WebGLRenderingContextBase* context)

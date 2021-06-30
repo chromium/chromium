@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webgl/ext_texture_norm_16.h"
 
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+
 namespace blink {
 
 EXTTextureNorm16::EXTTextureNorm16(WebGLRenderingContextBase* context)

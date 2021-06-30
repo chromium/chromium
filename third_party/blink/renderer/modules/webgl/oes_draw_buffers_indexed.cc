@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webgl/oes_draw_buffers_indexed.h"
 
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+
 namespace blink {
 
 OESDrawBuffersIndexed::OESDrawBuffersIndexed(WebGLRenderingContextBase* context)

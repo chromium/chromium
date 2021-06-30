@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 
