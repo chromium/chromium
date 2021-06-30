@@ -163,6 +163,14 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                       const CSSPropertyName&,
                                       const CSSValue&);
 
+  // Compute FilterOperations from the specified CSSValue, using the provided
+  // Font to resolve any font-relative units.
+  //
+  // Triggers loading of any external references held by |CSSValue|.
+  FilterOperations ComputeFilterOperations(Element*,
+                                           const Font&,
+                                           const CSSValue&);
+
   scoped_refptr<ComputedStyle> StyleForInterpolations(
       Element& element,
       ActiveInterpolationsMap& animations);

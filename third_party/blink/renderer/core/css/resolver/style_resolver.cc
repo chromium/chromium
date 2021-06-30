@@ -1514,6 +1514,27 @@ const CSSValue* StyleResolver::ComputeValue(
                                                    *state.Style());
 }
 
+FilterOperations StyleResolver::ComputeFilterOperations(
+    Element* element,
+    const Font& font,
+    const CSSValue& filter_value) {
+  scoped_refptr<ComputedStyle> parent = CreateComputedStyle();
+  parent->SetFont(font);
+
+  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+  StyleResolverState state(GetDocument(), *element, StyleRecalcContext(),
+                           StyleRequest(parent.get()));
+
+  state.SetStyle(ComputedStyle::Clone(*parent));
+
+  StyleBuilder::ApplyProperty(GetCSSPropertyFilter(), state,
+                              ScopedCSSValue(filter_value, &GetDocument()));
+
+  state.LoadPendingResources();
+
+  return state.Style()->Filter();
+}
+
 scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
     Element& element,
     ActiveInterpolationsMap& interpolations) {
