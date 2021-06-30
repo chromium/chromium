@@ -264,6 +264,7 @@ TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
 }
 
 TEST_F(LayoutObjectTest, UseCountContainingBlockFixedPosUnderFlattened3D) {
+  ScopedTransformInteropForTest disabled(false);
   SetBodyInnerHTML(R"HTML(
     <div style='transform-style: preserve-3d; opacity: 0.9'>
       <div id=target style='position:fixed'></div>
@@ -272,6 +273,22 @@ TEST_F(LayoutObjectTest, UseCountContainingBlockFixedPosUnderFlattened3D) {
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
   EXPECT_EQ(target->View(), target->Container());
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kTransformStyleContainingBlockComputedUsedMismatch));
+}
+
+TEST_F(LayoutObjectTest,
+       UseCountContainingBlockFixedPosUnderFlattened3DTransformInterop) {
+  ScopedTransformInteropForTest enabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <div style='transform-style: preserve-3d; opacity: 0.9'>
+      <div id=target style='position:fixed'></div>
+    </div>
+  )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  EXPECT_EQ(target->View(), target->GetDocument().GetLayoutView());
 
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kTransformStyleContainingBlockComputedUsedMismatch));

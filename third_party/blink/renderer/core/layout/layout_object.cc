@@ -1603,10 +1603,6 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
     return true;
   // https://www.w3.org/TR/css-transforms-1/#containing-block-for-all-descendants
 
-  if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
-      style->TransformStyle3D() == ETransformStyle3D::kPreserve3d)
-    return true;
-
   if (style->HasTransformRelatedProperty()) {
     if (!IsInline() || IsAtomicInlineLevel())
       return true;
@@ -1627,6 +1623,9 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
     UseCounter::Count(
         GetDocument(),
         WebFeature::kTransformStyleContainingBlockComputedUsedMismatch);
+    if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
+      return true;
+    }
   }
 
   return false;
