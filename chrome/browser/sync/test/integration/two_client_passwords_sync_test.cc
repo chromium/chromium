@@ -19,11 +19,11 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "content/public/test/browser_test.h"
 
 using passwords_helper::AddInsecureCredential;
-using passwords_helper::AddLogin;
 using passwords_helper::AllProfilesContainSamePasswordForms;
 using passwords_helper::AllProfilesContainSamePasswordFormsAsVerifier;
 using passwords_helper::CreateInsecureCredential;
@@ -32,13 +32,12 @@ using passwords_helper::GetAllInsecureCredentials;
 using passwords_helper::GetLogins;
 using passwords_helper::GetPasswordCount;
 using passwords_helper::GetPasswordStore;
+using passwords_helper::GetProfilePasswordStoreInterface;
 using passwords_helper::GetVerifierPasswordCount;
 using passwords_helper::GetVerifierPasswordStore;
+using passwords_helper::GetVerifierProfilePasswordStoreInterface;
 using passwords_helper::RemoveInsecureCredentials;
-using passwords_helper::RemoveLogin;
 using passwords_helper::RemoveLogins;
-using passwords_helper::UpdateLogin;
-using passwords_helper::UpdateLoginWithPrimaryKey;
 using CheckForInsecure = SamePasswordFormsChecker::CheckForInsecure;
 
 using password_manager::InsecureCredential;
@@ -73,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
 
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
@@ -86,11 +85,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
   PasswordForm form0 = CreateTestPasswordForm(0);
-  AddLogin(GetPasswordStore(0), form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
 
   PasswordForm form1 = form0;
   form1.password_value = u"new_password";
-  AddLogin(GetPasswordStore(1), form1);
+  GetProfilePasswordStoreInterface(1)->AddLogin(form1);
 
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 }
@@ -116,15 +115,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, MergeWithTheMostRecent) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Add the passwords to Client 0.
-  AddLogin(GetPasswordStore(0), form0_recent);
-  AddLogin(GetPasswordStore(0), form1_old);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0_recent);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form1_old);
   // Enable sync on Client 0 and wait until they are committed.
   ASSERT_TRUE(GetClient(0)->SetupSync()) << "GetClient(0)->SetupSync() failed.";
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   // Add the passwords to Client 1.
-  AddLogin(GetPasswordStore(1), form0_old);
-  AddLogin(GetPasswordStore(1), form1_recent);
+  GetProfilePasswordStoreInterface(1)->AddLogin(form0_old);
+  GetProfilePasswordStoreInterface(1)->AddLogin(form1_recent);
 
   // Enable sync on Client 1 and wait until all passwords are merged.
   ASSERT_TRUE(GetClient(1)->SetupSync()) << "GetClient(1)->SetupSync() failed.";
@@ -154,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(1)).Wait());
 
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
 
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
@@ -165,15 +164,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, Update) {
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetVerifierPasswordStore(), form);
-  AddLogin(GetPasswordStore(0), form);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
 
   // Wait for client 0 to commit and client 1 to receive the update.
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
 
   form.password_value = u"new_password";
-  UpdateLogin(GetVerifierPasswordStore(), form);
-  UpdateLogin(GetPasswordStore(1), form);
+  GetVerifierProfilePasswordStoreInterface()->UpdateLogin(form);
+  GetProfilePasswordStoreInterface(1)->UpdateLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
 
   // Wait for client 1 to commit and client 0 to receive the update.
@@ -188,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, AddTwice) {
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
 
   // Wait for client 0 to commit and client 1 to receive the update.
@@ -197,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, AddTwice) {
 
   // Update the password and add it again to client 0.
   form.password_value = u"new_password";
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
 
   // Wait for client 1 to receive the update.
@@ -210,17 +209,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, Delete) {
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
   PasswordForm form0 = CreateTestPasswordForm(0);
-  AddLogin(GetVerifierPasswordStore(), form0);
-  AddLogin(GetPasswordStore(0), form0);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
   PasswordForm form1 = CreateTestPasswordForm(1);
-  AddLogin(GetVerifierPasswordStore(), form1);
-  AddLogin(GetPasswordStore(0), form1);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form1);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form1);
 
   // Wait for client 0 to commit and client 1 to receive the update.
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
 
-  RemoveLogin(GetPasswordStore(1), form0);
-  RemoveLogin(GetVerifierPasswordStore(), form0);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(form0);
+  GetVerifierProfilePasswordStoreInterface()->RemoveLogin(form0);
   ASSERT_EQ(1, GetVerifierPasswordCount());
 
   // Wait for deletion from client 1 to propagate.
@@ -256,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Move around some passwords to make sure it's all working.
   PasswordForm form0 = CreateTestPasswordForm(0);
-  AddLogin(GetPasswordStore(0), form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
 
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 }
@@ -270,8 +269,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(DeleteTwo)) {
       CreateTestPasswordForm(base::FastHash(base::GenerateGUID()));
   PasswordForm form1 =
       CreateTestPasswordForm(base::FastHash(base::GenerateGUID()));
-  AddLogin(GetPasswordStore(0), form0);
-  AddLogin(GetPasswordStore(0), form1);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form1);
 
   const int init_password_count = GetPasswordCount(0);
 
@@ -279,13 +278,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(DeleteTwo)) {
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   ASSERT_EQ(init_password_count, GetPasswordCount(1));
 
-  RemoveLogin(GetPasswordStore(1), form0);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(form0);
 
   // Wait for deletion from client 1 to propagate.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   ASSERT_EQ(init_password_count - 1, GetPasswordCount(0));
 
-  RemoveLogin(GetPasswordStore(1), form1);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(form1);
 
   // Wait for deletion from client 1 to propagate.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
@@ -297,11 +296,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, DeleteAll) {
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
   PasswordForm form0 = CreateTestPasswordForm(0);
-  AddLogin(GetVerifierPasswordStore(), form0);
-  AddLogin(GetPasswordStore(0), form0);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
   PasswordForm form1 = CreateTestPasswordForm(1);
-  AddLogin(GetVerifierPasswordStore(), form1);
-  AddLogin(GetPasswordStore(0), form1);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form1);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form1);
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
@@ -318,11 +317,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Merge)) {
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
   PasswordForm form0 = CreateTestPasswordForm(0);
-  AddLogin(GetPasswordStore(0), form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
   PasswordForm form1 = CreateTestPasswordForm(1);
-  AddLogin(GetPasswordStore(1), form1);
+  GetProfilePasswordStoreInterface(1)->AddLogin(form1);
   PasswordForm form2 = CreateTestPasswordForm(2);
-  AddLogin(GetPasswordStore(1), form2);
+  GetProfilePasswordStoreInterface(1)->AddLogin(form2);
 
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   ASSERT_EQ(3, GetPasswordCount(0));
@@ -339,8 +338,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
   // Add one new password per profile. A unique form is created for each to
   // prevent them from overwriting each other.
   for (int i = 0; i < num_clients(); ++i) {
-    AddLogin(GetPasswordStore(i), CreateTestPasswordForm(base::RandInt(
-                                      0, std::numeric_limits<int32_t>::max())));
+    GetProfilePasswordStoreInterface(i)->AddLogin(CreateTestPasswordForm(
+        base::RandInt(0, std::numeric_limits<int32_t>::max())));
   }
 
   // Blocks and waits for password forms in all profiles to match.
@@ -360,15 +359,16 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier,
   base::HistogramTester histogram_tester;
 
   PasswordForm form0 = CreateTestPasswordForm(0);
-  AddLogin(GetVerifierPasswordStore(), form0);
-  AddLogin(GetPasswordStore(0), form0);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
 
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
   PasswordForm form1 = CreateTestPasswordForm(1);
-  UpdateLoginWithPrimaryKey(GetVerifierPasswordStore(), form1, form0);
-  UpdateLoginWithPrimaryKey(GetPasswordStore(0), form1, form0);
+  GetVerifierProfilePasswordStoreInterface()->UpdateLoginWithPrimaryKey(form1,
+                                                                        form0);
+  GetProfilePasswordStoreInterface(0)->UpdateLoginWithPrimaryKey(form1, form0);
 
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Add the passwords and security issues to Client 0.
-  AddLogin(GetPasswordStore(0), form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
   AddInsecureCredential(GetPasswordStore(0), issue0);
 
   // Enable sync on Client 0 and wait until they are committed.
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   // Add the passwords and security issues to Client 1.
-  AddLogin(GetPasswordStore(1), form1);
+  GetProfilePasswordStoreInterface(1)->AddLogin(form1);
   AddInsecureCredential(GetPasswordStore(1), issue1);
 
   // Enable sync on Client 1 and wait until all passwords are merged.
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
       CreateInsecureCredential(0, InsecureType::kPhished);
 
   // Add the form and security issues to Client 0.
-  AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
+  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(0));
   AddInsecureCredential(GetPasswordStore(0), issue1);
   AddInsecureCredential(GetPasswordStore(0), issue2);
 
@@ -452,8 +452,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
       CreateInsecureCredential(1, InsecureType::kPhished);
 
   // Add the form and security issues to Client 0.
-  AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
-  AddLogin(GetPasswordStore(0), CreateTestPasswordForm(1));
+  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(0));
+  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(1));
   AddInsecureCredential(GetPasswordStore(0), issue1);
   AddInsecureCredential(GetPasswordStore(0), issue2);
 
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   InsecureCredential issue = CreateInsecureCredential(0, InsecureType::kLeaked);
   // Add the form and security issue to Client 0.
-  AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
+  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(0));
   AddInsecureCredential(GetPasswordStore(0), issue);
 
   // Wait until Client 1 picks up changes.

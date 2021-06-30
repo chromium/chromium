@@ -25,12 +25,13 @@
 namespace {
 
 using password_manager::features_util::OptInToAccountStorage;
-using passwords_helper::AddLogin;
 using passwords_helper::CreateTestPasswordForm;
 using passwords_helper::GetPasswordCount;
 using passwords_helper::GetPasswordStore;
+using passwords_helper::GetProfilePasswordStoreInterface;
 using passwords_helper::GetVerifierPasswordCount;
 using passwords_helper::GetVerifierPasswordStore;
+using passwords_helper::GetVerifierProfilePasswordStoreInterface;
 using passwords_helper::ProfileContainsSamePasswordFormsAsVerifier;
 
 using password_manager::PasswordForm;
@@ -63,9 +64,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetVerifierPasswordStore(), form);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
 
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
@@ -81,9 +82,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetVerifierPasswordStore(), form);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
@@ -107,9 +108,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetVerifierPasswordStore(), form);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
@@ -133,9 +134,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
                   .Wait());
 
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetVerifierPasswordStore(), form);
+  GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
@@ -180,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   PasswordForm form = CreateTestPasswordForm(0);
-  AddLogin(GetPasswordStore(0), form);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
   ASSERT_EQ(1, GetPasswordCount(0));
   // Setup sync, wait for its completion, and make sure changes were synced.
   base::HistogramTester histogram_tester;

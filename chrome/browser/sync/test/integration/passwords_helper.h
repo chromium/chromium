@@ -22,6 +22,7 @@ class KeyDerivationParams;
 
 namespace password_manager {
 class PasswordStore;
+class PasswordStoreInterface;
 }
 
 namespace passwords_helper {
@@ -77,13 +78,19 @@ void RemoveInsecureCredentials(
 // Gets the password store of the profile with index |index|.
 // TODO(treib): Rename to GetProfilePasswordStore.
 password_manager::PasswordStore* GetPasswordStore(int index);
+password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface(
+    int index);
 
 // Gets the password store of the verifier profile.
 // TODO(treib): Rename to GetVerifierProfilePasswordStore.
 password_manager::PasswordStore* GetVerifierPasswordStore();
+password_manager::PasswordStoreInterface*
+GetVerifierProfilePasswordStoreInterface();
 
 // Gets the account-scoped password store of the profile with index |index|.
 password_manager::PasswordStore* GetAccountPasswordStore(int index);
+password_manager::PasswordStoreInterface* GetAccountPasswordStoreInterface(
+    int index);
 
 // Returns true iff the profile with index |index| contains the same password
 // forms as the verifier profile.

@@ -33,6 +33,7 @@
 using password_manager::InsecureCredential;
 using password_manager::PasswordForm;
 using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using sync_datatype_helper::test;
 
 namespace {
@@ -269,13 +270,31 @@ PasswordStore* GetPasswordStore(int index) {
       .get();
 }
 
+PasswordStoreInterface* GetProfilePasswordStoreInterface(int index) {
+  return PasswordStoreFactory::GetForProfile(test()->GetProfile(index),
+                                             ServiceAccessType::IMPLICIT_ACCESS)
+      .get();
+}
+
 PasswordStore* GetVerifierPasswordStore() {
   return PasswordStoreFactory::GetForProfile(test()->verifier(),
                                              ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }
 
+PasswordStoreInterface* GetVerifierProfilePasswordStoreInterface() {
+  return PasswordStoreFactory::GetForProfile(test()->verifier(),
+                                             ServiceAccessType::IMPLICIT_ACCESS)
+      .get();
+}
+
 PasswordStore* GetAccountPasswordStore(int index) {
+  return AccountPasswordStoreFactory::GetForProfile(
+             test()->GetProfile(index), ServiceAccessType::IMPLICIT_ACCESS)
+      .get();
+}
+
+PasswordStoreInterface* GetAccountPasswordStoreInterface(int index) {
   return AccountPasswordStoreFactory::GetForProfile(
              test()->GetProfile(index), ServiceAccessType::IMPLICIT_ACCESS)
       .get();
