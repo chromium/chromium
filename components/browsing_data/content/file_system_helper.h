@@ -122,7 +122,7 @@ class FileSystemHelper : public base::RefCountedThreadSafe<FileSystemHelper> {
   void AppendNativeIOInfoToFileSystemInfo(
       FetchCallback callback,
       const std::list<FileSystemInfo>& file_system_info_list,
-      std::map<blink::StorageKey, int64_t> native_io_usage_map);
+      const std::map<blink::StorageKey, int64_t>& native_io_usage_map);
 
   // Returns the file task runner for the |filesystem_context_|.
   base::SequencedTaskRunner* file_task_runner();

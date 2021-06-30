@@ -97,7 +97,7 @@ class CONTENT_EXPORT NativeIOManager {
   // particularly speedy.
   // TODO(rstz): Consider a caching mechanism to improve performance.
   void GetStorageKeyUsageMap(
-      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
           callback);
 
   // Computes the path to the directory storing an storage key's NativeIO files.
@@ -158,9 +158,9 @@ class CONTENT_EXPORT NativeIOManager {
 
   // Called after the I/O part of GetStorageKeyUsageMap() completed.
   void DidGetStorageKeyUsageMap(
-      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
           callback,
-      std::map<blink::StorageKey, int64_t> usage_map);
+      const std::map<blink::StorageKey, int64_t>& usage_map);
 
   // Points to the root directory for NativeIO files.
   //

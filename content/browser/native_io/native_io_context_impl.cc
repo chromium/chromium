@@ -82,7 +82,7 @@ void NativeIOContextImpl::DeleteStorageKeyData(
 }
 
 void NativeIOContextImpl::GetStorageKeyUsageMap(
-    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
         success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
@@ -96,8 +96,8 @@ void NativeIOContextImpl::GetStorageKeyUsageMap(
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                  base::OnceCallback<void(
-                     const std::map<blink::StorageKey, int64_t>)> callback,
-                 std::map<blink::StorageKey, int64_t> result) {
+                     const std::map<blink::StorageKey, int64_t>&)> callback,
+                 const std::map<blink::StorageKey, int64_t>& result) {
                 task_runner->PostTask(
                     FROM_HERE, base::BindOnce(std::move(callback), result));
               },
@@ -140,7 +140,7 @@ void NativeIOContextImpl::DeleteStorageKeyDataOnIOThread(
 }
 
 void NativeIOContextImpl::GetStorageKeyUsageMapOnIOThread(
-    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 

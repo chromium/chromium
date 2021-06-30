@@ -37,7 +37,7 @@ class CONTENT_EXPORT NativeIOContext
   // Returns the usage in bytes for all storage keys. Must be called on the
   // UI thread.
   virtual void GetStorageKeyUsageMap(
-      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
           callback) = 0;
 
  protected:

@@ -323,7 +323,7 @@ void NativeIOManager::GetStorageKeyUsage(
 }
 
 void NativeIOManager::GetStorageKeyUsageMap(
-    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
         callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -368,9 +368,9 @@ void NativeIOManager::DidGetStorageKeyUsage(
 }
 
 void NativeIOManager::DidGetStorageKeyUsageMap(
-    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
         callback,
-    std::map<blink::StorageKey, int64_t> usage_map) {
+    const std::map<blink::StorageKey, int64_t>& usage_map) {
   std::move(callback).Run(usage_map);
 }
 

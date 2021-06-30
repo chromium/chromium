@@ -63,7 +63,7 @@ class CONTENT_EXPORT NativeIOContextImpl : public NativeIOContext {
   //
   // Must be called on the UI thread.
   void GetStorageKeyUsageMap(
-      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
           callback) override;
 
  protected:
@@ -85,7 +85,7 @@ class CONTENT_EXPORT NativeIOContextImpl : public NativeIOContext {
       storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback);
 
   void GetStorageKeyUsageMapOnIOThread(
-      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>)>
+      base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
           callback);
 
   // Only to be accessed on the IO thread.

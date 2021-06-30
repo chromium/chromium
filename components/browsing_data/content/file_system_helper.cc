@@ -116,7 +116,7 @@ void FileSystemHelper::DidFetchFileSystemInfo(
 void FileSystemHelper::AppendNativeIOInfoToFileSystemInfo(
     FetchCallback callback,
     const std::list<FileSystemInfo>& file_system_info_list,
-    std::map<blink::StorageKey, int64_t> native_io_usage_map) {
+    const std::map<blink::StorageKey, int64_t>& native_io_usage_map) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::list<FileSystemInfo> result = file_system_info_list;
