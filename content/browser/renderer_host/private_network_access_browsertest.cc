@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), JsReplace("window.location.href = $1;", url)));
   observer.WaitForResourceCompletion(url);
 
-  blink::mojom::ResourceLoadInfoPtr* info = observer.FindResource(url);
+  blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(url);
   ASSERT_TRUE(info);
   ASSERT_TRUE(*info);
   EXPECT_TRUE((*info)->was_cached);
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), JsReplace("window.location.href = $1;", url)));
   observer.WaitForResourceCompletion(url);
 
-  blink::mojom::ResourceLoadInfoPtr* info = observer.FindResource(url);
+  blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(url);
   ASSERT_TRUE(info);
   ASSERT_TRUE(*info);
   EXPECT_TRUE((*info)->was_cached);
@@ -2455,7 +2455,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   observer.WaitForResourceCompletion(cached_url);
 
   // And that the resource was loaded from the cache.
-  blink::mojom::ResourceLoadInfoPtr* info = observer.FindResource(cached_url);
+  blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(cached_url);
   ASSERT_TRUE(info);
   ASSERT_TRUE(*info);
   EXPECT_TRUE((*info)->was_cached);

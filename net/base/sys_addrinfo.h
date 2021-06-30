@@ -14,6 +14,11 @@
 //
 // Prefer including this file instead of directly writing the #if / #else,
 // since it avoids duplicating the platform-specific selections.
+//
+// Note that this header transitively includes windows.h on Windows, which
+// pollutes the global namespace with thousands of macro definitions, so try to
+// avoid including this in headers. Including windows.h can also add significant
+// build overhead.
 
 #ifndef NET_BASE_SYS_ADDRINFO_H_
 #define NET_BASE_SYS_ADDRINFO_H_

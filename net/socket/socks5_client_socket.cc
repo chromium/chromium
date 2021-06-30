@@ -15,6 +15,7 @@
 #include "base/sys_byteorder.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/io_buffer.h"
+#include "net/base/sys_addrinfo.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

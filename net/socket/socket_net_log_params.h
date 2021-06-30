@@ -5,7 +5,6 @@
 #ifndef NET_SOCKET_SOCKET_NET_LOG_PARAMS_H_
 #define NET_SOCKET_SOCKET_NET_LOG_PARAMS_H_
 
-#include "net/base/sys_addrinfo.h"
 #include "net/log/net_log_event_type.h"
 
 namespace base {

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/server/http_server.h"
+
 #include "net/base/network_interfaces.h"
+#include "net/base/sys_addrinfo.h"
 
 namespace {
 

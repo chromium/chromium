@@ -54,8 +54,6 @@ CastTransportImpl::CastTransportImpl(Channel* channel,
       channel_id_(channel_id),
       ip_endpoint_(ip_endpoint),
       logger_(logger) {
-  DCHECK(socket);
-
   // Buffer is reused across messages to minimize unnecessary buffer
   // [re]allocations.
   read_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();

@@ -83,7 +83,7 @@ void ResourceLoadObserver::CheckResourceLoaded(
 }
 
 // Returns the resource with the given url if found, otherwise nullptr.
-blink::mojom::ResourceLoadInfoPtr* ResourceLoadObserver::FindResource(
+blink::mojom::ResourceLoadInfoPtr* ResourceLoadObserver::GetResource(
     const GURL& original_url) {
   for (auto& resource : resource_load_infos_) {
     if (resource->original_url == original_url)

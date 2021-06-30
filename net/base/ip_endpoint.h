@@ -10,12 +10,22 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
-#include "net/base/sys_addrinfo.h"
 
+#if defined(OS_WIN)
+// Replicate these from Windows headers to avoid pulling net/sys_addrinfo.h.
+// Doing that transitively brings in windows.h. Including windows.h pollutes the
+// global namespace with thousands of macro definitions. This file is
+// transitively included in enough files that including windows.h potentially
+// impacts build performance.
 struct sockaddr;
+typedef int socklen_t;
+#else
+#include "net/base/sys_addrinfo.h"
+#endif
 
 namespace net {
 

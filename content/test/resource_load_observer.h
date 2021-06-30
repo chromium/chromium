@@ -54,7 +54,7 @@ class ResourceLoadObserver : public WebContentsObserver {
       const base::TimeTicks& after_request);
 
   // Returns the resource with the given url if found, otherwise nullptr.
-  blink::mojom::ResourceLoadInfoPtr* FindResource(const GURL& original_url);
+  blink::mojom::ResourceLoadInfoPtr* GetResource(const GURL& original_url);
 
   void Reset();
 

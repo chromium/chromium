@@ -268,7 +268,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
       EXPECT_TRUE(frame_host->GetNetworkIsolationKey().IsTransient());
     }
 
-    return (*observer.FindResource(resource))->was_cached;
+    return (*observer.GetResource(resource))->was_cached;
   }
 
   // Navigates to |url| and returns if the navigation resource was fetched from
@@ -308,10 +308,10 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
       EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
       observer.WaitForResourceCompletion(sub_frame);
       EXPECT_EQ(subframe_navigation_resource_cached,
-                (*observer.FindResource(sub_frame))->was_cached);
+                (*observer.GetResource(sub_frame))->was_cached);
     }
 
-    return (*observer.FindResource(url))->was_cached;
+    return (*observer.GetResource(url))->was_cached;
   }
 
   // Loads a dedicated worker script and checks to see whether or not the
@@ -346,7 +346,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     observer.WaitForResourceCompletion(GenURL("3p.com", "/script"));
     observer.WaitForResourceCompletion(worker);
 
-    return (*observer.FindResource(worker))->was_cached;
+    return (*observer.GetResource(worker))->was_cached;
   }
 
   // Gets script to create subframe.
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                      GetSubframeScript(subframe_url)));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   observer.WaitForResourceCompletion(subframe_url);
-  EXPECT_EQ(false, (*observer.FindResource(subframe_url))->was_cached);
+  EXPECT_EQ(false, (*observer.GetResource(subframe_url))->was_cached);
 }
 
 namespace {
