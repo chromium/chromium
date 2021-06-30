@@ -5,6 +5,7 @@
 #include "chrome/updater/policy/win/group_policy_manager.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -40,8 +41,8 @@ void GroupPolicyManagerTests::DeletePolicyKey() {
 }
 
 TEST_F(GroupPolicyManagerTests, NoPolicySet) {
-  std::unique_ptr<PolicyManagerInterface> policy_manager(
-      std::make_unique<GroupPolicyManager>());
+  std::unique_ptr<PolicyManagerInterface> policy_manager =
+      std::make_unique<GroupPolicyManager>();
   EXPECT_FALSE(policy_manager->IsManaged());
 
   EXPECT_EQ(policy_manager->source(), "GroupPolicy");
@@ -49,7 +50,7 @@ TEST_F(GroupPolicyManagerTests, NoPolicySet) {
   int check_period = 0;
   EXPECT_FALSE(policy_manager->GetLastCheckPeriodMinutes(&check_period));
 
-  UpdatesSuppressedTimes suppressed_times = {};
+  UpdatesSuppressedTimes suppressed_times;
   EXPECT_FALSE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
 
   std::string download_preference;
@@ -132,8 +133,8 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, 1));
 
-  std::unique_ptr<PolicyManagerInterface> policy_manager(
-      std::make_unique<GroupPolicyManager>());
+  std::unique_ptr<PolicyManagerInterface> policy_manager =
+      std::make_unique<GroupPolicyManager>();
   EXPECT_EQ(policy_manager->IsManaged(), base::win::IsEnrolledToDomain());
 
   int check_period = 0;
@@ -238,8 +239,8 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
   EXPECT_EQ(ERROR_SUCCESS,
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, L"1"));
 
-  std::unique_ptr<PolicyManagerInterface> policy_manager(
-      std::make_unique<GroupPolicyManager>());
+  std::unique_ptr<PolicyManagerInterface> policy_manager =
+      std::make_unique<GroupPolicyManager>();
 
   int check_period = 0;
   EXPECT_FALSE(policy_manager->GetLastCheckPeriodMinutes(&check_period));

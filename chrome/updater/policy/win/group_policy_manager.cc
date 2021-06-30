@@ -5,6 +5,7 @@
 #include "chrome/updater/policy/win/group_policy_manager.h"
 
 #include <string>
+#include <utility>
 
 #include <userenv.h>
 
