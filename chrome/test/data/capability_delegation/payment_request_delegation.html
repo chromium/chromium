@@ -20,7 +20,7 @@ found in the LICENSE file.
       let post_message_options = {};
       post_message_options["targetOrigin"] = "*";
       if (delegate) {
-          post_message_options["createToken"] = "paymentrequest";
+          post_message_options["delegate"] = "paymentrequest";
       }
       frames[0].postMessage("try", post_message_options);
       return promise;

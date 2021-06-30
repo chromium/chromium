@@ -741,7 +741,7 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
       WebString("window.frames[0].postMessage('0', {targetOrigin: '*'});"));
   WebScriptSource post_message_w_payment_request(
       WebString("window.frames[0].postMessage("
-                "'1', {targetOrigin: '*', createToken: 'paymentrequest'});"));
+                "'1', {targetOrigin: '*', delegate: 'paymentrequest'});"));
 
   // The delegation info is not passed through a postMessage that is sent
   // without either user activation or the delegation option.

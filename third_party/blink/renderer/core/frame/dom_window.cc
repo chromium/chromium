@@ -708,9 +708,9 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
           GetExecutionContext()) &&
       LocalFrame::HasTransientUserActivation(source_frame) &&
-      options->hasCreateToken()) {
+      options->hasDelegate()) {
     Vector<String> capability_list;
-    options->createToken().Split(' ', capability_list);
+    options->delegate().Split(' ', capability_list);
     delegate_payment_request = capability_list.Contains("paymentrequest");
   }
 
