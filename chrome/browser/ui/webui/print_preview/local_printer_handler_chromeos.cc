@@ -60,7 +60,6 @@ LocalPrinterHandlerChromeos::Create(
       std::make_unique<LocalPrinterHandlerChromeos>(preview_web_contents);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   handler->local_printer_ = std::make_unique<crosapi::LocalPrinterAsh>();
-  handler->local_printer_version_ = crosapi::mojom::LocalPrinter::Version_;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl* service =
       chromeos::LacrosChromeServiceImpl::Get();

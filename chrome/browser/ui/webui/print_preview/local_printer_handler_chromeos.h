@@ -88,8 +88,8 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   std::unique_ptr<crosapi::mojom::LocalPrinter> local_printer_;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::LocalPrinter* local_printer_ = nullptr;
-#endif
   int local_printer_version_ = 0;
+#endif
   base::WeakPtrFactory<LocalPrinterHandlerChromeos> weak_ptr_factory_{this};
 };
 
