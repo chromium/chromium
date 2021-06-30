@@ -37,6 +37,8 @@
 #include "url/gurl.h"
 
 namespace autofill {
+class AutofillableData;
+class AutofillDataModel;
 class AutofillProfile;
 class ContentAutofillDriver;
 class CreditCard;
@@ -324,18 +326,6 @@ class WebController {
  private:
   friend class WebControllerBrowserTest;
 
-  struct FillFormInputData {
-    FillFormInputData();
-    ~FillFormInputData();
-
-    // Data for filling address form.
-    std::unique_ptr<autofill::AutofillProfile> profile;
-
-    // Data for filling card form.
-    std::unique_ptr<autofill::CreditCard> card;
-    std::u16string cvc;
-  };
-
   // RAII object that sets the action state to "running" when the object is
   // allocated and to "not running" when it gets deallocated.
   class ScopedAssistantActionStateRunning
@@ -453,8 +443,11 @@ class WebController {
       autofill::ContentAutofillDriver* driver,
       const autofill::FormData& form_data,
       const autofill::FormFieldData& form_field);
+  // Use |retain_data| to retain the source data until the form filling has
+  // been performed.
   void OnGetFormAndFieldDataForFilling(
-      std::unique_ptr<FillFormInputData> data_to_autofill,
+      const autofill::AutofillableData& data_to_autofill,
+      std::unique_ptr<autofill::AutofillDataModel> retain_data,
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& form_status,
       autofill::ContentAutofillDriver* driver,

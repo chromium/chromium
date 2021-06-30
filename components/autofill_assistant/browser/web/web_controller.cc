@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/autofillable_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -353,10 +354,6 @@ WebController::WebController(content::WebContents* web_contents,
       user_data_(user_data) {}
 
 WebController::~WebController() {}
-
-WebController::FillFormInputData::FillFormInputData() {}
-
-WebController::FillFormInputData::~FillFormInputData() {}
 
 void WebController::LoadURL(const GURL& url) {
 #ifdef NDEBUG
@@ -711,13 +708,12 @@ void WebController::FillAddressForm(
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   VLOG(3) << __func__ << " " << selector;
-  auto data_to_autofill = std::make_unique<FillFormInputData>();
-  data_to_autofill->profile = user_data::MakeUniqueFromProfile(*profile);
+  auto unique_profile = user_data::MakeUniqueFromProfile(*profile);
+  autofill::AutofillableData data_to_autofill(unique_profile.get());
   GetElementFormAndFieldData(
-      selector,
-      base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(data_to_autofill), std::move(callback)));
+      selector, base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
+                               weak_ptr_factory_.GetWeakPtr(), data_to_autofill,
+                               std::move(unique_profile), std::move(callback)));
 }
 
 void WebController::FillCardForm(
@@ -726,14 +722,11 @@ void WebController::FillCardForm(
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   VLOG(3) << __func__ << " " << selector;
-  auto data_to_autofill = std::make_unique<FillFormInputData>();
-  data_to_autofill->card = std::move(card);
-  data_to_autofill->cvc = cvc;
+  autofill::AutofillableData data_to_autofill(card.get(), cvc);
   GetElementFormAndFieldData(
-      selector,
-      base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(data_to_autofill), std::move(callback)));
+      selector, base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
+                               weak_ptr_factory_.GetWeakPtr(), data_to_autofill,
+                               std::move(card), std::move(callback)));
 }
 
 void WebController::RetrieveElementFormAndFieldData(
@@ -896,7 +889,8 @@ void WebController::OnGetFormAndFieldData(
 }
 
 void WebController::OnGetFormAndFieldDataForFilling(
-    std::unique_ptr<FillFormInputData> data_to_autofill,
+    const autofill::AutofillableData& data_to_autofill,
+    std::unique_ptr<autofill::AutofillDataModel> retain_data,
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& form_status,
     ContentAutofillDriver* driver,
@@ -906,15 +900,7 @@ void WebController::OnGetFormAndFieldDataForFilling(
     std::move(callback).Run(form_status);
     return;
   }
-
-  DCHECK(data_to_autofill->card || data_to_autofill->profile);
-  auto fill_data =
-      data_to_autofill->card
-          ? autofill::AutofillableData(data_to_autofill->card.get(),
-                                       data_to_autofill->cvc)
-          : autofill::AutofillableData(data_to_autofill->profile.get());
-  driver->FillFormForAssistant(fill_data, form_data, form_field);
-
+  driver->FillFormForAssistant(data_to_autofill, form_data, form_field);
   std::move(callback).Run(OkClientStatus());
 }
 
