@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -101,7 +101,7 @@ def _AllocateDexShards(dex_files):
 def _CreateDexFiles(shards, dex_staging_dir, min_api, use_concurrency):
   """Creates dex files within |dex_staging_dir| defined by |shards|."""
   tasks = []
-  for name, src_paths in shards.iteritems():
+  for name, src_paths in shards.items():
     dest_path = os.path.join(dex_staging_dir, name)
     if _IsStale(src_paths, dest_path):
       tasks.append(
@@ -146,7 +146,7 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
     permissions: A list of the permissions to grant, or None to grant all
                  non-denylisted permissions in the manifest.
   """
-  if isinstance(install_json, basestring):
+  if isinstance(install_json, str):
     with open(install_json) as f:
       install_dict = json.load(f)
   else:

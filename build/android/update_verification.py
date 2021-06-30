@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -35,6 +35,13 @@ from devil.android import device_denylist
 from devil.android import device_errors
 from devil.android import device_utils
 from devil.utils import run_tests_helper
+
+try:
+  from builtins import input as raw_input  # pylint: disable=redefined-builtin
+except ImportError:
+  # Python-2 already has raw_input.
+  pass
+
 
 def CreateAppData(device, old_apk, app_data, package_name):
   device.Install(old_apk)

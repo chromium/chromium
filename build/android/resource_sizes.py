@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright (c) 2011 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -98,7 +98,7 @@ class _AccumulatingReporter(object):
 
   def DumpReports(self, report_func):
     for (graph_title, trace_title,
-         units), value in sorted(self._combined_metrics.iteritems()):
+         units), value in sorted(self._combined_metrics.items()):
       report_func(graph_title, trace_title, value, units)
 
 
@@ -117,7 +117,7 @@ class _ChartJsonReporter(_AccumulatingReporter):
         value, units)
 
   def SynthesizeTotals(self, unique_method_count):
-    for tup, value in sorted(self._combined_metrics.iteritems()):
+    for tup, value in sorted(self._combined_metrics.items()):
       graph_title, trace_title, units = tup
       if trace_title == 'unique methods':
         value = unique_method_count
@@ -177,17 +177,16 @@ def _ExtractLibSectionSizesFromApk(apk_path, lib_path, tool_prefix):
     grouped_section_sizes = collections.defaultdict(int)
     no_bits_section_sizes, section_sizes = _CreateSectionNameSizeMap(
         extracted_lib_path, tool_prefix)
-    for group_name, section_names in _READELF_SIZES_METRICS.iteritems():
+    for group_name, section_names in _READELF_SIZES_METRICS.items():
       for section_name in section_names:
         if section_name in section_sizes:
           grouped_section_sizes[group_name] += section_sizes.pop(section_name)
 
     # Consider all NOBITS sections as .bss.
-    grouped_section_sizes['bss'] = sum(
-        v for v in no_bits_section_sizes.itervalues())
+    grouped_section_sizes['bss'] = sum(no_bits_section_sizes.values())
 
     # Group any unknown section headers into the "other" group.
-    for section_header, section_size in section_sizes.iteritems():
+    for section_header, section_size in section_sizes.items():
       sys.stderr.write('Unknown elf section header: %s\n' % section_header)
       grouped_section_sizes['other'] += section_size
 
@@ -265,7 +264,7 @@ def _NormalizeResourcesArsc(apk_path, num_arsc_files, num_translations,
   config_count = num_translations - 2
 
   size = 0
-  for res_id, string_val in en_strings.iteritems():
+  for res_id, string_val in en_strings.items():
     if string_val == fr_strings[res_id]:
       string_size = len(string_val)
       # 7 bytes is the per-entry overhead (not specific to any string). See
@@ -531,8 +530,8 @@ def _AnalyzeInternal(apk_path,
   for lib_info in native_code.AllEntries():
     section_sizes = _ExtractLibSectionSizesFromApk(apk_path, lib_info.filename,
                                                    tool_prefix)
-    native_code_unaligned_size += sum(
-        v for k, v in section_sizes.iteritems() if k != 'bss')
+    native_code_unaligned_size += sum(v for k, v in section_sizes.items()
+                                      if k != 'bss')
     # Size of main .so vs remaining.
     if lib_info == main_lib_info:
       main_lib_size = lib_info.file_size
@@ -540,7 +539,7 @@ def _AnalyzeInternal(apk_path,
       secondary_size = native_code.ComputeUncompressedSize() - main_lib_size
       report_func('Specifics', 'other lib size', secondary_size, 'bytes')
 
-      for metric_name, size in section_sizes.iteritems():
+      for metric_name, size in section_sizes.items():
         report_func('MainLibInfo', metric_name, size, 'bytes')
 
   # Main metric that we want to monitor for jumps.
@@ -634,7 +633,7 @@ def _CalculateCompressedSize(file_path):
   compressor = zlib.compressobj()
   total_size = 0
   with open(file_path, 'rb') as f:
-    for chunk in iter(lambda: f.read(CHUNK_SIZE), ''):
+    for chunk in iter(lambda: f.read(CHUNK_SIZE), b''):
       total_size += len(compressor.compress(chunk))
   total_size += len(compressor.flush())
   return total_size
@@ -818,6 +817,7 @@ def _DumpChartJson(args, chartjson):
 
 
 def main():
+  build_utils.InitLogging('RESOURCE_SIZES_DEBUG')
   argparser = argparse.ArgumentParser(description='Print APK size metrics.')
   argparser.add_argument(
       '--min-pak-resource-size',

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -559,8 +559,8 @@ class OutputBeautifier(object):
     """Returns a header string for memory usage statistics."""
     headers = ''
     for header in self.__MEMORY_COLUMN_TITLES:
-       headers += self.__PadString(header, 8, True) + ' '
-       headers += self.__PadString('(mB)', 8, False)
+      headers += self.__PadString(header, 8, True) + ' '
+      headers += self.__PadString('(mB)', 8, False)
     return self.__ColorString(headers, 'BOLD')
 
   def __PrintNetworkStatsHeader(self):
@@ -588,7 +588,7 @@ class OutputBeautifier(object):
     deltas = [0] * len(results)
     if old_results:
       assert len(old_results) == len(results)
-      deltas = map(sub, results, old_results)
+      deltas = list(map(sub, results, old_results))
     output = ''
     for idx, val in enumerate(results):
       round_val = self.__CleanRound(val, precision)
@@ -853,7 +853,7 @@ class OutputBeautifier(object):
       colors = []
       for data in mem_list:
         colors.append(ax.plot(timestamps, data)[0])
-        for i in xrange(len(timestamps)):
+        for i in range(len(timestamps)):
           ax.annotate(data[i], xy=(timestamps[i], data[i]))
       figure.legend(colors, self.__MEMORY_COLUMN_TITLES)
       pp.savefig()

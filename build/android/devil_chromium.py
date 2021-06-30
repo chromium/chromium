@@ -128,7 +128,7 @@ def _UseLocalBuildProducts(output_directory, devil_dynamic_config):
               for dep_config in dep_configs
           }
       }
-      for dep_name, dep_configs in _DEVIL_BUILD_PRODUCT_DEPS.iteritems()
+      for dep_name, dep_configs in _DEVIL_BUILD_PRODUCT_DEPS.items()
   }
 
 

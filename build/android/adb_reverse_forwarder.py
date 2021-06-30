@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright (c) 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -62,7 +62,7 @@ def main(argv):
   if len(args.ports) < 2 or len(args.ports) % 2:
     parser.error('Need even number of port pairs')
 
-  port_pairs = zip(args.ports[::2], args.ports[1::2])
+  port_pairs = list(zip(args.ports[::2], args.ports[1::2]))
 
   if args.build_type:
     constants.SetBuildType(args.build_type)

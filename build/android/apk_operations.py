@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -535,8 +535,8 @@ def _RunDiskUsage(devices, package_name):
             compilation_filter)
 
   def print_sizes(desc, sizes):
-    print('%s: %d KiB' % (desc, sum(sizes.itervalues())))
-    for path, size in sorted(sizes.iteritems()):
+    print('%s: %d KiB' % (desc, sum(sizes.values())))
+    for path, size in sorted(sizes.items()):
       print('    %s: %s KiB' % (path, size))
 
   parallel_devices = device_utils.DeviceUtils.parallel(devices)
@@ -548,7 +548,7 @@ def _RunDiskUsage(devices, package_name):
 
     (data_dir_sizes, code_cache_sizes, apk_sizes, lib_sizes, odex_sizes,
      compilation_filter) = result
-    total = sum(sum(sizes.itervalues()) for sizes in result[:-1])
+    total = sum(sum(sizes.values()) for sizes in result[:-1])
 
     print_sizes('Apk', apk_sizes)
     print_sizes('App Data (non-code cache)', data_dir_sizes)
