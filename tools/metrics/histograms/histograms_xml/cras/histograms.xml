@@ -714,6 +714,79 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cras.RtcDevicePair" enum="CrasDevicePair"
+    expires_after="2021-12-01">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    After one webRTC stream is completed, the corresponding device pair will be
+    logged. The runtime shorter than 1s will be ignored.
+  </summary>
+</histogram>
+
+<histogram name="Cras.RtcRuntime.{InDevice}.{OutDevice}" units="seconds"
+    expires_after="2021-12-01">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The runtime of webRTC streams using input device {InDevice} and output
+    device {OutDevice}. This log will be logged after a stream is completed or
+    devices are changed.
+  </summary>
+  <token key="InDevice">
+    <variant name="A2DP"/>
+    <variant name="AlsaLoopback"/>
+    <variant name="Bluetooth"/>
+    <variant name="BluetoothNarrowBandMic"/>
+    <variant name="BluetoothWideBandMic"/>
+    <variant name="FrontMic"/>
+    <variant name="Haptic"/>
+    <variant name="HDMI"/>
+    <variant name="Headphone"/>
+    <variant name="HFP"/>
+    <variant name="Hotword"/>
+    <variant name="HSP"/>
+    <variant name="InternalMic"/>
+    <variant name="InternalSpeaker"/>
+    <variant name="InvalidType"/>
+    <variant name="KeyboardMic"/>
+    <variant name="Lineout"/>
+    <variant name="Mic"/>
+    <variant name="PostDspLoopback"/>
+    <variant name="PostMixLoopback"/>
+    <variant name="RearMic"/>
+    <variant name="SilentHotword"/>
+    <variant name="Unknown"/>
+    <variant name="USB"/>
+  </token>
+  <token key="OutDevice">
+    <variant name="A2DP"/>
+    <variant name="AlsaLoopback"/>
+    <variant name="Bluetooth"/>
+    <variant name="BluetoothNarrowBandMic"/>
+    <variant name="BluetoothWideBandMic"/>
+    <variant name="FrontMic"/>
+    <variant name="Haptic"/>
+    <variant name="HDMI"/>
+    <variant name="Headphone"/>
+    <variant name="HFP"/>
+    <variant name="Hotword"/>
+    <variant name="HSP"/>
+    <variant name="InternalMic"/>
+    <variant name="InternalSpeaker"/>
+    <variant name="InvalidType"/>
+    <variant name="KeyboardMic"/>
+    <variant name="Lineout"/>
+    <variant name="Mic"/>
+    <variant name="PostDspLoopback"/>
+    <variant name="PostMixLoopback"/>
+    <variant name="RearMic"/>
+    <variant name="SilentHotword"/>
+    <variant name="Unknown"/>
+    <variant name="USB"/>
+  </token>
+</histogram>
+
 <histogram name="Cras.StreamCallbackThreshold" units="frames"
     expires_after="2021-12-01">
 <!-- Name completed by histogram_suffixes
