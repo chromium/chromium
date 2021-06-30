@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 
 class AuthenticationService;
+class ChromeAccountManagerService;
 @class ChromeIdentity;
-class PrefService;
 @class UnifiedConsentMediator;
 @class UnifiedConsentViewController;
 
@@ -28,10 +28,10 @@ class PrefService;
 // updates the UnifiedConsentViewController.
 @interface UnifiedConsentMediator : NSObject
 
-// Identity selected by the user to sign-in. By default, the first identity from
-// |GetAllIdentities(PrefService) is used. If there is no
-// identity in the list, the identity picker will be hidden. Nil is not accepted
-// if at least one identity exists.
+// Identity selected by the user to sign-in. By default, the identity returned
+// by `GetDefaultIdentity()` is used. If there is no identity in the list, the
+// identity picker will be hidden. Nil is not accepted if at least one identity
+// exists.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 // Instance delegate.
 @property(nonatomic, weak) id<UnifiedConsentMediatorDelegate> delegate;
@@ -40,7 +40,9 @@ class PrefService;
                     (UnifiedConsentViewController*)viewController
                                authenticationService:
                                    (AuthenticationService*)authenticationService
-                                         prefService:(PrefService*)prefService
+                               accountManagerService:
+                                   (ChromeAccountManagerService*)
+                                       accountManagerService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

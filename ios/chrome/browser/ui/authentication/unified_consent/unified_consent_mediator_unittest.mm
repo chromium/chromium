@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -53,7 +54,9 @@ class UnifiedConsentMediatorTest : public PlatformTest {
     mediator_ = [[UnifiedConsentMediator alloc]
         initWithUnifiedConsentViewController:view_controller_
                        authenticationService:authentication_service()
-                                 prefService:pref_service_];
+                       accountManagerService:
+                           ChromeAccountManagerServiceFactory::
+                               GetForBrowserState(browser_state_.get())];
     mediator_.delegate = mediator_delegate_mock_;
   }
 

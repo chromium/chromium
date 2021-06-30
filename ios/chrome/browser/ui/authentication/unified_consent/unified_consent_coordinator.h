@@ -45,9 +45,9 @@
 @interface UnifiedConsentCoordinator : ChromeCoordinator
 
 @property(nonatomic, weak) id<UnifiedConsentCoordinatorDelegate> delegate;
-// Identity selected by the user to sign-in. By default, the first identity from
-// |GetAllIdentities(PrefService) is used.
-// Must be non-nil if at least one identity exists.
+// Identity selected by the user to sign-in. By default, the identity returned
+// by `GetDefaultIdentity()` is used. Must be non-nil if at least one identity
+// exists.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 // Informs the coordinator whether the identity picker should automatically be
 // open when the UnifiedConsent view appears.

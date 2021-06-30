@@ -7,6 +7,7 @@
 #include "base/check.h"
 #import "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -30,8 +31,8 @@
 @property(nonatomic, assign) BOOL started;
 // Authentication service for identities.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
-// Pref service to retrieve preference values.
-@property(nonatomic, assign) PrefService* prefService;
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
@@ -46,10 +47,13 @@
                     (UnifiedConsentViewController*)viewController
                                authenticationService:
                                    (AuthenticationService*)authenticationService
-                                         prefService:(PrefService*)prefService {
+                               accountManagerService:
+                                   (ChromeAccountManagerService*)
+                                       accountManagerService {
   self = [super init];
   if (self) {
-    _prefService = prefService;
+    DCHECK(accountManagerService);
+    _accountManagerService = accountManagerService;
     _unifiedConsentViewController = viewController;
     _authenticationService = authenticationService;
     _identityServiceObserver =
@@ -61,11 +65,11 @@
 }
 
 - (void)dealloc {
-  DCHECK(!self.prefService);
+  DCHECK(!self.accountManagerService);
 }
 
 - (void)start {
-  DCHECK(self.prefService);
+  DCHECK(self.accountManagerService);
 
   self.selectedIdentity = [self findDefaultSelectedIdentity];
 
@@ -76,7 +80,7 @@
 }
 
 - (void)disconnect {
-  self.prefService = nullptr;
+  self.accountManagerService = nullptr;
 }
 
 #pragma mark - Properties
@@ -86,9 +90,7 @@
     return;
   }
   // nil is allowed only if there is no other identity.
-  DCHECK(selectedIdentity || !ios::GetChromeBrowserProvider()
-                                  ->GetChromeIdentityService()
-                                  ->HasIdentities());
+  DCHECK(selectedIdentity || !self.accountManagerService->HasIdentities());
   _selectedIdentity = selectedIdentity;
   self.selectedIdentityAvatar = nil;
   [self updateViewController];
@@ -101,10 +103,7 @@
     return self.authenticationService->GetAuthenticatedIdentity();
   }
 
-  NSArray* identities = ios::GetChromeBrowserProvider()
-                            ->GetChromeIdentityService()
-                            ->GetAllIdentities(self.prefService);
-  return identities.count ? identities[0] : nil;
+  return self.accountManagerService->GetDefaultIdentity();
 }
 
 // Updates the view if the mediator has been started.
@@ -157,21 +156,13 @@
 #pragma mark - ChromeIdentityServiceObserver
 
 - (void)identityListChanged {
-  if (!self.prefService) {
+  if (!self.accountManagerService) {
     return;
   }
 
-  if (!self.selectedIdentity || !ios::GetChromeBrowserProvider()
-                                     ->GetChromeIdentityService()
-                                     ->IsValidIdentity(self.selectedIdentity)) {
-    NSArray* identities = ios::GetChromeBrowserProvider()
-                              ->GetChromeIdentityService()
-                              ->GetAllIdentities(self.prefService);
-    ChromeIdentity* newIdentity = nil;
-    if (identities.count != 0) {
-      newIdentity = identities[0];
-    }
-    self.selectedIdentity = newIdentity;
+  if (!self.selectedIdentity ||
+      !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+    self.selectedIdentity = [self findDefaultSelectedIdentity];
     [self.delegate
         unifiedConsentViewMediatorDelegateNeedPrimaryButtonUpdate:self];
   }
