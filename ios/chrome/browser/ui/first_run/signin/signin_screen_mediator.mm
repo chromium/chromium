@@ -6,6 +6,7 @@
 
 #import "components/unified_consent/unified_consent_service.h"
 #include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
@@ -31,22 +32,27 @@
 @property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
 // Logger used to record sign in metrics.
 @property(nonatomic, strong) UserSigninLogger* logger;
-// Pref service to retrieve preference values.
-@property(nonatomic, assign) PrefService* prefService;
 // Manager for user consent.
 @property(nonatomic, assign)
     unified_consent::UnifiedConsentService* unifiedConsentService;
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
 @implementation SigninScreenMediator
 
-- (instancetype)initWithPrefService:(PrefService*)prefService
-              unifiedConsentService:(unified_consent::UnifiedConsentService*)
-                                        unifiedConsentService {
+- (instancetype)initWithAccountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                        unifiedConsentService:
+                            (unified_consent::UnifiedConsentService*)
+                                unifiedConsentService {
   self = [super init];
   if (self) {
-    _prefService = prefService;
+    DCHECK(accountManagerService);
+    DCHECK(unifiedConsentService);
+
+    _accountManagerService = accountManagerService;
     _unifiedConsentService = unifiedConsentService;
     _browserProviderObserver =
         std::make_unique<ChromeBrowserProviderObserverBridge>(self);
@@ -54,23 +60,24 @@
         std::make_unique<ChromeIdentityServiceObserverBridge>(self);
 
     _logger = [[FirstRunSigninLogger alloc]
-        initWithAccessPoint:signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE
-                promoAction:signin_metrics::PromoAction::
-                                PROMO_ACTION_NO_SIGNIN_PROMO
-                prefService:prefService];
+          initWithAccessPoint:signin_metrics::AccessPoint::
+                                  ACCESS_POINT_START_PAGE
+                  promoAction:signin_metrics::PromoAction::
+                                  PROMO_ACTION_NO_SIGNIN_PROMO
+        accountManagerService:accountManagerService];
   }
   return self;
 }
 
 - (void)dealloc {
-  DCHECK(!self.prefService);
   DCHECK(!self.unifiedConsentService);
+  DCHECK(!self.accountManagerService);
 }
 
 - (void)disconnect {
   [self.logger disconnect];
-  self.prefService = nullptr;
   self.unifiedConsentService = nullptr;
+  self.accountManagerService = nullptr;
 }
 
 - (void)startSignInWithAuthenticationFlow:
@@ -92,7 +99,7 @@
   if ([self.selectedIdentity isEqual:selectedIdentity])
     return;
   // nil is allowed only if there is no other identity.
-  DCHECK(selectedIdentity || !self.identityService->HasIdentities());
+  DCHECK(selectedIdentity || !self.accountManagerService->HasIdentities());
   _selectedIdentity = selectedIdentity;
 
   [self updateConsumer];
@@ -125,19 +132,13 @@
 #pragma mark - ChromeIdentityServiceObserver
 
 - (void)identityListChanged {
-  if (!self.prefService) {
+  if (!self.accountManagerService) {
     return;
   }
 
   if (!self.selectedIdentity ||
-      !self.identityService->IsValidIdentity(self.selectedIdentity)) {
-    NSArray* identities =
-        self.identityService->GetAllIdentities(self.prefService);
-    ChromeIdentity* newIdentity = nil;
-    if (identities.count != 0) {
-      newIdentity = identities[0];
-    }
-    self.selectedIdentity = newIdentity;
+      !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+    self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
   }
 }
 

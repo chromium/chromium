@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+class ChromeAccountManagerService;
 @class AuthenticationFlow;
 @class ChromeIdentity;
-class PrefService;
 @protocol SigninScreenConsumer;
 @protocol SigninScreenMediatorDelegate;
 
@@ -21,10 +21,11 @@ class UnifiedConsentService;
 @interface SigninScreenMediator : NSObject
 
 // The designated initializer.
-- (instancetype)initWithPrefService:(PrefService*)prefService
-              unifiedConsentService:
-                  (unified_consent::UnifiedConsentService*)unifiedConsentService
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAccountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                        unifiedConsentService:
+                            (unified_consent::UnifiedConsentService*)
+                                unifiedConsentService NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

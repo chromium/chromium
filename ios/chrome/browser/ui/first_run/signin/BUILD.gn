@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//components/unified_consent",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/unified_consent",
     "//ios/public/provider/chrome/browser:test_support",

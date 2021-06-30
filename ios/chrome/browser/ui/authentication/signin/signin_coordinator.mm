@@ -9,6 +9,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
@@ -43,9 +44,10 @@ using signin_metrics::PromoAction;
                                     accessPoint:(AccessPoint)accessPoint
                                     promoAction:(PromoAction)promoAction {
   UserSigninLogger* logger = [[UserSigninLogger alloc]
-      initWithAccessPoint:accessPoint
-              promoAction:promoAction
-              prefService:browser->GetBrowserState()->GetPrefs()];
+        initWithAccessPoint:accessPoint
+                promoAction:promoAction
+      accountManagerService:ChromeAccountManagerServiceFactory::
+                                GetForBrowserState(browser->GetBrowserState())];
   return [[UserSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
@@ -59,9 +61,10 @@ using signin_metrics::PromoAction;
                                                         browser:
                                                             (Browser*)browser {
   UserSigninLogger* logger = [[FirstRunSigninLogger alloc]
-      initWithAccessPoint:AccessPoint::ACCESS_POINT_START_PAGE
-              promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-              prefService:browser->GetBrowserState()->GetPrefs()];
+        initWithAccessPoint:AccessPoint::ACCESS_POINT_START_PAGE
+                promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+      accountManagerService:ChromeAccountManagerServiceFactory::
+                                GetForBrowserState(browser->GetBrowserState())];
   return [[UserSigninCoordinator alloc]
       initWithBaseNavigationController:navigationController
                                browser:browser
@@ -74,9 +77,10 @@ using signin_metrics::PromoAction;
         (UIViewController*)viewController
                                                 browser:(Browser*)browser {
   UserSigninLogger* logger = [[UpgradeSigninLogger alloc]
-      initWithAccessPoint:AccessPoint::ACCESS_POINT_SIGNIN_PROMO
-              promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-              prefService:browser->GetBrowserState()->GetPrefs()];
+        initWithAccessPoint:AccessPoint::ACCESS_POINT_SIGNIN_PROMO
+                promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+      accountManagerService:ChromeAccountManagerServiceFactory::
+                                GetForBrowserState(browser->GetBrowserState())];
   return [[UserSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
@@ -140,9 +144,10 @@ using signin_metrics::PromoAction;
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                     browser:(Browser*)browser {
-  if (!ios::GetChromeBrowserProvider()
-           ->GetChromeIdentityService()
-           ->HasIdentities()) {
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          browser->GetBrowserState());
+  if (!accountManagerService->HasIdentities()) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS);
     return nil;

@@ -9,6 +9,7 @@
 #include "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
@@ -70,9 +71,12 @@ class SigninScreenMediatorTest : public PlatformTest {
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     browser_state_ = TestChromeBrowserState::Builder().Build();
     mediator_ = [[SigninScreenMediator alloc]
-          initWithPrefService:browser_state_->GetPrefs()
-        unifiedConsentService:UnifiedConsentServiceFactory::GetForBrowserState(
-                                  browser_state_.get())];
+        initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                          GetForBrowserState(
+                                              browser_state_.get())
+                unifiedConsentService:UnifiedConsentServiceFactory::
+                                          GetForBrowserState(
+                                              browser_state_.get())];
     consumer_ = [[FakeSigninScreenConsumer alloc] init];
     identity_ = [FakeChromeIdentity identityWithEmail:@"test@email.com"
                                                gaiaID:@"gaiaID"

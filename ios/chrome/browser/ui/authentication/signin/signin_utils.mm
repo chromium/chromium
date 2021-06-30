@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -107,12 +109,10 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
     }
   }
 
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-
   // Don't show the promo if there are no identities.
-  NSArray* identities =
-      identity_service->GetAllIdentities(browser_state->GetPrefs());
+  ChromeAccountManagerService* account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  NSArray* identities = account_manager_service->GetAllIdentities();
   if (identities.count == 0)
     return false;
 
@@ -132,17 +132,16 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   return IsStrictSubset(last_known_gaia_id_list, identities);
 }
 
-void RecordVersionSeen(PrefService* pref_service,
+void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
                        const base::Version& current_version) {
-  DCHECK(pref_service);
+  DCHECK(account_manager_service);
   DCHECK(current_version.IsValid());
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                forKey:kDisplayedSSORecallForMajorVersionKey];
-  NSArray<ChromeIdentity*>* identities = ios::GetChromeBrowserProvider()
-                                             ->GetChromeIdentityService()
-                                             ->GetAllIdentities(pref_service);
+  NSArray<ChromeIdentity*>* identities =
+      account_manager_service->GetAllIdentities();
   NSSet<NSString*>* gaia_id_set = GaiaIdSetWithIdentities(identities);
   [defaults setObject:gaia_id_set.allObjects
                forKey:kLastShownAccountGaiaIdVersionKey];

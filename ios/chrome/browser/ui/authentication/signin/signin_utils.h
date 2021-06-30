@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+class ChromeAccountManagerService;
 class ChromeBrowserState;
 class PrefService;
 
@@ -25,7 +26,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 //   + increases the sign-in promo display count.
 //   + Gaia ids list.
 // Separated out into a discrete function to allow overriding when testing.
-void RecordVersionSeen(PrefService* pref_service,
+void RecordVersionSeen(ChromeAccountManagerService* account_manager_service,
                        const base::Version& current_version);
 
 // Returns a boolean indicating whether browser sign-in is allowed across the

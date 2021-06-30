@@ -10,6 +10,8 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
@@ -98,24 +100,22 @@
   PolicyWatcherBrowserAgent::FromBrowser(self.browser)
       ->AddObserver(_policyWatcherObserverBridge.get());
 
-  self.hadIdentitiesAtStartup = ios::GetChromeBrowserProvider()
-                                    ->GetChromeIdentityService()
-                                    ->HasIdentities();
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
+
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
   self.mediator = [[SigninScreenMediator alloc]
-        initWithPrefService:self.browser->GetBrowserState()->GetPrefs()
-      unifiedConsentService:UnifiedConsentServiceFactory::GetForBrowserState(
-                                self.browser->GetBrowserState())];
-  NSArray* identities =
-      ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
-          ->GetAllIdentities(self.browser->GetBrowserState()->GetPrefs());
-  ChromeIdentity* newIdentity = nil;
-  if (identities.count != 0) {
-    newIdentity = identities[0];
-  }
-  self.mediator.selectedIdentity = newIdentity;
+      initWithAccountManagerService:accountManagerService
+              unifiedConsentService:UnifiedConsentServiceFactory::
+                                        GetForBrowserState(
+                                            self.browser->GetBrowserState())];
+
+  self.mediator.selectedIdentity = accountManagerService->GetDefaultIdentity();
+  self.hadIdentitiesAtStartup = accountManagerService->HasIdentities();
+
   self.mediator.consumer = self.viewController;
   self.mediator.delegate = self;
   BOOL animated = self.baseNavigationController.topViewController != nil;

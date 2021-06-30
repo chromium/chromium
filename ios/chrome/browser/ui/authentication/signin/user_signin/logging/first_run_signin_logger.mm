@@ -34,8 +34,9 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
     LogSigninAccessPointStarted(self.accessPoint, self.promoAction);
     RecordSigninUserActionForAccessPoint(self.accessPoint, self.promoAction);
   }
-  if (self.prefService)
-    signin::RecordVersionSeen(self.prefService, version_info::GetVersion());
+  if (self.accountManagerService)
+    signin::RecordVersionSeen(self.accountManagerService,
+                              version_info::GetVersion());
 }
 
 @end

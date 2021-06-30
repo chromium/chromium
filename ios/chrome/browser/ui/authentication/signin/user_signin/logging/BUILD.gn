@@ -18,6 +18,7 @@ source_set("logging") {
     "//components/prefs",
     "//components/signin/public/base",
     "//components/version_info",
+    "//ios/chrome/browser/signin",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
   ]
