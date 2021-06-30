@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_table_view_controller.h"
 
+#import "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "components/autofill/core/common/autofill_features.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/cells/target_account_item.h"
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_metrics_recorder.h"
@@ -55,10 +57,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     saveCardModalDelegate;
 // Used to build and record metrics.
 @property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
-// Starting index in the SectionIdentifierContent for the legalMessages. Used to
-// query the corresponding SaveCardMessageWithLinks from legalMessages when
-// configuring the cell.
-@property(nonatomic, assign) int legalMessagesStartingIndex;
 
 // Prefs updated by InfobarSaveCardModalConsumer.
 // Cardholder name to be displayed.
@@ -190,18 +188,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.expirationYearItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
-  // Set legalMessagesStartingIndex right before adding any
-  // SaveCardMessageWithLinks TableViewTextLinkItems to the model.
-  self.legalMessagesStartingIndex =
-      [model numberOfItemsInSection:
-                 [model sectionForSectionIdentifier:SectionIdentifierContent]];
+  NSMutableString* joinedMessage = [[NSMutableString alloc] init];
+  BOOL shouldAddSpace = NO;
   for (SaveCardMessageWithLinks* message in self.legalMessages) {
-    TableViewTextLinkItem* legalMessageItem =
-        [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
-    legalMessageItem.text = message.messageText;
-    [model addItem:legalMessageItem
-        toSectionWithIdentifier:SectionIdentifierContent];
+    if (shouldAddSpace)
+      [joinedMessage appendString:@" "];
+    [joinedMessage appendString:message.messageText];
+    shouldAddSpace = YES;
   }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableAccountWalletStorage)) {
+    if (shouldAddSpace)
+      [joinedMessage appendString:@" "];
+    [joinedMessage appendString:l10n_util::GetNSString(
+                                    IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT)];
+  }
+  TableViewTextLinkItem* legalMessageItem =
+      [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
+  legalMessageItem.text = joinedMessage;
+  [model addItem:legalMessageItem
+      toSectionWithIdentifier:SectionIdentifierContent];
 
   if ([self.displayedTargetAccountEmail length] &&
       self.displayedTargetAccountAvatar != nil) {
@@ -311,18 +317,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     }
     case ItemTypeCardLegalMessage: {
-      NSUInteger legalMessageIndex =
-          indexPath.row - self.legalMessagesStartingIndex;
-      DCHECK(legalMessageIndex >= 0);
-      DCHECK(legalMessageIndex < self.legalMessages.count);
       TableViewTextLinkCell* linkCell =
           base::mac::ObjCCast<TableViewTextLinkCell>(cell);
-      SaveCardMessageWithLinks* message = self.legalMessages[legalMessageIndex];
-      [message.linkRanges enumerateObjectsUsingBlock:^(
-                              NSValue* rangeValue, NSUInteger i, BOOL* stop) {
-        [linkCell setLinkURL:message.linkURLs[i]
-                    forRange:rangeValue.rangeValue];
-      }];
+      for (SaveCardMessageWithLinks* message in self.legalMessages) {
+        [message.linkRanges enumerateObjectsUsingBlock:^(
+                                NSValue* rangeValue, NSUInteger i, BOOL* stop) {
+          [linkCell setLinkURL:message.linkURLs[i]
+                      forRange:rangeValue.rangeValue];
+        }];
+      }
       linkCell.delegate = self;
       linkCell.separatorInset =
           UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
