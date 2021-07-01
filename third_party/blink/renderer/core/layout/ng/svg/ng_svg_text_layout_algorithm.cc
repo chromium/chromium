@@ -833,9 +833,7 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
 float NGSvgTextLayoutAlgorithm::ScalingFactorAt(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items,
     wtf_size_t addressable_index) const {
-  return To<LayoutSVGInlineText>(
-             items[result_[addressable_index].item_index]->GetLayoutObject())
-      ->ScalingFactor();
+  return items[result_[addressable_index].item_index]->SvgScalingFactor();
 }
 
 bool NGSvgTextLayoutAlgorithm::IsFirstCharacterInTextPath(

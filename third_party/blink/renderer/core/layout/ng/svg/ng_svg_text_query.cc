@@ -123,9 +123,7 @@ float NGSvgTextQuery::SubStringLength(unsigned start_index,
       float inline_size = item->IsHorizontal()
                               ? item->SvgFragmentData()->rect.Width()
                               : item->SvgFragmentData()->rect.Height();
-      total_length +=
-          inline_size /
-          To<LayoutSVGInlineText>(item->GetLayoutObject())->ScalingFactor();
+      total_length += inline_size / item->SvgScalingFactor();
     }
     character_index += CodePointLength(item->Text(*items));
   }

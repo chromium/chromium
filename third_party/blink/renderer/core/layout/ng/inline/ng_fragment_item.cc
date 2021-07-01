@@ -339,22 +339,17 @@ void NGFragmentItem::SetSvgLineLocalRect(const PhysicalRect& unscaled_rect) {
 FloatRect NGFragmentItem::ObjectBoundingBox() const {
   if (Type() != kSvgText)
     return FloatRect(rect_);
-  const float scaling_factor =
-      To<LayoutSVGInlineText>(GetLayoutObject())->ScalingFactor();
-  DCHECK_GT(scaling_factor, 0.0f);
   FloatRect item_rect = SvgFragmentData()->rect;
   if (HasSvgTransformForBoundingBox())
     item_rect = BuildSvgTransformForBoundingBox().MapRect(item_rect);
-  item_rect.Scale(1 / scaling_factor);
+  item_rect.Scale(1 / SvgScalingFactor());
   return item_rect;
 }
 
 bool NGFragmentItem::Contains(const FloatPoint& position) const {
   if (Type() != kSvgText)
     return FloatRect(rect_).Contains(position);
-  const float scaling_factor =
-      To<LayoutSVGInlineText>(GetLayoutObject())->ScalingFactor();
-  DCHECK_GT(scaling_factor, 0.0f);
+  const float scaling_factor = SvgScalingFactor();
   FloatPoint scaled_position = position;
   scaled_position.Scale(scaling_factor, scaling_factor);
   FloatRect item_rect = SvgFragmentData()->rect;
@@ -651,6 +646,16 @@ AffineTransform NGFragmentItem::BuildSvgTransformForBoundingBox() const {
   transform.SetF(transform.F() + y);
   transform.Translate(-svg_data.rect.X(), -y);
   return transform;
+}
+
+float NGFragmentItem::SvgScalingFactor() const {
+  const auto* svg_inline_text =
+      DynamicTo<LayoutSVGInlineText>(GetLayoutObject());
+  if (!svg_inline_text)
+    return 1.0f;
+  const float scaling_factor = svg_inline_text->ScalingFactor();
+  DCHECK_GT(scaling_factor, 0.0f);
+  return scaling_factor;
 }
 
 String NGFragmentItem::ToString() const {
@@ -970,10 +975,7 @@ unsigned NGFragmentItem::TextOffsetForPoint(
       style.IsHorizontalWritingMode() ? point.left : point.top;
   if (const ShapeResultView* shape_result = TextShapeResult()) {
     float scaled_offset = point_in_line_direction.ToFloat();
-    if (Type() == kSvgText) {
-      scaled_offset *=
-          To<LayoutSVGInlineText>(GetLayoutObject())->ScalingFactor();
-    }
+    scaled_offset *= SvgScalingFactor();
     // TODO(layout-dev): Move caret logic out of ShapeResult into separate
     // support class for code health and to avoid this copy.
     return shape_result->CreateShapeResult()->CaretOffsetForHitTest(

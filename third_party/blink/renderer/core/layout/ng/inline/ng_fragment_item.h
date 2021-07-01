@@ -442,6 +442,10 @@ class CORE_EXPORT NGFragmentItem {
   // lengthAdjust=spacingAndGlyphs.
   AffineTransform BuildSvgTransformForBoundingBox() const;
 
+  // Returns a font scaling factor for SVG <text>.
+  // This returns 1 for an NGFragmentItem not for LayoutSVGInlineText.
+  float SvgScalingFactor() const;
+
   // Get a description of |this| for the debug purposes.
   String ToString() const;
 
