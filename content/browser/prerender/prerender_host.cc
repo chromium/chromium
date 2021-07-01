@@ -130,7 +130,6 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 
   // NavigationControllerDelegate
   void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override {}
-  void Stop() override { frame_tree_->StopLoading(); }
   bool IsBeingDestroyed() override { return false; }
   void NotifyBeforeFormRepostWarningShow() override {}
   void NotifyNavigationEntryCommitted(

@@ -2759,7 +2759,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   if (pending_entry_index_ == last_committed_entry_index_ &&
       !pending_entry_->IsRestored() &&
       pending_entry_->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK) {
-    delegate_->Stop();
+    frame_tree_.StopLoading();
 
     DiscardNonCommittedEntries();
     return;

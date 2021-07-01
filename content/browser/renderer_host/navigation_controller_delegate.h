@@ -25,7 +25,6 @@ class NavigationControllerDelegate {
 
   // Duplicates of WebContents methods.
   virtual void NotifyNavigationStateChanged(InvalidateTypes changed_flags) = 0;
-  virtual void Stop() = 0;
   virtual bool IsBeingDestroyed() = 0;
 
   // Methods from WebContentsImpl that NavigationControllerImpl needs to
