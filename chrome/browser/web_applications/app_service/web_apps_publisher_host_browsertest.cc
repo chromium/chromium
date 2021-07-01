@@ -28,6 +28,7 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -54,6 +55,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -435,6 +437,72 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PauseUnpause) {
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->paused,
             apps::mojom::OptionalBool::kFalse);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, GetMenuModel) {
+  auto CheckMenuItem = [](const crosapi::mojom::MenuItem& menu_item,
+                          const std::string& label,
+                          absl::optional<SkColor> color) {
+    EXPECT_EQ(menu_item.label, label);
+    if (color.has_value()) {
+      EXPECT_FALSE(menu_item.image.isNull());
+      EXPECT_EQ(menu_item.image.bitmap()->getColor(15, 15), color);
+    } else {
+      EXPECT_TRUE(menu_item.image.isNull());
+    }
+  };
+
+  const GURL app_url =
+      https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
+  const web_app::AppId app_id =
+      web_app::InstallWebAppFromPage(browser(), app_url);
+  crosapi::mojom::AppController& web_apps_publisher_host =
+      *apps::AppServiceProxyFactory::GetForProfile(profile())
+           ->WebAppsPublisherHostForTesting();
+
+  crosapi::mojom::MenuItemsPtr menu_items;
+  {
+    base::RunLoop run_loop;
+    web_apps_publisher_host.GetMenuModel(
+        app_id,
+        base::BindLambdaForTesting(
+            [&run_loop, &menu_items](crosapi::mojom::MenuItemsPtr items) {
+              menu_items = std::move(items);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  ASSERT_TRUE(menu_items);
+  ASSERT_EQ(6U, menu_items->items.size());
+  CheckMenuItem(*menu_items->items[0], "One", SK_ColorGREEN);
+  CheckMenuItem(*menu_items->items[1], "Two", SK_ColorBLUE);
+  CheckMenuItem(*menu_items->items[2], "Three", SK_ColorYELLOW);
+  CheckMenuItem(*menu_items->items[3], "Four", SK_ColorCYAN);
+  CheckMenuItem(*menu_items->items[4], "Five", SK_ColorMAGENTA);
+  CheckMenuItem(*menu_items->items[5], "Six", absl::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest,
+                       ExecuteContextMenuCommand) {
+  const GURL app_url =
+      https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
+  const web_app::AppId app_id =
+      web_app::InstallWebAppFromPage(browser(), app_url);
+  WebAppsPublisherHost& web_apps_publisher_host =
+      *apps::AppServiceProxyFactory::GetForProfile(profile())
+           ->WebAppsPublisherHostForTesting();
+
+  web_apps_publisher_host.ExecuteContextMenuCommand(app_id,
+                                                    /*item_id=*/5,
+                                                    display::kDefaultDisplayId);
+
+  EXPECT_EQ(BrowserList::GetInstance()
+                ->GetLastActive()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            https_server()->GetURL("/web_app_shortcuts/shortcuts.html#six"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, OpenNativeSettings) {
