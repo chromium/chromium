@@ -52,23 +52,26 @@ class LaunchQueue {
   setConsumer(consumer) {}
 }
 
+/** @typedef {{startIn: (string|FileSystemHandle)}} */
+let DraftFilePickerOptions;
+
 /**
  * https://wicg.github.io/native-file-system/#native-filesystem
- * @param {(!FilePickerOptions|undefined)} options
+ * @param {(!FilePickerOptions|DraftFilePickerOptions|undefined)} options
  * @return {!Promise<(!Array<!FileSystemFileHandle>)>}
  */
 window.showOpenFilePicker;
 
 /**
  * https://wicg.github.io/native-file-system/#native-filesystem
- * @param {(!FilePickerOptions|undefined)} options
+ * @param {(!FilePickerOptions|DraftFilePickerOptions|undefined)} options
  * @return {!Promise<(!FileSystemFileHandle)>}
  */
 window.showSaveFilePicker;
 
 /**
  * https://wicg.github.io/native-file-system/#native-filesystem
- * @param {(!FilePickerOptions|undefined)} options
+ * @param {(!FilePickerOptions|DraftFilePickerOptions|undefined)} options
  * @return {!Promise<(!FileSystemDirectoryHandle)>}
  */
 window.showDirectoryPicker;

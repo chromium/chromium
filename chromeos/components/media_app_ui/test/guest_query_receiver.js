@@ -57,6 +57,31 @@ function currentFile() {
 }
 
 /**
+ * Handlers for simple tests run in the guest that return a string result.
+ * @type{!Object<string, function(!TestMessageQueryData): Promise<string>>}
+ */
+const SIMPLE_TEST_QUERIES = {
+  requestSaveFile: async () => {
+    // Call requestSaveFile on the delegate.
+    const existingFile = assertLastReceivedFileList().item(0);
+    if (!existingFile) {
+      return 'requestSaveFile failed, no file loaded';
+    }
+    const pickedFile = await DELEGATE.requestSaveFile(
+        existingFile.name, existingFile.mimeType);
+    return assertCast(pickedFile.token).toString();
+  },
+  getExportFile: async (data) => {
+    const existingFile = assertLastReceivedFileList().item(0);
+    if (!existingFile) {
+      return 'getExportFile failed, no file loaded';
+    }
+    const pickedFile = await existingFile.getExportFile(data.simpleArgs.accept);
+    return pickedFile.token.toString();
+  }
+};
+
+/**
  * Acts on received TestMessageQueryData.
  * @param {!TestMessageQueryData} data
  * @return {!Promise<!TestMessageResponseData>}
@@ -78,6 +103,8 @@ async function runTestQuery(data) {
         result = typeError.message;
       }
     }
+  } else if (data.simple !== undefined && data.simple in SIMPLE_TEST_QUERIES) {
+    result = await SIMPLE_TEST_QUERIES[data.simple](data);
   } else if (data.navigate !== undefined) {
     // Simulate a user navigating to the next/prev file.
     if (data.navigate.direction === 'next') {
@@ -131,16 +158,6 @@ async function runTestQuery(data) {
       }
     } catch (/** @type{!Error} */ error) {
       result = `renameOriginalFile failed Error: ${error}`;
-    }
-  } else if (data.requestSaveFile) {
-    // Call requestSaveFile on the delegate.
-    const existingFile = assertLastReceivedFileList().item(0);
-    if (!existingFile) {
-      result = 'requestSaveFile failed, no file loaded';
-    } else {
-      const pickedFile = await DELEGATE.requestSaveFile(
-          existingFile.name, existingFile.mimeType);
-      result = assertCast(pickedFile.token).toString();
     }
   } else if (data.saveAs) {
     // Call save as on the first item in the last received file list, simulating
