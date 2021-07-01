@@ -1257,6 +1257,11 @@
         # are fixed.
         'swarming': {
           'shards': 30,
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+            },
+          ],
         },
       },
       'android-arm64-proguard-rel': {
