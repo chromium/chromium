@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/protocol/model_type_store_schema_descriptor.pb.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -26,6 +28,22 @@ const int64_t kInvalidSchemaVersion = -1;
 const int64_t ModelTypeStoreBackend::kLatestSchemaVersion = 1;
 const char ModelTypeStoreBackend::kDBSchemaDescriptorRecordId[] =
     "_mts_schema_descriptor";
+
+namespace {
+
+void LogDbStatusByCallingSiteIfNeeded(const std::string& calling_site,
+                                      leveldb::Status status) {
+  if (status.ok()) {
+    return;
+  }
+  const std::string histogram_name =
+      "Sync.ModelTypeStoreBackendError." + calling_site;
+  base::UmaHistogramEnumeration(histogram_name,
+                                leveldb_env::GetLevelDBStatusUMAValue(status),
+                                leveldb_env::LEVELDB_STATUS_MAX);
+}
+
+}  // namespace
 
 ModelTypeStoreBackend::CustomOnTaskRunnerDeleter::CustomOnTaskRunnerDeleter(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -85,6 +103,7 @@ absl::optional<ModelError> ModelTypeStoreBackend::Init(
     if (status.ok())
       status = OpenDatabase(path_str, env_.get());
   }
+  LogDbStatusByCallingSiteIfNeeded("Init", status);
   if (!status.ok()) {
     DCHECK(db_ == nullptr);
     return ModelError(FROM_HERE, status.ToString());
@@ -159,6 +178,7 @@ absl::optional<ModelError> ModelTypeStoreBackend::ReadRecordsWithPrefix(
   for (const std::string& id : id_list) {
     key = prefix + id;
     leveldb::Status status = db_->Get(read_options, key, &value);
+    LogDbStatusByCallingSiteIfNeeded("ReadRecords", status);
     if (status.ok()) {
       record_list->emplace_back(id, value);
     } else if (status.IsNotFound()) {
@@ -187,6 +207,7 @@ absl::optional<ModelError> ModelTypeStoreBackend::ReadAllRecordsWithPrefix(
     key.remove_prefix(prefix_slice.size());
     record_list->emplace_back(key.ToString(), iter->value().ToString());
   }
+  LogDbStatusByCallingSiteIfNeeded("ReadAllRecords", iter->status());
   return iter->status().ok() ? absl::nullopt
                              : absl::optional<ModelError>(
                                    {FROM_HERE, iter->status().ToString()});
@@ -201,6 +222,7 @@ absl::optional<ModelError> ModelTypeStoreBackend::WriteModifications(
       db_->Write(leveldb::WriteOptions(), write_batch.get());
   if (outcome)
     *outcome = status;
+  LogDbStatusByCallingSiteIfNeeded("WriteModifications", status);
   return status.ok()
              ? absl::nullopt
              : absl::optional<ModelError>({FROM_HERE, status.ToString()});
@@ -223,6 +245,7 @@ ModelTypeStoreBackend::DeleteDataAndMetadataForPrefix(
     write_batch.Delete(key);
   }
   leveldb::Status status = db_->Write(leveldb::WriteOptions(), &write_batch);
+  LogDbStatusByCallingSiteIfNeeded("DeleteData", status);
   return status.ok()
              ? absl::nullopt
              : absl::optional<ModelError>({FROM_HERE, status.ToString()});
@@ -250,6 +273,7 @@ int64_t ModelTypeStoreBackend::GetStoreVersion() {
   if (status.IsNotFound()) {
     return 0;
   } else if (!status.ok() || !schema_descriptor.ParseFromString(value)) {
+    LogDbStatusByCallingSiteIfNeeded("GetStoreVersion", status);
     return kInvalidSchemaVersion;
   }
   return schema_descriptor.version_number();
