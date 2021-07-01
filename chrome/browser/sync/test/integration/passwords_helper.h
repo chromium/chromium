@@ -62,13 +62,10 @@ std::vector<password_manager::InsecureCredential> GetAllInsecureCredentials(
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
     password_manager::PasswordStoreInterface* store);
 
-// Removes the login held in |form| from the password store |store|.  This
-// method blocks until the operation is complete.
-void RemoveLogin(password_manager::PasswordStore* store,
-                 const password_manager::PasswordForm& form);
-
-// Removes all password forms from the password store |store|.
-void RemoveLogins(password_manager::PasswordStore* store);
+// Removes all password forms from the password store |store|. This is an async
+// method that return immediately and does *not* block until the operation is
+// finished on the background thread.
+void RemoveLogins(password_manager::PasswordStoreInterface* store);
 
 // Removes passed insecure credential from the |store|.
 void RemoveInsecureCredentials(

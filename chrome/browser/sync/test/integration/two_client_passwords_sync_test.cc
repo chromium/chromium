@@ -304,8 +304,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, DeleteAll) {
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
-  RemoveLogins(GetPasswordStore(1));
-  RemoveLogins(GetVerifierPasswordStore());
+  RemoveLogins(GetProfilePasswordStoreInterface(1));
+  RemoveLogins(GetVerifierProfilePasswordStoreInterface());
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(0).Wait());
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
   ASSERT_EQ(0, GetVerifierPasswordCount());

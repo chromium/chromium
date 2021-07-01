@@ -80,7 +80,7 @@ void PasswordsSyncPerfTest::UpdateLogins(int profile) {
 }
 
 void PasswordsSyncPerfTest::RemoveLogins(int profile) {
-  passwords_helper::RemoveLogins(GetPasswordStore(profile));
+  passwords_helper::RemoveLogins(GetProfilePasswordStoreInterface(profile));
 }
 
 password_manager::PasswordForm PasswordsSyncPerfTest::NextLogin() {

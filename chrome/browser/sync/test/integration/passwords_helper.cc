@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -235,21 +236,11 @@ std::vector<InsecureCredential> GetAllInsecureCredentials(
   return consumer.WaitForResult();
 }
 
-void RemoveLogin(PasswordStore* store, const PasswordForm& form) {
-  ASSERT_TRUE(store);
-  base::WaitableEvent wait_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  store->RemoveLogin(form);
-  store->ScheduleTask(base::BindOnce(&PasswordStoreCallback, &wait_event));
-  wait_event.Wait();
-}
-
-void RemoveLogins(PasswordStore* store) {
-  std::vector<std::unique_ptr<PasswordForm>> forms = GetLogins(store);
-  for (const auto& form : forms) {
-    RemoveLogin(store, *form);
-  }
+void RemoveLogins(PasswordStoreInterface* store) {
+  // Null Time values enforce unbounded deletion in both direction
+  store->RemoveLoginsCreatedBetween(/*delete_begin=*/base::Time(),
+                                    /*delete_end=*/base::Time::Max(),
+                                    /*completion=*/base::NullCallback());
 }
 
 void RemoveInsecureCredentials(PasswordStore* store,
