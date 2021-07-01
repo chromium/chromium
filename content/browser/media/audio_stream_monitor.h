@@ -55,10 +55,6 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // any outstanding poll callbacks.
   void RenderProcessGone(int render_process_id);
 
-  // Adds/Removes Audible clients.
-  void AddAudibleClient();
-  void RemoveAudibleClient();
-
   // Starts or stops monitoring respectively for the stream owned by the
   // specified renderer.  Safe to call from any thread.
   static void StartMonitoringStream(int render_process_id,
@@ -85,8 +81,24 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
 
   void set_is_currently_audible_for_testing(bool value) { is_audible_ = value; }
 
+  // Class to help automatically remove audible client.
+  class CONTENT_EXPORT AudibleClientRegistration {
+   public:
+    explicit AudibleClientRegistration(
+        AudioStreamMonitor* audio_stream_monitor);
+    ~AudibleClientRegistration();
+
+   private:
+    AudioStreamMonitor* audio_stream_monitor_;
+  };
+
+  // Registers an audible client, which will be unregistered when the returned
+  // AudibleClientRegistration is released.
+  std::unique_ptr<AudibleClientRegistration> RegisterAudibleClient();
+
  private:
   friend class AudioStreamMonitorTest;
+  friend class AudibleClientRegistration;
 
   enum {
     // Minimum amount of time to hold a tab indicator on after it becomes
@@ -117,7 +129,9 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   void MaybeToggle();
   void UpdateStreams();
 
-  // void OnStreamRemoved();
+  // Adds/Removes Audible clients.
+  void AddAudibleClient();
+  void RemoveAudibleClient();
 
   // The WebContents instance to receive indicator toggle notifications.  This
   // pointer should be valid for the lifetime of AudioStreamMonitor.

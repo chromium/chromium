@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_power_experiment_manager.h"
 #include "content/browser/media/session/media_session_controllers_manager.h"
 #include "content/common/content_export.h"
@@ -215,7 +216,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
 
     // Helps monitor audio stream when not using AudioService.
     bool uses_audio_service_ = true;
-    bool audible_client_added_ = false;
+    std::unique_ptr<AudioStreamMonitor::AudibleClientRegistration>
+        audio_client_registration_;
   };
 
   using MediaPlayerHostImplMap =

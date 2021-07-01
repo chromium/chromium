@@ -28,6 +28,16 @@ AudioStreamMonitor* GetMonitorForRenderFrame(int render_process_id,
 
 }  // namespace
 
+AudioStreamMonitor::AudibleClientRegistration::AudibleClientRegistration(
+    AudioStreamMonitor* audio_stream_monitor)
+    : audio_stream_monitor_(audio_stream_monitor) {
+  audio_stream_monitor_->AddAudibleClient();
+}
+
+AudioStreamMonitor::AudibleClientRegistration::~AudibleClientRegistration() {
+  audio_stream_monitor_->RemoveAudibleClient();
+}
+
 bool AudioStreamMonitor::StreamID::operator<(const StreamID& other) const {
   return std::tie(render_process_id, render_frame_id, stream_id) <
          std::tie(other.render_process_id, other.render_frame_id,
@@ -47,7 +57,9 @@ AudioStreamMonitor::AudioStreamMonitor(WebContents* contents)
   DCHECK(web_contents_);
 }
 
-AudioStreamMonitor::~AudioStreamMonitor() {}
+AudioStreamMonitor::~AudioStreamMonitor() {
+  DCHECK_EQ(audible_clients_, 0);
+}
 
 bool AudioStreamMonitor::WasRecentlyAudible() const {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -75,6 +87,12 @@ void AudioStreamMonitor::RenderProcessGone(int render_process_id) {
                   return entry.first.render_process_id == render_process_id;
                 });
   UpdateStreams();
+}
+
+std::unique_ptr<AudioStreamMonitor::AudibleClientRegistration>
+AudioStreamMonitor::RegisterAudibleClient() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return std::make_unique<AudibleClientRegistration>(this);
 }
 
 void AudioStreamMonitor::AddAudibleClient() {

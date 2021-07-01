@@ -403,11 +403,11 @@ TEST_F(AudioStreamMonitorTest, OneAudibleClient) {
 
   ExpectRecentlyAudibleChangeNotification(true);
   ExpectCurrentlyAudibleChangeNotification(true);
-  monitor_->AddAudibleClient();
+  auto registration = monitor_->RegisterAudibleClient();
   ExpectIsCurrentlyAudible();
 
   ExpectCurrentlyAudibleChangeNotification(false);
-  monitor_->RemoveAudibleClient();
+  registration.reset();
   ExpectNotCurrentlyAudible();
 }
 
@@ -417,20 +417,20 @@ TEST_F(AudioStreamMonitorTest, MultipleAudibleClients) {
   // Add one client and the tab becomes audible.
   ExpectRecentlyAudibleChangeNotification(true);
   ExpectCurrentlyAudibleChangeNotification(true);
-  monitor_->AddAudibleClient();
+  auto registration1 = monitor_->RegisterAudibleClient();
   ExpectIsCurrentlyAudible();
 
   // Add another client and the tab remains audible.
-  monitor_->AddAudibleClient();
+  auto registration2 = monitor_->RegisterAudibleClient();
   ExpectIsCurrentlyAudible();
 
   // Removes one client and the tab remains audible.
-  monitor_->RemoveAudibleClient();
+  registration1.reset();
   ExpectIsCurrentlyAudible();
 
   // Removes another client and the tab is not audible.
   ExpectCurrentlyAudibleChangeNotification(false);
-  monitor_->RemoveAudibleClient();
+  registration2.reset();
   ExpectNotCurrentlyAudible();
 }
 
@@ -441,7 +441,7 @@ TEST_F(AudioStreamMonitorTest, AudibleClientAndStream) {
   // Add one client and the tab becomes audible.
   ExpectRecentlyAudibleChangeNotification(true);
   ExpectCurrentlyAudibleChangeNotification(true);
-  monitor_->AddAudibleClient();
+  auto registration = monitor_->RegisterAudibleClient();
   ExpectIsCurrentlyAudible();
 
   // The stream becomes audible and the tab remains audible.
@@ -449,7 +449,7 @@ TEST_F(AudioStreamMonitorTest, AudibleClientAndStream) {
   ExpectIsCurrentlyAudible();
 
   // Remove the client and the tab remains audible.
-  monitor_->RemoveAudibleClient();
+  registration.reset();
   ExpectIsCurrentlyAudible();
 
   // The stream becomes not audible and the tab is not audible.

@@ -14,7 +14,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/media/audible_metrics.h"
-#include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -318,13 +317,7 @@ MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       media_web_contents_observer_(media_web_contents_observer) {}
 
 MediaWebContentsObserver::MediaPlayerObserverHostImpl::
-    ~MediaPlayerObserverHostImpl() {
-  if (audible_client_added_) {
-    media_web_contents_observer_->web_contents_impl()
-        ->audio_stream_monitor()
-        ->RemoveAudibleClient();
-  }
-}
+    ~MediaPlayerObserverHostImpl() = default;
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     BindMediaPlayerObserverReceiver(
@@ -460,12 +453,10 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
   auto* audio_stream_monitor =
       media_web_contents_observer_->web_contents_impl()->audio_stream_monitor();
 
-  if (should_add_client && !audible_client_added_) {
-    audio_stream_monitor->AddAudibleClient();
-    audible_client_added_ = true;
-  } else if (!should_add_client && audible_client_added_) {
-    audio_stream_monitor->RemoveAudibleClient();
-    audible_client_added_ = false;
+  if (should_add_client && !audio_client_registration_) {
+    audio_client_registration_ = audio_stream_monitor->RegisterAudibleClient();
+  } else if (!should_add_client && audio_client_registration_) {
+    audio_client_registration_.reset();
   }
 }
 
