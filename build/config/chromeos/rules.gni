@@ -497,7 +497,7 @@ template("generate_skylab_runner_script") {
       deps += invoker.deps
     }
 
-    data = []
+    data = [ generated_script ]
     if (defined(invoker.data)) {
       data += invoker.data
     }
