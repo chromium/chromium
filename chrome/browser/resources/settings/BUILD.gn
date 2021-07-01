@@ -118,7 +118,7 @@ preprocess_if_expr("preprocess") {
     "autofill_page/multi_store_password_ui_entry.js",
     "autofill_page/password_check_behavior.js",
     "autofill_page/password_manager_proxy.js",
-    "autofill_page/show_password_behavior.js",
+    "autofill_page/show_password_mixin.js",
     "base_mixin.js",
     "chrome_cleanup_page/chrome_cleanup_proxy.js",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js",

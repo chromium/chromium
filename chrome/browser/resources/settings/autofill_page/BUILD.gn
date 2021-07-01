@@ -41,7 +41,7 @@ js_type_check("closure_compile") {
     ":passwords_section",
     ":payments_list",
     ":payments_section",
-    ":show_password_behavior",
+    ":show_password_mixin",
     ":upi_id_list_entry",
   ]
 }
@@ -171,7 +171,7 @@ js_library("password_check_list_item") {
 
 js_library("password_edit_dialog") {
   deps = [
-    ":show_password_behavior",
+    ":show_password_mixin",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
@@ -212,7 +212,7 @@ js_library("password_remove_confirmation_dialog") {
 js_library("password_list_item") {
   deps = [
     ":blocking_request_manager",
-    ":show_password_behavior",
+    ":show_password_mixin",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
@@ -358,7 +358,7 @@ js_library("payments_section") {
   externs_list = [ "$externs_path/autofill_private.js" ]
 }
 
-js_library("show_password_behavior") {
+js_library("show_password_mixin") {
   deps = [
     ":blocking_request_manager",
     ":multi_store_password_ui_entry",

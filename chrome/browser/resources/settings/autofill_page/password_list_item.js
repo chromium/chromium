@@ -16,11 +16,11 @@ import '../site_favicon.js';
 import './passwords_shared_css.js';
 
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {ShowPasswordBehavior, ShowPasswordBehaviorInterface} from './show_password_behavior.js';
+import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
 /**
  * @typedef {!Event<!{target: !HTMLElement, listItem:
@@ -28,14 +28,12 @@ import {ShowPasswordBehavior, ShowPasswordBehaviorInterface} from './show_passwo
  */
 export let PasswordMoreActionsClickedEvent;
 
-
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {ShowPasswordBehaviorInterface}
+ * @implements {ShowPasswordMixinInterface}
  */
-const PasswordListItemElementBase =
-    mixinBehaviors([ShowPasswordBehavior], PolymerElement);
+const PasswordListItemElementBase = ShowPasswordMixin(PolymerElement);
 
 /** @polymer */
 export class PasswordListItemElement extends PasswordListItemElementBase {

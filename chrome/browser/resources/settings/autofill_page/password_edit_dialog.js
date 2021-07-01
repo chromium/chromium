@@ -25,16 +25,16 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import {ShowPasswordBehavior, ShowPasswordBehaviorInterface} from './show_password_behavior.js';
+import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {ShowPasswordBehaviorInterface}
+ * @implements {ShowPasswordMixinInterface}
  * @implements {I18nBehaviorInterface}
  */
 const PasswordEditDialogElementBase =
-    mixinBehaviors([I18nBehavior, ShowPasswordBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], ShowPasswordMixin(PolymerElement));
 
 /** @polymer */
 class PasswordEditDialogElement extends PasswordEditDialogElementBase {
