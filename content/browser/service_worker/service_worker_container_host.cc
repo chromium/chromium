@@ -1411,7 +1411,7 @@ void ServiceWorkerContainerHost::RegistrationComplete(
     return;
   }
 
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id);
   // ServiceWorkerRegisterJob calls its completion callback, which results in
   // this function being called, while the registration is live.

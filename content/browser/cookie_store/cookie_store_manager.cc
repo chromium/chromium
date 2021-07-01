@@ -167,7 +167,7 @@ void CookieStoreManager::AddSubscriptions(
   // async call completes. blink::CookieStoreManager hangs onto the Blink side
   // of the Service Worker's registration. So, the registration will be live if
   // the call's result is received.
-  ServiceWorkerRegistration* service_worker_registration =
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   // If the calling blink::CookieStoreManager instance goes away (for example,
@@ -263,7 +263,7 @@ void CookieStoreManager::RemoveSubscriptions(
   // async call completes. blink::CookieStoreManager hangs onto the Blink side
   // of the Service Worker's registration. So, the registration will be live if
   // the call's result is received.
-  ServiceWorkerRegistration* service_worker_registration =
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   // If the calling blink::CookieStoreManager instance goes away (for example,

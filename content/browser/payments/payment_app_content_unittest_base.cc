@@ -205,7 +205,7 @@ PaymentManager* PaymentAppContentUnitTestBase::CreatePaymentManager(
 
   // Ensure the worker used for installation has stopped.
   called = false;
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       worker_helper_->context()->GetLiveRegistration(registration_id);
   EXPECT_TRUE(registration);
   EXPECT_TRUE(registration->active_version());

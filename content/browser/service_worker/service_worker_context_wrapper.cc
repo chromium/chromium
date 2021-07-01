@@ -837,8 +837,8 @@ ServiceWorkerContextWrapper::GetRunningServiceWorkerInfos() {
   return running_service_workers_;
 }
 
-ServiceWorkerRegistration* ServiceWorkerContextWrapper::GetLiveRegistration(
-    int64_t registration_id) {
+scoped_refptr<ServiceWorkerRegistration>
+ServiceWorkerContextWrapper::GetLiveRegistration(int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context_core_)
     return nullptr;

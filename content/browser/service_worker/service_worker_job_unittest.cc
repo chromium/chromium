@@ -1404,7 +1404,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
                                          int64_t resource_id) {
     ServiceWorkerVersion* version = context()->GetLiveVersion(version_id);
     ASSERT_TRUE(version);
-    ServiceWorkerRegistration* registration =
+    scoped_refptr<ServiceWorkerRegistration> registration =
         context()->GetLiveRegistration(version->registration_id());
     ASSERT_TRUE(registration);
     GURL script = version->script_url();

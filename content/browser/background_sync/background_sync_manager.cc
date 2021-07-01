@@ -784,7 +784,7 @@ void BackgroundSyncManager::RegisterCheckIfHasMainFrame(
     StatusAndRegistrationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ServiceWorkerRegistration* sw_registration =
+  scoped_refptr<ServiceWorkerRegistration> sw_registration =
       service_worker_context_->GetLiveRegistration(sw_registration_id);
   if (!sw_registration || !sw_registration->active_version()) {
     RecordFailureAndPostError(GetBackgroundSyncType(options),
@@ -836,7 +836,7 @@ void BackgroundSyncManager::RegisterImpl(
     return;
   }
 
-  ServiceWorkerRegistration* sw_registration =
+  scoped_refptr<ServiceWorkerRegistration> sw_registration =
       service_worker_context_->GetLiveRegistration(sw_registration_id);
   if (!sw_registration || !sw_registration->active_version()) {
     RecordFailureAndPostError(GetBackgroundSyncType(options),
@@ -876,7 +876,7 @@ void BackgroundSyncManager::RegisterDidAskForPermission(
   }
   DCHECK_EQ(permission_statuses.first, PermissionStatus::GRANTED);
 
-  ServiceWorkerRegistration* sw_registration =
+  scoped_refptr<ServiceWorkerRegistration> sw_registration =
       service_worker_context_->GetLiveRegistration(sw_registration_id);
   if (!sw_registration || !sw_registration->active_version()) {
     // The service worker was shut down in the interim.
@@ -978,7 +978,7 @@ void BackgroundSyncManager::RegisterDidGetDelay(
   if (registration.sync_type() == BackgroundSyncType::PERIODIC)
     registration.set_delay_until(clock_->Now() + delay);
 
-  ServiceWorkerRegistration* sw_registration =
+  scoped_refptr<ServiceWorkerRegistration> sw_registration =
       service_worker_context_->GetLiveRegistration(sw_registration_id);
   if (!sw_registration || !sw_registration->active_version()) {
     // The service worker was shut down in the interim.

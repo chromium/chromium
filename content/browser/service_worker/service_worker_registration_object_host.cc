@@ -65,7 +65,7 @@ void ExecuteUpdate(base::WeakPtr<ServiceWorkerContextCore> context,
     return;
   }
 
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context->GetLiveRegistration(registration_id);
   if (!registration) {
     // The service worker is no longer running, so update() won't be rejected.
@@ -77,7 +77,7 @@ void ExecuteUpdate(base::WeakPtr<ServiceWorkerContextCore> context,
   }
 
   context->UpdateServiceWorker(
-      registration, force_bypass_cache, skip_script_comparison,
+      registration.get(), force_bypass_cache, skip_script_comparison,
       std::move(outside_fetch_client_settings_object), std::move(callback));
 }
 

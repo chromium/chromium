@@ -105,7 +105,7 @@ bool PrepareExtendableMessageEventFromClient(
   // Reset |registration->self_update_delay| iff postMessage is coming from a
   // client, to prevent workers from postMessage to another version to reset
   // the delay (https://crbug.com/805496).
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context->GetLiveRegistration(registration_id);
   DCHECK(registration) << "running workers should have a live registration";
   registration->set_self_update_delay(base::TimeDelta());

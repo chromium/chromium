@@ -290,8 +290,11 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   }
 
   // This class maintains collections of live instances, this class
-  // does not own these object or influence their lifetime.
-  ServiceWorkerRegistration* GetLiveRegistration(int64_t registration_id);
+  // does not own these object or influence their lifetime.  It returns
+  // a scoped_refptr<>, however, as the caller must keep the registration
+  // alive while operating on it.
+  scoped_refptr<ServiceWorkerRegistration> GetLiveRegistration(
+      int64_t registration_id);
   void AddLiveRegistration(ServiceWorkerRegistration* registration);
   // RemoveLiveRegistration removes registration from |live_registrations_|
   // and notifies all observers of the id of the registration removed.

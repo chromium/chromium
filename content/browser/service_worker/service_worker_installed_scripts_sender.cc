@@ -203,7 +203,7 @@ void ServiceWorkerInstalledScriptsSender::Abort(
 
       // Delete the registration data since the data was corrupted.
       if (owner_->context()) {
-        ServiceWorkerRegistration* registration =
+        scoped_refptr<ServiceWorkerRegistration> registration =
             owner_->context()->GetLiveRegistration(owner_->registration_id());
         DCHECK(registration);
         // Check if the registation is still alive. The registration may have

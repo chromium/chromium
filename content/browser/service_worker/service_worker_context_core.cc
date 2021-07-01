@@ -733,8 +733,8 @@ bool ServiceWorkerContextCore::IsValidRegisterRequest(
   return true;
 }
 
-ServiceWorkerRegistration* ServiceWorkerContextCore::GetLiveRegistration(
-    int64_t id) {
+scoped_refptr<ServiceWorkerRegistration>
+ServiceWorkerContextCore::GetLiveRegistration(int64_t id) {
   auto it = live_registrations_.find(id);
   return (it != live_registrations_.end()) ? it->second : nullptr;
 }
@@ -978,7 +978,7 @@ void ServiceWorkerContextCore::OnControlleeRemoved(
 void ServiceWorkerContextCore::OnNoControllees(ServiceWorkerVersion* version) {
   DCHECK_EQ(this, version->context().get());
 
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       GetLiveRegistration(version->registration_id());
   if (registration)
     registration->OnNoControllees(version);

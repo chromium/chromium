@@ -627,7 +627,7 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
       // postMessage() between themselves to reset the delay via message event.
       // postMessage() resets the delay in ServiceWorkerObjectHost, iff it
       // didn't come from a service worker.
-      ServiceWorkerRegistration* registration =
+      scoped_refptr<ServiceWorkerRegistration> registration =
           context_->GetLiveRegistration(registration_id_);
       DCHECK(registration) << "running workers should have a live registration";
       registration->set_self_update_delay(base::TimeDelta());
@@ -786,7 +786,7 @@ void ServiceWorkerVersion::AddControllee(
   embedded_worker_->UpdateForegroundPriority();
   ClearTick(&no_controllees_time_);
 
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id_);
   if (registration) {
     registration->set_self_update_delay(base::TimeDelta());
@@ -1047,7 +1047,7 @@ void ServiceWorkerVersion::InitializeGlobalScope(
   receiver_.Bind(service_worker_host_.InitWithNewEndpointAndPassReceiver());
 
   scoped_refptr<ServiceWorkerRegistration> registration =
-      base::WrapRefCounted(context_->GetLiveRegistration(registration_id_));
+      context_->GetLiveRegistration(registration_id_);
   // The registration must exist since we keep a reference to it during
   // service worker startup.
   DCHECK(registration);
@@ -1352,7 +1352,7 @@ void ServiceWorkerVersion::ClaimClients(ClaimClientsCallback callback) {
     return;
   }
 
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id_);
   // Registration must be kept alive by ServiceWorkerGlobalScope#registration.
   if (!registration) {
@@ -1625,7 +1625,7 @@ void ServiceWorkerVersion::SkipWaiting(SkipWaitingCallback callback) {
     std::move(callback).Run(false);
     return;
   }
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id_);
   // TODO(leonhsl): Here we should be guaranteed a registration since
   // ServiceWorkerGlobalScope#registration should be keeping the registration
@@ -2189,7 +2189,7 @@ void ServiceWorkerVersion::MarkIfStale() {
     return;
   if (update_timer_.IsRunning() || !stale_time_.is_null())
     return;
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id_);
   if (!registration || registration->active_version() != this)
     return;
@@ -2317,7 +2317,7 @@ void ServiceWorkerVersion::CleanUpExternalRequest(
 void ServiceWorkerVersion::OnNoWorkInBrowser() {
   DCHECK(!HasWorkInBrowser());
   if (context_ && worker_is_idle_on_renderer_) {
-    ServiceWorkerRegistration* registration =
+    scoped_refptr<ServiceWorkerRegistration> registration =
         context_->GetLiveRegistration(registration_id());
     if (registration)
       registration->OnNoWork(this);

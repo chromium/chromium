@@ -1100,7 +1100,7 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
         pushed_registrations.insert(registration_data->registration_id).second;
     DCHECK(inserted);
 
-    ServiceWorkerRegistration* registration =
+    scoped_refptr<ServiceWorkerRegistration> registration =
         context_->GetLiveRegistration(registration_data->registration_id);
     if (registration) {
       infos.push_back(registration->GetInfo());

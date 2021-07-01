@@ -311,7 +311,7 @@ void PushMessagingManager::Subscribe(
   data.options = std::move(options);
   data.user_gesture = user_gesture;
 
-  ServiceWorkerRegistration* service_worker_registration =
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           data.service_worker_registration_id);
   if (!service_worker_registration ||
@@ -638,7 +638,7 @@ void PushMessagingManager::SendSubscriptionSuccess(
 void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
                                        UnsubscribeCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  ServiceWorkerRegistration* service_worker_registration =
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   if (!service_worker_registration) {
@@ -792,7 +792,7 @@ void PushMessagingManager::DidGetSubscription(
         break;
       }
 
-      ServiceWorkerRegistration* registration =
+      scoped_refptr<ServiceWorkerRegistration> registration =
           service_worker_context_->GetLiveRegistration(
               service_worker_registration_id);
       if (!registration) {

@@ -137,7 +137,7 @@ void ServiceWorkerContextWatcher::SendRegistrationInfo(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::unique_ptr<std::vector<ServiceWorkerRegistrationInfo>> registrations =
       std::make_unique<std::vector<ServiceWorkerRegistrationInfo>>();
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id);
   if (registration) {
     registrations->push_back(registration->GetInfo());

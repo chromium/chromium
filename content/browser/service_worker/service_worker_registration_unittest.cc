@@ -1083,7 +1083,7 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
   info->receiver.reset();
 
   // Get registration and set |self_update_delay| to zero.
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context()->GetLiveRegistration(registration_id);
   ASSERT_TRUE(registration);
   registration->set_self_update_delay(base::TimeDelta());
@@ -1253,20 +1253,20 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, SetVersionAttributes) {
       std::make_unique<MockServiceWorkerRegistrationObject>(
           std::move(info->receiver));
 
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context()->GetLiveRegistration(registration_id);
   ASSERT_NE(nullptr, registration);
   const int64_t version_1_id = 1L;
   const int64_t version_2_id = 2L;
   scoped_refptr<ServiceWorkerVersion> version_1 =
       base::MakeRefCounted<ServiceWorkerVersion>(
-          registration, kScriptUrl, blink::mojom::ScriptType::kClassic,
+          registration.get(), kScriptUrl, blink::mojom::ScriptType::kClassic,
           version_1_id,
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
           context()->AsWeakPtr());
   scoped_refptr<ServiceWorkerVersion> version_2 =
       base::MakeRefCounted<ServiceWorkerVersion>(
-          registration, kScriptUrl, blink::mojom::ScriptType::kClassic,
+          registration.get(), kScriptUrl, blink::mojom::ScriptType::kClassic,
           version_2_id,
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
           context()->AsWeakPtr());
@@ -1341,7 +1341,7 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest, SetUpdateViaCache) {
       std::make_unique<MockServiceWorkerRegistrationObject>(
           std::move(info->receiver));
 
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context()->GetLiveRegistration(registration_id);
   ASSERT_EQ(blink::mojom::ServiceWorkerUpdateViaCache::kImports,
             registration->update_via_cache());
@@ -1392,7 +1392,7 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest, UpdateFound) {
       std::make_unique<MockServiceWorkerRegistrationObject>(
           std::move(info->receiver));
 
-  ServiceWorkerRegistration* registration =
+  scoped_refptr<ServiceWorkerRegistration> registration =
       context()->GetLiveRegistration(registration_id);
   ASSERT_NE(nullptr, registration);
   EXPECT_EQ(0, mock_registration_object->update_found_called_count());

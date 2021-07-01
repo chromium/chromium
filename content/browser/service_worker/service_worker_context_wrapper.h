@@ -189,7 +189,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
 
-  ServiceWorkerRegistration* GetLiveRegistration(int64_t registration_id);
+  scoped_refptr<ServiceWorkerRegistration> GetLiveRegistration(
+      int64_t registration_id);
   ServiceWorkerVersion* GetLiveVersion(int64_t version_id);
   std::vector<ServiceWorkerRegistrationInfo> GetAllLiveRegistrationInfo();
   std::vector<ServiceWorkerVersionInfo> GetAllLiveVersionInfo();

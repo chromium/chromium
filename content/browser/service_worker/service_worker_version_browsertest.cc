@@ -603,11 +603,11 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
   void Update(int registration_id,
               ServiceWorkerContextCore::UpdateCallback callback) {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    ServiceWorkerRegistration* registration =
+    scoped_refptr<ServiceWorkerRegistration> registration =
         wrapper()->context()->GetLiveRegistration(registration_id);
     ASSERT_TRUE(registration);
     wrapper()->context()->UpdateServiceWorker(
-        registration, false /* force_bypass_cache */,
+        registration.get(), false /* force_bypass_cache */,
         false /* skip_script_comparison */,
         blink::mojom::FetchClientSettingsObject::New(), std::move(callback));
   }
@@ -618,7 +618,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
                            blink::ServiceWorkerStatusCode status,
                            const std::string& status_message,
                            int64_t registration_id) {
-    ServiceWorkerRegistration* registration =
+    scoped_refptr<ServiceWorkerRegistration> registration =
         wrapper()->context()->GetLiveRegistration(registration_id);
     DCHECK(registration);
 
@@ -650,7 +650,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
   }
 
   base::Time GetLastUpdateCheck(int64_t registration_id) {
-    ServiceWorkerRegistration* registration =
+    scoped_refptr<ServiceWorkerRegistration> registration =
         wrapper()->context()->GetLiveRegistration(registration_id);
     return registration->last_update_check();
   }
@@ -659,7 +659,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
                           base::Time last_update_time,
                           const base::RepeatingClosure& done_on_ui) {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    ServiceWorkerRegistration* registration =
+    scoped_refptr<ServiceWorkerRegistration> registration =
         wrapper()->context()->GetLiveRegistration(registration_id);
     ASSERT_TRUE(registration);
     registration->set_last_update_check(last_update_time);

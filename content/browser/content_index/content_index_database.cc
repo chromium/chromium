@@ -175,7 +175,7 @@ void ContentIndexDatabase::AddEntryOnCoreThread(
     return;
   }
 
-  auto* service_worker_registration =
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   if (!service_worker_registration ||
