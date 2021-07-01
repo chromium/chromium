@@ -419,7 +419,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point
     API_AVAILABLE(ios(13.0)) {
-  if (!IsTabGridContextMenuEnabled()) {
+  // Context menu shouldn't appear in the selection mode.
+  if (!IsTabGridContextMenuEnabled() || _mode == TabGridModeSelection) {
     return nil;
   }
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
@@ -454,8 +455,24 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // Return an empty array because the plus sign cell should not be dragged.
     return @[];
   }
-  TabSwitcherItem* item = self.items[indexPath.item];
-  return @[ [self.dragDropHandler dragItemForItemWithID:item.identifier] ];
+  if (_mode != TabGridModeSelection) {
+    TabSwitcherItem* item = self.items[indexPath.item];
+    return @[ [self.dragDropHandler dragItemForItemWithID:item.identifier] ];
+  }
+
+  // Make sure that the long pressed cell is selected before initiating a drag
+  // from it.
+  NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
+  NSString* itemID = self.items[index].identifier;
+  if (![self isItemWithIDSelectedForEditing:itemID]) {
+    [self tappedItemAtIndexPath:indexPath];
+  }
+
+  NSMutableArray<UIDragItem*>* dragItems = [[NSMutableArray alloc] init];
+  for (NSString* itemID in self.selectedEditingItemIDs) {
+    [dragItems addObject:[self.dragDropHandler dragItemForItemWithID:itemID]];
+  }
+  return dragItems;
 }
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
@@ -482,7 +499,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
     canHandleDropSession:(id<UIDropSession>)session {
-  return session.items.count == 1U;
+  return YES;
 }
 
 - (UICollectionViewDropProposal*)
@@ -502,66 +519,68 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)collectionView:(UICollectionView*)collectionView
     performDropWithCoordinator:
         (id<UICollectionViewDropCoordinator>)coordinator {
-  id<UICollectionViewDropItem> item = coordinator.items.firstObject;
+  NSArray<id<UICollectionViewDropItem>>* items = coordinator.items;
 
-  // Append to the end of the collection, unless drop index is specified.
-  // The sourceIndexPath is nil if the drop item is not from the same
-  // collection view. Set the destinationIndex to reflect the addition of an
-  // item.
-  NSUInteger destinationIndex =
-      item.sourceIndexPath ? self.items.count - 1 : self.items.count;
-  if (coordinator.destinationIndexPath) {
-    destinationIndex =
-        base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
-  }
-  if (self.thumbStripEnabled) {
+  for (id<UICollectionViewDropItem> item in items) {
+    // Append to the end of the collection, unless drop index is specified.
     // The sourceIndexPath is nil if the drop item is not from the same
-    // collection view.
-    NSUInteger plusSignCellIndex =
-        item.sourceIndexPath ? self.items.count : self.items.count + 1;
-    // Can't use [self isIndexPathForPlusSignCell:] here because the index of
-    // the plus sign cell in this point in code depends on
-    // |item.sourceIndexPath|.
-    // I.e., in this point in code, |collectionView.numberOfItemsInSection| is
-    // equal to |self.items.count + 1|.
-    if (destinationIndex == plusSignCellIndex) {
-      // Prevent the cell from being dropped where the plus sign cell is.
-      destinationIndex = plusSignCellIndex - 1;
+    // collection view. Set the destinationIndex to reflect the addition of an
+    // item.
+    NSUInteger destinationIndex =
+        item.sourceIndexPath ? self.items.count - 1 : self.items.count;
+    if (coordinator.destinationIndexPath) {
+      destinationIndex =
+          base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
+    }
+    if (self.thumbStripEnabled) {
+      // The sourceIndexPath is nil if the drop item is not from the same
+      // collection view.
+      NSUInteger plusSignCellIndex =
+          item.sourceIndexPath ? self.items.count : self.items.count + 1;
+      // Can't use [self isIndexPathForPlusSignCell:] here because the index of
+      // the plus sign cell in this point in code depends on
+      // |item.sourceIndexPath|.
+      // I.e., in this point in code, |collectionView.numberOfItemsInSection| is
+      // equal to |self.items.count + 1|.
+      if (destinationIndex == plusSignCellIndex) {
+        // Prevent the cell from being dropped where the plus sign cell is.
+        destinationIndex = plusSignCellIndex - 1;
+      }
+    }
+    NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
+    // Drop synchronously if local object is available.
+    if (item.dragItem.localObject) {
+      [coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath];
+      // The sourceIndexPath is non-nil if the drop item is from this same
+      // collection view.
+      [self.dragDropHandler dropItem:item.dragItem
+                             toIndex:destinationIndex
+                  fromSameCollection:(item.sourceIndexPath != nil)];
+    } else {
+      // Drop asynchronously if local object is not available.
+      UICollectionViewDropPlaceholder* placeholder =
+          [[UICollectionViewDropPlaceholder alloc]
+              initWithInsertionIndexPath:dropIndexPath
+                         reuseIdentifier:kCellIdentifier];
+      placeholder.cellUpdateHandler = ^(UICollectionViewCell* placeholderCell) {
+        GridCell* gridCell =
+            base::mac::ObjCCastStrict<GridCell>(placeholderCell);
+        gridCell.theme = self.theme;
+      };
+      placeholder.previewParametersProvider =
+          ^UIDragPreviewParameters*(UICollectionViewCell* placeholderCell) {
+        GridCell* gridCell =
+            base::mac::ObjCCastStrict<GridCell>(placeholderCell);
+        return gridCell.dragPreviewParameters;
+      };
+
+      id<UICollectionViewDropPlaceholderContext> context =
+          [coordinator dropItem:item.dragItem toPlaceholder:placeholder];
+      [self.dragDropHandler dropItemFromProvider:item.dragItem.itemProvider
+                                         toIndex:destinationIndex
+                              placeholderContext:context];
     }
   }
-  NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
-
-  // Drop synchronously if local object is available.
-  if (item.dragItem.localObject) {
-    [coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath];
-    // The sourceIndexPath is non-nil if the drop item is from this same
-    // collection view.
-    [self.dragDropHandler dropItem:item.dragItem
-                           toIndex:destinationIndex
-                fromSameCollection:(item.sourceIndexPath != nil)];
-    return;
-  }
-
-  // Drop asynchronously if local object is not available.
-  UICollectionViewDropPlaceholder* placeholder =
-      [[UICollectionViewDropPlaceholder alloc]
-          initWithInsertionIndexPath:dropIndexPath
-                     reuseIdentifier:kCellIdentifier];
-  placeholder.cellUpdateHandler = ^(UICollectionViewCell* placeholderCell) {
-    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(placeholderCell);
-    gridCell.theme = self.theme;
-  };
-  placeholder.previewParametersProvider =
-      ^UIDragPreviewParameters*(UICollectionViewCell* placeholderCell) {
-    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(placeholderCell);
-    return gridCell.dragPreviewParameters;
-  };
-
-  id<UICollectionViewDropPlaceholderContext> context =
-      [coordinator dropItem:item.dragItem toPlaceholder:placeholder];
-  [self.dragDropHandler dropItemFromProvider:item.dragItem.itemProvider
-                                     toIndex:destinationIndex
-                          placeholderContext:context];
 }
 
 #pragma mark - UIScrollViewDelegate
