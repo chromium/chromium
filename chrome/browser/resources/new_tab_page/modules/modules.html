@@ -14,6 +14,11 @@
   #removeModuleToastMessage {
     flex-grow: 1;
   }
+
+  [dragging] {
+    position: fixed;
+    z-index: 2;
+  }
 </style>
 <div id="modules"></div>
 <cr-toast id="removeModuleToast" duration="10000">

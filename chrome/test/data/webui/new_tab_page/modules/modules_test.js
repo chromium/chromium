@@ -233,24 +233,41 @@ suite('NewTabPageModulesModulesTest', () => {
       });
     });
 
-    test('module can be dragged', async () => {
+    test('drag first module to second position', async () => {
       // Arrange.
+      const moduleArray = [];
+      for (let i = 0; i < 3; ++i) {
+        let module = document.createElement('div');
+        module.style.height = `300px`;
+        module.style.width = `300px`;
+        moduleArray.push(module);
+      }
       const modulesElement = await createModulesElement([
         {
           descriptor: {id: 'foo'},
-          element: document.createElement('div'),
+          element: moduleArray[0],
+        },
+        {
+          descriptor: {id: 'bar'},
+          element: moduleArray[1],
+        },
+        {
+          descriptor: {id: 'foo bar'},
+          element: moduleArray[2],
         },
       ]);
       callbackRouterRemote.setDisabledModules(false, []);
       await callbackRouterRemote.$.flushForTesting();
 
-      const moduleWrapper =
-          modulesElement.shadowRoot.querySelector('ntp-module-wrapper');
+      let moduleWrappers = Array.from(
+          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+      const moduleWrapper = moduleWrappers[0];
       assertTrue(!!moduleWrapper);
 
       const moduleRect = moduleWrapper.getBoundingClientRect();
       const startX = moduleRect.x + moduleRect.width / 2;
       const startY = moduleRect.y + moduleRect.height / 2;
+      const secondPositionRect = moduleWrappers[1].getBoundingClientRect();
 
       // Act.
       moduleWrapper.dispatchEvent(new DragEvent('dragstart', {
@@ -259,15 +276,27 @@ suite('NewTabPageModulesModulesTest', () => {
       }));
 
       document.dispatchEvent(new DragEvent('dragover', {
-        clientX: startX + 500,
-        clientY: startY + 500,
+        clientX: startX + 10,
+        clientY: startY + moduleRect.height,
       }));
 
+      // Assert.
+      assertEquals(moduleRect.x + 10, moduleWrapper.getBoundingClientRect().x);
+      assertEquals(
+          moduleRect.y + moduleRect.height,
+          moduleWrapper.getBoundingClientRect().y);
+
+      // Act.
       document.dispatchEvent(new DragEvent('dragend'));
 
       // Assert.
-      assertEquals(moduleRect.x + 500, moduleWrapper.getBoundingClientRect().x);
-      assertEquals(moduleRect.y + 500, moduleWrapper.getBoundingClientRect().y);
+      moduleWrappers = Array.from(
+          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+      assertEquals(1, moduleWrappers.indexOf(moduleWrapper));
+      assertEquals(
+          secondPositionRect.x, moduleWrapper.getBoundingClientRect().x);
+      assertEquals(
+          secondPositionRect.y, moduleWrapper.getBoundingClientRect().y);
     });
   });
 });

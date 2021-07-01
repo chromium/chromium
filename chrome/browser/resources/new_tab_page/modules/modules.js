@@ -315,7 +315,7 @@ export class ModulesElement extends mixinBehaviors
     }
 
     const dragElement = e.target;
-    const dragElementRect = e.target.getBoundingClientRect();
+    const dragElementRect = dragElement.getBoundingClientRect();
     // This is the offset between the pointer and module so that the
     // module isn't dragged by the top-left corner.
     const dragOffset = {
@@ -323,19 +323,43 @@ export class ModulesElement extends mixinBehaviors
       y: e.y - dragElementRect.y,
     };
 
+    const moduleWrappers = Array.from(this.$.modules.childNodes);
+
+    const dragIndex = moduleWrappers.indexOf(dragElement);
+    let dropIndex = dragIndex;
+
     const dragOver = e => {
       e.preventDefault();
       if (e.dataTransfer) {
         e.dataTransfer.dropEffect = 'move';
       }
-      dragElement.style.position = 'fixed';
+
+      dragElement.setAttribute('dragging', '');
       dragElement.style.left = `${e.x - dragOffset.x}px`;
       dragElement.style.top = `${e.y - dragOffset.y}px`;
+
+      const moduleRects = moduleWrappers.map(m => m.getBoundingClientRect());
+      moduleRects.splice(dragIndex, 1);
+      dropIndex = moduleRects.findIndex(
+          r => e.x >= r.left && e.x <= r.right && e.y >= r.top &&
+              e.y <= r.bottom);
+      dropIndex = (dropIndex > -1) ? dropIndex : dragIndex;
     };
 
     this.ownerDocument.addEventListener('dragover', dragOver);
     this.ownerDocument.addEventListener('dragend', () => {
       this.ownerDocument.removeEventListener('dragover', dragOver);
+
+      const [draggingModule] = moduleWrappers.splice(dragIndex, 1);
+      draggingModule.removeAttribute('dragging');
+      draggingModule.style.removeProperty('left');
+      draggingModule.style.removeProperty('top');
+      moduleWrappers.splice(dropIndex, 0, draggingModule);
+
+      moduleWrappers.forEach(moduleWrapper => {
+        moduleWrapper.remove();
+        this.$.modules.appendChild(moduleWrapper);
+      });
     }, {once: true});
   }
 }
