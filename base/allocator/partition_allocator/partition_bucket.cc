@@ -616,6 +616,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // in case they are accidentally used.
   latest_extent->number_of_consecutive_super_pages = 0;
   latest_extent->next = nullptr;
+  latest_extent->number_of_nonempty_slot_spans = 0;
 
   PartitionSuperPageExtentEntry<thread_safe>* current_extent =
       root->current_extent;
@@ -864,6 +865,8 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       // Accept the empty slot span unless it got decommitted.
       if (new_slot_span->freelist_head) {
         new_slot_span->next_slot_span = nullptr;
+        new_slot_span->ToSuperPageExtent()
+            ->IncrementNumberOfNonemptySlotSpans();
         break;
       }
       PA_DCHECK(new_slot_span->is_decommitted());

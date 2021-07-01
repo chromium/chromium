@@ -287,7 +287,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceDifferentBucketsAligned) {
     size_t i = 0;
     void* first_slot_span_end = nullptr;
     void* second_slot_span_start = nullptr;
-    auto visited = IterateSlotSpans<ThreadSafe>(
+    IterateSlotSpans<ThreadSafe>(
         reinterpret_cast<char*>(super_page), true,
         [&](SlotSpan* slot_span) -> bool {
           if (i == 0) {
@@ -299,9 +299,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceDifferentBucketsAligned) {
             second_slot_span_start = SlotSpan::ToSlotSpanStartPtr(slot_span);
           }
           ++i;
-          return true;
+          return false;
         });
-    ASSERT_EQ(visited, 2u);
+    ASSERT_EQ(i, 2u);
     ASSERT_GT(second_slot_span_start, first_slot_span_end);
   }
 

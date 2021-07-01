@@ -285,6 +285,48 @@ void PCScanSnapshot::EnsureTaken(size_t pcscan_epoch) {
   std::call_once(once_flag_, &PCScanSnapshot::Take, this, pcscan_epoch);
 }
 
+template <class Function>
+void IterateNonEmptySlotSpans(char* super_page_base,
+                              size_t nonempty_slot_spans,
+                              Function function) {
+  PA_DCHECK(
+      !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
+  PA_DCHECK(nonempty_slot_spans);
+
+  size_t slot_spans_to_visit = nonempty_slot_spans;
+#if DCHECK_IS_ON()
+  size_t visited = 0;
+#endif
+
+  IterateSlotSpans<ThreadSafe>(
+      super_page_base, true /*with_quarantine*/,
+      [&function, &slot_spans_to_visit
+#if DCHECK_IS_ON()
+       ,
+       &visited
+#endif
+  ](SlotSpanMetadata<ThreadSafe>* slot_span) {
+        if (slot_span->is_empty() || slot_span->is_decommitted()) {
+          // Skip empty/decommitted slot spans.
+          return false;
+        }
+        function(slot_span);
+        --slot_spans_to_visit;
+#if DCHECK_IS_ON()
+        // In debug builds, scan all the slot spans to check that number of
+        // visited slot spans is equal to the number of nonempty_slot_spans.
+        ++visited;
+        return false;
+#else
+        return slot_spans_to_visit == 0;
+#endif
+      });
+#if DCHECK_IS_ON()
+  // Check that exactly all non-empty slot spans have been visited.
+  PA_DCHECK(nonempty_slot_spans == visited);
+#endif
+}
+
 void PCScanSnapshot::Take(size_t pcscan_epoch) {
   using Root = PartitionRoot<ThreadSafe>;
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
@@ -302,15 +344,25 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
       for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
                 *super_page_end = SuperPagesEndFromExtent(super_page_extent);
            super_page != super_page_end; super_page += kSuperPageSize) {
-        const size_t visited_slot_spans = IterateSlotSpans<ThreadSafe>(
-            super_page, true /*with_quarantine*/,
-            [this](SlotSpan* slot_span) -> bool {
-              if (slot_span->is_empty() || slot_span->is_decommitted()) {
-                return false;
-              }
+        auto* extent_entry =
+            reinterpret_cast<PartitionSuperPageExtentEntry<ThreadSafe>*>(
+                PartitionSuperPageToMetadataArea(super_page));
+        const size_t nonempty_slot_spans =
+            extent_entry->number_of_nonempty_slot_spans;
+        if (!nonempty_slot_spans) {
+#if DCHECK_IS_ON()
+          // Check that quarantine bitmap is empty for super-pages that contain
+          // only empty/decommitted slot-spans.
+          PA_CHECK(IsScannerQuarantineBitmapEmpty(super_page, pcscan_epoch));
+#endif
+          continue;
+        }
+
+        IterateNonEmptySlotSpans(
+            super_page, nonempty_slot_spans, [this](SlotSpan* slot_span) {
               auto* payload_begin = static_cast<uintptr_t*>(
                   SlotSpan::ToSlotSpanStartPtr(slot_span));
-              size_t provisioned_size = slot_span->GetProvisionedSize();
+              const size_t provisioned_size = slot_span->GetProvisionedSize();
               // Free & decommitted slot spans are skipped.
               PA_DCHECK(provisioned_size > 0);
               auto* payload_end =
@@ -321,19 +373,9 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
               } else {
                 scan_areas_worklist_.Push({payload_begin, payload_end});
               }
-              return true;
             });
-        // If we haven't visited any slot spans, all the slot spans in the
-        // super-page are either empty or decommitted. This means that all the
-        // objects are freed and there are no quarantined objects.
-        if (LIKELY(visited_slot_spans)) {
-          super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
-          super_pages_worklist_.Push(reinterpret_cast<uintptr_t>(super_page));
-        } else {
-#if DCHECK_IS_ON()
-          PA_CHECK(IsScannerQuarantineBitmapEmpty(super_page, pcscan_epoch));
-#endif
-        }
+        super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
+        super_pages_worklist_.Push(reinterpret_cast<uintptr_t>(super_page));
       }
     }
   }

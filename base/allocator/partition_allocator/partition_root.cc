@@ -649,7 +649,7 @@ void PartitionRoot<thread_safe>::ConfigureLazyCommit() {
                     size_to_commit - already_committed_size,
                     PageUpdatePermissions);
               }
-              return true;
+              return false;
             });
       }
     }

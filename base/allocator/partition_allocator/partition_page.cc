@@ -69,6 +69,8 @@ ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
       PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   root->lock_.AssertAcquired();
 
+  slot_span->ToSuperPageExtent()->DecrementNumberOfNonemptySlotSpans();
+
   // If the slot span is already registered as empty, give it another life.
   if (slot_span->empty_cache_index != -1) {
     PA_DCHECK(slot_span->empty_cache_index >= 0);
