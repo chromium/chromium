@@ -903,10 +903,7 @@ WebstorePrivateCompleteInstallFunction::Run() {
       CompleteInstall::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  // TODO(https://crbug.com/1125475): Enable Extensions for Ephemeral Guest
-  // profiles.
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile() ||
-      profile->IsOffTheRecord()) {
+  if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
     return RespondNow(Error(kIncognitoError));
   }
 
@@ -1076,11 +1073,8 @@ WebstorePrivateIsInIncognitoModeFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateIsInIncognitoModeFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  // TODO(https://crbug.com/1125475): Enable Extensions for Ephemeral Guest
-  // profiles.
   return RespondNow(ArgumentList(IsInIncognitoMode::Results::Create(
-      profile != profile->GetOriginalProfile() ||
-      profile->IsEphemeralGuestProfile())));
+      profile != profile->GetOriginalProfile())));
 }
 
 WebstorePrivateLaunchEphemeralAppFunction::
