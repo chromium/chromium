@@ -172,7 +172,14 @@ class ModelExecutor {
                    "OptimizationTarget",
                    optimization_guide::GetStringNameForOptimizationTarget(
                        optimization_target_));
+      base::TimeTicks execute_start_time = base::TimeTicks::Now();
       output = Execute(loaded_model_.get(), args...);
+      // The max of this histogram is 1 hour because we want to understand
+      // tail behavior and catch long running model executions.
+      base::UmaHistogramLongTimes(
+          "OptimizationGuide.ModelExecutor.ExecutionLatency." +
+              GetStringNameForOptimizationTarget(optimization_target_),
+          base::TimeTicks::Now() - execute_start_time);
     }
 
     DCHECK(ui_callback_on_complete);
