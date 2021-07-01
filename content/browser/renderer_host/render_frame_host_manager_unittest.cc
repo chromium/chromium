@@ -375,9 +375,9 @@ class RenderFrameHostManagerTest
                                                ->frame_tree_node()
                                                ->navigator()
                                                .controller();
-    mojom::NavigationType navigate_type =
-        entry->IsRestored() ? mojom::NavigationType::RESTORE
-                            : mojom::NavigationType::DIFFERENT_DOCUMENT;
+    blink::mojom::NavigationType navigate_type =
+        entry->IsRestored() ? blink::mojom::NavigationType::RESTORE
+                            : blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
     scoped_refptr<network::ResourceRequestBody> request_body;
     std::string post_content_type;
     if (frame_entry->method() == "POST") {
@@ -388,13 +388,13 @@ class RenderFrameHostManagerTest
     }
 
     auto& referrer = frame_entry->referrer();
-    mojom::CommonNavigationParamsPtr common_params =
+    blink::mojom::CommonNavigationParamsPtr common_params =
         entry->ConstructCommonNavigationParams(
             *frame_entry, request_body, frame_entry->url(),
             blink::mojom::Referrer::New(referrer.url, referrer.policy),
             navigate_type, blink::PreviewsTypes::PREVIEWS_UNSPECIFIED,
             base::TimeTicks::Now(), base::TimeTicks::Now());
-    mojom::CommitNavigationParamsPtr commit_params =
+    blink::mojom::CommitNavigationParamsPtr commit_params =
         entry->ConstructCommitNavigationParams(
             *frame_entry, common_params->url, frame_entry->committed_origin(),
             common_params->method,
@@ -2887,14 +2887,14 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
   FrameTreeNode* frame_tree_node =
       manager->current_frame_host()->frame_tree_node();
   auto& referrer = frame_entry->referrer();
-  mojom::CommonNavigationParamsPtr common_params =
+  blink::mojom::CommonNavigationParamsPtr common_params =
       entry.ConstructCommonNavigationParams(
           *frame_entry, nullptr, frame_entry->url(),
           blink::mojom::Referrer::New(referrer.url, referrer.policy),
-          mojom::NavigationType::DIFFERENT_DOCUMENT,
+          blink::mojom::NavigationType::DIFFERENT_DOCUMENT,
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(),
           base::TimeTicks::Now());
-  mojom::CommitNavigationParamsPtr commit_params =
+  blink::mojom::CommitNavigationParamsPtr commit_params =
       entry.ConstructCommitNavigationParams(
           *frame_entry, common_params->url, frame_entry->committed_origin(),
           common_params->method, entry.GetSubframeUniqueNames(frame_tree_node),

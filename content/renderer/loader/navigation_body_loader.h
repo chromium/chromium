@@ -24,6 +24,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 
@@ -55,8 +56,8 @@ class CONTENT_EXPORT NavigationBodyLoader
   // This method fills navigation params related to the navigation request,
   // redirects and response, and also creates a body loader if needed.
   static void FillNavigationParamsResponseAndBodyLoader(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       int request_id,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,

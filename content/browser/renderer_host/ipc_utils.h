@@ -7,9 +7,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/navigation_params.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -57,7 +57,7 @@ bool VerifyOpenURLParams(SiteInstance* site_instance,
 // This function has to be called on the UI thread.
 bool VerifyBeginNavigationCommonParams(
     SiteInstance* site_instance,
-    mojom::CommonNavigationParams* common_params);
+    blink::mojom::CommonNavigationParams* common_params);
 
 }  // namespace content
 

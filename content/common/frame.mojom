@@ -8,7 +8,6 @@ import "cc/mojom/browser_controls_state.mojom";
 import "content/common/frame_messages.mojom";
 import "content/common/native_types.mojom";
 import "content/common/navigation_client.mojom";
-import "content/common/navigation_params.mojom";
 import "content/common/web_ui.mojom";
 import "content/public/common/window_container_type.mojom";
 import "ipc/constants.mojom";
@@ -28,6 +27,7 @@ import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
+import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom";
@@ -41,6 +41,7 @@ import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
 import "third_party/blink/public/mojom/portal/portal.mojom";
@@ -342,8 +343,8 @@ interface Frame {
   // restart the navigation if it is no-longer same-document, which can happen
   // if the renderer committed another navigation in the meantime.
   CommitSameDocumentNavigation(
-      CommonNavigationParams common_params,
-      CommitNavigationParams request_params)
+      blink.mojom.CommonNavigationParams common_params,
+      blink.mojom.CommitNavigationParams request_params)
       => (blink.mojom.CommitResult commit_result);
 
   // Provides the renderer an updated |subresource_loader_factories|.
@@ -518,7 +519,7 @@ struct CreateNewWindowParams {
 
   // The impression associated with the navigation in the new window, if
   // one is specified.
-  Impression? impression;
+  blink.mojom.Impression? impression;
 };
 
 // Operation result when the renderer asks the browser to create a new window.
@@ -693,8 +694,8 @@ interface FrameHost {
   // TODO(ahemery): |navigation_client| should not be optional. Make it
   // mandatory.
   BeginNavigation(
-      CommonNavigationParams common_params,
-      BeginNavigationParams begin_params,
+      blink.mojom.CommonNavigationParams common_params,
+      blink.mojom.BeginNavigationParams begin_params,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
       pending_associated_remote<NavigationClient>? navigation_client,
       pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?

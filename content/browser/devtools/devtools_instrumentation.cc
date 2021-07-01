@@ -32,7 +32,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -47,6 +46,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
 namespace content {
 namespace devtools_instrumentation {
@@ -436,7 +436,7 @@ bool ShouldWaitForDebuggerInWindowOpen() {
 
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
-    mojom::BeginNavigationParams* begin_params,
+    blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
     absl::optional<std::vector<net::SourceStream::SourceType>>*
         devtools_accepted_stream_types) {

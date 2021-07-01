@@ -11,12 +11,12 @@
 #include "base/types/pass_key.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 
@@ -145,9 +145,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void Cancel(FinalStatus status);
 
   bool AreBeginNavigationParamsCompatibleWithNavigation(
-      const mojom::BeginNavigationParams& potential_activation);
+      const blink::mojom::BeginNavigationParams& potential_activation);
   bool AreCommonNavigationParamsCompatibleWithNavigation(
-      const mojom::CommonNavigationParams& potential_activation);
+      const blink::mojom::CommonNavigationParams& potential_activation);
 
   // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
   // PrerenderAttributesPtr.
@@ -174,8 +174,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // the prerendered page, copied immediately after BeginNavigation. They will
   // be compared with the navigation parameters of the potential activation when
   // attempting to reserve the prerender host for a navigation.
-  mojom::BeginNavigationParamsPtr begin_params_;
-  mojom::CommonNavigationParamsPtr common_params_;
+  blink::mojom::BeginNavigationParamsPtr begin_params_;
+  blink::mojom::CommonNavigationParamsPtr common_params_;
 
   // Holds the navigation ID for the main frame initial navigation.
   absl::optional<int64_t> initial_navigation_id_;

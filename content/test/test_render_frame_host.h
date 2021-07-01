@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/navigation_client.mojom-forward.h"
-#include "content/common/navigation_params.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
@@ -26,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -211,8 +211,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void SendCommitNavigation(
       mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -230,8 +230,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void SendCommitFailedNavigation(
       mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       bool has_stale_copy_in_cache,
       int32_t error_code,
       int32_t extended_error_code,

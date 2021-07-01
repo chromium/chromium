@@ -19,7 +19,7 @@
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"

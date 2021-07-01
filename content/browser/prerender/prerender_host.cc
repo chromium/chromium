@@ -398,7 +398,7 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
 }
 
 bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
-    const mojom::BeginNavigationParams& potential_activation) {
+    const blink::mojom::BeginNavigationParams& potential_activation) {
   if (potential_activation.initiator_frame_token !=
       begin_params_->initiator_frame_token) {
     return false;
@@ -458,14 +458,14 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
 }
 
 bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
-    const mojom::CommonNavigationParams& potential_activation) {
+    const blink::mojom::CommonNavigationParams& potential_activation) {
   if (potential_activation.initiator_origin !=
       common_params_->initiator_origin) {
     return false;
   }
 
   DCHECK_EQ(common_params_->navigation_type,
-            mojom::NavigationType::DIFFERENT_DOCUMENT);
+            blink::mojom::NavigationType::DIFFERENT_DOCUMENT);
   if (potential_activation.navigation_type != common_params_->navigation_type) {
     return false;
   }

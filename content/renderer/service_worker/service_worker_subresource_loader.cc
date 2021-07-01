@@ -23,6 +23,7 @@
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"

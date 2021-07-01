@@ -9,13 +9,13 @@
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_params.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -26,8 +26,8 @@ namespace content {
 // to the IO thread by a NavigationRequest object.
 struct CONTENT_EXPORT NavigationRequestInfo {
   NavigationRequestInfo(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::BeginNavigationParamsPtr begin_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::BeginNavigationParamsPtr begin_params,
       const net::IsolationInfo& isolation_info,
       bool is_main_frame,
       bool are_ancestors_secure,
@@ -46,8 +46,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
-  mojom::CommonNavigationParamsPtr common_params;
-  mojom::BeginNavigationParamsPtr begin_params;
+  blink::mojom::CommonNavigationParamsPtr common_params;
+  blink::mojom::BeginNavigationParamsPtr begin_params;
 
   // Contains information used to prevent sharing information from a navigation
   // request across first party contexts. In particular, tracks the

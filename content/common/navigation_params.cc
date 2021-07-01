@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/common/navigation_params.h"
-#include "content/common/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
 namespace content {
 
-mojom::CommonNavigationParamsPtr CreateCommonNavigationParams() {
-  auto common_params = mojom::CommonNavigationParams::New();
+blink::mojom::CommonNavigationParamsPtr CreateCommonNavigationParams() {
+  auto common_params = blink::mojom::CommonNavigationParams::New();
   common_params->referrer = blink::mojom::Referrer::New();
   common_params->navigation_start = base::TimeTicks::Now();
   common_params->source_location = network::mojom::SourceLocation::New();
@@ -16,10 +16,10 @@ mojom::CommonNavigationParamsPtr CreateCommonNavigationParams() {
   return common_params;
 }
 
-mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
-  auto commit_params = mojom::CommitNavigationParams::New();
+blink::mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
+  auto commit_params = blink::mojom::CommitNavigationParams::New();
   commit_params->navigation_token = base::UnguessableToken::Create();
-  commit_params->navigation_timing = mojom::NavigationTiming::New();
+  commit_params->navigation_timing = blink::mojom::NavigationTiming::New();
 
   return commit_params;
 }

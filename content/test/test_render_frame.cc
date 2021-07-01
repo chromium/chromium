@@ -15,7 +15,6 @@
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/navigation_params.h"
-#include "content/common/navigation_params.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_policy_container_host.h"
 #include "content/public/test/mock_render_thread.h"
@@ -31,6 +30,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -172,8 +172,8 @@ class MockFrameHost : public mojom::FrameHost {
   void DidOpenDocumentInputStream(const GURL& url) override {}
 
   void BeginNavigation(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::BeginNavigationParamsPtr begin_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::BeginNavigationParamsPtr begin_params,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>,
       mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>)
@@ -244,9 +244,10 @@ void TestRenderFrame::SetHTMLOverrideForNextNavigation(
   next_navigation_html_override_ = html;
 }
 
-void TestRenderFrame::Navigate(network::mojom::URLResponseHeadPtr head,
-                               mojom::CommonNavigationParamsPtr common_params,
-                               mojom::CommitNavigationParamsPtr commit_params) {
+void TestRenderFrame::Navigate(
+    network::mojom::URLResponseHeadPtr head,
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    blink::mojom::CommitNavigationParamsPtr commit_params) {
   mock_navigation_client_.reset();
   BindNavigationClient(
       mock_navigation_client_.BindNewEndpointAndPassDedicatedReceiver());
@@ -271,15 +272,16 @@ void TestRenderFrame::Navigate(network::mojom::URLResponseHeadPtr head,
                      base::Unretained(mock_frame_host_.get())));
 }
 
-void TestRenderFrame::Navigate(mojom::CommonNavigationParamsPtr common_params,
-                               mojom::CommitNavigationParamsPtr commit_params) {
+void TestRenderFrame::Navigate(
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    blink::mojom::CommitNavigationParamsPtr commit_params) {
   Navigate(network::mojom::URLResponseHead::New(), std::move(common_params),
            std::move(commit_params));
 }
 
 void TestRenderFrame::NavigateWithError(
-    mojom::CommonNavigationParamsPtr common_params,
-    mojom::CommitNavigationParamsPtr commit_params,
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    blink::mojom::CommitNavigationParamsPtr commit_params,
     int error_code,
     const net::ResolveErrorInfo& resolve_error_info,
     const absl::optional<std::string>& error_page_content) {

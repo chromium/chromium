@@ -56,8 +56,8 @@ class NavigationURLLoaderTest : public testing::Test {
   std::unique_ptr<NavigationURLLoader> CreateTestLoader(
       const GURL& url,
       NavigationURLLoaderDelegate* delegate) {
-    mojom::BeginNavigationParamsPtr begin_params =
-        mojom::BeginNavigationParams::New(
+    blink::mojom::BeginNavigationParamsPtr begin_params =
+        blink::mojom::BeginNavigationParams::New(
             absl::nullopt /* initiator_frame_token */,
             std::string() /* headers */, net::LOAD_NORMAL,
             false /* skip_service_worker */,

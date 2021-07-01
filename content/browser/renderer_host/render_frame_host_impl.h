@@ -110,6 +110,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
@@ -1069,8 +1070,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // process, e.g. by AppCache etc.
   void CommitNavigation(
       NavigationRequest* navigation_request,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -1083,13 +1084,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Indicates that a navigation failed and that this RenderFrame should display
   // an error page.
-  void FailedNavigation(NavigationRequest* navigation_request,
-                        const mojom::CommonNavigationParams& common_params,
-                        const mojom::CommitNavigationParams& commit_params,
-                        bool has_stale_copy_in_cache,
-                        int error_code,
-                        int extended_error_code,
-                        const absl::optional<std::string>& error_page_content);
+  void FailedNavigation(
+      NavigationRequest* navigation_request,
+      const blink::mojom::CommonNavigationParams& common_params,
+      const blink::mojom::CommitNavigationParams& commit_params,
+      bool has_stale_copy_in_cache,
+      int error_code,
+      int extended_error_code,
+      const absl::optional<std::string>& error_page_content);
 
   // Sends a renderer-debug URL to the renderer process for handling.
   void HandleRendererDebugURL(const GURL& url);
@@ -2202,8 +2204,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   virtual void SendCommitNavigation(
       mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -2221,8 +2223,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   virtual void SendCommitFailedNavigation(
       mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       bool has_stale_copy_in_cache,
       int32_t error_code,
       int32_t extended_error_code,
@@ -2392,8 +2394,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // can still be retrieved even if the RenderFrameHost has been deleted in
   // between.
   void BeginNavigation(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::BeginNavigationParamsPtr begin_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::BeginNavigationParamsPtr begin_params,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
@@ -2508,8 +2510,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const network::ResourceRequestBody& body);
 
   void UpdatePermissionsForNavigation(
-      const mojom::CommonNavigationParams& common_params,
-      const mojom::CommitNavigationParams& commit_params);
+      const blink::mojom::CommonNavigationParams& common_params,
+      const blink::mojom::CommitNavigationParams& commit_params);
 
   // Returns true if there is an active transient fullscreen allowance for the
   // Window Placement feature (i.e. on screen configuration changes).

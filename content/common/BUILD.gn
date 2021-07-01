@@ -84,7 +84,6 @@ source_set("common") {
     "font_list.cc",
     "font_list.h",
     "font_list_fontconfig.cc",
-    "frame_messages.h",
     "gin_java_bridge_messages.h",
     "in_process_child_thread_params.cc",
     "in_process_child_thread_params.h",
@@ -121,7 +120,6 @@ source_set("common") {
     "navigation_gesture.h",
     "navigation_params.cc",
     "navigation_params.h",
-    "navigation_params_mojom_traits.h",
     "navigation_params_utils.h",
     "origin_util.cc",
     "partition_alloc_support.cc",
@@ -443,7 +441,6 @@ mojom("mojo_bindings") {
     "media/media_log_records.mojom",
     "native_types.mojom",
     "navigation_client.mojom",
-    "navigation_params.mojom",
     "render_accessibility.mojom",
     "render_message_filter.mojom",
     "renderer.mojom",
@@ -550,7 +547,6 @@ mojom("mojo_bindings") {
       ]
 
       traits_private_headers = [
-        "//content/common/frame_messages.h",
         "//content/public/common/common_param_traits.h",
         "//services/network/public/cpp/p2p_param_traits.h",
       ]
@@ -582,10 +578,6 @@ mojom("mojo_bindings") {
     {
       types = [
         {
-          mojom = "content.mojom.Impression"
-          cpp = "::blink::Impression"
-        },
-        {
           mojom = "content.mojom.PageState"
           cpp = "::blink::PageState"
         },
@@ -595,13 +587,10 @@ mojom("mojo_bindings") {
         },
       ]
       traits_headers = [
-        "//content/common/content_param_traits.h",
-        "//content/common/navigation_params.h",
-        "//third_party/blink/public/common/navigation/impression.h",
+        "//content/public/common/common_param_traits.h",
         "//third_party/blink/public/common/page_state/page_state.h",
         "//ui/base/page_transition_types.h",
       ]
-      traits_private_headers = [ "//content/common/frame_messages.h" ]
     },
   ]
 

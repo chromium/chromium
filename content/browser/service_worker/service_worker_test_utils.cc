@@ -67,8 +67,8 @@ class FakeNavigationClient : public mojom::NavigationClient {
  private:
   // mojom::NavigationClient implementation:
   void CommitNavigation(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -88,8 +88,8 @@ class FakeNavigationClient : public mojom::NavigationClient {
     std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
   }
   void CommitFailedNavigation(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::CommitNavigationParamsPtr commit_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
       bool has_stale_copy_in_cache,
       int error_code,
       int extended_error_code,

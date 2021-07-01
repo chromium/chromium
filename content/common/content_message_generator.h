@@ -6,11 +6,6 @@
 // NOLINT(build/header_guard)
 
 #include "build/build_config.h"
-#undef CONTENT_COMMON_FRAME_MESSAGES_H_
-#include "content/common/frame_messages.h"
-#ifndef CONTENT_COMMON_FRAME_MESSAGES_H_
-#error "Failed to include content/common/frame_messages.h"
-#endif
 #include "media/media_buildflags.h"
 
 #if defined(OS_ANDROID)

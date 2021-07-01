@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
 namespace content {
 
@@ -41,8 +42,8 @@ class FrameHostInterceptor::FrameAgent
   FrameHost* GetForwardingInterface() override { return impl_; }
 
   void BeginNavigation(
-      mojom::CommonNavigationParamsPtr common_params,
-      mojom::BeginNavigationParamsPtr begin_params,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::BeginNavigationParamsPtr begin_params,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
@@ -78,8 +79,8 @@ FrameHostInterceptor::~FrameHostInterceptor() = default;
 
 bool FrameHostInterceptor::WillDispatchBeginNavigation(
     RenderFrameHost* render_frame_host,
-    mojom::CommonNavigationParamsPtr* common_params,
-    mojom::BeginNavigationParamsPtr* begin_params,
+    blink::mojom::CommonNavigationParamsPtr* common_params,
+    blink::mojom::BeginNavigationParamsPtr* begin_params,
     mojo::PendingRemote<blink::mojom::BlobURLToken>* blob_url_token,
     mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client) {
   return true;
