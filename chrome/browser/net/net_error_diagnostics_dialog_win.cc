@@ -89,8 +89,7 @@ bool CanShowNetworkDiagnosticsDialog(content::WebContents* web_contents) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // The Windows diagnostic tool logs URLs it's run with, so it shouldn't be
   // used with incognito or guest profiles.  See https://crbug.com/929141
-  return !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
-         !profile->IsEphemeralGuestProfile();
+  return !profile->IsIncognitoProfile() && !profile->IsGuestSession();
 }
 
 void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
