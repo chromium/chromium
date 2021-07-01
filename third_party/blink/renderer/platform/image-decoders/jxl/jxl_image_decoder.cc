@@ -17,20 +17,29 @@ void MakeTransferFunctionHLG01(skcms_TransferFunction* tf) {
       tf, 1 / 12.0f, 2.0f, 2.0f, 1 / 0.17883277f, 0.28466892f, 0.55991073f);
 }
 
-// Computes whether the transfer function from the parsed ICC profile
-// approximately matches the given parametric transfer function. Returns a
-// ColorProfile if it matches, or nullptr if not.
+// Computes whether the transfer function from the ColorProfile, that was
+// created from a parsed ICC profile, approximately matches the given parametric
+// transfer function. Returns a ColorProfile if it matches, or nullptr if not.
 std::unique_ptr<ColorProfile> ApproximatelyMatchesTF(
-    const skcms_ICCProfile* parsed,
+    const ColorProfile& profile,
     const skcms_TransferFunction* tf) {
-  skcms_ICCProfile parsed_test = *parsed;
-  parsed_test.has_trc = true;
+  skcms_ICCProfile parsed_copy = *profile.GetProfile();
+  // Override the transfer function with a known parametric curve.
+  parsed_copy.has_trc = true;
   for (int c = 0; c < 3; c++) {
-    parsed_test.trc[c].table_entries = 0;
-    parsed_test.trc[c].parametric = *tf;
+    parsed_copy.trc[c].table_entries = 0;
+    parsed_copy.trc[c].parametric = *tf;
   }
-  if (skcms_ApproximatelyEqualProfiles(parsed, &parsed_test)) {
-    return std::make_unique<ColorProfile>(parsed_test);
+  if (skcms_ApproximatelyEqualProfiles(profile.GetProfile(), &parsed_copy)) {
+    // The input ColorProfile owns the buffer memory, make a new copy for
+    // the newly created one and pass the ownership of the new copy to the new
+    // color profile.
+    std::unique_ptr<uint8_t[]> owned_buffer(
+        new uint8_t[profile.GetProfile()->size]);
+    memcpy(owned_buffer.get(), profile.GetProfile()->buffer,
+           profile.GetProfile()->size);
+    parsed_copy.buffer = owned_buffer.get();
+    return std::make_unique<ColorProfile>(parsed_copy, std::move(owned_buffer));
   }
   return nullptr;
 }
@@ -311,8 +320,6 @@ void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
             // and set the profile to one that indicates this transfer function
             // more clearly than a raw ICC profile does, so Chrome considers
             // the profile as HDR.
-            const skcms_ICCProfile* parsed = profile->GetProfile();
-
             skcms_TransferFunction tf_pq;
             skcms_TransferFunction tf_hlg01;
             skcms_TransferFunction tf_hlg12;
@@ -321,7 +328,7 @@ void JXLImageDecoder::DecodeImpl(size_t index, bool only_size) {
             skcms_TransferFunction_makeHLG(&tf_hlg12);
 
             for (skcms_TransferFunction tf : {tf_pq, tf_hlg01, tf_hlg12}) {
-              auto match = ApproximatelyMatchesTF(parsed, &tf);
+              auto match = ApproximatelyMatchesTF(*profile, &tf);
               if (match) {
                 is_hdr_ = true;
                 profile.swap(match);
