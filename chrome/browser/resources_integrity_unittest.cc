@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/app/packed_resources_integrity.h"
 #include "chrome/browser/buildflags.h"
@@ -31,6 +32,7 @@ TEST_F(CheckResourceIntegrityTest, Match) {
 
   base::RunLoop loop;
   CheckResourceIntegrity(test_data_path.AppendASCII("circle.svg"), expected,
+                         base::SequencedTaskRunnerHandle::Get(),
                          base::BindLambdaForTesting([&](bool matches) {
                            EXPECT_TRUE(matches);
                            loop.Quit();
@@ -46,6 +48,7 @@ TEST_F(CheckResourceIntegrityTest, Mismatch) {
   base::RunLoop loop;
   CheckResourceIntegrity(test_data_path.AppendASCII("circle.svg"),
                          base::make_span<32>(unexpected),
+                         base::SequencedTaskRunnerHandle::Get(),
                          base::BindLambdaForTesting([&](bool matches) {
                            EXPECT_FALSE(matches);
                            loop.Quit();
@@ -59,6 +62,7 @@ TEST_F(CheckResourceIntegrityTest, NonExistentFile) {
   CheckResourceIntegrity(
       base::FilePath(FILE_PATH_LITERAL("this file does not exist.moo")),
       base::make_span<crypto::kSHA256Length>(unexpected),
+      base::SequencedTaskRunnerHandle::Get(),
       base::BindLambdaForTesting([&](bool matches) {
         EXPECT_FALSE(matches);
         loop.Quit();

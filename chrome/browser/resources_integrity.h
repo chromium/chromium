@@ -17,6 +17,7 @@
 void CheckResourceIntegrity(
     const base::FilePath& path,
     const base::span<const uint8_t, crypto::kSHA256Length> expected_signature,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceCallback<void(bool)> callback);
 
 // Checks the main Chrome .pak files for corruption by calling

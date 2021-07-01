@@ -67,11 +67,10 @@ void ReportPakIntegrity(const std::string& histogram_name, bool hash_matches) {
 void CheckResourceIntegrity(
     const base::FilePath& path,
     const base::span<const uint8_t, crypto::kSHA256Length> expected_signature,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceCallback<void(bool)> callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
+  task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CheckResourceIntegrityInternal, path, expected_signature),
       std::move(callback));
 }
@@ -114,17 +113,22 @@ void CheckPakFileIntegrity() {
       kSha256_chrome_200_percent_pak;
 #endif  // defined(OS_WIN)
 
-  CheckResourceIntegrity(resources_pack_path, resources_hash,
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+
+  CheckResourceIntegrity(resources_pack_path, resources_hash, task_runner,
                          base::BindOnce(&ReportPakIntegrity,
                                         "SafeBrowsing.PakIntegrity.Resources"));
   CheckResourceIntegrity(
       resources_pack_path.DirName().AppendASCII("chrome_100_percent.pak"),
-      chrome_100_hash,
+      chrome_100_hash, task_runner,
       base::BindOnce(&ReportPakIntegrity,
                      "SafeBrowsing.PakIntegrity.Chrome100"));
   CheckResourceIntegrity(
       resources_pack_path.DirName().AppendASCII("chrome_200_percent.pak"),
-      chrome_200_hash,
+      chrome_200_hash, task_runner,
       base::BindOnce(&ReportPakIntegrity,
                      "SafeBrowsing.PakIntegrity.Chrome200"));
 }
