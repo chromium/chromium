@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Aktuelni stil prikaza je preklopni</translation>
 <translation id="1087788677726983142">Sakrij filtere strima događaja</translation>
 <translation id="1088402100970133699">Nema prethodne stavke liste</translation>
-<translation id="1114836634143403764">Predlog</translation>
 <translation id="1120743664840974483">{"a": "avala", "b": "beograd", "c": "cetinje", "d": "drina", "e": "evropa", "f": "futog", "g": "golija", "h": "heroj", "i": "igalo", "j": "jadran", "k": "kosovo", "l": "lovćen", "m": "morava", "n": "niš", "o": "obilić", "p": "pirot", "q": "kvorum", "r": "ruma", "s": "sava", "t": "timok", "u": "užice", "v": "valjevo", "w": "duplo ve", "x": "ksilofon", "y": "ipsilon", "z": "zemun", "ć": "ćuprija", "č": "čačak", "dž": "džep", "đ": "đakovica", "lj": "ljubovija", "nj": "njegoš", "š": "šabac", "ž": "žabljak"}</translation>
 <translation id="1120938014254001895">Prevlačite nagore pomoću dva prsta</translation>
 <translation id="1126928665165112660">Nije kurziv</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Informacije o sadržaju</translation>
 <translation id="2417948780551741035">Završne napomene</translation>
 <translation id="2419852971200420169">Lista opisa</translation>
-<translation id="2421113964388408478">Brisanje</translation>
 <translation id="2422937916923936891">Polje za potvrdu stavke menija</translation>
 <translation id="2428534162001909979">Meniji sa komandama</translation>
 <translation id="242998846562331953">Titlovi</translation>
 <translation id="2435422727584637732">Otvorenoplava</translation>
+<translation id="2438712309510062123">Predložite</translation>
 <translation id="2450814015951372393">Polje za potvrdu</translation>
 <translation id="2461822463642141190">Aktuelno</translation>
 <translation id="2462626033734746142">Grupa dugmadi za izbor</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Dvaput dodirnite da biste počeli da menjate</translation>
 <translation id="2598495320872286378">Gramatička greška</translation>
 <translation id="2603828437139726540">Pomeri unapred za jedan znak</translation>
+<translation id="2619052155095999743">Umetanje</translation>
 <translation id="2619344480613750862">Možete i da se krećete između odeljaka na ekranu. Na primer, možete da se krećete između pokretača, police i Chrome kartica. Da biste prešli na sledeći odeljak, prevucite sleva nadesno pomoću četiri prsta. Isprobajte odmah da biste nastavili.</translation>
 <translation id="2624431853467395961">Otvara režim za učenje</translation>
 <translation id="2626530649491650971">element na koji može da se klikne</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Zatvorenocrvena</translation>
 <translation id="4482330759234983253">Prethodna tabela</translation>
 <translation id="4491109536499578614">Slika</translation>
-<translation id="4505167975768625962">Umetanje</translation>
 <translation id="4511186779140817916">Belobraon</translation>
 <translation id="451510441928265982">Nema prethodnog zaglavlja 2. nivoa</translation>
 <translation id="4515799157838123044">Bleđi sadržaj u pozadini</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Promeni stil prikaza u uporedni</translation>
 <translation id="8215202828671303819">Višestruki izbor</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, neprozirnost od <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">Izbriši</translation>
 <translation id="826825447994856889">Uvod</translation>
 <translation id="827266600368092403">Započnite ili završite izbor</translation>
 <translation id="827422111966801947">Tamnoplava</translation>

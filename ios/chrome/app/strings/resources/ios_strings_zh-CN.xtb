@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
+<translation id="2021670401941426298">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="2022352537516230970">专为 iPhone 打造</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
@@ -207,6 +208,7 @@
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3131206671572504478">阻止所有 Cookie</translation>
 <translation id="313283613037595347">创建新的无痕式标签页。</translation>
+<translation id="3134493362339304186">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）。您不会因此而退出自己的 Google 帐号。若要清除其他形式的历史记录，请访问<ph name="BEGIN_LINK" />我的 Google 活动记录<ph name="END_LINK" />。</translation>
 <translation id="3153862085237805241">保存卡片</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157684681743766797">全部标为…</translation>
@@ -229,6 +231,7 @@
 <translation id="3285962946108803577">分享页面…</translation>
 <translation id="3290875554372353449">选择帐号</translation>
 <translation id="3311748811247479259">已关闭</translation>
+<translation id="3317580614754548493">您不会因此而退出自己的 Google 帐号。若要清除<ph name="BEGIN_LINK" />搜索<ph name="END_LINK" />记录或其他形式的历史记录，请前往<ph name="BEGIN_LINK" />我的 Google 帐号<ph name="END_LINK" />页面</translation>
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="3329904751041170572">无法连接到服务器。</translation>
@@ -557,6 +560,7 @@
 请尽量为每个网站使用独一无二的密码。</translation>
 <translation id="651505212789431520">取消同步？您随时可在“设置”中开启同步功能。</translation>
 <translation id="6524918542306337007">无痕模式不可用</translation>
+<translation id="6560725150890787329">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。您不会因此而退出自己的 Google 帐号。若要清除其他形式的历史记录，请访问<ph name="BEGIN_LINK" />我的 Google 活动记录<ph name="END_LINK" />。</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
 <translation id="6603393121510733479">贵单位关闭了无痕浏览。
@@ -675,7 +679,6 @@
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">拦截了弹出式窗口（<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 个）</translation>
 <translation id="7607521702806708809">删除密码</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> 分钟</translation>
 <translation id="7638584964844754484">密码不正确</translation>
 <translation id="7646772052135772216">无法同步密码</translation>
 <translation id="7649070708921625228">帮助</translation>
@@ -801,6 +804,7 @@
 <translation id="8976382372951310360">帮助</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8985320356172329008">已使用以下帐号登录 Google：</translation>
+<translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="9034759925968272072">您不会因此而退出自己的 Google 帐号。您的 Google 帐号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="9037965129289936994">显示原始网页</translation>
 <translation id="9039373489628511875">带宽</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Nåværende visningsstil er innfelt</translation>
 <translation id="1087788677726983142">Skjul filtre for aktivitetsstrømmer</translation>
 <translation id="1088402100970133699">Det finnes ingen tidligere listeelementer</translation>
-<translation id="1114836634143403764">Forslag</translation>
 <translation id="1120743664840974483">{"a": "Anna", "b": "Bernhard", "c": "Cæsar", "d": "David", "e": "Edith", "f": "Fredrik", "g": "Gustav", "h": "Harald", "i": "Ivar", "j": "Johan","k": "Karin", "l": "Ludvig", "m": "Martin", "n": "Nils", "o": "Olivia","p": "Petter", "q": "Quintus", "r": "Rikard", "s": "Sigrid", "t": "Teodor", "u": "Ulrik", "v": "enkelt-v", "w": "dobbelt-v","x": "Xerxes", "y": "yngling", "z": "Zakarias", "æ": "ærlig", "ø": "østen", "å": "Åse"}</translation>
 <translation id="1120938014254001895">Sveip to fingre opp</translation>
 <translation id="1126928665165112660">Ikke kursivert</translation>
@@ -203,11 +202,11 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2417569100218200841">Innholdsinformasjon</translation>
 <translation id="2417948780551741035">Sluttnoter</translation>
 <translation id="2419852971200420169">Beskrivelsesliste</translation>
-<translation id="2421113964388408478">Sletting</translation>
 <translation id="2422937916923936891">Avmerkingsrute for menyelement</translation>
 <translation id="2428534162001909979">Kommandomenyer</translation>
 <translation id="242998846562331953">Undertekst</translation>
 <translation id="2435422727584637732">Sterk blå</translation>
+<translation id="2438712309510062123">Foreslå</translation>
 <translation id="2450814015951372393">Avmerkingsrute</translation>
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="2462626033734746142">Gruppe med alternativknapper</translation>
@@ -226,6 +225,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2592212930811759050">Dobbelttrykk for å begynne å redigere</translation>
 <translation id="2598495320872286378">Grammatikkfeil</translation>
 <translation id="2603828437139726540">Flytt fremover ett tegn</translation>
+<translation id="2619052155095999743">Sett inn</translation>
 <translation id="2619344480613750862">Du kan også bevege deg mellom deler av skjermen. Du kan for eksempel bevege deg mellom appoversikten, hyllen og Chrome-fanene dine. For å gå til neste del, sveip fra venstre til høyre med fire fingre. Prøv det nå for å fortsette.</translation>
 <translation id="2624431853467395961">Åpne læremodus</translation>
 <translation id="2626530649491650971">klikkbart</translation>
@@ -507,7 +507,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4479068155583208887">Mursteinsrød</translation>
 <translation id="4482330759234983253">Forrige tabell</translation>
 <translation id="4491109536499578614">Bilde</translation>
-<translation id="4505167975768625962">Innsetting</translation>
 <translation id="4511186779140817916">Skåldet mandel</translation>
 <translation id="451510441928265982">Det finnes ingen tidligere overskrifter på nivå 2</translation>
 <translation id="4515799157838123044">Skyggelegg bakgrunnsinnhold</translation>
@@ -1010,6 +1009,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8212109599554677485">Endre visningsstilen til side om side</translation>
 <translation id="8215202828671303819">Flervalg</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % opasitet.</translation>
+<translation id="8261506727792406068">Slett</translation>
 <translation id="826825447994856889">Innledning</translation>
 <translation id="827266600368092403">Start eller avslutt utvalget</translation>
 <translation id="827422111966801947">Indigo</translation>

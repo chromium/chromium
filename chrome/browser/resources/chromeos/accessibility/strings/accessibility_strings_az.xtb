@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Cari ekran üslubu sıra ilə birləşəndir</translation>
 <translation id="1087788677726983142">Tədbir yayım filtrlərini gizlədin</translation>
 <translation id="1088402100970133699">Öncəki siyahı elementi yoxdur</translation>
-<translation id="1114836634143403764">Təklif</translation>
 <translation id="1120743664840974483">{"a": "alma", "b": "bravo", "c": "charlie", "d": "delta", "e": "exo", "f": "fil", "g": "gilas", "h": "hotel", "i": "isti", "j": "juliet","k": "kilo", "l": "lima", "m": "mil", "n": "noyabr", "o": "oskar","p": "papa", "q": "qutu", "r": "romeo", "s": "sierra", "t": "tango", "u": "usta", "v": "viktor", "w": "whiskey","x": "xray", "y": "yaşıl", "z": "zulu"}</translation>
 <translation id="1120938014254001895">İki barmağınızla yuxarı çəkin</translation>
 <translation id="1126928665165112660">Kursiv deyil</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Məzmun haqqında məlumat</translation>
 <translation id="2417948780551741035">Son qeyd</translation>
 <translation id="2419852971200420169">Təsvir siyahısı</translation>
-<translation id="2421113964388408478">Silinmə</translation>
 <translation id="2422937916923936891">Menyu elementlərini seçim xanası</translation>
 <translation id="2428534162001909979">Əmr Menyuları</translation>
 <translation id="242998846562331953">Subtitr</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Redaktəyə başlamaq üçün klikləyin</translation>
 <translation id="2598495320872286378">Qrammatik səhv</translation>
 <translation id="2603828437139726540">Bir simvol irəli köçürün</translation>
+<translation id="2619052155095999743">Daxil edin</translation>
 <translation id="2619344480613750862">Həmçinin ekranın bölmələri arasında hərəkət edə bilərsiniz. Məsələn, başladıcı, rəf və Chrome tablarınız arasında hərəkət edə bilərsiniz. Növbəti bölməyə keçmək üçün dörd barmağınızla soldan sağa sürüşdürün. Davam etmək üçün indi sınayın.</translation>
 <translation id="2624431853467395961">Öyrənmə rejimini açın</translation>
 <translation id="2626530649491650971">kliklənə bilən</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">Tünd-qırmızı</translation>
 <translation id="4482330759234983253">Öncəki tabel</translation>
 <translation id="4491109536499578614">Şəkil</translation>
-<translation id="4505167975768625962">Əlavə etmə</translation>
 <translation id="4511186779140817916">Ağardılmış Badam</translation>
 <translation id="451510441928265982">Öncəki 2-ci səviyyə başlığı yoxdur</translation>
 <translation id="4515799157838123044">Arxa fon məzmununu kölgələndirin</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">Ekran üslubunu yan-yana olaraq dəyişin</translation>
 <translation id="8215202828671303819">Multi seçin</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% qeyri-şəffaflıq.</translation>
+<translation id="8261506727792406068">Silin</translation>
 <translation id="826825447994856889">Giriş</translation>
 <translation id="827266600368092403">Seçimi başladın və ya bitirin</translation>
 <translation id="827422111966801947">İndiqo</translation>

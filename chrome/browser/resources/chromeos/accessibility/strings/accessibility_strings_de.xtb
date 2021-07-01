@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Die aktuelle Displaydarstellung ist "Überlappen"</translation>
 <translation id="1087788677726983142">Filter für Ereignisstreams ausblenden</translation>
 <translation id="1088402100970133699">Kein vorheriges Listenelement</translation>
-<translation id="1114836634143403764">Vorschlag</translation>
 <translation id="1120743664840974483">{"a": "Anton", "ä": "Ärger", "b": "Berta", "c": "Cäsar", "d": "Dora", "e": "Emil", "f": "Friedrich", "g": "Gustav", "h": "Heinrich", "i": "Ida", "j": "Julius", "k": "Kaufmann", "l": "Ludwig", "m": "Martha", "n": "Nordpol", "o": "Otto", "ö": "Ökonom", "p": "Paula", "q": "Quelle", "r": "Richard", "s": "Samuel", "ß": "Eszett", "t": "Theodor", "u": "Ulrich", "ü": "Übermut", "v": "Viktor", "w": "Wilhelm", "x": "Xanthippe", "y": "Ypsilon", "z": "Zacharias"}</translation>
 <translation id="1120938014254001895">Mit zwei Fingern nach oben wischen</translation>
 <translation id="1126928665165112660">Nicht kursiv</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Inhaltsinfo</translation>
 <translation id="2417948780551741035">Endnoten</translation>
 <translation id="2419852971200420169">Beschreibungsliste</translation>
-<translation id="2421113964388408478">Löschen</translation>
 <translation id="2422937916923936891">Kästchen für Menüpunkt</translation>
 <translation id="2428534162001909979">Befehlsmenüs</translation>
 <translation id="242998846562331953">Untertitel</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Zum Bearbeiten doppeltippen</translation>
 <translation id="2598495320872286378">Grammatikfehler</translation>
 <translation id="2603828437139726540">Ein Zeichen weiter</translation>
+<translation id="2619052155095999743">Einfügen</translation>
 <translation id="2619344480613750862">Außerdem können Sie zwischen den Bildschirmbereichen wechseln. So können Sie beispielsweise zwischen dem Launcher, der Ablage und Ihren Chrome-Tabs wechseln. Wischen Sie mit vier Fingern von links nach rechts, um zum nächsten Abschnitt zu gelangen. Verwenden Sie diese Touch-Geste, um mit dem nächsten Schritt fortzufahren.</translation>
 <translation id="2624431853467395961">Lernmodus öffnen</translation>
 <translation id="2626530649491650971">anklickbar</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">Backstein</translation>
 <translation id="4482330759234983253">Vorherige Tabelle</translation>
 <translation id="4491109536499578614">Bild</translation>
-<translation id="4505167975768625962">Einfügen</translation>
 <translation id="4511186779140817916">Mandelweiß</translation>
 <translation id="451510441928265982">Keine vorherige Überschrift der Ebene 2</translation>
 <translation id="4515799157838123044">Inhalte im Hintergrund abdunkeln</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">Displaydarstellung in "Nebeneinander" ändern</translation>
 <translation id="8215202828671303819">Mehrfachauswahl</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % Deckkraft.</translation>
+<translation id="8261506727792406068">Löschen</translation>
 <translation id="826825447994856889">Einleitung</translation>
 <translation id="827266600368092403">Auswahl starten oder beenden</translation>
 <translation id="827422111966801947">Indigo</translation>

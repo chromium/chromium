@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
 <translation id="1289216811211435351">Bytt til Chromium</translation>
 <translation id="1361748954329991663">Chromium er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chromium lenger.</translation>
+<translation id="1370204544543370355">For å få mest mulig ut av Chromium, logg på Chromium med Google-kontoen din</translation>
 <translation id="1431818719585918472">La Chromium låse inkognitofanene dine.</translation>
 <translation id="1472013873724362412">Kontoen din fungerer ikke i Chromium. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="1507010443238049608">Bidra til å gjøre Chromium bedre og raskere</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chromium-dataene dine blir slettet fra denne enheten</translation>
 <translation id="4806326830773390517">Bidra til å gjøre Chromium bedre ved å sende bruksstatistikk og programstopprapporter til Google</translation>
 <translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>
-<translation id="4852878756222711218">For å få mest mulig ut av Chromium, logg på med Google-kontoen din</translation>
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
 <translation id="5171868502429358653">Logg på Chromium</translation>

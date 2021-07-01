@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">現在の表示スタイルは交互表示です</translation>
 <translation id="1087788677726983142">イベント ストリーム フィルタを非表示にする</translation>
 <translation id="1088402100970133699">前のリスト項目はありません</translation>
-<translation id="1114836634143403764">提案</translation>
 <translation id="1120743664840974483">{"a": "アルファ", "b": "ブラボー", "c": "チャーリー", "d": "デルタ", "e": "エコー", "f": "フォックストロット", "g": "ゴルフ", "h": "ホテル", "i": "インディア", "j": "ジュリエット","k": "キロ", "l": "リマ", "m": "マイク", "n": "ノベンバー", "o": "オスカー","p": "パパ", "q": "ケベック", "r": "ロメオ", "s": "シエラ", "t": "タンゴ", "u": "ユニフォーム", "v": "ビクター", "w": "ウイスキー","x": "エックスレイ", "y": "ヤンキー", "z": "ズールー"}</translation>
 <translation id="1120938014254001895">2 本の指で上にスワイプします</translation>
 <translation id="1126928665165112660">斜体オフ</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">コンテンツ情報</translation>
 <translation id="2417948780551741035">巻末注</translation>
 <translation id="2419852971200420169">説明リスト</translation>
-<translation id="2421113964388408478">削除</translation>
 <translation id="2422937916923936891">メニュー項目のチェックボックス</translation>
 <translation id="2428534162001909979">コマンド メニュー</translation>
 <translation id="242998846562331953">字幕</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">編集を開始するにはダブルタップします</translation>
 <translation id="2598495320872286378">文法ミス</translation>
 <translation id="2603828437139726540">1 文字前へ移動</translation>
+<translation id="2619052155095999743">挿入</translation>
 <translation id="2619344480613750862">画面上のセクション間を移動することもできます。たとえば、ランチャー、シェルフ、Chrome のタブの間を移動できます。次のセクションに移動するには、4 本の指で左から右にスワイプします。実際にやってみて、次へ進みましょう。</translation>
 <translation id="2624431853467395961">学習モードを開く</translation>
 <translation id="2626530649491650971">クリック可能</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">ファイア ブリック</translation>
 <translation id="4482330759234983253">前の表</translation>
 <translation id="4491109536499578614">画像</translation>
-<translation id="4505167975768625962">挿入</translation>
 <translation id="4511186779140817916">ブランチド アーモンド</translation>
 <translation id="451510441928265982">前のレベル 2 の見出しはありません</translation>
 <translation id="4515799157838123044">背景コンテンツに影をつける</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">表示スタイルを横並びに変更する</translation>
 <translation id="8215202828671303819">複数選択可</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />（不透明度 <ph name="OPACITY_PERCENTAGE" />%）</translation>
+<translation id="8261506727792406068">削除</translation>
 <translation id="826825447994856889">序論</translation>
 <translation id="827266600368092403">選択を開始または終了します</translation>
 <translation id="827422111966801947">インディゴ</translation>

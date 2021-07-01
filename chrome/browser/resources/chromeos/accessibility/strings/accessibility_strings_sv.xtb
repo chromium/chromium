@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Aktuellt visningsformat är omlott</translation>
 <translation id="1087788677726983142">Göm filter för händelseflöden</translation>
 <translation id="1088402100970133699">Det finns ingen föregående post i listan</translation>
-<translation id="1114836634143403764">Förslag</translation>
 <translation id="1120743664840974483">{"a": "Adam", "b": "Bertil", "c": "Cesar", "d": "David", "e": "Erik", "f": "Filip", "g": "Gustav", "h": "Helge", "i": "Ivar", "j": "Johan","k": "Kalle", "l": "Ludvig", "m": "Martin", "n": "Niklas", "o": "Olof","p": "Petter", "q": "Quintus", "r": "Rudolf", "s": "Sigurd", "t": "Tore", "u": "Urban", "v": "Viktor", "w": "Wilhelm","x": "Xerxes", "y": "Yngve", "z": "Zäta", "å": "Åke", "ä": "Ärlig", "ö": "Östen"}</translation>
 <translation id="1120938014254001895">Svep uppåt med två fingrar</translation>
 <translation id="1126928665165112660">Inte kursiv</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Innehållsinformation</translation>
 <translation id="2417948780551741035">Slutnoter</translation>
 <translation id="2419852971200420169">Beskrivningslista</translation>
-<translation id="2421113964388408478">Borttagning</translation>
 <translation id="2422937916923936891">Kryssruta för menyalternativ</translation>
 <translation id="2428534162001909979">Kommandomenyer</translation>
 <translation id="242998846562331953">Underrubrik</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Börja redigera genom att trycka snabbt två gånger</translation>
 <translation id="2598495320872286378">Grammatikfel</translation>
 <translation id="2603828437139726540">Flytta framåt ett tecken</translation>
+<translation id="2619052155095999743">Infoga</translation>
 <translation id="2619344480613750862">Du kan även flytta dig från en del av skärmen till en annan. Du kan till exempel flytta dig mellan Appstartaren, hyllan och flikar i Chrome. Du kommer till nästa del genom att svepa från vänster till höger med fyra fingrar. Prova det nu för att fortsätta.</translation>
 <translation id="2624431853467395961">Öppna inlärningsläge</translation>
 <translation id="2626530649491650971">klickbart</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">Tegelröd</translation>
 <translation id="4482330759234983253">Föregående tabell</translation>
 <translation id="4491109536499578614">Bild</translation>
-<translation id="4505167975768625962">Infogning</translation>
 <translation id="4511186779140817916">Blekt mandelbrun</translation>
 <translation id="451510441928265982">Det finns ingen föregående rubrik på nivå 2</translation>
 <translation id="4515799157838123044">Skugga innehåll i bakgrunden</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">Ändra visningsformatet till sida vid sida</translation>
 <translation id="8215202828671303819">Flerval</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % genomskinlighet.</translation>
+<translation id="8261506727792406068">Radera</translation>
 <translation id="826825447994856889">Inledning</translation>
 <translation id="827266600368092403">Börja eller sluta markera</translation>
 <translation id="827422111966801947">Indigoblå</translation>

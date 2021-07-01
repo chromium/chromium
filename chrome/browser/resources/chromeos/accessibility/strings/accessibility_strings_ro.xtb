@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Stilul de afișare actual este intercalat</translation>
 <translation id="1087788677726983142">Ascunde filtrele pentru fluxul de evenimente</translation>
 <translation id="1088402100970133699">Nu există un element de listă anterior</translation>
-<translation id="1114836634143403764">Sugestie</translation>
 <translation id="1120743664840974483">{„a”: „alfa”, „ă”: „ăla”, „â”: „â din a”, „b”: „bravo”, „c”: „Charlie”, „d”: „delta”, „e”: „ecou”, „f”: „foxtrot”, „g”: „golf”, „h”: „hotel”, „i”: „India”, „î”: „început”, „j”: „Julieta”, „k”: „kilogram”, „l”: „Lima”, „m”: „Mike”, „n”: „noiembrie”, „o”: „Oscar”, „p”: „papa”, „q”: „Quebec”, „r”: „Romeo”, „s”: „sierra”, „ș”: „șarpe”, „t”: „tango”, „ț”: „țară”, „u”: „uniformă”, „v”: „Victor”, „w”: „whisky”, „x”: „xilofon”, „y”: „yankeu”, „z”: „zulu”}</translation>
 <translation id="1120938014254001895">Glisează cu două degete în sus</translation>
 <translation id="1126928665165112660">Fără cursiv</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Informații privind conținutul</translation>
 <translation id="2417948780551741035">Note de final</translation>
 <translation id="2419852971200420169">Lista de descrieri</translation>
-<translation id="2421113964388408478">Ștergere</translation>
 <translation id="2422937916923936891">Casetă de selectare pentru element de meniu</translation>
 <translation id="2428534162001909979">Meniuri de comenzi</translation>
 <translation id="242998846562331953">Subtitrare</translation>
 <translation id="2435422727584637732">Albastru deschis</translation>
+<translation id="2438712309510062123">Sugerează</translation>
 <translation id="2450814015951372393">Casetă de selectare</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462626033734746142">Grup buton radio</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Atinge de două ori pentru a începe editarea</translation>
 <translation id="2598495320872286378">Greșeală de gramatică</translation>
 <translation id="2603828437139726540">Mută înainte cu un caracter</translation>
+<translation id="2619052155095999743">Introduceți</translation>
 <translation id="2619344480613750862">Poți să comuți între două secțiuni ale eranului. De exemplu, comută între lansator, raft și filele Chrome. Pentru a trece la secțiunea următoare, glisează de la stânga la dreapta cu patru degete. Încearcă acum pentru a continua.</translation>
 <translation id="2624431853467395961">Deschide modul de învățare</translation>
 <translation id="2626530649491650971">pe care se poate da clic</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Roșu cărămiziu</translation>
 <translation id="4482330759234983253">Tabelul anterior</translation>
 <translation id="4491109536499578614">Imagine</translation>
-<translation id="4505167975768625962">Inserare</translation>
 <translation id="4511186779140817916">Alb migdală</translation>
 <translation id="451510441928265982">Nu există un titlu de nivel 2 anterior</translation>
 <translation id="4515799157838123044">Estompează conținutul din fundal</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Schimbă stilul de afișare la alăturat</translation>
 <translation id="8215202828671303819">Selectare multiplă</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% opacitate.</translation>
+<translation id="8261506727792406068">Șterge</translation>
 <translation id="826825447994856889">Introducere</translation>
 <translation id="827266600368092403">Începe sau încheie selecția</translation>
 <translation id="827422111966801947">Indigo</translation>

@@ -258,7 +258,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1807246157184219062">Açık</translation>
 <translation id="1807528111851433570">Başlangıç sayfası</translation>
 <translation id="1812527064848182527">yatay</translation>
-<translation id="1814698615734239189">Bu uygulama, mobil cihazlar için tasarlanmıştır. Uyumluluk modunda çalışıyor. Yeniden boyutlandırmaya izin vermek, uygulamanın yeniden başlatılması dahil olmak üzere sorunlarla karşılaşılmasına neden olabilir.</translation>
 <translation id="1821930232296380041">Geçersiz istek veya istek parametreleri</translation>
 <translation id="1822540298136254167">Ziyaret ettiğiniz web siteleri ve bu sitelerde geçirdiğiniz zaman</translation>
 <translation id="1826516787628120939">Kontrol ediliyor</translation>
@@ -677,7 +676,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3431636764301398940">Bu kartı bu cihaza kaydet</translation>
 <translation id="3432601291244612633">Sayfayı kapat</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
-<translation id="3435896845095436175">Etkinleştir</translation>
 <translation id="3438829137925142401">Google Hesabınızdaki kayıtlı şifreleri kullanın</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Bu cihazın sahibi dinozor oyununu kapattı.</translation>
@@ -814,6 +812,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3946209740501886391">Bu sitede her zaman sor</translation>
 <translation id="3949571496842715403">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasında Konu Diğer Adları belirtilmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantınıza müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="3949601375789751990">Göz atma geçmişiniz burada görünür</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Kayıtlı ödeme yöntemi yok</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3961148744525529027">Ödeme işleyici sayfası yarım olarak açıldı</translation>
@@ -821,7 +820,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3963721102035795474">Okuyucu Modu</translation>
 <translation id="3963837677003247395">Manuel olarak devam edilsin mi?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yok}=1{1 siteden }other{# siteden }}</translation>
-<translation id="3970481983430640194">Artık bu uygulamayı sürükleyebilir ve yeniden boyutlandırabilirsiniz</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> engellendi</translation>
 <translation id="3973357910713125165">Chrome Güvenlik Kontrolü yürüt düğmesi, Chrome ayarlarında Güvenlik Kontrolü yürütmek için Enter'a basın</translation>
@@ -941,6 +939,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4346197816712207223">Kabul Edilen Kredi Kartları</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome, bu şifreyi kullandığınız <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ve diğer sitelere giderek şifrenizi hemen değiştirmenizi öneriyor.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" />, yakındaki Bluetooth cihazlar için tarama yapmak istiyor. Şu cihazlar bulundu:</translation>
 <translation id="4356973930735388585">Bu sitedeki saldırganlar, bilgilerinizi (örneğin fotoğraflar, şifreler, mesajlar ve kredi kartları) çalacak veya silecek tehlikeli programları bilgisayarınıza yüklemeyi deneyebilir.</translation>
 <translation id="4358059973562876591">Belirttiğiniz şablonlar, DnsOverHttpsMode politikasındaki bir hata nedeniyle uygulanamayabilir.</translation>
 <translation id="4358461427845829800">Ödeme yöntemlerini yönet...</translation>
@@ -1393,7 +1392,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6032524144326295339">Posta kutusu 2</translation>
 <translation id="6032955021262906325">Soldan bağlı</translation>
 <translation id="6034000775414344507">Açık Gri</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> uygulaması düzgün bir şekilde yeniden boyutlandırılamayabilir. Uygulamanın beklenmeyen davranışlar sergilemesini önlemek için hazır ayar pencere boyutlarını kullanın.</translation>
 <translation id="6034283069659657473">10x14 (Zarf)</translation>
 <translation id="6034514109191629503">Akordeon katlama</translation>
 <translation id="6039846035001940113">Sorun devam ederse site sahibiyle iletişime geçin.</translation>
@@ -1423,7 +1421,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6120179357481664955">UPI ID'nizi hatırlıyor musunuz?</translation>
 <translation id="6123290840358279103">Sanal kartı görüntüle</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
-<translation id="6143538402333184781">Bu uygulama yalnızca "Telefon" boyutunu destekliyor.</translation>
 <translation id="6146055958333702838">Kabloları kontrol edin ve kullandığınız yönlendiricileri, modemleri
     veya diğer ağ cihazlarını yeniden başlatın.</translation>
 <translation id="614940544461990577">Aşağıdakileri deneyin:</translation>
@@ -1973,7 +1970,6 @@ Ek ayrıntılar:
 <translation id="8225771182978767009">Bu bilgisayarı kuran kişi bu siteyi engellemeyi seçmiş.</translation>
 <translation id="8228419419708659934">İki sayfalı görünüm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Bu uygulama için bir daha sorma</translation>
 <translation id="8232343881378637145">Platform sıcaklığı</translation>
 <translation id="8238581221633243064">Sayfayı yeni bir Gizli sekmede aç</translation>
 <translation id="8241707690549784388">Aradığınız sayfa, girdiğiniz bilgileri kullandı. O sayfaya dönmeniz, gerçekleştirdiğiniz işlemlerin tekrarlanmasına yol açabilir. Devam etmek istiyor musunuz?</translation>
@@ -1986,7 +1982,6 @@ Ek ayrıntılar:
 <translation id="825929999321470778">Tüm Kayıtlı Şifreleri Göster</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8262952874573525464">Altta kenar dikişi</translation>
-<translation id="826298712171642726">Yeniden Boyutlandırma etkinleştirilsin mi?</translation>
 <translation id="8265992338205884890">Görünür veriler</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> olarak oturum açılıyor</translation>
 <translation id="8269242089528251720">Ayrı dokümanlar/Harmanlanmış kopyalar</translation>
@@ -2017,6 +2012,7 @@ Ek ayrıntılar:
 <translation id="8355270400102541638">Yerel Kilitlenme Bağlamı:</translation>
 <translation id="8363502534493474904">Uçak modunu kapatma</translation>
 <translation id="8364627913115013041">Henüz ayarlanmadı.</translation>
+<translation id="8368027906805972958">Bilinmeyen veya desteklenmeyen cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play hizmetleri</translation>
 <translation id="8371889962595521444">Özel kök sertifikalar</translation>
 <translation id="8374636051559112948">Değişkenlik gösterir</translation>

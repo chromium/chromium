@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">Зургуудыг хадгалахын тулд Тохиргоон дээр товшиж, таны зургуудад нэмэхийг Chromium-д зөвшөөрнө үү</translation>
 <translation id="1289216811211435351">Chromium руу сэлгэх</translation>
 <translation id="1361748954329991663">Chromium хуучирсан байна. <ph name="BEGIN_LINK" />Апп дэлгүүр<ph name="END_LINK" />-т шинэчлэлт байхгүй бол таны төхөөрөмж Chromium-н шинэ хувилбарыг цаашид дэмжихгүй байж болзошгүй.</translation>
+<translation id="1370204544543370355">Chromium-г бүрэн ашиглахын тулд Chromium-д Google Бүртгэлээрээ нэвтэрнэ үү</translation>
 <translation id="1431818719585918472">Chromium-д таны Нууцлалтай табуудыг түгжихийг зөвшөөрнө үү.</translation>
 <translation id="1472013873724362412">Таны бүртгэл Chromium-д ажилладаггүй. Нэвтрэхийн тулд та домайн админдаа хандах, эсвэл Google Бүртгэлийн энгийн хувилбарыг ашиглах боломжтой.</translation>
 <translation id="1507010443238049608">Chromium-н онцлог болон гүйцэтгэлийг сайжруулахад туслах</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">Таны бүртгэлийг <ph name="HOSTED_DOMAIN" />-с удирддаг тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс арилгана</translation>
 <translation id="4806326830773390517">Статистик хэрэглээ болон гэмтлийн тайланг Google-д илгээж, Chromium-г сайжруулахад туслаарай</translation>
 <translation id="4828317641996116749">Chromium бүх нууц үгийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
-<translation id="4852878756222711218">Chromium-г бүрэн ашиглахын тулд Google Бүртгэлээрээ нэвтрээрэй</translation>
 <translation id="4985291216379576555">Офлайн байна, Chromium-н шинэчлэлтийг шалгах боломжгүй байна</translation>
 <translation id="4999538639245140991">Ta <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
 <translation id="5171868502429358653">Chromium-д нэвтэрнэ үү</translation>

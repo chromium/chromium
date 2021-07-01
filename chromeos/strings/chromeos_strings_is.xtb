@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Kerfi</translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2751739896257479635">Annars stigs EAP-auðkenning</translation>
+<translation id="2783010256799387990">STÓÐST</translation>
 <translation id="2789486458103222910">Í lagi</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="2862104018715411648">Komdu skjalinu fyrir í skannanum og veldu „Skanna“ til að hefjast handa</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Aðgangsorð rennur út eftir <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Engin prentun í gangi</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
 <translation id="4378373042927530923">Ekki keyra</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drifið mitt</translation>
@@ -229,7 +231,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5691511426247308406">Fjölskylda</translation>
 <translation id="5752751666635965375">Búðu til eigin leik</translation>
 <translation id="5760715441271661976">Vefgáttarstaða</translation>
-<translation id="5797428682393400134">TÓKST</translation>
 <translation id="5832805196449965646">Bæta notanda við</translation>
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5849570051105887917">Kóði heimaveitu</translation>
@@ -296,6 +297,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="714876143603641390">LAN-tenging</translation>
 <translation id="7162487448488904999">Gallerí</translation>
+<translation id="7172721935181587524">1 mynd</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> hefur umsjón með þessu <ph name="DEVICE_TYPE" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
@@ -345,6 +347,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8294431847097064396">Uppruni</translation>
 <translation id="8297006494302853456">Veikt</translation>
 <translation id="8302368968391049045">HTTPS-eldveggur</translation>
+<translation id="8318753676953949627">Engar myndir</translation>
 <translation id="8347227221149377169">Prentverk</translation>
 <translation id="8352772353338965963">Bæta reikningi við innskráningu á marga reikninga. Hægt er að fá aðgang að öllum innskráðum reikningum án aðgangsorðs og því ætti aðeins að nota þennan eiginleika með traustum reikningum.</translation>
 <translation id="8364946094152050673">Auðir nafnaþjónar</translation>

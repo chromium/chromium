@@ -157,7 +157,6 @@
 <translation id="2132302418721800944">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="2135456203358955318">ଡକ୍‌ଡ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">ଓଭରଭିଉରୁ ବାହାରିଯିବା ପାଇଁ ତିନୋଟି ଆଙ୍ଗୁଠିରେ ତଳକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="2208323208084708176">ଏକୀକୃତ ଡେସ୍କଟପ୍ ମୋଡ୍</translation>
 <translation id="2220572644011485463">ପିନ୍‌ କିମ୍ବା ପାସ୍‌ୱର୍ଡ</translation>
@@ -204,6 +203,7 @@
 <translation id="2542089167727451762">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍ ଛବି ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="255671100581129685">Google ଆସିଷ୍ଟାଣ୍ଟ ଏକ ସାର୍ବଜନିକ ଅବଧିରେ ଉପଲବ୍ଧ ନୁହେଁ।</translation>
 <translation id="256712445991462162">ଡକ୍ ହୋଇଥିବା ମ୍ୟାଗ୍ନିଫାୟାର୍</translation>
+<translation id="2573588302192866788"><ph name="NAME" /> ସହ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="2575685495496069081">ଏକାଧିକ ସାଇନ୍‌ ଇନ୍‌ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="2582112259361606227">ଅପ୍‍‍ଡେଟ୍ କରିବା ପାଇଁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2595239820337756193">5K ମାଇଲରେ</translation>
@@ -350,6 +350,7 @@
 <translation id="3742055079367172538">ସ୍କ୍ରି‍ନ୍‍ସଟ୍ ନିଆଯାଇଛି</translation>
 <translation id="3771549900096082774">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ୍ ମୋଡ୍</translation>
 <translation id="3773700760453577392">ଜଣେ ବ୍ୟବସ୍ଥାପକ <ph name="USER_EMAIL" /> ପାଇଁ ଏକାଧିକ ସାଇନ୍-ଇନ୍‌କୁ ଅନୁମୋଦିତ କରିନାହାନ୍ତି। ଜାରି ରଖିବା ନିମନ୍ତେ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ସାଇନ୍ ଆଉଟ୍ କରିବାକୁ ହେବ।</translation>
+<translation id="3779139509281456663"><ph name="NAME" /> ସହ ସଂଯୋଗ କରାଯାଉଛି</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="3796746699333205839">ଏକ ଆପ୍ଲିକେସନ୍ ଆପଣଙ୍କ କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରୁଛି</translation>
@@ -704,6 +705,7 @@
 <translation id="6614169507485700968">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
+<translation id="6630773993843701741">ଡିଭାଇସକୁ ମାନୁଆଲୀ ପେୟାର୍ କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="6637729079642709226">ସମୟ ବଦଳାନ୍ତୁ</translation>
 <translation id="6641720045729354415">ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି <ph name="ORIGIN_NAME" /> ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଚାହୁଁଛି</translation>
@@ -789,6 +791,7 @@
 <translation id="7348093485538360975">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡ</translation>
 <translation id="735745346212279324">VPN ବିଚ୍ଛିନ୍ନ ହୋଇଛି</translation>
 <translation id="7360036564632145207">ପେରିଫେରାଲଗୁଡ଼ିକ ପାଇଁ ଆପଣଙ୍କ ଡାଟା ଆକ୍ସେସ୍ ସୁରକ୍ଷା ସେଟିଂରେ ପରିବର୍ତ୍ତନ କରି ପରଫରମାନ୍ସକୁ ଅପ୍ଟିମାଇଜ୍ କରାଯାଇପାରିବ</translation>
+<translation id="7366890467478514168"><ph name="NAME" /> ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7371404428569700291">ୱିଣ୍ଡୋ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7377169924702866686">କ୍ୟାପ୍ସ ଲକ୍ ଅନ୍ ଅଛି।</translation>
 <translation id="7378203170292176219">ରେକର୍ଡ କରିବାର କ୍ଷେତ୍ରକୁ ଚୟନ କରିବାକୁ ଡ୍ରାଗ୍ କରନ୍ତୁ</translation>
@@ -1039,6 +1042,7 @@
 <translation id="9193626018745640770">ଗୋଟିଏ ଅଜଣା ପ୍ରାପ୍ତକର୍ତ୍ତା ଉପରେ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="9194617393863864469">ଅନ୍ୟଜଣେ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ସାଇନ୍-ଇନ୍ କରନ୍ତୁ...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ରିଜୋଲ୍ୟୁସନକୁ <ph name="RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ରଖିବା ପାଇଁ ସୁନିଶ୍ଚିତ କରନ୍ତୁରେ କ୍ଲିକ୍ କରନ୍ତୁ। ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସ୍ <ph name="TIMEOUT_SECONDS" />ରେ ରିଷ୍ଟୋର୍ କରାଯିବ।</translation>
+<translation id="9201044636667689546">ଏହି Chromebookରେ <ph name="NAME" /> ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="9210037371811586452">ଏକୀକୃତ ଡେସ୍କଟପ୍ ମୋଡ୍‌ରୁ ପ୍ରସ୍ଥାନ କରୁଛି</translation>
 <translation id="9211490828691860325">ସମସ୍ତ ଡେସ୍କ</translation>

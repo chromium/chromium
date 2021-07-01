@@ -257,7 +257,6 @@
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="1812527064848182527">横向</translation>
-<translation id="1814698615734239189">此应用是专为移动设备打造的。它正在兼容模式下运行。允许调整大小可能会引发问题（包括应用重启）。</translation>
 <translation id="1821930232296380041">请求或请求参数无效</translation>
 <translation id="1822540298136254167">您访问过的网站和您在这些网站上花费的时间</translation>
 <translation id="1826516787628120939">正在检查</translation>
@@ -674,7 +673,6 @@
 <translation id="3431636764301398940">将此卡的信息保存到该设备</translation>
 <translation id="3432601291244612633">关闭页面</translation>
 <translation id="3435738964857648380">安全</translation>
-<translation id="3435896845095436175">启用</translation>
 <translation id="3438829137925142401">使用您 Google 帐号中保存的密码</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
@@ -809,6 +807,7 @@
 <translation id="3946209740501886391">在该网站上一律询问</translation>
 <translation id="3949571496842715403">此服务器无法证实它就是 <ph name="DOMAIN" /> - 它的安全证书没有指定主题备用名称。这可能是因为某项配置有误或某个攻击者拦截了您的连接。</translation>
 <translation id="3949601375789751990">您的浏览记录会显示在此处</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">尚未保存任何付款方式</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3961148744525529027">付款处理程序工作表已在下半屏中打开</translation>
@@ -816,7 +815,6 @@
 <translation id="3963721102035795474">阅读器模式</translation>
 <translation id="3963837677003247395">以手动方式继续？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
-<translation id="3970481983430640194">现在，您可以通过拖动来调整此应用的大小了</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
 <translation id="3973357910713125165">“运行 Chrome 安全检查”按钮，按 Enter 键即可从 Chrome 设置中运行安全检查</translation>
@@ -935,6 +933,7 @@
 <translation id="4346197816712207223">接受的信用卡</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">您刚刚在一个诈骗网站中输入了密码。Chrome 建议您立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及使用此密码的其他网站更改密码。</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> 想搜索附近的蓝牙设备，并发现了以下设备：</translation>
 <translation id="4356973930735388585">此网站上的攻击者可能会试图在您的计算机上安装危险程序，以窃取或删除您的信息（例如：照片、密码、通讯内容和信用卡信息）。</translation>
 <translation id="4358059973562876591">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策出错了。</translation>
 <translation id="4358461427845829800">管理付款方式…</translation>
@@ -1387,7 +1386,6 @@
 <translation id="6032524144326295339">信箱 2</translation>
 <translation id="6032955021262906325">装订（左侧）</translation>
 <translation id="6034000775414344507">浅灰色</translation>
-<translation id="6034062182346928710">“<ph name="APP_NAME" />”可能无法妥当地调整大小。请使用预设窗口大小，以防止该应用出现失常行为。</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">风琴折</translation>
 <translation id="6039846035001940113">如果问题仍然存在，请与网站所有者联系。</translation>
@@ -1417,7 +1415,6 @@
 <translation id="6120179357481664955">要记住您的 UPI ID 吗？</translation>
 <translation id="6123290840358279103">查看虚拟卡</translation>
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
-<translation id="6143538402333184781">此应用仅支持“手机”尺寸。</translation>
 <translation id="6146055958333702838">请检查所有网线是否都已连好，然后重新启动您可能正在使用的任何路由器、调制解调器或其他网络设备。</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6150036310511284407">三孔（左侧）</translation>
@@ -1786,6 +1783,7 @@
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
 <translation id="7554475479213504905">仍然重新加载并显示</translation>
 <translation id="7554791636758816595">新标签页</translation>
+<translation id="7559278538486662777">无法调整此应用的大小。</translation>
 <translation id="7564049878696755256">您可能会无法再访问自己的 <ph name="ORG_NAME" /> 帐号，或者身份信息遭到盗用。Chrome 建议您立即更改密码。</translation>
 <translation id="7567204685887185387">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能是由骗子发出的。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="7569952961197462199">从 Chrome 中移除信用卡信息？</translation>
@@ -1965,7 +1963,6 @@
 <translation id="8225771182978767009">设置此计算机的用户已选择屏蔽此网站。</translation>
 <translation id="8228419419708659934">双页视图</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">别再询问我是否要对此应用执行这项操作</translation>
 <translation id="8232343881378637145">平台温度</translation>
 <translation id="8238581221633243064">在新的无痕式标签页中打开网页</translation>
 <translation id="8241707690549784388">您所查找的网页要使用已输入的信息。返回此页可能需要重复已进行的所有操作。是否要继续操作？</translation>
@@ -1978,7 +1975,6 @@
 <translation id="825929999321470778">显示所有已保存的密码</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8262952874573525464">边缘装订（底部）</translation>
-<translation id="826298712171642726">允许调整大小？</translation>
 <translation id="8265992338205884890">可见数据</translation>
 <translation id="8267698848189296333">目前登录的帐号是 <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">单独的文档/逐份打印的副本</translation>
@@ -2009,6 +2005,7 @@
 <translation id="8355270400102541638">本机崩溃上下文：</translation>
 <translation id="8363502534493474904">关闭飞行模式</translation>
 <translation id="8364627913115013041">未设置。</translation>
+<translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服务</translation>
 <translation id="8371889962595521444">自定义的根证书</translation>
 <translation id="8374636051559112948">视具体情况而定</translation>

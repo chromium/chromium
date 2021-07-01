@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1989112275319619282">Shfleto</translation>
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
+<translation id="2021670401941426298">Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="2022352537516230970">Krijuar për iPhone tënd</translation>
 <translation id="2073572773299281212">Aktiv <ph name="DAYS" /> ditë më parë</translation>
 <translation id="2074131957428911366">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="3112556859945124369">Shëno...</translation>
 <translation id="3131206671572504478">Bllokoji të gjitha</translation>
 <translation id="313283613037595347">Krijo një skedë të re "të fshehtë".</translation>
+<translation id="3134493362339304186">Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme. Nuk do të dalësh nga "Llogaria jote e Google". Për të pastruar format e tjera të historikut, vizito <ph name="BEGIN_LINK" />Aktivitetin tim në Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Ruaj kartën</translation>
 <translation id="3157387275655328056">Shto te lista e leximit</translation>
 <translation id="3157684681743766797">Shëno të gjitha…</translation>
@@ -229,6 +231,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="3285962946108803577">Ndaj faqen...</translation>
 <translation id="3290875554372353449">Zgjidh një llogari</translation>
 <translation id="3311748811247479259">Joaktiv</translation>
+<translation id="3317580614754548493">Nuk do të dalësh nga "Llogaria jote e Google". Për të pastruar <ph name="BEGIN_LINK" />kërkimin<ph name="END_LINK" /> ose forma të tjera të historikut, vizito <ph name="BEGIN_LINK" />Llogarinë time të Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informacionet rreth sajtit</translation>
 <translation id="3329904751041170572">Nuk mund të lidhej me serverin.</translation>
@@ -557,6 +560,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="651505212789431520">Të anulohet sinkronizimi? Mund ta aktivizosh sinkronizimin në çdo kohë te "Cilësimet".</translation>
 <translation id="6524918542306337007">Modaliteti "i fshehtë" nuk ofrohet</translation>
+<translation id="6560725150890787329">Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme. Nuk do të dalësh nga "Llogaria jote e Google". Për të pastruar format e tjera të historikut, vizito <ph name="BEGIN_LINK" />Aktivitetin tim në Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zmadho</translation>
 <translation id="6585618849026997638">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
 <translation id="6603393121510733479">Organizata jote ka çaktivizuar shfletimin privat.
@@ -675,7 +679,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7600965453749440009">Asnjëherë mos përkthe <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Dritare kërcyese të bllokuara (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Fshi fjalëkalimin</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> min.</translation>
 <translation id="7638584964844754484">Shprehje kalimi e pasaktë</translation>
 <translation id="7646772052135772216">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
 <translation id="7649070708921625228">Ndihma</translation>
@@ -801,6 +804,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8976382372951310360">Ndihma</translation>
 <translation id="8981454092730389528">Kontrollet e aktivitetit të Google</translation>
 <translation id="8985320356172329008">Je identifikuar në Google si</translation>
+<translation id="9000089900434778519">Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="9034759925968272072">Nuk do të dalësh nga llogaria e Google. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Shfaq origjinalin</translation>
 <translation id="9039373489628511875">Gjerësia e bandës</translation>

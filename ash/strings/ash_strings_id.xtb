@@ -137,6 +137,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1990046457226896323">File ucapan didownload</translation>
 <translation id="1993072747612765854">Pelajari lebih lanjut update <ph name="SYSTEM_APP_NAME" /> terbaru</translation>
 <translation id="1998100899771863792">Desktop saat ini</translation>
+<translation id="1999628559811343244">Rekaman paket jaringan dimulai</translation>
 <translation id="2016340657076538683">Ketik pesan</translation>
 <translation id="2018630726571919839">Ceritakan lelucon</translation>
 <translation id="2021864487439853900">Klik untuk membuka kunci</translation>
@@ -157,7 +158,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2132302418721800944">Rekam dalam layar penuh</translation>
 <translation id="2135456203358955318">Kaca pembesar tersemat</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Coba lagi</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Geser ke bawah dengan tiga jari untuk keluar dari Ringkasan</translation>
 <translation id="2208323208084708176">Mode desktop terpadu</translation>
 <translation id="2220572644011485463">PIN atau sandi</translation>
@@ -728,6 +728,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6751826523481687655">Pelacakan performa diaktifkan</translation>
 <translation id="6752912906630585008">Desktop <ph name="REMOVED_DESK" /> dihapus dan digabung dengan Desktop <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Tidak ada media yang diputar</translation>
+<translation id="6773040085467426602">Klik berhenti untuk menghentikan operasi rekaman paket yang sedang berlangsung.</translation>
 <translation id="6777216307882431711">Mengisi daya perangkat USB-C yang terhubung</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6803622936009808957">Tidak dapat menggandakan tampilan karena tidak ditemukan resolusi yang didukung. Memasuki desktop yang diperluas sebagai gantinya.</translation>
@@ -941,6 +942,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8433977262951327081">Pintasan untuk menampilkan balon menu opsi masukan di rak telah diubah. Harap gunakan <ph name="NEW_SHORTCUT" />, bukan <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Desktop <ph name="DESK_TITILE" /> diaktifkan</translation>
 <translation id="8452135315243592079">Kartu SIM tidak ada</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Tutup Klik untuk Diucapkan</translation>
 <translation id="847056008324733326">Setelan skala layar</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> telah <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2751739896257479635">EAP चरण 2 प्रमाणीकरण</translation>
+<translation id="2783010256799387990">जांच में पास</translation>
 <translation id="2789486458103222910">ठीक है</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="2862104018715411648">स्कैनर पर अपना दस्तावेज़ रखें. इसके बाद, स्कैन करने की प्रोसेस शुरू करने के लिए, 'स्कैन करें' को चुनें</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
 <translation id="4238516577297848345">फ़िलहाल, कुछ प्रिंट नहीं हो रहा</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4378373042927530923">चल नहीं पाया</translation>
 <translation id="4382484599443659549">पीडीएफ़</translation>
 <translation id="4425149324548788773">मेरी डिस्क</translation>
@@ -229,7 +231,6 @@
 <translation id="5691511426247308406">परिवार</translation>
 <translation id="5752751666635965375">अपना गेम बनाएं</translation>
 <translation id="5760715441271661976">पोर्टल की स्थिति</translation>
-<translation id="5797428682393400134">सफल</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5849570051105887917">'होम' पर काम करने वाली सेवाओं का कोड</translation>
@@ -296,6 +297,7 @@
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7162487448488904999">गैलरी</translation>
+<translation id="7172721935181587524">एक इमेज</translation>
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
@@ -345,6 +347,7 @@
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297006494302853456">कमज़ोर</translation>
 <translation id="8302368968391049045">एचटीटीपीएस फ़ायरवॉल</translation>
+<translation id="8318753676953949627">कोई इमेज नहीं</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
 <translation id="8352772353338965963">एक से ज़्यादा साइन-इन के लिए कोई खाता जोड़ें. सभी साइन इन किए गए खातों को पासवर्ड के बिना एक्सेस किया जा सकता है, इसलिए इस सुविधा का इस्तेमाल सिर्फ़ विश्वसनीय खातों के साथ किया जाना चाहिए.</translation>
 <translation id="8364946094152050673">ये नाम सर्वर खाली हैं</translation>

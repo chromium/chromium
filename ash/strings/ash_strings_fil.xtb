@@ -137,6 +137,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1990046457226896323">Na-download na ang mga speech file</translation>
 <translation id="1993072747612765854">Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Kasalukuyang desk</translation>
+<translation id="1999628559811343244">Sinimulan ang pag-capture sa packet ng network</translation>
 <translation id="2016340657076538683">Mag-type ng mensahe</translation>
 <translation id="2018630726571919839">Pahingi ng joke</translation>
 <translation id="2021864487439853900">I-click para i-unlock</translation>
@@ -157,7 +158,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2132302418721800944">I-record ang full screen</translation>
 <translation id="2135456203358955318">Naka-dock na magnifier</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Mag-swipe pababa gamit ang tatlong daliri para lumabas sa Overview</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN o password</translation>
@@ -728,6 +728,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6751826523481687655">Naka-on ang pag-trace ng performance</translation>
 <translation id="6752912906630585008">Inalis ang Desk na <ph name="REMOVED_DESK" /> at isinama sa Desk na <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Walang nagpe-play na media</translation>
+<translation id="6773040085467426602">Mag-click para ihinto ang mga kasalukuyang operasyon sa pag-capture ng packet.</translation>
 <translation id="6777216307882431711">Pinapagana ang mga nakakonektang USB-C device</translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6803622936009808957">Hindi ma-mirror ang mga display dahil walang mga sinusuportahang resolusyon na nakita. Pumasok na lang sa pinalawak na desktop.</translation>
@@ -941,6 +942,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8433977262951327081">Napalitan na ang shortcut para sa pagpapakita ng bubble na menu ng mga opsyon sa input sa shelf. Pakigamit ang <ph name="NEW_SHORTCUT" /> sa halip na <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Na-activate ang desk na <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Walang nakalagay na SIM card</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Isara ang Select-to-speak</translation>
 <translation id="847056008324733326">Mga setting ng scale ng display</translation>
 <translation id="8473301994082929012">Ang <ph name="ORGANIZATION_NAME" /> ay may <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

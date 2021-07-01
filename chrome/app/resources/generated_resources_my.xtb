@@ -2302,7 +2302,6 @@
 <translation id="3468298837301810372">အညွှန်း</translation>
 <translation id="3468999815377931311">Android ဖုန်း</translation>
 <translation id="3470442499439619530">ဒီအသုံးပြုသူကို ဖယ်ရှားပစ်ရန်</translation>
-<translation id="3471350386419633991">တဘ်များကို ဖတ်ရန်စာရင်းသို့ထည့်ရန် တဘ်ပေါ်တွင် ညာဘက်ခလုတ်ကို နှိပ်ပါ (သို့) ‘လိပ်စာ’ သင်္ကေတကို နှိပ်ပါ။ ‘လိပ်စာ ဘား’ မှ ဝင်ကြည့်ပါ။</translation>
 <translation id="3471876058939596279">ဗီဒီယိုအတွက် HDMI နှင့် USB Type-C ပို့တ်များကို တစ်ပြိုင်နက် အသုံးပြု၍မရပါ။ အခြား ဗီဒီယိုပို့တ်ကို အသုံးပြုပါ။</translation>
 <translation id="3473241910002674503">တက်ဘလက်မုဒ်တွင် ခလုတ်များဖြင့် ပင်မစာမျက်နှာသို့ သွားခြင်း၊ နောက်ပြန်သွားခြင်းနှင့် အက်ပ်များပြောင်းခြင်းတို့ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="3473479545200714844">မျက်နှာပြင် ပုံချဲ့ပေးသူ</translation>
@@ -2770,7 +2769,6 @@
 <translation id="3945513714196326460">ပိုတိုသည့်အမည် စမ်းကြည့်ပါ</translation>
 <translation id="3948116654032448504">ပုံကို <ph name="SEARCH_ENGINE" />ဖြင့် ရှာရန်</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> က အောက်ပါဖိုင်တွဲများ အတွင်းရှိ ဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">IE ထံမှ တင်သွင်းခဲ့</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{ဤအက်ပ်က အန္တရာယ်ရှိနိုင်သည်}other{ဤအက်ပ်များက အန္တရာယ်ရှိနိုင်သည်}}</translation>
 <translation id="3950820424414687140">ဝင်ရောက်</translation>
@@ -3093,7 +3091,6 @@
 <translation id="4349828822184870497">အထောက်အကူဖြစ်စေသည်</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> ကို သင့်တည်နေရာအသုံးပြုခြင်းမှ အမြဲပိတ်ရန်</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> သည် အနီးတစ်ဝိုက်ရှိ ဘလူးတုသ်စက်များကို ရှာဖွေလိုသည်။ အောက်ပါစက်များကို တွေ့ရှိထားသည်-</translation>
 <translation id="4354073718307267720">ဝဘ်ဆိုက်က သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံဆွဲခြင်း သို့မဟုတ် ကင်မရာအနေအထား ခြေရာခံခြင်းတို့ ပြုလုပ်လိုသည့်အခါ မေးမြန်းရန်</translation>
 <translation id="4354344420232759511">သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်များကို ဤနေရာတွင် မြင်ရပါမည်</translation>
 <translation id="435527878592612277">သင့်ဓာတ်ပုံ ရွေးရန်</translation>
@@ -3356,7 +3353,6 @@
 <translation id="4625078469366263107">အက်ပ်ကို ဖွင့်ရန်</translation>
 <translation id="4627427111733173920">ကွတ်ကီးများကို ပိတ်ထားခြင်း</translation>
 <translation id="4627442949885028695">အခြားစက်ပစ္စည်းမှ ဆက်လုပ်ပါ</translation>
-<translation id="4628757576491864469">စက်ပစ္စည်းများ</translation>
 <translation id="4628762811416793313">Linux ကွန်တိန်နာ စနစ်ထည့်သွင်းခြင်း ပြီးမြောက်မှုမရှိပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> ပရိုဖိုင် ဖွင့်ရန်</translation>
 <translation id="4632655012900268062">ကတ်များ စိတ်ကြိုက်ပြင်ရန်</translation>
@@ -3523,6 +3519,7 @@
 <translation id="4830502475412647084">OS အပ်ဒိတ်ကို ထည့်သွင်းနေသည်</translation>
 <translation id="4830573902900904548">သင့် <ph name="DEVICE_TYPE" /> သည် <ph name="NETWORK_NAME" /> ကိုအသုံးပြုပြီ: အင်တာနက်သို့ ချိတ်ဆက်၍မရနိုင်ပါ။ ကျေးဇူးပြု၍ အခြားကွန်ရက်ကို ရွေးချယ်ပါ။ <ph name="LEARN_MORE_LINK_START" />ပိုမိုလေ့လာရန်<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">ပရင်တာဆာဗာမှ ပရင်တာ ၁ ခုတွေ့သည်</translation>
+<translation id="4834007576107377210">သက်ဆိုင်မှုရှိပါက သင်၏ရှာဖွေမှတ်တမ်းကို ဖျက်ရန်အတွက် သင့်ရှာဖွေရေး အင်ဂျင်၏ ညွှန်ကြားချက်များကို ကြည့်ပါ</translation>
 <translation id="4836046166855586901">ဤကိရိယာသုံးနေချိန်ကို ဝဘ်ဆိုက်ကသိလိုသည့်အခါ ခွင့်တောင်းရန်</translation>
 <translation id="4836504898754963407">လက်ဗွေရာများ စီမံရန်</translation>
 <translation id="4837128290434901661">Google Search သို့ ပြန်ပြောင်းမလား။</translation>
@@ -5139,7 +5136,6 @@
 <translation id="6651237644330755633">ဝဘ်ဆိုက်များ၏ အထောက်အထားအဖြစ် ဤအသိအမှတ်ပြုလက်မှတ်များကို ယုံကြည်ပါ</translation>
 <translation id="6651495917527016072">သင့်ဖုန်းဖြင့် Wi-Fi ကွန်ရက်များကို စင့်ခ်လုပ်နိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> ပေါင်းစည်းခြင်းကို x86_64 စနစ်များတွင်သာ ပံ့ပိုးပါသည်။ ARM သို့ x86 စနစ်များအပေါ်တွင် တည်ဆောက်ထားသော Chromebook များတွင် ဤလုပ်ဆောင်ချက်ကို ပံ့ပိုးမထားပါ။</translation>
-<translation id="66537479323396140">ရှာဖွေစာလုံးဖြည့်ကွက်လပ်ရှိ မှတ်တမ်းနှင့် အလိုအလျောက် ဖြည့်ပေးခြင်းများကို ရှင်းပေးသည်။ သင့် Google Account သည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံဖြင့် ကြည့်ရှုခြင်းမှတ်တမ်းများ ရှိနေနိုင်သည်။</translation>
 <translation id="6654509035557065241">ဦးစားပေး ကွန်ရက်</translation>
 <translation id="6655190889273724601">ပြုစုသူ မုဒ်</translation>
 <translation id="6655458902729017087">အကောင့်များ ဝှက်မည်</translation>
@@ -6723,7 +6719,6 @@
 <translation id="8363142353806532503">မိုက်ခရိုဖုန်းကို ပိတ်ထားသည်</translation>
 <translation id="8366396658833131068">သင့် ကွန်ရက်၏ ချိတ်ဆက်နိုင်စွမ်း ပြန်လည် ကောင်းလာပါပြီ။ ကျေးဇူးပြုပြီး အခြား ကွန်ရက် တစ်ခုကို ရွေးပါ သို့မဟုတ် သင်၏ kiosk အက်ပ်ကို ဖွင့်တင်ရန် အောက်ပါ 'ဆက်လုပ်ရန်' ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="8366694425498033255">ရွေးချယ်ထားသေည ကီးများ</translation>
-<translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် ကိရိယာ ( <ph name="DEVICE_ID" /> )</translation>
 <translation id="8368859634510605990">&amp;စာညှပ်များ အားလုံး ဖွင့်ရန်</translation>
 <translation id="8370294614544004647">လက်ပ်တော့ပိတ်လိုက်သည့်အခါ နားရန်</translation>
 <translation id="8371695176452482769">ယခုပြောပါ</translation>
@@ -6736,7 +6731,6 @@
 <translation id="8379991678458444070">ဤတဘ်၏ လိပ်စာကို မှတ်ထားခြင်းဖြင့် အမြန်ပြန်ဖွင့်နိုင်သည်</translation>
 <translation id="8382913212082956454">အီးမေးလ် လိပ်စာ &amp;ကူးယူရန်</translation>
 <translation id="8386091599636877289">မူဝါဒကို မတွေ့ပါ။</translation>
-<translation id="838705362287678887"><ph name="BEGIN_LINK_SEARCH" />ရှာဖွေမှု<ph name="END_LINK_SEARCH" /> (သို့) အခြား မှတ်တမ်းပုံစံများကို ရှင်းထုတ်ရန် <ph name="BEGIN_LINK_GOOGLE" />ကျွန်ုပ်၏ Google Account<ph name="END_LINK_GOOGLE" /> တွင် ဝင်ကြည့်ပါ</translation>
 <translation id="8387361103813440603">သင့်တည်နေရာကို ကြည့်ရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="8388770971141403598">ဒုတိယ ပရိုဖိုင်များကို ပံ့ပိုးမထားပါ</translation>
 <translation id="8389416080014625855">ဤ 'စာမျက်နှာ' အတွက် QR ကုဒ် ပြုလုပ်ရန်</translation>

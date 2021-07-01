@@ -2288,7 +2288,6 @@
 <translation id="3468298837301810372">ラベル</translation>
 <translation id="3468999815377931311">Android スマートフォン</translation>
 <translation id="3470442499439619530">このユーザーを削除</translation>
-<translation id="3471350386419633991">リーディング リストにタブを追加するには、タブを右クリックするか、ブックマーク アイコンをクリックします。ブックマーク バーからアクセスしてください。</translation>
 <translation id="3471876058939596279">HDMI ポートと USB Type-C ポートを同時にビデオ出力に使用することはできません。別のビデオポートを使用してください。</translation>
 <translation id="3473241910002674503">タブレット モードで、ボタンを使用してホームに移動したり、戻ったり、アプリを切り替えたりできます。</translation>
 <translation id="3473479545200714844">画面拡大鏡</translation>
@@ -2757,7 +2756,6 @@
 <translation id="3945513714196326460">名前を短くしてください</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> で画像を検索(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> は次のフォルダのファイルを編集できます</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" />（<ph name="DEVICE_ID" />）</translation>
 <translation id="394984172568887996">IE ブックマーク</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{このアプリは安全でない可能性があります}other{これらのアプリは安全でない可能性があります}}</translation>
 <translation id="3950820424414687140">ログイン</translation>
@@ -3080,7 +3078,6 @@
 <translation id="4349828822184870497">役に立った</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> による位置情報へのアクセスを常にブロックする</translation>
 <translation id="4350782034419308508">OK Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> が近くの Bluetooth デバイスのスキャンを求めています。検出済みのデバイスは次のとおりです。</translation>
 <translation id="4354073718307267720">サイトから周囲の 3D マップの作成またはカメラ位置の追跡を求められたときに確認する</translation>
 <translation id="4354344420232759511">アクセスしたサイトがここに表示されます</translation>
 <translation id="435527878592612277">写真を選択</translation>
@@ -3342,7 +3339,6 @@
 <translation id="4625078469366263107">アプリを有効にする</translation>
 <translation id="4627427111733173920">Cookie がブロックされました</translation>
 <translation id="4627442949885028695">他のデバイスで開いたタブ</translation>
-<translation id="4628757576491864469">デバイス</translation>
 <translation id="4628762811416793313">Linux コンテナの設定を完了できませんでした。もう一度お試しください。</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> のプロフィールを開く</translation>
 <translation id="4632655012900268062">カードをカスタマイズする</translation>
@@ -3509,6 +3505,7 @@
 <translation id="4830502475412647084">OS アップデートのインストール中</translation>
 <translation id="4830573902900904548">お使いの <ph name="DEVICE_TYPE" /> から <ph name="NETWORK_NAME" /> を使用してインターネットに接続できません。別のネットワークを選択してください。<ph name="LEARN_MORE_LINK_START" />詳細<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">プリント サーバーで 1 個のプリンタが見つかりました</translation>
+<translation id="4834007576107377210">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）</translation>
 <translation id="4836046166855586901">サイトからこのデバイスのアクティブ状態の検出を求められたときに確認する</translation>
 <translation id="4836504898754963407">フィンガープリントの管理</translation>
 <translation id="4837128290434901661">Google 検索に戻しますか？</translation>
@@ -5127,7 +5124,6 @@
 <translation id="6651237644330755633">ウェブサイトの識別でこの証明書を信頼します</translation>
 <translation id="6651495917527016072">Wi-Fi ネットワークをスマートフォンと同期します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome と <ph name="MS_AD_NAME" /> の統合は x86_64 プラットフォームでのみサポートされています。ARM または x86 プラットフォームを使用している Chromebooks では、この機能はサポートされていません。</translation>
-<translation id="66537479323396140">検索ボックスの履歴とオートコンプリート データを削除します。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="6654509035557065241">優先するネットワーク</translation>
 <translation id="6655190889273724601">デベロッパー モード</translation>
 <translation id="6655458902729017087">アカウントを非表示にする</translation>
@@ -6711,7 +6707,6 @@
 <translation id="8363142353806532503">マイクがブロックされています</translation>
 <translation id="8366396658833131068">ネットワーク接続が復元されました。キオスク アプリを起動するには、別のネットワークを選択するか、下の [続行] ボタンを押してください。</translation>
 <translation id="8366694425498033255">選択キー</translation>
-<translation id="8368027906805972958">不明またはサポートされていないデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="8368859634510605990">すべてのブックマークを開く(&amp;O)</translation>
 <translation id="8370294614544004647">ノートパソコンを閉じたときにスリープ状態にする</translation>
 <translation id="8371695176452482769">お話しください</translation>
@@ -6724,7 +6719,6 @@
 <translation id="8379991678458444070">このタブをブックマークに追加すると、すばやくこのタブに戻ることができます</translation>
 <translation id="8382913212082956454">メール アドレスをコピー(&amp;E)</translation>
 <translation id="8386091599636877289">ポリシーが見つかりません。</translation>
-<translation id="838705362287678887"><ph name="BEGIN_LINK_SEARCH" />検索<ph name="END_LINK_SEARCH" />や他の履歴を削除するには、<ph name="BEGIN_LINK_GOOGLE" />Google アカウント<ph name="END_LINK_GOOGLE" />にアクセスしてください</translation>
 <translation id="8387361103813440603">位置情報の取得を許可しないサイト</translation>
 <translation id="8388770971141403598">セカンダリ プロファイルはサポートされていません</translation>
 <translation id="8389416080014625855">このページの QR コードを作成</translation>

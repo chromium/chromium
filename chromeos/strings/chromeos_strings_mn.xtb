@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP 2-р шатны баталгаажуулалт</translation>
+<translation id="2783010256799387990">ДАВСАН</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2862104018715411648">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулж, скан хийхийг сонгоно уу</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
 <translation id="4238516577297848345">Хэвлэж байгаа ажил алга</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> зураг</translation>
 <translation id="4378373042927530923">Ажилдаггүй</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
@@ -229,7 +231,6 @@
 <translation id="5691511426247308406">Гэр бүл</translation>
 <translation id="5752751666635965375">Тоглоомоо бүтээгээрэй</translation>
 <translation id="5760715441271661976">Порталын төлөв</translation>
-<translation id="5797428682393400134">АМЖИЛТТАЙ</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5849570051105887917">Нүүр хуудас бэлтгэх код</translation>
@@ -296,6 +297,7 @@
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7172721935181587524">1 зураг</translation>
 <translation id="7177485034254901881">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг. Администраторууд төхөөрөмжийг алсаас тохируулж магадгүй.</translation>
 <translation id="7216409898977639127">Үүрэн холбооны үйлчилгээ үзүүлэгч</translation>
 <translation id="7271040990581020067">Сканнерыг одоогоор ашиглаж байна. Дараа дахин оролдоно уу.</translation>
@@ -345,6 +347,7 @@
 <translation id="8294431847097064396">Эх сурвалж</translation>
 <translation id="8297006494302853456">Сул</translation>
 <translation id="8302368968391049045">HTTPS галт хана</translation>
+<translation id="8318753676953949627">Зураг байхгүй</translation>
 <translation id="8347227221149377169">Хэвлэх ажлууд</translation>
 <translation id="8352772353338965963">Олон хэрэглэгч бүхий нэвтрэх хэсэгт бүртгэл нэмж оруулах. Бүх нэвтэрсэн бүртгэлүүд нууц үггүйгээр нэвтрэх боломжтой учраас энэ горимыг зөвхөн итгэл хүлээсэн бүртгэлүүдэд ашиглахыг зөвлөж байна.</translation>
 <translation id="8364946094152050673">DNS хоосон байна</translation>

@@ -679,7 +679,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Excluir senha</translation>
-<translation id="7616830195948464104"><ph name="TIME" />min</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
 <translation id="7646772052135772216">A sincronização de senha não está funcionando</translation>
 <translation id="7649070708921625228">Ajuda</translation>
@@ -803,6 +802,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8917490105272468696">Sim</translation>
 <translation id="895541991026785598">Informar um problema</translation>
 <translation id="8976382372951310360">Ajuda</translation>
+<translation id="8976414606286374109">Os cartões são salvos na sua Conta do Google.</translation>
 <translation id="8981454092730389528">Controles de atividades do Google</translation>
 <translation id="8985320356172329008">Conectado(a) ao Google como</translation>
 <translation id="9000089900434778519">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável.</translation>

@@ -2290,7 +2290,6 @@
 <translation id="3468298837301810372">Метка</translation>
 <translation id="3468999815377931311">Тэлефон Android</translation>
 <translation id="3470442499439619530">Выдаліць карыстальніка</translation>
-<translation id="3471350386419633991">Каб дадаць укладку ў спіс на прагляд, націсніце на яе правай кнопкай мышы або націсніце на значок закладкі. Значок знаходзіцца на панэлі закладак.</translation>
 <translation id="3471876058939596279">Парты HDMI і USB Type-C не могуць выкарыстоўвацца для відэа адначасова. Паспрабуйце іншы відэапорт.</translation>
 <translation id="3473241910002674503">Пераход на Панэль запуску, вяртанне назад і пераключэнне праграм кнопкамі ў планшэтным рэжыме.</translation>
 <translation id="3473479545200714844">Экранная лупа</translation>
@@ -2759,7 +2758,6 @@
 <translation id="3945513714196326460">Паспрабуйце ўвесці карацейшую назву</translation>
 <translation id="3948116654032448504">&amp;Пошук відарыса праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> можа змяняць файлы ў наступных папках</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Імпартаваныя з IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Гэта праграма можа быць небяспечнай}one{Гэтыя праграмы могуць быць небяспечнымі}few{Гэтыя праграмы могуць быць небяспечнымі}many{Гэтыя праграмы могуць быць небяспечнымі}other{Гэтыя праграмы могуць быць небяспечнымі}}</translation>
 <translation id="3950820424414687140">Увайсці</translation>
@@ -3082,7 +3080,6 @@
 <translation id="4349828822184870497">Карысна</translation>
 <translation id="4350230709416545141">Заўсёды блакіраваць сайту <ph name="HOST" /> доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> запытвае пошук прылад Bluetooth паблізу. Знойдзены наступныя прылады:</translation>
 <translation id="4354073718307267720">Пытацца, калі сайт запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="4354344420232759511">Тут будуць паказвацца наведаныя вамі сайты</translation>
 <translation id="435527878592612277">Выберыце сваё фота</translation>
@@ -3344,7 +3341,6 @@
 <translation id="4625078469366263107">Уключыць праграму</translation>
 <translation id="4627427111733173920">Файлы cookie заблакіраваны</translation>
 <translation id="4627442949885028695">Працягніце з іншай прылады</translation>
-<translation id="4628757576491864469">Прылады</translation>
 <translation id="4628762811416793313">Наладжванне кантэйнера Linux не завершана. Паўтарыце спробу.</translation>
 <translation id="4629521233550547305">Адкрыць профіль "<ph name="PROFILE_NAME" />"</translation>
 <translation id="4632655012900268062">Наладзіць карткі</translation>
@@ -3511,6 +3507,7 @@
 <translation id="4830502475412647084">Ідзе ўсталяванне абнаўлення АС</translation>
 <translation id="4830573902900904548">Прыладзе <ph name="DEVICE_TYPE" /> не ўдалося падключыцца да інтэрнэту праз сетку <ph name="NETWORK_NAME" />. Выберыце іншую сетку. <ph name="LEARN_MORE_LINK_START" />Даведацца больш<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">На серверы друку знойдзены 1 прынтар</translation>
+<translation id="4834007576107377210">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя)</translation>
 <translation id="4836046166855586901">Дазволіць сайтам запытваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="4836504898754963407">Кіраваць адбіткамі пальцаў</translation>
 <translation id="4837128290434901661">Зноў зрабіць Google Пошук стандартнай пошукавай сістэмай?</translation>
@@ -5124,7 +5121,6 @@
 <translation id="6651237644330755633">Давяраць гэтаму сертыфікату пры ідэнтыфікацыі вэб-сайтаў</translation>
 <translation id="6651495917527016072">Сінхранізуйце параметры сетак Wi-Fi са сваім тэлефонам. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Інтэграцыя <ph name="MS_AD_NAME" /> з Chrome падтрымліваецца толькі на платформах архітэктуры x86_64. Прылады Chromebook, пабудаваныя на платформах архітэктуры ARM або x86, не падтрымліваюць гэту функцыянальнасць.</translation>
-<translation id="66537479323396140">Будуць выдалены гісторыя і падказкі аўтазапаўнення ў полі пошуку. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="6654509035557065241">Прыярытэтная сетка</translation>
 <translation id="6655190889273724601">Рэжым распрацоўшчыка</translation>
 <translation id="6655458902729017087">Схаваць уліковыя запісы</translation>
@@ -6707,7 +6703,6 @@
 <translation id="8363142353806532503">Мікрафон заблакіраваны</translation>
 <translation id="8366396658833131068">Падключэнне да сеткі адноўлена. Выберыце іншую сетку або націсніце ніжэй кнопку "Працягнуць", каб запусціць праграму-кіёск.</translation>
 <translation id="8366694425498033255">Клавішы для выбару</translation>
-<translation id="8368027906805972958">Прылада невядомая або не падтрымліваецца (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Адкрыць усе закладкі</translation>
 <translation id="8370294614544004647">Пры закрыцці ноўтбука пераводзіць яго ў рэжым сну</translation>
 <translation id="8371695176452482769">Гаварыце</translation>
@@ -6720,7 +6715,6 @@
 <translation id="8379991678458444070">Дадаўшы гэту ўкладку ў закладкі, вы будзеце мець да яе хуткі доступ</translation>
 <translation id="8382913212082956454">Скапіраваць &amp;адрас электроннай пошты</translation>
 <translation id="8386091599636877289">Палітыка не знойдзена.</translation>
-<translation id="838705362287678887">Каб выдаліць гісторыю <ph name="BEGIN_LINK_SEARCH" />пошуку<ph name="END_LINK_SEARCH" /> або іншых дзеянняў, перайдзіце на старонку <ph name="BEGIN_LINK_GOOGLE" />Мой Уліковы запіс Google<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">Не дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
 <translation id="8388770971141403598">Дадатковыя профілі не падтрымліваюцца</translation>
 <translation id="8389416080014625855">Стварыць QR-код для гэтай старонкі</translation>

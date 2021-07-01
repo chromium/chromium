@@ -679,7 +679,6 @@
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
 <translation id="7603852183842204213">උත්පතන අවහිරයි ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
 <translation id="7607521702806708809">මුරපදය මකන්න</translation>
-<translation id="7616830195948464104">මිනි <ph name="TIME" /></translation>
 <translation id="7638584964844754484">රහස්පදය වැරදියි</translation>
 <translation id="7646772052135772216">මුරපද සමමුහූර්තය ක්‍රියා නොකරයි</translation>
 <translation id="7649070708921625228">උදවු</translation>
@@ -803,6 +802,7 @@
 <translation id="8917490105272468696">ඔව්, මම කැමතියි</translation>
 <translation id="895541991026785598">ගැටලුවක් වාර්තා කරන්න</translation>
 <translation id="8976382372951310360">උදවු</translation>
+<translation id="8976414606286374109">කාඩ්පත් ඔබගේ Google ගිණුමට සුරැකේ.</translation>
 <translation id="8981454092730389528">Google ක්‍රියාකාරකම් පාලනය</translation>
 <translation id="8985320356172329008">Google වෙත පුරනය වූයේ</translation>
 <translation id="9000089900434778519">ඔබගේ සෙවීම් යන්ත්‍රය වන්නේ <ph name="DSE_NAME" />. අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔවුන්ගේ උපදෙස් බලන්න.</translation>

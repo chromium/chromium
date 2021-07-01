@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Bieżący styl wyświetlania to Przeplatany</translation>
 <translation id="1087788677726983142">Ukryj filtry strumienia wydarzenia</translation>
 <translation id="1088402100970133699">Nie ma poprzedniego elementu listy</translation>
-<translation id="1114836634143403764">Sugestia</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "brawo", "c": "czarli", "d": "delta", "e": "eko", "f": "fokstrot", "g": "golf", "h": "hotel", "i": "india", "j": "dżuliet","k": "kilo", "l": "lima", "m": "majk", "n": "nowember", "o": "oskar","p": "papa", "q": "kebek", "r": "romeo", "s": "sjera", "t": "tango", "u": "juniform", "v": "wiktor", "w": "łyski","x": "eks-rej", "y": "janki", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Przesuń dwoma palcami w górę</translation>
 <translation id="1126928665165112660">Bez kursywy</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Informacje o zawartości</translation>
 <translation id="2417948780551741035">Przypisy końcowe</translation>
 <translation id="2419852971200420169">Lista opisu</translation>
-<translation id="2421113964388408478">Usunięcie</translation>
 <translation id="2422937916923936891">Pole wyboru elementu menu</translation>
 <translation id="2428534162001909979">Menu poleceń</translation>
 <translation id="242998846562331953">Napisy</translation>
 <translation id="2435422727584637732">Płóciennoniebieski</translation>
+<translation id="2438712309510062123">Zasugeruj</translation>
 <translation id="2450814015951372393">Pole wyboru</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
 <translation id="2462626033734746142">Grupa przycisków radiowych</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Kliknij dwukrotnie, by rozpocząć edycję</translation>
 <translation id="2598495320872286378">Błąd gramatyczny</translation>
 <translation id="2603828437139726540">Przejdź jeden znak dalej</translation>
+<translation id="2619052155095999743">Wstaw</translation>
 <translation id="2619344480613750862">Możesz też przechodzić między sekcjami ekranu. Na przykład możesz przechodzić między Menu z aplikacjami, półką a kartami Chrome. Aby przejść do następnej sekcji, przesuń z lewej do prawej czterema palcami. Zrób to teraz, aby przejść dalej.</translation>
 <translation id="2624431853467395961">Otwórz tryb informacyjny</translation>
 <translation id="2626530649491650971">klikalny</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Ceglasty</translation>
 <translation id="4482330759234983253">Poprzednia tabela</translation>
 <translation id="4491109536499578614">Obraz</translation>
-<translation id="4505167975768625962">Wstawienie</translation>
 <translation id="4511186779140817916">Blanszowane migdały</translation>
 <translation id="451510441928265982">Nie ma poprzedniego nagłówka poziomu 2</translation>
 <translation id="4515799157838123044">Przyciemnij zawartość w tle</translation>
@@ -1009,6 +1008,7 @@
 <translation id="8212109599554677485">Zmień styl wyświetlania na Obok siebie</translation>
 <translation id="8215202828671303819">Wybór wielokrotny</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, przezroczystość <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">Usuń</translation>
 <translation id="826825447994856889">Wprowadzenie</translation>
 <translation id="827266600368092403">Rozpocznij lub zakończ wybieranie</translation>
 <translation id="827422111966801947">Indygo</translation>

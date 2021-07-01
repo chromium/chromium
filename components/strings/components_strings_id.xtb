@@ -257,7 +257,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1807528111851433570">Lembar mulai</translation>
 <translation id="1812527064848182527">lanskap</translation>
-<translation id="1814698615734239189">Aplikasi ini didesain untuk perangkat seluler. Aplikasi berjalan dalam mode kompatibilitas. Mengizinkan pengubahan ukuran dapat menimbulkan masalah termasuk aplikasi dimulai ulang.</translation>
 <translation id="1821930232296380041">Permintaan atau parameter permintaan tidak valid</translation>
 <translation id="1822540298136254167">Situs yang Anda kunjungi dan waktu yang dihabiskan untuk mengunjunginya</translation>
 <translation id="1826516787628120939">Memeriksa</translation>
@@ -676,7 +675,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3431636764301398940">Simpan kartu ini ke perangkat ini</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3435738964857648380">Keamanan</translation>
-<translation id="3435896845095436175">Aktifkan</translation>
 <translation id="3438829137925142401">Gunakan sandi yang disimpan di Akun Google Anda</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Pemilik perangkat ini menonaktifkan game dinosaurus.</translation>
@@ -812,6 +810,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3946209740501886391">Selalu tanyakan pada situs ini</translation>
 <translation id="3949571496842715403">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak menyebutkan Nama Alternatif Subjek. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="3949601375789751990">Histori browsing Anda muncul di sini</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Tidak ada metode pembayaran yang disimpan</translation>
 <translation id="3950820424414687140">Login</translation>
 <translation id="3961148744525529027">Lembar handler pembayaran setengah terbuka</translation>
@@ -819,7 +818,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3963721102035795474">Mode Pembaca</translation>
 <translation id="3963837677003247395">Lanjutkan secara manual?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs }other{Dari # situs }}</translation>
-<translation id="3970481983430640194">Anda kini dapat menarik dan mengubah ukuran aplikasi ini</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> diblokir.</translation>
 <translation id="3973357910713125165">Tombol Jalankan Pemeriksaan Keamanan Chrome, tekan Enter untuk menjalankan Pemeriksaan Keamanan di setelan Chrome</translation>
@@ -938,6 +936,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4346197816712207223">Kartu Kredit yang Diterima</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Anda baru saja memasukkan sandi ke situs penipuan. Chrome merekomendasikan Anda untuk membuka <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, serta situs lain tempat Anda menggunakan sandi ini dan mengubahnya sekarang.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> ingin memindai perangkat Bluetooth di sekitar. Perangkat berikut telah ditemukan:</translation>
 <translation id="4356973930735388585">Penyerang di situs ini mungkin berusaha memasang program berbahaya di komputer Anda yang dapat mencuri atau menghapus informasi (misalnya, foto, sandi, pesan, dan kartu kredit).</translation>
 <translation id="4358059973562876591">Template yang telah Anda tentukan mungkin tidak diterapkan karena terjadi error dengan kebijakan DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Kelola metode pembayaran...</translation>
@@ -1390,7 +1389,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6032524144326295339">Kotak surat 2</translation>
 <translation id="6032955021262906325">Jilid di kiri</translation>
 <translation id="6034000775414344507">Abu-abu Muda</translation>
-<translation id="6034062182346928710">Perubahan ukuran <ph name="APP_NAME" /> mungkin tidak sesuai. Gunakan ukuran jendela preset untuk mencegah aplikasi mengalami gangguan.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Lipatan akordeon</translation>
 <translation id="6039846035001940113">Jika masalah berlanjut, hubungi pemilik situs.</translation>
@@ -1420,7 +1418,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6120179357481664955">Ingat ID UPI Anda?</translation>
 <translation id="6123290840358279103">Lihat kartu virtual</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
-<translation id="6143538402333184781">Aplikasi ini hanya mendukung ukuran "Ponsel".</translation>
 <translation id="6146055958333702838">Periksa semua kabel dan boot ulang router, modem, atau perangkat
     jaringan lain yang mungkin Anda gunakan.</translation>
 <translation id="614940544461990577">Coba:</translation>
@@ -1968,7 +1965,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8225771182978767009">Orang yang menyiapkan komputer ini telah memilih untuk memblokir situs ini.</translation>
 <translation id="8228419419708659934">Tampilan dua halaman</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Jangan tanya saya lagi untuk aplikasi ini</translation>
 <translation id="8232343881378637145">Suhu platform</translation>
 <translation id="8238581221633243064">Buka halaman dalam tab Samaran baru</translation>
 <translation id="8241707690549784388">Halaman yang dicari menggunakan informasi yang Anda masukkan. Kembali ke halaman tersebut dapat menyebabkan pengulangan tindakan apa pun yang Anda lakukan. Apakah Anda ingin melanjutkan?</translation>
@@ -1981,7 +1977,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="825929999321470778">Tampilkan Semua Sandi Tersimpan</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8262952874573525464">Jahitan tepi di bawah</translation>
-<translation id="826298712171642726">Aktifkan Pengubahan Ukuran?</translation>
 <translation id="8265992338205884890">Data yang terlihat</translation>
 <translation id="8267698848189296333">Login sebagai <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Dokumen terpisah/Salinan tersusun</translation>
@@ -2012,6 +2007,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8355270400102541638">Konteks Error Lokal:</translation>
 <translation id="8363502534493474904">Nonaktifkan mode pesawat</translation>
 <translation id="8364627913115013041">Tidak disetel.</translation>
+<translation id="8368027906805972958">Perangkat tidak dikenal atau tidak didukung (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Layanan Google Play</translation>
 <translation id="8371889962595521444">Root certificate kustom</translation>
 <translation id="8374636051559112948">Bervariasi</translation>

@@ -257,7 +257,6 @@
 <translation id="1807246157184219062">ብርሃን</translation>
 <translation id="1807528111851433570">የመጀመሪያ ሉህ</translation>
 <translation id="1812527064848182527">የመሬት ገጽታ</translation>
-<translation id="1814698615734239189">ይህ መተግበሪያ ለተንቀሳቃሽ መሳሪያ የተሰራ ነው። በተኳኋኝነት ሁነታ ላይ በመሄድ ላይ ነው። መጠን መቀየርን ፍቀድ እንደ የመተግበሪያ ዳግም ማስጀመርን ያሉ ችግሮች ሊያጋጥም ይችላል።</translation>
 <translation id="1821930232296380041">ልክ ያልሆነ ጥያቄ ወይም የጥያቄ ልኬቶች</translation>
 <translation id="1822540298136254167">እርስዎ የሚጎበኟቸው ጣቢያዎች እና በእነሱ ላይ የሚያጠፉት ጊዜ</translation>
 <translation id="1826516787628120939">በመፈተሸ ላይ</translation>
@@ -675,7 +674,6 @@
 <translation id="3431636764301398940">ይህን ካርድ ወደዚህ መሣሪያ አስቀምጥ</translation>
 <translation id="3432601291244612633">ገጽ ይዝጉ</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
-<translation id="3435896845095436175">አንቃ</translation>
 <translation id="3438829137925142401">በእርስዎ የGoogle መለያ ውስጥ የተቀመጡ የይለፍ ቃሎችን ይጠቀሙ</translation>
 <translation id="3443726618221119081">ጁሮ-ኩ-ካይ</translation>
 <translation id="3447661539832366887">የዚህ መሣሪያ ባለቤት የዳይኖሰር ጨዋታውን አጥፍቶታል።</translation>
@@ -812,6 +810,7 @@
 <translation id="3946209740501886391">ሁልጊዜ በዚህ ጣቢያ ላይ ጠይቅ</translation>
 <translation id="3949571496842715403">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት ዕውቅና ማረጋገጫው የርዕሰ ጒዳይ አማራጭ ስሞችን አይጠቅስም። ይህ በተሳሳተ ውቅረት የተከሰተ ወይም አጥቂ የእርስዎን ግንኙነት አቋርጦ እየገባ ስለሆነ ሊሆን ይችላል።</translation>
 <translation id="3949601375789751990">የአሰሳ ታሪክዎ እዚህ ይመጣል</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">ምንም የተቀመጡ የመክፈያ ዘዴዎች የሉም</translation>
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="3961148744525529027">ክፍያ ተቆጣጣሪ ሉህ በግማሽ ተከፍቷል</translation>
@@ -819,7 +818,6 @@
 <translation id="3963721102035795474">የአንባቢ ሁነታ</translation>
 <translation id="3963837677003247395">በእጅ ይቀጥል?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ምንም}=1{ከ1 ጣቢያ }one{ከ# ጣቢያዎች }other{ከ# ጣቢያዎች }}</translation>
-<translation id="3970481983430640194">አሁን ይህን መተግበሪያ መጎተት እና መጠኑን መለወጥ ይችላሉ</translation>
 <translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ታግዷል</translation>
 <translation id="3973357910713125165">በChrome ቅንብሮች ውስጥ የደህንነት ፍተሻን ለማሄድ የChrome ደህንነት ፍተሻ ቁልፍን ያሂዱ፣ ከዚያ አስገባን ይጫኑ</translation>
@@ -940,6 +938,7 @@
 <translation id="4346197816712207223">ተቀባይነት ያላቸው ክሬዲት ካርዶች</translation>
 <translation id="4346833872170306413">ROC 8K</translation>
 <translation id="4349531505348777662">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። Chrome ወደ <ph name="WEBSITE_1" />፣ <ph name="WEBSITE_2" /> እና ይህን የይለፍ ቃል በሚጠቀሙባቸው ሌሎች ጣቢያዎች ሄደው አሁኑኑ እንዲለውጡት ይመክራል።</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> በአቅራቢያ የብሉቱዝ መሣሪያዎች ካሉ መቃኘት ይፈልጋል። የሚከተሉት መሣሪያዎች ተገኝተዋል፦</translation>
 <translation id="4356973930735388585">በዚህ ጣቢያ ላይ ያሉ አጥቂዎች መረጃዎን (ለምሳሌ፦ ፎቶዎች፣ የይለፍ ቃላት፣ መልዕክቶች እና ክሬዲት ካርዶች) ሊሰርቁ ወይም ሊሰርዙ የሚችሉ አደገኛ ፕሮግራሞችን በኮምፒውተርዎ ላይ ለመጫን ሊሞክሩ ይችላሉ።</translation>
 <translation id="4358059973562876591">በDnsOverHttpsMode መመሪያው ላይ ባለ ስህተት ምክንያት እርስዎ የገለጿቸው ቅንብር ደንቦች ላይተገበሩ ይችላሉ።</translation>
 <translation id="4358461427845829800">የመክፈያ ዘዴዎችን ያቀናብሩ...</translation>
@@ -1392,7 +1391,6 @@
 <translation id="6032524144326295339">የመልዕክት ሳጥን 2</translation>
 <translation id="6032955021262906325">በግራ በኩል ጠርዝ</translation>
 <translation id="6034000775414344507">ፈካ ያለ ግራጫ</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> በጥሩ ሁኔታ መጠኑን ላይቀየር ይችላል። መተግበሪያው አጉል ባህሪ እንዳያሳይ ቅድመ-ቅምጥ የመስኮት መጠኖችን ይጠቀሙ።</translation>
 <translation id="6034283069659657473">10x14 (የደብዳቤ ፖስታ)</translation>
 <translation id="6034514109191629503">አኮርዲዮን እጥፋት</translation>
 <translation id="6039846035001940113">ችግሩ ከቀጠለ የጣቢያ ባለቤቱን ያነጋግሩ።</translation>
@@ -1422,7 +1420,6 @@
 <translation id="6120179357481664955">የእርስዎን UPI መታወቂያ ያስታውሳሉ?</translation>
 <translation id="6123290840358279103">ምናባዊ ካርድ ይመልከቱ</translation>
 <translation id="6124432979022149706">Chrome Enterprise አያያዦች</translation>
-<translation id="6143538402333184781">ይህ መተግበሪያ የ«ስልክ» መጠንን ብቻ ነው የሚደግፈው።</translation>
 <translation id="6146055958333702838">ማናቸውም ገመዶችን ይፈትሹና እየተጠቀሙ ሊሆኑ የሚችሏቸውን ማንኛውም ራውተሮች፣
         ሞደሞችን ወይም ሌላ አውታረ መረብ መሣሪያዎችን ዳግም ያስጀምሩ።</translation>
 <translation id="614940544461990577">ይሞክሩ፦</translation>
@@ -1972,7 +1969,6 @@
 <translation id="8225771182978767009">ይህን ኮምፒውተር ያቀናበረው ሰው ይህን ጣቢያ ለማገድ መርጧል።</translation>
 <translation id="8228419419708659934">ሁለት ገጽ ዕይታ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />፣ <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">ለዚህ መተግበሪያ እንደገና አትጠይቀኝ</translation>
 <translation id="8232343881378637145">የመሣሪያ ስርዓት ሙቀት መጠን</translation>
 <translation id="8238581221633243064">ገጹን ማንነት በማያሳውቅ አዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="8241707690549784388">እየፈለጉት ያሉት ገጽ ያስገቡትን መረጃ ተጥቅሟል። ወደዛ ገጽ መመለስ ወስደውት የነበረውን ርምጃ እንዲደገም ሊያደርግ ይችላል። ለመቀጠል ይፈልጋሉ?</translation>
@@ -1985,7 +1981,6 @@
 <translation id="825929999321470778">ሁሉንም የተቀመጡ የይለፍ ቃላትን አሳይ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8262952874573525464">ከታች ጫፍ፣ ጫፉን ስፋ</translation>
-<translation id="826298712171642726">መጠን መቀየርን ያንቁ</translation>
 <translation id="8265992338205884890">የሚታይ ውሂብ</translation>
 <translation id="8267698848189296333">እንደ <ph name="USERNAME" /> በመግባት ላይ</translation>
 <translation id="8269242089528251720">የተለዩ ሰነዶች/የተጣመሩ ቅጂዎች</translation>
@@ -2016,6 +2011,7 @@
 <translation id="8355270400102541638">የአካባቢያዊ ስንክል አውድ፦</translation>
 <translation id="8363502534493474904">የአውሮፕላን ሁነታን ማጥፋት</translation>
 <translation id="8364627913115013041">አልተዋቀረም።</translation>
+<translation id="8368027906805972958">ያልታወቀ ወይም የማይደገፍ መሣሪያ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play አገልግሎቶች</translation>
 <translation id="8371889962595521444">ብጁ የስር ቅንብሮች</translation>
 <translation id="8374636051559112948">ይለያያል</translation>

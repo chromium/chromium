@@ -1547,6 +1547,7 @@
 <translation id="2659971421398561408">‏تغيير حجم قرص نظام التشغيل Crostini</translation>
 <translation id="2660779039299703961">حدث</translation>
 <translation id="266079277508604648">‏يتعذّر الاتصال بالطابعة. تحقق مما إذا كانت الطابعة مُفعّلة ومتصلة بجهاز Chromebook عن طريق Wi-Fi أو USB.</translation>
+<translation id="2661315027005813059">الصفحة المخزّنة من خلال ميزة "التخزين المؤقت للصفحات": <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">يمكنك التصفُّح بشكلٍ أسرع واستخدام بيانات أقل باستخدام الوضع البسيط. يمكنك النقر للتعرُّف على مزيد من المعلومات.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663302507110284145">اللغة</translation>
@@ -1910,6 +1911,7 @@
 <translation id="3021678814754966447">عرض م&amp;صدر الإطار</translation>
 <translation id="3022978424994383087">لم يتم استيعاب هذا.</translation>
 <translation id="3023464535986383522">الاستماع والاختيار</translation>
+<translation id="3023517118372899130">تحديد مفتاح التبديل: اختيار</translation>
 <translation id="3024374909719388945">استخدام تنسيق 24 ساعة</translation>
 <translation id="3027296729579831126">تفعيل ميزة "المشاركة عن قرب"</translation>
 <translation id="3029466929721441205">عرض أدوات قلم الشاشة في الرفّ</translation>
@@ -2292,7 +2294,6 @@
 <translation id="3468298837301810372">الاسم</translation>
 <translation id="3468999815377931311">‏هاتف Android</translation>
 <translation id="3470442499439619530">إزالة هذا المستخدم</translation>
-<translation id="3471350386419633991">يمكنك النقر بزر الماوس الأيمن على علامة تبويب أو النقر على رمز الإشارات المرجعية لإضافة علامات تبويب إلى "قائمة القراءة" ومن ثمّ الوصول إليها من "شريط الإشارات".</translation>
 <translation id="3471876058939596279">‏لا يمكن استخدام منافذ USB من نوع C وHDMI لهذا الفيديو في الوقت نفسه. عليك استخدام منفذ فيديو مختلف.</translation>
 <translation id="3473241910002674503">يمكنك الانتقال إلى الصفحة الرئيسية والصفحة السابقة والتبديل بين التطبيقات باستخدام أزرار التنقل في وضع الجهاز اللوحي.</translation>
 <translation id="3473479545200714844">مكبّر الشاشة</translation>
@@ -2529,6 +2530,7 @@
 <translation id="3722108462506185496">حدث خطأ أثناء بدء تشغيل خدمة الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
 <translation id="3727187387656390258">فحص النوافذ المنبثقة</translation>
 <translation id="372722114124766626">مرة واحدة فقط</translation>
+<translation id="3727473233247516571">الإطار الفرعي المخزّن من خلال ميزة "التخزين المؤقت للصفحات": <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">عرض الإشعارات من هاتفك</translation>
 <translation id="3728681439294129328">ضبط عنوان الشبكة</translation>
 <translation id="3729303374699765035">طلب الإذن عند محاولة موقع إلكتروني العثور على أجهزة البلوتوث المجاورة</translation>
@@ -2757,7 +2759,6 @@
 <translation id="3945513714196326460">جرِّب استخدام اسم أقصر.</translation>
 <translation id="3948116654032448504">&amp;بحث على <ph name="SEARCH_ENGINE" /> عن صورة</translation>
 <translation id="3948507072814225786">بإمكان <ph name="ORIGIN" /> تعديل الملفات في المجلدات التالية:</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">‏تمّ الاستيراد من IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{قد يكون هذا التطبيق خطيرًا}zero{قد تكون هذه التطبيقات خطيرة}two{قد يكون هذان التطبيقان خطيرين}few{قد تكون هذه التطبيقات خطيرة}many{قد تكون هذه التطبيقات خطيرة}other{قد تكون هذه التطبيقات خطيرة}}</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
@@ -3080,7 +3081,6 @@
 <translation id="4349828822184870497">مفيد</translation>
 <translation id="4350230709416545141">حظر النطاق <ph name="HOST" /> دائمًا من الوصول إلى موقعك الجغرافي</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152">يريد <ph name="ORIGIN" /> البحث عن أجهزة البلوتوث المجاورة. وتم العثور على الأجهزة التالية:</translation>
 <translation id="4354073718307267720">طلب الإذن عند محاولة موقع إلكتروني إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
 <translation id="4354344420232759511">ستظهر المواقع التي تزورها هنا.</translation>
 <translation id="435527878592612277">اختيار صورتك</translation>
@@ -3342,7 +3342,6 @@
 <translation id="4625078469366263107">تفعيل التطبيق</translation>
 <translation id="4627427111733173920">تم حظر ملفات تعريف الارتباط</translation>
 <translation id="4627442949885028695">متابعة من جهاز آخر</translation>
-<translation id="4628757576491864469">الأجهزة</translation>
 <translation id="4628762811416793313">‏لم يكتمل إعداد حاوية نظام التشغيل Linux. يُرجى إعادة المحاولة.</translation>
 <translation id="4629521233550547305">فتح ملف <ph name="PROFILE_NAME" /> الشخصي</translation>
 <translation id="4632655012900268062">تخصيص البطاقات</translation>
@@ -3509,6 +3508,7 @@
 <translation id="4830502475412647084">جارٍ تثبيت تحديث لنظام التشغيل</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> غير قادر على الاتصال بالإنترنت باستخدام <ph name="NETWORK_NAME" />. يُرجى اختيار شبكة أخرى. <ph name="LEARN_MORE_LINK_START" />مزيد من المعلومات<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">تم العثور على طابعة واحدة من خادم الطباعة.</translation>
+<translation id="4834007576107377210">اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="4836046166855586901">طلب الإذن عندما يحاول أحد المواقع الإلكترونية رصد استخدامك النشط لهذا الجهاز</translation>
 <translation id="4836504898754963407">إدارة بصمات الإصبع</translation>
 <translation id="4837128290434901661">‏هل تريد التغيير مرة أخرى إلى "بحث Google"؟</translation>
@@ -3745,6 +3745,7 @@
 <translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 مع ترميز RSA</translation>
 <translation id="5090637338841444533">المواقع الإلكترونية التي لا يُسمح لها بتتبّع موضع الكاميرا</translation>
+<translation id="5093569275467863761">الإطار الفرعي المخزّن من خلال ميزة "التخزين المؤقت للصفحات" في وضع "التصفّح المتخفي": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">الاتصال بتطبيقات التعاون الأصلية</translation>
 <translation id="5097002363526479830">تعذّر الاتصال بشبكة "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">الأداة: <ph name="PRINT_NAME" /></translation>
@@ -5126,7 +5127,6 @@
 <translation id="6651237644330755633">الوثوق بهذه الشهادة لتحديد هوية المواقع الإلكترونية</translation>
 <translation id="6651495917527016072">‏يمكنك مزامنة شبكات Wi-Fi مع هاتفك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">‏يتم دعم دمج Chrome <ph name="MS_AD_NAME" /> على الأنظمة الأساسية x86_64 فقط. ولا تدعم أجهزة Chromebook التي تم إنشاؤها في أعلى ARM أو النظام الأساسي x86 هذه الوظيفة.</translation>
-<translation id="66537479323396140">‏يتم محو السجلّ وعمليات الإكمال التلقائي في مربّع البحث. وقد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح على <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">اختيار الشبكة كمفضَّلة</translation>
 <translation id="6655190889273724601">وضع مطوّر البرامج</translation>
 <translation id="6655458902729017087">إخفاء الحسابات</translation>
@@ -6404,6 +6404,7 @@
 <translation id="8032244173881942855">يتعذّر إرسال علامة التبويب.</translation>
 <translation id="8033827949643255796">تم التحديد</translation>
 <translation id="8033958968890501070">انتهاء المهلة</translation>
+<translation id="8035059678007243127">الصفحة المخزّنة من خلال ميزة "التخزين المؤقت للصفحات" في وضع "التصفّح المتخفي": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8037117027592400564">قراءة جميع النصوص المنطوقة باستخدام الكلام المركب</translation>
 <translation id="8037357227543935929">الطلب (تلقائي)</translation>
 <translation id="803771048473350947">ملف</translation>
@@ -6533,6 +6534,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">‏من خلال <ph name="BEGIN_LINK" />مبادرة حماية الخصوصية<ph name="END_LINK" />، نعمل في Chrome على تطوير تقنيات جديدة لحمايتك من آليات التتبُّع في جميع المواقع الإلكترونية مع الحفاظ على محتوى شبكة الإنترنت المفتوحة المتاحة للجميع.</translation>
 <translation id="8161293209665121583">وضع القارئ لصفحات الويب</translation>
+<translation id="8162307956032783161">تحديد مفتاح التبديل: التالي</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{نقل علامة تبويب واحدة إلى نافذة جديدة}zero{نقل علامات تبويب إلى نافذة جديدة}two{نقل علامتَي تبويب إلى نافذة جديدة}few{نقل علامات تبويب إلى نافذة جديدة}many{نقل علامات تبويب إلى نافذة جديدة}other{نقل علامات تبويب إلى نافذة جديدة}}</translation>
 <translation id="8165997195302308593">‏إعادة توجيه منفذ Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
@@ -6673,6 +6675,7 @@
 <translation id="8317671367883557781">إضافة اتصال شبكة</translation>
 <translation id="8319414634934645341">استخدام المفتاح الموسع</translation>
 <translation id="8321476692217554900">الإشعارات</translation>
+<translation id="8321492415476219409">تحديد مفتاح التبديل: السابق</translation>
 <translation id="8321837372750396788">ستتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">تم حظر دخول هذه الصفحة إلى الميكروفون التابع لك.</translation>
 <translation id="8323167517179506834">‏اكتب عنوان URL</translation>
@@ -6708,7 +6711,6 @@
 <translation id="8363142353806532503">تم حظر استخدام الميكروفون</translation>
 <translation id="8366396658833131068">تمت استعادة اتصال الشبكة. يُرجى اختيار شبكة أخرى أو الضغط على الزر "متابعة" أدناه لتشغيل تطبيق الكشك.</translation>
 <translation id="8366694425498033255">مفاتيح التحديد</translation>
-<translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;فتح كل الإشارات المرجعية</translation>
 <translation id="8370294614544004647">السكون عند غلق الكمبيوتر المحمول</translation>
 <translation id="8371695176452482769">تحدث الآن</translation>
@@ -6721,7 +6723,6 @@
 <translation id="8379991678458444070">يمكنك الرجوع إلى هنا بسرعة من خلال وضع إشارة مرجعية على علامة التبويب هذه.</translation>
 <translation id="8382913212082956454">نسخ عنوان البريد الإل&amp;كتروني</translation>
 <translation id="8386091599636877289">تعذَّر العثور على السياسة.</translation>
-<translation id="838705362287678887">‏لمحو <ph name="BEGIN_LINK_SEARCH" />سجلّ البحث<ph name="END_LINK_SEARCH" /> أو غيره من السجلّات، انتقِل إلى صفحة <ph name="BEGIN_LINK_GOOGLE" />حسابي على Google<ph name="END_LINK_GOOGLE" />.</translation>
 <translation id="8387361103813440603">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على موقعك الجغرافي</translation>
 <translation id="8388770971141403598">لا يمكن استخدام الملفات الشخصية الثانوية.</translation>
 <translation id="8389416080014625855">إنشاء رمز استجابة سريعة لهذه الصفحة</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Mtindo wa onyesho wa sasa ni wa mchanganyiko</translation>
 <translation id="1087788677726983142">Ficha vichujio vya mtiririko wa tukio</translation>
 <translation id="1088402100970133699">Hakuna kipengee cha orodha kilichotangulia</translation>
-<translation id="1114836634143403764">Pendekezo</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Telezesha vidole viwili kuelekea juu</translation>
 <translation id="1126928665165112660">Si italiki</translation>
@@ -203,11 +202,11 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="2417569100218200841">Maelezo ya maudhui</translation>
 <translation id="2417948780551741035">Maelezo ya mwisho wa kitabu</translation>
 <translation id="2419852971200420169">Orodha ya ufafanuzi</translation>
-<translation id="2421113964388408478">Ufutaji</translation>
 <translation id="2422937916923936891">Kisanduku cha kuteua cha kipengee cha menyu</translation>
 <translation id="2428534162001909979">Menyu za Amri</translation>
 <translation id="242998846562331953">Manukuu</translation>
 <translation id="2435422727584637732">Samawati</translation>
+<translation id="2438712309510062123">Pendekeza</translation>
 <translation id="2450814015951372393">Kisanduku cha kuteua</translation>
 <translation id="2461822463642141190">Ya sasa</translation>
 <translation id="2462626033734746142">Vitufe kadhaa vya mviringo</translation>
@@ -226,6 +225,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="2592212930811759050">Gusa mara mbili ili uanze kubadilisha</translation>
 <translation id="2598495320872286378">Kosa la kisarufi</translation>
 <translation id="2603828437139726540">Sogeza mbele kwa herufi moja</translation>
+<translation id="2619052155095999743">Ingiza</translation>
 <translation id="2619344480613750862">Unaweza pia kusogeza kutoka sehemu moja ya skrini hadi nyingine. Kwa mfano, unaweza kusogeza kati ya kifungua programu, rafu na vichupo vyako vya Chrome. Ili uende kwenye sehemu inayofuata, telezesha vidole vinne kutoka kushoto kuelekea kulia. Jaribu sasa ili uendelee.</translation>
 <translation id="2624431853467395961">Fungua hali ya kujifunza</translation>
 <translation id="2626530649491650971">kinabofyeka</translation>
@@ -507,7 +507,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="4479068155583208887">Nyekundu Iliyokolea</translation>
 <translation id="4482330759234983253">Jedwali lililotangulia</translation>
 <translation id="4491109536499578614">Picha</translation>
-<translation id="4505167975768625962">Uwekaji</translation>
 <translation id="4511186779140817916">Kahawia Isiyokolea</translation>
 <translation id="451510441928265982">Hakuna kichwa cha kiwango cha pili kilichotangulia</translation>
 <translation id="4515799157838123044">Fanya maudhui ya mandhari nyuma yasionekane vizuri</translation>
@@ -1010,6 +1009,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="8212109599554677485">Badilisha mtindo wa onyesho uwe upande kwa upande</translation>
 <translation id="8215202828671303819">Chaguo nyingi</translation>
 <translation id="8249864170673238087">Kutopitisha nuru kwa <ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">Futa</translation>
 <translation id="826825447994856889">Utangulizi</translation>
 <translation id="827266600368092403">Anza au maliza kuteua</translation>
 <translation id="827422111966801947">Nili</translation>

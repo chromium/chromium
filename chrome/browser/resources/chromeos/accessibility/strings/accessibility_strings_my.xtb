@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">လက်ရှိ မျက်နှာပြင်ပြသမှုပုံစံသည် အပေါ်အောက်ပုံစံ ဖြစ်သည်</translation>
 <translation id="1087788677726983142">အစီအစဉ် ထုတ်လွှင့်မှု စစ်ထုတ်ချက်များကို ဖျောက်ထားပါ</translation>
 <translation id="1088402100970133699">ယခင် စာရင်းအကြောင်းအရာ မရှိပါ</translation>
-<translation id="1114836634143403764">အကြံပြုချက်</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">အပေါ်သို့ လက်နှစ်ချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="1126928665165112660">စာလုံးစောင်း မဟုတ်ပါ</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">အကြောင်းအရာ အင်ဖို</translation>
 <translation id="2417948780551741035">အဆုံးသတ် မှတ်ချက်များ</translation>
 <translation id="2419852971200420169">အကြောင်းအရာ စာရင်း</translation>
-<translation id="2421113964388408478">ဖျက်ခြင်း</translation>
 <translation id="2422937916923936891">မီနူး အရာ စစ်ကြည့်ရန် အကွက်</translation>
 <translation id="2428534162001909979">အမိန့်မီနူးများ</translation>
 <translation id="242998846562331953">စာတန်းထိုး</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">စတင်တည်းဖြတ်ရန် နှစ်ချက်တို့ပါ</translation>
 <translation id="2598495320872286378">သဒ္ဒါ အမှား</translation>
 <translation id="2603828437139726540">စာလုံးတစ်လုံးစာ ရှေ့သို့ကျော်ရန်</translation>
+<translation id="2619052155095999743">ထည့်သွင်းရန်</translation>
 <translation id="2619344480613750862">ဖန်သားပြင်ရှိ ကဏ္ဍများအကြားလည်း ရွှေ့နိုင်သည်။ ဥပမာ စတင်စနစ်၊ စင်နှင့် သင့် Chrome တဘ်များအကြား ရွှေ့နိုင်သည်။ ကဏ္ဍနောက်တစ်ခုသို့ ရွှေ့ရန် လက်လေးချောင်းဖြင့် ဘယ်မှညာသို့ ပွတ်ဆွဲပါ။ ရှေ့ဆက်ရန် ယခုစမ်းကြည့်လိုက်ပါ။</translation>
 <translation id="2624431853467395961">လေ့လာခြင်းမုဒ်ကို ဖွင့်ပါ</translation>
 <translation id="2626530649491650971">ကလစ်ရနိုင်</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">အုတ်ခဲနီ</translation>
 <translation id="4482330759234983253">ယခင်ဇယား</translation>
 <translation id="4491109536499578614">ပုံ</translation>
-<translation id="4505167975768625962">ထည့်သွင်းခြင်း</translation>
 <translation id="4511186779140817916">မက်မွန်စေ့ဖျော့</translation>
 <translation id="451510441928265982">ယခင် အဆင့် ၂ ခေါင်းစီး မရှိပါ</translation>
 <translation id="4515799157838123044">နောက်ခံအကြောင်းအရာ မှိန်ထားရန်</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">မျက်နှာပြင်ပြသမှုပုံစံကို ဘေးချင်းကပ်ပုံစံသို့ ပြောင်းရန်</translation>
 <translation id="8215202828671303819">အမျာအပြား ရွေးရန်</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />၊ <ph name="OPACITY_PERCENTAGE" />% အလင်းပိတ်မှု</translation>
+<translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="826825447994856889">နိဒါန်း</translation>
 <translation id="827266600368092403">ရွေးချယ်မှု စတင်ရန် သို့မဟုတ် အဆုံးသတ်ရန်</translation>
 <translation id="827422111966801947">မဲနယ်</translation>

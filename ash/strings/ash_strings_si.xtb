@@ -137,6 +137,7 @@
 <translation id="1990046457226896323">කථන ගොනු බාගන්නා ලදී</translation>
 <translation id="1993072747612765854">නවතම <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීන කිරීම ගැන තව දැන ගන්න</translation>
 <translation id="1998100899771863792">වත්මන් වැඩතලය</translation>
+<translation id="1999628559811343244">ජාල පැකට් ග්‍රහණය ආරම්භ විය</translation>
 <translation id="2016340657076538683">පණිවිඩයක් ටයිප් කරන්න</translation>
 <translation id="2018630726571919839">මට විහිළුවක් කියන්න</translation>
 <translation id="2021864487439853900">අගුලු හැරීමට ක්ලික් කරන්න</translation>
@@ -157,7 +158,6 @@
 <translation id="2132302418721800944">පූර්ණ තිරය පටිගත කරන්න</translation>
 <translation id="2135456203358955318">ඈඳන ලද විශාලකය</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: යළි උත්සාහ කරන්න</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">දළ විශ්ලේෂණයෙන් පිටවීමට ඇඟිලි තුනකින් පහළට ස්වයිප් කරන්න</translation>
 <translation id="2208323208084708176">එකාබද්ධ ඩෙස්ක්ටොප් ප්‍රකාරය</translation>
 <translation id="2220572644011485463">PIN අංකය හෝ මුරපදය</translation>
@@ -728,6 +728,7 @@
 <translation id="6751826523481687655">කාර්ය සාධන අනුරේඛනය ක්‍රියාත්මකයි</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> මේසය ඉවත් කර <ph name="RECEIVE_DESK" /> මේසය සමඟ ඒකාබද්ධ කෙරිණි</translation>
 <translation id="6757237461819837179">මාධ්‍ය වාදනය නොවේ</translation>
+<translation id="6773040085467426602">සිදු වෙමින් පවතින පැකට් ග්‍රහණ මෙහෙයුම් නැවැත්වීමට නවත්වන්න ක්ලික් කරන්න.</translation>
 <translation id="6777216307882431711">සම්බන්ධිත USB-C උපාංග බල ගැන්වේ</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6803622936009808957">සහාය වන විසඳුම් හමු නොවුන නිසා ප්‍රදර්ශන කැඩපත්කරනය කළ නොහැකි විය. ඒ වෙනුවට දිගු කළ ඩෙස්ක්ටොප් එකට ඇතුළු විය.</translation>
@@ -941,6 +942,7 @@
 <translation id="8433977262951327081">රාක්කය තුළ ආදාන විකල්ප මෙනු බුබුළ පෙන්වීමේ කෙටි මග වෙනස් කර ඇත. <ph name="OLD_SHORTCUT" /> වෙනුවට <ph name="NEW_SHORTCUT" /> භාවිත කරන්න.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> මේසය ක්‍රියාත්මක කළා</translation>
 <translation id="8452135315243592079">SIM පත අතුරුදහන්</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">කථා කිරීමට තෝරන්න වසන්න</translation>
 <translation id="847056008324733326">සංදර්ශන පරිමාණ සැකසීම්</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> හට <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ඇත.</translation>

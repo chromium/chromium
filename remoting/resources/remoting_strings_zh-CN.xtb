@@ -24,6 +24,7 @@
 如果“<ph name="SERVICE_SCRIPT_NAME" />”已处于选中状态，请先取消选中，然后再次勾选。</translation>
 <translation id="225614027745146050">欢迎</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
+<translation id="2329392777730037872">未能在客户端上打开 <ph name="URL" />。</translation>
 <translation id="2333212046079545895">版权所有 2021 Google LLC。保留所有权利。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2366718077645204424">无法连接到主机，这可能是由您所使用网络的配置导致的。</translation>
@@ -88,6 +89,7 @@
 <translation id="4867841927763172006">发送PrtScn</translation>
 <translation id="4974476491460646149">与“<ph name="HOSTNAME" />”的连接已关闭</translation>
 <translation id="4985296110227979402">您需要先设置计算机，然后才能进行远程访问</translation>
+<translation id="4987330545941822761">Chrome 远程桌面无法确定应使用哪款浏览器在本地打开网址。请从下面的列表中选择。</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" />（离线）</translation>
 <translation id="507204348399810022">确定要停用与“<ph name="HOSTNAME" />”的远程连接吗？</translation>
 <translation id="5170982930780719864">主机 ID 无效。</translation>
@@ -135,6 +137,7 @@
 <translation id="7144878232160441200">重试</translation>
 <translation id="7312846573060934304">主机未连接到网络。</translation>
 <translation id="7319983568955948908">停止共享</translation>
+<translation id="7359298090707901886">无法使用所选浏览器在本地计算机上打开网址。</translation>
 <translation id="7401733114166276557">Chrome 远程桌面</translation>
 <translation id="7434397035092923453"><ph name="CLIENT_USERNAME" /> 访问客户端的请求遭拒。</translation>
 <translation id="7444276978508498879">已连接客户端：<ph name="CLIENT_USERNAME" />。</translation>

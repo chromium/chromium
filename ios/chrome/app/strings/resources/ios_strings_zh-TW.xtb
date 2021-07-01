@@ -679,7 +679,6 @@
 <translation id="7600965453749440009">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">刪除密碼</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> 分鐘</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="7649070708921625228">說明</translation>
@@ -803,6 +802,7 @@
 <translation id="8917490105272468696">是，我同意</translation>
 <translation id="895541991026785598">回報問題</translation>
 <translation id="8976382372951310360">說明</translation>
+<translation id="8976414606286374109">信用卡會儲存至你的 Google 帳戶。</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
 <translation id="9000089900434778519">你的搜尋引擎是 <ph name="DSE_NAME" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>

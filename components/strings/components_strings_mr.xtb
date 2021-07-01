@@ -261,7 +261,6 @@
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1807528111851433570">शीट सुरू करा</translation>
 <translation id="1812527064848182527">लॅंडस्केप</translation>
-<translation id="1814698615734239189">हे ॲप मोबाइल डिव्हाइससाठी डिझाइन केलेले आहे. ते कंपॅटिबिलिटी मोडमध्ये रन होत आहे. आकार बदलण्याला अनुमती दिल्यामुळे ॲप पुन्हा सुरू होण्याच्या समावेशासह समस्या येऊ शकतात.</translation>
 <translation id="1821930232296380041">अवैध विनंती किंवा विनंती मापदंड</translation>
 <translation id="1822540298136254167">तुम्ही भेट देत असलेल्या वेबसाइट आणि त्यावर व्यतीत केलेला वेळ</translation>
 <translation id="1826516787628120939">तपासत आहे</translation>
@@ -680,7 +679,6 @@
 <translation id="3431636764301398940">या डिव्हाइसवर हे कार्ड सेव्ह करा</translation>
 <translation id="3432601291244612633">पेज बंद करा</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
-<translation id="3435896845095436175">सुरू करा</translation>
 <translation id="3438829137925142401">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड वापरा</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">या डिव्हाइसच्या मालकाने डायनासोर गेम बंद केला आहे.</translation>
@@ -816,6 +814,7 @@
 <translation id="3946209740501886391">नेहमी या साइटवर विचारा</translation>
 <translation id="3949571496842715403">हा सर्व्हर <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षा सर्टिफिकेट विषय पर्यायी नावांचा उल्लेख करत नाही. हे कदाचित चुकीच्या कॉंफिगरेशनमुळे होत आहे किंवा हल्लेखोर तुमच्या कनेक्शनमध्ये अडथळा आणत आहे.</translation>
 <translation id="3949601375789751990">तुमचा ब्राउझिंग इतिहास येथे दिसतो</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">सेव्ह केलेल्या पेमेंट पद्धती नाहीत</translation>
 <translation id="3950820424414687140">साइन इन करा</translation>
 <translation id="3961148744525529027">पेमेंट हँडलर शीट अर्धे उघडलेले आहे</translation>
@@ -823,7 +822,6 @@
 <translation id="3963721102035795474">वाचक मोड</translation>
 <translation id="3963837677003247395">मॅन्‍युअली सुरू ठेवायचे आहे का?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{काहीही नाही}=1{1 साइटकडून }other{# साइटकडून }}</translation>
-<translation id="3970481983430640194">तुम्ही आता हे ॲप ड्रॅग करू शकता आणि त्याचा आकार बदलू शकता</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> अवरोधित केले आहे</translation>
 <translation id="3973357910713125165">Chrome सुरक्षितता तपासणी रन करा बटण, Chrome सेटिंग्जमध्ये सुरक्षितता तपासणी रन करण्यासाठी एंटर दाबा</translation>
@@ -947,6 +945,7 @@
 <translation id="4346197816712207223">स्वीकारली जाणारी क्रेडिट कार्डे</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुम्ही हा पासवर्ड जेथे वापरता अशा <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> आणि इतर साइटवर जाण्याची आणि तो आता बदलण्याची Chrome शिफारस करते.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> ला जवळपासची ब्लूटूथ डिव्हाइस स्कॅन करायची आहेत. खालील डिव्हाइस आढळली:</translation>
 <translation id="4356973930735388585">या साइट वरील आक्रमणकर्ते तुमची माहिती (उदाहरणार्थ, फोटो, पासवर्ड, मेसेज आणि क्रेडिट कार्ड) चोरणारे किंवा हटविणारे धोकादायक प्रोग्राम तुमच्या कॉंप्युटरवर इंस्टॉल करण्‍याचा प्रयत्न करू शकतात.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode धोरणामधील एररमुळे तुम्ही नमूद केलेली टेम्पलेट कदाचित लागू केली जाऊ शकत नाहीत.</translation>
 <translation id="4358461427845829800">पेमेंट पद्धती व्यवस्थापित करा</translation>
@@ -1399,7 +1398,6 @@
 <translation id="6032524144326295339">मेलबॉक्स २</translation>
 <translation id="6032955021262906325">बाइंड लेफ्ट</translation>
 <translation id="6034000775414344507">फिकट राखाडी</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> योग्यप्रकारे आकार बदलू शकणार नाही. ॲपला गैरवर्तन करण्यापासून रोखण्यासाठी, प्रीसेट विंडोचे आकार वापरा.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">ॲकॉर्डियन फोल्ड</translation>
 <translation id="6039846035001940113">समस्या कायम राहिल्यास साइटच्या मालकाशी संपर्क साधा.</translation>
@@ -1429,7 +1427,6 @@
 <translation id="6120179357481664955">तुमचा UPI आयडी लक्षात ठेवायचा आहे का?</translation>
 <translation id="6123290840358279103">व्हर्च्युअल कार्ड पहा</translation>
 <translation id="6124432979022149706">Chrome एंटरप्राइझ कनेक्टर</translation>
-<translation id="6143538402333184781">हे ॲप फक्त "फोन" च्या आकाराला सपोर्ट करते.</translation>
 <translation id="6146055958333702838">कोणत्याही केबल तपासा आणि कोणतेही राउटर, मोडेम किंवा तुम्ही
 वापरत असलेले
         अन्य नेटवर्क डिव्हाइसेस रीबूट करा.</translation>
@@ -1980,7 +1977,6 @@
 <translation id="8225771182978767009">ज्या व्यक्तीने हा कॉंप्युटर सेट केला त्या व्यक्तीने ही साइट ब्लॉक करण्याचे निवडले आहे.</translation>
 <translation id="8228419419708659934">दोन पेज दृश्य</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">या ॲपसाठी मला पुन्हा विचारू नका</translation>
 <translation id="8232343881378637145">प्लॅटफॉर्मचे तापमान</translation>
 <translation id="8238581221633243064">पेज नवीन गुप्त टॅबमध्ये उघडा</translation>
 <translation id="8241707690549784388">तुम्ही जे पेज शोधत आहत ते तुम्ही एंटर केलेली माहिती वापरत आहे. त्या पेजकडे परत गेल्यास कदाचित तुम्ही केलेल्या कोणत्याही क्रियेची पुनरावृत्ती होईल. तुम्ही सुरू ठेवू इच्छिता?</translation>
@@ -1993,7 +1989,6 @@
 <translation id="825929999321470778">सेव्ह केलेले सर्व पासवर्ड दाखवा</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8262952874573525464">एज स्टिच बॉटम</translation>
-<translation id="826298712171642726">आकार बदलणे सुरू करायचे आहे का?</translation>
 <translation id="8265992338205884890">दृश्यमान डेटा</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> म्हणून साइन इन करीत आहे</translation>
 <translation id="8269242089528251720">वेगळे दस्तऐवज/संकलित केलेल्या प्रती</translation>
@@ -2024,6 +2019,7 @@
 <translation id="8355270400102541638">स्थानिक क्रॅश संदर्भ:</translation>
 <translation id="8363502534493474904">विमान मोड बंद करा</translation>
 <translation id="8364627913115013041">सेट केलेले नाही.</translation>
+<translation id="8368027906805972958">अज्ञात किंवा सपोर्ट नसलेले डिव्हाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play सेवा</translation>
 <translation id="8371889962595521444">कस्टम रूट सर्टिफिकेट</translation>
 <translation id="8374636051559112948">बदलते</translation>
@@ -2041,6 +2037,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमची कुकी प्राधान्ये व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="8433057134996913067">हे तुम्हाला बहुतांश वेबसाइट वरून साइन आउट करेल.</translation>
 <translation id="8437238597147034694">&amp;हलवा पूर्ववत करा</translation>
+<translation id="8438476240229491014">हे सेटिंग लक्षात ठेवा</translation>
 <translation id="8438786541497918448">कॅमेरा आणि मायक्रोफोन वापरायचा का?</translation>
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
 <translation id="8457125768502047971">अनिश्चित</translation>

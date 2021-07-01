@@ -946,17 +946,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (1 değeri) ayarlanırsa <ph name="PRODUCT_OS_NAME" /> cihaza sadece önemli güvenlik veya kararlılık düzeltmelerinin uygulanması sağlanır.
 
       <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (2 değeri) ayarlanırsa giriş ekranında tarayıcıya hiçbir varyasyonun uygulanmasına izin verilmez. Bu modun, <ph name="PRODUCT_OS_NAME" /> geliştiricilerinin kritik güvenlik düzeltmelerini zamanında sağlamalarını engelleyebileceğini ve dolayısıyla önerilmediğini lütfen unutmayın.</translation>
-<translation id="2216380260552785166">Bu politika, <ph name="PRODUCT_NAME" /> ürününün Eski Tarayıcı Desteği özelliğinin site listesi/gri liste politikalarını nasıl yorumladığını kontrol eder. Şu politikaları etkiler: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> ve <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      "Varsayılan", (0) değerine ayarlanırsa veya ayarlanmazsa URL eşleşmesi daha az katı kurallı olur. "/" karakterini içermeyen kurallar, URL'nin ana makine adının herhangi bir yerinde alt dize arar.
-
-      "Katı", (1) değerine ayarlanırsa URL eşleşmesi katı kurallı olur. "/" karakterini içermeyen kurallar, yalnızca ana makine adının sonunda eşleşir. Alan adı sınırında da bulunmaları gerekir. Bu, <ph name="MS_IE_PRODUCT_NAME" /> ve <ph name="MS_EDGE_PRODUCT_NAME" /> ile daha uyumludur.
-
-      Örneğin, "example.com" kuralıyla:
-
-      "http://example.com/" ve "http://subdomain.example.com/" ayrıştırma modundan bağımsız olarak eşleşir.
-
-      "http://notexample.com/", "http://example.com.invalid.com/" ve "http://example.comabc/" yalnızca "Varsayılan" modda eşleşir.</translation>
 <translation id="2221850122314326571">Bu ayar etkinleştirildiğinde <ph name="PRODUCT_NAME" /> sunucu sertifikalarının doğrulamasını yerleşik sertifika doğrulayıcıyı kullanarak yerine getirir.
       Bu ayar devre dışı bırakıldığında <ph name="PRODUCT_NAME" /> sunucu sertifikalarının doğrulamasını platform tarafından sağlanan eski sertifika doğrulayıcıyı kullanarak yerine getirir.
       Bu ayar belirtilmezse yerleşik veya eski sertifika doğrulayıcı kullanılabilir.

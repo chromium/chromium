@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">El estilo de presentación actual es intercalado</translation>
 <translation id="1087788677726983142">Ocultar filtros de emisión de eventos</translation>
 <translation id="1088402100970133699">No hay ningún elemento de la lista anterior</translation>
-<translation id="1114836634143403764">Sugerencia</translation>
 <translation id="1120743664840974483">{"a": "Alicante", "b": "Barcelona", "c": "Cáceres", "d": "Dinamarca", "e": "España", "f": "Francia", "g": "Granada", "h": "Huelva", "i": "Italia", "j": "Jaén","k": "kilo", "l": "Lugo", "m": "Madrid", "n": "Navarra", "ñ": "ñoño", "o": "Oviedo","p": "Pamplona", "q": "queso", "r": "Roma", "s": "Sevilla", "t": "Toledo", "u": "Ucrania", "v": "Vitoria", "w": "Washington","x": "xilófono", "y": "Yugoslavia", "z": "Zaragoza"}</translation>
 <translation id="1120938014254001895">Desliza dos dedos hacia arriba</translation>
 <translation id="1126928665165112660">Sin cursiva</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Información del contenido</translation>
 <translation id="2417948780551741035">Notas finales</translation>
 <translation id="2419852971200420169">Lista de descripciones</translation>
-<translation id="2421113964388408478">Eliminación</translation>
 <translation id="2422937916923936891">Casilla de verificación de elemento de menú</translation>
 <translation id="2428534162001909979">Menús de comandos</translation>
 <translation id="242998846562331953">Subtítulo</translation>
 <translation id="2435422727584637732">Azul intenso</translation>
+<translation id="2438712309510062123">Sugerir</translation>
 <translation id="2450814015951372393">Casilla de verificación</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462626033734746142">Grupo de botones de opción</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Toca dos veces para empezar a editar</translation>
 <translation id="2598495320872286378">Error de gramática</translation>
 <translation id="2603828437139726540">Avanzar un carácter</translation>
+<translation id="2619052155095999743">Insertar</translation>
 <translation id="2619344480613750862">También puedes desplazarte por secciones de la pantalla. Por ejemplo, puedes moverte entre el menú de aplicaciones, la estantería y las pestañas de Chrome. Para ir a la siguiente sección, desliza cuatro dedos de izquierda a derecha. Pruébalo ahora para continuar.</translation>
 <translation id="2624431853467395961">Abrir modo de aprendizaje</translation>
 <translation id="2626530649491650971">elemento en el que se puede hacer clic</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Rojo ladrillo</translation>
 <translation id="4482330759234983253">Tabla anterior</translation>
 <translation id="4491109536499578614">Imagen</translation>
-<translation id="4505167975768625962">Inserción</translation>
 <translation id="4511186779140817916">Blanco almendra</translation>
 <translation id="451510441928265982">No hay ningún título de nivel 2 anterior</translation>
 <translation id="4515799157838123044">Sombrear contenido en segundo plano</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Cambiar el estilo de presentación al formato en paralelo</translation>
 <translation id="8215202828671303819">Selección múltiple</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % de opacidad.</translation>
+<translation id="8261506727792406068">Eliminar</translation>
 <translation id="826825447994856889">Introducción</translation>
 <translation id="827266600368092403">Inicia o termina la selección</translation>
 <translation id="827422111966801947">Índigo</translation>

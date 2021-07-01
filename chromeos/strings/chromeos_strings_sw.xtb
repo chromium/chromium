@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Mfumo</translation>
 <translation id="2740531572673183784">Sawa</translation>
 <translation id="2751739896257479635">Uthibitisho wa EAP wa awamu ya pili</translation>
+<translation id="2783010256799387990">LIMEFAULU</translation>
 <translation id="2789486458103222910">Sawa</translation>
 <translation id="2805756323405976993">Programu</translation>
 <translation id="2862104018715411648">Weka hati yako kwenye kichanganuzi kisha uchague 'Changanua' ili uanze</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Muda wa kutumia nenosiri utaisha baada ya <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Hakuna kazi za kuchapisha zinazoendelea</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
+<translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Usitekeleze</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Hifadhi Yangu</translation>
@@ -228,7 +230,6 @@
 <translation id="5691511426247308406">Familia</translation>
 <translation id="5752751666635965375">Tengeneza mchezo wako</translation>
 <translation id="5760715441271661976">Hali ya Ukurasa wa Mwanzo</translation>
-<translation id="5797428682393400134">LIMEFAULU</translation>
 <translation id="5832805196449965646">Ongeza Mtumiaji Mwingine</translation>
 <translation id="583281660410589416">Haijulikani</translation>
 <translation id="5849570051105887917">Msimbo wa mtoa huduma za nyumbani</translation>
@@ -295,6 +296,7 @@
 <translation id="7144878232160441200">Jaribu tena</translation>
 <translation id="714876143603641390">Muunganisho wa LAN</translation>
 <translation id="7162487448488904999">Matunzio</translation>
+<translation id="7172721935181587524">Picha moja</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> hii inadhibitiwa na <ph name="MANAGER" />. Wasimamizi wanaweza kuweka mipangilio ya kifaa kwa mbali.</translation>
 <translation id="7216409898977639127">Mtoa huduma za vifaa vya mkononi</translation>
 <translation id="7271040990581020067">Kichanganuzi kinatumika kwa sasa. Jaribu tena baadaye.</translation>
@@ -344,6 +346,7 @@
 <translation id="8294431847097064396">Chanzo</translation>
 <translation id="8297006494302853456">Dhaifu</translation>
 <translation id="8302368968391049045">Kinga mtandao ya HTTPS</translation>
+<translation id="8318753676953949627">Hakuna Picha</translation>
 <translation id="8347227221149377169">Kazi za kuchapisha</translation>
 <translation id="8352772353338965963">Ongeza akaunti ya uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja. Akaunti zote zilizoingiwa zinaweza kufikiwa bila nenosiri, hivyo kipengee hiki lazima kitumike kwenye akaunti zinazoaminika pekee.</translation>
 <translation id="8364946094152050673">Seva za majina hazina kitu</translation>

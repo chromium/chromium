@@ -2290,7 +2290,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3468298837301810372">Étiquette</translation>
 <translation id="3468999815377931311">Téléphone Android</translation>
 <translation id="3470442499439619530">Supprimer cet utilisateur</translation>
-<translation id="3471350386419633991">Faites un clic droit sur un onglet ou cliquez sur l'icône de favoris pour ajouter des onglets à une liste de lecture. Accédez-y dans la barre de favoris.</translation>
 <translation id="3471876058939596279">Les ports HDMI et USB de type C ne peuvent pas être utilisés simultanément pour la sortie vidéo. Utilisez un port vidéo différent.</translation>
 <translation id="3473241910002674503">Naviguer vers l'écran d'accueil ou vers l'arrière et basculer entre les applications grâce aux boutons en mode tablette.</translation>
 <translation id="3473479545200714844">Loupe d'écran</translation>
@@ -2759,7 +2758,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3945513714196326460">Essayez d'entrer un nom plus court</translation>
 <translation id="3948116654032448504">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> peut modifier les fichiers dans les dossiers suivants</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Importés d'Internet Explorer</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Cette application pourrait être dangereuse}one{Cette application pourrait être dangereuse}other{Ces applications pourraient être dangereuses}}</translation>
 <translation id="3950820424414687140">Connexion</translation>
@@ -3082,7 +3080,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4349828822184870497">Utile</translation>
 <translation id="4350230709416545141">Toujours empêcher <ph name="HOST" /> d'accéder à votre position</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> veut rechercher des appareils Bluetooth à proximité. Les appareils suivants ont été détectés :</translation>
 <translation id="4354073718307267720">Demander une autorisation lorsqu'un site veut créer une carte 3D de votre environnement ou faire le suivi de la position de l'appareil photo</translation>
 <translation id="4354344420232759511">Les sites que vous visiterez apparaîtront ici</translation>
 <translation id="435527878592612277">Sélectionner votre photo</translation>
@@ -3344,7 +3341,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4625078469366263107">Activer l'application</translation>
 <translation id="4627427111733173920">Témoins bloqués</translation>
 <translation id="4627442949885028695">Continuer à partir d'un autre appareil</translation>
-<translation id="4628757576491864469">Appareils</translation>
 <translation id="4628762811416793313">Échec de la configuration du conteneur Linux. Veuillez réessayer.</translation>
 <translation id="4629521233550547305">Ouvrir le profil <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Personnaliser les cartes</translation>
@@ -3511,6 +3507,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4830502475412647084">Installation d'une mise à jour du système d'exploitation en cours…</translation>
 <translation id="4830573902900904548">Votre <ph name="DEVICE_TYPE" /> ne parvient pas à se connecter à Internet en utilisant <ph name="NETWORK_NAME" />. Veuillez choisir un autre réseau. <ph name="LEARN_MORE_LINK_START" />En savoir plus<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">1 imprimante a été trouvée sur le serveur d'impression</translation>
+<translation id="4834007576107377210">Consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche, le cas échéant</translation>
 <translation id="4836046166855586901">Demander une autorisation lorsqu'un site veut savoir si vous êtes en train d'utiliser cet appareil</translation>
 <translation id="4836504898754963407">Gérer les empreintes digitales</translation>
 <translation id="4837128290434901661">Rétablir la recherche Google?</translation>
@@ -5129,7 +5126,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6651237644330755633">Considérer ce certificat comme fiable pour identifier les sites Web</translation>
 <translation id="6651495917527016072">Synchronisez les réseaux Wi-Fi avec votre téléphone. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">L'intégration <ph name="MS_AD_NAME" /> Chrome est prise en charge par les plateformes x86_64 uniquement. Les Chromebook basés sur les plateformes ARM ou x86 ne prennent pas en charge cette fonctionnalité.</translation>
-<translation id="66537479323396140">Efface l'historique et les saisies semi-automatiques dans le champ de recherche. D'autres formes d'historique de navigation peuvent exister dans votre compte Google, à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Choisir ce réseau par défaut</translation>
 <translation id="6655190889273724601">Mode développeur</translation>
 <translation id="6655458902729017087">Masquer les comptes</translation>
@@ -6713,7 +6709,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8363142353806532503">Le microphone est bloqué</translation>
 <translation id="8366396658833131068">Votre connexion réseau est rétablie. Veuillez sélectionner un autre réseau ou appuyer sur « Continuer » ci-dessous pour lancer votre application de kiosque.</translation>
 <translation id="8366694425498033255">Touches de sélection</translation>
-<translation id="8368027906805972958">Appareil inconnu ou non pris en charge (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Ouvrir tous les favoris</translation>
 <translation id="8370294614544004647">Mettre en veille à la fermeture du couvercle</translation>
 <translation id="8371695176452482769">Parlez maintenant</translation>
@@ -6726,7 +6721,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8379991678458444070">Revenez ici rapidement en ajoutant cet onglet aux favoris</translation>
 <translation id="8382913212082956454">Copier l'adresse de courri&amp;el</translation>
 <translation id="8386091599636877289">Politique introuvable.</translation>
-<translation id="838705362287678887">Pour effacer vos <ph name="BEGIN_LINK_SEARCH" />recherches<ph name="END_LINK_SEARCH" /> ou d'autres types d'historiques, visitez la page <ph name="BEGIN_LINK_GOOGLE" />Mon compte Google<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">Non autorisés à consulter votre position</translation>
 <translation id="8388770971141403598">Les profils secondaires ne sont pas pris en charge</translation>
 <translation id="8389416080014625855">Créer un code QR pour cette page</translation>

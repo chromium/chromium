@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Praegu on valitud vahelehtedega kuvastiil</translation>
 <translation id="1087788677726983142">Sündmuste voo filtrite peitmine</translation>
 <translation id="1088402100970133699">Eelmist loendiüksust ei ole</translation>
-<translation id="1114836634143403764">Soovitus</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "braavo", "c": "charlie", "d": "delta", "e": "eesti", "f": "fokstrott", "g": "golf", "h": "hotell", "i": "india", "j": "juuni","k": "kilo", "l": "liim", "m": "mati", "n": "november", "o": "oskar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "š": "šokolaad", "z": "zoo", "ž": "žanr",  "t": "tango", "u": "uni", "v": "viktor", "w": "wales","x": "xavier", "y": "yankee", "õ": "õnne", "ä": "ärni", "ö": "ööbik", "ü": "ülle"}</translation>
 <translation id="1120938014254001895">Pühkige kahe sõrmega üles</translation>
 <translation id="1126928665165112660">Ei ole kursiivis</translation>
@@ -203,11 +202,11 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2417569100218200841">Sisu teave</translation>
 <translation id="2417948780551741035">Järelmärkused</translation>
 <translation id="2419852971200420169">Kirjelduse loend</translation>
-<translation id="2421113964388408478">Kustutamine</translation>
 <translation id="2422937916923936891">Menüü-üksuse märkeruut</translation>
 <translation id="2428534162001909979">Käsumenüüd</translation>
 <translation id="242998846562331953">Subtiitrid</translation>
 <translation id="2435422727584637732">Erksinine</translation>
+<translation id="2438712309510062123">Soovitage</translation>
 <translation id="2450814015951372393">Märkeruut</translation>
 <translation id="2461822463642141190">Praegune</translation>
 <translation id="2462626033734746142">Raadionuppude rühm</translation>
@@ -226,6 +225,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2592212930811759050">Topeltpuudutage muutmise alustamiseks</translation>
 <translation id="2598495320872286378">Grammatikaviga</translation>
 <translation id="2603828437139726540">Liigu ühe tähemärgi võrra edasi</translation>
+<translation id="2619052155095999743">Lisa</translation>
 <translation id="2619344480613750862">Saate ka ekraanikuva jaotiste vahel liikuda. Näiteks saate liikuda käivitaja, riiuli ja Chrome'i vahelehtede vahel. Järgmisesse jaotisse liikumiseks pühkige nelja sõrmega vasakult paremale. Jätkamiseks proovige seda kohe.</translation>
 <translation id="2624431853467395961">Õppimisrežiimi avamine</translation>
 <translation id="2626530649491650971">klõpsatav</translation>
@@ -507,7 +507,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4479068155583208887">Telliskivipunane</translation>
 <translation id="4482330759234983253">Eelmine tabel</translation>
 <translation id="4491109536499578614">Image</translation>
-<translation id="4505167975768625962">Lisamine</translation>
 <translation id="4511186779140817916">Hele mandel</translation>
 <translation id="451510441928265982">Eelmist 2. taseme pealkirja ei ole</translation>
 <translation id="4515799157838123044">Taustasisu varjutamine</translation>
@@ -1010,6 +1009,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="8212109599554677485">Aktiveeri kuvastiil Kõrvuti</translation>
 <translation id="8215202828671303819">Mitmikvalimine</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, läbipaistmatus <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">Kustuta</translation>
 <translation id="826825447994856889">Sissejuhatus</translation>
 <translation id="827266600368092403">Valimise alustamine või lõpetamine</translation>
 <translation id="827422111966801947">Indigosinine</translation>

@@ -679,7 +679,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7600965453749440009">Non tradurre mai <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Popup bloccati (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Elimina password</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> min</translation>
 <translation id="7638584964844754484">Passphrase sbagliata</translation>
 <translation id="7646772052135772216">La sincronizzazione delle password non funziona</translation>
 <translation id="7649070708921625228">Guida</translation>
@@ -803,6 +802,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8917490105272468696">Sì, accetto</translation>
 <translation id="895541991026785598">Segnala un problema</translation>
 <translation id="8976382372951310360">Guida</translation>
+<translation id="8976414606286374109">Le carte di credito vengono salvate nel tuo Account Google.</translation>
 <translation id="8981454092730389528">Gestione attività di Google</translation>
 <translation id="8985320356172329008">Accesso effettuato a Google come</translation>
 <translation id="9000089900434778519">Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
@@ -828,7 +828,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9188680907066685419">Esci dall'account gestito</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> g fa</translation>
 <translation id="9203116392574189331">Handoff</translation>
-<translation id="9223358826628549784">Rapporto sugli arresti anomali inviato.</translation>
+<translation id="9223358826628549784">Report sugli arresti anomali inviato.</translation>
 <translation id="952704832371081537">Annulla</translation>
 <translation id="984509647832111802">La sincronizzazione non funziona.</translation>
 <translation id="988141524645182168">Altri dispositivi</translation>

@@ -137,6 +137,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1990046457226896323">Datoteke za govor so bile prenesene.</translation>
 <translation id="1993072747612765854">Več informacij o najnovejši posodobitvi za <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Trenutno namizje</translation>
+<translation id="1999628559811343244">Začel se je zajem omrežnih paketov</translation>
 <translation id="2016340657076538683">Vnesite sporočilo</translation>
 <translation id="2018630726571919839">Povej mi šalo</translation>
 <translation id="2021864487439853900">Kliknite za odklepanje</translation>
@@ -157,7 +158,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2132302418721800944">Snemanje celotnega zaslona</translation>
 <translation id="2135456203358955318">Zasidrana lupa</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Poskusi znova</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Če želite zapreti način pregleda, povlecite s tremi prsti navzdol.</translation>
 <translation id="2208323208084708176">Način enotnega namizja</translation>
 <translation id="2220572644011485463">Koda PIN ali geslo</translation>
@@ -728,6 +728,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6751826523481687655">Sledenje učinkovitosti delovanja je vklopljeno</translation>
 <translation id="6752912906630585008">Namizje <ph name="REMOVED_DESK" /> je bilo odstranjeno in združeno z namizjem <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Predstavnost se ne predvaja</translation>
+<translation id="6773040085467426602">Kliknite za ustavitev, če želite ustaviti trenutni postopek zajema paketov.</translation>
 <translation id="6777216307882431711">Napajanje povezanih naprav USB-C</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6803622936009808957">Zaslonov ni bilo mogoče zrcaliti, ker ni bilo najdene nobene podprte ločljivosti. Uporabljeno je razširjeno namizje.</translation>
@@ -941,6 +942,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8433977262951327081">Bližnjica za prikaz oblačka menija z možnostmi vnosa na polici se je spremenila. Namesto <ph name="OLD_SHORTCUT" /> uporabite <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Namizje <ph name="DESK_TITILE" /> je bilo aktivirano</translation>
 <translation id="8452135315243592079">Ni kartice SIM</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Zapri »Izberite in poslušajte«</translation>
 <translation id="847056008324733326">Nastavitve zaslonskega razmerja</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> je <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">বর্তমানৰ ডিছপ্লে’ৰ শৈলীটো হৈছে ইণ্টাৰলীভ</translation>
 <translation id="1087788677726983142">কাৰ্যক্ৰমৰ ষ্ট্রীমৰ ফিল্টাৰ লুকুৱাওক</translation>
 <translation id="1088402100970133699">কোনো পূৰ্বৱৰ্তী সূচীৰ বস্তু নাই</translation>
-<translation id="1114836634143403764">পৰামৰ্শ</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">দুটা আঙুলি ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="1126928665165112660">ইটালিক নহয়</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">সমলৰ তথ্য</translation>
 <translation id="2417948780551741035">এণ্ডন‘টছ</translation>
 <translation id="2419852971200420169">বিৱৰণ সূচী</translation>
-<translation id="2421113964388408478">মচা কাৰ্য</translation>
 <translation id="2422937916923936891">মেনুত থকা বস্তুৰ চ্চেক বক্স</translation>
 <translation id="2428534162001909979">নির্দেশনাৰ মেনু</translation>
 <translation id="242998846562331953">ছাবটাইটেল</translation>
@@ -506,7 +504,6 @@
 <translation id="4479068155583208887">ইটাৰঙী</translation>
 <translation id="4482330759234983253">পূৰ্বৱৰ্তী তালিকা</translation>
 <translation id="4491109536499578614">প্ৰতিচ্ছবি</translation>
-<translation id="4505167975768625962">অন্তর্ভুক্তিকৰণ</translation>
 <translation id="4511186779140817916">চাফা বাদামৰ দৰে</translation>
 <translation id="451510441928265982">পূর্বৱর্তী স্তৰ ২ৰ শিৰোনাম নাই</translation>
 <translation id="4515799157838123044">পটভূমিৰ সমল ধূসৰ কৰক</translation>
@@ -1009,6 +1006,7 @@
 <translation id="8212109599554677485">ডিছপ্লে’ৰ শৈলী কাষে-কাষে থকা অৱস্থালৈ সলনি কৰক</translation>
 <translation id="8215202828671303819">একাধিক বাছনি</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% অস্পষ্টতা।</translation>
+<translation id="8261506727792406068">মচক</translation>
 <translation id="826825447994856889">পাতনি</translation>
 <translation id="827266600368092403">বাছনি আৰম্ভ অথবা সমাপ্ত কৰক</translation>
 <translation id="827422111966801947">ইণ্ডিগ'</translation>

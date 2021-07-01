@@ -150,7 +150,7 @@
 <translation id="6276708887952587684">查看網頁原始碼</translation>
 <translation id="6321940490215594447">開啟「記錄」頁面</translation>
 <translation id="6340769215862220182">放大顯示</translation>
-<translation id="634687982629734605">在以下位置之間切換：狀態區 (帳戶相片顯示位置)、啟動器、網址列、書籤列 (如有顯示)、開啟的網頁及下載列 (如顯示)。如果畫面上有可聚焦的對話框，焦點會改為移至對話框。</translation>
+<translation id="634687982629734605">在以下位置之間切換焦點：狀態區 (帳戶相片顯示位置)、啟動器、網址列、書籤列 (如有顯示)、開啟的網頁及下載列 (如有顯示)。如果畫面上有可成為焦點的對話框，焦點會改為移至對話框。</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /> 鍵</translation>
 <translation id="6395172954772765143">選取文字至本行結尾</translation>
 <translation id="6425378783626925378">按一下捷徑列中的第 1-8 個圖示</translation>

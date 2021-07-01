@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Trenutno je izbran prepleten slog prikaza</translation>
 <translation id="1087788677726983142">Skritje filtrov toka dogodkov</translation>
 <translation id="1088402100970133699">Ni prejšnjega elementa seznama</translation>
-<translation id="1114836634143403764">Predlog</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "celje", "č": "časopis", "d": "delta", "e": "eho", "f": "fokstrot", "g": "golf", "h": "hotel", "i": "indija", "j": "julija", "k": "kilo", "l": "lima", "m": "maribor", "n": "november", "o": "oskar", "p": "postojna", "q": "quebec", "r": "romeo", "s": "sežana", "š": "štajerska", "t": "tango", "u": "uniforma", "v": "viktor", "w": "washington", "x": "iks", "y": "youtube", "z": "zulu", "ž": "žaba"}</translation>
 <translation id="1120938014254001895">Z dvema prstoma povlecite gor</translation>
 <translation id="1126928665165112660">Ni ležeče</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Informacije o vsebini</translation>
 <translation id="2417948780551741035">Končne opombe</translation>
 <translation id="2419852971200420169">Seznam opisov</translation>
-<translation id="2421113964388408478">Brisanje</translation>
 <translation id="2422937916923936891">Potrditveno polje menijskega elementa</translation>
 <translation id="2428534162001909979">Meniji z ukazi</translation>
 <translation id="242998846562331953">Podnaslov</translation>
 <translation id="2435422727584637732">Svetlo modra</translation>
+<translation id="2438712309510062123">Predlagajte</translation>
 <translation id="2450814015951372393">Potrditveno polje</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2462626033734746142">Skupina izbirnih gumbov</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Dvakrat se dotaknite, če želite začeti urejati</translation>
 <translation id="2598495320872286378">Slovnična napaka</translation>
 <translation id="2603828437139726540">Premik naprej za en znak</translation>
+<translation id="2619052155095999743">Vstavi</translation>
 <translation id="2619344480613750862">Prav tako se lahko pomikate po razdelkih na zaslonu. Pomikate se lahko na primer po zaganjalniku, polici in zavihkih v Chromu. Če se želite pomakniti na naslednji razdelek, s štirimi prsti povlecite z leve proti desni. Preizkusite zdaj, če želite nadaljevati.</translation>
 <translation id="2624431853467395961">Odpiranje načina za učenje</translation>
 <translation id="2626530649491650971">omogoča klikanje</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Intenzivno opečnata</translation>
 <translation id="4482330759234983253">Prejšnja tabela</translation>
 <translation id="4491109536499578614">Slika</translation>
-<translation id="4505167975768625962">Vstavljanje</translation>
 <translation id="4511186779140817916">Obledela svetlo rjava</translation>
 <translation id="451510441928265982">Ni prejšnjega naslova na ravni 2</translation>
 <translation id="4515799157838123044">Senčenje vsebine v ozadju</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Preklop na vzporedni slog prikaza</translation>
 <translation id="8215202828671303819">Sočasna izbira več elementov</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />-odstotna neprosojnost.</translation>
+<translation id="8261506727792406068">Izbriši</translation>
 <translation id="826825447994856889">Uvod</translation>
 <translation id="827266600368092403">Začetek ali konec izbire</translation>
 <translation id="827422111966801947">Indigo</translation>

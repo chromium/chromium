@@ -137,6 +137,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1990046457226896323">Puhetiedostot ladattu</translation>
 <translation id="1993072747612765854">Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="1998100899771863792">Nykyinen työpöytä</translation>
+<translation id="1999628559811343244">Verkkopakettien kaappaaminen käynnistetty</translation>
 <translation id="2016340657076538683">Kirjoita viesti</translation>
 <translation id="2018630726571919839">Kerro vitsi</translation>
 <translation id="2021864487439853900">Klikkaa avataksesi lukituksen</translation>
@@ -157,7 +158,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2132302418721800944">Tallenna koko näyttö</translation>
 <translation id="2135456203358955318">Kiinnitetty suurennus</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yritä uudelleen</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Poistu Viimeisimmät-osiosta pyyhkäisemällä kolmella sormella alaspäin</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
@@ -728,6 +728,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6751826523481687655">Tehokkuuden seuranta on käytössä</translation>
 <translation id="6752912906630585008">Työpöytä <ph name="REMOVED_DESK" /> poistettu ja yhdistetty työpöytään <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Mediaa ei toisteta</translation>
+<translation id="6773040085467426602">Pysäytä nykyiset paketin kaappausoperaatiot klikkaamalla lopeta.</translation>
 <translation id="6777216307882431711">Toimii yhdistettyjen USB-C-laitteiden virtalähteenä</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6803622936009808957">Näyttöjen peilaaminen ei onnistunut, sillä tuettua resoluutiota ei löytynyt. Sen sijaan valittiin työpöydän laajennus.</translation>
@@ -941,6 +942,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8433977262951327081">Hyllyn syöttöasetukset näyttävä valikkokupla on muuttunut. Käytä uutta pikanäppäintä <ph name="NEW_SHORTCUT" /> vanhan (<ph name="OLD_SHORTCUT" />) sijaan.</translation>
 <translation id="8444246603146515890">Työpöytä <ph name="DESK_TITILE" /> aktivoitu</translation>
 <translation id="8452135315243592079">SIM-kortti puuttuu.</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Sulje teksti puhuttuna</translation>
 <translation id="847056008324733326">Näytön skaalauksen asetukset</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> omistaa tämän: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

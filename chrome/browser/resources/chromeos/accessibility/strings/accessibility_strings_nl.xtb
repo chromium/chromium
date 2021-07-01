@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">De huidige weergavestijl is interleave</translation>
 <translation id="1087788677726983142">Filters voor gebeurtenisstream verbergen</translation>
 <translation id="1088402100970133699">Geen vorig lijstitem</translation>
-<translation id="1114836634143403764">Suggestie</translation>
 <translation id="1120743664840974483">{"a": "anna", "b": "bernard", "c": "cornelis", "d": "dirk", "e": "eduard", "f": "ferdinand", "g": "gerard", "h": "hendrik", "i": "izaak", "j": "johannes", "k": "karel", "l": "lodewijk", "m": "maria", "n": "nico", "o": "otto","p": "pieter", "q": "quirinus", "r": "rudolf", "s": "simon", "t": "tinus", "u": "utrecht", "v": "victor", "w": "willem","x": "xantippe", "y": "ypsilon", "z": "zaandam"}</translation>
 <translation id="1120938014254001895">Swipe met twee vingers omhoog</translation>
 <translation id="1126928665165112660">Niet cursief</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Informatie over content</translation>
 <translation id="2417948780551741035">Eindnoten</translation>
 <translation id="2419852971200420169">Beschrijvingslijst</translation>
-<translation id="2421113964388408478">Verwijdering</translation>
 <translation id="2422937916923936891">Selectievakje voor menu-item</translation>
 <translation id="2428534162001909979">Opdrachtmenu's</translation>
 <translation id="242998846562331953">Ondertitel</translation>
 <translation id="2435422727584637732">Dodger-blauw</translation>
+<translation id="2438712309510062123">Voorstellen</translation>
 <translation id="2450814015951372393">Selectievakje</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2462626033734746142">Groep met keuzerondjes</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Dubbeltik om te beginnen met bewerken</translation>
 <translation id="2598495320872286378">Grammaticafout</translation>
 <translation id="2603828437139726540">Eén teken vooruit gaan</translation>
+<translation id="2619052155095999743">Invoegen</translation>
 <translation id="2619344480613750862">Je kunt ook bewegen naar andere gedeelten van het scherm. Je kunt bijvoorbeeld heen en weer bewegen tussen de Launcher, de plank en je Chrome-tabbladen. Swipe met 4 vingers van links naar rechts om naar het volgende gedeelte te gaan. Probeer het nu uit.</translation>
 <translation id="2624431853467395961">Leermodus openen</translation>
 <translation id="2626530649491650971">klikbaar</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Signaalrood</translation>
 <translation id="4482330759234983253">Vorige tabel</translation>
 <translation id="4491109536499578614">Afbeelding</translation>
-<translation id="4505167975768625962">Invoeging</translation>
 <translation id="4511186779140817916">Gebleekte amandel</translation>
 <translation id="451510441928265982">Geen vorige kop van niveau 2</translation>
 <translation id="4515799157838123044">Content op de achtergrond vervagen</translation>
@@ -1009,6 +1008,7 @@
 <translation id="8212109599554677485">De weergavestijl wijzigen in naast elkaar</translation>
 <translation id="8215202828671303819">Meervoudige selectie</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% doorzichtigheid.</translation>
+<translation id="8261506727792406068">Verwijderen</translation>
 <translation id="826825447994856889">Inleiding</translation>
 <translation id="827266600368092403">Selectie starten of beëindigen</translation>
 <translation id="827422111966801947">Indigo</translation>

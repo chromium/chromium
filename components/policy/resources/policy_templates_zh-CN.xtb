@@ -867,6 +867,13 @@
       如果设置了此政策，那么当超出该上限后，浏览器将开始舍弃标签页以节省内存空间。不过，我们无法保证浏览器运行时占用的内存量会始终低于该上限。任何小于 1024 的值都会被向上舍入到 1024。
 
       如果此政策未设置，那么仅当检测到所用机器的物理内存容量即将用尽时，浏览器才会开始尝试节省内存空间。</translation>
+<translation id="2165567959657265531">为与这些格式匹配的网域设置的 Cookie 将恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为。恢复为旧版行为会导致未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性的 Cookie 被当作“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 来处理，会撤消“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 必须附带“<ph name="ATTRIBUTE_SECURE_NAME" />”属性的要求，并会在评估两个网站是否为同一个网站时跳过架构对比。如需查看完整说明，请参阅 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
+
+          对于与此处所列格式不匹配的网域上的 Cookie 以及未设置此政策时的所有 Cookie，全局默认值将是用户的个人配置。
+
+          如需详细了解有效的格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。
+
+          请注意，您在此处列出的格式会被系统视为网域（而非网址），因此您不应指定架构或端口。</translation>
 <translation id="2166155400701622446">这是 <ph name="PRODUCT_NAME" /> 内置的受限端口列表。与这些端口的连接将失败。此设置允许绕过该列表。此政策的值应是一个逗号分隔列表，包含 0 个或多个获准进行外发连接的端口。
 
       限制端口是为了防止有人将 <ph name="PRODUCT_NAME" /> 作为媒介来利用各种网络安全漏洞。设置此政策可能会致使您的网络遭到攻击。此政策是一种临时的变通方案，旨在应对“ERR_UNSAFE_PORT”代码类错误，以便将在被禁用的端口上运行的服务迁移到标准端口（例如端口 80 或 443）。
@@ -928,17 +935,6 @@
       如果将此政策设置为 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />（值为 1），则只有被视为重要安全性或稳定性修复程序的变体可应用于 <ph name="PRODUCT_OS_NAME" />。
 
       如果将此政策设置为 <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（值为 2），则任何变体都不会在登录屏幕应用于浏览器。请注意，我们不建议您使用此模式，因为它可能会妨碍 <ph name="PRODUCT_OS_NAME" />开发者及时提供重要的安全性修复程序。</translation>
-<translation id="2216380260552785166">此政策用于控制 <ph name="PRODUCT_NAME" /> 如何解析“旧版浏览器支持”功能的 sitelist/greylist 政策。它会影响以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
-
-      如果此政策设为“默认”(0) 或未设置，网址匹配将不太严格。不含“/”的规则会在网址主机名中的任意位置查找子字符串。
-
-      如果此政策设为“严格”(1)，网址匹配将更为严格。不含“/”的规则仅在主机名末尾处匹配。它们还必须位于域名边界。此政策可以更好地兼容 <ph name="MS_IE_PRODUCT_NAME" /> 和 <ph name="MS_EDGE_PRODUCT_NAME" />。
-
-      例如，对于规则“example.com”：
-
-      “http://example.com/”和“http://subdomain.example.com/”匹配，无论解析模式为何。
-
-      “http://notexample.com/”、“http://example.com.invalid.com/”和“http://example.comabc/”仅在“默认”模式下匹配。</translation>
 <translation id="2221850122314326571">如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
       如果此设置已停用，<ph name="PRODUCT_NAME" /> 将会使用平台提供的旧版证书验证程序来验证服务器证书。
       如果此设置未配置，系统既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。

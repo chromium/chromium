@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
+<translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2862104018715411648">Coloca el documento en el escáner y selecciona Escanear para comenzar</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">La contraseña caducará dentro de <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay ningún trabajo de impresión en curso</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
 <translation id="4378373042927530923">Sin ejecutar</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mi unidad</translation>
@@ -228,7 +230,6 @@
 <translation id="5691511426247308406">Familia</translation>
 <translation id="5752751666635965375">Crea tu propio juego</translation>
 <translation id="5760715441271661976">Estado de portal</translation>
-<translation id="5797428682393400134">CORRECTO</translation>
 <translation id="5832805196449965646">Añadir perfil</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5849570051105887917">Código del proveedor inicial</translation>
@@ -295,6 +296,7 @@
 <translation id="7144878232160441200">Reintentar</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
+<translation id="7172721935181587524">1 imagen</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
@@ -344,6 +346,7 @@
 <translation id="8294431847097064396">Origen</translation>
 <translation id="8297006494302853456">Débil</translation>
 <translation id="8302368968391049045">Cortafuegos de HTTPS</translation>
+<translation id="8318753676953949627">Sin imágenes</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
 <translation id="8364946094152050673">Servidores de nombres vacíos</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Pašreizējais displeja veids ir mijas attēlojums.</translation>
 <translation id="1087788677726983142">Paslēpt notikumu plūsmas filtrus</translation>
 <translation id="1088402100970133699">Nav iepriekšējā saraksta vienuma.</translation>
-<translation id="1114836634143403764">Ieteikums</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Velciet ar diviem pirkstiem uz augšu</translation>
 <translation id="1126928665165112660">Nav slīprakstā</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Satura informācija</translation>
 <translation id="2417948780551741035">Beigu vēres</translation>
 <translation id="2419852971200420169">Aprakstu saraksts</translation>
-<translation id="2421113964388408478">Dzēšana</translation>
 <translation id="2422937916923936891">Izvēlnes vienuma izvēles rūtiņa</translation>
 <translation id="2428534162001909979">Komandu izvēlnes</translation>
 <translation id="242998846562331953">Apakšvirsraksts</translation>
 <translation id="2435422727584637732">Spilgti zila</translation>
+<translation id="2438712309510062123">Ieteikums</translation>
 <translation id="2450814015951372393">Izvēles rūtiņa</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
 <translation id="2462626033734746142">Radiopogu grupa</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Veiciet dubultskārienu, lai sāktu rediģēšanu</translation>
 <translation id="2598495320872286378">Gramatikas kļūda</translation>
 <translation id="2603828437139726540">Pārvietot uz priekšu par vienu rakstzīmi</translation>
+<translation id="2619052155095999743">Ievietot</translation>
 <translation id="2619344480613750862">Varat arī pārvietoties pa ekrāna apgabaliem. Piemēram, varat pāriet no palaidēja uz plauktu vai Chrome cilnēm. Lai pārietu uz nākamo apgabalu, ar četriem pirkstiem velciet no kreisās puses uz labo. Izmēģiniet to tūlīt, lai turpinātu.</translation>
 <translation id="2624431853467395961">Atvērt mācību režīmu</translation>
 <translation id="2626530649491650971">klikšķināms</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Ķieģeļsarkana</translation>
 <translation id="4482330759234983253">Iepriekšējā tabula</translation>
 <translation id="4491109536499578614">Attēls</translation>
-<translation id="4505167975768625962">Ievietošana</translation>
 <translation id="4511186779140817916">Lobītu mandeļu</translation>
 <translation id="451510441928265982">Nav iepriekšējā 2. līmeņa virsraksta.</translation>
 <translation id="4515799157838123044">Fona satura aptumšošana</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Mainīt displeja veidu uz attēlojumu līdzās</translation>
 <translation id="8215202828671303819">Vairāku elementu atlase</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% necaurredzamība.</translation>
+<translation id="8261506727792406068">Dzēst</translation>
 <translation id="826825447994856889">Ievads</translation>
 <translation id="827266600368092403">Sākt vai beigt atlasi</translation>
 <translation id="827422111966801947">Indigo</translation>

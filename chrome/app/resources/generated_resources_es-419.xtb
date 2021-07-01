@@ -2285,7 +2285,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3470442499439619530">Quitar este usuario</translation>
-<translation id="3471350386419633991">Haz clic con el botón derecho en una pestaña o haz clic en el ícono de Favoritos para agregar pestañas a una lista de lectura. Accede a la pestaña desde la barra de favoritos.</translation>
 <translation id="3471876058939596279">No se pueden usar los puertos HDMI y USB tipo C al mismo tiempo para transmitir video. Usa otro puerto de video.</translation>
 <translation id="3473241910002674503">Con los botones del modo tablet, puedes navegar hacia la pantalla de inicio, regresar y cambiar de apps.</translation>
 <translation id="3473479545200714844">Lupa</translation>
@@ -2754,7 +2753,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto.</translation>
 <translation id="3948116654032448504">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos en las siguientes carpetas</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Importado de Internet Explorer</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Es posible que esta app sea peligrosa}other{Es posible que estas apps sean peligrosas}}</translation>
 <translation id="3950820424414687140">Acceder</translation>
@@ -3077,7 +3075,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4349828822184870497">Útil</translation>
 <translation id="4350230709416545141">Siempre impedir que <ph name="HOST" /> acceda a tu ubicación</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> quiere detectar dispositivos Bluetooth cercanos. Se encontraron los siguientes dispositivos:</translation>
 <translation id="4354073718307267720">Preguntar cuando un sitio desee crear un mapa 3D de tu entorno o hacer un seguimiento de la posición de la cámara</translation>
 <translation id="4354344420232759511">Los sitios que visitas aparecerán aquí</translation>
 <translation id="435527878592612277">Seleccionar tu foto</translation>
@@ -3339,7 +3336,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4625078469366263107">Habilitar app</translation>
 <translation id="4627427111733173920">Se bloquearon cookies</translation>
 <translation id="4627442949885028695">Cómo continuar desde otro dispositivo</translation>
-<translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4628762811416793313">No se completó la configuración del contenedor de Linux. Vuelve a intentarlo.</translation>
 <translation id="4629521233550547305">Abrir el perfil de <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Personalizar tarjetas</translation>
@@ -3506,6 +3502,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4830502475412647084">Instalando la actualización del SO</translation>
 <translation id="4830573902900904548">Tu <ph name="DEVICE_TYPE" /> no puede conectarse a Internet a través de <ph name="NETWORK_NAME" />. Debes elegir otra red. <ph name="LEARN_MORE_LINK_START" />Más información<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Se encontró 1 impresora en el servidor de impresión</translation>
+<translation id="4834007576107377210">Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda de corresponder</translation>
 <translation id="4836046166855586901">Permitir que los sitios pregunten en qué momento estás usando activamente este dispositivo</translation>
 <translation id="4836504898754963407">Administrar huellas dactilares</translation>
 <translation id="4837128290434901661">¿Deseas volver a usar la Búsqueda de Google?</translation>
@@ -5124,7 +5121,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6651237644330755633">Confía en este certificado para identificar sitios web</translation>
 <translation id="6651495917527016072">Sincroniza las redes Wi-Fi con tu teléfono. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">La integración de <ph name="MS_AD_NAME" /> en Chrome solo es compatible en plataformas x86_64. Las Chromebooks creadas a partir de una plataforma ARM o x86 no son compatibles con esta funcionalidad.</translation>
-<translation id="66537479323396140">Borra el historial y las sugerencias de autocompletado del cuadro de búsqueda. Es posible que tu Cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Configurar una red preferida</translation>
 <translation id="6655190889273724601">Modo de desarrollador</translation>
 <translation id="6655458902729017087">Ocultar cuentas</translation>
@@ -6709,7 +6705,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8363142353806532503">Micrófono bloqueado</translation>
 <translation id="8366396658833131068">Se restauró la conexión de red. Selecciona una red distinta o presiona el botón "Continuar" para iniciar la aplicación de kiosco.</translation>
 <translation id="8366694425498033255">Teclas de selección</translation>
-<translation id="8368027906805972958">Dispositivo desconocido o no compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Abrir todos los favoritos</translation>
 <translation id="8370294614544004647">Suspender cuando se cierra la laptop</translation>
 <translation id="8371695176452482769">Hablar ahora</translation>
@@ -6722,7 +6717,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8379991678458444070">Para regresar aquí rápidamente, agrega esta pestaña a favoritos</translation>
 <translation id="8382913212082956454">Copiar dir&amp;ección de correo electrónico</translation>
 <translation id="8386091599636877289">No se encontró la política.</translation>
-<translation id="838705362287678887">Para borrar la <ph name="BEGIN_LINK_SEARCH" />búsqueda<ph name="END_LINK_SEARCH" /> o algún otro tipo de historial, visita <ph name="BEGIN_LINK_GOOGLE" />Mi Cuenta de Google<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">No puede ver tu ubicación</translation>
 <translation id="8388770971141403598">Los perfiles secundarios no son compatibles</translation>
 <translation id="8389416080014625855">Crear un código QR para esta página</translation>

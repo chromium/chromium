@@ -938,17 +938,6 @@
       如果設為 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (值為 1)，使用者只能將修正重大安全性或穩定性問題的變化版本套用到 <ph name="PRODUCT_OS_NAME" />。
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法在登入畫面上將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_OS_NAME" />開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
-<translation id="2216380260552785166">這項政策可控管 <ph name="PRODUCT_NAME" /> 如何解讀舊版瀏覽器支援功能的網站清單/可疑項目清單政策，影響範圍涵蓋以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
-
-      如果將這項政策設為「預設」(0) 或不設定，網址比對方式會較不嚴格，不含「/」的規則會尋找網址主機名稱中任意位置出現的子字串。
-
-      如果將這項政策設為「嚴格」(1)，網址比對方式會比較嚴格，不含「/」的規則只會在主機名稱的結尾進行比對，這類規則比對的內容也不得超出網域名稱的範圍。這種比對方式與 <ph name="MS_IE_PRODUCT_NAME" /> 及 <ph name="MS_EDGE_PRODUCT_NAME" /> 的相容性較高。
-
-      以「example.com」規則為例：
-
-無論剖析模式為何，「http://example.com/」和「http://subdomain.example.com/」都是相符的結果。
-
-      不過，「http://notexample.com/」、「http://example.com.invalid.com/」和「http://example.comabc/」只有在「預設」模式下才會是相符的結果。</translation>
 <translation id="2221850122314326571">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
       如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
       如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
@@ -962,6 +951,10 @@
 <translation id="2223393221350938149">禁止任何網站執行 JavaScript JIT</translation>
 <translation id="2223582957891074498">如果將這項政策設為 True，使用者無法使用鍵盤快速鍵或擴充功能 API 來擷取螢幕畫面。如果將這項政策設為 False，使用者可以擷取螢幕畫面。</translation>
 <translation id="2223598546285729819">預設通知設定</translation>
+<translation id="2231726854197443389">這項政策可控管使用者是否能夠在設定中啟用僅限 HTTPS 模式。此模式會將所有瀏覽作業升級為採用 HTTPS。
+      如果將這項政策設為允許或不設定，使用者將可啟用僅限 HTTPS 模式。
+      如果將這項政策設為禁止，使用者則無法啟用僅限 HTTPS 模式。
+      請注意，系統目前不支援強制啟用僅限 HTTPS 模式。</translation>
 <translation id="2231817271680715693">第一次執行時從預設瀏覽器匯入瀏覽記錄</translation>
 <translation id="2231962946025538735">這項政策已淘汰，請使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控管是否要提供 Flash 外掛程式，並使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 指定是否要使用整合式 PDF 檢視器開啟 PDF 檔案。
 
@@ -1192,6 +1185,7 @@
 <translation id="2482676533225429905">內建訊息傳遞</translation>
 <translation id="2483146640187052324">無論使用任何網路連線，皆預測網路動作</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
+<translation id="2497965601277442929">禁止使用者啟用僅限 HTTPS 模式</translation>
 <translation id="2498238926436517902">一律自動隱藏檔案櫃</translation>
 <translation id="250022556568924228">如果設定這項政策，<ph name="PRODUCT_OS_NAME" />會下載《服務條款》，並在裝置本機帳戶的工作階段啟動時向使用者顯示。使用者必須接受《服務條款》才能登入工作階段。
 
@@ -3686,6 +3680,7 @@
       使用者無法變更這項設定。</translation>
 <translation id="5848438019586925019">用於產生金鑰組的演算法。</translation>
 <translation id="585270638818921943">禁止使用者使用來源不受信任的 Android 應用程式</translation>
+<translation id="5853547031212075792">允許使用者啟用僅限 HTTPS 模式</translation>
 <translation id="5859344336338527083">你可以透過這項政策，指定可安裝擴充功能、應用程式和主題的網址。在 <ph name="PRODUCT_NAME" /> 21 以前的版本中，使用者只要點選 *.crx 檔案的連結，<ph name="PRODUCT_NAME" /> 就會在顯示幾則警告訊息後，詢問使用者是否要安裝該檔案。在後續版本中，使用者則必須先下載這類檔案，再將檔案拖曳至 <ph name="PRODUCT_NAME" /> 設定頁面中。透過這項設定，你可以允許特定網址使用較簡易的舊式安裝流程。
 
           這份清單中的每個項目皆為擴充功能形式的比對模式 (請參閱 https://developer.chrome.com/extensions/match_patterns)。任何網址只要與這份清單中的任意項目相符，使用者便可輕鬆安裝該網址提供的檔案。*.crx 檔案位置和下載來源網頁 (參照網址) 都必須與這份清單中的模式相符。
@@ -5355,6 +5350,7 @@
 <translation id="7962093600142350905">這項政策可控管是否要在列印預覽對話方塊中向使用者顯示任何可用的 Privet 印表機。
       如果將這項政策設為啟用，列印預覽就會顯示可用的 Privet 印表機。
       如果將這項政策設為停用或不設定，列印預覽中則不會顯示 Privet 印表機，因為這種列印方式已經淘汰。</translation>
+<translation id="7970844378072291834">強制啟用僅限 HTTPS 模式 (尚不支援)</translation>
 <translation id="7973609468423251675">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定電池供電時的閒置時間長度。如果使用者在這段時間內沒有任何動作，系統就會將螢幕調暗。
@@ -5991,6 +5987,7 @@
 
       如果不設定這項政策，系統會使用平台專屬的預設值：<ph name="MS_WIN_NAME" /> 使用 <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> 使用 <ph name="SAFARI_PRODUCT_NAME" />。<ph name="LINUX_OS_NAME" /> 將無法啟動替代瀏覽器。</translation>
 <translation id="8836975838488342340">存取碼的有效時限 (以秒為單位)。</translation>
+<translation id="8842208363354615697">允許啟用僅限 HTTPS 模式</translation>
 <translation id="885147810817138322">向使用者顯示媒體推薦內容</translation>
 <translation id="8852579753940989645">啟用轉譯器程式碼完整性功能</translation>
 <translation id="8854571659927427063">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入書籤。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何書籤。

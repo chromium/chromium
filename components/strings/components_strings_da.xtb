@@ -261,7 +261,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1807528111851433570">Startark</translation>
 <translation id="1812527064848182527">landskab</translation>
-<translation id="1814698615734239189">Denne app er tilpasset mobilenheder. Den kører i kompatibilitetstilstand. Hvis du tillader ændring af størrelsen, kan der opstå problemer, som muligvis kan medføre, at appen genstartes.</translation>
 <translation id="1821930232296380041">Ugyldig anmodning eller anmodningsparametre</translation>
 <translation id="1822540298136254167">Hvilke websites du besøger, og hvor lang tid du bruger på dem</translation>
 <translation id="1826516787628120939">Kontrollerer</translation>
@@ -680,7 +679,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3431636764301398940">Gem dette kort på denne enhed</translation>
 <translation id="3432601291244612633">Luk side</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
-<translation id="3435896845095436175">Aktivér</translation>
 <translation id="3438829137925142401">Brug de adgangskoder, der er gemt på din Google-konto</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Ejeren af denne enhed har lukket dinosaurspillet.</translation>
@@ -817,6 +815,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3946209740501886391">Spørg altid på dette website</translation>
 <translation id="3949571496842715403">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet ikke angiver alternative navne på emner. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="3949601375789751990">Din browserhistorik vises her</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Der er ingen gemte betalingsmetoder</translation>
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3961148744525529027">Regnearket for betalingshandler er åbnet halvt</translation>
@@ -824,7 +823,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3963721102035795474">Læser-tilstand</translation>
 <translation id="3963837677003247395">Vil du fortsætte manuelt?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{1 website }one{# website }other{# websites }}</translation>
-<translation id="3970481983430640194">Du kan nu trække i denne app og tilpasse størrelsen</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokeret</translation>
 <translation id="3973357910713125165">Knappen Kør Chrome-sikkerhedstjek – tryk på Enter for at køre sikkerhedstjekket i Chrome-indstillingerne</translation>
@@ -948,6 +946,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4346197816712207223">Accepterede kreditkort</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Du har lige angivet din adgangskode på et vildledende website. Chrome anbefaler, at du straks går til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og eventuelle andre websites, hvor du har brugt denne adgangskode, og ændrer den.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> vil gerne søge efter Bluetooth-enheder i nærheden. Følgende enheder blev fundet:</translation>
 <translation id="4356973930735388585">Hackere på dette website vil muligvis forsøge at installere skadelige programmer på din computer, som stjæler eller sletter dine oplysninger (f.eks. billeder, adgangskoder, beskeder og kreditkortoplysninger).</translation>
 <translation id="4358059973562876591">De skabeloner, du har angivet, anvendes muligvis ikke på grund af en fejl med politikken DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Administrer betalingsmetoder...</translation>
@@ -1400,7 +1399,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6032524144326295339">Postkasse 2</translation>
 <translation id="6032955021262906325">Bind i venstre side</translation>
 <translation id="6034000775414344507">Lysegrå</translation>
-<translation id="6034062182346928710">Størrelsen på <ph name="APP_NAME" /> kan muligvis ikke tilpasses uden problemer. Brug forindstillede vinduestørrelser for at sikre, at appen fungerer korrekt.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Harmonikafals</translation>
 <translation id="6039846035001940113">Kontakt ejeren af websitet, hvis problemet fortsætter.</translation>
@@ -1430,7 +1428,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6120179357481664955">Skal dit UPI-id huskes?</translation>
 <translation id="6123290840358279103">Se virtuelt kort</translation>
 <translation id="6124432979022149706">Chrome Enterprise-connectorer</translation>
-<translation id="6143538402333184781">Denne app understøtter kun "Telefon"-størrelse.</translation>
 <translation id="6146055958333702838">Kontrollér eventuelle kabler, og genstart alle routere, modemmer eller andre
     netværksenheder, du bruger.</translation>
 <translation id="614940544461990577">Prøv at:</translation>
@@ -1980,7 +1977,6 @@ Yderligere oplysninger:
 <translation id="8225771182978767009">Den person, der har konfigureret denne computer, har valgt at blokere dette website.</translation>
 <translation id="8228419419708659934">Tosidet visning</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Spørg mig ikke om denne app igen</translation>
 <translation id="8232343881378637145">Platformstemperatur</translation>
 <translation id="8238581221633243064">Åbn siden på en ny inkognitofane</translation>
 <translation id="8241707690549784388">Siden, du søger, benyttede oplysninger, du har indtastet. Vender du tilbage til denne side kan det betyde, at enhver handling, du har foretaget, skal gentages. Vil du fortsætte?</translation>
@@ -1993,7 +1989,6 @@ Yderligere oplysninger:
 <translation id="825929999321470778">Se alle gemte adgangskoder</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8262952874573525464">Kanthæftning nederst</translation>
-<translation id="826298712171642726">Vil du aktivere størrelsesjustering?</translation>
 <translation id="8265992338205884890">Synlige data</translation>
 <translation id="8267698848189296333">Logger ind som <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Individuelle dokumenter/samlede kopier</translation>
@@ -2024,6 +2019,7 @@ Yderligere oplysninger:
 <translation id="8355270400102541638">Lokal nedbrudskontekst:</translation>
 <translation id="8363502534493474904">Deaktivere flytilstand</translation>
 <translation id="8364627913115013041">Ikke angivet.</translation>
+<translation id="8368027906805972958">Ukendt eller ikke-understøttet enhed (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-tjenester</translation>
 <translation id="8371889962595521444">Tilpassede rodcertifikater</translation>
 <translation id="8374636051559112948">Varierer</translation>

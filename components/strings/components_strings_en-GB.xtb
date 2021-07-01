@@ -260,7 +260,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1807246157184219062">Light</translation>
 <translation id="1807528111851433570">Start sheet</translation>
 <translation id="1812527064848182527">landscape</translation>
-<translation id="1814698615734239189">This app is designed for mobile devices. It is running in a compatibility mode. Allow resizing might encounter issues including app restarting.</translation>
 <translation id="1821930232296380041">Invalid request or request parameters</translation>
 <translation id="1822540298136254167">Websites that you visit and time spent on them</translation>
 <translation id="1826516787628120939">Checking</translation>
@@ -679,7 +678,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3431636764301398940">Save this card to this device</translation>
 <translation id="3432601291244612633">Close page</translation>
 <translation id="3435738964857648380">Security</translation>
-<translation id="3435896845095436175">Enable</translation>
 <translation id="3438829137925142401">Use passwords saved in your Google Account</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">The owner of this device turned off the dinosaur game.</translation>
@@ -816,6 +814,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3946209740501886391">Always ask on this site</translation>
 <translation id="3949571496842715403">This server could not prove that it is <ph name="DOMAIN" />; its security certificate does not specify Subject Alternative Names. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="3949601375789751990">Your browsing history appears here</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">No saved payment methods</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3961148744525529027">Payment handler sheet is half-opened</translation>
@@ -823,7 +822,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3963721102035795474">Reader Mode</translation>
 <translation id="3963837677003247395">Continue manually?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{From 1 site }other{From # sites }}</translation>
-<translation id="3970481983430640194">You can now drag and resize this app</translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
 <translation id="3973357910713125165">Run Chrome safety check button; press Enter to run safety check in Chrome settings</translation>
@@ -947,6 +945,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4346197816712207223">Accepted Credit Cards</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> and other sites where you use this password, and changing it now.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> wants to scan for nearby Bluetooth devices. The following devices have been found:</translation>
 <translation id="4356973930735388585">Attackers on this site might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages and credit cards).</translation>
 <translation id="4358059973562876591">The templates that you've specified may not be applied due to an error with the DnsOverHttpsMode policy.</translation>
 <translation id="4358461427845829800">Manage payment methods...</translation>
@@ -1399,7 +1398,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Bind left</translation>
 <translation id="6034000775414344507">Light grey</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> may not resize well. Use preset window sizes to prevent the app from misbehaving.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Accordion fold</translation>
 <translation id="6039846035001940113">If the problem continues, contact the site owner.</translation>
@@ -1429,7 +1427,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6120179357481664955">Remember your UPI ID?</translation>
 <translation id="6123290840358279103">View virtual card</translation>
 <translation id="6124432979022149706">Chrome Enterprise connectors</translation>
-<translation id="6143538402333184781">This app only supports 'Phone' size.</translation>
 <translation id="6146055958333702838">Check any cables and reboot any routers, modems or other network
     devices you may be using.</translation>
 <translation id="614940544461990577">Try:</translation>
@@ -1978,7 +1975,6 @@ Additional details:
 <translation id="8225771182978767009">The person who set up this computer has chosen to block this site.</translation>
 <translation id="8228419419708659934">Two-page view</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Don't ask me again for this app</translation>
 <translation id="8232343881378637145">Platform temperature</translation>
 <translation id="8238581221633243064">Open page in a new Incognito tab</translation>
 <translation id="8241707690549784388">The page that you're looking for used information that you entered. Returning to that page might cause any action that you took to be repeated. Do you want to continue?</translation>
@@ -1991,7 +1987,6 @@ Additional details:
 <translation id="825929999321470778">Show all saved passwords</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8262952874573525464">Edge stitch bottom</translation>
-<translation id="826298712171642726">Enable resizing?</translation>
 <translation id="8265992338205884890">Visible data</translation>
 <translation id="8267698848189296333">Signing in as <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Separate documents/Collated copies</translation>
@@ -2022,6 +2017,7 @@ Additional details:
 <translation id="8355270400102541638">Local crash context:</translation>
 <translation id="8363502534493474904">Turning off aeroplane mode</translation>
 <translation id="8364627913115013041">Not set.</translation>
+<translation id="8368027906805972958">Unknown or unsupported device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play services</translation>
 <translation id="8371889962595521444">Custom root certificates</translation>
 <translation id="8374636051559112948">Varies</translation>

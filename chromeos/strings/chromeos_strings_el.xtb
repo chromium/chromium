@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Σύστημα</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2751739896257479635">2η φάση ελέγχου ταυτότητας EAP:</translation>
+<translation id="2783010256799387990">ΕΠΙΤΥΧΗΣ ΟΛΟΚΛΗΡΩΣΗ</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2862104018715411648">Τοποθετήστε το έγγραφο στον σαρωτή και επιλέξτε Σάρωση για να ξεκινήσετε.</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> εικόνες</translation>
 <translation id="4378373042927530923">Δεν εκτελέστηκε</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
@@ -229,7 +231,6 @@
 <translation id="5691511426247308406">Οικογένεια</translation>
 <translation id="5752751666635965375">Δημιουργία παιχνιδιών</translation>
 <translation id="5760715441271661976">Κατάσταση πύλης</translation>
-<translation id="5797428682393400134">ΕΠΙΤΥΧΙΑ</translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5849570051105887917">Κωδικός παρόχου αρχικής σελίδας</translation>
@@ -296,6 +297,7 @@
 <translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7172721935181587524">1 εικόνα</translation>
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
 <translation id="7271040990581020067">Ο σαρωτής χρησιμοποιείται αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
@@ -345,6 +347,7 @@
 <translation id="8294431847097064396">Πηγή</translation>
 <translation id="8297006494302853456">Αδύναμο</translation>
 <translation id="8302368968391049045">Τείχος προστασίας HTTPS</translation>
+<translation id="8318753676953949627">Δεν υπάρχουν εικόνες</translation>
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
 <translation id="8352772353338965963">Προσθέστε έναν λογαριασμό στη σύνδεση σε πολλούς λογαριασμούς. Όλοι οι συνδεδεμένοι λογαριασμοί μπορούν να προσπελαστούν χωρίς κωδικό πρόσβασης, επομένως αυτή η δυνατότητα πρέπει να χρησιμοποιείται μόνο με αξιόπιστους λογαριασμούς.</translation>
 <translation id="8364946094152050673">Κενά ονόματα διακομιστών</translation>

@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chromium pievienot fotoattēlus.</translation>
 <translation id="1289216811211435351">Pāriešana uz Chromium</translation>
 <translation id="1361748954329991663">Pārlūka Chromium versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chromium jaunās versijas.</translation>
+<translation id="1370204544543370355">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties tajā, izmantojot savu Google kontu</translation>
 <translation id="1431818719585918472">Atļaujiet pārlūkā Chromium bloķēt inkognito cilnes.</translation>
 <translation id="1472013873724362412">Jūsu konts nedarbojas pārlūkā Chromium. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
 <translation id="1507010443238049608">Palīdzēt uzlabot Chromium funkcijas un veiktspēju</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">Jūsu konts tiek pārvaldīts domēnā <ph name="HOSTED_DOMAIN" />, tāpēc jūsu Chromium dati no šīs ierīces tiks dzēsti.</translation>
 <translation id="4806326830773390517">Palīdziet uzlabot pārlūku Chromium, nosūtot lietojuma statistiku un avāriju pārskatus Google serveriem.</translation>
 <translation id="4828317641996116749">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
-<translation id="4852878756222711218">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties Google kontā</translation>
 <translation id="4985291216379576555">Bezsaistē, pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4999538639245140991">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chromium dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
 <translation id="5171868502429358653">Pierakstīšanās pārlūkprogrammā Chromium</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Gaya tampilan saat ini adalah disisipkan</translation>
 <translation id="1087788677726983142">Sembunyikan filter streaming acara</translation>
 <translation id="1088402100970133699">Tidak ada item daftar sebelumnya</translation>
-<translation id="1114836634143403764">Saran</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "charlie", "d": "delta", "e": "eko", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oskar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "yuniform", "v": "viktor", "w": "wiski","x": "eksray", "y": "yangki", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Geser dua jari ke atas</translation>
 <translation id="1126928665165112660">Tidak miring</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Info konten</translation>
 <translation id="2417948780551741035">Catatan akhir</translation>
 <translation id="2419852971200420169">Daftar deskripsi</translation>
-<translation id="2421113964388408478">Penghapusan</translation>
 <translation id="2422937916923936891">Kotak centang item menu</translation>
 <translation id="2428534162001909979">Menu Perintah</translation>
 <translation id="242998846562331953">Subjudul</translation>
 <translation id="2435422727584637732">Dodger Blue</translation>
+<translation id="2438712309510062123">Sarankan</translation>
 <translation id="2450814015951372393">Kotak centang</translation>
 <translation id="2461822463642141190">Arus</translation>
 <translation id="2462626033734746142">Grup tombol radio</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Ketuk dua kali untuk mulai mengedit</translation>
 <translation id="2598495320872286378">Kesalahan tata bahasa</translation>
 <translation id="2603828437139726540">Maju satu karakter</translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2619344480613750862">Anda juga dapat berpindah-pindah bagian pada layar. Misalnya, Anda dapat berpindah di antara peluncur, rak, dan tab Chrome. Untuk berpindah ke bagian berikutnya, geser dari kiri ke kanan dengan empat jari. Coba sekarang untuk melanjutkan.</translation>
 <translation id="2624431853467395961">Buka mode pembelajaran</translation>
 <translation id="2626530649491650971">dapat diklik</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Fire Brick</translation>
 <translation id="4482330759234983253">Tabel sebelumnya</translation>
 <translation id="4491109536499578614">Gambar</translation>
-<translation id="4505167975768625962">Penyisipan</translation>
 <translation id="4511186779140817916">Blanched Almond</translation>
 <translation id="451510441928265982">Tidak ada judul level 2 sebelumnya</translation>
 <translation id="4515799157838123044">Tutupi konten di latar belakang</translation>
@@ -1009,6 +1008,7 @@
 <translation id="8212109599554677485">Ubah gaya tampilan menjadi berdampingan</translation>
 <translation id="8215202828671303819">Multi-pilihan</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% opasitas.</translation>
+<translation id="8261506727792406068">Hapus</translation>
 <translation id="826825447994856889">Pendahuluan</translation>
 <translation id="827266600368092403">Mulai atau akhiri pemilihan</translation>
 <translation id="827422111966801947">Indigo</translation>

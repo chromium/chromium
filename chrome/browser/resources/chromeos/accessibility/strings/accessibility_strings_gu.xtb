@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">વર્તમાન ડિસ્પ્લે શૈલી 'એકબીજાની ઉપર જુઓ' છે</translation>
 <translation id="1087788677726983142">ઇવેન્ટ સ્ટ્રીમ ફિલ્ટર છુપાવો</translation>
 <translation id="1088402100970133699">કોઈ પાછલી સૂચિ આઇટમ નથી</translation>
-<translation id="1114836634143403764">સૂચન</translation>
 <translation id="1120743664840974483">{"a": "આલ્ફા", "b": "બ્રાવો", "c": "ચાર્લી", "d": "ડેલ્ટા", "e": "ઇકો", "f": "ફોક્સટ્રોટ", "g": "ગોલ્ફ", "h": "હોટલ", "i": "ઇન્ડિયા", "j": "જુલિયેટ","k": "કિલો", "l": "લીમા", "m": "માઇક", "n": "નવેમ્બર", "o": "ઑસ્કાર","p": "પાપા", "q": "ક્વેબેક", "r": "રોમિયો", "s": "સિયેરા", "t": "ટેંગો", "u": "યુનિફોર્મ", "v": "વિક્ટર", "w": "વ્હિસ્કી","x": "એક્સરે", "y": "યેંકી", "z": "ઝુલુ"}</translation>
 <translation id="1120938014254001895">બે આંગળી ઉપરની બાજુ સ્વાઇપ કરો</translation>
 <translation id="1126928665165112660">ઇટાલિક નથી</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">કન્ટેન્ટ માહિતી</translation>
 <translation id="2417948780551741035">અંતિમ નોંધ</translation>
 <translation id="2419852971200420169">વર્ણનની સૂચિ</translation>
-<translation id="2421113964388408478">ડિલીટ કરો</translation>
 <translation id="2422937916923936891">મેનૂ આઇટમ ચેક બૉક્સ</translation>
 <translation id="2428534162001909979">આદેશ મેનૂઝ</translation>
 <translation id="242998846562331953">ઉપશીર્ષક</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">ફેરફાર શરૂ કરવા માટે બે વાર ટૅપ કરો</translation>
 <translation id="2598495320872286378">વ્યાકરણની ભૂલ</translation>
 <translation id="2603828437139726540">એક અક્ષર આગળ ખસેડો</translation>
+<translation id="2619052155095999743">શામેલ કરો</translation>
 <translation id="2619344480613750862">તમે સ્ક્રીનના એક વિભાગથી બીજા વિભાગ પર પણ જઈ શકો છો. ઉદાહરણ તરીકે, તમે લૉન્ચર, શેલ્ફ અને તમારી Chrome ટૅબ પર જઈ શકો છો. આગલા વિભાગમાં જવા માટે, ચાર આંગળીથી ડાબેથી જમણે સ્વાઇપ કરો. આગળ વધવા માટે, હમણાં જ અજમાવી જુઓ.</translation>
 <translation id="2624431853467395961">જાણો મોડ ખોલો</translation>
 <translation id="2626530649491650971">ક્લિક કરી શકાય તેવા</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">આગમાંની ઈંટ જેવો</translation>
 <translation id="4482330759234983253">પાછલું કોષ્ટક</translation>
 <translation id="4491109536499578614">છબી</translation>
-<translation id="4505167975768625962">ઉમેરો</translation>
 <translation id="4511186779140817916">આછો બદામી</translation>
 <translation id="451510441928265982">કોઈ પાછલું 'લેવલ 2' મથાળું નથી</translation>
 <translation id="4515799157838123044">બૅકગ્રાઉન્ડના કન્ટેન્ટનો રંગ ઝાંખો કરો</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">ડિસ્પ્લે શૈલીને 'સાથેસાથે' પર બદલો</translation>
 <translation id="8215202828671303819">બહુ પસંદ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, પારદર્શકતા <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="826825447994856889">પ્રસ્તાવના</translation>
 <translation id="827266600368092403">પસંદગી શરૂ અથવા સમાપ્ત કરો</translation>
 <translation id="827422111966801947">ઘેરો ભૂરો</translation>

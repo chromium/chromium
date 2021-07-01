@@ -2303,7 +2303,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3468298837301810372">Nhãn</translation>
 <translation id="3468999815377931311">Điện thoại Android</translation>
 <translation id="3470442499439619530">Xóa người dùng này</translation>
-<translation id="3471350386419633991">Hãy nhấp chuột phải vào một thẻ hoặc nhấp vào biểu tượng Dấu trang để thêm các thẻ vào một danh sách đọc. Bạn có thể truy cập từ thanh Dấu trang.</translation>
 <translation id="3471876058939596279">Không thể sử dụng đồng thời cổng USB Type-C và HDMI cho video. Hãy sử dụng một cổng video khác.</translation>
 <translation id="3473241910002674503">Chuyển về trang chủ, quay lại và chuyển đổi ứng dụng bằng các nút ở chế độ máy tính bảng.</translation>
 <translation id="3473479545200714844">Phóng to màn hình</translation>
@@ -2772,7 +2771,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3945513714196326460">Hãy thử nhập một tên ngắn hơn</translation>
 <translation id="3948116654032448504">&amp;Tìm kiếm hình ảnh trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong các thư mục sau đây</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Đã nhập từ IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Ứng dụng này có thể nguy hiểm}other{Các ứng dụng này có thể nguy hiểm}}</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
@@ -3095,7 +3093,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4349828822184870497">Hữu ích</translation>
 <translation id="4350230709416545141">Luôn chặn không cho <ph name="HOST" /> truy cập thông tin vị trí của bạn</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> muốn quét tìm các thiết bị Bluetooth ở gần và đã tìm thấy các thiết bị sau đây:</translation>
 <translation id="4354073718307267720">Hỏi khi một trang web muốn tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="4354344420232759511">Các trang web bạn truy cập sẽ xuất hiện ở đây</translation>
 <translation id="435527878592612277">Chọn ảnh của bạn</translation>
@@ -3358,7 +3355,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4625078469366263107">Bật ứng dụng</translation>
 <translation id="4627427111733173920">Đã chặn cookie</translation>
 <translation id="4627442949885028695">Tiếp tục từ thiết bị khác</translation>
-<translation id="4628757576491864469">Thiết bị</translation>
 <translation id="4628762811416793313">Quá trình thiết lập vùng chứa Linux chưa hoàn tất. Vui lòng thử lại.</translation>
 <translation id="4629521233550547305">Mở hồ sơ <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Tùy chỉnh thẻ</translation>
@@ -3525,6 +3521,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4830502475412647084">Đang cài đặt bản cập nhật hệ điều hành</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> của bạn không thể kết nối Internet bằng cách sử dụng <ph name="NETWORK_NAME" />. Vui lòng chọn mạng khác. <ph name="LEARN_MORE_LINK_START" />Tìm hiểu thêm<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Tìm thấy 1 máy in trên máy chủ máy in</translation>
+<translation id="4834007576107377210">Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn của công cụ tìm kiếm của bạn (nếu có)</translation>
 <translation id="4836046166855586901">Hỏi khi một trang web muốn biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4836504898754963407">Quản lý vân tay số</translation>
 <translation id="4837128290434901661">Chuyển lại về Google Tìm kiếm?</translation>
@@ -5143,7 +5140,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6651237644330755633">Tin tưởng chứng chỉ này khi nhận dạng trang web</translation>
 <translation id="6651495917527016072">Đồng bộ hóa các mạng Wi-Fi với điện thoại của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Tính năng tích hợp <ph name="MS_AD_NAME" /> vào Chrome chỉ được hỗ trợ trên các nền tảng x86_64. Chromebook được phát triển trên nền tảng ARM hoặc x86 không hỗ trợ chức năng này.</translation>
-<translation id="66537479323396140">Xóa nhật ký duyệt web và nội dung tự động hoàn thành trong hộp tìm kiếm. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Đặt mạng ưu tiên</translation>
 <translation id="6655190889273724601">Chế độ dành cho nhà phát triển</translation>
 <translation id="6655458902729017087">Ẩn tài khoản</translation>
@@ -6728,7 +6724,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8363142353806532503">Micrô bị chặn</translation>
 <translation id="8366396658833131068">Kết nối mạng của bạn đã được khôi phục. Hãy chọn mạng khác hoặc nhấn nút 'Tiếp tục' bên dưới để khởi chạy ứng dụng kiosk của bạn.</translation>
 <translation id="8366694425498033255">Phím chọn</translation>
-<translation id="8368027906805972958">Thiết bị không xác định hoặc không được hỗ trợ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Mở tất cả dấu trang</translation>
 <translation id="8370294614544004647">Chuyển sang chế độ ngủ khi gập máy tính</translation>
 <translation id="8371695176452482769">Nói ngay bây giờ</translation>
@@ -6741,7 +6736,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8379991678458444070">Đánh dấu thẻ này để quay lại đây nhanh chóng</translation>
 <translation id="8382913212082956454">Sao chép địa chỉ &amp;email</translation>
 <translation id="8386091599636877289">Không tìm thấy chính sách.</translation>
-<translation id="838705362287678887">Để xóa <ph name="BEGIN_LINK_SEARCH" />nhật ký tìm kiếm<ph name="END_LINK_SEARCH" /> hoặc các dạng nhật ký khác, hãy truy cập vào trang <ph name="BEGIN_LINK_GOOGLE" />Tài khoản Google của tôi<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">Không được phép xem vị trí của bạn</translation>
 <translation id="8388770971141403598">Hồ sơ phụ không được hỗ trợ</translation>
 <translation id="8389416080014625855">Tạo mã QR cho trang này</translation>

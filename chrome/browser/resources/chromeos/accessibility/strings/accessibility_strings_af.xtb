@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Huidige vertoonstyl is interpaginering</translation>
 <translation id="1087788677726983142">Versteek geleentheidstroomfilters</translation>
 <translation id="1088402100970133699">Geen vorige lysitem nie</translation>
-<translation id="1114836634143403764">Voorstel</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Swiep twee vingers boontoe</translation>
 <translation id="1126928665165112660">Nie skuinsdruk nie</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Inhoudinligting</translation>
 <translation id="2417948780551741035">Eindnotas</translation>
 <translation id="2419852971200420169">Beskrywinglys</translation>
-<translation id="2421113964388408478">Uitvee</translation>
 <translation id="2422937916923936891">Kieslysitem-merkblokkie</translation>
 <translation id="2428534162001909979">Bevelkieslyste</translation>
 <translation id="242998846562331953">Onderskrif</translation>
 <translation id="2435422727584637732">Helder hemelblou</translation>
+<translation id="2438712309510062123">Stel voor</translation>
 <translation id="2450814015951372393">Merkblokkie</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2462626033734746142">Radioknoppiegroep</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Dubbeltik om te begin redigeer</translation>
 <translation id="2598495320872286378">Grammatikafout</translation>
 <translation id="2603828437139726540">Beweeg een karakter vorentoe</translation>
+<translation id="2619052155095999743">Invoeg</translation>
 <translation id="2619344480613750862">Jy kan ook tussen die afdelings van die skerm beweeg. Jy kan byvoorbeeld tussen die lanseerder, die rak en jou Chrome-oortjies beweeg. Swiep van links na regs met vier vingers om na die volgende afdeling te beweeg. Probeer dit nou om voort te gaan.</translation>
 <translation id="2624431853467395961">Maak leermodus oop</translation>
 <translation id="2626530649491650971">klikbare</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Vlambaksteen</translation>
 <translation id="4482330759234983253">Vorige tabel</translation>
 <translation id="4491109536499578614">Prent</translation>
-<translation id="4505167975768625962">Invoeging</translation>
 <translation id="4511186779140817916">Amandelwit</translation>
 <translation id="451510441928265982">Geen vorige vlak 2-opskrif nie</translation>
 <translation id="4515799157838123044">Vervaag agtergrondinhoud</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Verander vertoonstyl na sy-aan-sy</translation>
 <translation id="8215202828671303819">Multi-kies</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ondeursigtighied.</translation>
+<translation id="8261506727792406068">Vee uit</translation>
 <translation id="826825447994856889">Inleiding</translation>
 <translation id="827266600368092403">Begin of eindig keuse</translation>
 <translation id="827422111966801947">Indigo</translation>

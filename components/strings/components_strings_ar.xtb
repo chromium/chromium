@@ -261,7 +261,6 @@
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1807528111851433570">ورقة البداية</translation>
 <translation id="1812527064848182527">معالم</translation>
-<translation id="1814698615734239189">هذا التطبيق مصمّم للعمل على الأجهزة الجوّالة. وهو يعمل الآن في وضع التوافق. وقد يؤدي تغيير حجمه إلى حدوث مشاكل، من بينها إعادة تشغيل التطبيق.</translation>
 <translation id="1821930232296380041">طلب غير صالح، أو معلمات طلب غير صالحة</translation>
 <translation id="1822540298136254167">المواقع الإلكترونية التي تزورها والوقت المُستغرق في تصفُّحها</translation>
 <translation id="1826516787628120939">حساب شيكات</translation>
@@ -680,7 +679,6 @@
 <translation id="3431636764301398940">حفظ هذه البطاقة إلى هذا الجهاز</translation>
 <translation id="3432601291244612633">إغلاق الصفحة</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
-<translation id="3435896845095436175">تفعيل الإضافات</translation>
 <translation id="3438829137925142401">‏استخدام كلمات المرور المحفوظة في حسابك على Google</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">أوقف مالك هذا الجهاز تشغيل لعبة الديناصور.</translation>
@@ -817,6 +815,7 @@
 <translation id="3946209740501886391">السؤال دائمًا على الموقع الإلكتروني هذا</translation>
 <translation id="3949571496842715403">لم يتمكن هذا الخادم من إثبات أنه <ph name="DOMAIN" />؛ بل إن شهادة الأمان التابعة له لا تُحدّد الأسماء البديلة للمضيفات. وربما يكون السبب في ذلك وجود خطأ في الإعداد أو اعتراض أحد المهاجمين للاتصال.</translation>
 <translation id="3949601375789751990">يظهر سجلّ التصفّح هنا</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">لا تتوفر طرق دفع محفوظة</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3961148744525529027">جدول بيانات معالج الدفع مفتوح جزئيًا</translation>
@@ -824,7 +823,6 @@
 <translation id="3963721102035795474">وضع القارئ</translation>
 <translation id="3963837677003247395">هل تريد المتابعة يدويًا؟</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{بدون}=1{من موقع واحد }two{من موقعين (#) }few{من # مواقع }many{من # موقعًا }other{من # موقع }}</translation>
-<translation id="3970481983430640194">يمكنك الآن سحب هذا التطبيق وتغيير حجمه.</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3973234410852337861">تم حظر <ph name="HOST_NAME" /></translation>
 <translation id="3973357910713125165">‏زر تشغيل ميزة "تأكيد السلامة" في Chrome، اضغط على مفتاح Enter لتشغيل هذه الميزة في إعدادات Chrome.</translation>
@@ -948,6 +946,7 @@
 <translation id="4346197816712207223">بطاقات الائتمان المقبولة</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. ينصحك Chrome بالانتقال إلى <ph name="WEBSITE_1" /> و<ph name="WEBSITE_2" /> ومواقع إلكترونية أخرى تستخدم فيها كلمة المرور هذه، ثم تغيير كلمة المرور الآن.</translation>
+<translation id="4351060348582610152">يريد <ph name="ORIGIN" /> البحث عن أجهزة البلوتوث المجاورة. وتم العثور على الأجهزة التالية:</translation>
 <translation id="4356973930735388585">قد يحاول المهاجمون الموجودون على هذا الموقع تثبيت برامج خطيرة على الكمبيوتر التابع لك تسرق معلوماتك أو تحذفها (على سبيل المثال، الصور وكلمات المرور والرسائل وبطاقات الائتمان).</translation>
 <translation id="4358059973562876591">‏قد لا يتم تطبيق النماذج التي حدّدتها بسبب حدوث خطأ في سياسة DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">إدارة طرق الدفع...</translation>
@@ -1400,7 +1399,6 @@
 <translation id="6032524144326295339">صندوق البريد الإلكتروني 2</translation>
 <translation id="6032955021262906325">التجليد يسارًا</translation>
 <translation id="6034000775414344507">رمادي فاتح</translation>
-<translation id="6034062182346928710">قد لا يتم تغيير حجم التطبيق <ph name="APP_NAME" /> بشكل مناسِب. استخدِم أحجام النوافذ المُعَدّة مسبقًا لمنع حدوث خلل في أداء التطبيق.</translation>
 <translation id="6034283069659657473">‏10x14 (مغلف)</translation>
 <translation id="6034514109191629503">طي أكورديوني</translation>
 <translation id="6039846035001940113">في حال استمرت المشكلة، اتصل بمالك الموقع.</translation>
@@ -1430,7 +1428,6 @@
 <translation id="6120179357481664955">هل تتذكر معرّف واجهة الدفعات الموحّدة؟</translation>
 <translation id="6123290840358279103">عرض البطاقة الافتراضية</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
-<translation id="6143538402333184781">يتوافق هذا التطبيق مع حجم "الهاتف" فقط.</translation>
 <translation id="6146055958333702838">تحقق من أي كابلات وأعد تشغيل أي أجهزة توجيه أو أجهزة مودم أو أجهزة شبكة
         أخرى ربما تستخدمها.</translation>
 <translation id="614940544461990577">يمكنك محاولة:</translation>
@@ -1980,7 +1977,6 @@
 <translation id="8225771182978767009">اختار الشخص الذي أعد جهاز الكمبيوتر حظر الموقع الإلكتروني هذا.</translation>
 <translation id="8228419419708659934">عرض صفحتين</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">عدم تكرار السؤال عند استخدام هذا التطبيق</translation>
 <translation id="8232343881378637145">درجة حرارة النظام الأساسي</translation>
 <translation id="8238581221633243064">يمكنك فتح الصفحة في علامة تبويب جديدة للتصفح المتخفي</translation>
 <translation id="8241707690549784388">استخدمت الصفحة التي تبحث عنها المعلومات التي أدخلتها وقد يؤدّي الرجوع إليها  إلى تكرار  جميع الإجراءات السابقة. هل تريد المتابعة؟</translation>
@@ -1993,7 +1989,6 @@
 <translation id="825929999321470778">عرض جميع كلمات المرور المحفوظة</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8262952874573525464">خزم الحواف من الأسفل</translation>
-<translation id="826298712171642726">هل تريد تفعيل ميزة تغيير الحجم؟</translation>
 <translation id="8265992338205884890">البيانات المرئية</translation>
 <translation id="8267698848189296333">تسجيل الدخول باسم <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">مستندات مفصولة/نُسخ مُجمّعة</translation>
@@ -2024,6 +2019,7 @@
 <translation id="8355270400102541638">سياق التعطّل على جهاز المستخدِم:</translation>
 <translation id="8363502534493474904">إيقاف "وضع الطيران"</translation>
 <translation id="8364627913115013041">لم يتم تعيينها.</translation>
+<translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏خدمات Google Play</translation>
 <translation id="8371889962595521444">شهادات الجذر المُخصَّصة</translation>
 <translation id="8374636051559112948">يختلف من جهاز إلى آخر</translation>
@@ -2041,6 +2037,7 @@
 <translation id="8431194080598727332">‏<ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة الإعدادات المفضّلة لملفات تعريف الارتباط في إعدادات متصفّح Chrome.</translation>
 <translation id="8433057134996913067">سيؤدي هذا إلى خروجك من معظم المواقع الإلكترونية.</translation>
 <translation id="8437238597147034694">تراجع عن ال&amp;نقل</translation>
+<translation id="8438476240229491014">تذكر هذا الإعداد</translation>
 <translation id="8438786541497918448">هل تريد استخدام الكاميرا والميكروفون؟</translation>
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8457125768502047971">غير محدَّد</translation>

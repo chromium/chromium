@@ -261,7 +261,6 @@
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1807528111851433570">صفحه شروع</translation>
 <translation id="1812527064848182527">منظره</translation>
-<translation id="1814698615734239189">این برنامه برای دستگاه‌های همراه طراحی شده است و در حالت سازگاری اجرا می‌شود. مجاز کردن تغییر اندازه ممکن است باعث بروز مشکلاتی مثل بازراه‌اندازی برنامه شود.</translation>
 <translation id="1821930232296380041">پارامترهای درخواست یا درخواست نامعتبر</translation>
 <translation id="1822540298136254167">وب‌سایت‌هایی که بازدید می‌کنید و زمانی که در آن‌ها صرف می‌کنید</translation>
 <translation id="1826516787628120939">در حال بررسی</translation>
@@ -680,7 +679,6 @@
 <translation id="3431636764301398940">این کارت را در این دستگاه ذخیره کنید</translation>
 <translation id="3432601291244612633">بستن صفحه</translation>
 <translation id="3435738964857648380">امنیت</translation>
-<translation id="3435896845095436175">فعال کردن</translation>
 <translation id="3438829137925142401">‏استفاده از گذرواژه‌های ذخیره‌شده در «حساب Google»</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">مالک این دستگاه بازی دایناسور را خاموش کرده است</translation>
@@ -817,6 +815,7 @@
 <translation id="3946209740501886391">در این سایت، همیشه سؤال شود</translation>
 <translation id="3949571496842715403">‏این سرور نتوانست ثابت کند که <ph name="DOMAIN" /> است؛ در گواهی امنیتی آن، Subject Alternative Names مشخص نشده است. ممکن است این مشکل به دلیل پیکربندی نادرست یا قطع اتصال شما توسط مهاجم ایجاد شده باشد.</translation>
 <translation id="3949601375789751990">سابقه مرورتان در اینجا نشان داده می‌شود</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">روش پرداخت ذخیره‌شده‌ای وجود ندارد</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3961148744525529027">برگ کنترل‌کننده پرداخت نیمه‌باز است</translation>
@@ -824,7 +823,6 @@
 <translation id="3963721102035795474">حالت «خواننده»</translation>
 <translation id="3963837677003247395">به‌صورت دستی ادامه می‌دهید؟</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{هیچ‌کدام}=1{از ۱ سایت }one{از # سایت }other{از # سایت }}</translation>
-<translation id="3970481983430640194">اکنون می‌توانید اندازه این برنامه را با کشیدن تغییر دهید</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود شده است</translation>
 <translation id="3973357910713125165">‏دکمه «راندن بررسی ایمنی در Chrome»، کلید «ورود» را فشار دهید تا «بررسی ایمنی» در تنظیمات Chrome اجرا شود</translation>
@@ -948,6 +946,7 @@
 <translation id="4346197816712207223">کارت‌های اعتباری قابل‌‌قبول</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. Chrome توصیه می‌کند همین حالا به <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" />، و سایت‌های دیگری که در آن‌ها از این گذرواژه استفاده می‌کنید بروید و گذرواژه را تغییر دهید.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> می‌خواهد دستگاه‌های «بلوتوث» اطراف را جستجو کند. دستگاه‌های زیر پیدا شدند:</translation>
 <translation id="4356973930735388585">مهاجم‌ها در این سایت ممکن است تلاش کنند برنامه‌های خطرناکی در رایانه شما نصب کنند که اطلاعات شما (مانند عکس‌ها، گذرواژه‌ها، پیام‌ها و کارت‌های اعتباری) را به سرقت می‌برند یا حذف می‌کنند.</translation>
 <translation id="4358059973562876591">‏ممکن است الگوهایی که مشخص کردید به‌دلیل خطای خط‌مشی DnsOverHttpsMode اعمال نشوند.</translation>
 <translation id="4358461427845829800">مدیریت روش‌های پرداخت…</translation>
@@ -1400,7 +1399,6 @@
 <translation id="6032524144326295339">صندوق پست ۲</translation>
 <translation id="6032955021262906325">به‌هم چسباندن از چپ</translation>
 <translation id="6034000775414344507">خاکستری کم‌رنگ</translation>
-<translation id="6034062182346928710">ممکن است اندازه <ph name="APP_NAME" /> به‌خوبی تغییر نکند. برای جلوگیری از عملکرد نادرست برنامه، از پیش‌تنظیم‌های اندازه پنجره استفاده کنید.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">تاخوردگی آکاردئونی</translation>
 <translation id="6039846035001940113">اگر مشکل ادامه دارد، با مالک سایت تماس بگیرید.</translation>
@@ -1430,7 +1428,6 @@
 <translation id="6120179357481664955">‏شناسه «رابط پرداخت‌های یکپارچه» (UPI) شما به‌خاطر سپرده شود؟</translation>
 <translation id="6123290840358279103">مشاهده کارت مجازی</translation>
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
-<translation id="6143538402333184781">این برنامه فقط از اندازه «تلفن» پشتیبانی می‌کند.</translation>
 <translation id="6146055958333702838">همه کابل‌ها را بررسی کنید و همه ره‌یاب‌ها، مودم‌ها، یا دیگر دستگاه‌های
    شبکه‌ای را که ممکن است درحال استفاده از آن‌ها باشید مجدداً راه‌اندازی کنید.</translation>
 <translation id="614940544461990577">این موارد را امتحان کنید:</translation>
@@ -1980,7 +1977,6 @@
 <translation id="8225771182978767009">شخصی که این رایانه را راه‌اندازی کرده این سایت را مسدود کرده است.</translation>
 <translation id="8228419419708659934">نمای دوصفحه‌ای</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">دیگر برای این برنامه از من سؤال نشود</translation>
 <translation id="8232343881378637145">دمای پلتفورم</translation>
 <translation id="8238581221633243064">صفحه را در برگه «ناشناس» جدیدی باز کنید</translation>
 <translation id="8241707690549784388">صفحه‌ای که جستجو می‌کنید از اطلاعاتی استفاده می‌کند که شما وارد کرده‌اید. بازگشت به آن صفحه ممکن است باعث شود اقدامی را که قبلاً انجام دادید دوباره تکرار کنید. آیا می‌خواهید ادامه دهید؟</translation>
@@ -1993,7 +1989,6 @@
 <translation id="825929999321470778">نمایش همه گذرواژه‌های ذخیره‌شده</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8262952874573525464">دوختن لبه پایین</translation>
-<translation id="826298712171642726">تغییر اندازه فعال شود؟</translation>
 <translation id="8265992338205884890">داده‌های قابل‌مشاهده</translation>
 <translation id="8267698848189296333">ورود به سیستم به‌عنوان <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">اسناد جداگانه/کپی‌های تلفیقی</translation>
@@ -2024,6 +2019,7 @@
 <translation id="8355270400102541638">بافت خرابی محلی:</translation>
 <translation id="8363502534493474904">خاموش کردن حالت هواپیما</translation>
 <translation id="8364627913115013041">تنظیم نشده.</translation>
+<translation id="8368027906805972958">دستگاه ناشناس یا پشتیبانی‌نشده (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏خدمات Google Play</translation>
 <translation id="8371889962595521444">گواهی‌نامه ریشه سفارشی</translation>
 <translation id="8374636051559112948">متفاوت است</translation>

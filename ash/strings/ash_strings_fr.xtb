@@ -157,7 +157,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'Aperçu</translation>
 <translation id="2208323208084708176">Mode bureau unifié</translation>
 <translation id="2220572644011485463">Code ou mot de passe</translation>
@@ -204,6 +203,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2542089167727451762">Appuyez sur votre image de profil</translation>
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
 <translation id="256712445991462162">la loupe ancrée</translation>
+<translation id="2573588302192866788">Impossible de connecter <ph name="NAME" /></translation>
 <translation id="2575685495496069081">La connexion multicompte a été désactivée</translation>
 <translation id="2582112259361606227">Redémarrer pour mettre à jour</translation>
 <translation id="2595239820337756193">5 km en miles</translation>
@@ -350,6 +350,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3771549900096082774">Mode Contraste élevé</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
+<translation id="3779139509281456663">Connexion à <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="3796746699333205839">Une application utilise la caméra et le micro</translation>
@@ -704,6 +705,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
 <translation id="6627638273713273709">Rechercher+Maj+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> souhaite utiliser le micro</translation>
+<translation id="6630773993843701741">Ouvrez les paramètres Bluetooth pour associer l'appareil manuellement</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
 <translation id="6641720045729354415">Activer/Désactiver les Sous-titres instantanés. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
@@ -789,6 +791,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7348093485538360975">Clavier virtuel</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
 <translation id="7360036564632145207">Vous pouvez optimiser les performances en modifiant le paramètre "Protection de l'accès aux données pour les périphériques"</translation>
+<translation id="7366890467478514168">Connecter <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7377169924702866686">La touche de verrouillage des majuscules est activée</translation>
 <translation id="7378203170292176219">Faire glisser pour sélectionner une zone à enregistrer</translation>
@@ -1039,6 +1042,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="9193626018745640770">Destinataire de la diffusion inconnu</translation>
 <translation id="9194617393863864469">Se connecter avec un autre compte utilisateur…</translation>
 <translation id="9198992156681343238">La résolution de <ph name="DISPLAY_NAME" /> est passée à <ph name="RESOLUTION" />. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="9201044636667689546">Connectez <ph name="NAME" /> à ce Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, géré par votre administrateur</translation>
 <translation id="9210037371811586452">Sortie du mode Bureau unifié</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>

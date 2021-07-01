@@ -261,7 +261,6 @@
 <translation id="1807246157184219062">આછું</translation>
 <translation id="1807528111851433570">શરૂઆતની શીટ</translation>
 <translation id="1812527064848182527">લૅન્ડસ્કેપ</translation>
-<translation id="1814698615734239189">આ ઍપ મોબાઇલ ડિવાઇસ માટે ડિઝાઇન કરવામાં આવી છે. તે સુસંગતતા મોડમાં ચાલી રહી છે. કદ બદલવાની મંજૂરી આપવાથી ઍપને ફરી શરૂ કરવા સહિતની સમસ્યાઓ આવી શકે છે.</translation>
 <translation id="1821930232296380041">અમાન્ય વિનંતી અથવા વિનંતી પરિમાણો</translation>
 <translation id="1822540298136254167">તમે મુલાકાત લો તે વેબસાઇટ અને તેના પર વિતાવેલો સમય</translation>
 <translation id="1826516787628120939">તપાસી રહ્યાં છે</translation>
@@ -679,7 +678,6 @@
 <translation id="3431636764301398940">આ ડિવાઇસ પર આ કાર્ડ સાચવો</translation>
 <translation id="3432601291244612633">પેજ બંધ કરો</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
-<translation id="3435896845095436175">ચાલુ કરો</translation>
 <translation id="3438829137925142401">તમારા Google એકાઉન્ટમાં સાચવેલા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">આ ઉપકરણના માલિકે ડાયનાસોર રમત બંધ કરી છે.</translation>
@@ -816,6 +814,7 @@
 <translation id="3946209740501886391">આ સાઇટ પર હંમેશાં પૂછો</translation>
 <translation id="3949571496842715403">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર વિષય વૈકલ્પિક નામનો ઉલ્લેખ કરતું નથી. આ કોઈ ખોટી ગોઠવણીને કારણે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવતો હોવાને કારણે બન્યું હોઈ શકે.</translation>
 <translation id="3949601375789751990">તમારો બ્રાઉઝિંગ ઇતિહાસ અહીં દેખાય છે</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">કોઈ ચુકવણી પદ્ધતિ સાચવેલી નથી</translation>
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3961148744525529027">ચુકવણી માટેની હૅન્ડલર શીટ અડધી ખુલ્લી છે</translation>
@@ -823,7 +822,6 @@
 <translation id="3963721102035795474">રીડર મોડ</translation>
 <translation id="3963837677003247395">મેન્યુઅલી ચાલુ રાખીએ?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{કોઈ નહીં}=1{1 સાઇટમાંથી }one{# સાઇટમાંથી }other{# સાઇટમાંથી }}</translation>
-<translation id="3970481983430640194">હવે તમે આ ઍપને ખેંચીને તેનું કદ બદલી શકો છો</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> અવરોધિત છે</translation>
 <translation id="3973357910713125165">Chromeની સલામતી માટે તપાસ ચલાવો બટન, Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવવા માટે Enter દબાવો</translation>
@@ -947,6 +945,7 @@
 <translation id="4346197816712207223">સ્વીકૃત ક્રેડિટ કાર્ડ</translation>
 <translation id="4346833872170306413">રૉક-16K</translation>
 <translation id="4349531505348777662">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> તેમજ તમે આ પાસવર્ડનો જ્યાં ઉપયોગ કરતા હોય તે અન્ય સાઇટ પર જઈને તેને હમણાં જ બદલવાનો સુઝાવ આપે છે.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> નજીકના બ્લૂટૂથ ડિવાઇસ માટે સ્કૅન કરવા માગે છે. નીચે મુજબના ડિવાઇસ મળ્યા છે:</translation>
 <translation id="4356973930735388585">આ સાઇટ પરના હુમલાખોરો તમારા કમ્પ્યુટર પર તમારી માહિતી (ઉદાહરણ તરીકે, ફોટો, પાસવર્ડ, સંદેશા અને ક્રેડિટ કાર્ડ)ને ચોરી શકે કે કાઢી નાખે એવા જોખમી પ્રોગ્રામને ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરી શકે છે.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode નીતિમાં ભૂલના કારણે તમે ઉલ્લેખ કરેલા નમૂનાઓને કદાચ લાગુ કરવામાં આવશે નહીં.</translation>
 <translation id="4358461427845829800">ચુકવણી પદ્ધતિઓ મેનેજ કરો…</translation>
@@ -1399,7 +1398,6 @@
 <translation id="6032524144326295339">મેઇલબૉક્સ 2</translation>
 <translation id="6032955021262906325">ડાબી બાજુએ જોડો</translation>
 <translation id="6034000775414344507">આછો ગ્રે</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> કદાચ યોગ્ય રીતે કદ બદલી શકશે નહીં. ઍપને વિચિત્ર રીતે કાર્ય કરતા અટકાવવા માટે, વિન્ડોના પ્રીસેટ કરેલા કદનો ઉપયોગ કરો.</translation>
 <translation id="6034283069659657473">10x14 (એન્વલપ)</translation>
 <translation id="6034514109191629503">અકૉર્ડિઅન ફોલ્ડ</translation>
 <translation id="6039846035001940113">જો સમસ્યા ચાલુ રહે, તો સાઇટના માલિકનો સંપર્ક કરો.</translation>
@@ -1429,7 +1427,6 @@
 <translation id="6120179357481664955">તમારું UPI ID યાદ રાખીએ?</translation>
 <translation id="6123290840358279103">વર્ચ્યુઅલ કાર્ડ જુઓ</translation>
 <translation id="6124432979022149706">Chrome એન્ટરપ્રાઇઝ કનેક્ટર</translation>
-<translation id="6143538402333184781">આ ઍપ ફક્ત "ફોન"ના કદને સપોર્ટ કરે છે.</translation>
 <translation id="6146055958333702838">કોઈપણ કેબલ્સ તપાસો અને તમે કદાચ ઉપયોગમાં લઇ રહ્યાં હોય તેવા કોઇપણ રાઉટર્સ, મૉડેમ્સ 
     અથવા અન્ય નેટવર્ક ઉપકરણોને રીબૂટ કરો.</translation>
 <translation id="614940544461990577">પ્રયાસ કરો:</translation>
@@ -1979,7 +1976,6 @@
 <translation id="8225771182978767009">આ કમ્પ્યુટરને સેટ કરનાર વ્યક્તિએ આ સાઇટને અવરોધિત કરવાનું પસંદ કર્યું છે.</translation>
 <translation id="8228419419708659934">બે પેજવાળો વ્યૂ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">આ ઍપ માટે મને ફરીથી પૂછશો નહીં</translation>
 <translation id="8232343881378637145">પ્લૅટફૉર્મનું તાપમાન</translation>
 <translation id="8238581221633243064">એક નવી છુપી વિંડોમાં પેજ ખોલો</translation>
 <translation id="8241707690549784388">તમારા દ્વારા દાખલ કરાયેલી વપરાયેલી માહિતી માટે આ પાનું તમે જોઈ રહ્યા છો. તે પૃષ્ઠ પર પાછા જવાથી એવી કોઈપણ ક્રિયા ફરીથી થઈ શકે છે જે તમે પહેલા કરી હતી. શું તમે ચાલુ રાખવા માંગો છો?</translation>
@@ -1992,7 +1988,6 @@
 <translation id="825929999321470778">બધા સાચવેલા પાસવર્ડ બતાવો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8262952874573525464">નીચે કિનારી જોડવી</translation>
-<translation id="826298712171642726">કદ બદલવાનું ચાલુ કરીએ?</translation>
 <translation id="8265992338205884890">જોઈ શકાતો ડેટા</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> તરીકે સાઇન ઇન કરી રહ્યાં છે</translation>
 <translation id="8269242089528251720">અલગ દસ્તાવેજો/ગોઠવેલી કૉપિ</translation>
@@ -2023,6 +2018,7 @@
 <translation id="8355270400102541638">સ્થાનિક ક્રૅશ સંદર્ભ:</translation>
 <translation id="8363502534493474904">એરપ્લેન મોડ બંધ કરીને</translation>
 <translation id="8364627913115013041">સેટ નથી.</translation>
+<translation id="8368027906805972958">અજાણ્યું અથવા અસમર્થિત ડિવાઇસ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play સેવાઓ</translation>
 <translation id="8371889962595521444">કસ્ટમ રૂટ પ્રમાણપત્રો</translation>
 <translation id="8374636051559112948">બદલાતી રહે છે</translation>
@@ -2040,6 +2036,7 @@
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ટૅબ દબાવો અને પછી Chrome સેટિંગમાં કુકીની તમારી પસંદગીઓ મેનેજ કરવા માટે Enter કી દબાવો</translation>
 <translation id="8433057134996913067">આ તમને મોટાભાગની વેબસાઇટ્સમાંથી સાઇન આઉટ કરશે.</translation>
 <translation id="8437238597147034694">&amp;ખસેડવું પૂર્વવત્‌ કરો</translation>
+<translation id="8438476240229491014">આ સેટિંગ યાદ રાખો</translation>
 <translation id="8438786541497918448">કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરીએ?</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>
 <translation id="8457125768502047971">અનિશ્ચિત</translation>

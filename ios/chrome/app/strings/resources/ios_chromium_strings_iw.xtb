@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">‏כדי לשמור תמונות צריך להקיש על 'הגדרות' על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
 <translation id="1289216811211435351">‏החלפה ל-Chromium</translation>
 <translation id="1361748954329991663">‏Chromium אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות החדשות של Chromium.</translation>
+<translation id="1370204544543370355">‏אפשר להיכנס ל-Chromium באמצעות חשבון Google כדי להפיק את המרב מ-Chromium</translation>
 <translation id="1431818719585918472">‏הכרטיסיות במצב אנונימי יינעלו באמצעות Chromium.</translation>
 <translation id="1472013873724362412">‏החשבון שלך לא פועל ב-Chromium. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
 <translation id="1507010443238049608">‏עזרה בשיפור התכונות והביצועים של Chromium</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים שלך מ-Chromium יימחקו מהמכשיר הזה</translation>
 <translation id="4806326830773390517">‏רוצה לעזור לנו לשפר את Chromium? צריך פשוט לשלוח אל Google סטטיסטיקות שימוש ודוחות קריסה</translation>
 <translation id="4828317641996116749">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
-<translation id="4852878756222711218">‏כדי להפיק את המרב מ-Chromium, יש להיכנס לחשבון Google</translation>
 <translation id="4985291216379576555">‏אופליין, Chromium לא יכול לחפש עדכונים</translation>
 <translation id="4999538639245140991">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chromium שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
 <translation id="5171868502429358653">‏כניסה אל Chromium</translation>

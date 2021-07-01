@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Az aktuális megjelenítési mód beékelt</translation>
 <translation id="1087788677726983142">Esemény streamszűrőinek elrejtése</translation>
 <translation id="1088402100970133699">Nincs előző listaelem</translation>
-<translation id="1114836634143403764">Javaslat</translation>
 <translation id="1120743664840974483">{"a": "aladár", "á": "ákos" "b": "béla", "c": "cecil", "cs": "csaba", "d": "dénes", "dz": "edzés", "dzs": "dzsungel", "e": "elemér", "é": "éva", "f": "ferenc", "g": "géza", "gy": "györgy", "h": "hugó", "i": "ilona", "í": "írás", "j": "józsef","k": "katalin", "l": "lászló", "ly": "lyuk", "m": "márton", "n": "nándor", "ny": "nyár", "o": "ottó", "ó": "óriás", "ö": "ödön", "ő": "őrség", "p": "péter", "q": "quebec", "r": "róbert", "s": "sándor", "sz": "szilárd", "t": "tibor", "ty": "tyúk", "u": "ubul", "ú": "újság", "ü": "ünnep", "ű": "űrhajó", "v": "viktor", "w": "waterloo","x": "xilofon", "y": "youtube", "z": "zoltán", "zs": "zsuzsanna",}</translation>
 <translation id="1120938014254001895">Csúsztassa két ujját felfelé</translation>
 <translation id="1126928665165112660">Nem dőlt</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Tartalominformáció</translation>
 <translation id="2417948780551741035">Záró jegyzetek</translation>
 <translation id="2419852971200420169">Leíráslista</translation>
-<translation id="2421113964388408478">Törlés</translation>
 <translation id="2422937916923936891">Menüelem – jelölőnégyzet</translation>
 <translation id="2428534162001909979">Parancsmenük</translation>
 <translation id="242998846562331953">Felirat</translation>
 <translation id="2435422727584637732">Dodger-kék</translation>
+<translation id="2438712309510062123">Javaslat</translation>
 <translation id="2450814015951372393">Jelölőnégyzet</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="2462626033734746142">Választógombcsoport</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Koppintson duplán a szerkesztés megkezdéséhez</translation>
 <translation id="2598495320872286378">Nyelvhelyességi hiba</translation>
 <translation id="2603828437139726540">Ugrás előrébb egy karakterrel</translation>
+<translation id="2619052155095999743">Beillesztés</translation>
 <translation id="2619344480613750862">A képernyő szakaszai között is mozoghat. Lépkedhet például az indító, a polc és a Chrome-lapok között. A következő szakaszhoz lépéshez csúsztasson balról jobbra négy ujjával. Próbálja ki most a folytatáshoz.</translation>
 <translation id="2624431853467395961">Tanuló mód megnyitása</translation>
 <translation id="2626530649491650971">rákattintható</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Téglavörös</translation>
 <translation id="4482330759234983253">Előző táblázat</translation>
 <translation id="4491109536499578614">Kép</translation>
-<translation id="4505167975768625962">Beszúrás</translation>
 <translation id="4511186779140817916">Hámozott mandula</translation>
 <translation id="451510441928265982">Nincs előző 2. szintű címsor</translation>
 <translation id="4515799157838123044">Háttérben lévő tartalmak árnyékolása</translation>
@@ -1009,6 +1008,7 @@
 <translation id="8212109599554677485">A megjelenítési mód módosítása egymás mellettire</translation>
 <translation id="8215202828671303819">Többszörös kiválasztás</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% átlátszatlanság.</translation>
+<translation id="8261506727792406068">Törlés</translation>
 <translation id="826825447994856889">Bevezetés</translation>
 <translation id="827266600368092403">Kijelölés kezdete vagy vége</translation>
 <translation id="827422111966801947">Indigókék</translation>

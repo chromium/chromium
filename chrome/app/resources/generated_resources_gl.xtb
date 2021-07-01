@@ -2286,7 +2286,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3470442499439619530">Eliminar este usuario</translation>
-<translation id="3471350386419633991">Fai clic co botón dereito nunha pestana ou fai clic na icona dos marcadores para engadir pestanas a unha lista de lectura. Accede desde a barra de marcadores.</translation>
 <translation id="3471876058939596279">Os portos HDMI e USB tipo C non se poden utilizar ao mesmo tempo para o contido de vídeo. Utiliza un porto de vídeo distinto.</translation>
 <translation id="3473241910002674503">Vai ao inicio, volve atrás e cambia de aplicación usando os botóns no modo de tableta.</translation>
 <translation id="3473479545200714844">Lupa</translation>
@@ -2755,7 +2754,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3945513714196326460">Proba cun nome máis curto</translation>
 <translation id="3948116654032448504">&amp;Buscar imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar os ficheiros dos seguintes cartafoles</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Importados desde Internet Explorer</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Esta aplicación pode ser perigosa}other{Estas aplicacións poden ser perigosas}}</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
@@ -3078,7 +3076,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4349828822184870497">É útil</translation>
 <translation id="4350230709416545141">Impedir sempre que <ph name="HOST" /> teña acceso á túa localización</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> quere buscar dispositivos Bluetooth cerca. Atopáronse os seguintes dispositivos:</translation>
 <translation id="4354073718307267720">Preguntar cando un sitio queira crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
 <translation id="4354344420232759511">Os sitios que visitas aparecerán aquí</translation>
 <translation id="435527878592612277">Seleccionar a túa foto</translation>
@@ -3340,7 +3337,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4625078469366263107">Activar aplicación</translation>
 <translation id="4627427111733173920">Cookies bloqueadas</translation>
 <translation id="4627442949885028695">Continuar desde outro dispositivo</translation>
-<translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4628762811416793313">A configuración do contedor de Linux non se completou. Téntao de novo.</translation>
 <translation id="4629521233550547305">Abrir perfil de <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Personalizar tarxetas</translation>
@@ -3507,6 +3503,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4830502475412647084">Instalando actualización do SO</translation>
 <translation id="4830573902900904548">O teu dispositivo <ph name="DEVICE_TYPE" /> non pode conectarse a Internet a través de <ph name="NETWORK_NAME" />. Selecciona outra rede. <ph name="LEARN_MORE_LINK_START" />Máis información<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Atopouse 1 impresora no servidor de impresión</translation>
+<translation id="4834007576107377210">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca</translation>
 <translation id="4836046166855586901">Pregúntache sempre que un sitio quere saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4836504898754963407">Xestionar impresións dixitais</translation>
 <translation id="4837128290434901661">Queres volver cambiar á Busca de Google?</translation>
@@ -5125,7 +5122,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="6651237644330755633">Confiar neste certificado para identificar sitios web</translation>
 <translation id="6651495917527016072">Sincroniza as redes wifi co teu teléfono. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">A integración de <ph name="MS_AD_NAME" /> con Chrome só é compatible nas plataformas x86_64. Os Chromebook baseados nunha plataforma x86 ou ARC non admiten esta función.</translation>
-<translation id="66537479323396140">Borra o historial e os completados automáticos na caixa de busca. É posible que a túa Conta de Google teña outros tipos de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Establecer rede como preferida</translation>
 <translation id="6655190889273724601">Modo de programador</translation>
 <translation id="6655458902729017087">Ocultar contas</translation>
@@ -6708,7 +6704,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8363142353806532503">Bloqueouse o micrófono</translation>
 <translation id="8366396658833131068">Restableceuse a túa conectividade de rede. Selecciona unha rede diferente ou preme o botón "Continuar" a continuación para iniciar a túa aplicación de quiosco.</translation>
 <translation id="8366694425498033255">Teclas de selección</translation>
-<translation id="8368027906805972958">Dispositivo descoñecido ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Abrir todos os marcadores</translation>
 <translation id="8370294614544004647">Entrar en suspensión ao pechar o ordenador portátil</translation>
 <translation id="8371695176452482769">Fala agora</translation>
@@ -6721,7 +6716,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8379991678458444070">Engade esta pestana aos marcadores para volver a ela rapidamente</translation>
 <translation id="8382913212082956454">Copiar &amp;enderezo de correo electrónico</translation>
 <translation id="8386091599636877289">Non se atopou a política.</translation>
-<translation id="838705362287678887">Para borrar o historial de <ph name="BEGIN_LINK_SEARCH" />busca<ph name="END_LINK_SEARCH" /> ou doutros tipos, visita <ph name="BEGIN_LINK_GOOGLE" />A miña Conta de Google<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">Sitios que non poden ver a túa localización</translation>
 <translation id="8388770971141403598">Os perfís secundarios non son compatibles</translation>
 <translation id="8389416080014625855">Crear código QR para esta páxina</translation>

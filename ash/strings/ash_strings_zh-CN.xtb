@@ -157,7 +157,6 @@
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">若要退出“概览”模式，请用三根手指向下滑动</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
@@ -204,6 +203,7 @@
 <translation id="2542089167727451762">请点按您的个人资料图片</translation>
 <translation id="255671100581129685">无法在公用自助终端使用 Google 助理。</translation>
 <translation id="256712445991462162">停靠的放大镜</translation>
+<translation id="2573588302192866788">无法连接“<ph name="NAME" />”</translation>
 <translation id="2575685495496069081">多帐号登录已被停用</translation>
 <translation id="2582112259361606227">重启以进行更新</translation>
 <translation id="2595239820337756193">5 公里是多少英里</translation>
@@ -350,6 +350,7 @@
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3771549900096082774">高反差模式</translation>
 <translation id="3773700760453577392">管理员已禁止 <ph name="USER_EMAIL" /> 使用多帐号登录功能。所有用户都必须先退出帐号才能继续。</translation>
+<translation id="3779139509281456663">正在连接“<ph name="NAME" />”</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">锁定</translation>
 <translation id="3796746699333205839">有一个应用正在使用您的摄像头和麦克风</translation>
@@ -704,6 +705,7 @@
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
 <translation id="6627638273713273709">搜索键+Shift+K</translation>
 <translation id="6629480180092995136">“<ph name="APP_NAME" />”想使用麦克风</translation>
+<translation id="6630773993843701741">打开蓝牙设置以手动为此设备配对</translation>
 <translation id="6637729079642709226">更改时间</translation>
 <translation id="6641720045729354415">开启/关闭“实时字幕”功能。<ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
@@ -789,6 +791,7 @@
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
+<translation id="7366890467478514168">连接“<ph name="NAME" />”</translation>
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7377169924702866686">大写锁定已打开。</translation>
 <translation id="7378203170292176219">拖动鼠标指针即可选择要录制的区域</translation>
@@ -1039,6 +1042,7 @@
 <translation id="9193626018745640770">正在投射至不明接收器</translation>
 <translation id="9194617393863864469">登录其他用户帐号…</translation>
 <translation id="9198992156681343238">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
+<translation id="9201044636667689546">请将“<ph name="NAME" />”连接到此 Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />，由您的管理员管理</translation>
 <translation id="9210037371811586452">正在退出统一桌面模式</translation>
 <translation id="9211490828691860325">所有桌面</translation>

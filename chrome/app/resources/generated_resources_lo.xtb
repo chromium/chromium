@@ -2300,7 +2300,6 @@
 <translation id="3468298837301810372">ປ້າຍກຳກັບ</translation>
 <translation id="3468999815377931311">ໂທລະສັບ Android</translation>
 <translation id="3470442499439619530">ເອົາ​ຜູ້​ໃຊ້​ນີ້ອອກໄປ</translation>
-<translation id="3471350386419633991">ຄລິກຂວາໃສ່ແຖບໃດໜຶ່ງ ຫຼື ຄລິກໄອຄອນບຸກມາກເພື່ອເພີ່ມແຖບໃສ່ລາຍຊື່ການອ່ານ. ເຂົ້າເຖິງຈາກແຖບບຸກມາກ.</translation>
 <translation id="3471876058939596279">ບໍ່ສາມາດໃຊ້ຜອດ HDMI ແລະ USB ປະເພດ C ສຳລັບວິດີໂອໃນເວລາພ້ອມກັນໄດ້. ໃຊ້ຜອດວິດີໂອອື່ນ.</translation>
 <translation id="3473241910002674503">ໄປຫາໜ້າຫຼັກ, ກັບຄືນ ແລະ ສະຫຼັບແອັບດ້ວຍປຸ່ມໃນໂໝດແທັບເລັດ.</translation>
 <translation id="3473479545200714844">ເຄື່ອງຂະຫຍາຍໜ້າຈໍ</translation>
@@ -2769,7 +2768,6 @@
 <translation id="3945513714196326460">ກະລຸນາລອງໃຊ້ຊື່ທີ່ສັ້ນລົງ</translation>
 <translation id="3948116654032448504">&amp;ຊອກຫາ <ph name="SEARCH_ENGINE" /> ຮູບ</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ໃນໂຟນເດີຕໍ່ໄປນີ້ໄດ້</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">ນໍາ​ເຂົ້າ​ຈາກ IE ແລ້ວ</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{ແອັບນີ້ອາດຈະເປັນອັນຕະລາຍ}other{ແອັບເຫຼົ່ານີ້ອາດຈະເປັນອັນຕະລາຍ}}</translation>
 <translation id="3950820424414687140">ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
@@ -3092,7 +3090,6 @@
 <translation id="4349828822184870497">ມີປະໂຫຍດ</translation>
 <translation id="4350230709416545141">ບລັອກບໍ່ໃຫ້ <ph name="HOST" /> ເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານທຸກເທື່ອ</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> ຕ້ອງການສະແກນຫາອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງ, ພົບເຫັນອຸປະກອນຕໍ່ໄປນີ້ແລ້ວ:</translation>
 <translation id="4354073718307267720">ຖາມເມື່ອເວັບໄຊຕ້ອງການສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="4354344420232759511">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="435527878592612277">ເລືອກຮູບພາບຂອງທ່ານ</translation>
@@ -3355,7 +3352,6 @@
 <translation id="4625078469366263107">ເປີດນຳໃຊ້ແອັບ</translation>
 <translation id="4627427111733173920">ບລັອກຄຸກກີ້ໄວ້ແລ້ວ</translation>
 <translation id="4627442949885028695">ສືບຕໍ່ຈາກອຸປະກອນອື່ນ</translation>
-<translation id="4628757576491864469">ອຸ​ປະ​ກອນ</translation>
 <translation id="4628762811416793313">ການຕັ້ງຄ່າກ່ອງບັນຈຸ Linux ບໍ່ສຳເລັດ. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ.</translation>
 <translation id="4629521233550547305">ເປີດໂປຣໄຟລ໌ <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">ປັບແຕ່ງບັດ</translation>
@@ -3522,6 +3518,7 @@
 <translation id="4830502475412647084">ກຳລັງຕິດຕັ້ງການອັບເດດລະບົບປະຕິບັດການ</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> ບໍ່​ສາ​ມາດ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດ​ດ້ວຍ​ການ​ໃຊ້ <ph name="NETWORK_NAME" /> ໄດ້. ກະ​ລຸ​ນາ​ເລືອກ​ເຄືອ​ຂ່າຍ​ອື່ນ. <ph name="LEARN_MORE_LINK_START" />ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">ພົບເຄື່ອງພິມ 1 ລາຍການຈາກເຊີບເວີການພິມ</translation>
+<translation id="4834007576107377210">ກະລຸນາອ່ານຄຳແນະນຳຂອງໂປຣແກຣມຊອກຫາຂອງທ່ານສຳລັບວິທີການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ</translation>
 <translation id="4836046166855586901">ຖາມເມື່ອເວັບໄຊຕ້ອງການຮູ້ເມື່ອທ່ານກຳລັງໃຊ້ອຸປະກອນນີ້ຢູ່</translation>
 <translation id="4836504898754963407">ຈັດການລາຍນິ້ວມື</translation>
 <translation id="4837128290434901661">ປ່ຽນກັບຄືນເປັນ Google ຊອກຫາບໍ?</translation>
@@ -5140,7 +5137,6 @@
 <translation id="6651237644330755633">ເຊື່ອຖືໃບຢັ້ງຢືນນີ້ສຳລັບການລະບຸເວັບໄຊ</translation>
 <translation id="6651495917527016072">ຊິ້ງຂໍ້ມູນເຄືອຂ່າຍ Wi-Fi ກັບໂທລະສັບຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">ຮອງຮັບການລວມ <ph name="MS_AD_NAME" /> ຂອງ Chrome ໃນລະບົບປະຕິບັດການ x86_64 ເທົ່ານັ້ນ. Chromebooks ທີ່ສ້າງຈາກສ່ວນເທິງຂອງ ARM ຫຼື ລະບົບປະຕິບັດການ x86 ບໍ່ຮອງຮັບຟັງຊັນນີ້.</translation>
-<translation id="66537479323396140">ລຶບລ້າງປະຫວັດ ແລະ autocompletion ໃນກ່ອງຊອກຫາ. ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">ຕ້ອງການໃຊ້ເຄືອຂ່າຍນີ້</translation>
 <translation id="6655190889273724601">ໂໝດຜູ້​ພັດ​ທະ​ນາ​</translation>
 <translation id="6655458902729017087">ເຊື່ອງ​ບັນ​ຊີ</translation>
@@ -6723,7 +6719,6 @@
 <translation id="8363142353806532503">ບລັອກໄມໂຄຣໂຟນໄວ້ແລ້ວ</translation>
 <translation id="8366396658833131068">ການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານກັບຄືນມາແລ້ວ. ກະລຸນາເລືອກເຄືອຂ່າຍອື່ນ ຫຼືກົດປຸ່ມ 'ສືບຕໍ່' ຢູ່ລຸ່ມນີ້ ເພື່ອເປີດໃຊ້ແອັບ kiosk ຂອງທ່ານ.</translation>
 <translation id="8366694425498033255">ປຸ່ມເລືອກ</translation>
-<translation id="8368027906805972958">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ ຫຼື ບໍ່ຮອງຮັບ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">ເປີດທຸກບຸກມາກສ໌</translation>
 <translation id="8370294614544004647">ນອນເມື່ອປິດແລັບທັອບ</translation>
 <translation id="8371695176452482769">ເວົ້າ​ດຽວນີ້</translation>
@@ -6736,7 +6731,6 @@
 <translation id="8379991678458444070">ກັບຄືນຫາບ່ອນນີ້ໄດ້ຢ່າງວ່ອງໄວດ້ວຍການບຸກມາກແຖບນີ້ໄວ້</translation>
 <translation id="8382913212082956454">ກັອບປີ້ທີ່ຢູ່ອີເມວ</translation>
 <translation id="8386091599636877289">ບໍ່ເຫັນນະໂຍບາຍ.</translation>
-<translation id="838705362287678887">ເພື່ອລຶບລ້າງ <ph name="BEGIN_LINK_SEARCH" />ການຊອກຫາ<ph name="END_LINK_SEARCH" /> ຫຼື ປະຫວັດໃນຮູບແບບອື່ນ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK_GOOGLE" />ບັນຊີ Google ຂອງຂ້ອຍ<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຫັນສະຖານທີ່ຂອງທ່ານ</translation>
 <translation id="8388770971141403598">ບໍ່ຮອງຮັບໂປຣໄຟລ໌ສຳຮອງ</translation>
 <translation id="8389416080014625855">ສ້າງລະຫັດ QR ສຳລັບໜ້ານີ້</translation>

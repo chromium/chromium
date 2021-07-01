@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">현재 디스플레이 스타일은 인터리브입니다</translation>
 <translation id="1087788677726983142">이벤트 스트림 필터 숨기기</translation>
 <translation id="1088402100970133699">이전 목록 항목이 없습니다</translation>
-<translation id="1114836634143403764">추천</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "fox", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">손가락 두 개를 사용하여 위로 스와이프</translation>
 <translation id="1126928665165112660">기울임꼴 아님</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">콘텐츠 정보</translation>
 <translation id="2417948780551741035">미주</translation>
 <translation id="2419852971200420169">설명 목록</translation>
-<translation id="2421113964388408478">삭제</translation>
 <translation id="2422937916923936891">메뉴 항목 체크박스</translation>
 <translation id="2428534162001909979">명령 메뉴</translation>
 <translation id="242998846562331953">부제목</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">수정하려면 두 번 탭하세요.</translation>
 <translation id="2598495320872286378">문법 오류</translation>
 <translation id="2603828437139726540">한 글자 앞으로 이동</translation>
+<translation id="2619052155095999743">삽입</translation>
 <translation id="2619344480613750862">또한 화면의 섹션 간에 이동할 수 있습니다. 예를 들어 런처, 실행기, Chrome 탭 간에 이동할 수 있습니다. 다음 섹션으로 이동하려면 네 손가락을 왼쪽에서 오른쪽으로 스와이프하세요. 계속하려면 지금 해 보세요.</translation>
 <translation id="2624431853467395961">학습 모드 열기</translation>
 <translation id="2626530649491650971">clickable</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">파이어 브릭</translation>
 <translation id="4482330759234983253">이전 표</translation>
 <translation id="4491109536499578614">이미지</translation>
-<translation id="4505167975768625962">삽입</translation>
 <translation id="4511186779140817916">블렌치드 아몬드</translation>
 <translation id="451510441928265982">이전 수준 2 제목이 없습니다</translation>
 <translation id="4515799157838123044">배경 콘텐츠 흐리게 표시</translation>
@@ -1009,6 +1007,7 @@
 <translation id="8212109599554677485">디스플레이 스타일을 나란히로 변경</translation>
 <translation id="8215202828671303819">다중 선택</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, 불투명도 <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">삭제</translation>
 <translation id="826825447994856889">소개</translation>
 <translation id="827266600368092403">선택을 시작 또는 종료합니다.</translation>
 <translation id="827422111966801947">인디고</translation>

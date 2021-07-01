@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">Si vols desar imatges, toca Configuració per permetre que Chromium les afegeixi a les teves fotos</translation>
 <translation id="1289216811211435351">Canvia a Chromium</translation>
 <translation id="1361748954329991663">Chromium no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chromium.</translation>
+<translation id="1370204544543370355">Per treure el màxim profit de Chromium, inicia-hi la sessió amb el teu Compte de Google</translation>
 <translation id="1431818719585918472">Deixa que Chromium bloquegi les teves pestanyes d'incògnit.</translation>
 <translation id="1472013873724362412">El vostre compte no funciona a Chromium. Contacteu amb l'administrador del domini o utilitzeu un compte de Google estàndard per iniciar la sessió.</translation>
 <translation id="1507010443238049608">Ajuda a millorar les funcions i el rendiment de Chromium</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chromium s'esborraran d'aquest dispositiu</translation>
 <translation id="4806326830773390517">Ajuda a millorar Chromium enviant les estadístiques d'ús i els informes d'error a Google</translation>
 <translation id="4828317641996116749">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
-<translation id="4852878756222711218">Per treure el màxim profit de Chromium, inicia la sessió amb el teu Compte de Google</translation>
 <translation id="4985291216379576555">Sense connexió; Chromium no pot cercar actualitzacions</translation>
 <translation id="4999538639245140991">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="5171868502429358653">Inicia la sessió a Chromium</translation>

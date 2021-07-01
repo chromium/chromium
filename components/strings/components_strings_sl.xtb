@@ -261,7 +261,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1807528111851433570">Začetni list</translation>
 <translation id="1812527064848182527">ležeče</translation>
-<translation id="1814698615734239189">Ta aplikacija je zasnovana za mobilne naprave. Izvaja se v združljivostnem načinu. Če omogočite spreminjanje velikosti, lahko pride do težav, vključno z vnovičnim zaganjanjem aplikacije.</translation>
 <translation id="1821930232296380041">Neveljavna zahteva ali parametri zahteve</translation>
 <translation id="1822540298136254167">Spletna mesta, ki jih obiščete, in čas, ki ga porabite zanje</translation>
 <translation id="1826516787628120939">Preverjanje</translation>
@@ -680,7 +679,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3431636764301398940">Shrani to kartico v tej napravi</translation>
 <translation id="3432601291244612633">Zapri stran</translation>
 <translation id="3435738964857648380">Varnost</translation>
-<translation id="3435896845095436175">Omogoči</translation>
 <translation id="3438829137925142401">Uporabite gesla, shranjena v računu Google</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Lastnik te naprave je izklopil igro z dinozavri</translation>
@@ -817,6 +815,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3946209740501886391">Vedno vprašaj na tem spletnem mestu</translation>
 <translation id="3949571496842715403">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo ne določa nadomestnih imen SAN (Subject Alternative Name). Razlog za to je morda napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="3949601375789751990">Tu je prikazana zgodovina brskanja</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Ni shranjenih plačilnih sredstev</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3961148744525529027">List rutine za obravnavo plačil je napol odprt</translation>
@@ -824,7 +823,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3963721102035795474">Način bralnika</translation>
 <translation id="3963837677003247395">Želite nadaljevati ročno?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Brez}=1{1 spletno mesto }one{# spletno mesto }two{# spletni mesti }few{# spletna mesta }other{# spletnih mest }}</translation>
-<translation id="3970481983430640194">To aplikacijo lahko zdaj vlečete in ji spremenite velikost.</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="3973234410852337861">Spletno mesto <ph name="HOST_NAME" /> je blokirano</translation>
 <translation id="3973357910713125165">Gumb za zagon varnostnega preverjanja v Chromu, pritisnite Enter, če želite v nastavitvah Chroma zagnati varnostno preverjanje</translation>
@@ -948,6 +946,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4346197816712207223">Sprejete kreditne kartice</translation>
 <translation id="4346833872170306413">ROC 16K</translation>
 <translation id="4349531505348777662">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome priporoča, da obiščete <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ter druga spletna mesta, na katerih uporabljate to geslo, in ga takoj spremenite.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> želi iskati naprave Bluetooth v bližini. Najdene so bile te naprave:</translation>
 <translation id="4356973930735388585">Napadalci na tem spletnem mestu lahko poskusijo v vašem računalniku namestiti nevarne programe, ki kradejo ali brišejo podatke (na primer fotografije, gesla, sporočila in podatke kreditnih kartic).</translation>
 <translation id="4358059973562876591">Navedenih predlog morda ne bo mogoče uporabiti zaradi napake pravilnika DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Upravljanje plačilnih sredstev ...</translation>
@@ -1400,7 +1399,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6032524144326295339">Nabiralnik 2</translation>
 <translation id="6032955021262906325">Vezava na levi</translation>
 <translation id="6034000775414344507">Svetlo siva</translation>
-<translation id="6034062182346928710">Aplikaciji <ph name="APP_NAME" /> morda ne bo mogoče primerno spremeniti velikosti. Uporabite prednastavljene velikosti okna, če želite preprečiti, da bi aplikacija delovala nepravilno.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Prepogibanje v obliki harmonike</translation>
 <translation id="6039846035001940113">Če težave ne odpravite, se obrnite na lastnika spletnega mesta.</translation>
@@ -1430,7 +1428,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6120179357481664955">Si želite zapomniti ID za UPI?</translation>
 <translation id="6123290840358279103">Ogled navidezne kartice</translation>
 <translation id="6124432979022149706">Priključki za Chrome za podjetja</translation>
-<translation id="6143538402333184781">Ta aplikacija podpira samo velikost »Telefon«.</translation>
 <translation id="6146055958333702838">Preverite kable in znova zaženite usmerjevalnike, modeme ali druge omrežne 
     naprave, ki jih uporabljate.</translation>
 <translation id="614940544461990577">Poskusite:</translation>
@@ -1980,7 +1977,6 @@ Dodatne podrobnosti:
 <translation id="8225771182978767009">Oseba, ki je nastavila ta računalnik, je blokirala to spletno mesto.</translation>
 <translation id="8228419419708659934">Pogled dveh strani</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Ne sprašuj več za to aplikacijo</translation>
 <translation id="8232343881378637145">Temperatura platforme</translation>
 <translation id="8238581221633243064">Odpiranje strani v novem anonimnem zavihku.</translation>
 <translation id="8241707690549784388">Stran, ki jo iščete, je uporabila informacije, ki ste jih vnesli. Z vrnitvijo na to stran se bodo morda ponovila vsa vaša dejanja, ki ste jih opravili. Ali želite nadaljevati?</translation>
@@ -1993,7 +1989,6 @@ Dodatne podrobnosti:
 <translation id="825929999321470778">Prikaz vseh shranjenih gesel</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262952874573525464">Robni šiv spodaj</translation>
-<translation id="826298712171642726">Želite omogočiti spreminjanje velikosti?</translation>
 <translation id="8265992338205884890">Vidni podatki</translation>
 <translation id="8267698848189296333">Prijava kot: <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Ločeni dokumenti/zbrane kopije</translation>
@@ -2024,6 +2019,7 @@ Dodatne podrobnosti:
 <translation id="8355270400102541638">Lokalni kontekst zrušitve:</translation>
 <translation id="8363502534493474904">izklopiti način za letalo</translation>
 <translation id="8364627913115013041">Ni nastavljen.</translation>
+<translation id="8368027906805972958">Neznana ali nepodprta naprava (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Storitve Google Play</translation>
 <translation id="8371889962595521444">Korenska potrdila po meri</translation>
 <translation id="8374636051559112948">Se razlikuje</translation>

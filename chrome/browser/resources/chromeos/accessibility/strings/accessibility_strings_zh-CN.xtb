@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">当前的显示样式为交错</translation>
 <translation id="1087788677726983142">隐藏事件流过滤条件</translation>
 <translation id="1088402100970133699">没有上一个列表项</translation>
-<translation id="1114836634143403764">建议</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">向上滑动两根手指</translation>
 <translation id="1126928665165112660">非斜体</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">内容信息</translation>
 <translation id="2417948780551741035">尾注</translation>
 <translation id="2419852971200420169">说明列表</translation>
-<translation id="2421113964388408478">删除</translation>
 <translation id="2422937916923936891">菜单项复选框</translation>
 <translation id="2428534162001909979">命令菜单</translation>
 <translation id="242998846562331953">副标题</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">点按两次即可开始修改</translation>
 <translation id="2598495320872286378">语法错误</translation>
 <translation id="2603828437139726540">前移 1 个字符</translation>
+<translation id="2619052155095999743">插入</translation>
 <translation id="2619344480613750862">您还可在屏幕上的各部分之间移动。例如，您可在启动器、任务栏和 Chrome 标签页之间移动。若要移至下一部分，请用 4 根手指从左向右滑动屏幕。请立即尝试此手势以继续。</translation>
 <translation id="2624431853467395961">打开学习模式</translation>
 <translation id="2626530649491650971">可点击</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">耐火砖红色</translation>
 <translation id="4482330759234983253">上一个表格</translation>
 <translation id="4491109536499578614">图片</translation>
-<translation id="4505167975768625962">插入</translation>
 <translation id="4511186779140817916">杏仁白</translation>
 <translation id="451510441928265982">没有上一个 2 级标题</translation>
 <translation id="4515799157838123044">暗化背景内容</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">将显示样式更改为并排</translation>
 <translation id="8215202828671303819">多选</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />，不透明度为 <ph name="OPACITY_PERCENTAGE" />%。</translation>
+<translation id="8261506727792406068">删除</translation>
 <translation id="826825447994856889">简介</translation>
 <translation id="827266600368092403">开始或结束选择</translation>
 <translation id="827422111966801947">靛青色</translation>

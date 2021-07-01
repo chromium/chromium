@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Stili aktual i ekranit është me alternim sinjalesh</translation>
 <translation id="1087788677726983142">Fshih filtrat e rrjedhës së ngjarjeve</translation>
 <translation id="1088402100970133699">Nuk ka artikull të mëparshëm liste</translation>
-<translation id="1114836634143403764">Sugjerim</translation>
 <translation id="1120743664840974483">{"a": "akademi", "b": "balet", "c": "cilindër", "ç": “çokollatë", "d": "dentist", “dh”: “dhuratë”, "e": "ekuacion", “ë”: “ëmbëlsirë”, "f": "fustan", "g": "golf", “gj”: “gjethe”, "h": "hotel", "i": "iriq", "j": "jelek", "k": "kripë", "l": "limon", “ll”: “llambë”, "m": "medalje", "n": "nëntor", ‘nj’: “njerkë”, "o": "oksigjen", "p": "pallat", "q": "qielli", "r": "restorant", “rr”: “rreze”, "s": "stacion", “sh”: “sheqer”, "t": "tango", “th”: “thesar”, "u": "ushtar", "v": "violinë", “x”: “xixëllonjë”, “xh”: “xhamadan”, ‘y’: “ylber”, "z": "zog", “zh”: “zhapik”}</translation>
 <translation id="1120938014254001895">Rrëshqit shpejt dy gishta lart</translation>
 <translation id="1126928665165112660">Jo kursiv</translation>
@@ -203,7 +202,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2417569100218200841">Informacion mbi përmbajtjen</translation>
 <translation id="2417948780551741035">Shënime përfundimtare</translation>
 <translation id="2419852971200420169">Lista e përshkrimeve</translation>
-<translation id="2421113964388408478">Fshirje</translation>
 <translation id="2422937916923936891">Kutia e shënimit të artikullit të menysë</translation>
 <translation id="2428534162001909979">Menytë e komandës</translation>
 <translation id="242998846562331953">Titrat</translation>
@@ -226,6 +224,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2592212930811759050">Trokit dy herë për të filluar modifikimin</translation>
 <translation id="2598495320872286378">Gabim gramatikor</translation>
 <translation id="2603828437139726540">Lëviz përpara një karakter</translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2619344480613750862">Mund të lëvizësh po ashtu mes seksioneve të ekranit. Për shembull, mund të lëvizësh mes nisësit, raftit dhe skedave të tua të Chrome. Për të kaluar te seksioni tjetër, rrëshqit shpejt nga e majta në të djathtë me katër gishta. Provoje tani për të vazhduar.</translation>
 <translation id="2624431853467395961">Hap modalitetin e të mësuarit</translation>
 <translation id="2626530649491650971">i klikueshëm</translation>
@@ -507,7 +506,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4479068155583208887">Tullë zjarri</translation>
 <translation id="4482330759234983253">Tabela e mëparshme</translation>
 <translation id="4491109536499578614">Imazh</translation>
-<translation id="4505167975768625962">Futje</translation>
 <translation id="4511186779140817916">Bajame e zbardhur</translation>
 <translation id="451510441928265982">Nuk ka titull të mëparshëm të nivelit 2</translation>
 <translation id="4515799157838123044">Përmbajtja e sfondit të hijes</translation>
@@ -1010,6 +1008,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="8212109599554677485">Ndrysho stilin e ekranit në vendosje përkrah</translation>
 <translation id="8215202828671303819">Përzgjedhje e shumëfishtë</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, tejdukshmëria <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">Fshi</translation>
 <translation id="826825447994856889">Prezantim</translation>
 <translation id="827266600368092403">Fillo ose përfundo zgjedhjen</translation>
 <translation id="827422111966801947">Indigo</translation>

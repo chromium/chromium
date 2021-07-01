@@ -137,6 +137,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1990046457226896323">Talskrár sóttar</translation>
 <translation id="1993072747612765854">Frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Núverandi skrifborð</translation>
+<translation id="1999628559811343244">Upptaka netkerfispakka er hafin</translation>
 <translation id="2016340657076538683">Sláðu inn skilaboð</translation>
 <translation id="2018630726571919839">Segðu mér brandara</translation>
 <translation id="2021864487439853900">Smelltu til að opna</translation>
@@ -157,7 +158,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2132302418721800944">Taka upp á öllum skjánum</translation>
 <translation id="2135456203358955318">Stækkunargler í föstum glugga</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reyna aftur</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Strjúktu niður með þremur fingrum til að loka Yfirliti.</translation>
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
@@ -728,6 +728,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6751826523481687655">Kveikt er á afkastarakningu</translation>
 <translation id="6752912906630585008">Skjáborð <ph name="REMOVED_DESK" /> fjarlægt og sameinað skjáborði <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Ekkert efni í spilun</translation>
+<translation id="6773040085467426602">Smelltu til að stöðva yfirstandandi pakkaupptökur.</translation>
 <translation id="6777216307882431711">Knýr tengd USB-C tæki</translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6803622936009808957">Ekki var hægt að spegla skjái vegna þess að engin studd upplausn fannst. Skjáborð hefur verið framlengt í staðinn.</translation>
@@ -941,6 +942,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8433977262951327081">Flýtileiðin til að sýna valmyndarblöðru fyrir innsláttarvalkosti í hillunni hefur breyst. Notaðu <ph name="NEW_SHORTCUT" /> í staðinn fyrir <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Skjáborð <ph name="DESK_TITILE" /> virkjað</translation>
 <translation id="8452135315243592079">SIM-kort vantar</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Loka Textaupplestri</translation>
 <translation id="847056008324733326">Stillingarar skjástærðar</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> hefur <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

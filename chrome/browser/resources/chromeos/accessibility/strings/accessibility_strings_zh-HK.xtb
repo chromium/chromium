@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">目前的顯示樣式為交錯</translation>
 <translation id="1087788677726983142">隱藏活動串流篩選器</translation>
 <translation id="1088402100970133699">冇上一個清單項目</translation>
-<translation id="1114836634143403764">建議</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">以兩隻手指向上滑動</translation>
 <translation id="1126928665165112660">唔係斜體</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">內容資料</translation>
 <translation id="2417948780551741035">尾註</translation>
 <translation id="2419852971200420169">說明清單</translation>
-<translation id="2421113964388408478">刪除</translation>
 <translation id="2422937916923936891">選單項目選框</translation>
 <translation id="2428534162001909979">指令選單</translation>
 <translation id="242998846562331953">字幕</translation>
 <translation id="2435422727584637732">道奇藍色</translation>
+<translation id="2438712309510062123">建議</translation>
 <translation id="2450814015951372393">選框</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2462626033734746142">圓形按鈕群組</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">輕按兩下即可開始編輯</translation>
 <translation id="2598495320872286378">文法錯誤</translation>
 <translation id="2603828437139726540">移到下一個字元</translation>
+<translation id="2619052155095999743">插入</translation>
 <translation id="2619344480613750862">您亦可在螢幕畫面的各個部分之間移動，例如在啟動器、捷徑列和 Chrome 分頁之間移動。如要移至下一個部分，請以四指由左至右滑動。立即試試，然後再繼續吧。</translation>
 <translation id="2624431853467395961">開啟學習模式</translation>
 <translation id="2626530649491650971">可按一下</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">磚紅色</translation>
 <translation id="4482330759234983253">上一個表格</translation>
 <translation id="4491109536499578614">圖片</translation>
-<translation id="4505167975768625962">插入</translation>
 <translation id="4511186779140817916">杏仁白色</translation>
 <translation id="451510441928265982">冇上一個第 2 級標題</translation>
 <translation id="4515799157838123044">淡化背景內容</translation>
@@ -1009,6 +1008,7 @@
 <translation id="8212109599554677485">將顯示樣式變更為並排。</translation>
 <translation id="8215202828671303819">多重選取</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />，<ph name="OPACITY_PERCENTAGE" />% 透明度。</translation>
+<translation id="8261506727792406068">刪除</translation>
 <translation id="826825447994856889">簡介</translation>
 <translation id="827266600368092403">開始或結束選取</translation>
 <translation id="827422111966801947">靛藍色</translation>

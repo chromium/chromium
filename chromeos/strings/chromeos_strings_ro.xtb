@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autentificare EAP din a doua fază</translation>
+<translation id="2783010256799387990">REUȘIT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2862104018715411648">Așază documentul pe scaner și selectează Scanează pentru a începe</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagini</translation>
 <translation id="4378373042927530923">Nu a rulat</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
@@ -229,7 +231,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5691511426247308406">Familie</translation>
 <translation id="5752751666635965375">Creează propriul joc</translation>
 <translation id="5760715441271661976">Starea portalului</translation>
-<translation id="5797428682393400134">TRECUT</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5849570051105887917">Codul furnizorului local</translation>
@@ -296,6 +297,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
+<translation id="7172721935181587524">O imagine</translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
 <translation id="7271040990581020067">Scanerul este în uz. Încearcă din nou mai târziu.</translation>
@@ -345,6 +347,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8318753676953949627">Nicio imagine</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
 <translation id="8352772353338965963">Adăugați un cont pentru conectarea multiplă. Conturile conectate pot fi accesate fără parolă, prin urmare, această funcție trebuie folosită numai cu conturile de încredere.</translation>
 <translation id="8364946094152050673">Serverele de nume sunt goale</translation>

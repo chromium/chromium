@@ -137,6 +137,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1990046457226896323">Talefiler er lastet ned</translation>
 <translation id="1993072747612765854">Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen</translation>
 <translation id="1998100899771863792">Gjeldende skrivebord</translation>
+<translation id="1999628559811343244">Registrering av nettverkspakker er startet</translation>
 <translation id="2016340657076538683">Skriv inn en melding</translation>
 <translation id="2018630726571919839">Fortell meg en vits</translation>
 <translation id="2021864487439853900">Klikk for å låse opp</translation>
@@ -157,7 +158,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2132302418721800944">Ta opp hele skjermen</translation>
 <translation id="2135456203358955318">Dokket lupe</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv på nytt</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Sveip ned med tre fingre for å lukke Oversikt</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
@@ -728,6 +728,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6751826523481687655">Ytelsessporing er slått på</translation>
 <translation id="6752912906630585008">Skrivebord <ph name="REMOVED_DESK" /> ble fjernet og slått sammen med skrivebord <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Ingen medier spilles av</translation>
+<translation id="6773040085467426602">Klikk på stopp for å stoppe pågående operasjoner med pakkeregistrering.</translation>
 <translation id="6777216307882431711">Gir strøm til tilkoblede USB-C-enheter</translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6803622936009808957">Kunne ikke speile skjermene fordi ingen støttede oppløsninger ble funnet. Utvidet skrivebord ble brukt i stedet.</translation>
@@ -941,6 +942,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8433977262951327081">Hurtigtasten for å vise boblen med menyen for valg av inndataalternativer på hyllen er endret. Bruk <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Skrivebord <ph name="DESK_TITILE" /> er aktivert</translation>
 <translation id="8452135315243592079">SIM-kort mangler</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Lukk Tekstopplesing</translation>
 <translation id="847056008324733326">Innstillinger for visningsskala</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

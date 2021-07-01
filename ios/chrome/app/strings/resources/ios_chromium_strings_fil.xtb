@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">Para makapag-save ng mga larawan, mag-tap sa Mga Setting para payagan ang Chromium na magdagdag sa iyong mga larawan</translation>
 <translation id="1289216811211435351">Lumipat sa Chromium</translation>
 <translation id="1361748954329991663">Luma na ang Chromium. Kung walang available na update sa <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, posibleng hindi na sinusuportahan ng iyong device ang mga bagong bersyon ng Chromium.</translation>
+<translation id="1370204544543370355">Para masulit ang Chromium, mag-sign in sa Chromium gamit ang iyong Google Account</translation>
 <translation id="1431818719585918472">Payagan ang Chromium na i-lock ang iyong mga tab na Incognito.</translation>
 <translation id="1472013873724362412">Hindi gumagana ang iyong account sa Chromium. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
 <translation id="1507010443238049608">Tumulong sa Pagpapahusay ng Mga Feature at Performance ng Chromium</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito</translation>
 <translation id="4806326830773390517">Tumulong na pahusayin ang Chromium sa pamamagitan ng pagpapadala ng mga istatistika sa paggamit at mga ulat ng pag-crash sa Google</translation>
 <translation id="4828317641996116749">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
-<translation id="4852878756222711218">Para masulit ang Chromium, mag-sign in sa iyong Google Account</translation>
 <translation id="4985291216379576555">Naka-offline, hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="4999538639245140991">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chromium sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="5171868502429358653">Mag-sign In sa Chromium</translation>

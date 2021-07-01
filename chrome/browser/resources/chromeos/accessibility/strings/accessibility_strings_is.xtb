@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Núverandi birtingarstíll er samfléttaður</translation>
 <translation id="1087788677726983142">Fela síur viðburðarstraums</translation>
 <translation id="1088402100970133699">Ekkert fyrra listaatriði</translation>
-<translation id="1114836634143403764">Tillaga</translation>
 <translation id="1120743664840974483">{"a": "Alfreð", "á": "Ásta", "b": "Bjarni", "c": "Ceres", "d": "Davíð", "ð": "Eðvarð", "e": "Einar", "é": "Él", "f": "Friðrik", "g": "Gunnar", "h": "Halldór", "i": "Ingi", "í": "Íris", "j": "Jónas","k": "Kristján", "l": "Lárus", "m": "Magnús", "n": "Nikulás", "o": "Oddur", "ó": "Ólafur", "p": "Pétur", "q": "Quebec", "r": "Ragnar", "s": "Sigurður", "t": "Teitur", "u": "Unnur", "ú": "Úlfur", "v": "Viktor", "w": "Whiskey","x": "xray", "y": "Ylfa", "ý": "Ýmir", "þ": "Þóra",  "æ": "Ægir", "ö": "Ölvir", "z": "zebra“}</translation>
 <translation id="1120938014254001895">Strjúktu tveimur fingrum upp</translation>
 <translation id="1126928665165112660">Ekki skáletrað</translation>
@@ -203,11 +202,11 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2417569100218200841">Efnisupplýsingar</translation>
 <translation id="2417948780551741035">Aftanmálsgreinar</translation>
 <translation id="2419852971200420169">Lýsingalisti</translation>
-<translation id="2421113964388408478">Eyðing</translation>
 <translation id="2422937916923936891">Gátreitur valmyndaratriðis</translation>
 <translation id="2428534162001909979">Skipanavalmyndir</translation>
 <translation id="242998846562331953">Skjátexti</translation>
 <translation id="2435422727584637732">Dodger-blár</translation>
+<translation id="2438712309510062123">Koma með tillögu</translation>
 <translation id="2450814015951372393">Gátreitur</translation>
 <translation id="2461822463642141190">Núna</translation>
 <translation id="2462626033734746142">Valhnappahópur</translation>
@@ -226,6 +225,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2592212930811759050">Ýttu tvisvar til að byrja að breyta</translation>
 <translation id="2598495320872286378">Málfræðivilla</translation>
 <translation id="2603828437139726540">Færa fram um einn staf</translation>
+<translation id="2619052155095999743">Setja inn</translation>
 <translation id="2619344480613750862">Þú getur einnig farið á milli hluta á skjánum. Til dæmis geturðu farið á milli ræsiforritsins, hillunnar og Chrome flipanna þinna. Strjúktu frá vinstri til hægri með fjórum fingrum til að fara á næsta svæði. Prófaðu það núna til að halda áfram.</translation>
 <translation id="2624431853467395961">Opna fræðslustillingu</translation>
 <translation id="2626530649491650971">smellanlegt</translation>
@@ -507,7 +507,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4479068155583208887">Múrsteinsrauður</translation>
 <translation id="4482330759234983253">Fyrri tafla</translation>
 <translation id="4491109536499578614">Mynd</translation>
-<translation id="4505167975768625962">Innsetning</translation>
 <translation id="4511186779140817916">Möndluhvítur</translation>
 <translation id="451510441928265982">Engin fyrri 2. stigs fyrirsögn</translation>
 <translation id="4515799157838123044">Skuggi bakgrunnsefnis</translation>
@@ -1010,6 +1009,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="8212109599554677485">Breyta birtingarstíl í hlið við hlið</translation>
 <translation id="8215202828671303819">Fjölval</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% gegnsæi.</translation>
+<translation id="8261506727792406068">Eyða</translation>
 <translation id="826825447994856889">Inngangur</translation>
 <translation id="827266600368092403">Hefja eða ljúka vali</translation>
 <translation id="827422111966801947">Dimmfjólublár</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Tartekatua da oraingo bistaratze-estiloa</translation>
 <translation id="1087788677726983142">Ezkutatu gertaeren jarioaren iragazkiak</translation>
 <translation id="1088402100970133699">Ez dago zerrendako beste elementurik honen aurretik</translation>
-<translation id="1114836634143403764">Iradokizuna</translation>
 <translation id="1120743664840974483">{"a": "Araba", "b": "Bilbo", "c": "Cuenca", "d": "Donostia", "e": "Eibar", "f": "Finisterre", "g": "Getxo", "h": "Huelva", "i": "Irun", "j": "Jaka","k": "Kanada", "l": "Logroño", "m": "Madril", "n": "Nafarroa", "o": "Olite","p": "Pontevedra", "q": "Quebec", "r": "Riga", "s": "Santurtzi", "t": "Tolosa", "u": "Urretxu", "v": "Valentzia", "w": "Washington","x": "Xemein", "y": "York", "z": "Zarautz"}</translation>
 <translation id="1120938014254001895">Pasatu bi hatz gorantz</translation>
 <translation id="1126928665165112660">Ez du formatu etzanik</translation>
@@ -203,7 +202,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2417569100218200841">Edukiaren informazioa</translation>
 <translation id="2417948780551741035">Amaierako oharrak</translation>
 <translation id="2419852971200420169">Azalpenen zerrenda</translation>
-<translation id="2421113964388408478">Ezabatzea</translation>
 <translation id="2422937916923936891">Menuko elementuaren koadroa</translation>
 <translation id="2428534162001909979">Agindu-menuak</translation>
 <translation id="242998846562331953">Azpititulua</translation>
@@ -226,6 +224,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2592212930811759050">Sakatu birritan idazten hasteko</translation>
 <translation id="2598495320872286378">Gramatika-akatsa</translation>
 <translation id="2603828437139726540">Aurreratu karaktere bat</translation>
+<translation id="2619052155095999743">Txertatu</translation>
 <translation id="2619344480613750862">Pantailako atalen artean ere mugi zaitezke. Adibidez, abiarazlearen, apalaren eta Chrome-ko fitxen artean mugi zaitezke. Hurrengo atalera joateko, pasatu lau hatz ezkerretik eskuinera. Proba ezazu aurrera egiteko.</translation>
 <translation id="2624431853467395961">Ireki ikasteko modua</translation>
 <translation id="2626530649491650971">klikagarria</translation>
@@ -507,7 +506,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4479068155583208887">Adreilu gorriaren kolorekoa</translation>
 <translation id="4482330759234983253">Aurreko taula</translation>
 <translation id="4491109536499578614">Irudia</translation>
-<translation id="4505167975768625962">Txertatzea</translation>
 <translation id="4511186779140817916">Almendra zurituaren kolorekoa</translation>
 <translation id="451510441928265982">Ez dago bigarren mailako beste goibururik honen aurretik</translation>
 <translation id="4515799157838123044">Lausotu atzeko planoko edukia</translation>
@@ -1009,6 +1007,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8212109599554677485">Ezarri alboz alboko bistaratze-estiloa</translation>
 <translation id="8215202828671303819">Hautespen anizkoitza</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />. Opakutasuna: % <ph name="OPACITY_PERCENTAGE" />.</translation>
+<translation id="8261506727792406068">Ezabatu</translation>
 <translation id="826825447994856889">Sarrera</translation>
 <translation id="827266600368092403">Hasi edo amaitu hautapena</translation>
 <translation id="827422111966801947">Indigoa</translation>

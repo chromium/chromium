@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">বর্তমান ডিসপ্লে স্টাইল একটি অন্যটির মধ্যে সন্নিবিষ্ট</translation>
 <translation id="1087788677726983142">ইভেন্ট স্ট্রিম ফিল্টার লুকান</translation>
 <translation id="1088402100970133699">কোনও পূর্ববর্তী আইটেমের তালিকা নেই</translation>
-<translation id="1114836634143403764">সাজেশন</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">দুই আঙ্গুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="1126928665165112660">ইটালিক নয়</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">কন্টেন্টর তথ্য</translation>
 <translation id="2417948780551741035">এন্ডনোট</translation>
 <translation id="2419852971200420169">বর্ণনার তালিকা</translation>
-<translation id="2421113964388408478">মোছা হচ্ছে</translation>
 <translation id="2422937916923936891">মেনু আইটেম চেক বাক্স</translation>
 <translation id="2428534162001909979">কম্যান্ড মেনুগুলি</translation>
 <translation id="242998846562331953">সাবটাইটেল</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">এডিট শুরু করতে ডবল-ট্যাপ করুন</translation>
 <translation id="2598495320872286378">ব্যাকরণগত ভুল</translation>
 <translation id="2603828437139726540">টেক্সটের কার্সর একটি অক্ষর আগে নিয়ে যান</translation>
+<translation id="2619052155095999743">ঢোকান</translation>
 <translation id="2619344480613750862">আপনি স্ক্রিনের নানা বিভাগে নেভিগেট করতে পারেন। যেমন, আপনি লঞ্চার, শেল্ফ ও আপনার Chrome ট্যাবের মধ্যে নেভিগেট করতে পারেন। পরের বিভাগে নেভিগেট করতে চার আঙুল দিয়ে বাঁদিক থেকে ডানদিকে সোয়াইপ করুন। চালিয়ে যেতে এখনই করে দেখুন।</translation>
 <translation id="2624431853467395961">শিখন মোড খুলুন</translation>
 <translation id="2626530649491650971">ক্লিক যোগ্য</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">ইঁট লাল</translation>
 <translation id="4482330759234983253">পূর্ববর্তী সারণী</translation>
 <translation id="4491109536499578614">ছবি</translation>
-<translation id="4505167975768625962">যোগ করা হচ্ছে</translation>
 <translation id="4511186779140817916">ফ্যাকাশে গোলাপী</translation>
 <translation id="451510441928265982">কোনও পূর্ববর্তী লেভেল ২ শিরোনাম নেই</translation>
 <translation id="4515799157838123044">ব্যাকগ্রাউন্ডে থাকা কন্টেন্টকে ঢেকে দিন</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">ডিসপ্লে স্টাইল পাশাপাশি হিসেবে পরিবর্তন করুন।</translation>
 <translation id="8215202828671303819">একাধিক নির্বাচন</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% অস্পষ্টতা।</translation>
+<translation id="8261506727792406068">মুছুন</translation>
 <translation id="826825447994856889">পরিচয়</translation>
 <translation id="827266600368092403">শুরু বা শেষ বেছে নেওয়া</translation>
 <translation id="827422111966801947">নীল</translation>

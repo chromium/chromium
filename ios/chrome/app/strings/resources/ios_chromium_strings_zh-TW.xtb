@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">如要儲存圖片，請輕觸 [設定] 並允許 Chromium 新增相片</translation>
 <translation id="1289216811211435351">改為使用 Chromium</translation>
 <translation id="1361748954329991663">Chromium 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chromium。</translation>
+<translation id="1370204544543370355">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium</translation>
 <translation id="1431818719585918472">讓 Chromium 鎖定你的無痕分頁。</translation>
 <translation id="1472013873724362412">無法使用您的帳戶登入 Chromium，請洽詢您的網域管理員或使用一般 Google 帳戶登入。</translation>
 <translation id="1507010443238049608">協助改善 Chromium 的功能與效能</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
 <translation id="4806326830773390517">將使用統計資料和當機報告傳送給 Google，協助我們讓 Chromium 更臻完美</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼，請稍後再試。</translation>
-<translation id="4852878756222711218">如要充分運用 Chromium 的所有功能，請登入你的 Google 帳戶</translation>
 <translation id="4985291216379576555">目前處於離線狀態，因此 Chromium 無法檢查更新</translation>
 <translation id="4999538639245140991">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chromium 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
 <translation id="5171868502429358653">登入 Chromium</translation>

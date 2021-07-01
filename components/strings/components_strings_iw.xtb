@@ -261,7 +261,6 @@
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1807528111851433570">גיליון ראשון</translation>
 <translation id="1812527064848182527">לרוחב</translation>
-<translation id="1814698615734239189">האפליקציה הזו מיועדת למכשירים ניידים. היא פועלת במצב תאימות. הרשאה לשינוי הגודל עלולה לגרום לבעיות, כולל הפעלת האפליקציה מחדש.</translation>
 <translation id="1821930232296380041">הבקשה או הפרמטרים של הבקשה אינם חוקיים</translation>
 <translation id="1822540298136254167">אתרים שנכנסת אליהם וזמני השהייה באתרים האלה</translation>
 <translation id="1826516787628120939">מתבצעת בדיקה</translation>
@@ -680,7 +679,6 @@
 <translation id="3431636764301398940">שמירת כרטיס זה במכשיר הנוכחי</translation>
 <translation id="3432601291244612633">סגירת הדף</translation>
 <translation id="3435738964857648380">אבטחה</translation>
-<translation id="3435896845095436175">הפעלה</translation>
 <translation id="3438829137925142401">‏שימוש בסיסמאות השמורות בחשבון Google שלך</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">הבעלים של המכשיר הזה כיבה את משחק הדינוזאורים.</translation>
@@ -817,6 +815,7 @@
 <translation id="3946209740501886391">יש לשאול תמיד באתר הזה</translation>
 <translation id="3949571496842715403">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו לא מציין ערכי Subject Alternative Name. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="3949601375789751990">היסטוריית הגלישה שלך מופיעה כאן</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">אין אמצעי תשלום שמורים</translation>
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3961148744525529027">גיליון פרטי התשלום פתוח בחצי גובה המסך</translation>
@@ -824,7 +823,6 @@
 <translation id="3963721102035795474">מצב קורא</translation>
 <translation id="3963837677003247395">להמשיך באופן ידני?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ללא}=1{מאתר אחד }two{משני אתרים }many{מ-# אתרים }other{מ-# אתרים }}</translation>
-<translation id="3970481983430640194">עכשיו אפשר לגרור את האפליקציה ולשנות לה את הגודל.</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> חסום</translation>
 <translation id="3973357910713125165">‏לחצן להרצת בדיקת אבטחה ב-Chrome, יש להקיש על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
@@ -946,6 +944,7 @@
 <translation id="4346197816712207223">כרטיסי אשראי שהסוחר מקבל</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">‏הזנת כרגע את הסיסמה שלך באתר מטעה. ההמלצה של Chrome היא לעבור אל <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ואתרים אחרים שבהם הסיסמה הזו נמצאת בשימוש, ולשנות את הסיסמה עכשיו.</translation>
+<translation id="4351060348582610152">‏<ph name="ORIGIN" /> מבקש לבצע סריקה כדי לאתר מכשירי Bluetooth בקרבת מקום. המכשירים הבאים נמצאו:</translation>
 <translation id="4356973930735388585">תוקפים באתר הזה עשויים לנסות להתקין במחשב שלך תוכניות מסוכנות שגונבות או מוחקות מידע שלך (לדוגמה: תמונות, סיסמאות, הודעות ופרטי כרטיסי אשראי).</translation>
 <translation id="4358059973562876591">‏לא ניתן להחיל את התבניות שבחרת עקב שגיאה במדיניות DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">ניהול אמצעי תשלום...</translation>
@@ -1403,7 +1402,6 @@ Del</translation>
 <translation id="6032524144326295339">תיבת דואר 2</translation>
 <translation id="6032955021262906325">כריכה בקצה השמאלי</translation>
 <translation id="6034000775414344507">אפור בהיר</translation>
-<translation id="6034062182346928710">ייתכן ששינוי הגודל של <ph name="APP_NAME" /> לא יפעל כראוי. כדאי להשתמש בגדלים של חלונות בהגדרה קבועה מראש כדי למנוע פעילות לא תקינה של האפליקציה.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)‎</translation>
 <translation id="6034514109191629503">קיפול אקורדיון</translation>
 <translation id="6039846035001940113">אם הבעיה ממשיכה, יש לפנות אל בעל האתר.</translation>
@@ -1433,7 +1431,6 @@ Del</translation>
 <translation id="6120179357481664955">‏מזהה UPI שלך זכור לך?</translation>
 <translation id="6123290840358279103">לצפייה בכרטיס הווירטואלי</translation>
 <translation id="6124432979022149706">‏מחברים של Chrome Enterprise</translation>
-<translation id="6143538402333184781">באפליקציה הזו יש תמיכה רק בגודל "טלפון".</translation>
 <translation id="6146055958333702838">יש לבדוק את הכבלים ולהפעיל מחדש את הנתבים, המודמים ושאר התקני הרשת
 שמשתמשים בהם.</translation>
 <translation id="614940544461990577">כדאי לנסות:</translation>
@@ -1983,7 +1980,6 @@ Del</translation>
 <translation id="8225771182978767009">המשתמש שהגדיר את המחשב הזה בחר לחסום את האתר הזה.</translation>
 <translation id="8228419419708659934">תצוגת 2 עמודים</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">לא צריך לבקש שוב בשביל האפליקציה הזו</translation>
 <translation id="8232343881378637145">טמפרטורת פלטפורמה</translation>
 <translation id="8238581221633243064">פתיחת הדף בכרטיסייה אנונימית חדשה</translation>
 <translation id="8241707690549784388">הדף שחיפשת השתמש במידע שהזנת. החזרה לדף זה עלולה לגרום לכפילות בפעולות שביצעת. האם ברצונך להמשיך?</translation>
@@ -1996,7 +1992,6 @@ Del</translation>
 <translation id="825929999321470778">הצגת כל הסיסמאות השמורות</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8262952874573525464">הידוק קצוות בחלק התחתון</translation>
-<translation id="826298712171642726">להפעיל את שינוי הגודל?</translation>
 <translation id="8265992338205884890">גישה לנתונים הבאים</translation>
 <translation id="8267698848189296333">מתבצעת כניסה כ-<ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">מסמכים נפרדים/עותקים מסודרים</translation>
@@ -2027,6 +2022,7 @@ Del</translation>
 <translation id="8355270400102541638">ההקשר המקומי של הקריסה:</translation>
 <translation id="8363502534493474904">לכבות את מצב הטיסה</translation>
 <translation id="8364627913115013041">לא מוגדר.</translation>
+<translation id="8368027906805972958">מכשיר לא ידוע או שאינו נתמך (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏שירותי Google Play</translation>
 <translation id="8371889962595521444">אישורי בסיס בהתאמה אישית</translation>
 <translation id="8374636051559112948">משתנה</translation>

@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Stelsel</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
+<translation id="2783010256799387990">GESLAAG</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2862104018715411648">Plaas jou dokument op die skandeerder en kies Skandeer om te begin</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Geen druktake aan die gang nie</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> prente</translation>
 <translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -229,7 +231,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5691511426247308406">Familie</translation>
 <translation id="5752751666635965375">Maak jou eie speletjie</translation>
 <translation id="5760715441271661976">Portaalstatus</translation>
-<translation id="5797428682393400134">SUKSES</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5849570051105887917">Tuisverskafferkode</translation>
@@ -296,6 +297,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7162487448488904999">Galery</translation>
+<translation id="7172721935181587524">1 prent</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
 <translation id="7271040990581020067">Skandeerder word tans gebruik Probeer later weer.</translation>
@@ -345,6 +347,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8297006494302853456">Swak</translation>
 <translation id="8302368968391049045">HTTPS-brandmuur</translation>
+<translation id="8318753676953949627">Geen prente nie</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>

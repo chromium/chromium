@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">نمط العرض الحالي هو تضمين النص.</translation>
 <translation id="1087788677726983142">إخفاء فلاتر بث الحدث</translation>
 <translation id="1088402100970133699">ليس هناك عنصر قائمة سابق.</translation>
-<translation id="1114836634143403764">اقتراح</translation>
 <translation id="1120743664840974483">{"أ": "أرنب"، "ب": "بيت"، "ت": "تفاحة"، "ث": "ثعلب"، "ج": "جزر"، "ح": "حصان"، "خ": "خوخ"، "د": "دراجة"، "ذ": "ذهب"، "ر": "ريشة"، "ز": "زرافة"، "س": "سمكة"، "ش": "شمس"، "ص": "صوص"، "ض"، "ضوء"، "ط": "طائرة"، "ظ": "ظرف"، "ع": "عصفور"، "غ": "غيمة"، "ف": "فراشة"، "ق": "قمر"، "ك": "كرة"، "ل": "ليمون"، "م": "موز"، "ن": "نجمة"، "ه": "هدية"، "و": "وردة"، "ي": "يد"}</translation>
 <translation id="1120938014254001895">التمرير السريع بإصبعين إلى الأعلى</translation>
 <translation id="1126928665165112660">غير مائل</translation>
@@ -204,7 +203,6 @@
 <translation id="2417569100218200841">معلومات المحتوى</translation>
 <translation id="2417948780551741035">تعليقات ختامية</translation>
 <translation id="2419852971200420169">قائمة الوصف</translation>
-<translation id="2421113964388408478">حذف</translation>
 <translation id="2422937916923936891">مربع اختيار عنصر القائمة</translation>
 <translation id="2428534162001909979">قوائم الأوامر</translation>
 <translation id="242998846562331953">عنوان فرعي</translation>
@@ -227,6 +225,7 @@
 <translation id="2592212930811759050">انقر مرّتين لبدء التعديل</translation>
 <translation id="2598495320872286378">خطأ في قاعدة نحوية</translation>
 <translation id="2603828437139726540">نقل للأمام بمقدار حرف واحد</translation>
+<translation id="2619052155095999743">إدخال</translation>
 <translation id="2619344480613750862">‏يمكنك أيضًا التنقّل بين أقسام الشاشة. على سبيل المثال، يمكنك التنقّل بين مشغّل التطبيقات والرف وعلامات تبويب Chrome. للانتقال إلى القسم التالي، مرِّر سريعًا من اليمين إلى اليسار بأربعة أصابع. جرِّب ذلك الآن للمتابعة.</translation>
 <translation id="2624431853467395961">فتح وضع التعلّم</translation>
 <translation id="2626530649491650971">قابل للنقر</translation>
@@ -508,7 +507,6 @@
 <translation id="4479068155583208887">أحمر قرميدي ناري</translation>
 <translation id="4482330759234983253">الجدول السابق</translation>
 <translation id="4491109536499578614">صورة</translation>
-<translation id="4505167975768625962">إدراج</translation>
 <translation id="4511186779140817916">لوزي</translation>
 <translation id="451510441928265982">ليس هناك عنوان سابق من المستوى الثاني.</translation>
 <translation id="4515799157838123044">تظليل محتوى الخلفية</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">تغيير نمط العرض إلى "جنبًا إلى جنب"</translation>
 <translation id="8215202828671303819">تحديد متعدد</translation>
 <translation id="8249864170673238087">تعتيم <ph name="COLOR" />، <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">حذف</translation>
 <translation id="826825447994856889">مقدمة</translation>
 <translation id="827266600368092403">بدء الاختيار أو إنهاؤه</translation>
 <translation id="827422111966801947">نيلي</translation>

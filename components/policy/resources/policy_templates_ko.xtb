@@ -953,17 +953,6 @@
       <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> 옵션을 설정하면(값 1) 중요한 보안 또는 안정성 관련 수정사항으로 간주되는 변형만 <ph name="PRODUCT_OS_NAME" />에 적용 가능합니다.
 
       <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> 옵션을 설정하면(값 2) 로그인 화면에서 브라우저에 어떤 변형도 적용할 수 없습니다. 이 모드를 사용하면 <ph name="PRODUCT_OS_NAME" /> 개발자가 중요한 보안 수정사항을 신속히 제공하지 못할 수 있으므로 권장되지 않습니다.</translation>
-<translation id="2216380260552785166">이 정책은 <ph name="PRODUCT_NAME" />에서 이전 브라우저 지원 기능을 위한 사이트 목록/그레이리스트를 해석하는 방식을 결정합니다. <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 및 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" /> 정책에 영향을 미칩니다.
-
-      'Default'(0)로 설정하거나 설정하지 않을 경우 URL 매칭이 덜 엄격합니다. '/'를 포함하지 않는 규칙은 URL 호스트 이름 어디에서든 하위 문자열을 찾습니다.
-
-      'Strict'(1)인 경우 URL 매칭이 더 엄격합니다. '/'를 포함하지 않는 규칙은 호스트 이름 끝에서만 매칭합니다. 도메인 이름 경계에도 있어야 합니다. <ph name="MS_IE_PRODUCT_NAME" /> 및 <ph name="MS_EDGE_PRODUCT_NAME" />에서 더 잘 호환됩니다.
-
-      예를 들어 'example.com' 규칙에서
-
-      'http://example.com/' 및 'http://subdomain.example.com/'은 분석 모드와 관계없이 매칭됩니다.
-
-      'http://notexample.com/', 'http://example.com.invalid.com/' 및 'http://example.comabc/'는 'Default' 모드에서만 매칭됩니다.</translation>
 <translation id="2221850122314326571">이 설정을 사용하면 <ph name="PRODUCT_NAME" />에서 내장 인증서 확인 기능을 사용하여 서버 인증서를 확인합니다.
       사용 중지하면 <ph name="PRODUCT_NAME" /> 제품이 플랫폼에서 제공하는 레거시 인증서 확인 기능을 사용하여 서버 인증서를 확인합니다.
       설정하지 않으면 내장 또는 레거시 인증서 확인 기능을 사용할 수 있습니다.

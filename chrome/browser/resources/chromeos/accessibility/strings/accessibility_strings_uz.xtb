@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Joriy ekran – ustma-ust uslubida</translation>
 <translation id="1087788677726983142">Oqimli amallar filterlarini yopish</translation>
 <translation id="1088402100970133699">Avvalgi roʻyxat bandi mavjud emas</translation>
-<translation id="1114836634143403764">Taklif</translation>
 <translation id="1120743664840974483">{"a": "abror", "b": "bobur", "d": "doston", "e": "eldor", "f": "fotima", "g": "gulnora", "h": "hamida", "i": "iroda", "j": "jasur", "k": "komil", "l": "laziz", "m": "malika", "n": "nigora", "o": "odina", "p": "pokiza", "q": "qahramon", "r": "rustam", "s": "sodiq", "t": "temur", "u": "ubaydulla", "v": "vazira", "x": "xumora", "y": "yoqut", "z": "zamira", "o‘": "o‘ktam", "g‘": "g‘iyos", "sh": "shahlo", "ch": "charos", "ng": "tong"}</translation>
 <translation id="1120938014254001895">Ikkita barmoq bilan tepaga suring</translation>
 <translation id="1126928665165112660">Qiya emas</translation>
@@ -202,7 +201,6 @@
 <translation id="2417569100218200841">Kontent haqida ma’lumot</translation>
 <translation id="2417948780551741035">Yakuniy izohlar</translation>
 <translation id="2419852971200420169">Tavsif roʻyxat</translation>
-<translation id="2421113964388408478">Olib tashlanadi</translation>
 <translation id="2422937916923936891">Menyu bandi: belgilash katakchasi</translation>
 <translation id="2428534162001909979">Buyruqlar menyusi</translation>
 <translation id="242998846562331953">Taglavha</translation>
@@ -225,6 +223,7 @@
 <translation id="2592212930811759050">Tahrirlashni boshlash uchun ikki marta bosing</translation>
 <translation id="2598495320872286378">Grammatik xato</translation>
 <translation id="2603828437139726540">Bitta oldingi belgiga oʻtish</translation>
+<translation id="2619052155095999743">Joylash</translation>
 <translation id="2619344480613750862">Ekran qismlarini ham shunday varaqlash mumkin. Masalan launcher, javon yoki Chrome varaqlariaro. Keyingi qismga almashtirish uchun toʻrtta barmoq bilan ekranni chapga suring. Buni hoziroq sinab koʻring.</translation>
 <translation id="2624431853467395961">O‘rganish rejimini ochish</translation>
 <translation id="2626530649491650971">clickable</translation>
@@ -506,7 +505,6 @@
 <translation id="4479068155583208887">Toʻq xira qizil</translation>
 <translation id="4482330759234983253">Avvalgi jadval</translation>
 <translation id="4491109536499578614">Tasvir</translation>
-<translation id="4505167975768625962">Joylanadi</translation>
 <translation id="4511186779140817916">Archilgan bodomrang</translation>
 <translation id="451510441928265982">Bundan oldin boshqa 4-darajali sarlavha mavjud emas</translation>
 <translation id="4515799157838123044">Fondagi kontentni xiralashtirish</translation>
@@ -1009,6 +1007,7 @@
 <translation id="8212109599554677485">Ekranni yonma-yon uslubiga oʻzgartirish</translation>
 <translation id="8215202828671303819">Bir nechta elementni tanlash</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, shaffofligi: <ph name="OPACITY_PERCENTAGE" />%</translation>
+<translation id="8261506727792406068">O‘chirish</translation>
 <translation id="826825447994856889">Kirish</translation>
 <translation id="827266600368092403">Belgilashni boshlash yoki tugatish</translation>
 <translation id="827422111966801947">Toʻq siyohrang</translation>

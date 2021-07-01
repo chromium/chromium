@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">È attivo lo stile del display interfoliazione</translation>
 <translation id="1087788677726983142">Nascondi i filtri del flusso di eventi</translation>
 <translation id="1088402100970133699">Nessuna voce elenco precedente</translation>
-<translation id="1114836634143403764">Suggerimento</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliett","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "x-ray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Scorri verso l'alto con due dita</translation>
 <translation id="1126928665165112660">Non corsivo</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Informazioni sui contenuti</translation>
 <translation id="2417948780551741035">Note finali</translation>
 <translation id="2419852971200420169">Elenco di descrizioni</translation>
-<translation id="2421113964388408478">Eliminazione</translation>
 <translation id="2422937916923936891">Casella di controllo voce di menu</translation>
 <translation id="2428534162001909979">Menu dei comandi</translation>
 <translation id="242998846562331953">Sottotitolo</translation>
 <translation id="2435422727584637732">Blu Dodger</translation>
+<translation id="2438712309510062123">Suggerisci</translation>
 <translation id="2450814015951372393">Casella di controllo</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="2462626033734746142">Gruppo pulsanti di opzione</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Tocca due volte per iniziare la modifica</translation>
 <translation id="2598495320872286378">Errore grammaticale</translation>
 <translation id="2603828437139726540">Sposta in avanti di un carattere</translation>
+<translation id="2619052155095999743">Inserisci</translation>
 <translation id="2619344480613750862">Puoi anche spostarti tra le varie sezioni dello schermo. Ad esempio, puoi spostarti tra Avvio app, la barra delle app e le schede di Chrome. Per passare alla sezione successiva, scorri da sinistra verso destra con quattro dita. Per continuare, prova ora.</translation>
 <translation id="2624431853467395961">Apri la modalità di apprendimento</translation>
 <translation id="2626530649491650971">selezionabile</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Mattone fuoco</translation>
 <translation id="4482330759234983253">Tabella precedente</translation>
 <translation id="4491109536499578614">Immagine</translation>
-<translation id="4505167975768625962">Inserimento</translation>
 <translation id="4511186779140817916">Mandorla sbiancata</translation>
 <translation id="451510441928265982">Nessuna intestazione di livello 2 precedente</translation>
 <translation id="4515799157838123044">Sfuma i contenuti in background</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Cambia stile display su affiancato</translation>
 <translation id="8215202828671303819">Selezione multipla</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, opacità <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">Elimina</translation>
 <translation id="826825447994856889">Introduzione</translation>
 <translation id="827266600368092403">Inizia o termina la selezione</translation>
 <translation id="827422111966801947">Indaco</translation>

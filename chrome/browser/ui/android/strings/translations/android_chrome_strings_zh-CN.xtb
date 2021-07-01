@@ -331,6 +331,7 @@
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">通告</translation>
+<translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
 <translation id="3157842584138209013">通过“更多选项”按钮查看您已节省多少数据流量</translation>
 <translation id="3166827708714933426">标签页和窗口快捷键</translation>
@@ -449,6 +450,7 @@
 <translation id="3924911262913579434">已开启“<ph name="SAFE_BROWSING_MODE" />”</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">合并我的数据</translation>
+<translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">无法启用语音搜索功能</translation>
 <translation id="3943557322767080599">当您登录 Google 帐号时，向您显示 Chrome 登录提示</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{待准备就绪后，Chrome 即会加载您的网页}other{待准备就绪后，Chrome 即会加载您的网页}}</translation>

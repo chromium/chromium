@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">รูปแบบการแสดงผลปัจจุบันคือข้อความแทรก</translation>
 <translation id="1087788677726983142">ซ่อนตัวกรองสตรีมเหตุการณ์</translation>
 <translation id="1088402100970133699">ไม่มีรายการก่อนหน้า</translation>
-<translation id="1114836634143403764">คำแนะนำ</translation>
 <translation id="1120743664840974483">{"a": "อัลฟ่า", "b": "บราโว่", "c": "ชาร์ลี", "d": "เดลต้า", "e": "เอคโค่", "f": "ฟอกซ์ทรอต", "g": "กอล์ฟ", "h": "โฮเท็ล", "i": "อินเดีย", "j": "จูเลียต","k": "กิโล", "l": "ลิมา", "m": "ไมค์", "n": "โนเวมเบอร์", "o": "ออสการ์","p": "ปาป้า", "q": "ควิเบค", "r": "โรมิโอ", "s": "เซียร์ร่า", "t": "แทงโก้", "u": "ยูนิฟอร์ม", "v": "วิคเตอร์", "w": "วิสกี้","x": "เอ็กซเรย์", "y": "แยงกี้", "z": "ซูลู"}</translation>
 <translation id="1120938014254001895">เลื่อน 2 นิ้วขึ้น</translation>
 <translation id="1126928665165112660">ไม่เป็นตัวเอียง</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">ข้อมูลเนื้อหา</translation>
 <translation id="2417948780551741035">อ้างอิงท้ายเรื่อง</translation>
 <translation id="2419852971200420169">รายการคำอธิบาย</translation>
-<translation id="2421113964388408478">การลบ</translation>
 <translation id="2422937916923936891">ช่องทำเครื่องหมายรายการเมนู</translation>
 <translation id="2428534162001909979">เมนูคำสั่ง</translation>
 <translation id="242998846562331953">หัวข้อย่อย</translation>
 <translation id="2435422727584637732">สีฟ้าด็อดเจอร์บลู</translation>
+<translation id="2438712309510062123">แนะนำ</translation>
 <translation id="2450814015951372393">ช่องทำเครื่องหมาย</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
 <translation id="2462626033734746142">กลุ่มปุ่มตัวเลือก</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">แตะสองครั้งเพื่อเริ่มแก้ไข</translation>
 <translation id="2598495320872286378">ข้อผิดพลาดด้านไวยากรณ์</translation>
 <translation id="2603828437139726540">เลื่อนไปข้างหน้า 1 อักขระ</translation>
+<translation id="2619052155095999743">แทรก</translation>
 <translation id="2619344480613750862">คุณไปยังส่วนต่างๆ ของหน้าได้ด้วย ตัวอย่างเช่น คุณอาจเลื่อนไปมาระหว่าง Launcher, แถบ และแท็บใน Chrome หากต้องการไปยังส่วนถัดไป ให้ใช้ 4 นิ้วปัดจากซ้ายไปขวา ลองทำเลยเพื่อไปต่อ</translation>
 <translation id="2624431853467395961">เปิดโหมดการเรียนรู้</translation>
 <translation id="2626530649491650971">คลิกได้</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">สีแดงไฟร์บริก</translation>
 <translation id="4482330759234983253">ตารางก่อนหน้า</translation>
 <translation id="4491109536499578614">รูปภาพ</translation>
-<translation id="4505167975768625962">การแทรก</translation>
 <translation id="4511186779140817916">สีน้ำตาลแบลนช์อัลมอนด์</translation>
 <translation id="451510441928265982">ไม่มีส่วนหัวระดับ 2 ก่อนหน้า</translation>
 <translation id="4515799157838123044">ทำให้สีของเนื้อหาในพื้นหลังจางลง</translation>
@@ -1009,6 +1008,7 @@
 <translation id="8212109599554677485">เปลี่ยนรูปแบบการแสดงผลเป็นการแสดงคู่กัน</translation>
 <translation id="8215202828671303819">เลือกหลายรายการ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" /> ความทึบแสง <ph name="OPACITY_PERCENTAGE" />%</translation>
+<translation id="8261506727792406068">ลบ</translation>
 <translation id="826825447994856889">บทนำ</translation>
 <translation id="827266600368092403">เริ่มต้นหรือสิ้นสุดการเลือก</translation>
 <translation id="827422111966801947">สีคราม</translation>

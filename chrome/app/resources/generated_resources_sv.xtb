@@ -2303,7 +2303,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3468298837301810372">Etikett</translation>
 <translation id="3468999815377931311">Android-mobil</translation>
 <translation id="3470442499439619530">Ta bort denna användare</translation>
-<translation id="3471350386419633991">Högerklicka på en flik eller klicka på bokmärkesikonen för att lägga till flikar på en läslista. Åtkomst från bokmärkesfältet.</translation>
 <translation id="3471876058939596279">HDMI- och USB Type-C-portar kan inte användas till video och dockningsstation samtidigt. Använd en annan videoport.</translation>
 <translation id="3473241910002674503">Navigera till startsidan, tillbaka och byt appar med knappar i surfplatteläget.</translation>
 <translation id="3473479545200714844">Skärmförstorare</translation>
@@ -2772,7 +2771,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3945513714196326460">Ange ett kortare namn</translation>
 <translation id="3948116654032448504">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter bild</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> har redigeringsbehörighet till filer i följande mappar</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Importerat från IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Den här appen kan vara skadlig}other{De här apparna kan vara skadliga}}</translation>
 <translation id="3950820424414687140">Logga in</translation>
@@ -3095,7 +3093,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4349828822184870497">Användbart</translation>
 <translation id="4350230709416545141">Blockera alltid <ph name="HOST" /> från att få åtkomst till din plats</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> vill söka efter Bluetooth-enheter i närheten. Följande enheter har hittats:</translation>
 <translation id="4354073718307267720">Fråga när en webbplats vill skapa en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
 <translation id="4354344420232759511">Webbplatser du besöker visas här</translation>
 <translation id="435527878592612277">Välj foto</translation>
@@ -3358,7 +3355,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4625078469366263107">Aktivera appen</translation>
 <translation id="4627427111733173920">Cookies har blockeras</translation>
 <translation id="4627442949885028695">Fortsätta på en annan enhet</translation>
-<translation id="4628757576491864469">Enheter</translation>
 <translation id="4628762811416793313">Det gick inte att slutföra konfigureringen av Linux-behållaren. Försök igen.</translation>
 <translation id="4629521233550547305">Öppna profilen <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Anpassa kort</translation>
@@ -3525,6 +3521,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4830502475412647084">Uppdateringen för operativsystemet installeras</translation>
 <translation id="4830573902900904548">Din <ph name="DEVICE_TYPE" /> kan inte ansluta till internet med <ph name="NETWORK_NAME" />. Välj ett annat nätverk. <ph name="LEARN_MORE_LINK_START" />Läs mer<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">1 skrivare från utskriftsservern hittades</translation>
+<translation id="4834007576107377210">Visa sökmotorns anvisningar för att radera sökhistoriken om tillämpligt</translation>
 <translation id="4836046166855586901">Fråga när en webbplats vill veta om du använder enheten aktivt</translation>
 <translation id="4836504898754963407">Hantera fingeravtryck</translation>
 <translation id="4837128290434901661">Vill du byta tillbaka till Google Sök?</translation>
@@ -5143,7 +5140,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6651237644330755633">Lita på detta certifikat för identifiering av webbplatser</translation>
 <translation id="6651495917527016072">Synkronisera wifi-nätverk med telefonen. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Integrering med <ph name="MS_AD_NAME" /> i Chrome stöds bara på x86_64-plattformar. Chromebook-enheter som bygger på ARM- eller x86-plattformen saknar stöd för denna funktion.</translation>
-<translation id="66537479323396140">Historik och autoslutföranden i sökrutan rensas. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Föredraget nätverk</translation>
 <translation id="6655190889273724601">Programmerarläge</translation>
 <translation id="6655458902729017087">Dölj konton</translation>
@@ -6728,7 +6724,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8363142353806532503">Mikrofon är blockerad</translation>
 <translation id="8366396658833131068">Nätverksanslutningen har återställts. Välj ett annat nätverk eller tryck på knappen Fortsätt om du vill starta kioskappen.</translation>
 <translation id="8366694425498033255">Valtangenter</translation>
-<translation id="8368027906805972958">Enheten är okänd eller stöds inte (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Öppna alla bokmärken</translation>
 <translation id="8370294614544004647">Aktivera viloläge när laptopen stängs</translation>
 <translation id="8371695176452482769">Prata nu</translation>
@@ -6741,7 +6736,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8379991678458444070">Bokmärk fliken om du snabbt vill hitta tillbaka</translation>
 <translation id="8382913212082956454">Kopiera &amp;e-postadress</translation>
 <translation id="8386091599636877289">Policyn hittades inte.</translation>
-<translation id="838705362287678887">Du kan rensa <ph name="BEGIN_LINK_SEARCH" />sökhistoriken<ph name="END_LINK_SEARCH" /> och annan historik på <ph name="BEGIN_LINK_GOOGLE" />Mitt Google-konto<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">Får inte se var du befinner dig</translation>
 <translation id="8388770971141403598">Sekundära profiler stöds inte</translation>
 <translation id="8389416080014625855">Skapa QR-kod för den här sidan</translation>

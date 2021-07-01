@@ -24,7 +24,7 @@
 अगर '<ph name="SERVICE_SCRIPT_NAME" />' पहले से चुना है, तो सही का निशान हटाकर दोबारा लगाएं.</translation>
 <translation id="225614027745146050">आपका स्वागत है</translation>
 <translation id="2320166752086256636">कीबोर्ड छिपाएं</translation>
-<translation id="2329392777730037872">क्लाइंट पर <ph name="URL" /> नहीं खोला जा सका.</translation>
+<translation id="2329392777730037872">क्लाइंट के डिवाइस पर <ph name="URL" /> नहीं खोला जा सका.</translation>
 <translation id="2333212046079545895">कॉपीराइट 2021 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2366718077645204424">होस्‍ट तक पहुंचने में असमर्थ. यह संभवत:   उपयोग किए जाने वाले नेटवर्क के कॉन्फ़िगरेशन के कारण है.</translation>
@@ -89,7 +89,7 @@
 <translation id="4867841927763172006">PrtScn भेजें</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> का कनेक्शन बंद है</translation>
 <translation id="4985296110227979402">आपको सबसे पहले अपने कंप्यूटर को रिमोट (दूर के) एक्सेस के लिए सेट करना होगा</translation>
-<translation id="4987330545941822761">'Chrome रिमोट डेस्कटॉप', यूआरएल खोलने के लिए ब्राउज़र नहीं चुन सकता. कृपया, नीचे दी गई सूची से चुनें.</translation>
+<translation id="4987330545941822761">'Chrome रिमोट डेस्कटॉप', कंप्यूटर पर यूआरएल खोलने के लिए ब्राउज़र नहीं चुन सकता. कृपया, नीचे दी गई सूची से चुनें.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ऑफ़लाइन)</translation>
 <translation id="507204348399810022">क्‍या आप वाकई <ph name="HOSTNAME" /> से दूर से किए गए कनेक्‍शन को बंद करना चाहते हैं?</translation>
 <translation id="5170982930780719864">अमान्‍य होस्‍ट आईडी.</translation>
@@ -137,7 +137,7 @@
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7312846573060934304">होस्ट ऑफ़लाइन है.</translation>
 <translation id="7319983568955948908">साझाकरण रोकें</translation>
-<translation id="7359298090707901886">लोकल मशीन पर यूआरएल खोलने के लिए, चुने गए ब्राउज़र का इस्तेमाल नहीं किया जा सकता.</translation>
+<translation id="7359298090707901886">कंप्यूटर पर यूआरएल खोलने के लिए, चुने गए ब्राउज़र का इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="7401733114166276557">Chrome दूरस्थ डेस्कटॉप</translation>
 <translation id="7434397035092923453">क्लाइंट की एक्सेस अस्वीकार की गई: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">क्लाइंट कनेक्ट किया गया: <ph name="CLIENT_USERNAME" />.</translation>

@@ -885,7 +885,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
           No caso de cookies em domínios não cobertos pelos padrões especificados neste documento ou no caso de todos os cookies, se a política não for definida, o valor padrão geral será a configuração pessoal do usuário.
 
-          Para ver informações detalhadas sobre padrões válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+          Para ver informações detalhadas sobre padrões válidos, consulte https://chromeenterprise.google/intl/pt_br/policies/url-patterns/.
 
           Observe que os padrões que você lista aqui são tratados como domínios, não URLs. Assim, recomendamos que você não especifique um esquema ou uma porta.</translation>
 <translation id="2166155400701622446">Há uma lista de portas restritas integrada ao <ph name="PRODUCT_NAME" />. Qualquer tentativa de conexão com essas portas falhará. Esta configuração permite ignorar a lista. O valor é uma lista separada por vírgulas de zero ou mais portas em que conexões de saída serão permitidas.
@@ -949,17 +949,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Definir <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1) permite que apenas as variações consideradas como correções críticas de segurança ou estabilidade sejam aplicadas ao <ph name="PRODUCT_OS_NAME" />.
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
-<translation id="2216380260552785166">Esta política controla como o <ph name="PRODUCT_NAME" /> interpreta políticas de lista de sites/lista cinza no recurso Suporte a navegadores legados. Ela afeta as políticas <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      Se ela for definida como "Default" (0) ou for deixada sem definição, a correspondência de URL será menos rigorosa. Regras que não tiverem "/" procurarão uma substring em qualquer lugar no nome do host do URL.
-
-      Se for definida como "Strict" (1), a correspondência de URL será mais rigorosa. Regras que não tiverem "/" terão correspondência apenas no fim do nome do host. Elas também precisarão estar no limite de um nome de domínio. Esse comportamento é mais compatível com o <ph name="MS_IE_PRODUCT_NAME" /> e o <ph name="MS_EDGE_PRODUCT_NAME" />.
-
-      Por exemplo, com a regra "example.com":
-
-      "http://example.com/" e "http://subdomain.example.com/" são correspondentes independentemente do modo de análise.
-
-      "http://notexample.com/", "http://example.com.invalid.com/" e "http://example.comabc/" são correspondentes apenas no modo "Default".</translation>
 <translation id="2221850122314326571">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> verificará os certificados do servidor usando o verificador integrado de certificados.
       Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> verificará os certificados do servidor usando o verificador legado disponibilizado pela plataforma.
       Quando esta configuração não for definida, tanto o verificador de certificados integrado quanto o legado poderão ser usados.
@@ -973,6 +962,10 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2223393221350938149">Não permitir que sites executem o JIT do JavaScript</translation>
 <translation id="2223582957891074498">Se a política for definida como verdadeira, não será permitido fazer capturas de tela com os atalhos do teclado ou APIs de extensão. Se ela for definida como falsa, as capturas de tela serão permitidas.</translation>
 <translation id="2223598546285729819">Configuração padrão de notificações</translation>
+<translation id="2231726854197443389">Esta política controla se os usuários podem ativar o HTTPS-Only Mode nas Configurações. O HTTPS-Only Mode faz upgrade de todas as navegações para HTTPS.
+      Se esta configuração for deixada sem definição ou for permitida, os usuários poderão ativar o HTTPS-Only Mode.
+      Se ela não for permitida, os usuários não poderão ativar o HTTPS-Only Mode.
+      A ativação automática do HTTPS-Only Mode não está disponível no momento.</translation>
 <translation id="2231817271680715693">Importar histórico de navegação do navegador padrão na primeira execução</translation>
 <translation id="2231962946025538735">O uso desta política foi suspenso. Use <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar a disponibilidade do plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar se o visualizador de PDF integrado será usado para abrir arquivos PDF.
 
@@ -1201,6 +1194,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2482676533225429905">Mensagens nativas</translation>
 <translation id="2483146640187052324">Prever ações da rede em qualquer conexão de rede</translation>
 <translation id="2496180316473517155">Histórico de navegação</translation>
+<translation id="2497965601277442929">Não permitir que os usuários ativem o HTTPS-Only Mode</translation>
 <translation id="2498238926436517902">Sempre ocultar automaticamente a estante</translation>
 <translation id="250022556568924228">A definição desta política significa que o <ph name="PRODUCT_OS_NAME" /> faz o download dos Termos de Serviço e os apresenta aos usuários ao início de cada sessão de uma conta local do dispositivo. Os usuários só poderão fazer login na sessão após aceitarem os Termos de Serviço.
 
@@ -2604,7 +2598,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4330372709562934569">Permitir que os sites listados façam solicitações para endpoints de uma rede mais privada a partir de contextos não seguros.</translation>
 <translation id="4331357743227845302">Esta política permite que os administradores configurem os serviços Bluetooth a que o <ph name="PRODUCT_OS_NAME" /> pode se conectar.
 
-Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que os usuários se conectem apenas aos serviços Bluetooth especificados com uma exceção quando a lista estiver vazia, ou seja, quando qualquer serviço tiver permissão para ser usado. UUIDs reservados pela Bluetooth SIG podem ser representados como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> ou <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. UUIDs personalizados podem ser representados como <ph name="BLUETOOTH_CUSTOM_UUID" />. UUIDs são indiferentes a maiúsculas. Se esta política não for definida, os usuários poderão se conectar a qualquer serviço Bluetooth.</translation>
+Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que os usuários se conectem apenas aos serviços Bluetooth especificados com uma exceção quando a lista estiver vazia, ou seja, quando qualquer serviço tiver permissão para ser usado. UUIDs reservados pela Bluetooth SIG podem ser representados como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> ou <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. UUIDs personalizados podem ser representados como <ph name="BLUETOOTH_CUSTOM_UUID" />. UUIDs não diferenciam maiúsculas e minúsculas. Se esta política não for definida, os usuários poderão se conectar a qualquer serviço Bluetooth.</translation>
 <translation id="4332177773549877617">Registra eventos de instalações do app Android</translation>
 <translation id="4341199399451274159">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> especificará as codificações de caracteres compatíveis com o provedor de pesquisa. As codificações são nomes de páginas de código como UTF-8, GB2312 e ISO-8859-1. Elas são testadas na ordem fornecida.
 
@@ -3739,6 +3733,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Os usuários não poderão mudar essa configuração.</translation>
 <translation id="5848438019586925019">O algoritmo para gerar pares de chaves.</translation>
 <translation id="585270638818921943">Impede o uso de apps Android de fontes não confiáveis</translation>
+<translation id="5853547031212075792">Permitir que os usuários ativem o HTTPS-Only Mode</translation>
 <translation id="5859344336338527083">Se definida, a política especificará os URLs que podem instalar extensões, apps e temas. Antes do <ph name="PRODUCT_NAME" /> 21, os usuários podiam clicar em um link para um arquivo *.crx e o <ph name="PRODUCT_NAME" /> se oferecia para instalar o arquivo após alguns avisos. Depois dessa versão, esses arquivos precisam ser transferidos por download e arrastados para a página de configurações do <ph name="PRODUCT_NAME" />. Essa configuração permite que URLs específicos utilizem o fluxo de instalação antigo e mais simples.
 
       Cada item nesta lista é um padrão de correspondência de estilo de extensão (consulte https://developer.chrome.com/extensions/match_patterns). Os usuários conseguem instalar com facilidade os itens de qualquer URL correspondente a um item da lista. Tanto o local do arquivo *.crx quanto a página de onde o download é feito (ou seja, o referenciador) precisam ser permitidos por esses padrões.
@@ -5429,6 +5424,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="7962093600142350905">Esta política controla se as impressoras com protocolo Privet disponíveis serão exibidas ao usuário na caixa de diálogo de visualização de impressão.
       Se a política for definida como "Ativada", as impressoras com protocolo Privet disponíveis serão exibidas.
       Se ela for definida como "Desativada" ou deixada sem definição, as impressoras com protocolo Privet não serão exibidas na visualização de impressão, já que esse método de impressão está suspenso.</translation>
+<translation id="7970844378072291834">Forçar a ativação do HTTPS-Only Mode (indisponível no momento)</translation>
 <translation id="7973609468423251675">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Especifica o tempo sem entrada do usuário para que a tela seja apagada quando o dispositivo estiver funcionando com energia da bateria.
@@ -6070,6 +6066,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a política não for definida, o padrão usado seguirá a plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. No <ph name="LINUX_OS_NAME" />, não será possível abrir um navegador alternativo.</translation>
 <translation id="8836975838488342340">Tempo pelo qual o código de acesso é válido (em segundos).</translation>
+<translation id="8842208363354615697">Permitir que o HTTPS-Only Mode seja ativado</translation>
 <translation id="885147810817138322">Exibir recomendações de mídia aos usuários</translation>
 <translation id="8852579753940989645">Ativar integridade do código renderizador</translation>
 <translation id="8854571659927427063">Se a política for definida como ativada, os favoritos serão importados do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhum favorito será importado durante a primeira execução.

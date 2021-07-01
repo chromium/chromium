@@ -137,6 +137,7 @@
 <translation id="1990046457226896323">የንግግር ፋይሎች ወርደዋል</translation>
 <translation id="1993072747612765854">ስለቅርብ ጊዜው የ<ph name="SYSTEM_APP_NAME" /> ዝማኔ የበለጠ ይረዱ</translation>
 <translation id="1998100899771863792">የአሁኑ ዴስክ</translation>
+<translation id="1999628559811343244">የአውታረ መረብ ፓኬት ቀረጻ ተጀምሯል</translation>
 <translation id="2016340657076538683">መልዕክት ይተይቡ</translation>
 <translation id="2018630726571919839">ቀልድ ንገረኝ</translation>
 <translation id="2021864487439853900">ለመክፈት ጠቅ ያድርጉ</translation>
@@ -157,7 +158,6 @@
 <translation id="2132302418721800944">ሙሉ ማያ ገጽን ቅረጽ</translation>
 <translation id="2135456203358955318">የተተከለ ማጉያ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />፦ እንደገና ይሞክሩ</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">ከአጠቃላይ ዕይታ ለመውጣት በሦስት ጣቶች ወደ ታች ያንሸራትቱ</translation>
 <translation id="2208323208084708176">የተዋሃደ የዴስክቶፕ ሁነታ</translation>
 <translation id="2220572644011485463">ፒን ወይም የይለፍ ቃል</translation>
@@ -728,6 +728,7 @@
 <translation id="6751826523481687655">የአፈጻጸም ክትትል በርቷል</translation>
 <translation id="6752912906630585008">ዴስክ <ph name="REMOVED_DESK" /> ተወግዶ ከዴስክ <ph name="RECEIVE_DESK" /> ጋር ተዋህዷል</translation>
 <translation id="6757237461819837179">ምንም ሚዲያ እየተጫወተ አይደለም</translation>
+<translation id="6773040085467426602">ቀጣይነት ያላቸውን የፓኬት ቀረፃ ስራዎች ለማቆም አቁም የሚለውን ጠቅ ያድርጉ።</translation>
 <translation id="6777216307882431711">የተገናኙ የUSB-C መሣሪያዎችን ኃይል በመሙላት ላይ</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6803622936009808957">ምንም የሚደገፉ ጥራቶች ስላልተገኙ ማሳያዎችን ማሳየት አልተቻለም። ይልቁንስ ወደ የተስፋፋ ዴስክቶፕ ሁነታ ተገብቷል።</translation>
@@ -941,6 +942,7 @@
 <translation id="8433977262951327081">በመደርደሪያው ውስጥ የግቤት አማራጮች ምናሌ አረፋን ለማሳየት የሚሆነው አቋራጭ ተለውጧል። እባክዎ በ<ph name="OLD_SHORTCUT" /> ምትክ <ph name="NEW_SHORTCUT" />ን ይጠቀሙ።</translation>
 <translation id="8444246603146515890">ዴስክ <ph name="DESK_TITILE" /> ገቢር ተደርጓል</translation>
 <translation id="8452135315243592079">ሲም ካርድ ይጎድላል</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">ለመናገር ምረጥን ይዝጉ</translation>
 <translation id="847056008324733326">የልኬት ቅንብሮችን አሳይ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> አለው።</translation>

@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
 <translation id="1289216811211435351">Switch to Chromium</translation>
 <translation id="1361748954329991663">Chromium is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chromium anymore.</translation>
+<translation id="1370204544543370355">To get the most out of Chromium, sign in to Chromium with your Google Account</translation>
 <translation id="1431818719585918472">Let Chromium lock your incognito tabs.</translation>
 <translation id="1472013873724362412">Your account does not work on Chromium. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
 <translation id="1507010443238049608">Help improve Chromium's features and performance</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
 <translation id="4806326830773390517">Help improve Chromium by sending usage statistics and crash reports to Google</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
-<translation id="4852878756222711218">To get the most out of Chromium, sign in with your Google Account</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google Account.</translation>
 <translation id="5171868502429358653">Sign In to Chromium</translation>

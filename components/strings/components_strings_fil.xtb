@@ -261,7 +261,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1807246157184219062">Maliwanag</translation>
 <translation id="1807528111851433570">Panimulang sheet</translation>
 <translation id="1812527064848182527">landscape</translation>
-<translation id="1814698615734239189">Idinisenyo ang app na ito para sa mga mobile device. Gumagana ito sa compatibility mode. Kapag pinayagan ang pag-resize, posibleng makaranas ng mga isyu kabilang ang pag-restart ng app.</translation>
 <translation id="1821930232296380041">Di-wastong kahilingan o mga parameter ng kahilingan</translation>
 <translation id="1822540298136254167">Mga website na binibisita mo at oras na ginugugol dito</translation>
 <translation id="1826516787628120939">Sinusuri</translation>
@@ -680,7 +679,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3431636764301398940">I-save ang card na ito sa device na ito</translation>
 <translation id="3432601291244612633">Isara ang page</translation>
 <translation id="3435738964857648380">Seguridad</translation>
-<translation id="3435896845095436175">I-enable</translation>
 <translation id="3438829137925142401">Gamitin ang mga naka-save na password sa iyong Google Account</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Na-off ng may-ari ng device na ito ang larong dinosaur.</translation>
@@ -817,6 +815,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3946209740501886391">Palaging hilingin sa site na ito</translation>
 <translation id="3949571496842715403">Hindi mapatunayan ng server na ito na <ph name="DOMAIN" /> ito; hindi tinutukoy ng certificate ng seguridad nito ang Mga Alternatibong Pangalan ng Subject. Maaaring dahil ito sa isang maling configuration o sa isang umaatake na humahadlang sa iyong koneksyon.</translation>
 <translation id="3949601375789751990">Lalabas dito ang iyong history ng pag-browse</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Walang naka-save na paraan ng pagbabayad</translation>
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="3961148744525529027">Nakabukas nang kalahati ang sheet ng tagapangasiwa ng pagbabayad</translation>
@@ -824,7 +823,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3963721102035795474">Reader Mode</translation>
 <translation id="3963837677003247395">Manual na magpatuloy?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Wala}=1{Mula sa 1 site }one{Mula sa # site }other{Mula sa # na site }}</translation>
-<translation id="3970481983430640194">Puwede mo na ngayong i-drag at i-resize ang app na ito</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="3973234410852337861">Naka-block ang <ph name="HOST_NAME" /></translation>
 <translation id="3973357910713125165">Pindutin ang button ng Pag-check sa Kaligtasan sa Chrome, pindutin ang Enter para magpatakbo ng Pag-check sa Kaligtasan sa Chrome sa mga setting ng Chrome</translation>
@@ -948,6 +946,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4346197816712207223">Mga Tinatanggap na Credit Card</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Inirerekomenda ng Chrome na pumunta sa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, at iba pang site kung saan mo ginagamit ang password na ito at baguhin ito ngayon.</translation>
+<translation id="4351060348582610152">Gustong mag-scan ng <ph name="ORIGIN" /> para sa mga Bluetooth device na nasa malapit. Nahanap ang mga sumusunod na device:</translation>
 <translation id="4356973930735388585">Maaaring subukan ng mga attacker sa site na ito na mag-install ng mga mapanganib na program sa iyong computer na magnanakaw o magde-delete ng impormasyon mo (halimbawa, mga larawan, password, mensahe at credit card).</translation>
 <translation id="4358059973562876591">Posibleng hindi mailapat ang mga template na tinukoy mo dahil sa error sa patakarang DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Pamahalaan ang mga paraan ng pagbabayad...</translation>
@@ -1400,7 +1399,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Bind left</translation>
 <translation id="6034000775414344507">Light Grey</translation>
-<translation id="6034062182346928710">Posibleng hindi ma-resize nang maayos ang <ph name="APP_NAME" />. Gamitin ang mga preset na laki ng window para mapigilan ang hindi normal na paggana ng app.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Accordion fold</translation>
 <translation id="6039846035001940113">Kung magpapatuloy ang problema, makipag-ugnayan sa may-ari ng site.</translation>
@@ -1430,7 +1428,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6120179357481664955">Natatandaan mo ang iyong UPI ID?</translation>
 <translation id="6123290840358279103">Tingnan ang virtual card</translation>
 <translation id="6124432979022149706">Mga Chrome Enterprise Connector</translation>
-<translation id="6143538402333184781">Sinusuportahan lang ng app na ito ang laki ng "Telepono."</translation>
 <translation id="6146055958333702838">Tingnan ang anumang mga kable at i-reboot ang anumang mga router, modem o iba
     pang mga network device na maaaring ginagamit mo.</translation>
 <translation id="614940544461990577">Subukang:</translation>
@@ -1980,7 +1977,6 @@ Mga karagdagang detalye:
 <translation id="8225771182978767009">Pinili ng taong nag-set up ng computer na ito na i-block ang site na ito.</translation>
 <translation id="8228419419708659934">Dalawang page na view</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Huwag nang magtanong ulit sa akin para sa app na ito</translation>
 <translation id="8232343881378637145">Temperatura ng platform</translation>
 <translation id="8238581221633243064">Buksan ang page sa bagong Incognito tab</translation>
 <translation id="8241707690549784388">Ang pahina na hinahanap mo para sa paggamit ng impormasyon na ipinasok mo. Ang pagbalik sa pahinang iyon maaaring magsanhi ng anumang aksyon na akalo mo ay naulit. Nais mo bang ipagpatuloy?</translation>
@@ -1993,7 +1989,6 @@ Mga karagdagang detalye:
 <translation id="825929999321470778">Ipakita ang Lahat ng Naka-save na Password</translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="8262952874573525464">Edge stitch bottom</translation>
-<translation id="826298712171642726">I-enable ang Pag-resize?</translation>
 <translation id="8265992338205884890">Visible na data</translation>
 <translation id="8267698848189296333">Nagsa-sign in bilang <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Mga hiwalay na dokumento/Mga naka-collate na kopya</translation>
@@ -2024,6 +2019,7 @@ Mga karagdagang detalye:
 <translation id="8355270400102541638">Konteksto ng Lokal na Pag-crash:</translation>
 <translation id="8363502534493474904">I-off ang airplane mode</translation>
 <translation id="8364627913115013041">Hindi nakatakda.</translation>
+<translation id="8368027906805972958">Hindi alam o hindi sinusuportahang device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Mga serbisyo ng Google Play</translation>
 <translation id="8371889962595521444">Mga custom na root certificate</translation>
 <translation id="8374636051559112948">Iba't iba</translation>

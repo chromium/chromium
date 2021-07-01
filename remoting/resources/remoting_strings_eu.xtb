@@ -24,7 +24,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 "<ph name="SERVICE_SCRIPT_NAME" />" dagoeneko markatuta badago, desmarkatu, eta marka ezazu berriro.</translation>
 <translation id="225614027745146050">Ongi etorri</translation>
 <translation id="2320166752086256636">Ezkutatu teklatua</translation>
-<translation id="2329392777730037872">Ezin izan da ireki <ph name="URL" /> bezeroan.</translation>
+<translation id="2329392777730037872">Ezin izan da ireki <ph name="URL" /> bezeroaren gailuan.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="2359808026110333948">Jarraitu</translation>
 <translation id="2366718077645204424">Ezin da ostalariarekin konektatu. Agian erabiltzen ari zaren sarearen konfigurazioarengatik izan daiteke.zoo</translation>
@@ -89,7 +89,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="4867841927763172006">Bidali Inpr Pa</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> ostalaritik deskonektatu da</translation>
 <translation id="4985296110227979402">Lehenik, ordenagailua konfiguratu behar duzu urrunetik atzitu ahal izateko</translation>
-<translation id="4987330545941822761">Chrome-ren Urruneko pantailak ezin du zehaztu URLak ordenagailuan irekitzeko arakatzailea. Hautatu zerrenda honetako bat.</translation>
+<translation id="4987330545941822761">Chrome-ren Urruneko pantaila eginbideak ezin du zehaztu URLak ordenagailuan irekitzeko arakatzailea. Hautatu zerrenda honetako bat.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (konexiorik gabe)</translation>
 <translation id="507204348399810022">Ziur <ph name="HOSTNAME" /> ostalarirako urruneko konexioak desgaitu nahi dituzula?</translation>
 <translation id="5170982930780719864">Ez du balio ostalariaren IDak.</translation>

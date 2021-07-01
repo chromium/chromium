@@ -957,17 +957,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Việc đặt <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (giá trị 1) sẽ chỉ cho phép áp dụng những biến thể được xem là bản sửa lỗi quan trọng về độ bảo mật hoặc độ ổn định cho <ph name="PRODUCT_OS_NAME" />.
 
       Việc đặt <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (giá trị 2) sẽ không cho phép áp dụng tất cả biến thể cho trình duyệt trên màn hình đăng nhập. Xin lưu ý rằng chế độ này có thể khiến nhà phát triển <ph name="PRODUCT_OS_NAME" /> không thể cung cấp kịp thời các bản sửa lỗi bảo mật quan trọng nên không được khuyên dùng.</translation>
-<translation id="2216380260552785166">Chính sách này kiểm soát cách <ph name="PRODUCT_NAME" /> diễn giải các chính sách danh sách trang web/danh sách xám cho tính năng Hỗ trợ trình duyệt cũ. Chính sách này sẽ ảnh hưởng đến những chính sách sau: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> và <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      Nếu chính sách được đặt là "Mặc định" (0) hoặc không được đặt, tính năng so khớp URL sẽ bớt nghiêm ngặt hơn. Các quy tắc không chứa ký tự "/" sẽ tìm một chuỗi con ở vị trí bất kỳ trong tên máy chủ của URL.
-
-      Nếu chính sách được đặt là "Nghiêm ngặt" (1), tính năng so khớp URL sẽ nghiêm ngặt hơn. Các quy tắc không chứa ký tự "/" sẽ chỉ khớp ở cuối tên máy chủ. Đồng thời những quy tắc này sẽ chỉ khớp khi ở ranh giới tên miền. Tính năng này tương thích tốt hơn với <ph name="MS_IE_PRODUCT_NAME" /> và <ph name="MS_EDGE_PRODUCT_NAME" />.
-
-      Chẳng hạn như với quy tắc "example.com":
-
-      "http://example.com/" và "http://subdomain.example.com/" sẽ khớp nhau bất kể chế độ phân tích cú pháp nào được áp dụng.
-
-      "http://notexample.com/", "http://example.com.invalid.com/" và "http://example.comabc/" sẽ chỉ khớp ở chế độ "Mặc định".</translation>
 <translation id="2221850122314326571">Khi bạn bật chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn để xác minh chứng chỉ máy chủ.
       Khi bạn tắt chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ cũ do nền tảng cung cấp để xác minh chứng chỉ máy chủ.
       Nếu bạn không đặt chế độ cài đặt này, thì trình xác minh chứng chỉ cũ hoặc tích hợp sẵn có thể được sử dụng.

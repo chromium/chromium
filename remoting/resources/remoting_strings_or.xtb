@@ -23,6 +23,7 @@
 ଯଦି '<ph name="SERVICE_SCRIPT_NAME" />'କୁ ପୂର୍ବରୁ ଚେକ୍ କରାଯାଇଛି, ତେବେ ଏହାକୁ ଅନ୍‌ଚେକ୍ କରନ୍ତୁ ଏବଂ ଏହା ପରେ ପୁଣି ଚେକ୍ କରନ୍ତୁ।</translation>
 <translation id="225614027745146050">ସ୍ଵାଗତ</translation>
 <translation id="2320166752086256636">କୀବୋର୍ଡ୍ ଲୁଚାନ୍ତୁ</translation>
+<translation id="2329392777730037872">କ୍ଲାଏଣ୍ଟରେ <ph name="URL" /> ଖୋଲିବା ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2333212046079545895">କପିରାଇଟ୍ 2021 Google LLC। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2366718077645204424">ହୋଷ୍ଟ ପାଖରେ ପହଞ୍ଚି ପାରିଲା ନାହିଁ। ଏହା ସମ୍ଭବତଃ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ନେଟ୍‍ୱାର୍କର କନଫିଗ୍‌ରେସନ୍ କାରଣରୁ ହୋଇଛି।</translation>
@@ -87,6 +88,7 @@
 <translation id="4867841927763172006">ପ୍ରିଣ୍ଟସ୍କ୍ରିନ୍‌ ପଠାନ୍ତୁ</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> ପାଇଁ ସଂଯୋଗ ବନ୍ଦ ଅଛି</translation>
 <translation id="4985296110227979402">ରିମୋଟ୍‍ ଆକ୍ସେସ୍‌ ପାଇଁ ଆପଣ ପ୍ରଥମେ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ ସେଟ୍‍ ଅପ୍‍ କରିବା ଦରକାର</translation>
+<translation id="4987330545941822761">URLଗୁଡ଼ିକୁ ସ୍ଥାନୀୟ ଭାବେ ଖୋଲିବା ପାଇଁ Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍ ବ୍ରାଉଜର୍ ସ୍ଥିର କରିପାରିବ ନାହିଁ। ଦୟାକରି ନିମ୍ନରେ ଥିବା ତାଲିକାରୁ ଏହାକୁ ବାଛନ୍ତୁ।</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ଅଫ୍‌ଲାଇନ୍)</translation>
 <translation id="507204348399810022">ଆପଣ ନିଶ୍ଚିତ ରୂପେ<ph name="HOSTNAME" /> ପାଇଁ ଥିବା ରିମୋଟ୍ ସଂଯୋଗକୁ ଅକ୍ଷମ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="5170982930780719864">ଅବୈଧ ହୋଷ୍ଟ id।</translation>
@@ -134,6 +136,7 @@
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7312846573060934304">ହୋଷ୍ଟ ଅଫ୍‌ଲାଇନ୍‌ ଅଛି</translation>
 <translation id="7319983568955948908">ସେୟାର୍‍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="7359298090707901886">ସ୍ଥାନୀୟ ମେସିନରେ URLଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ବଛାଯାଇଥିବା ବ୍ରାଉଜରକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7401733114166276557">Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍</translation>
 <translation id="7434397035092923453">କ୍ଲାଏଣ୍ଟଙ୍କ ପାଇଁ ଆକ୍ସେସ୍ ଅଗ୍ରାହ୍ୟ ହୋଇଛି: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7444276978508498879">କ୍ଲାଏଣ୍ଟ ସଂଯୁକ୍ତ କରାଗଲା: <ph name="CLIENT_USERNAME" />।</translation>

@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
+<translation id="2783010256799387990">PASSED</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2862104018715411648">Place your document on the scanner and select 'Scan' to get started</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Password expires in <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No print jobs in progress</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4378373042927530923">Not run</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -229,7 +231,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5691511426247308406">Family</translation>
 <translation id="5752751666635965375">Make your own game</translation>
 <translation id="5760715441271661976">Portal state</translation>
-<translation id="5797428682393400134">SUCCESS</translation>
 <translation id="5832805196449965646">Add Person</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5849570051105887917">Home provider code</translation>
@@ -296,6 +297,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="714876143603641390">LAN connectivity</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
@@ -345,6 +347,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297006494302853456">Weak</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
+<translation id="8318753676953949627">No images</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
 <translation id="8364946094152050673">Empty name servers</translation>

@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2751739896257479635">രണ്ടാം ഘട്ട EAP പരിശോധിച്ചുറപ്പിക്കൽ</translation>
+<translation id="2783010256799387990">വിജയിച്ചു</translation>
 <translation id="2789486458103222910">ശരി</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
 <translation id="2862104018715411648">നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്ക്കുക, ആരംഭിക്കാൻ സ്‌കാൻ ചെയ്യുക തിരഞ്ഞെടുക്കുക</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ചിത്രങ്ങൾ</translation>
 <translation id="4378373042927530923">റൺ ചെയ്‌തിട്ടില്ല</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">എന്റെ ഡ്രൈവ്</translation>
@@ -228,7 +230,6 @@
 <translation id="5691511426247308406">കുടുംബം</translation>
 <translation id="5752751666635965375">സ്വന്തം ഗെയിം സൃഷ്ടിക്കൂ</translation>
 <translation id="5760715441271661976">പോര്‍ട്ടല്‍ നില</translation>
-<translation id="5797428682393400134">വിജയകരം</translation>
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5849570051105887917">ഹോം ദാതാവിന്റെ കോഡ്</translation>
@@ -295,6 +296,7 @@
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="714876143603641390">LAN കണക്റ്റിവിറ്റി</translation>
 <translation id="7162487448488904999">ഗാലറി</translation>
+<translation id="7172721935181587524">ഒരു ചിത്രം</translation>
 <translation id="7177485034254901881">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്. അഡ്മിൻമാർ ഉപകരണം വിദൂരമായി കോൺഫിഗർ ചെയ്‌തേക്കാം.</translation>
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
 <translation id="7271040990581020067">സ്‌കാനർ നിലവിൽ ഉപയോഗത്തിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -344,6 +346,7 @@
 <translation id="8294431847097064396">ഉറവിടം</translation>
 <translation id="8297006494302853456">ദുര്‍ബലം</translation>
 <translation id="8302368968391049045">HTTPS ഫയര്‍വാള്‍</translation>
+<translation id="8318753676953949627">ഇമേജുകളൊന്നുമില്ല</translation>
 <translation id="8347227221149377169">പ്രിന്റ് ജോലികൾ</translation>
 <translation id="8352772353338965963">ഒന്നിലധികം സൈൻ-ഇന്നിനായി ഒരു അക്കൗണ്ട് ചേർക്കുക. സൈൻ-ഇൻ ചെയ്‌ത അക്കൗണ്ടുകളെല്ലാം ഒരു പാസ്‌വേഡില്ലാതെ ആക്‌സസ് ചെയ്യാനാകുമെന്നതിനാൽ ഈ സവിശേഷത പരിചയമുള്ള അക്കൗണ്ടുകളിൽ മാത്രമേ ഉപയോഗിക്കാവൂ.</translation>
 <translation id="8364946094152050673">ശൂന്യമായ നെയിം സെർവറുകൾ</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">El estilo actual de la pantalla es intercalado</translation>
 <translation id="1087788677726983142">Ocultar filtros para la transmisión de eventos</translation>
 <translation id="1088402100970133699">No hay elementos de lista anteriores</translation>
-<translation id="1114836634143403764">Sugerencia</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "chocolate", "d": "delta", "e": "eco", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "julieta","k": "kilo", "l": "lima", "m": "maría", "n": "noviembre", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniforme", "v": "víctor", "w": "whisky","x": "xilófono", "y": "yanqui", "z": "zulú"}</translation>
 <translation id="1120938014254001895">Deslizar dos dedos hacia arriba</translation>
 <translation id="1126928665165112660">Sin cursiva</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Información del contenido</translation>
 <translation id="2417948780551741035">Notas finales</translation>
 <translation id="2419852971200420169">Lista de descripciones</translation>
-<translation id="2421113964388408478">Contenido borrado</translation>
 <translation id="2422937916923936891">Casilla de verificación del elemento de menú</translation>
 <translation id="2428534162001909979">Menús de comandos</translation>
 <translation id="242998846562331953">Subtítulo</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Presiona dos veces para comenzar a editar</translation>
 <translation id="2598495320872286378">Error gramatical</translation>
 <translation id="2603828437139726540">Avanzar un carácter</translation>
+<translation id="2619052155095999743">Insertar</translation>
 <translation id="2619344480613750862">También puedes moverte entre secciones de la pantalla. Por ejemplo, puedes alternar entre el selector, la barra y las pestañas de Chrome. Para moverte a la próxima sección, desliza cuatro dedos de izquierda a derecha. Pruébalo ahora para continuar.</translation>
 <translation id="2624431853467395961">Abrir el modo de aprendizaje</translation>
 <translation id="2626530649491650971">elemento en el que se puede hacer clic</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">Rojo ladrillo</translation>
 <translation id="4482330759234983253">Tabla anterior</translation>
 <translation id="4491109536499578614">Imagen</translation>
-<translation id="4505167975768625962">Contenido agregado</translation>
 <translation id="4511186779140817916">Almendra pálido</translation>
 <translation id="451510441928265982">No hay encabezados de nivel 2 anteriores</translation>
 <translation id="4515799157838123044">Sombrear el contenido del fondo</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">Cambia el estilo de la pantalla a lado a lado</translation>
 <translation id="8215202828671303819">Selección múltiple</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% de opacidad.</translation>
+<translation id="8261506727792406068">Borrar</translation>
 <translation id="826825447994856889">Introducción</translation>
 <translation id="827266600368092403">Inicia o finaliza la selección</translation>
 <translation id="827422111966801947">Índigo</translation>

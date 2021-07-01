@@ -257,7 +257,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1807528111851433570">Startblatt</translation>
 <translation id="1812527064848182527">Querformat</translation>
-<translation id="1814698615734239189">Diese App ist für Mobilgeräte ausgelegt. Sie wird in einem Kompatibilitätsmodus ausgeführt. Wenn Sie das Anpassen der Größe erlauben, können Probleme auftauchen, beispielsweise könnte die App neu starten.</translation>
 <translation id="1821930232296380041">Anfrage oder Anfrageparameter ungültig</translation>
 <translation id="1822540298136254167">Von Ihnen besuchte Websites und Dauer des Besuchs</translation>
 <translation id="1826516787628120939">Überprüfung läuft</translation>
@@ -676,7 +675,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3431636764301398940">Diese Karte für dieses Gerät speichern</translation>
 <translation id="3432601291244612633">Seite schließen</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
-<translation id="3435896845095436175">Aktivieren</translation>
 <translation id="3438829137925142401">Im Google-Konto gespeicherte Passwörter verwenden</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Der Eigentümer dieses Geräts hat das Dinosaurier-Spiel deaktiviert.</translation>
@@ -811,6 +809,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3946209740501886391">Auf dieser Website immer fragen</translation>
 <translation id="3949571496842715403">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat gibt keine alternativen Namen an. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
 <translation id="3949601375789751990">Hier wird Ihr Browserverlauf angezeigt</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Keine gespeicherten Zahlungsmethoden</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3961148744525529027">Das Dokument zur Zahlungsabwicklung ist zur Hälfte geöffnet</translation>
@@ -818,7 +817,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3963721102035795474">Lesemodus</translation>
 <translation id="3963837677003247395">Manuell fortfahren?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Keine}=1{Von 1 Website }other{Von # Websites }}</translation>
-<translation id="3970481983430640194">Sie können jetzt diese App verschieben und ihre Größe anpassen</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ist gesperrt</translation>
 <translation id="3973357910713125165">Schaltfläche zum Ausführen des Chrome-Sicherheitschecks – drücken Sie die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
@@ -937,6 +935,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4346197816712207223">Akzeptierte Kreditkarten</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Sie haben Ihr Passwort gerade auf einer verdächtigen Website eingegeben. Chrome empfiehlt, Ihr Passwort auf <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> und allen anderen Websites, auf denen Sie es verwendet haben, zu ändern.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> möchte nach Bluetooth-Geräten in der Nähe suchen. Die folgenden Geräte wurden gefunden:</translation>
 <translation id="4356973930735388585">Unbefugte Dritte auf dieser Website versuchen unter Umständen, gefährliche Programme auf Ihrem Computer zu installieren, um Ihre Daten zu stehlen oder zu löschen, zum Beispiel Fotos, Passwörter, Nachrichten und Kreditkartendaten.</translation>
 <translation id="4358059973562876591">Die von Ihnen angegebenen Vorlagen können wegen eines Fehlers bei der Richtlinie "DnsOverHttpsMode" nicht angewendet werden.</translation>
 <translation id="4358461427845829800">Zahlungsmethoden verwalten…</translation>
@@ -1389,7 +1388,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6032524144326295339">Ablage 2</translation>
 <translation id="6032955021262906325">Bindung links</translation>
 <translation id="6034000775414344507">Hellgrau</translation>
-<translation id="6034062182346928710">Die Größe von <ph name="APP_NAME" /> kann eventuell nicht richtig angepasst werden. Verwenden Sie voreingestellte Fenstergrößen, damit die App ordnungsgemäß funktioniert.</translation>
 <translation id="6034283069659657473">10x14 (Umschlag)</translation>
 <translation id="6034514109191629503">Akkordeonfaltung</translation>
 <translation id="6039846035001940113">Falls das Problem weiterhin besteht, wenden Sie sich an den Inhaber der Website.</translation>
@@ -1419,7 +1417,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6120179357481664955">Soll Ihre UPI-ID gespeichert werden?</translation>
 <translation id="6123290840358279103">Virtuelle Karte ansehen</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
-<translation id="6143538402333184781">Diese App unterstützt nur die Größe „Smartphone“.</translation>
 <translation id="6146055958333702838">Überprüfen Sie alle Kabel und starten Sie alle verwendeten Router, Modems und
     anderen Netzwerkgeräte neu.</translation>
 <translation id="614940544461990577">Versuchen Sie Folgendes:</translation>
@@ -1789,6 +1786,7 @@ Weitere Details:
 <translation id="7552846755917812628">Probieren Sie folgende Tipps aus:</translation>
 <translation id="7554475479213504905">Aktualisieren und trotzdem anzeigen</translation>
 <translation id="7554791636758816595">Neuer Tab</translation>
+<translation id="7559278538486662777">Die Größe dieser App kann nicht geändert werden.</translation>
 <translation id="7564049878696755256">Sie könnten den Zugriff auf Ihr <ph name="ORG_NAME" />-Konto verlieren oder zum Opfer von Identitätsdiebstahl werden. Chrome empfiehlt Ihnen, Ihr Passwort jetzt zu ändern.</translation>
 <translation id="7567204685887185387">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wurde möglicherweise in betrügerischer Absicht ausgegeben. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der Ihre Verbindung abfängt.</translation>
 <translation id="7569952961197462199">Kreditkarte aus Chrome entfernen?</translation>
@@ -1968,7 +1966,6 @@ Weitere Details:
 <translation id="8225771182978767009">Die Person, die diesen Computer eingerichtet hat, hat diese Website gesperrt.</translation>
 <translation id="8228419419708659934">Zwei-Seiten-Ansicht</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Für diese App nicht mehr nachfragen</translation>
 <translation id="8232343881378637145">Plattformtemperatur</translation>
 <translation id="8238581221633243064">Seite in einem neuen Inkognitotab öffnen</translation>
 <translation id="8241707690549784388">Die gesuchte Seite hat die von Ihnen eingegebenen Informationen verwendet bzw. verarbeitet. Wenn Sie zu dieser Seite zurückgehen, wird eventuell eine schon ausgeführte Aktion wiederholt. Möchten Sie fortfahren?</translation>
@@ -1981,7 +1978,6 @@ Weitere Details:
 <translation id="825929999321470778">Alle gespeicherten Passwörter anzeigen</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8262952874573525464">Mehrere Heftklammern unten</translation>
-<translation id="826298712171642726">Größenanpassung aktivieren?</translation>
 <translation id="8265992338205884890">Sichtbare Daten</translation>
 <translation id="8267698848189296333">Als <ph name="USERNAME" /> anmelden</translation>
 <translation id="8269242089528251720">Getrennte Dokumente/sortierte Kopien</translation>
@@ -2012,6 +2008,7 @@ Weitere Details:
 <translation id="8355270400102541638">Kontext für lokalen Absturz:</translation>
 <translation id="8363502534493474904">Flugmodus ausschalten</translation>
 <translation id="8364627913115013041">Nicht eingerichtet</translation>
+<translation id="8368027906805972958">Unbekanntes oder nicht unterstütztes Gerät (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-Dienste</translation>
 <translation id="8371889962595521444">Benutzerdefinierte Root-Zertifikate</translation>
 <translation id="8374636051559112948">Variiert</translation>

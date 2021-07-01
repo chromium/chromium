@@ -137,6 +137,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1990046457226896323">Spraaklêers is afgelaai</translation>
 <translation id="1993072747612765854">Kom meer te wete oor die jongste <ph name="SYSTEM_APP_NAME" />-opdatering</translation>
 <translation id="1998100899771863792">Huidige lessenaar</translation>
+<translation id="1999628559811343244">Netwerkpakketvasvang het begin</translation>
 <translation id="2016340657076538683">Tik 'n boodskap</translation>
 <translation id="2018630726571919839">Vertel vir my 'n grappie</translation>
 <translation id="2021864487439853900">Klik om te ontsluit</translation>
@@ -157,7 +158,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2132302418721800944">Neem volskerm op</translation>
 <translation id="2135456203358955318">Gedokte vergrootglas</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: herprobeer</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Swiep met drie vingers af om Oorsig te verlaat</translation>
 <translation id="2208323208084708176">Verenigde werkskermmodus</translation>
 <translation id="2220572644011485463">PIN of wagwoord</translation>
@@ -729,6 +729,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6751826523481687655">Werkverrigtingnasporing is aangeskakel</translation>
 <translation id="6752912906630585008">Lessenaar <ph name="REMOVED_DESK" /> is verwyder en met lessenaar <ph name="RECEIVE_DESK" /> saamgevoeg</translation>
 <translation id="6757237461819837179">Geen media speel tans nie</translation>
+<translation id="6773040085467426602">Klik stop om deurlopende pakketvasvangbedrywighede te stop.</translation>
 <translation id="6777216307882431711">Gee tans krag aan gekoppelde USB-C-toestelle</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6803622936009808957">Kon nie skerms weerspieël nie, omdat daar geen gesteunde resolusies gevind kon word nie. Het eerder by uitgebreide skerm ingegaan.</translation>
@@ -942,6 +943,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8433977262951327081">Die kortpad om die invoeropsies se kieslysborrel op die rak te wys, het verander. Gebruik asseblief <ph name="NEW_SHORTCUT" /> in plaas van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Lessenaar <ph name="DESK_TITILE" /> is geaktiveer</translation>
 <translation id="8452135315243592079">Verlore SIM-kaart</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Maak Hardoplees toe</translation>
 <translation id="847056008324733326">Vertoonskaalinstellings</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> het <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

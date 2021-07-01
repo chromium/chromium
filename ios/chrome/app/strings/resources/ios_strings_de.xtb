@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
+<translation id="2021670401941426298">Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer Suchmaschine.</translation>
 <translation id="2022352537516230970">Für Ihr iPhone entwickelt</translation>
 <translation id="2073572773299281212">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="2074131957428911366">Sie können in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> auswählen, was Sie synchronisieren möchten.</translation>
@@ -207,6 +208,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="3112556859945124369">Markieren…</translation>
 <translation id="3131206671572504478">Alle blockieren</translation>
 <translation id="313283613037595347">Neuen Inkognitotab erstellen.</translation>
+<translation id="3134493362339304186">Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer Suchmaschine. Sie werden nicht von Ihrem Google-Konto abgemeldet. Unter <ph name="BEGIN_LINK" />Meine Google-Aktivitäten<ph name="END_LINK" /> können Sie andere Verläufe löschen.</translation>
 <translation id="3153862085237805241">Karte speichern</translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157684681743766797">Alle markieren…</translation>
@@ -229,6 +231,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="3285962946108803577">Seite teilen…</translation>
 <translation id="3290875554372353449">Konto auswählen</translation>
 <translation id="3311748811247479259">Aus</translation>
+<translation id="3317580614754548493">Sie werden nicht von Ihrem Google-Konto abgemeldet. Unter <ph name="BEGIN_LINK" />Mein Google-Konto<ph name="END_LINK" /> können Sie Verläufe wie den <ph name="BEGIN_LINK" />Suchverlauf<ph name="END_LINK" /> löschen</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
 <translation id="3329904751041170572">Verbindung zum Server konnte nicht hergestellt werden.</translation>
@@ -557,6 +560,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</translation>
 <translation id="651505212789431520">Synchronisierung abbrechen? Sie können die Synchronisierung jederzeit in den Einstellungen aktivieren.</translation>
 <translation id="6524918542306337007">Inkognitomodus ist nicht verfügbar</translation>
+<translation id="6560725150890787329">Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum Löschen Ihres Suchverlaufs finden Sie in der zugehörigen Anleitung. Sie werden nicht von Ihrem Google-Konto abgemeldet. Unter <ph name="BEGIN_LINK" />Meine Google-Aktivitäten<ph name="END_LINK" /> können Sie andere Verläufe löschen.</translation>
 <translation id="6561262006871132942">Heranzoomen</translation>
 <translation id="6585618849026997638">Sie können Lesezeichen setzen, damit Sie zu Seiten zurückfinden, die für Sie interessant sind</translation>
 <translation id="6603393121510733479">Ihre Organisation hat das private Surfen deaktiviert.
@@ -675,7 +679,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Passwort löschen</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> Min.</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="7649070708921625228">Hilfe</translation>
@@ -801,6 +804,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8976382372951310360">Hilfe</translation>
 <translation id="8981454092730389528">Google-Aktivitätseinstellungen</translation>
 <translation id="8985320356172329008">In Google angemeldet als</translation>
+<translation id="9000089900434778519">Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum Löschen Ihres Suchverlaufs finden Sie in der zugehörigen Anleitung.</translation>
 <translation id="9034759925968272072">Sie werden nicht von Ihrem Google-Konto abgemeldet. Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Arten von Browserverlaufsdaten für Ihr Google-Konto.</translation>
 <translation id="9037965129289936994">Original anzeigen</translation>
 <translation id="9039373489628511875">Bandbreite</translation>

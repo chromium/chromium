@@ -679,7 +679,6 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="7600965453749440009">No traducir nunca del <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Eliminar contraseña</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> min</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="7646772052135772216">La sincronización de contraseñas no funciona</translation>
 <translation id="7649070708921625228">Ayuda</translation>
@@ -803,6 +802,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8917490105272468696">Sí, acepto</translation>
 <translation id="895541991026785598">Notificar un problema</translation>
 <translation id="8976382372951310360">Ayuda</translation>
+<translation id="8976414606286374109">Las tarjetas se guardan en tu cuenta de Google.</translation>
 <translation id="8981454092730389528">Gestión de tu actividad en Google</translation>
 <translation id="8985320356172329008">Has iniciado sesión en Google como</translation>
 <translation id="9000089900434778519">Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>

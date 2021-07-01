@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">ବର୍ତ୍ତମାନର ଡିସପ୍ଲେ ଶୈଳୀ ହେଉଛି ଇଣ୍ଟରଲିଭ୍</translation>
 <translation id="1087788677726983142">ଇଭେଣ୍ଟ ଷ୍ଟ୍ରିମ୍ ଫିଲ୍ଟର୍ ଲୁଚାନ୍ତୁ</translation>
 <translation id="1088402100970133699">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ତାଲିକା ଆଇଟମ୍ ନାହିଁ</translation>
-<translation id="1114836634143403764">ପ୍ରସ୍ତାବ</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">ଦୁଇଟି ଆଙ୍ଗୁଠିକୁ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="1126928665165112660">ଇଟାଲିକ୍ ନୁହେଁ</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">ବିଷୟବସ୍ତୁ ସୂଚନା</translation>
 <translation id="2417948780551741035">ଶେଷନୋଟ୍</translation>
 <translation id="2419852971200420169">ଡେସକ୍ରିପସନ୍ ଲିଷ୍ଟ</translation>
-<translation id="2421113964388408478">ଡିଲିଟ୍‍ କରିବା ପ୍ରକ୍ରିୟା</translation>
 <translation id="2422937916923936891">ମେନୁ ଆଇଟମ୍ ଚେକ୍ ବାକ୍ସ</translation>
 <translation id="2428534162001909979">କମାଣ୍ଡ ମେନୁଗୁଡ଼ିକ</translation>
 <translation id="242998846562331953">ଉପଶୀର୍ଷକ</translation>
@@ -507,7 +505,6 @@
 <translation id="4479068155583208887">ଫାୟାର୍ ବ୍ରିକ୍</translation>
 <translation id="4482330759234983253">ପୂର୍ବବର୍ତ୍ତୀ ଟେବୁଲ୍</translation>
 <translation id="4491109536499578614">ଛବି</translation>
-<translation id="4505167975768625962">ଭର୍ତ୍ତି କରିବା</translation>
 <translation id="4511186779140817916">ଫିକା ବାଦାମୀ</translation>
 <translation id="451510441928265982">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସ୍ତର 2 ହେଡିଂ ନାହିଁ</translation>
 <translation id="4515799157838123044">ପୃଷ୍ଠପଟର ବିଷୟବସ୍ତୁକୁ ସେଡ୍ କରନ୍ତୁ</translation>
@@ -1010,6 +1007,7 @@
 <translation id="8212109599554677485">ଡିସପ୍ଲେ ଶୈଳୀକୁ ପାଖାପାଖିରେ ବଦଳାନ୍ତୁ</translation>
 <translation id="8215202828671303819">ଏକାଧିକ ଚୟନ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ଅସ୍ୱଚ୍ଛତା।</translation>
+<translation id="8261506727792406068">ବିଲୋପ</translation>
 <translation id="826825447994856889">ପରିଚୟ</translation>
 <translation id="827266600368092403">ଚୟନ ଆରମ୍ଭ କିମ୍ବା ଶେଷ କରନ୍ତୁ</translation>
 <translation id="827422111966801947">ଘନନୀଳ</translation>

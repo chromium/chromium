@@ -261,7 +261,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1807528111851433570">Indítási lap</translation>
 <translation id="1812527064848182527">fekvő</translation>
-<translation id="1814698615734239189">Ez az alkalmazás mobileszközökre készült. Jelenleg kompatibilitási módban fut. Az átméretezés esetén problémák léphetnek fel, például újraindulhat az alkalmazás.</translation>
 <translation id="1821930232296380041">Érvénytelen kérés vagy kérésparaméter</translation>
 <translation id="1822540298136254167">A felkeresett webhelyek és a rajtuk eltöltött idő</translation>
 <translation id="1826516787628120939">Ellenőrzés</translation>
@@ -678,7 +677,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3431636764301398940">Kártya mentése az eszközre</translation>
 <translation id="3432601291244612633">Oldal bezárása</translation>
 <translation id="3435738964857648380">Biztonság</translation>
-<translation id="3435896845095436175">Engedélyezés</translation>
 <translation id="3438829137925142401">A Google-fiókba mentett jelszavak használata</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Az eszköz tulajdonosa kikapcsolta a dinoszauruszos játékot.</translation>
@@ -815,6 +813,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3946209740501886391">Mindig kérdezze meg ezen a webhelyen</translation>
 <translation id="3949571496842715403">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványában nincs meghatározva a „Subject Alternative Names” mező. Ezt okozhatja konfigurációs hiba, vagy az, hogy egy támadó eltérítette az Ön kapcsolatát.</translation>
 <translation id="3949601375789751990">A böngészési előzmények itt jelennek meg</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nincs mentett fizetési mód</translation>
 <translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3961148744525529027">A fizetési információkat tartalmazó munkalap félmagasságban van megnyitva</translation>
@@ -822,7 +821,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3963721102035795474">Olvasási mód</translation>
 <translation id="3963837677003247395">Folytatja manuálisan?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nincs}=1{ 1 webhelyről }other{# webhelyről }}</translation>
-<translation id="3970481983430640194">Mostantól húzással méretezheti át az alkalmazást</translation>
 <translation id="397105322502079400">Számítás…</translation>
 <translation id="3973234410852337861">A(z) <ph name="HOST_NAME" /> le van tiltva</translation>
 <translation id="3973357910713125165">A Chrome biztonsági ellenőrzését futtató gomb. Nyomja le az Entert a biztonsági ellenőrzés futtatásához a Chrome beállításaiban.</translation>
@@ -946,6 +944,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4346197816712207223">Elfogadott hitelkártyák</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" /> és <ph name="WEBSITE_2" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
+<translation id="4351060348582610152">A(z) <ph name="ORIGIN" /> szeretné megkeresni a közeli Bluetooth-eszközöket. A következő eszközöket találta:</translation>
 <translation id="4356973930735388585">Előfordulhat, hogy a támadók ezen a webhelyen olyan veszélyes programokat próbálnak telepíteni számítógépére, amelyek ellopják vagy törlik adatait (például fotóit, jelszavait, üzeneteit vagy bankkártyájának adatait).</translation>
 <translation id="4358059973562876591">A DnsOverHttpsMode házirenddel kapcsolatos hiba miatt előfordulhat, hogy a megadott sablonok nem alkalmazhatók.</translation>
 <translation id="4358461427845829800">Fizetési módok kezelése…</translation>
@@ -1398,7 +1397,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6032524144326295339">2. postaláda</translation>
 <translation id="6032955021262906325">Kötés a bal oldalon</translation>
 <translation id="6034000775414344507">Világosszürke</translation>
-<translation id="6034062182346928710">Előfordulhat, hogy a(z) <ph name="APP_NAME" /> átméretezése nem működik megfelelően. Használjon előre beállított ablakméreteket a hibák elkerülése érdekében.</translation>
 <translation id="6034283069659657473">10x14 (boríték)</translation>
 <translation id="6034514109191629503">Harmonikahajtás</translation>
 <translation id="6039846035001940113">Ha a probléma továbbra is fennáll, lépjen kapcsolatba a webhely tulajdonosával.</translation>
@@ -1428,7 +1426,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6120179357481664955">Emlékszik UPI-azonosítójára?</translation>
 <translation id="6123290840358279103">Virtuális kártya megtekintése</translation>
 <translation id="6124432979022149706">Chrome Enterprise csatlakozási szoftverek</translation>
-<translation id="6143538402333184781">Ez az alkalmazás csak a „Telefon” méretet támogatja.</translation>
 <translation id="6146055958333702838">Ellenőrizze a kábeleket, majd indítsa újra a routert, modemet vagy más
     hálózati eszközt, amelyet használ.</translation>
 <translation id="614940544461990577">Próbálja ki a következőket:</translation>
@@ -1978,7 +1975,6 @@ További részletek:
 <translation id="8225771182978767009">A számítógépet beállító személy a webhely letiltása mellett döntött.</translation>
 <translation id="8228419419708659934">Kétoldalas nézet</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> és <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Ne kérdezzen rá többet ennél az alkalmazásnál</translation>
 <translation id="8232343881378637145">Platform hőmérséklete</translation>
 <translation id="8238581221633243064">Oldal megnyitása új inkognitó ablakban</translation>
 <translation id="8241707690549784388">A keresett oldal a megadott információt használta. Ha visszatér arra az oldalra, akkor lehet, hogy az egyszer már megtett mozdulatok ismétlésre kerülnek. Mégis továbblép?</translation>
@@ -1991,7 +1987,6 @@ További részletek:
 <translation id="825929999321470778">Az összes mentett jelszó megjelenítése</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8262952874573525464">Éltűzés alul</translation>
-<translation id="826298712171642726">Engedélyezi az átméretezést?</translation>
 <translation id="8265992338205884890">Látható adatok</translation>
 <translation id="8267698848189296333">Bejelentkezés mint <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Különálló dokumentumok/Szétválogatott másolatok</translation>
@@ -2022,6 +2017,7 @@ További részletek:
 <translation id="8355270400102541638">Összeomlás helyi kontextusa:</translation>
 <translation id="8363502534493474904">Repülős üzemmód kikapcsolása</translation>
 <translation id="8364627913115013041">Nincs beállítva.</translation>
+<translation id="8368027906805972958">Ismeretlen vagy nem támogatott eszköz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-szolgáltatások</translation>
 <translation id="8371889962595521444">Egyéni gyökérszintű tanúsítványok</translation>
 <translation id="8374636051559112948">Változó</translation>

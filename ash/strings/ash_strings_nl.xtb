@@ -137,6 +137,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1990046457226896323">Spraakbestanden gedownload</translation>
 <translation id="1993072747612765854">Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Huidig bureau</translation>
+<translation id="1999628559811343244">Opname van netwerkpakketten gestart</translation>
 <translation id="2016340657076538683">Typ een bericht</translation>
 <translation id="2018630726571919839">Vertel me een grap</translation>
 <translation id="2021864487439853900">Klik om te ontgrendelen</translation>
@@ -157,7 +158,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2132302418721800944">Opname van volledig scherm maken</translation>
 <translation id="2135456203358955318">Vastgezet vergrootglas</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Opnieuw proberen</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Swipe met 3 vingers omlaag om het overzicht te sluiten</translation>
 <translation id="2208323208084708176">Samengestelde desktopmodus</translation>
 <translation id="2220572644011485463">Pincode of wachtwoord</translation>
@@ -728,6 +728,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6751826523481687655">Bijhouden van prestaties staat aan</translation>
 <translation id="6752912906630585008">Bureaublad <ph name="REMOVED_DESK" /> verwijderd en samengevoegd met bureaublad <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Er wordt geen media afgespeeld</translation>
+<translation id="6773040085467426602">Klik op Stoppen om de huidige opname-activiteiten van pakketten te stoppen.</translation>
 <translation id="6777216307882431711">De aangesloten USB-C-apparaten worden van stroom voorzien</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6803622936009808957">Kan schermen niet spiegelen, omdat er geen ondersteunde resoluties zijn gevonden. Het uitgebreide bureaublad is geactiveerd.</translation>
@@ -941,6 +942,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8433977262951327081">De sneltoets waarmee je de ballon van het menu met invoeropties op de plank toont, is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Bureaublad <ph name="DESK_TITILE" /> geactiveerd</translation>
 <translation id="8452135315243592079">Simkaart ontbreekt</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'Selecteer om uitgesproken te worden' sluiten</translation>
 <translation id="847056008324733326">Instellingen voor weergaveschaal</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> heeft <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>

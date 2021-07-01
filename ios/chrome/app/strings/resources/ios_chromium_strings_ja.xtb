@@ -44,7 +44,6 @@
 <translation id="4736424910885271643">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、Chromium データはこのデバイスから削除されます</translation>
 <translation id="4806326830773390517">使用統計情報と障害レポートを Google に送信して Chromium の機能向上に役立てる</translation>
 <translation id="4828317641996116749">Chromium ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
-<translation id="4852878756222711218">Chromium を最大限に活用するには、Google アカウントでログインしてください</translation>
 <translation id="4985291216379576555">オフラインのため Chromium でアップデートを確認できません</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chromium データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
 <translation id="5171868502429358653">Chromium にログイン</translation>

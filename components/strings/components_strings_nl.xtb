@@ -256,7 +256,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1807246157184219062">Licht</translation>
 <translation id="1807528111851433570">Startblad</translation>
 <translation id="1812527064848182527">liggend</translation>
-<translation id="1814698615734239189">Deze app is ontworpen voor mobiele apparaten. De app is actief in een compatibiliteitsmodus. Als je toestaat dat het formaat wordt aangepast, kunnen er problemen optreden, zoals het opnieuw opstarten van de app.</translation>
 <translation id="1821930232296380041">Ongeldige aanvraag of aanvraagparameters</translation>
 <translation id="1822540298136254167">Websites die je bezoekt en waarop je tijd doorbrengt</translation>
 <translation id="1826516787628120939">Controleren</translation>
@@ -672,7 +671,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3431636764301398940">Deze creditcard opslaan op dit apparaat</translation>
 <translation id="3432601291244612633">Pagina sluiten</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
-<translation id="3435896845095436175">Aanzetten</translation>
 <translation id="3438829137925142401">Wachtwoorden gebruiken die zijn opgeslagen in je Google-account</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">De eigenaar van dit apparaat heeft de dinosaurusgame uitgezet.</translation>
@@ -807,6 +805,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3946209740501886391">Altijd vragen op deze site</translation>
 <translation id="3949571496842715403">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. In het bijbehorende beveiligingscertificaat worden geen 'Subject Alternative Names' gespecificeerd. Dit kan worden veroorzaakt door een verkeerde configuratie of door een aanvaller die je verbinding heeft onderschept.</translation>
 <translation id="3949601375789751990">Je browsegeschiedenis zie je hier</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Geen opgeslagen betaalmethoden</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="3961148744525529027">Blad voor betalingshandler is half geopend</translation>
@@ -814,7 +813,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3963721102035795474">Lezermodus</translation>
 <translation id="3963837677003247395">Handmatig doorgaan?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Geen}=1{Van één site }other{Van # sites }}</translation>
-<translation id="3970481983430640194">Je kunt deze app nu slepen om het formaat ervan aan te passen</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> wordt geblokkeerd</translation>
 <translation id="3973357910713125165">Knop Chrome-veiligheidscheck uitvoeren, druk op Enter om de veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
@@ -938,6 +936,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4346197816712207223">Geaccepteerde creditcards</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan naar <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en andere sites te gaan waarop je dit wachtwoord hebt gebruikt en je wachtwoord nu te wijzigen.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> wil scannen naar Bluetooth-apparaten in de buurt. De volgende apparaten zijn gevonden:</translation>
 <translation id="4356973930735388585">Cybercriminelen op deze site proberen mogelijk gevaarlijke programma's op je computer te installeren waarmee je gegevens worden gestolen of verwijderd (bijvoorbeeld foto's, wachtwoorden, berichten en creditcards).</translation>
 <translation id="4358059973562876591">De gespecificeerde templates worden misschien niet toegepast door een fout met het beleid DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Betaalmethoden beheren...</translation>
@@ -1388,7 +1387,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Links inbinden</translation>
 <translation id="6034000775414344507">Lichtgrijs</translation>
-<translation id="6034062182346928710">Het formaat van <ph name="APP_NAME" /> wordt misschien niet goed aangepast. Gebruik vooraf ingestelde vensterformaten om te zorgen dat de app goed blijft werken.</translation>
 <translation id="6034283069659657473">10x14 (envelop)</translation>
 <translation id="6034514109191629503">Zigzagvouw 3-slag even</translation>
 <translation id="6039846035001940113">Als het probleem blijft optreden, neem je contact op met de site-eigenaar.</translation>
@@ -1418,7 +1416,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6120179357481664955">Weet je je UPI-ID nog?</translation>
 <translation id="6123290840358279103">Virtuele kaart bekijken</translation>
 <translation id="6124432979022149706">Chrome Enterprise-connectors</translation>
-<translation id="6143538402333184781">Deze app ondersteunt alleen het formaat Telefoon.</translation>
 <translation id="6146055958333702838">Controleer alle kabels en start alle routers, modems of andere netwerkapparaten die je gebruikt, opnieuw op.</translation>
 <translation id="614940544461990577">Probeer dit eens:</translation>
 <translation id="6150036310511284407">Drie perforaties links</translation>
@@ -1967,7 +1964,6 @@ Aanvullende informatie:
 <translation id="8225771182978767009">De persoon die deze computer heeft geconfigureerd, heeft deze site geblokkeerd.</translation>
 <translation id="8228419419708659934">Weergave met twee pagina's</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Niet meer vragen voor deze app</translation>
 <translation id="8232343881378637145">Temperatuur van plateau</translation>
 <translation id="8238581221633243064">Pagina openen op een nieuw incognitotabblad</translation>
 <translation id="8241707690549784388">De pagina die je zoekt, heeft informatie gebruikt die je hebt opgegeven Als je terugkeert naar deze pagina, worden acties die je hebt uitgevoerd, mogelijk herhaald. Wil je doorgaan?</translation>
@@ -1980,7 +1976,6 @@ Aanvullende informatie:
 <translation id="825929999321470778">Alle opgeslagen wachtwoorden tonen</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8262952874573525464">Inbinden met nietjes onder</translation>
-<translation id="826298712171642726">Formaataanpassing aanzetten?</translation>
 <translation id="8265992338205884890">Zichtbare gegevens</translation>
 <translation id="8267698848189296333">Inloggen als <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Afzonderlijke documenten/gesorteerde exemplaren</translation>
@@ -2011,6 +2006,7 @@ Aanvullende informatie:
 <translation id="8355270400102541638">Lokale crashcontext:</translation>
 <translation id="8363502534493474904">Zet de vliegtuigmodus uit</translation>
 <translation id="8364627913115013041">Niet ingesteld.</translation>
+<translation id="8368027906805972958">Onbekend of niet-ondersteund apparaat (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play-services</translation>
 <translation id="8371889962595521444">Custom rootcertificaten</translation>
 <translation id="8374636051559112948">Varieert</translation>

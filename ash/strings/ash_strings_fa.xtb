@@ -137,6 +137,7 @@
 <translation id="1990046457226896323">فایل‌های گفتاری بارگیری شد</translation>
 <translation id="1993072747612765854">درباره جدیدترین به‌روزرسانی‌ <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
 <translation id="1998100899771863792">میزکار کنونی</translation>
+<translation id="1999628559811343244">ضبط بسته شبکه شروع شد</translation>
 <translation id="2016340657076538683">پیامی تایپ کنید</translation>
 <translation id="2018630726571919839">‏Tell me a joke (لطیفه‌ای بگو)</translation>
 <translation id="2021864487439853900">قفل‌گشایی با کلیک کردن</translation>
@@ -157,7 +158,6 @@
 <translation id="2132302418721800944">ضبط تمام صفحه</translation>
 <translation id="2135456203358955318">ذره‌بین متصل</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: امتحان مجدد</translation>
-<translation id="2167870087604746126">‎+ V</translation>
 <translation id="2170530631236737939">برای خروج از «نمای کلی»، با سه انگشت تند به پایین بکشید</translation>
 <translation id="2208323208084708176">حالت میزکار یکپارچه</translation>
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
@@ -728,6 +728,7 @@
 <translation id="6751826523481687655">ردیابی عملکرد روشن است</translation>
 <translation id="6752912906630585008">میز <ph name="REMOVED_DESK" /> برداشته شد و با میز <ph name="RECEIVE_DESK" /> ادغام شد</translation>
 <translation id="6757237461819837179">هیچ رسانه‌ای درحال پخش نیست</translation>
+<translation id="6773040085467426602">برای توقف عملیات‌های درحال انجام ضبط بسته، روی «توقف» کلیک کنید.</translation>
 <translation id="6777216307882431711">‏درحال تأمین برق دستگاه‌های USB-C متصل</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6803622936009808957">نمایش یک تصویر واحد در چند صفحه نمایش ممکن نیست زیرا وضوح تصویر پشتیبانی شده‌ای وجود ندارد. بجای آن حالت نمایش دسک‌تاپ چند بخشی استفاده می‌شود.</translation>
@@ -941,6 +942,7 @@
 <translation id="8433977262951327081">میان‌بر نمایش حبابک گزینه‌های ورودی در قفسه تغییر کرده است. لطفاً به‌جای <ph name="OLD_SHORTCUT" /> از <ph name="NEW_SHORTCUT" /> استفاده کنید.</translation>
 <translation id="8444246603146515890">میز <ph name="DESK_TITILE" /> فعال شد</translation>
 <translation id="8452135315243592079">سیم‌کارت وجود ندارد</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + ر</translation>
 <translation id="8462305545768648477">بستن «انتخاب برای شنیدن»</translation>
 <translation id="847056008324733326">تنظیمات مقیاس نمایش</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> دارد.</translation>

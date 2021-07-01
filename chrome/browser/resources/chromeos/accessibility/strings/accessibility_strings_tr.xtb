@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Mevcut görüntüleme stili üst üste (interleave)</translation>
 <translation id="1087788677726983142">Etkinlik akış filtrelerini gizle</translation>
 <translation id="1088402100970133699">Önceki liste öğesi yok</translation>
-<translation id="1114836634143403764">Öneri</translation>
 <translation id="1120743664840974483">{"a": "adana", "b": "bolu", "c": "ceyhan", "ç": "çanakkale", "d": "denizli", "e": "edirne", "f": "fatsa", "g": "giresun", "ğ": "yumuşak ge", "h": "hatay", "ı": "ısparta", "i": "izmir", "j": "jandarma", "k": "kars", "l": "lüleburgaz", "m": "muş", "n": "niğde", "o": "ordu", "ö": "ödemiş", "p": "polatlı", "r": "rize", "s": "sinop", "ş": "şırnak", "t": "tokat", "u": "uşak", "ü": "ünye", "v": "van", "y": "yozgat", "z": "zonguldak"}</translation>
 <translation id="1120938014254001895">İki parmağınızı yukarı kaydırın</translation>
 <translation id="1126928665165112660">İtalik değil</translation>
@@ -203,7 +202,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2417569100218200841">İçerik bilgileri</translation>
 <translation id="2417948780551741035">Son notlar</translation>
 <translation id="2419852971200420169">Açıklama listesi</translation>
-<translation id="2421113964388408478">Silme</translation>
 <translation id="2422937916923936891">Menü öğesi onay kutusu</translation>
 <translation id="2428534162001909979">Komut Menüleri</translation>
 <translation id="242998846562331953">Alt başlık</translation>
@@ -226,6 +224,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2592212930811759050">Düzenlemeye başlamak için iki kez dokunun</translation>
 <translation id="2598495320872286378">Dil bilgisi hatası</translation>
 <translation id="2603828437139726540">Bir karakter ileri git</translation>
+<translation id="2619052155095999743">Ekle</translation>
 <translation id="2619344480613750862">İsterseniz ekrandaki bölümler arasında geçiş yapabilirsiniz. Örneğin, başlatıcı, raf ve Chrome sekmeleriniz arasında dolaşabilirsiniz. Sonraki bölüme geçmek için dört parmağınızla soldan sağa kaydırın. Devam etmek için şimdi bunu yapmayı deneyin.</translation>
 <translation id="2624431853467395961">Öğrenme modunu açar</translation>
 <translation id="2626530649491650971">tıklanabilir</translation>
@@ -507,7 +506,6 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4479068155583208887">Kiremit Rengi</translation>
 <translation id="4482330759234983253">Önceki tablo</translation>
 <translation id="4491109536499578614">Resim</translation>
-<translation id="4505167975768625962">Ekleme</translation>
 <translation id="4511186779140817916">Beyazlatılmış Badem</translation>
 <translation id="451510441928265982">Önceki 2. düzey başlık yok</translation>
 <translation id="4515799157838123044">Arka plandaki içeriği gölgede bırakın</translation>
@@ -1009,6 +1007,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8212109599554677485">Görüntüleme stilini yan yana olarak değiştir</translation>
 <translation id="8215202828671303819">Çoklu seçim</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, %<ph name="OPACITY_PERCENTAGE" /> opaklık.</translation>
+<translation id="8261506727792406068">Sil</translation>
 <translation id="826825447994856889">Giriş</translation>
 <translation id="827266600368092403">Seçimi başlat veya bitir</translation>
 <translation id="827422111966801947">Çivit Mavisi</translation>

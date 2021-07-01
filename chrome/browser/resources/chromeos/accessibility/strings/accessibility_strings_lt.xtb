@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Dabartinis vaizdo stilius yra įterptasis</translation>
 <translation id="1087788677726983142">Slėpti įvykių srauto filtrus</translation>
 <translation id="1088402100970133699">Nėra ankstesnio sąrašo elemento</translation>
-<translation id="1114836634143403764">Pasiūlymas</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Perbraukite dviem pirštais aukštyn</translation>
 <translation id="1126928665165112660">Ne kursyvas</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Turinio informacija</translation>
 <translation id="2417948780551741035">Išnašos</translation>
 <translation id="2419852971200420169">Aprašų sąrašas</translation>
-<translation id="2421113964388408478">Trynimas</translation>
 <translation id="2422937916923936891">Meniu elemento žymimasis laukelis</translation>
 <translation id="2428534162001909979">Komandų meniu</translation>
 <translation id="242998846562331953">Paantraštė</translation>
 <translation id="2435422727584637732">Sodri šviesiai mėlyna spalva</translation>
+<translation id="2438712309510062123">Siūlyti</translation>
 <translation id="2450814015951372393">Žymimasis laukelis</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
 <translation id="2462626033734746142">Akučių grupė</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Norėdami pradėti redaguoti palieskite dukart</translation>
 <translation id="2598495320872286378">Gramatikos klaida</translation>
 <translation id="2603828437139726540">Perkelti pirmyn per vieną simbolį</translation>
+<translation id="2619052155095999743">Įterpti</translation>
 <translation id="2619344480613750862">Taip pat galite pereiti iš vienos ekrano skilties į kitą. Pvz., galite pereiti iš paleidimo priemonės į lentyną, „Chrome“ skirtukus ir atvirkščiai. Jei norite pereiti į kitą skiltį, perbraukite keturiais pirštais iš kairės į dešinę. Išbandykite dabar, jei norite tęsti.</translation>
 <translation id="2624431853467395961">Atidarykite mokomąjį režimą</translation>
 <translation id="2626530649491650971">spustelėjamas</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Plytų raudonumo spalva</translation>
 <translation id="4482330759234983253">Ankstesnė lentelė</translation>
 <translation id="4491109536499578614">Vaizdas</translation>
-<translation id="4505167975768625962">Įterpimas</translation>
 <translation id="4511186779140817916">Kreminė spalva</translation>
 <translation id="451510441928265982">Nėra ankstesnės 2 lygio antraštės</translation>
 <translation id="4515799157838123044">Užtamsinti fono turinį</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Keisti vaizdo stilių į gretutinį</translation>
 <translation id="8215202828671303819">Kelių elementų pasirinkimas</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % nepermatomumas.</translation>
+<translation id="8261506727792406068">Ištrinti</translation>
 <translation id="826825447994856889">Įžanga</translation>
 <translation id="827266600368092403">Pradėti arba baigti pasirinkimą</translation>
 <translation id="827422111966801947">Indigo spalva</translation>

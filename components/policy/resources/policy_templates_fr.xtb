@@ -890,6 +890,13 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est configurée, le navigateur commence à ignorer des onglets pour économiser de la mémoire lorsque la limite est dépassée. Il n'est cependant pas garanti que le navigateur fonctionne toujours en deçà de cette limite. Toute valeur inférieure à 1024 est arrondie à ce nombre.
 
       Si cette règle n'est pas configurée, le navigateur ne commence à économiser de la mémoire que s'il détecte que la quantité de mémoire physique sur l'ordinateur est faible.</translation>
+<translation id="2165567959657265531">Permet de rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies définis sur les domaines correspondant à ces formats. Si vous rétablissez l'ancien comportement, les cookies dont la valeur de l'attribut "<ph name="ATTRIBUTE_SAMESITE_NAME" />" n'est pas spécifiée sont traités comme si la valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" était définie. De plus, ceux dont l'attribut a pour valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" n'exigent plus que la valeur de l'attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" soit spécifiée. Enfin, les schémas ne sont pas non plus comparés pour déterminer si deux sites sont identiques ou non. Pour une description complète, accédez à https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
+
+          Pour les cookies sur des domaines autres que ceux représentés par les formats spécifiés ici, ou pour tous les cookies si cette règle n'est pas configurée, la valeur globale par défaut sera définie à partir de la configuration personnelle de l'utilisateur.
+
+          Pour en savoir plus sur les formats valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+          Les formats que vous répertoriez ici sont traités comme des domaines et non des URL. Vous ne devez donc pas spécifier de schéma ni de port.</translation>
 <translation id="2166155400701622446">Une liste de ports restreints est intégrée à <ph name="PRODUCT_NAME" />. Toute connexion à ces ports échouera. Ce paramètre permet de contourner cette liste. Il s'agit d'une liste d'éléments séparés par une virgule contenant zéro port ou plus sur lesquels les connexions sortantes seront autorisées.
 
       Les ports sont restreints afin d'éviter l'utilisation de <ph name="PRODUCT_NAME" /> en tant que vecteur pour exploiter différentes failles réseau. Définir cette règle peut exposer votre réseau aux attaques. Elle est conçue comme solution de contournement temporaire pour les erreurs avec le code "ERR_UNSAFE_PORT" qui surviennent lors de la migration d'un service, d'un port bloqué vers un port standard (port 80 ou 443, par exemple).
@@ -951,17 +958,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si vous définissez <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> sur "1", seules les variantes considérées comme des correctifs essentiels de sécurité ou de stabilité peuvent être appliquées à <ph name="PRODUCT_OS_NAME" />.
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur sur l'écran de connexion. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_OS_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
-<translation id="2216380260552785166">Cette règle contrôle la façon dont <ph name="PRODUCT_NAME" /> interprète les règles des listes grises/de sites pour la fonctionnalité Legacy Browser Support. Cela concerne ces règles : <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> et <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      Si la valeur est définie sur "Par défaut" (0) ou n'est pas spécifiée, la correspondance d'URL est moins stricte. Les règles qui n'incluent pas "/" recherchent une sous-chaîne dans le nom d'hôte de l'URL.
-
-      Si la valeur est définie sur "Strict" (1), la correspondance d'URL est plus stricte. Les règles qui n'incluent pas "/" n'établissent une correspondance qu'avec la fin du nom d'hôte. Elles doivent être associées à la limite d'un nom de domaine. La compatibilité est meilleure avec <ph name="MS_IE_PRODUCT_NAME" /> et <ph name="MS_EDGE_PRODUCT_NAME" />.
-
-      Par exemple, pour la règle "example.com" :
-
-      "http://example.com/" et "http://subdomain.example.com/" correspondent, quel que soit le mode d'analyse.
-
-      "http://notexample.com/", "http://example.com.invalid.com/" et "http://example.comabc/" correspondent uniquement en mode "Par défaut".</translation>
 <translation id="2221850122314326571">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
       Lorsque ce paramètre est désactivé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'ancien outil de vérification fourni par la plate-forme.
       Lorsque ce paramètre n'est pas défini, l'outil intégré de vérification des certificats ou l'ancien outil peuvent être utilisés.

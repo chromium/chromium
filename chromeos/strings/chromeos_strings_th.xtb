@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">ระบบ</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2751739896257479635">การตรวจสอบสิทธิ์ขั้นที่ 2 ของ EAP</translation>
+<translation id="2783010256799387990">ผ่าน</translation>
 <translation id="2789486458103222910">ตกลง</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2862104018715411648">วางเอกสารบนเครื่องสแกนและเลือก "สแกน" เพื่อเริ่มต้น</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ภาพ</translation>
 <translation id="4378373042927530923">ไม่ทำงาน</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
@@ -229,7 +231,6 @@
 <translation id="5691511426247308406">ครอบครัว</translation>
 <translation id="5752751666635965375">สร้างเกมของคุณเอง</translation>
 <translation id="5760715441271661976">สถานะพอร์ทัล</translation>
-<translation id="5797428682393400134">สำเร็จ</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5849570051105887917">รหัสผู้ให้บริการหน้าแรก</translation>
@@ -296,6 +297,7 @@
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
+<translation id="7172721935181587524">1 ภาพ</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
@@ -345,6 +347,7 @@
 <translation id="8294431847097064396">แหล่งที่มา</translation>
 <translation id="8297006494302853456">อ่อน</translation>
 <translation id="8302368968391049045">ไฟร์วอลล์ HTTPS</translation>
+<translation id="8318753676953949627">ไม่มีภาพ</translation>
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8352772353338965963">เพิ่มบัญชีเพื่อลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี บัญชีที่ลงชื่อเข้าใช้แล้วทั้งหมดสามารถเข้าถึงได้โดยไม่ต้องใช้รหัสผ่าน คุณจึงควรใช้ฟีเจอร์นี้กับบัญชีที่เชื่อถือเท่านั้น</translation>
 <translation id="8364946094152050673">เนมเซิร์ฟเวอร์ว่างเปล่า</translation>

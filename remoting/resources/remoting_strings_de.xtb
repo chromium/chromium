@@ -24,6 +24,7 @@ Klicken Sie zum Erteilen dieser Berechtigung unten auf "<ph name="BUTTON_NAME" /
 Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entfernen Sie diesen und klicken Sie noch einmal auf das Kästchen.</translation>
 <translation id="225614027745146050">Willkommen</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
+<translation id="2329392777730037872"><ph name="URL" /> konnte auf dem Client nicht geöffnet werden.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2366718077645204424">Die Verbindung zum Host kann nicht hergestellt werden. Das von Ihnen verwendete Netzwerk ist möglicherweise nicht korrekt konfiguriert.</translation>
@@ -88,6 +89,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4867841927763172006">Druck senden</translation>
 <translation id="4974476491460646149">Verbindung zwischen Client und <ph name="HOSTNAME" /> getrennt</translation>
 <translation id="4985296110227979402">Richten Sie zuerst Ihren Computer für den Remotezugriff ein</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop kann nicht ermitteln, welcher Browser zum lokalen Öffnen der Links verwendet werden soll. Wählen Sie einen aus der folgenden Liste aus.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Möchten Sie die Remote-Verbindungen zu <ph name="HOSTNAME" /> wirklich deaktivieren?</translation>
 <translation id="5170982930780719864">Ungültige Host-ID</translation>
@@ -135,6 +137,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7312846573060934304">Host ist offline.</translation>
 <translation id="7319983568955948908">Freigabe beenden</translation>
+<translation id="7359298090707901886">Der ausgewählte Browser kann nicht zum Öffnen von Links auf dem lokalen Computer verwendet werden.</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">Zugriff für folgenden Client verweigert: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">Client verbunden: <ph name="CLIENT_USERNAME" /></translation>

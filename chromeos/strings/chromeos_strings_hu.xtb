@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Rendszer</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP hitelesítés 2. fázisa</translation>
+<translation id="2783010256799387990">SIKERES ELLENŐRZÉS</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2862104018715411648">A kezdéshez helyezze a dokumentumot a szkennerre, és válassza a Scan (Beolvasás) gombot.</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
 <translation id="4378373042927530923">Nem fut</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Saját meghajtó</translation>
@@ -229,7 +231,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5691511426247308406">Család</translation>
 <translation id="5752751666635965375">Készítsen saját játékot</translation>
 <translation id="5760715441271661976">Portál állapota</translation>
-<translation id="5797428682393400134">SIKERÜLT</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5849570051105887917">Otthoni szolgáltató kódja</translation>
@@ -296,6 +297,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7144878232160441200">Újra</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
 <translation id="7162487448488904999">Galéria</translation>
+<translation id="7172721935181587524">1 kép</translation>
 <translation id="7177485034254901881">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
@@ -345,6 +347,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8294431847097064396">Forrás</translation>
 <translation id="8297006494302853456">Gyenge</translation>
 <translation id="8302368968391049045">HTTPS-tűzfal</translation>
+<translation id="8318753676953949627">Nincsenek képek</translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8352772353338965963">Adjon hozzá egy fiókot a többfiókos bejelentkezéshez. Az összes bejelentkezett fiók elérhető a jelszó megadása nélkül, ezért ezt a funkciót csak megbízható fiókokkal használja.</translation>
 <translation id="8364946094152050673">Üres névszerverek</translation>

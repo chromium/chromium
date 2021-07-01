@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autenticazione fase 2 di tipo EAP</translation>
+<translation id="2783010256799387990">SUPERATO</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="2862104018715411648">Posiziona il documento sullo scanner e seleziona Scansiona per iniziare</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nessun processo di stampa in corso</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
 <translation id="4378373042927530923">Non eseguito</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">I miei file</translation>
@@ -229,7 +231,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5691511426247308406">Famiglia</translation>
 <translation id="5752751666635965375">Crea il tuo gioco</translation>
 <translation id="5760715441271661976">Stato portale</translation>
-<translation id="5797428682393400134">OPERAZIONE RIUSCITA</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5849570051105887917">Codice del provider principale</translation>
@@ -296,6 +297,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
 <translation id="7162487448488904999">Galleria</translation>
+<translation id="7172721935181587524">1 immagine</translation>
 <translation id="7177485034254901881">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />. Gli amministratori possono configurarlo da remoto.</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
 <translation id="7271040990581020067">Lo scanner è attualmente in uso. Riprova più tardi.</translation>
@@ -345,6 +347,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8294431847097064396">Origine</translation>
 <translation id="8297006494302853456">Debole</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8318753676953949627">Nessuna immagine</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="8352772353338965963">Aggiungi un account per l'accesso simultaneo. Poiché gli account che hanno effettuato l'accesso sono tutti accessibili senza password, devi utilizzare questa funzione solo con gli account attendibili.</translation>
 <translation id="8364946094152050673">il campo dei server dei nomi è vuoto</translation>

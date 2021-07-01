@@ -261,7 +261,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1807528111851433570">Sākuma lapa</translation>
 <translation id="1812527064848182527">ainava</translation>
-<translation id="1814698615734239189">Šī lietotne ir paredzēta mobilajām ierīcēm. Tā darbojas saderības režīmā. Atļaujot lieluma mainīšanu, var rasties problēmas, tostarp ar lietotnes restartēšanu.</translation>
 <translation id="1821930232296380041">Pieprasījums vai tā parametri nebija derīgi.</translation>
 <translation id="1822540298136254167">Tīmekļa vietnes, kuras apmeklējat, un cik daudz laika tajās pavadāt</translation>
 <translation id="1826516787628120939">Pārbaude</translation>
@@ -680,7 +679,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3431636764301398940">Saglabāt šo karti šajā ierīcē</translation>
 <translation id="3432601291244612633">Aizvērt lapu</translation>
 <translation id="3435738964857648380">Drošība</translation>
-<translation id="3435896845095436175">Iespējot</translation>
 <translation id="3438829137925142401">Jūsu Google kontā glabāto paroļu izmantošana</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Šīs ierīces īpašnieks ir izslēdzis dinozauru spēli.</translation>
@@ -816,6 +814,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3946209740501886391">Vienmēr jautāt šajā vietnē</translation>
 <translation id="3949571496842715403">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tā drošības sertifikātā nav norādīti temata citi nosaukumi. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ļaunprātīgi izmanto jūsu savienojumu.</translation>
 <translation id="3949601375789751990">Šeit ir redzama jūsu pārlūkošanas vēsture.</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nav saglabātu maksājuma veidu</translation>
 <translation id="3950820424414687140">Pierakstīties</translation>
 <translation id="3961148744525529027">Maksājumu apstrādātāja lapa ir līdz pusei atvērta</translation>
@@ -823,7 +822,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3963721102035795474">Lasītāja režīms</translation>
 <translation id="3963837677003247395">Vai turpināt manuāli?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nav}=1{No 1 vietnes }zero{No # vietnēm }one{No # vietnes }other{No # vietnēm }}</translation>
-<translation id="3970481983430640194">Tagad varat vilkt šo lietotni un mainīt tās lielumu.</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="3973234410852337861">Vietne <ph name="HOST_NAME" /> ir bloķēta</translation>
 <translation id="3973357910713125165">Poga “Veikt Chrome drošības pārbaudi”. Lai Chrome iestatījumos veiktu drošības pārbaudi, nospiediet ievadīšanas taustiņu.</translation>
@@ -947,6 +945,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4346197816712207223">Pieņemtās kredītkartes</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chrome ieteikums: tūlīt apmeklējiet vietni <ph name="WEBSITE_1" /> un <ph name="WEBSITE_2" />, kā arī citas vietnes, kurās izmantojat šo paroli, un nomainiet to.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> vēlas meklēt tuvumā esošas Bluetooth ierīces. Ir atrastas šīs ierīces:</translation>
 <translation id="4356973930735388585">Šajā vietnē esošie uzbrucēji jūsu datorā var mēģināt instalēt bīstamas programmas, kuras var nozagt vai dzēst jūsu informāciju (piemēram, fotoattēlus, paroles, ziņojumus un informāciju par kredītkartēm).</translation>
 <translation id="4358059973562876591">Norādītās veidnes, iespējams, netiks lietotas, jo ir radusies kļūda ar politiku DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Pārvaldīt maksājumu veidus...</translation>
@@ -1399,7 +1398,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6032524144326295339">2. pastkaste</translation>
 <translation id="6032955021262906325">Iesējums kreisajā pusē</translation>
 <translation id="6034000775414344507">Gaiši pelēka</translation>
-<translation id="6034062182346928710">Iespējams, nevarēs atbilstoši mainīt lietotnes <ph name="APP_NAME" /> lielumu. Izmantojiet iepriekš iestatītus logu lielumus, lai nodrošinātu pareizu lietotnes darbību.</translation>
 <translation id="6034283069659657473">10x14 (aploksne)</translation>
 <translation id="6034514109191629503">Sānisks lentes locījums</translation>
 <translation id="6039846035001940113">Ja problēma joprojām pastāv, sazinieties ar vietnes īpašnieku.</translation>
@@ -1429,7 +1427,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6120179357481664955">Vai iegaumēt jūsu UPI ID?</translation>
 <translation id="6123290840358279103">Skatīt virtuālo karti</translation>
 <translation id="6124432979022149706">Chrome Enterprise savienotāji</translation>
-<translation id="6143538402333184781">Šajā lietotnē tiek atbalstīti tikai izmēri tālrunim.</translation>
 <translation id="6146055958333702838">Pārbaudiet vadus un atkārtoti palaidiet maršrutētājus, modemus vai citas
     izmantotās tīkla ierīces.</translation>
 <translation id="614940544461990577">Veiciet tālāk norādītās darbības.</translation>
@@ -1979,7 +1976,6 @@ Papildu informācija:
 <translation id="8225771182978767009">Persona, kura iestatīja šo datoru, izvēlējās bloķēt šo vietni.</translation>
 <translation id="8228419419708659934">Divu lappušu skats</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Vairs nejautāt par šo lietotni</translation>
 <translation id="8232343881378637145">Platformas temperatūra</translation>
 <translation id="8238581221633243064">Atvērt lapu jaunā inkognito režīma cilnē</translation>
 <translation id="8241707690549784388">Lapa, ko meklējāt, izmantoja jūsu ievadīto informāciju. Atgriešanās lapā var radīt jebkuras jūsu darbības atkārtojumu. Vai vēlaties turpināt?</translation>
@@ -1992,7 +1988,6 @@ Papildu informācija:
 <translation id="825929999321470778">Rādīt visas saglabātās paroles</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8262952874573525464">Malu sašuvums apakšdaļā</translation>
-<translation id="826298712171642726">Vai iespējot lieluma maiņu?</translation>
 <translation id="8265992338205884890">Redzamie dati</translation>
 <translation id="8267698848189296333">Notiek pierakstīšanās lietotāja <ph name="USERNAME" /> kontā</translation>
 <translation id="8269242089528251720">Atsevišķi dokumenti/kopijas ar sakārtotu lapu secību</translation>
@@ -2023,6 +2018,7 @@ Papildu informācija:
 <translation id="8355270400102541638">Lokālais avārijas konteksts:</translation>
 <translation id="8363502534493474904">Izslēdziet lidojuma režīmu.</translation>
 <translation id="8364627913115013041">Nav iestatīta.</translation>
+<translation id="8368027906805972958">Nezināma vai neatbalstīta ierīce (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play pakalpojumi</translation>
 <translation id="8371889962595521444">Pielāgoti saknes sertifikāti</translation>
 <translation id="8374636051559112948">Atšķiras</translation>

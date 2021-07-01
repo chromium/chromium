@@ -137,6 +137,7 @@
 <translation id="1990046457226896323">Ярианы файлуудыг татсан</translation>
 <translation id="1993072747612765854">Хамгийн сүүлийн <ph name="SYSTEM_APP_NAME" /> шинэчлэлтийн талаар дэлгэрэнгүй үзэх</translation>
 <translation id="1998100899771863792">Одоогийн дэлгэц</translation>
+<translation id="1999628559811343244">Сүлжээний пакет авахыг эхлүүлсэн</translation>
 <translation id="2016340657076538683">Мессеж бичих</translation>
 <translation id="2018630726571919839">Надад онигоо ярьж өгөөч</translation>
 <translation id="2021864487439853900">Түгжээг тайлахын тулд товших</translation>
@@ -157,7 +158,6 @@
 <translation id="2132302418721800944">Бүтэн дэлгэцийг бичих</translation>
 <translation id="2135456203358955318">Суурилуулсан томруулагч</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Дахин оролдох</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Тоймоос гарахын тулд гурван хуруугаараа доош шударна уу</translation>
 <translation id="2208323208084708176">Компьютерийн нэгдмэл горим</translation>
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
@@ -729,6 +729,7 @@
 <translation id="6751826523481687655">Гүйцэтгэлийн хяналтыг асаасан</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> дэлгэцийг хасаж, <ph name="RECEIVE_DESK" /> дэлгэцтэй нэгтгэсэн</translation>
 <translation id="6757237461819837179">Медиа тоглуулаагүй байна</translation>
+<translation id="6773040085467426602">Үргэлжилж буй пакет авах үйл ажиллагааг зогсоохын тулд зогсоохыг товшино уу.</translation>
 <translation id="6777216307882431711">Холбогдсон USB-C төхөөрөмжүүдийг цэнэглэж байна</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6803622936009808957">Ямар нэг холбогдох шийдэл олдоогүй учраас дэлгэцүүдийг ойлгож чадахгүй байна. Оронд нь сунгасан десктопыг орууллаа.</translation>
@@ -943,6 +944,7 @@
 <ph name="OLD_SHORTCUT" />-н оронд <ph name="NEW_SHORTCUT" />-г ашиглана уу.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> дэлгэцийг идэвхжүүлсэн байна</translation>
 <translation id="8452135315243592079">SIM карт олдсонгүй</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Ярихаар сонгох онцлогийг хаах</translation>
 <translation id="847056008324733326">Дэлгэцийн хэмжээсийн тохиргоо</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> нь <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />-тай байна.</translation>

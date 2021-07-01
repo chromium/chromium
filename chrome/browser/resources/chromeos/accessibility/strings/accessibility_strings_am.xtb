@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">የአሁኑ የማሳያ ቅጥ ምትር ነው</translation>
 <translation id="1087788677726983142">የክስተት ዥረት ማጣሪያዎችን ደብቅ</translation>
 <translation id="1088402100970133699">ምንም ቀዳሚ የርዕስ ንጥል የለም</translation>
-<translation id="1114836634143403764">የአስተያየት ጥቆማ</translation>
 <translation id="1120743664840974483">{"a": "አልፋ", "b": "ብራቮ", "c": "ቻርሊ", "d": "ዴልታ", "e": "ኤኮ", "f": "ፎክስትሮት", "g": "ጎልፍ", "h": "ሆቴል", "i": "ኢንዲያ", "j": "ጁሊዬት","k": "ኪሎ", "l": "ሊማ", "m": "ማይክ", "n": "ኖቬምበር", "o": "ኦስካር","p": "ፓፓ", "q": "ኴቤክ", "r": "ሮሚዮ", "s": "ሲዬራ", "t": "ታንጎ", "u": "ዩኒፎርም", "v": "ቪክቶር", "w": "ዊስኪ","x": "ኤክስሬይ", "y": "ያንኪ", "z": "ዙሉ"}</translation>
 <translation id="1120938014254001895">ሁለት ጣቶችን ወደ ላይ ያንሸራትቱ</translation>
 <translation id="1126928665165112660">ሰያፍ አይደለም</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">የይዘት መረጃ</translation>
 <translation id="2417948780551741035">ግርጌ ማስታወሻዎች</translation>
 <translation id="2419852971200420169">ዝርዝር መግለጫ</translation>
-<translation id="2421113964388408478">ስረዛ</translation>
 <translation id="2422937916923936891">የምናሌ ንጥል አመልካች ሳጥን</translation>
 <translation id="2428534162001909979">የትዕዛዝ ምናሌዎች</translation>
 <translation id="242998846562331953">የግርጌ ጽሑፍ</translation>
 <translation id="2435422727584637732">ብሩህ ሰማያዊ</translation>
+<translation id="2438712309510062123">ጠቁም</translation>
 <translation id="2450814015951372393">አመልካች ሳጥን</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
 <translation id="2462626033734746142">የሬዲዮ አዝራር ቡድን</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">ማርትዕ ለመጀመር ሁለቴ መታ ያድርጉ</translation>
 <translation id="2598495320872286378">የሰዋስው ስሕተት</translation>
 <translation id="2603828437139726540">አንድ ቁምፊ ወደፊት</translation>
+<translation id="2619052155095999743">አስገባ</translation>
 <translation id="2619344480613750862">እንዲሁም በማያ ገጹ ክፍሎች መካከል ማንቀሳቀስ ይችላሉ። ለምሳሌ በማስጀመሪያው፣ በመደርደሪያው እና በChrome ትሮችዎ መካከል ማንቀሳቀስ ይችላሉ። ወደ ቀጣዩ ክፍል ለመሄድ በአራት ጣቶች ከግራ ወደ ቀኝ ያንሸራትቱ። ለመቀጠል አሁን ይሞክሩ።</translation>
 <translation id="2624431853467395961">የመማር ሁነታን ይክፈቱ</translation>
 <translation id="2626530649491650971">ጠቅ ሊደረግ የሚችል</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">የእሳት ጡብ</translation>
 <translation id="4482330759234983253">ቀዳሚ ሠንጠረዥ</translation>
 <translation id="4491109536499578614">ምስል</translation>
-<translation id="4505167975768625962">ማስገባት</translation>
 <translation id="4511186779140817916">የነጣ አልሞንድ</translation>
 <translation id="451510441928265982">ምንም ቀዳሚ የደረጃ 2 ርዕስ የለም</translation>
 <translation id="4515799157838123044">የጀርባ ይዘት ጥላ</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">የማሳያ ቅጥ ወደ ጎን ለጎን ቀይር</translation>
 <translation id="8215202828671303819">ብዙ ምርጫ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ብርሃን-ከልነት።</translation>
+<translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="826825447994856889">መግቢያ</translation>
 <translation id="827266600368092403">ምርጫ ይጀምሩ ወይም ይጨርሱ</translation>
 <translation id="827422111966801947">ወይን ጠጅ</translation>

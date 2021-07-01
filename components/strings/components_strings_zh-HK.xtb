@@ -257,7 +257,6 @@
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="1812527064848182527">橫向</translation>
-<translation id="1814698615734239189">此應用程式專為流動裝置而設，目前是以兼容模式運作。允許應用程式調整大小可能會導致應用程式重新啟動等問題。</translation>
 <translation id="1821930232296380041">要求或要求參數無效</translation>
 <translation id="1822540298136254167">您瀏覽的網站和瀏覽時間</translation>
 <translation id="1826516787628120939">檢查中</translation>
@@ -676,7 +675,6 @@
 <translation id="3431636764301398940">將這張信用卡儲存至此裝置</translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3435738964857648380">安全性</translation>
-<translation id="3435896845095436175">啟用</translation>
 <translation id="3438829137925142401">使用儲存在 Google 帳戶中的密碼</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">此裝置的擁有者已停用恐龍遊戲。</translation>
@@ -812,6 +810,7 @@
 <translation id="3946209740501886391">在此網站上一律詢問</translation>
 <translation id="3949571496842715403">此伺服器無法證明所屬網域為 <ph name="DOMAIN" />；其安全性憑證沒有指定主體替代名稱。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="3949601375789751990">您的瀏覽記錄會在這裡顯示</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">尚未儲存任何付款方法</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3961148744525529027">付款處理常式工作表只係顯示咁一半</translation>
@@ -819,7 +818,6 @@
 <translation id="3963721102035795474">閱讀器模式</translation>
 <translation id="3963837677003247395">要以手動方式繼續操作嗎？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{無}=1{來自 1 個網站}other{來自 # 個網站}}</translation>
-<translation id="3970481983430640194">您現在可拖曳此應用程式來調整大小</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已遭封鎖</translation>
 <translation id="3973357910713125165">執行 Chrome 安全檢查按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
@@ -938,6 +936,7 @@
 <translation id="4346197816712207223">接受的信用卡</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">您剛才在欺詐網站上輸入了密碼。Chrome 建議前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及其他您使用此密碼的網站，並立即變更密碼。</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> 要求掃瞄附近的藍牙裝置，並已找到以下裝置：</translation>
 <translation id="4356973930735388585">攻擊者可能會透過此網站試圖在您的電腦上安裝危險程式，藉此竊取或刪除您的資料 (例如相片、密碼、訊息或信用卡資料)。</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode 政策發生錯誤，因此系統無法套用您指定的範本。</translation>
 <translation id="4358461427845829800">管理付款方法…</translation>
@@ -1390,7 +1389,6 @@
 <translation id="6032524144326295339">出紙槽 2</translation>
 <translation id="6032955021262906325">釘裝 (左側)</translation>
 <translation id="6034000775414344507">淺灰色</translation>
-<translation id="6034062182346928710">「<ph name="APP_NAME" />」可能未妥善調整。請使用預設視窗大小，以免應用程式運作異常。</translation>
 <translation id="6034283069659657473">10x14 (信封)</translation>
 <translation id="6034514109191629503">彈弓摺</translation>
 <translation id="6039846035001940113">如果問題持續，請聯絡網站擁有者。</translation>
@@ -1420,7 +1418,6 @@
 <translation id="6120179357481664955">要記住您的 UPI ID 嗎？</translation>
 <translation id="6123290840358279103">查看虛擬卡</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
-<translation id="6143538402333184781">此應用程式只支援「手機」大小。</translation>
 <translation id="6146055958333702838">檢查連接線，或重新啟動路由器、數據機或其他使用中的
     網絡裝置。</translation>
 <translation id="614940544461990577">建議做法：</translation>
@@ -1970,7 +1967,6 @@
 <translation id="8225771182978767009">設定此電腦的用戶已封鎖此網站。</translation>
 <translation id="8228419419708659934">雙頁檢視</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">不要再就是否為此應用程式啟用功能詢問我</translation>
 <translation id="8232343881378637145">平台溫度</translation>
 <translation id="8238581221633243064">在新無痕式分頁中開啟網頁</translation>
 <translation id="8241707690549784388">您尋找的網頁使用了您輸入的資料。返回該頁會重複您剛才的動作。您確定要繼續嗎？</translation>
@@ -1983,7 +1979,6 @@
 <translation id="825929999321470778">顯示所有已儲存的密碼</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262952874573525464">邊緣裝訂 (底部)</translation>
-<translation id="826298712171642726">要啟用調整大小功能嗎？</translation>
 <translation id="8265992338205884890">可顯示的資料</translation>
 <translation id="8267698848189296333">正在以 <ph name="USERNAME" /> 登入</translation>
 <translation id="8269242089528251720">個別文件/已自動分頁的副本</translation>
@@ -2014,6 +2009,7 @@
 <translation id="8355270400102541638">本機當機內容：</translation>
 <translation id="8363502534493474904">關閉飛行模式</translation>
 <translation id="8364627913115013041">未設定。</translation>
+<translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服務</translation>
 <translation id="8371889962595521444">自訂根憑證</translation>
 <translation id="8374636051559112948">不定</translation>

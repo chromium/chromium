@@ -257,7 +257,6 @@
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1807528111851433570">시작 시트</translation>
 <translation id="1812527064848182527">가로 모드</translation>
-<translation id="1814698615734239189">휴대기기용으로 제작된 앱입니다. 호환 모드에서 실행되고 있습니다. 크기 조정을 허용하면 앱이 다시 시작되는 등의 문제가 발생할 수 있습니다.</translation>
 <translation id="1821930232296380041">잘못된 요청 또는 요청 매개변수</translation>
 <translation id="1822540298136254167">방문 웹사이트 및 접속 시간</translation>
 <translation id="1826516787628120939">확인 중</translation>
@@ -676,7 +675,6 @@
 <translation id="3431636764301398940">기기에 카드 저장</translation>
 <translation id="3432601291244612633">페이지 닫기</translation>
 <translation id="3435738964857648380">보안</translation>
-<translation id="3435896845095436175">사용</translation>
 <translation id="3438829137925142401">Google 계정에 저장된 비밀번호 사용</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">이 기기의 소유자가 공룡 게임을 사용 중지했습니다.</translation>
@@ -813,6 +811,7 @@
 <translation id="3946209740501886391">이 사이트에서 항상 물어보기</translation>
 <translation id="3949571496842715403">보안 인증서에 주체 대체 이름(SAN)이 지정되어 있지 않아 이 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버를 잘못 설정했거나 공격자가 연결을 가로채고 있기 때문일 수도 있습니다.</translation>
 <translation id="3949601375789751990">인터넷 사용 기록이 여기에 표시됩니다.</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" />(<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">저장된 결제 수단이 없습니다.</translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3961148744525529027">결제 핸들러 시트가 절반 높이로 열림</translation>
@@ -820,7 +819,6 @@
 <translation id="3963721102035795474">리더 모드</translation>
 <translation id="3963837677003247395">직접 계속하시겠어요?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{없음}=1{사이트 1개 }other{사이트 #개 }}</translation>
-<translation id="3970481983430640194">이제 앱을 드래그하여 크기를 조절할 수 있습니다.</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
 <translation id="3973357910713125165">Chrome 안전 확인 실행 버튼, Enter 키를 눌러 Chrome 설정에서 안전 확인 실행</translation>
@@ -939,6 +937,7 @@
 <translation id="4346197816712207223">사용 가능한 신용카드</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> 등 동일한 비밀번호를 사용한 사이트로 이동하여 비밀번호를 변경하시기 바랍니다.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" />에서 주변 블루투스 기기를 검색하려고 합니다. 다음 기기가 발견되었습니다.</translation>
 <translation id="4356973930735388585">이 사이트의 공격자가 사용자 정보(예: 사진, 비밀번호, 메시지, 신용카드)를 도용하거나 삭제하는 위험한 프로그램을 컴퓨터에 설치하려고 시도할 수 있습니다.</translation>
 <translation id="4358059973562876591">지정한 템플릿이 DnsOverHttpsMode 정책 오류로 인해 적용되지 않을 수 있습니다.</translation>
 <translation id="4358461427845829800">결제 수단 관리...</translation>
@@ -1391,7 +1390,6 @@
 <translation id="6032524144326295339">메일박스 2</translation>
 <translation id="6032955021262906325">왼쪽 바인드</translation>
 <translation id="6034000775414344507">연한 회색</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" />의 크기 조절이 제대로 되지 않을 수 있습니다. 앱이 오작동하지 않도록 미리 설정된 창 크기를 사용하세요.</translation>
 <translation id="6034283069659657473">10x14(봉투)</translation>
 <translation id="6034514109191629503">아코디언 폴드</translation>
 <translation id="6039846035001940113">문제가 계속되면 사이트 소유자에게 문의하세요.</translation>
@@ -1421,7 +1419,6 @@
 <translation id="6120179357481664955">UPI ID를 저장하시겠습니까?</translation>
 <translation id="6123290840358279103">가상 카드 보기</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
-<translation id="6143538402333184781">앱이 '휴대전화' 크기만 지원합니다.</translation>
 <translation id="6146055958333702838">케이블을 확인하고 사용 중인 라우터, 모뎀 또는 기타 네트워크 기기를
     재부팅하시기 바랍니다.</translation>
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
@@ -1970,7 +1967,6 @@
 <translation id="8225771182978767009">컴퓨터를 설정한 사용자가 이 사이트를 차단했습니다.</translation>
 <translation id="8228419419708659934">두 페이지씩 보기</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">이 앱의 경우 다시 묻지 않음</translation>
 <translation id="8232343881378637145">플랫폼 온도</translation>
 <translation id="8238581221633243064">새 시크릿 창에서 페이지 열기</translation>
 <translation id="8241707690549784388">찾고 있는 페이지에서 사용자가 입력한 정보를 사용했습니다. 해당 페이지로 돌아가면 기존 작업을 반복할 수 있습니다. 계속하시겠습니까?</translation>
@@ -1983,7 +1979,6 @@
 <translation id="825929999321470778">저장된 비밀번호 모두 표시</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8262952874573525464">하단 에지 스티치</translation>
-<translation id="826298712171642726">크기 조절을 사용 설정하시겠습니까?</translation>
 <translation id="8265992338205884890">표시되는 데이터</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" />(으)로 로그인</translation>
 <translation id="8269242089528251720">별도 문서/모은 사본</translation>
@@ -2014,6 +2009,7 @@
 <translation id="8355270400102541638">로컬 비정상 종료 컨텍스트:</translation>
 <translation id="8363502534493474904">비행기 모드 사용 중지</translation>
 <translation id="8364627913115013041">설정 안됨</translation>
+<translation id="8368027906805972958">알 수 없거나 지원되지 않는 기기(<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 서비스</translation>
 <translation id="8371889962595521444">맞춤 루트 인증서</translation>
 <translation id="8374636051559112948">다양함</translation>

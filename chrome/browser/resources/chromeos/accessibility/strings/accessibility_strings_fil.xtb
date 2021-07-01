@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Naka-interleave ang kasalukuyang istilo ng display</translation>
 <translation id="1087788677726983142">Itago ang mga filter ng stream ng event</translation>
 <translation id="1088402100970133699">Walang nakaraang item sa listahan</translation>
-<translation id="1114836634143403764">Suhestyon</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Mag-swipe pataas gamit ang dalawang daliri</translation>
 <translation id="1126928665165112660">Hindi naka-italic</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Impormasyon ng nilalaman</translation>
 <translation id="2417948780551741035">Mga Endnote</translation>
 <translation id="2419852971200420169">Listahan ng paglalarawan</translation>
-<translation id="2421113964388408478">Pag-delete</translation>
 <translation id="2422937916923936891">Check box ng item sa menu</translation>
 <translation id="2428534162001909979">Mga Menu ng Command</translation>
 <translation id="242998846562331953">Subtitle</translation>
 <translation id="2435422727584637732">Dodger Blue</translation>
+<translation id="2438712309510062123">Magmungkahi</translation>
 <translation id="2450814015951372393">Check box</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="2462626033734746142">Pangkat ng radio button</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">I-double tap para simulan ang pag-edit</translation>
 <translation id="2598495320872286378">Error sa grammar</translation>
 <translation id="2603828437139726540">Lumipat sa unahan ng isang char</translation>
+<translation id="2619052155095999743">Ipasok</translation>
 <translation id="2619344480613750862">Puwede ka ring magpalipat-lipat sa mga seksyon ng screen. Halimbawa, puwede kang lumipat sa pagitan ng launcher, shelf, at iyong mga tab ng Chrome. Para lumipat sa susunod na seksyon, mag-swipe pakanan gamit ang apat na daliri. Subukan ito ngayon para magpatuloy.</translation>
 <translation id="2624431853467395961">Buksan ang learn mode</translation>
 <translation id="2626530649491650971">naki-click</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Fire Brick</translation>
 <translation id="4482330759234983253">Nakaraang talahanayan</translation>
 <translation id="4491109536499578614">Larawan</translation>
-<translation id="4505167975768625962">Paglagay</translation>
 <translation id="4511186779140817916">Blanched Almond</translation>
 <translation id="451510441928265982">Walang nakaraang heading sa antas 2</translation>
 <translation id="4515799157838123044">I-shade ang content ng background</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Gawing tabi-tabi ang istilo ng display</translation>
 <translation id="8215202828671303819">Maramihang pagpili</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% opacity.</translation>
+<translation id="8261506727792406068">I-delete</translation>
 <translation id="826825447994856889">Panimula</translation>
 <translation id="827266600368092403">Simulan o tapusin ang pagpipilian</translation>
 <translation id="827422111966801947">Indigo</translation>

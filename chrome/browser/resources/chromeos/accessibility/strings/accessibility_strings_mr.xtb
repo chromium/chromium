@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">सध्याची डिस्प्ले शैली इंटरलीव्ह आहे</translation>
 <translation id="1087788677726983142">इव्हेंट स्ट्रीम फिल्टर लपवा</translation>
 <translation id="1088402100970133699">मागील सूची आयटम नाही</translation>
-<translation id="1114836634143403764">सूचना</translation>
 <translation id="1120743664840974483">{"a": "अल्फा", "b": "ब्रेव्हो", "c": "चार्ली", "d": "डेल्टा", "e": "इको", "f": "फॉक्सट्रॉट", "g": "गोल्फ", "h": "हॉटेल", "i": "इंडिया", "j": "जुलिएट","k": "किलो", "l": "लिमा", "m": "माइक", "n": "नोव्हेंबर", "o": "ऑस्कर","p": "पापा", "q": "क्वेबेक", "r": "रोमिओ", "s": "सीएरा", "t": "टँगो", "u": "युनिफॉर्म", "v": "व्हिक्टर", "w": "व्हिस्की","x": "एक्सरे", "y": "यंकी", "z": "झुलू"}</translation>
 <translation id="1120938014254001895">दोन बोटांनी वरच्या दिशेला स्वाइप करा</translation>
 <translation id="1126928665165112660">तिर्यक नाही</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">आशय माहिती</translation>
 <translation id="2417948780551741035">अंतिम नोंदी</translation>
 <translation id="2419852971200420169">वर्णन सूची</translation>
-<translation id="2421113964388408478">हटवणे</translation>
 <translation id="2422937916923936891">मेनू आयटम चेक बॉक्‍स</translation>
 <translation id="2428534162001909979">कमांड मेनू</translation>
 <translation id="242998846562331953">सबटायटल</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">संपादन सुरू करण्यासाठी दोनदा टॅप करा</translation>
 <translation id="2598495320872286378">व्याकरण एरर</translation>
 <translation id="2603828437139726540">एक वर्ण वर जा</translation>
+<translation id="2619052155095999743">समाविष्ट करा</translation>
 <translation id="2619344480613750862">तुम्ही स्क्रीनच्या विभागांदरम्यानदेखील हलवू शकता. उदाहरणार्थ, तुम्ही लाँंचर, शेल्फ आणि तुमच्या Chrome टॅबदरम्यान हलवू शकता. पुढील विभागावर जाण्यासाठी, चार बोटांनी डावीकडून उजवीकडे स्वाइप करा. पुढे सुरू ठेवण्यासाठी, आता वापरून पाहा.</translation>
 <translation id="2624431853467395961">जाणून घ्या मोड उघडा</translation>
 <translation id="2626530649491650971">क्लिक करण्‍यायोग्य</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">लालभडक</translation>
 <translation id="4482330759234983253">मागील सारणी</translation>
 <translation id="4491109536499578614">इमेज</translation>
-<translation id="4505167975768625962">घालणे</translation>
 <translation id="4511186779140817916">फिकट बदामी</translation>
 <translation id="451510441928265982">मागील पातळी दोन शीर्षक नाही</translation>
 <translation id="4515799157838123044">आशयाच्या बॅकग्राउंडची रंगछटा</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">डिस्प्ले शैली शेजारी-शेजारी वर बदला</translation>
 <translation id="8215202828671303819">एकाधिक निवड</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% अपारदर्शकता.</translation>
+<translation id="8261506727792406068">हटवा</translation>
 <translation id="826825447994856889">परिचय</translation>
 <translation id="827266600368092403">निवड सुरू करा किंवा संपवा</translation>
 <translation id="827422111966801947">नीळ</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">O estilo de exibição atual é intercalado</translation>
 <translation id="1087788677726983142">Ocultar filtros de stream de eventos</translation>
 <translation id="1088402100970133699">Nenhum item de lista anterior</translation>
-<translation id="1114836634143403764">Sugestão</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "x-ray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Deslize para cima usando dois dedos</translation>
 <translation id="1126928665165112660">Sem itálico</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Informações sobre o conteúdo</translation>
 <translation id="2417948780551741035">Notas finais</translation>
 <translation id="2419852971200420169">Lista de descrições</translation>
-<translation id="2421113964388408478">Exclusão</translation>
 <translation id="2422937916923936891">Caixa de seleção de item de menu</translation>
 <translation id="2428534162001909979">Menus de comando</translation>
 <translation id="242998846562331953">Legenda</translation>
 <translation id="2435422727584637732">Azul-anil</translation>
+<translation id="2438712309510062123">Sugerir</translation>
 <translation id="2450814015951372393">Caixa de seleção</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="2462626033734746142">Grupo de botões de opção</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Toque duas vezes para começar a editar</translation>
 <translation id="2598495320872286378">Erro gramatical</translation>
 <translation id="2603828437139726540">Avançar um caractere</translation>
+<translation id="2619052155095999743">Inserir</translation>
 <translation id="2619344480613750862">Também é possível mudar de seção na tela. Por exemplo, você pode alternar entre o acesso rápido, a estante e as guias do Chrome. Para acessar a próxima seção, deslize da esquerda para a direita com quatro dedos. Tente agora para continuar.</translation>
 <translation id="2624431853467395961">Abre o modo de aprendizado</translation>
 <translation id="2626530649491650971">clicável</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Tijolo</translation>
 <translation id="4482330759234983253">Tabela anterior</translation>
 <translation id="4491109536499578614">Imagem</translation>
-<translation id="4505167975768625962">Inserção</translation>
 <translation id="4511186779140817916">Riviera</translation>
 <translation id="451510441928265982">Nenhum cabeçalho de nível 2 anterior</translation>
 <translation id="4515799157838123044">Escurecer conteúdo em segundo plano</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Mudar estilo de exibição para lado a lado</translation>
 <translation id="8215202828671303819">Seleção múltipla</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% de opacidade.</translation>
+<translation id="8261506727792406068">Excluir</translation>
 <translation id="826825447994856889">Introdução</translation>
 <translation id="827266600368092403">Iniciar ou finalizar seleção</translation>
 <translation id="827422111966801947">Índigo</translation>

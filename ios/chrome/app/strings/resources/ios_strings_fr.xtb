@@ -108,6 +108,7 @@
 <translation id="1974060860693918893">Paramètres avancés</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
+<translation id="2021670401941426298">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="2022352537516230970">Conçu pour votre iPhone</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
@@ -207,6 +208,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="313283613037595347">Créer un onglet de navigation privée</translation>
+<translation id="3134493362339304186">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, le cas échéant. Vous ne serez pas déconnecté de votre compte Google. Pour effacer d'autres historiques, consultez <ph name="BEGIN_LINK" />Mon activité Google<ph name="END_LINK" />.</translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
@@ -229,6 +231,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="3285962946108803577">Partager la page…</translation>
 <translation id="3290875554372353449">Sélectionner un compte</translation>
 <translation id="3311748811247479259">Désactivé</translation>
+<translation id="3317580614754548493">Vous ne serez pas déconnecté de votre compte Google. Pour effacer l'<ph name="BEGIN_LINK" />historique des recherches<ph name="END_LINK" /> ou d'autres historiques, accédez à la page <ph name="BEGIN_LINK" />Mon compte Google<ph name="END_LINK" /></translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informations sur le site</translation>
 <translation id="3329904751041170572">Impossible de se connecter au serveur.</translation>
@@ -557,6 +560,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</translation>
 <translation id="651505212789431520">Annuler la synchronisation ? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
+<translation id="6560725150890787329">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant. Vous ne serez pas déconnecté de votre compte Google. Pour effacer d'autres historiques, consultez <ph name="BEGIN_LINK" />Mon activité Google<ph name="END_LINK" />.</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.
@@ -676,7 +680,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
 <translation id="7603852183842204213">Pop-up bloqués (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Supprimer le mot de passe</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> min</translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
 <translation id="7646772052135772216">La synchronisation du mot de passe ne fonctionne pas</translation>
 <translation id="7649070708921625228">Aide</translation>
@@ -802,6 +805,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8981454092730389528">Commandes Google relatives à l'activité</translation>
 <translation id="8985320356172329008">Connecté à Google en tant que</translation>
+<translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. Celui-ci conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afficher l'original</translation>
 <translation id="9039373489628511875">Bande passante</translation>

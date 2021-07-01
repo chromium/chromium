@@ -257,7 +257,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Hoja de inicio</translation>
 <translation id="1812527064848182527">horizontal</translation>
-<translation id="1814698615734239189">Esta app está diseñada para dispositivos móviles. Se está ejecutando en modo de compatibilidad. Si permites que se cambie su tamaño, podría tener problemas, por ejemplo, que se reinicie.</translation>
 <translation id="1821930232296380041">Solicitud o parámetros de solicitud no válidos</translation>
 <translation id="1822540298136254167">Los sitios web que visitas y el tiempo que pasas en ellos</translation>
 <translation id="1826516787628120939">Comprobando</translation>
@@ -677,7 +676,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3431636764301398940">Guardar esta tarjeta para este dispositivo</translation>
 <translation id="3432601291244612633">Cerrar página</translation>
 <translation id="3435738964857648380">Seguridad</translation>
-<translation id="3435896845095436175">Habilitar</translation>
 <translation id="3438829137925142401">Usar las contraseñas guardadas en tu Cuenta de Google</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">El propietario del dispositivo desactivó el juego de dinosaurios.</translation>
@@ -814,6 +812,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3946209740501886391">Preguntar siempre en este sitio</translation>
 <translation id="3949571496842715403">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; su certificado de seguridad no especifica la extensión Nombres alternativos del asunto. Es posible que se deba a un error en la configuración o a que haya un atacante que está interceptando tu conexión.</translation>
 <translation id="3949601375789751990">Tu historial de navegación aparece aquí</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">No hay formas de pago guardadas</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3961148744525529027">La hoja del controlador de pagos está abierta a la mitad</translation>
@@ -821,7 +820,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3963721102035795474">Modo de lectura</translation>
 <translation id="3963837677003247395">¿Quieres continuar de forma manual?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ninguno}=1{De 1 sitio }other{De # sitios }}</translation>
-<translation id="3970481983430640194">Ahora puedes arrastrar esta app y cambiarle el tamaño</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
 <translation id="3973357910713125165">Botón Realizar Verificación de seguridad de Chrome: presiona Intro para realizar la Verificación de seguridad en la configuración de Chrome</translation>
@@ -940,6 +938,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4346197816712207223">Tarjetas de crédito aceptadas</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda cambiar esta contraseña ahora en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios donde la uses.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> quiere detectar dispositivos Bluetooth cercanos. Se encontraron los siguientes dispositivos:</translation>
 <translation id="4356973930735388585">Es posible que los atacantes que se encuentren en este sitio intenten instalar programas peligrosos en tu computadora con el fin de robarte información o borrarla (p. ej., fotos, contraseñas, mensajes y tarjetas de crédito).</translation>
 <translation id="4358059973562876591">Debido a un error relacionado con la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="4358461427845829800">Administrar formas de pago…</translation>
@@ -1392,7 +1391,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6032524144326295339">Buzón 2</translation>
 <translation id="6032955021262906325">Encuadernado a la izquierda</translation>
 <translation id="6034000775414344507">Gris claro</translation>
-<translation id="6034062182346928710">Es posible que el cambio de tamaño de <ph name="APP_NAME" /> no funcione correctamente. Utiliza los tamaños predeterminados de ventana para que la app responda de modo previsible.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Plegado en acordeón</translation>
 <translation id="6039846035001940113">Si el problema persiste, comunícate con el propietario del sitio.</translation>
@@ -1422,7 +1420,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6120179357481664955">¿Recuerdas tu ID de IUP?</translation>
 <translation id="6123290840358279103">Ver la tarjeta virtual</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
-<translation id="6143538402333184781">Esta app solo es compatible con el tamaño "Teléfono".</translation>
 <translation id="6146055958333702838">Revisa los cables y reinicia los routers, módems u otros dispositivos
         de red que estés usando.</translation>
 <translation id="614940544461990577">Intenta:</translation>
@@ -1972,7 +1969,6 @@ Detalles adicionales:
 <translation id="8225771182978767009">La persona que configuró esta computadora decidió bloquear este sitio.</translation>
 <translation id="8228419419708659934">Vista de dos páginas</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">No volver a preguntarme sobre esta app</translation>
 <translation id="8232343881378637145">Temperatura de la plataforma</translation>
 <translation id="8238581221633243064">Abre la página en una nueva pestaña de incógnito.</translation>
 <translation id="8241707690549784388">La página que buscas ha utilizado la información que has especificado. Volver a la página podría provocar la repetición de alguna acción. ¿Deseas continuar?</translation>
@@ -1985,7 +1981,6 @@ Detalles adicionales:
 <translation id="825929999321470778">Mostrar todas las contraseñas guardadas</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8262952874573525464">Costura del borde inferior</translation>
-<translation id="826298712171642726">¿Deseas habilitar el cambio de tamaño?</translation>
 <translation id="8265992338205884890">Datos visibles</translation>
 <translation id="8267698848189296333">Acceder como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos separados/copias intercaladas</translation>
@@ -2016,6 +2011,7 @@ Detalles adicionales:
 <translation id="8355270400102541638">Contexto de falla local:</translation>
 <translation id="8363502534493474904">Desactivar el modo de avión.</translation>
 <translation id="8364627913115013041">Sin establecer</translation>
+<translation id="8368027906805972958">Dispositivo desconocido o no compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Servicios de Google Play</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Variable</translation>

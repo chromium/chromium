@@ -2286,7 +2286,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android telefonu</translation>
 <translation id="3470442499439619530">Bu istifadəçini silin</translation>
-<translation id="3471350386419633991">Oxu siyahısına tablar əlavə etmək üçün taba sağ düymə ilə toxunun və ya Əlfəcin ikonasına toxunun. Əlfəcin panelindən giriş edin.</translation>
 <translation id="3471876058939596279">HDMI və C növlü USB portları video üçün eyni vaxtda işlədilə bilməz. Fərqli video port istifadə edin.</translation>
 <translation id="3473241910002674503">Planşet rejimindəki düymələrlə əsas səhifəyə, geri keçin və tətbiqləri dəyişdirin.</translation>
 <translation id="3473479545200714844">Ekran böyüdücü</translation>
@@ -2755,7 +2754,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3945513714196326460">Daha qısa ad seçin</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> şəkil axtarır</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> aşağıdakı qovluqlarda olan faylları redaktə edə bilər</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">İnternet Explorer'dən import edildi</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Bu tətbiq təhlükəli ola bilər}other{Bu tətbiqlər təhlükəli ola bilər}}</translation>
 <translation id="3950820424414687140">Giriş</translation>
@@ -3076,7 +3074,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4349828822184870497">Faydalı</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> üçün məkanınıza girişi həmişə bloklayın</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> yaxınlıqdakı Bluetooth cihazlarını axtarmaq istəyir. Aşağıdakı cihazlar tapıldı:</translation>
 <translation id="4354073718307267720">Sayt ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və ya kamera mövqeyini izləmək istədikdə icazə tələb edin</translation>
 <translation id="4354344420232759511">Daxil olduğunuz saytlar burda görünəcək</translation>
 <translation id="435527878592612277">Foto seçin</translation>
@@ -3338,7 +3335,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4625078469366263107">Tətbiqi Aktiv Edin</translation>
 <translation id="4627427111733173920">Kukilər blok edildi</translation>
 <translation id="4627442949885028695">Başqa cihazdan davam edin</translation>
-<translation id="4628757576491864469">Cihazlar</translation>
 <translation id="4628762811416793313">Linux konteynerinin quraşdırılması tamamlanmadı. Yenidən cəhd edin.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> profilini açın</translation>
 <translation id="4632655012900268062">Kartları fərdiləşdirin</translation>
@@ -3505,6 +3501,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4830502475412647084">OS güncəlləməsi quraşdırılır</translation>
 <translation id="4830573902900904548">Sənin <ph name="DEVICE_TYPE" /> istifadə edərək İnternet qoşulmaq iqtidarında deyil <ph name="NETWORK_NAME" /> . Başqa şəbəkə seçin. <ph name="LEARN_MORE_LINK_START" /> Daha çox məlumat <ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Çap serverindən 1 printer tapıldı</translation>
+<translation id="4834007576107377210">Axtarış tarixçənizi silmək üçün axtarış sisteminizin təlimatlarına (təmin edilibsə) baxın</translation>
 <translation id="4836046166855586901">Sayt bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək istədikdə icazə istəsin</translation>
 <translation id="4836504898754963407">Barmaq izlərini idarə edin</translation>
 <translation id="4837128290434901661">Google Axtarış seçiminə qayıtmaq istəyirsiniz?</translation>
@@ -5121,7 +5118,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6651237644330755633">Veb sayt tanınması üçün bu sertifikata inanın</translation>
 <translation id="6651495917527016072">Wi-Fi şəbəkələrini telefonunuzla sinxronlaşdırın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> inteqrasiyası yalnız x86_64 platformalarında dəstəklənir. ARM və ya x86 platforması üzərində hazırlanmış Chromebook'lar bu funksionallığı dəstəkləmir.</translation>
-<translation id="66537479323396140">Axtarış bölməsindəki tarixçə və avtomatik tamamlamaları silir. Google Hesabının <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> bölməsində başqa axtarış tarixçəsinin formaları ola bilər.</translation>
 <translation id="6654509035557065241">Şəbəkə tərcih edin</translation>
 <translation id="6655190889273724601">Developer rejimi</translation>
 <translation id="6655458902729017087">Hesabları Gizlədin</translation>
@@ -6704,7 +6700,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8363142353806532503">Mikrofon blok edildi</translation>
 <translation id="8366396658833131068">Şəbəkə bağlantınız bərpa oldu. Fərqli şəbəkə seçin və ya kiosk tətbiqini işə salmaq üçün "Davam edin" düyməsinə basın.</translation>
 <translation id="8366694425498033255">Seçim açarları</translation>
-<translation id="8368027906805972958">Naməlum və ya dəstəklənməyən cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Bütün əlfəcinləri açın</translation>
 <translation id="8370294614544004647">Noutbuk bağlandıqda yuxu rejiminə keçsin</translation>
 <translation id="8371695176452482769">İndi Danışın</translation>
@@ -6717,7 +6712,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8379991678458444070">Tabı əlfəcinlərə əlavə etməklə asanlıqla geri qayıdın</translation>
 <translation id="8382913212082956454">E-poçt ünvanını kopyalayın</translation>
 <translation id="8386091599636877289">Qayda tapılmadı.</translation>
-<translation id="838705362287678887"><ph name="BEGIN_LINK_SEARCH" />Axtarış<ph name="END_LINK_SEARCH" /> və ya digər tarixçə formalarını təmizləmək üçün <ph name="BEGIN_LINK_GOOGLE" />Google Hesabım<ph name="END_LINK_GOOGLE" /> bölməsini ziyarət edin</translation>
 <translation id="8387361103813440603">Məkanınıza baxmaq icazəsi verilməyib</translation>
 <translation id="8388770971141403598">İkinci dərəcəli profillər dəstəklənmir</translation>
 <translation id="8389416080014625855">Bu Səhifə üçün QR kodu yaradın</translation>

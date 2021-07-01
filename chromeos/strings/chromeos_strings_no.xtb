@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fase 2-autentisering av EAP</translation>
+<translation id="2783010256799387990">BESTÅTT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2862104018715411648">Legg dokumentet på skanneren, og velg Skann for å komme i gang</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
 <translation id="4378373042927530923">Ikke kjørt</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Min disk</translation>
@@ -229,7 +231,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5691511426247308406">Familie</translation>
 <translation id="5752751666635965375">Lag ditt eget spill</translation>
 <translation id="5760715441271661976">Portaltilstand</translation>
-<translation id="5797428682393400134">FULLFØRT</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5849570051105887917">Kode for leverandøren for hjemmeenheten</translation>
@@ -296,6 +297,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
 <translation id="7162487448488904999">Galleri</translation>
+<translation id="7172721935181587524">1 bilde</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="7216409898977639127">Mobiloperatør</translation>
 <translation id="7271040990581020067">Skanneren er i bruk for øyeblikket. Prøv igjen senere.</translation>
@@ -345,6 +347,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8297006494302853456">Svakt</translation>
 <translation id="8302368968391049045">HTTPS-brannmur</translation>
+<translation id="8318753676953949627">Ingen bilder</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
 <translation id="8364946094152050673">Tomme navnetjenere</translation>

@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">หากต้องการบันทึกรูปภาพ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chromium เพิ่มไปยังรูปภาพ</translation>
 <translation id="1289216811211435351">เปลี่ยนไปใช้ Chromium</translation>
 <translation id="1361748954329991663">Chromium เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chromium เวอร์ชันใหม่อีกต่อไป</translation>
+<translation id="1370204544543370355">ลงชื่อเข้าใช้ Chromium ด้วยบัญชี Google เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="1431818719585918472">ให้ Chromium ล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1472013873724362412">บัญชีของคุณไม่ทำงานใน Chromium โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
 <translation id="1507010443238049608">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chromium</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">บัญชีของคุณจัดการโดย <ph name="HOSTED_DOMAIN" /> ระบบจึงจะล้างข้อมูล Chromium จากอุปกรณ์นี้</translation>
 <translation id="4806326830773390517">ช่วยปรับปรุง Chromium โดยการส่งสถิติการใช้งานและรายงานข้อขัดข้องไปยัง Google</translation>
 <translation id="4828317641996116749">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งภายหลัง</translation>
-<translation id="4852878756222711218">ลงชื่อเข้าใช้ด้วยบัญชี Google เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="4985291216379576555">ออฟไลน์อยู่ Chromium ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="4999538639245140991">เนื่องจากคุณกำลังออกจากระบบบัญชีที่จัดการโดย <ph name="SIGNOUT_MANAGED_DOMAIN" /> ข้อมูล Chromium ของคุณจะถูกลบออกจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ในบัญชี Google</translation>
 <translation id="5171868502429358653">ลงชื่อเข้าใช้ Chromium</translation>

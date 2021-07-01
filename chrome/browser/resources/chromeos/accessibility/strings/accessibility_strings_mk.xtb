@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Тековниот стил на екранот е подредени преплетени рамки (interleave)</translation>
 <translation id="1087788677726983142">Сокриј ги филтрите за пренос на настани</translation>
 <translation id="1088402100970133699">Нема претходна ставка на списокот</translation>
-<translation id="1114836634143403764">Предлог</translation>
 <translation id="1120743664840974483">{„a“: „алфа“, „b“: „браво“, „c“: „чарли“, „d“: „делта“, „e“: „ехо“, „f“: „фокстрот“, „g“: „голф“, „h“: „хотел“, „i“: „индија“, „j“: „џулиет“,„k“: „кило“, „l“: „лима“, „m“: „мајк“, „n“: „ноември“, „o“: „оскар“,„p“: „папа“, „q“: „квебек“, „r“: „ромео“, „s“: „сиера“, „t“: „танго“, „u“: „униформа“, „v“: „виктор“, „w“: „виски“,„x“: „ексреј“, „y“: „јенки“, „z“: „зулу“}</translation>
 <translation id="1120938014254001895">Повлечете нагоре со два прста</translation>
 <translation id="1126928665165112660">Не е курзив</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Информации за содржина</translation>
 <translation id="2417948780551741035">Референци</translation>
 <translation id="2419852971200420169">Список со опис</translation>
-<translation id="2421113964388408478">Бришење</translation>
 <translation id="2422937916923936891">Поле за избор на ставка од мени</translation>
 <translation id="2428534162001909979">Менија со наредби</translation>
 <translation id="242998846562331953">Наслов</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Допрете двапати за да започнете со изменување</translation>
 <translation id="2598495320872286378">Граматичка грешка</translation>
 <translation id="2603828437139726540">Преместете нанапред за еден знак</translation>
+<translation id="2619052155095999743">Вметни</translation>
 <translation id="2619344480613750862">Може да се движите и помеѓу делови на екранот. На пример, може да се движите помеѓу стартерот, полицата и картичките на Chrome. За да одите на следниот дел, повлечете одлево надесно со четири прста. Пробајте сега за да продолжите.</translation>
 <translation id="2624431853467395961">Отвори режим за учење</translation>
 <translation id="2626530649491650971">на кој може да се кликне</translation>
@@ -508,7 +507,6 @@
 <translation id="4479068155583208887">Црвена како цигла</translation>
 <translation id="4482330759234983253">Претходна табела</translation>
 <translation id="4491109536499578614">Слика</translation>
-<translation id="4505167975768625962">Вметнување</translation>
 <translation id="4511186779140817916">Боја на бланширан бадем</translation>
 <translation id="451510441928265982">Нема претходен наслов на ниво 2</translation>
 <translation id="4515799157838123044">Затемни ги содржините во заднина</translation>
@@ -1011,6 +1009,7 @@
 <translation id="8212109599554677485">Сменете го стилот на екранот на еден до друг</translation>
 <translation id="8215202828671303819">Повеќекратно избирање</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % непроѕирност.</translation>
+<translation id="8261506727792406068">Избриши</translation>
 <translation id="826825447994856889">Вовед</translation>
 <translation id="827266600368092403">Започнете или завршете го изборот</translation>
 <translation id="827422111966801947">Индиго</translation>

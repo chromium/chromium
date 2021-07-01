@@ -956,17 +956,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (nilai 1) disetel, hanya variasi yang dianggap sebagai perbaikan keamanan atau stabilitas penting yang akan diterapkan ke <ph name="PRODUCT_OS_NAME" />.
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan diterapkan ke browser di layar login. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_OS_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
-<translation id="2216380260552785166">Kebijakan ini mengontrol cara <ph name="PRODUCT_NAME" /> menafsirkan kebijakan sitelist/greylist untuk fitur Dukungan Browser Lama. Kebijakan ini akan memengaruhi kebijakan berikut: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" />, dan <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      Jika disetel ke 'Default' (0) atau tidak disetel, pencocokan URL kurang ketat. Aturan yang tidak berisi "/" akan mencari substring di mana pun di nama host URL.
-
-      Jika disetel ke 'Strict' (1), pencocokan URL akan lebih ketat. Aturan yang tidak berisi "/" hanya akan dicocokkan pada akhir nama host. Aturan juga harus berada di batas nama domain. Aturan ini lebih kompatibel dengan <ph name="MS_IE_PRODUCT_NAME" /> dan <ph name="MS_EDGE_PRODUCT_NAME" />.
-
-      Misalnya, dengan aturan "example.com":
-
-      "http://example.com/" dan "http://subdomain.example.com/" cocok, apa pun mode penguraiannya.
-
-      "http://notexample.com/", "http://example.com.invalid.com/", dan "http://example.comabc/" hanya cocok dalam mode 'Default'.</translation>
 <translation id="2221850122314326571">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan.
       Jika setelan ini dinonaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat lama yang disediakan oleh platform.
       Jika setelan ini tidak ditetapkan, pemverifikasi sertifikat yang lama atau bawaan dapat digunakan.
@@ -980,6 +969,10 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2223393221350938149">Jangan izinkan situs apa pun menjalankan JIT JavaScript</translation>
 <translation id="2223582957891074498">Jika kebijakan ditetapkan ke Benar (True), screenshot yang diambil dengan pintasan keyboard atau API ekstensi tidak akan diizinkan. Jika kebijakan ditetapkan ke Salah (False), screenshot akan diizinkan.</translation>
 <translation id="2223598546285729819">Setelan pemberitahuan default</translation>
+<translation id="2231726854197443389">Kebijakan ini mengontrol apakah pengguna dapat mengaktifkan Mode Khusus HTTPS di Setelan. Mode Khusus HTTPS mengupgrade semua navigasi ke HTTPS.
+      Jika setelan ini tidak disetel atau disetel ke diizinkan, pengguna akan diizinkan mengaktifkan Mode Khusus HTTPS.
+      Jika setelan ini disetel ke tidak diizinkan, pengguna tidak akan diizinkan mengaktifkan Mode Khusus HTTPS.
+      Mengaktifkan paksa Mode Khusus HTTPS saat ini tidak didukung.</translation>
 <translation id="2231817271680715693">Impor histori browseran dari browser default saat pertama kali dijalankan</translation>
 <translation id="2231962946025538735">Kebijakan ini tidak digunakan lagi. Gunakan kebijakan <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> untuk mengontrol ketersediaan plugin Flash dan <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> untuk mengontrol apakah penampil PDF yang terintegrasi akan digunakan untuk membuka file PDF atau tidak.
 
@@ -1208,6 +1201,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2482676533225429905">Perpesanan Asli</translation>
 <translation id="2483146640187052324">Prediksi tindakan jaringan di koneksi jaringan apa pun</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
+<translation id="2497965601277442929">Jangan izinkan pengguna mengaktifkan Mode Khusus HTTPS</translation>
 <translation id="2498238926436517902">Selalu sembunyikan rak secara otomatis</translation>
 <translation id="250022556568924228">Jika kebijakan disetel, <ph name="PRODUCT_OS_NAME" /> akan mendownload Persyaratan Layanan dan menampilkannya kepada pengguna saat sesi akun lokal perangkat dimulai. Pengguna hanya dapat login ke sesi setelah menerima Persyaratan Layanan.
 
@@ -3764,6 +3758,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Pengguna tidak dapat mengubah setelan ini.</translation>
 <translation id="5848438019586925019">Algoritme untuk pembuatan pasangan kunci.</translation>
 <translation id="585270638818921943">Cegah pengguna menggunakan aplikasi Android dari sumber yang tidak tepercaya</translation>
+<translation id="5853547031212075792">Izinkan pengguna mengaktifkan Mode Khusus HTTPS</translation>
 <translation id="5859344336338527083">Menyetel kebijakan akan menentukan URL mana yang dapat menginstal ekstensi, aplikasi, dan tema. Sebelum <ph name="PRODUCT_NAME" /> 21, pengguna dapat mengklik link ke file *.crx, dan <ph name="PRODUCT_NAME" /> akan menawarkan untuk menginstal file setelah menampilkan beberapa peringatan. Setelah itu, file tersebut harus didownload dan ditarik ke halaman setelan <ph name="PRODUCT_NAME" />. Setelan ini memungkinkan URL tertentu menggunakan alur penginstalan lama yang lebih mudah.
 
       Setiap item dalam daftar ini merupakan pola kecocokan gaya ekstensi (buka https://developer.chrome.com/extensions/match_patterns). Pengguna dapat dengan mudah menginstal item dari URL apa pun yang cocok dengan item dalam daftar ini. Baik lokasi file *.crx maupun halaman tempat dimulainya download (halaman perujuk) harus diizinkan oleh pola ini.
@@ -5458,6 +5453,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7962093600142350905">Kebijakan ini mengontrol apakah printer privet yang tersedia akan ditampilkan kepada pengguna di dialog pratinjau cetak.
       Jika kebijakan ini disetel ke Aktif, printer privet yang tersedia akan ditampilkan.
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, printer privet tidak akan muncul di pratinjau cetak, karena metode pencetakan ini sudah tidak digunakan lagi.</translation>
+<translation id="7970844378072291834">Aktifkan paksa Mode Khusus HTTPS (belum didukung)</translation>
 <translation id="7973609468423251675">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Menentukan durasi waktu tanpa masukan pengguna setelah layar diredupkan saat menggunakan daya baterai.
@@ -6095,6 +6091,7 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Jika kebijakan tidak disetel, kebijakan default khusus platform akan digunakan: <ph name="IE_PRODUCT_NAME" /> untuk <ph name="MS_WIN_NAME" />, atau <ph name="SAFARI_PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" />. Di <ph name="LINUX_OS_NAME" />, peluncuran browser alternatif akan gagal.</translation>
 <translation id="8836975838488342340">Durasi waktu kode akses valid (dalam detik).</translation>
+<translation id="8842208363354615697">Mengizinkan pengaktifan Mode Khusus HTTPS</translation>
 <translation id="885147810817138322">Tampilkan rekomendasi media kepada pengguna</translation>
 <translation id="8852579753940989645">Mengaktifkan Integritas Kode Perender</translation>
 <translation id="8854571659927427063">Jika kebijakan disetel ke Aktif, bookmark akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada bookmark yang akan diimpor saat pertama kali dijalankan.

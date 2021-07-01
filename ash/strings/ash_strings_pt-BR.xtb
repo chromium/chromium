@@ -137,6 +137,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1990046457226896323">Download de arquivos de fala concluído</translation>
 <translation id="1993072747612765854">Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Espaço de trabalho atual</translation>
+<translation id="1999628559811343244">Captura de pacote de rede iniciada</translation>
 <translation id="2016340657076538683">Digite uma mensagem</translation>
 <translation id="2018630726571919839">Conte uma piada</translation>
 <translation id="2021864487439853900">Clique para desbloquear</translation>
@@ -157,7 +158,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2132302418721800944">Gravar tela cheia</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar novamente</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Deslize com três dedos para baixo para fechar a Visão geral</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
@@ -706,7 +706,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6614169507485700968">A tela de privacidade está ativada</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
 <translation id="6629480180092995136">O app <ph name="APP_NAME" /> quer usar o microfone</translation>
-<translation id="6630773993843701741">Abra as configurações do Bluetooth para parear o dispositivo manualmente</translation>
+<translation id="6630773993843701741">Abra as configurações do Bluetooth se quiser parear o dispositivo manualmente</translation>
 <translation id="6637729079642709226">Alterar horário</translation>
 <translation id="6641720045729354415">Alternar Legenda instantânea. <ph name="STATE_TEXT" /></translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quer confirmar sua identidade</translation>
@@ -728,6 +728,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6751826523481687655">O acompanhamento de desempenho está ativado</translation>
 <translation id="6752912906630585008">Espaço de trabalho <ph name="REMOVED_DESK" /> removido e integrado ao <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Nenhuma mídia em reprodução</translation>
+<translation id="6773040085467426602">Clique em "Parar" para interromper as operações atuais de captura de pacotes.</translation>
 <translation id="6777216307882431711">Carregando dispositivos USB-C conectados</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6803622936009808957">Não foi possível espelhar os displays porque não foram encontradas resoluções suportadas. Em vez disso, foi ativada a área de trabalho estendida.</translation>
@@ -941,6 +942,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8433977262951327081">O atalho para mostrar o balão de menu de opções de entrada na estante foi alterado. Use <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Espaço de trabalho <ph name="DESK_TITILE" /> ativado</translation>
 <translation id="8452135315243592079">Chip ausente</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Fechar o Selecionar para ouvir</translation>
 <translation id="847056008324733326">Exibir configurações de escala</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> o recurso <ph name="FEATURE_NAME" />.</translation>
@@ -1043,7 +1045,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="9193626018745640770">Transmitindo para um destinatário desconhecido</translation>
 <translation id="9194617393863864469">Fazer login com outro usuário...</translation>
 <translation id="9198992156681343238">A resolução de <ph name="DISPLAY_NAME" /> foi modificada para <ph name="RESOLUTION" />. Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="9201044636667689546">Conectar <ph name="NAME" /> ao Chromebook</translation>
+<translation id="9201044636667689546">Conecte <ph name="NAME" /> ao Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gerenciada pelo seu administrador</translation>
 <translation id="9210037371811586452">Saindo do modo de área de trabalho unificada</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>

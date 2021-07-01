@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
+<translation id="2783010256799387990">ציון 'עובר'</translation>
 <translation id="2789486458103222910">אישור</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2862104018715411648">כדי להתחיל, יש למקם את המסמך על הסורק וללחוץ על 'סריקה'</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
 <translation id="4378373042927530923">לא הופעל</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
@@ -229,7 +231,6 @@
 <translation id="5691511426247308406">משפחה</translation>
 <translation id="5752751666635965375">רוצה ליצור משחק משלך?</translation>
 <translation id="5760715441271661976">מצב הפורטל</translation>
-<translation id="5797428682393400134">הבדיקה הסתיימה בהצלחה</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5849570051105887917">קוד ספק ביתי</translation>
@@ -296,6 +297,7 @@
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
 <translation id="7162487448488904999">גלריה</translation>
+<translation id="7172721935181587524">תמונה אחת</translation>
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
@@ -345,6 +347,7 @@
 <translation id="8294431847097064396">מקור</translation>
 <translation id="8297006494302853456">חלש</translation>
 <translation id="8302368968391049045">‏חומת אש מסוג HTTPS</translation>
+<translation id="8318753676953949627">אין תמונות</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>

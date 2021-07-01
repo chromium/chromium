@@ -24,6 +24,7 @@
 ਜੇ '<ph name="SERVICE_SCRIPT_NAME" />' 'ਤੇ ਪਹਿਲਾਂ ਹੀ ਨਿਸ਼ਾਨ ਲੱਗਾ ਹੋਇਆ ਹੈ, ਤਾਂ ਇਸ ਤੋਂ ਨਿਸ਼ਾਨ ਹਟਾਓ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
 <translation id="225614027745146050">ਸੁਆਗਤ ਹੈ</translation>
 <translation id="2320166752086256636">ਕੀ-ਬੋਰਡ ਲੁੁਕਾਓ</translation>
+<translation id="2329392777730037872">ਕਲਾਇੰਟ 'ਤੇ <ph name="URL" /> ਖੋਲ੍ਹਣ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="2333212046079545895">ਕਾਪੀਰਾਈਟ 2021 Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2366718077645204424">ਹੋਸਟ ਤੱਕ ਪਹੁੰਚਣ ਵਿੱਚ ਅਸਮਰੱਥ। ਇਹ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੇ ਜਾ ਰਹੇ ਨੈੱਟਵਰਕ ਦਸੰਰੂਪਣ ਦੇ ਕਾਰਨ ਹੈ।</translation>
@@ -87,6 +88,7 @@
 <translation id="4867841927763172006">PrtScn ਭੇਜੋ</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> ਲਈ ਕਨੈਕਸ਼ਨ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4985296110227979402">ਤੁਹਾਨੂੰ ਪਹਿਲਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਪਹੁੰਚ ਲਈ ਸਥਾਪਤ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="4987330545941822761">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਸਥਾਨਕ ਤੌਰ 'ਤੇ URL ਖੋਲ੍ਹਣ ਲਈ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਨਿਰਧਾਰਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਨੂੰ ਹੇਠਾਂ ਦਿੱਤੀ ਸੂਚੀ ਵਿੱਚੋਂ ਚੁਣੋ।</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ਆਫ਼ਲਾਈਨ)</translation>
 <translation id="507204348399810022">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="HOSTNAME" /> ਲਈ ਰੀਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5170982930780719864">ਅਵੈਧ ਹੋਸਟ ਆਈ.ਡੀ.</translation>
@@ -133,6 +135,7 @@
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7312846573060934304">ਹੋਸਟ ਆਫ਼ਲਾਈਨ ਹੈ।</translation>
 <translation id="7319983568955948908">ਸ਼ੇਅਰਿੰਗ ਰੋਕੋ</translation>
+<translation id="7359298090707901886">ਸਥਾਨਕ ਮਸ਼ੀਨ 'ਤੇ URL ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਚੁਣੇ ਗਏ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
 <translation id="7401733114166276557">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ</translation>
 <translation id="7434397035092923453">ਕਲਾਇੰਟ ਲਈ ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ਕਲਾਇੰਟ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ: <ph name="CLIENT_USERNAME" />.</translation>

@@ -963,7 +963,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="202918510990975568">Segurtasuna eta saio-hasiera konfiguratzeko, idatzi pasahitza</translation>
 <translation id="2030455719695904263">Ukipen-panela</translation>
 <translation id="2031639749079821948">Google-ko kontuan gordeta dago pasahitza</translation>
-<translation id="2031914984822377766">Gehitu <ph name="LINK_BEGIN" />webguneetako hizkuntza<ph name="LINK_END" /> lehenetsiak. Zerrendako lehen hizkuntza erabiliko da itzulpenetan.</translation>
+<translation id="2031914984822377766">Gehitu <ph name="LINK_BEGIN" />webguneetarako hizkuntza<ph name="LINK_END" /> lehenetsiak. Zerrendako lehen hizkuntza erabiliko da itzulpenetan.</translation>
 <translation id="2034346955588403444">Gehitu beste wifi-sare bat</translation>
 <translation id="203574396658008164">Gaitu pantaila blokeatutik oharrak idazteko aukera</translation>
 <translation id="2037445849770872822">Gainbegiratzea konfiguratu da Google-ko kontu honetan. Gurasoen murriztapen gehiago konfiguratzeko, hautatu Egin aurrera.
@@ -2287,7 +2287,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3468298837301810372">Etiketa</translation>
 <translation id="3468999815377931311">Android-eko telefonoa</translation>
 <translation id="3470442499439619530">Kendu erabiltzailea</translation>
-<translation id="3471350386419633991">Fitxak irakurketa-zerrendan gehitzeko, egin klik eskuineko botoiarekin fitxa batean edo sakatu laster-marken ikonoa. Atzi itzazu laster-marken barratik.</translation>
 <translation id="3471876058939596279">HDMI eta USB Type-C motako atakak ezin dira bideorako erabili aldi berean. Erabili beste bideo-ataka bat.</translation>
 <translation id="3473241910002674503">Tableta moduan, erabili botoiak orri nagusira joateko, atzera egiteko eta aplikazioz aldatzeko.</translation>
 <translation id="3473479545200714844">Lupa</translation>
@@ -2756,7 +2755,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3945513714196326460">Idatzi izen laburrago bat</translation>
 <translation id="3948116654032448504">&amp;Bilatu irudia <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> webguneak karpeta hauetako fitxategiak editatzeko baimena du</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Internet Explorer arakatzailetik inportatutakoak</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Baliteke aplikazio hau arriskutsua izatea}other{Baliteke aplikazio hauek arriskutsuak izatea}}</translation>
 <translation id="3950820424414687140">Hasi saioa</translation>
@@ -3079,7 +3077,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4349828822184870497">Lagungarria da</translation>
 <translation id="4350230709416545141">Blokeatu beti <ph name="HOST" /> ostalariari kokapena atzitzeko aukera</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> webguneak inguruko Bluetooth bidezko gailuak bilatu nahi ditu. Gailu hauek aurkitu dira:</translation>
 <translation id="4354073718307267720">Eskatu zure baimena webguneren batek inguruaren 3D-ko mapa bat sortu edo kameraren posizioaren jarraipena egin nahi duenean</translation>
 <translation id="4354344420232759511">Hemen agertuko dira bisitatzen dituzun webguneak</translation>
 <translation id="435527878592612277">Hautatu argazkia</translation>
@@ -3341,7 +3338,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4625078469366263107">Gaitu aplikazioa</translation>
 <translation id="4627427111733173920">Cookieak blokeatuta daude</translation>
 <translation id="4627442949885028695">Jarraitu beste gailu batetik</translation>
-<translation id="4628757576491864469">Gailuak</translation>
 <translation id="4628762811416793313">Ez da osatu Linux edukiontziaren konfigurazioa. Saiatu berriro.</translation>
 <translation id="4629521233550547305">Ireki <ph name="PROFILE_NAME" /> erabiltzailearen profila</translation>
 <translation id="4632655012900268062">Pertsonalizatu txartelak</translation>
@@ -3508,6 +3504,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4830502475412647084">Sistema eragilearen eguneratzea instalatzen</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> gailuak ezin du konektatu Internetera <ph name="NETWORK_NAME" /> erabilita. Aukeratu beste sare bat. <ph name="LEARN_MORE_LINK_START" />Lortu informazio gehiago<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Inprimagailu bat aurkitu da inprimatze-zerbitzarian</translation>
+<translation id="4834007576107377210">Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko</translation>
 <translation id="4836046166855586901">Eman gailua erabiltzen ari zaren galdetzeko baimena webguneei</translation>
 <translation id="4836504898754963407">Kudeatu hatz-markak</translation>
 <translation id="4837128290434901661">Google Bilaketa zerbitzura itzuli nahi duzu?</translation>
@@ -5126,7 +5123,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6651237644330755633">Jo fidagarritzat webguneak identifikatzeko ziurtagiri hau</translation>
 <translation id="6651495917527016072">Sinkronizatu wifi-sareak telefonoarekin. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">x86_64 plataformetan soilik onartzen da Chrome <ph name="MS_AD_NAME" /> integrazioa. ARM eta x86 plataformak erabiltzen dituzten Chromebook gailuek ez dute onartzen funtzio hori.</translation>
-<translation id="66537479323396140">Bilaketa-koadroko historia eta osatze automatikoak garbitzen ditu. Google-ko kontuko historia arakatzeko beste modu batzuk aurki zenitzake <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="6654509035557065241">Sare hobetsia</translation>
 <translation id="6655190889273724601">Garatzaile modua</translation>
 <translation id="6655458902729017087">Ezkutatu kontuak</translation>
@@ -6709,7 +6705,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8363142353806532503">Mikrofonoa blokeatua dago</translation>
 <translation id="8366396658833131068">Sareko konexioa leheneratu da. Hautatu beste sare bat edo sakatu hemen behean dagoen "Jarraitu" botoia aplikazio espezializatua abiarazteko.</translation>
 <translation id="8366694425498033255">Hautatze-teklak</translation>
-<translation id="8368027906805972958">Gailu ezezaguna edo bateraezina (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">I&amp;reki laster-marka guztiak</translation>
 <translation id="8370294614544004647">Ixtean, ezarri ordenagailu eramangarria inaktibo</translation>
 <translation id="8371695176452482769">Hitz egin</translation>
@@ -6722,7 +6717,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8379991678458444070">Hona bizkor itzuli ahal izateko, egin fitxa honen laster-marka</translation>
 <translation id="8382913212082956454">Kopiatu &amp;helbide elektronikoa</translation>
 <translation id="8386091599636877289">Ez da aurkitu gidalerroa.</translation>
-<translation id="838705362287678887"><ph name="BEGIN_LINK_SEARCH" />Bilaketa-historia<ph name="END_LINK_SEARCH" /> edo beste historia mota batzuk garbitzeko, joan <ph name="BEGIN_LINK_GOOGLE" />Google Kontua<ph name="END_LINK_GOOGLE" /> atalera</translation>
 <translation id="8387361103813440603">Ezin dute ikusi zure kokapena</translation>
 <translation id="8388770971141403598">Ez dira onartzen bigarren mailako profilak</translation>
 <translation id="8389416080014625855">Sortu orriaren QR kodea</translation>
@@ -6856,7 +6850,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8553342806078037065">Kudeatu beste pertsona batzuk</translation>
 <translation id="8554899698005018844">Ez da zehaztu hizkuntzarik</translation>
 <translation id="8557022314818157177">Jarraitu segurtasun-giltza sakatzen, hatz-marka hauteman arte</translation>
-<translation id="8557180006508471423">Aktibatu "Google Chrome" Mac-eko Kokapen-zerbitzuetan</translation>
+<translation id="8557180006508471423">Aktibatu "Google Chrome" Mac-eko Kokapen-zerbitzuak ezarpenean</translation>
 <translation id="8557930019681227453">Manifestua</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Ireki guztiak &amp;beste leiho batean}=1{Ireki &amp;beste leiho batean}other{Ireki guztiak ({COUNT}) &amp;beste leiho batean}}</translation>
 <translation id="8561206103590473338">Elefantea</translation>

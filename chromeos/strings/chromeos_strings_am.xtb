@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">ስርዓት</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2751739896257479635">EAP የክፍል 2 ማረጋገጥ</translation>
+<translation id="2783010256799387990">አልፏል</translation>
 <translation id="2789486458103222910">እሺ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2862104018715411648">ሰነድዎን በመቃኛው ላይ ያስቀምጡትና ለመጀመር ቃኝን ይምረጡ</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">የይለፍ ቃል በ <ph name="TIME" /> ውስጥ አገልግሎት ጊዜው ያበቃል</translation>
 <translation id="4238516577297848345">በሂደት ላይ ያሉ ምንም የህትመት ስራዎች የሉም</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
 <translation id="4378373042927530923">አታሂድ</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">የእኔ Drive</translation>
@@ -229,7 +231,6 @@
 <translation id="5691511426247308406">ቤተሰብ</translation>
 <translation id="5752751666635965375">የራስዎን ጨዋታ ይፍጠሩ</translation>
 <translation id="5760715441271661976">የመተላለፊያ ሁኔታ</translation>
-<translation id="5797428682393400134">ተሳክቷል</translation>
 <translation id="5832805196449965646">ሰው አክል</translation>
 <translation id="583281660410589416">ያልታወቀ </translation>
 <translation id="5849570051105887917">የመነሻ ገጽ አቅራቢ ኮድ</translation>
@@ -296,6 +297,7 @@
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="714876143603641390">የላን ተገናኝነት</translation>
 <translation id="7162487448488904999">ማዕከለ-ስዕላት</translation>
+<translation id="7172721935181587524">1 ምስል</translation>
 <translation id="7177485034254901881">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
@@ -345,6 +347,7 @@
 <translation id="8294431847097064396">ምንጭ</translation>
 <translation id="8297006494302853456">ደካማ</translation>
 <translation id="8302368968391049045">የHTTPS ኬላ</translation>
+<translation id="8318753676953949627">ምንም ምስሎች የሉም</translation>
 <translation id="8347227221149377169">የኅትመት ሥራዎች</translation>
 <translation id="8352772353338965963">አንድ መለያ ባለብዙ መለያ መግቢያ ላይ ያክሉ። ሁሉም የተገባባቸው መለያዎች ያለይለፍ ቃል ሊደረስባቸው ይችላሉ፣ ስለዚህ ይህ ባህሪ በታመኑ መለያዎች ላይ ብቻ ነው መጠቀም ያለባቸው።</translation>
 <translation id="8364946094152050673">ባዶ የስም አገልጋዮች</translation>

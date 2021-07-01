@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Det aktuelle visningsformat er sammenfletning</translation>
 <translation id="1087788677726983142">Skjul filtre for begivenhedsstreaming</translation>
 <translation id="1088402100970133699">Der er ingen forrige listepunkter</translation>
-<translation id="1114836634143403764">Forslag</translation>
 <translation id="1120743664840974483">{"a": "Adam", "b": "bravo", "c": "celcius", "d": "delta", "e": "Egon", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "Ida", "j": "Julie","k": "kilo", "l": "lima", "m": "Mia", "n": "november", "o": "Ole","p": "pappa", "q": "quiz", "r": "Robert", "s": "Sigurd", "t": "tango", "u": "uniform", "v": "Viktor", "w": "whiskey","x": "Xerxes", "y": "ymer", "z": "zulu", "æ": "æble", "ø": "øre", "å": "Åse"}</translation>
 <translation id="1120938014254001895">Stryg opad med to fingre</translation>
 <translation id="1126928665165112660">Ikke kursiv</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Indholdsoplysninger</translation>
 <translation id="2417948780551741035">Slutnoter</translation>
 <translation id="2419852971200420169">Beskrivelsesliste</translation>
-<translation id="2421113964388408478">Sletning</translation>
 <translation id="2422937916923936891">Afkrydsningsfelt til menupunkt</translation>
 <translation id="2428534162001909979">Kommandomenuer</translation>
 <translation id="242998846562331953">Undertitel</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Tryk to gange for at redigere</translation>
 <translation id="2598495320872286378">Grammatikfejl</translation>
 <translation id="2603828437139726540">Gå ét tegn frem</translation>
+<translation id="2619052155095999743">Indsæt</translation>
 <translation id="2619344480613750862">Du kan også navigere mellem sektioner på en skærm. Du kan f.eks. navigere mellem applisten, hylden og dine Chrome-faner. Hvis du vil gå til næste sektion, skal du stryge fra venstre mod højre med fire fingre. Prøv det nu for at fortsætte.</translation>
 <translation id="2624431853467395961">Åbn indlæringstilstanden</translation>
 <translation id="2626530649491650971">klikbart</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">Ildfast sten</translation>
 <translation id="4482330759234983253">Forrige tabel</translation>
 <translation id="4491109536499578614">Billede</translation>
-<translation id="4505167975768625962">Indsættelse</translation>
 <translation id="4511186779140817916">Blancheret mandel</translation>
 <translation id="451510441928265982">Der er ingen forrige niveau 2-overskrifter</translation>
 <translation id="4515799157838123044">Nuance for indhold i baggrunden</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">Skift visningsformat til side om side</translation>
 <translation id="8215202828671303819">Valg af flere</translation>
 <translation id="8249864170673238087"><ph name="COLOR" /> – <ph name="OPACITY_PERCENTAGE" /> % gennemsigtighed.</translation>
+<translation id="8261506727792406068">Slet</translation>
 <translation id="826825447994856889">Indledning</translation>
 <translation id="827266600368092403">Start eller afslut det valgte</translation>
 <translation id="827422111966801947">Indigoblå</translation>

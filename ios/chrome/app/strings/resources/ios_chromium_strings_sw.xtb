@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">Ili uhifadhi picha, gusa Mipangilio ili uruhusu Chromium iweke kwenye picha zako</translation>
 <translation id="1289216811211435351">Badilisha utumie Chromium</translation>
 <translation id="1361748954329991663">Toleo hili la Chromium limepitwa na wakati. Iwapo hakuna sasisho kwenye <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kuna uwezekano kuwa kifaa chako hakitumii tena matoleo mapya ya Chromium.</translation>
+<translation id="1370204544543370355">Ili unufaike zaidi na Chromium, ingia kwenye Chromium ukitumia Akaunti yako ya Google</translation>
 <translation id="1431818719585918472">Ruhusu Chromium ifunge vichupo vyako Fiche.</translation>
 <translation id="1472013873724362412">Akaunti yako haifanyi kazi kwenye Chromium. Tafadhali wasiliana na msimamizi wako wa kikoa au utumie Akaunti ya kawaida ya Google kuingia.</translation>
 <translation id="1507010443238049608">Tusaidie Kuboresha Utendaji na Vipengele vya Chromium</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">Akaunti yako inadhibitiwa na <ph name="HOSTED_DOMAIN" />, kwa hivyo data yako ya Chromium itafutwa kwenye kifaa hiki</translation>
 <translation id="4806326830773390517">Saidia kuboresha Chromium kwa kutumia Google takwimu za matumizi na ripoti za kuacha kufanya kazi</translation>
 <translation id="4828317641996116749">Chromium imeshindwa kukagua manenosiri yote. Jaribu tena baadaye.</translation>
-<translation id="4852878756222711218">Ili unufaike zaidi na Chromium, ingia ukitumia Akaunti yako ya Google</translation>
 <translation id="4985291216379576555">Nje ya mtandao, Chromium imeshindwa kukagua kama kuna masasisho</translation>
 <translation id="4999538639245140991">Kwa sababu unaondoka kwenye akaunti inayodhibitiwa na <ph name="SIGNOUT_MANAGED_DOMAIN" />, data yako ya Chromium itafutwa kwenye kifaa hiki, lakini itasalia katika Akaunti yako ya Google.</translation>
 <translation id="5171868502429358653">Ingia Katika Akaunti kwenye Chromium</translation>

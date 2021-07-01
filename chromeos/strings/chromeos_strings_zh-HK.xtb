@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">系統</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2751739896257479635">EAP 第 2 階段驗證</translation>
+<translation id="2783010256799387990">已通過</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2862104018715411648">將文件放到掃瞄器上，並選取 [掃瞄] 以開始掃瞄</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
 <translation id="4238516577297848345">沒有進行中的列印工作</translation>
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
@@ -229,7 +231,6 @@
 <translation id="5691511426247308406">家庭</translation>
 <translation id="5752751666635965375">自製遊戲</translation>
 <translation id="5760715441271661976">入口網站狀態</translation>
-<translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5849570051105887917">家庭網絡供應商代碼</translation>
@@ -296,6 +297,7 @@
 <translation id="7144878232160441200">重試</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7162487448488904999">媒體庫</translation>
+<translation id="7172721935181587524">1 張圖片</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理員可能會遠端設定裝置。</translation>
 <translation id="7216409898977639127">流動服務供應商</translation>
 <translation id="7271040990581020067">掃瞄器目前正在使用中，請稍後再試。</translation>
@@ -345,6 +347,7 @@
 <translation id="8294431847097064396">來源</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8302368968391049045">HTTPS 防火牆</translation>
+<translation id="8318753676953949627">沒有圖片</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議您只讓信任的帳戶使用這項功能。</translation>
 <translation id="8364946094152050673">域名伺服器空白</translation>

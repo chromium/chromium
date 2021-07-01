@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">ಪ್ರಸ್ತುತ ಡಿಸ್‌ಪ್ಲೇ ಶೈಲಿ ನಡುಪುಟ ಆಗಿದೆ</translation>
 <translation id="1087788677726983142">ಈವೆಂಟ್ ಸ್ಟ್ರೀಮ್ ಫಿಲ್ಟರ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="1088402100970133699">ಯಾವುದೇ ಹಿಂದಿನ ಪಟ್ಟಿ ಐಟಂಯಿಲ್ಲ</translation>
-<translation id="1114836634143403764">ಸಲಹೆ</translation>
 <translation id="1120743664840974483">{"a": "ಆಲ್ಫಾ", "b": "ಬ್ರಾವೋ", "c": "ಚಾರ್ಲಿ", "d": "ಡೆಲ್ಟಾ", "e": "ಇಕೋ", "f": "ಫಾಕ್ಸ್‌ಟ್ರಾಟ್", "g": "ಗಾಲ್ಫ್", "h": "ಹೋಟೆಲ್", "i": "ಇಂಡಿಯಾ", "j": "ಜೂಲಿಯೆಟ್","k": "ಕಿಲೋ", "l": "ಲಿಮಾ", "m": "ಮೈಕ್", "n": "ನವೆಂಬರ್", "o": "ಆಸ್ಕರ್","p": "ಪಾಪಾ", "q": "ಕ್ವಿಬೆಕ್", "r": "ರೋಮಿಯೋ", "s": "ಸಿಯೆರಾ", "t": "ಟ್ಯಾಂಗೋ", "u": "ಯುನಿಫಾರ್ಮ್", "v": "ವಿಕ್ಟರ್", "w": "ವಿಸ್ಕಿ","x": "ಎಕ್ಸ್‌ರೇ", "y": "ಯಾಂಕೀ", "z": "ಜುಲು"}</translation>
 <translation id="1120938014254001895">ಎರಡು ಬೆರಳುಗಳಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="1126928665165112660">ಇಟಾಲಿಕ್ ಅಲ್ಲ</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">ವಿಷಯ ಮಾಹಿತಿ</translation>
 <translation id="2417948780551741035">ಅಂತಿಮ ಟಿಪ್ಪಣಿಗಳು</translation>
 <translation id="2419852971200420169">ವಿವರಣೆ ಪಟ್ಟಿ</translation>
-<translation id="2421113964388408478">ಅಳಿಸುವಿಕೆ</translation>
 <translation id="2422937916923936891">ಮೆನು ಐಟಂ ಚೆಕ್‌ಬಾಕ್ಸ್</translation>
 <translation id="2428534162001909979">ಕಮಾಂಡ್ ಮೆನುಗಳು</translation>
 <translation id="242998846562331953">ಉಪಶೀರ್ಷಿಕೆ</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">ಎಡಿಟಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2598495320872286378">ವ್ಯಾಕರಣ ದೋಷ</translation>
 <translation id="2603828437139726540">ಒಂದು ಅಕ್ಷರ ಮುಂದಕ್ಕೆ ಸರಿಸಿ</translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2619344480613750862">ನೀವು ಸ್ಕ್ರೀನ್‌ನ ವಿಭಾಗಗಳ ನಡುವೆಯೂ ಚಲಿಸಬಹುದು. ಉದಾಹರಣೆಗೆ, ನೀವು ಲಾಂಚರ್, ಶೆಲ್ಫ್ ಮತ್ತು ನಿಮ್ಮ Chrome ಟ್ಯಾಬ್‌ಗಳ ನಡುವೆ ಸರಿಸಬಹುದು. ಮುಂದಿನ ವಿಭಾಗಕ್ಕೆ ತೆರಳಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಎಡದಿಂದ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ. ಮುಂದುವರಿಯಲು ಇದನ್ನು ಈಗ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2624431853467395961">ಕಲಿಕೆ ಮೋಡ್‌ ತೆರೆಯಿರಿ</translation>
 <translation id="2626530649491650971">ಕ್ಲಿಕ್ ಮಾಡಬಹುದಾದ</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">ಫೈರ್ ಬ್ರಿಕ್</translation>
 <translation id="4482330759234983253">ಹಿಂದಿನ ಕೋಷ್ಟಕ</translation>
 <translation id="4491109536499578614">ಚಿತ್ರ</translation>
-<translation id="4505167975768625962">ಅಳವಡಿಕೆ</translation>
 <translation id="4511186779140817916">ಬ್ಲಾಂಚ್ ಮಾಡಿದ ಆಲ್ಮಂಡ್</translation>
 <translation id="451510441928265982">ಯಾವುದೇ ಹಿಂದಿನ ಹಂತ 2 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="4515799157838123044">ಹಿನ್ನೆಲೆ ವಿಷಯವನ್ನು ಶೇಡ್ ಮಾಡಿ</translation>
@@ -1009,6 +1007,7 @@
 <translation id="8212109599554677485">ಡಿಸ್‌ಪ್ಲೇ ಶೈಲಿಯನ್ನು ಅಕ್ಕ ಪಕ್ಕಕ್ಕೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="8215202828671303819">ಬಹು ಆಯ್ಕೆ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ಅಪಾರದರ್ಶಕತೆ.</translation>
+<translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="826825447994856889">ಪರಿಚಯ</translation>
 <translation id="827266600368092403">ಪ್ರಾರಂಭ ಅಥವಾ ಅಂತ್ಯದ ಆಯ್ಕೆ</translation>
 <translation id="827422111966801947">ಇಂಡಿಗೊ</translation>

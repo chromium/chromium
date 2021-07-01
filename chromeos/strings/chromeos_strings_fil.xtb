@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
+<translation id="2783010256799387990">NAKAPASA</translation>
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="2862104018715411648">Ilagay ang iyong dokumento sa scanner at piliin ang I-scan para makapagsimula</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
 <translation id="4378373042927530923">Hindi Tumakbo</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Aking Drive</translation>
@@ -229,7 +231,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5691511426247308406">Pamilya</translation>
 <translation id="5752751666635965375">Gumawa ng sariling laro</translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
-<translation id="5797428682393400134">TAGUMPAY</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5849570051105887917">Home provider code</translation>
@@ -296,6 +297,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7172721935181587524">1 Larawan</translation>
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
@@ -345,6 +347,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8294431847097064396">Pinagmulan</translation>
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8302368968391049045">Firewall ng HTTPS</translation>
+<translation id="8318753676953949627">Walang Larawan</translation>
 <translation id="8347227221149377169">Mga pag-print</translation>
 <translation id="8352772353338965963">Magdagdag ng account sa multiple na pag-sign in. Maa-access ang lahat ng naka-sign in na account nang walang password, kaya dapat na gamitin lang ang feature na ito sa mga pinagkakatiwalaang account.</translation>
 <translation id="8364946094152050673">Mga walang lamang name server</translation>

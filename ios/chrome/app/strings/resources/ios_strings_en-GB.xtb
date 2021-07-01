@@ -677,7 +677,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Delete password</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> min</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="7649070708921625228">Help</translation>
@@ -801,6 +800,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8917490105272468696">Yes, I'm In</translation>
 <translation id="895541991026785598">Report an Issue</translation>
 <translation id="8976382372951310360">Help</translation>
+<translation id="8976414606286374109">Cards are saved to your Google Account.</translation>
 <translation id="8981454092730389528">Google Activity Controls</translation>
 <translation id="8985320356172329008">Signed In to Google as</translation>
 <translation id="9000089900434778519">Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>

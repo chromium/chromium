@@ -941,17 +941,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als je <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (waarde 1) instelt, mogen alleen varianten die worden beschouwd als essentiële beveiligings- of stabiliteitsoplossingen, worden toegepast op <ph name="PRODUCT_OS_NAME" />.
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
-<translation id="2216380260552785166">Met dit beleid wordt bepaald hoe <ph name="PRODUCT_NAME" /> beleid voor sitelijsten/grijze lijsten interpreteert voor de ondersteuningsfunctie voor oudere browsers. Het is alleen van invloed op het volgende beleid: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> en <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      Als dit is ingesteld op 'Default' (0) of niet is ingesteld, wordt de URL-overeenkomst minder strikt toegepast. Regels die geen '/' bevatten, zoeken naar een subtekenreeks in de URL-hostnaam.
-
-      Als dit is ingesteld op 'Strict' (1), wordt de URL-overeenkomst strikter toegepast. Regels die geen '/' bevatten komen alleen overeen aan het einde van de hostnaam. Deze moeten zich ook bij de domeinnaamgrens bevinden. Dit werkt beter met <ph name="MS_IE_PRODUCT_NAME" /> en <ph name="MS_EDGE_PRODUCT_NAME" />.
-
-      Een voorbeeld met de regel 'example.com':
-
-'http://example.com/' en 'http://subdomain.example.com/' komen overeen, ongeacht de parseermodus.
-
-      'http://notexample.com/', 'http://example.com.invalid.com/' en 'http://example.comabc/' komen alleen overeen in de modus 'Default'.</translation>
 <translation id="2221850122314326571">Als je deze instelling aanzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
       Als je deze instelling uitzet, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd.
       Als je deze instelling niet instelt, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
@@ -965,6 +954,10 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="2223393221350938149">Niet toestaan dat sites JavaScript JIT uitvoeren</translation>
 <translation id="2223582957891074498">Als je het beleid instelt op 'True', kunnen er geen screenshots worden gemaakt via sneltoetsen of extensie-API's. Als je het beleid instelt op 'False', zijn screenshots toegestaan.</translation>
 <translation id="2223598546285729819">Standaardinstelling voor meldingen</translation>
+<translation id="2231726854197443389">Met dit beleid wordt bepaald of gebruikers de modus 'Alleen HTTPS' kunnen aanzetten in de instellingen. Met de modus 'Alleen HTTPS' worden alle navigaties naar HTTPS geüpgraded.
+      Als deze instelling niet is ingesteld of is ingesteld op Toegestaan, kunnen gebruikers de modus 'Alleen HTTPS' aanzetten.
+      Als deze instelling is ingesteld op 'Niet toegestaan', kunnen gebruikers de modus 'Alleen HTTPS' niet aanzetten.
+      Het wordt momenteel niet ondersteund om de modus 'Alleen HTTPS' gedwongen aan te zetten.</translation>
 <translation id="2231817271680715693">Browsegeschiedenis importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="2231962946025538735">Dit beleid is beëindigd. Gebruik het beleid <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> om de beschikbaarheid van de Flash-plug-in te beheren en het beleid <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> om aan te geven of de geïntegreerde pdf-viewer moet worden gebruikt om pdf-bestanden te openen.
 
@@ -1192,6 +1185,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2482676533225429905">Systeemeigen berichten</translation>
 <translation id="2483146640187052324">Netwerkacties voorspellen voor elke netwerkverbinding</translation>
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
+<translation id="2497965601277442929">Gebruikers niet toestaan de modus 'Alleen HTTPS' aan te zetten</translation>
 <translation id="2498238926436517902">Archief altijd automatisch verbergen</translation>
 <translation id="250022556568924228">Als je het beleid instelt, downloadt <ph name="PRODUCT_OS_NAME" /> de servicevoorwaarden en geeft deze aan gebruikers weer als er een lokale accountsessie op het apparaat wordt gestart. Gebruikers kunnen alleen inloggen bij de sessie nadat ze de servicevoorwaarden hebben geaccepteerd.
 
@@ -3707,6 +3701,7 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5848438019586925019">Het algoritme voor het genereren van sleutelparen.</translation>
 <translation id="585270638818921943">Voorkomen dat de gebruiker Android-apps van niet-vertrouwde bronnen gebruikt</translation>
+<translation id="5853547031212075792">Gebruikers toestaan de modus 'Alleen HTTPS' aan te zetten</translation>
 <translation id="5859344336338527083">Als je dit beleid instelt, kun je opgeven welke URL's extensies, apps en thema's mogen installeren. Vóór <ph name="PRODUCT_NAME" /> 21 konden gebruikers op een link naar een *.crx-bestand klikken en bood <ph name="PRODUCT_NAME" /> aan het bestand te installeren na een aantal waarschuwingen. Sindsdien moeten bestanden worden gedownload en naar de instellingenpagina van <ph name="PRODUCT_NAME" /> worden gesleept. Met deze instelling kunnen specifieke URL's het oude, eenvoudigere installatieproces gebruiken.
 
       Elk item in deze lijst is een patroon van een extensie (zie https://developer.chrome.com/extensions/match_patterns). Gebruikers kunnen gemakkelijk items installeren vanaf elke URL die overeenkomt met een item in deze lijst. De locatie van het *.crx-bestand en de pagina waar de download wordt gestart (de verwijzer genoemd), moeten beide zijn toegestaan op basis van deze patronen.
@@ -5380,6 +5375,7 @@ Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRO
 <translation id="7962093600142350905">Met dit beleid bepaal je of gebruikers beschikbare Privet-printers te zien krijgen in het dialoogvenster met afdrukvoorbeeld.
       Als je dit beleid aanzet, worden beschikbare Privet-printers getoond.
       Als je dit beleid niet toepast of niet instelt, worden Privet-printers niet getoond in het dialoogvenster met afdrukvoorbeeld, omdat deze afdrukmethode is verouderd.</translation>
+<translation id="7970844378072291834">Modus 'Alleen HTTPS' gedwongen aanzetten (nog niet ondersteund)</translation>
 <translation id="7973609468423251675">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Specificeert de tijdsduur zonder gebruikersinvoer waarna het scherm wordt gedimd als er op de batterij wordt gewerkt.
@@ -6022,6 +6018,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Als je het beleid niet instelt, wordt er een platformspecifieke standaard-app gebruikt: <ph name="IE_PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" /> voor <ph name="MAC_OS_NAME" />. In <ph name="LINUX_OS_NAME" /> werkt het starten van een alternatieve browser niet.</translation>
 <translation id="8836975838488342340">Tijd dat de toegangscode geldig is (in seconden).</translation>
+<translation id="8842208363354615697">Toestaan dat de modus 'Alleen HTTPS' wordt aangezet</translation>
 <translation id="885147810817138322">Media-aanbevelingen tonen aan gebruikers</translation>
 <translation id="8852579753940989645">Code-integriteit van weergaveprogramma aanzetten</translation>
 <translation id="8854571659927427063">Als je het beleid toepast, worden de bookmarks van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden de bookmarks niet geïmporteerd bij de eerste uitvoering.

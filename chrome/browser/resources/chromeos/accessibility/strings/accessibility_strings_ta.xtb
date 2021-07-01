@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">தற்போதைய காட்சி நடை: ஒன்றின் மேல் ஒன்று</translation>
 <translation id="1087788677726983142">நிகழ்வு வரிசை வடிப்பான்களை மறை</translation>
 <translation id="1088402100970133699">முந்தைய பட்டியல் உருப்படி எதுவும் இல்லை</translation>
-<translation id="1114836634143403764">பரிந்துரை</translation>
 <translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">இரண்டு விரல்களை மேலே ஸ்வைப் செய்யவும்</translation>
 <translation id="1126928665165112660">சாய்வு அல்ல</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">உள்ளடக்கத் தகவல்</translation>
 <translation id="2417948780551741035">முடிவுக்குறிப்புகள்</translation>
 <translation id="2419852971200420169">விளக்கப் பட்டியல்</translation>
-<translation id="2421113964388408478">நீக்கும்</translation>
 <translation id="2422937916923936891">மெனு ஐட்டம் செக்பாக்ஸ்</translation>
 <translation id="2428534162001909979">கட்டளை மெனுக்கள்</translation>
 <translation id="242998846562331953">வசனம்</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">திருத்துவதற்கு, இருமுறை தட்டவும்</translation>
 <translation id="2598495320872286378">இலக்கணப் பிழை</translation>
 <translation id="2603828437139726540">முந்தைய எழுத்துக்குச் செல்</translation>
+<translation id="2619052155095999743">செருகு</translation>
 <translation id="2619344480613750862">திரையில் உள்ள பிரிவுகளுக்கு இடையேயும் மாறலாம். எடுத்துக்காட்டு: தொடக்கி, ஷெல்ஃப், Chrome தாவல்கள் ஆகியவற்றுக்கு இடையே மாறலாம். அடுத்த பிரிவுக்குச் செல்ல, நான்கு விரல்களால் இடதுபுறத்திலிருந்து வலதுபுறம் ஸ்வைப் செய்யலாம். தொடர, இப்போதே செய்து பாருங்கள்.</translation>
 <translation id="2624431853467395961">கற்றல் பயன்முறையைத் திறக்கவும்</translation>
 <translation id="2626530649491650971">கிளிக் செய்யத்தக்கது</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">ஃபயர் பிரிக்</translation>
 <translation id="4482330759234983253">முந்தைய அட்டவணை</translation>
 <translation id="4491109536499578614">படம்</translation>
-<translation id="4505167975768625962">செருகும்</translation>
 <translation id="4511186779140817916">பிலாஞ்ச்டு ஆல்மண்ட்</translation>
 <translation id="451510441928265982">முந்தைய 2ம் நிலை தலைப்பு எதுவும் இல்லை</translation>
 <translation id="4515799157838123044">பின்புலத்தில் உள்ளவற்றை மங்கலாக்கு</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">தற்போதைய காட்சி நடையை 'அருகருகே' என்பதற்கு மாற்று</translation>
 <translation id="8215202828671303819">பலவற்றைத் தேர்ந்தெடுத்தல்</translation>
 <translation id="8249864170673238087"><ph name="OPACITY_PERCENTAGE" />% ஒளிபுகாத்தன்மை, <ph name="COLOR" />.</translation>
+<translation id="8261506727792406068">நீக்கு</translation>
 <translation id="826825447994856889">அறிமுகம்</translation>
 <translation id="827266600368092403">தொடக்க அல்லது இறுதித் தேர்வு</translation>
 <translation id="827422111966801947">இண்டிகோ</translation>

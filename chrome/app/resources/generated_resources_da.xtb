@@ -2304,7 +2304,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
 <translation id="3470442499439619530">Fjern denne bruger</translation>
-<translation id="3471350386419633991">Højreklik på en fane, eller klik på bogmærkeikonet for at føje faner til en læseliste. Du finder ikonet på bogmærkelinjen.</translation>
 <translation id="3471876058939596279">Portene til HDMI og USB-C kan ikke bruges til video på samme tid. Brug en anden videoport.</translation>
 <translation id="3473241910002674503">Gå til startsiden, gå tilbage, og skift mellem apps ved hjælp af knapperne i tablettilstand.</translation>
 <translation id="3473479545200714844">Skærmforstørrer</translation>
@@ -2541,7 +2540,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3722108462506185496">Der opstod en fejl under opstarten af tjenesten på den virtuelle maskine. Prøv igen.</translation>
 <translation id="3727187387656390258">Undersøg pop op-vindue</translation>
 <translation id="372722114124766626">Kun én gang</translation>
-<translation id="3727473233247516571">Underramme for back/forward-cache: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727473233247516571">Underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">Spejl notifikationer fra din telefon</translation>
 <translation id="3728681439294129328">Konfigurer netværksadresse</translation>
 <translation id="3729303374699765035">Spørg, når et website vil søge efter Bluetooth-enheder i nærheden</translation>
@@ -2773,7 +2772,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3945513714196326460">Prøv et kortere navn</translation>
 <translation id="3948116654032448504">&amp;Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i følgende mapper</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Importeret fra IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Denne app kan være skadelig}one{Denne app kan være skadelig}other{Disse apps kan være skadelige}}</translation>
 <translation id="3950820424414687140">Log ind</translation>
@@ -3096,7 +3094,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4349828822184870497">Nyttig</translation>
 <translation id="4350230709416545141">Giv aldrig <ph name="HOST" /> adgang til din placering</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> vil gerne søge efter Bluetooth-enheder i nærheden. Følgende enheder blev fundet:</translation>
 <translation id="4354073718307267720">Spørg, når et website gerne vil oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen</translation>
 <translation id="4354344420232759511">Her vises de websites, du besøger</translation>
 <translation id="435527878592612277">Vælg dit billede</translation>
@@ -3359,7 +3356,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4625078469366263107">Aktivér app</translation>
 <translation id="4627427111733173920">Cookies er blokeret</translation>
 <translation id="4627442949885028695">Fortsæt fra en anden enhed</translation>
-<translation id="4628757576491864469">Enheder</translation>
 <translation id="4628762811416793313">Konfigurationen af Linux-containeren blev ikke fuldført. Prøv igen.</translation>
 <translation id="4629521233550547305">Åbn profilen <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Tilpas kort</translation>
@@ -3526,6 +3522,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4830502475412647084">Installerer OS-opdateringen</translation>
 <translation id="4830573902900904548">Din <ph name="DEVICE_TYPE" /> kan ikke oprette forbindelse til internettet via <ph name="NETWORK_NAME" />. Vælg et andet netværk. <ph name="LEARN_MORE_LINK_START" />Få flere oplysninger<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Der blev fundet 1 printer på printerserveren</translation>
+<translation id="4834007576107377210">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant</translation>
 <translation id="4836046166855586901">Spørg, når et website vil vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="4836504898754963407">Administrer fingeraftryk</translation>
 <translation id="4837128290434901661">Vil du skifte tilbage til Google Søgning?</translation>
@@ -3762,7 +3759,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5090637338841444533">Har ikke tilladelse til at spore din kameraposition</translation>
-<translation id="5093569275467863761">Underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5093569275467863761">Inkognito-underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">Kommunikere med indbyggede apps</translation>
 <translation id="5097002363526479830">Der kunne ikke oprettes forbindelse til netværket "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">Værktøj: <ph name="PRINT_NAME" /></translation>
@@ -5144,7 +5141,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6651237644330755633">Hav tillid til dette certifikat i forbindelse med identificering af websites</translation>
 <translation id="6651495917527016072">Synkroniser Wi-Fi-netværk med din telefon. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" />-integration understøttes kun på x86_64-platforme. Chromebooks, der er bygget på en ARM- eller x86-platform, understøtter ikke denne funktionalitet.</translation>
-<translation id="66537479323396140">Rydder historikken og autofuldførelser i søgefeltet. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Foretræk netværk</translation>
 <translation id="6655190889273724601">Udviklertilstand</translation>
 <translation id="6655458902729017087">Skjul konti</translation>
@@ -6421,7 +6417,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8032244173881942855">Fanen kunne ikke castes.</translation>
 <translation id="8033827949643255796">valgt</translation>
 <translation id="8033958968890501070">Timeout</translation>
-<translation id="8035059678007243127">Inkognitotilstand i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8035059678007243127">Inkognitoside i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8037117027592400564">Læs hele teksten højt ved hjælp af talesyntese</translation>
 <translation id="8037357227543935929">Spørg (standardindstilling)</translation>
 <translation id="803771048473350947">Fil</translation>
@@ -6728,7 +6724,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8363142353806532503">Der er blokeret for adgang til mikrofonen</translation>
 <translation id="8366396658833131068">Netværksforbindelsen er genoprettet. Vælg et andet netværk, eller tryk på knappen "Fortsæt" nedenfor for at åbne din terminalapp.</translation>
 <translation id="8366694425498033255">Valgknapper</translation>
-<translation id="8368027906805972958">Ukendt eller ikke-understøttet enhed (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Åbn alle bogmærker</translation>
 <translation id="8370294614544004647">Dvale, når skærmen er klappet ned</translation>
 <translation id="8371695176452482769">Indtal nu</translation>
@@ -6741,7 +6736,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8379991678458444070">Tilføj denne fane som bogmærke, så du hurtigt kan vende tilbage hertil</translation>
 <translation id="8382913212082956454">Kopier mailadress&amp;e</translation>
 <translation id="8386091599636877289">Politikken blev ikke fundet.</translation>
-<translation id="838705362287678887">Du kan rydde dine <ph name="BEGIN_LINK_SEARCH" />søgninger<ph name="END_LINK_SEARCH" /> eller andre former for historik ved at gå til <ph name="BEGIN_LINK_GOOGLE" />Min Google-konto<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">Har ikke tilladelse til at se din placering</translation>
 <translation id="8388770971141403598">Sekundære profiler understøttes ikke</translation>
 <translation id="8389416080014625855">Opret en QR-kode for denne side</translation>

@@ -261,7 +261,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1807528111851433570">Tờ đầu</translation>
 <translation id="1812527064848182527">ngang</translation>
-<translation id="1814698615734239189">Ứng dụng này được thiết kế dành cho thiết bị di động. Ứng dụng đang chạy ở chế độ tương thích. Nếu cho phép đổi kích thước, bạn có thể gặp phải các sự cố, bao gồm cả việc khởi động lại ứng dụng.</translation>
 <translation id="1821930232296380041">Yêu cầu hoặc tham số yêu cầu không hợp lệ</translation>
 <translation id="1822540298136254167">Các trang web bạn đã truy cập và thời lượng truy cập các trang web đó</translation>
 <translation id="1826516787628120939">Đang kiểm tra</translation>
@@ -680,7 +679,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3431636764301398940">Lưu thẻ này vào thiết bị này</translation>
 <translation id="3432601291244612633">Đóng trang</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
-<translation id="3435896845095436175">Bật</translation>
 <translation id="3438829137925142401">Dùng mật khẩu đã lưu trong Tài khoản Google của bạn</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Chủ sở hữu của thiết bị này đã tắt trò chơi khủng long.</translation>
@@ -817,6 +815,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3946209740501886391">Luôn hỏi trên trang web này</translation>
 <translation id="3949571496842715403">Máy chủ này không thể chứng minh được đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ không chỉ định Tên thay thế đối tượng. Điều này có thể do cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="3949601375789751990">Lịch sử duyệt web của bạn xuất hiện ở đây</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Bạn chưa lưu phương thức thanh toán nào</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="3961148744525529027">Trang tính trình xử lý thanh toán đang mở trên nửa màn hình</translation>
@@ -824,7 +823,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3963721102035795474">Chế độ đọc</translation>
 <translation id="3963837677003247395">Bạn muốn tiếp tục theo cách thủ công?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Không có}=1{Của 1 trang web }other{Của # trang web }}</translation>
-<translation id="3970481983430640194">Bây giờ, bạn có thể kéo và thay đổi kích thước của ứng dụng này</translation>
 <translation id="397105322502079400">Đang tính...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> bị chặn</translation>
 <translation id="3973357910713125165">Nút Chạy quy trình Kiểm tra an toàn trên Chrome, nhấn Enter để chạy quy trình Kiểm tra an toàn trong phần cài đặt của Chrome</translation>
@@ -948,6 +946,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4346197816712207223">Thẻ tín dụng được chấp nhận</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chrome khuyên bạn nên truy cập vào <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> và các trang web khác mà bạn dùng mật khẩu này rồi đổi mật khẩu ngay bây giờ.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> muốn quét tìm các thiết bị Bluetooth ở gần và đã tìm thấy các thiết bị sau đây:</translation>
 <translation id="4356973930735388585">Những kẻ tấn công trên trang web này có thể tìm cách cài đặt các chương trình nguy hiểm vào máy tính của bạn. Các chương trình này sẽ đánh cắp hoặc xóa thông tin của bạn (ví dụ: ảnh, mật khẩu, thư và thẻ tín dụng).</translation>
 <translation id="4358059973562876591">Các mẫu bạn đã chỉ định có thể không được áp dụng do lỗi liên quan đến chính sách DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Quản lý phương thức thanh toán...</translation>
@@ -1400,7 +1399,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6032524144326295339">Hộp thư 2</translation>
 <translation id="6032955021262906325">Đóng gáy bên trái</translation>
 <translation id="6034000775414344507">Xám nhạt</translation>
-<translation id="6034062182346928710">Có thể <ph name="APP_NAME" /> sẽ thay đổi kích thước không chuẩn xác. Hãy dùng kích thước cửa sổ đặt trước để ngăn ứng dụng hoạt động không đúng cách.</translation>
 <translation id="6034283069659657473">10x14 (Phong bì)</translation>
 <translation id="6034514109191629503">Gấp kiểu đàn xếp</translation>
 <translation id="6039846035001940113">Nếu sự cố vẫn tiếp diễn, hãy liên hệ với chủ sở hữu trang web.</translation>
@@ -1430,7 +1428,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6120179357481664955">Ghi nhớ mã nhận dạng sản phẩm duy nhất (UPI) của bạn?</translation>
 <translation id="6123290840358279103">Xem thẻ ảo</translation>
 <translation id="6124432979022149706">Trình kết nối của Chrome Enterprise</translation>
-<translation id="6143538402333184781">Ứng dụng này chỉ hỗ trợ kích thước "Điện thoại".</translation>
 <translation id="6146055958333702838">Kiểm tra mọi dây cáp rồi khởi động lại bộ định tuyến, modem hoặc các thiết bị
     mạng khác mà bạn có thể đang sử dụng.</translation>
 <translation id="614940544461990577">Hãy thử:</translation>
@@ -1980,7 +1977,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8225771182978767009">Người thiết lập máy tính này đã chọn chặn trang web này.</translation>
 <translation id="8228419419708659934">Chế độ xem hai trang</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Không hỏi lại tôi về ứng dụng này</translation>
 <translation id="8232343881378637145">Nhiệt độ bệ máy</translation>
 <translation id="8238581221633243064">Mở trang trong thẻ Ẩn danh mới</translation>
 <translation id="8241707690549784388">Trang mà bạn đang tìm sử dụng thông tin bạn đã nhập vào. Việc quay lại trang đó có thể lặp lại bất kỳ tác vụ nào bạn đã thực hiện. Bạn có muốn tiếp tục không?</translation>
@@ -1993,7 +1989,6 @@ Thông tin chi tiết bổ sung:
 <translation id="825929999321470778">Hiển thị tất cả các mật khẩu đã lưu</translation>
 <translation id="8261506727792406068">Xóa</translation>
 <translation id="8262952874573525464">May viền ở dưới cùng</translation>
-<translation id="826298712171642726">Cho phép đổi kích thước?</translation>
 <translation id="8265992338205884890">Dữ liệu hiển thị</translation>
 <translation id="8267698848189296333">Đăng nhập với tên <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Tài liệu riêng biệt/Bản sao đã đối chiếu</translation>
@@ -2024,6 +2019,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8355270400102541638">Bối cảnh dẫn đến sự cố trên máy:</translation>
 <translation id="8363502534493474904">Tắt chế độ trên máy bay</translation>
 <translation id="8364627913115013041">Chưa đặt.</translation>
+<translation id="8368027906805972958">Thiết bị không xác định hoặc không được hỗ trợ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Dịch vụ Google Play</translation>
 <translation id="8371889962595521444">Chứng chỉ gốc tùy chỉnh</translation>
 <translation id="8374636051559112948">Khác nhau</translation>

@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Le style d'affichage actuel est "entrelacé"</translation>
 <translation id="1087788677726983142">Masquer les filtres de flux d'événements</translation>
 <translation id="1088402100970133699">Aucun élément de liste précédent</translation>
-<translation id="1114836634143403764">Suggestion</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliett","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "x-ray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Balayer l'écran vers le haut avec deux doigts</translation>
 <translation id="1126928665165112660">Pas en italique</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Infos sur le contenu</translation>
 <translation id="2417948780551741035">Notes de fin</translation>
 <translation id="2419852971200420169">Liste de descriptions</translation>
-<translation id="2421113964388408478">Suppression</translation>
 <translation id="2422937916923936891">Case à cocher d'élément de menu</translation>
 <translation id="2428534162001909979">Menus de commandes</translation>
 <translation id="242998846562331953">Sous-titre</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Appuyer deux fois pour commencer la modification</translation>
 <translation id="2598495320872286378">Erreur grammaticale</translation>
 <translation id="2603828437139726540">Avancer d'un caractère</translation>
+<translation id="2619052155095999743">Insérer</translation>
 <translation id="2619344480613750862">Vous pouvez vous déplacer entre des sections de l'écran, par exemple entre le Lanceur d'applications, l'étagère et vos onglets Chrome. Faites le test en balayant l'écran de gauche à droite avec quatre doigts pour passer à la section suivante.</translation>
 <translation id="2624431853467395961">Ouvrir le mode d'apprentissage</translation>
 <translation id="2626530649491650971">cliquable</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">Brique</translation>
 <translation id="4482330759234983253">Tableau précédent</translation>
 <translation id="4491109536499578614">Image</translation>
-<translation id="4505167975768625962">Insertion</translation>
 <translation id="4511186779140817916">Amande blanchie</translation>
 <translation id="451510441928265982">Aucun titre de niveau 2 précédent</translation>
 <translation id="4515799157838123044">Estomper le contenu en arrière-plan</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">Définir le style d'affichage sur "côte à côte"</translation>
 <translation id="8215202828671303819">Sélection multiple</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, opacité : <ph name="OPACITY_PERCENTAGE" /> %.</translation>
+<translation id="8261506727792406068">Supprimer</translation>
 <translation id="826825447994856889">Introduction</translation>
 <translation id="827266600368092403">Début ou fin de sélection</translation>
 <translation id="827422111966801947">Indigo</translation>

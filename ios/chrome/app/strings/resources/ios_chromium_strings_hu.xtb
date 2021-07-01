@@ -6,6 +6,7 @@
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
 <translation id="1289216811211435351">Váltás Chromiumra</translation>
 <translation id="1361748954329991663">A Chromium elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chromium újabb verzióit.</translation>
+<translation id="1370204544543370355">Annak érdekében, hogy a legtöbbet hozhassa ki Chromiumból, jelentkezzen be Google-fiókjával a böngészőbe</translation>
 <translation id="1431818719585918472">Az inkognitó lapok zárolásának engedélyezése a Chromium számára.</translation>
 <translation id="1472013873724362412">Fiókja nem működik a Chromium rendszeren. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
 <translation id="1507010443238049608">Segítség a Chromium funkcióinak és teljesítményének javítása érdekében</translation>
@@ -44,7 +45,6 @@
 <translation id="4736424910885271643">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chromium-adatai törölve lesznek erről az eszközről.</translation>
 <translation id="4806326830773390517">Küldjön használati statisztikákat és hibajelentéseket a Google-nak, így segíthet a Chromium fejlesztésében</translation>
 <translation id="4828317641996116749">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
-<translation id="4852878756222711218">Annak érdekében, hogy a legtöbbet hozhassa ki Chromiumból, jelentkezzen be Google-fiókjával</translation>
 <translation id="4985291216379576555">Offline állapotban van, ezért a Chromium nem tud frissítéseket keresni</translation>
 <translation id="4999538639245140991">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chromium-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="5171868502429358653">Bejelentkezés a Chromiumba</translation>

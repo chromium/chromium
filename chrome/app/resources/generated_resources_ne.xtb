@@ -1540,6 +1540,7 @@
 <translation id="2659971421398561408">Crostini का लागि छुट्याइएको डिस्कको आकार बदल्ने</translation>
 <translation id="2660779039299703961">घटना</translation>
 <translation id="266079277508604648">प्रिन्टरमा जडान गर्न सकिएन। उक्त प्रिन्टर सक्रिय अवस्थामा हुनुका साथै त्यसलाई Wi-Fi वा USB मार्फत तपाईंको Chromebook सँग जडान गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
+<translation id="2661315027005813059">ब्याक/फर्वार्ड क्यास गरिएको पेज: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">लाइट मोडको सहायताले अझ छिटो ब्राउज गर्नुका साथै कम डेटा प्रयोग गर्नुहोस्। थप जान्न क्लिक गर्नुहोस्।</translation>
 <translation id="2662876636500006917">Chrome वेब स्टोर</translation>
 <translation id="2663302507110284145">भाषा</translation>
@@ -1903,6 +1904,7 @@
 <translation id="3021678814754966447">फ्रेम स्रोत &amp;हेर्नुहोस्</translation>
 <translation id="3022978424994383087">मैले बुझिनँ।</translation>
 <translation id="3023464535986383522">सेलेक्ट टु स्पिक सुविधा</translation>
+<translation id="3023517118372899130">निम्न कार्य गर्न कुन स्विच प्रयोग गर्ने भन्ने कुरा तोक्नुहोस्: चयन गर्नुहोस्</translation>
 <translation id="3024374909719388945">24-घण्टे घडी प्रयोग गर्नुहोस</translation>
 <translation id="3027296729579831126">नजिकैका डिभाइससँग सेयर गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="3029466929721441205">सेल्फमा स्टाइलसका उपकरणहरू देखाइयोस्</translation>
@@ -2284,7 +2286,6 @@
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फोन</translation>
 <translation id="3470442499439619530">यो प्रयोगकर्ता हटाउनुहोस्</translation>
-<translation id="3471350386419633991">पछि पढ्न सुरक्षित गरिएका वेबपेजको सूचीमा कुनै ट्याब थप्न सो ट्याबमा दायाँ क्लिक गर्नुहोस् वा बुकमार्क जनाउने आइकनमा ट्याप गर्नुहोस्। तपाईं बुकमार्क बारमा गई बुकमार्क जनाउने आइकन प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="3471876058939596279">भिडियोसम्बन्धी प्रयोजनका लागि HDMI र USB Type-C पोर्टहरू एकै समयमा प्रयोग गर्न मिल्दैन। कुनै अर्को भिडियो पोर्ट प्रयोग गर्नुहोस्।</translation>
 <translation id="3473241910002674503">ट्याब्लेट मोडमा हुँदा बटनहरूको प्रयोग गरी गृह स्क्रिनमा जानुहोस्, पछाडि फर्कनुहोस् र एउटा अनुप्रयोगबाट अर्को एपमा जानुहोस्।</translation>
 <translation id="3473479545200714844">स्क्रिन म्याग्निफायर</translation>
@@ -2521,6 +2522,7 @@
 <translation id="3722108462506185496">भर्चुअल मेसिन सेवा सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3727187387656390258">पपअप निरीक्षण गर्नुहोस्</translation>
 <translation id="372722114124766626">एक पटक मात्र</translation>
+<translation id="3727473233247516571">ब्याक/फर्वार्ड क्यास गरिएको सबफ्रेम: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">आफ्नो फोनमा प्राप्त हुने सूचनाहरू आफ्नो Chromebook मा पनि प्राप्त गर्नुहोस्</translation>
 <translation id="3728681439294129328">नेटवर्कको ठेगाना कन्फिगर गर्नुहोस्</translation>
 <translation id="3729303374699765035">कुनै साइटले छेउछाउका ब्लुटुथ यन्त्रहरू पत्ता लगाउन खोज्दा सोध्नुहोस्</translation>
@@ -2751,7 +2753,6 @@
 <translation id="3945513714196326460">अझ छोटो नाम राखी हेर्नुहोस्</translation>
 <translation id="3948116654032448504">र छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ले निम्न फोल्डरमा रहेका फाइलहरू सम्पादन गर्न सक्छ</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">IE बाट आयात गरिएको</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{यो एप खतरनाक हुन सक्छ}other{यी एपहरू खतरनाक हुन सक्छन्}}</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
@@ -3074,7 +3075,6 @@
 <translation id="4349828822184870497">उपयोगी लाग्यो</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> लाई कहिल्यै पनि आफ्नो स्थानसम्बन्धी जानकारी प्रयोग नदिनुहोस्</translation>
 <translation id="4350782034419308508">Hey Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> वरपरका ब्लुटुथ यन्त्रहरू खोज्न स्क्यान गर्न चाहन्छ। निम्न यन्त्रहरू फेला परेका छन्:</translation>
 <translation id="4354073718307267720">कुनै साइटले आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन खोज्दा मलाई सोधियोस्</translation>
 <translation id="4354344420232759511">तपाईंले भ्रमण गर्ने साइटहरू यहाँ देखिने छन्</translation>
 <translation id="435527878592612277">आफ्नो तस्बिर चयन गर्नुहोस्</translation>
@@ -3336,7 +3336,6 @@
 <translation id="4625078469366263107">एप सक्षम पार्नुहोस्</translation>
 <translation id="4627427111733173920">कूकीहरूमाथि रोक लगाइएको छ</translation>
 <translation id="4627442949885028695">अर्को यन्त्रबाट जारी राख्नुहोस्</translation>
-<translation id="4628757576491864469">यन्त्रहरू</translation>
 <translation id="4628762811416793313">Linux कन्टेनर सेटअप गर्ने कार्य पूरा भएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> नामक प्रोफाइल खोल्नुहोस्</translation>
 <translation id="4632655012900268062">कार्डहरू आफूले चाहे जस्तो बनाउनुहोस्</translation>
@@ -3503,6 +3502,7 @@
 <translation id="4830502475412647084">OS अद्यावधिक स्थापना गर्दै</translation>
 <translation id="4830573902900904548">तपाईँको <ph name="DEVICE_TYPE" /> <ph name="NETWORK_NAME" /> प्रयोग गरेर इन्टरनेटसँग जडान गर्न असमर्थ छ। कृपया अर्को नेटवर्क छनौट गर्नुहोस्। <ph name="LEARN_MORE_LINK_START" /> थप जान्नुहोस् <ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">प्रिन्ट सर्भरमा १ प्रिन्टर फेला पर्‍यो</translation>
+<translation id="4834007576107377210">लागू हुन्छ भने आफ्नो खोजको इतिहास मेटाउन सर्च इन्जिनमा दिइएका निर्देशनहरू हेर्नुहोस्</translation>
 <translation id="4836046166855586901">कुनै साइटले मैले यो डिभाइस चलाइरहेको छु कि छुइनँ भन्ने कुराको जानकारी माग्दा मलाई सोधियोस्</translation>
 <translation id="4836504898754963407">फिंगरप्रिन्टहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4837128290434901661">फेरि Google खोज प्रयोग गर्ने हो?</translation>
@@ -3739,6 +3739,7 @@
 <translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">RSA को साथमा PKCS #1 SHA-512 गुप्तलेखन</translation>
 <translation id="5090637338841444533">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइएका साइटहरू</translation>
+<translation id="5093569275467863761">इन्कोग्निटो मोडमा ब्याक/फर्वार्ड क्यास गरिएको सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">सहयोगी मुल अनुप्रयोगहरूसँग सञ्चार गर्नुहोस्</translation>
 <translation id="5097002363526479830">नेटवर्क '<ph name="NAME" />' मा जडान हुन असफल भयो: <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">टुल: <ph name="PRINT_NAME" /></translation>
@@ -5119,7 +5120,6 @@
 <translation id="6651237644330755633">वेबसाइटहरूको पहिचान गर्न यो प्रमाणपत्रमाथि विश्वास गर्नुहोस्</translation>
 <translation id="6651495917527016072">आफ्नो फोनमा Wi-Fi नेटवर्कहरू सिंक गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> एकीकरण x86_64 प्लेटफर्ममा मात्र समर्थित छ। कुनै ARM वा x86 प्लेटफर्मको शीर्षमा निर्मित Chromebooks ले यो कार्यलाई समर्थन गर्दैन।</translation>
-<translation id="66537479323396140">इतिहास र खोज बाकसमा खोज पद स्वतः पूरा गर्ने सम्बन्धमा दिइएका सुझावहरू मेटाइन्छन्। तपाईंको Google खातामा रहेको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य स्वरूपमा ब्राउजिङ इतिहास सेभ गरिएको हुन सक्छ।</translation>
 <translation id="6654509035557065241">कुनै नेटवर्क रोज्नुहोस्</translation>
 <translation id="6655190889273724601">विकासकर्ता मोड</translation>
 <translation id="6655458902729017087">खाताहरू लुकाउनुहोस्</translation>
@@ -6396,6 +6396,7 @@
 <translation id="8032244173881942855">ट्याब लाई cast गर्न असमर्थ।</translation>
 <translation id="8033827949643255796">चयन गरिएको</translation>
 <translation id="8033958968890501070">समयावधि सकियो</translation>
+<translation id="8035059678007243127">इन्कोग्निटो मोडमा ब्याक/फर्वार्ड क्यास गरिएको पेज: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8037117027592400564">बोलिएका सबै पाठहरूलाई संश्लेषण गरिएको बोली प्रयोग गरेर पढ्नुहोस्</translation>
 <translation id="8037357227543935929">सोध्नुहोस् (डिफल्ट मान)</translation>
 <translation id="803771048473350947">फाइल</translation>
@@ -6525,6 +6526,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">खुला वेबको जीवन्तता कायम राख्दै विभिन्न साइटमा प्रयोग गरिने क्रियाकलाप ट्र्याक गर्ने प्रविधिबाट तपाईंलाई सुरक्षित राख्नका निम्ति Chrome ले <ph name="BEGIN_LINK" />प्राइभेसी स्यान्डबक्स<ph name="END_LINK" />का सहायताले नयाँ प्रविधिहरू विकास गर्दै छ।</translation>
 <translation id="8161293209665121583">पाठक मोडमा वेब पृष्ठहरू पढ्ने सुविधा</translation>
+<translation id="8162307956032783161">निम्न कार्य गर्न कुन स्विच प्रयोग गर्ने भन्ने कुरा तोक्नुहोस्: अर्को</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ट्याब सारेर नयाँ विन्डोमा लैजानुहोस्}other{ट्याबहरू सारेर नयाँ विन्डोमा लैजानुहोस्}}</translation>
 <translation id="8165997195302308593">Crostini मा पोर्ट फर्वार्ड गर्ने सुविधा</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{एउटा फोन नम्बर}other{# वटा फोन नम्बर}}</translation>
@@ -6665,6 +6667,7 @@
 <translation id="8317671367883557781">नेटवर्क जडान थप्नुहोस्</translation>
 <translation id="8319414634934645341">विस्तारित कुञ्जी प्रयोग</translation>
 <translation id="8321476692217554900">सूचनाहरू</translation>
+<translation id="8321492415476219409">निम्न कार्य गर्न कुन स्विच प्रयोग गर्ने भन्ने कुरा तोक्नुहोस्: अघिल्लो</translation>
 <translation id="8321837372750396788"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्ने छ।</translation>
 <translation id="8322814362483282060">यो पृष्ठलाई तपाईंको माइक्रोफोनको पहुँच गर्नबाट ब्लक गरिएको छ।</translation>
 <translation id="8323167517179506834">युआरएल टाइप गर्नुहोस्</translation>
@@ -6700,7 +6703,6 @@
 <translation id="8363142353806532503">माइक्रोफोन प्रयोग गर्नमाथि रोक लगाइयो</translation>
 <translation id="8366396658833131068">तपाइँको सञ्जाल जडान पुनर्स्थापित भएको छ। कृपया एक भिन्न सञ्जाल चयन गर्नुहोस् वा तपाइँको किसोक एप सुरु गर्नको लागि 'जारी राख्नुहोस्' बटन थिच्नुहोस्।</translation>
 <translation id="8366694425498033255">छनोट कुञ्जीहरू</translation>
-<translation id="8368027906805972958">अज्ञात वा प्रयोग गर्न नमिल्ने यन्त्र (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;सबै बुकमार्कहरू खोल्नुहोस्</translation>
 <translation id="8370294614544004647">ल्यापटप बन्द गरिएका बेला स्लिप मोडमा लगियोस्</translation>
 <translation id="8371695176452482769">अब बोल्नुहोस्</translation>
@@ -6713,7 +6715,6 @@
 <translation id="8379991678458444070">यो ट्याबमा पुस्तक चिन्ह लगाएर छिट्टै यहाँ फर्कनुहोस्</translation>
 <translation id="8382913212082956454">&amp;इमेल ठेगानाको प्रतिलिपी बनाउनुहोस्</translation>
 <translation id="8386091599636877289">नीति फेला परेन।</translation>
-<translation id="838705362287678887"><ph name="BEGIN_LINK_SEARCH" />खोज इतिहास<ph name="END_LINK_SEARCH" /> वा अन्य प्रकारका इतिहास मेटाउन <ph name="BEGIN_LINK_GOOGLE" />मेरो Google खाता<ph name="END_LINK_GOOGLE" />मा जानुहोस्</translation>
 <translation id="8387361103813440603">तपाईंको स्थान हेर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8388770971141403598">सहायक प्रोफाइल प्रयोग गर्न मिल्दैन</translation>
 <translation id="8389416080014625855">यो पृष्ठको लागि QR कोड सिर्जना गर्नुहोस्</translation>

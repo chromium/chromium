@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">L'estil de pantalla actual és entrellaçat</translation>
 <translation id="1087788677726983142">Amaga els filtres del flux d'esdeveniments</translation>
 <translation id="1088402100970133699">No hi ha cap element de llista anterior</translation>
-<translation id="1114836634143403764">Suggeriment</translation>
 <translation id="1120743664840974483">{"a": "alfa", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
 <translation id="1120938014254001895">Fes lliscar dos dits cap amunt</translation>
 <translation id="1126928665165112660">Sense cursiva</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Informació sobre el contingut</translation>
 <translation id="2417948780551741035">Notes finals</translation>
 <translation id="2419852971200420169">Llista de descripcions</translation>
-<translation id="2421113964388408478">Supressió</translation>
 <translation id="2422937916923936891">Casella de selecció de l'element de menú</translation>
 <translation id="2428534162001909979">Menús d'ordres</translation>
 <translation id="242998846562331953">Subtítol</translation>
 <translation id="2435422727584637732">Blau intens clar</translation>
+<translation id="2438712309510062123">Suggereix</translation>
 <translation id="2450814015951372393">Casella de selecció</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462626033734746142">Grup de botons d'opció</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Fes doble toc per començar a editar</translation>
 <translation id="2598495320872286378">Error gramatical</translation>
 <translation id="2603828437139726540">Avança un caràcter</translation>
+<translation id="2619052155095999743">Insereix</translation>
 <translation id="2619344480613750862">També pots moure't per les seccions de la pantalla. Per exemple, et pots moure entre el menú d'aplicacions, el prestatge i les pestanyes de Chrome. Per passar a la secció següent, fes lliscar quatre dits d'esquerra a dreta. Prova-ho ara per continuar.</translation>
 <translation id="2624431853467395961">Obre el mode d'aprenentatge</translation>
 <translation id="2626530649491650971">s'hi pot fer clic</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Maó</translation>
 <translation id="4482330759234983253">Taula anterior</translation>
 <translation id="4491109536499578614">Imatge</translation>
-<translation id="4505167975768625962">Inserció</translation>
 <translation id="4511186779140817916">Blanc ametlla</translation>
 <translation id="451510441928265982">No hi ha cap encapçalament anterior de nivell 2</translation>
 <translation id="4515799157838123044">Ombreja el contingut en segon pla</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Canvia l'estil de pantalla a paral·lel</translation>
 <translation id="8215202828671303819">Selecció múltiple</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% d'opacitat.</translation>
+<translation id="8261506727792406068">Suprimeix</translation>
 <translation id="826825447994856889">Introducció</translation>
 <translation id="827266600368092403">Inicia o finalitza la selecció</translation>
 <translation id="827422111966801947">Anyil</translation>

@@ -261,7 +261,6 @@
 <translation id="1807246157184219062">ແສງ​</translation>
 <translation id="1807528111851433570">ແຜ່ນວຽກເລີ່ມຕົ້ນ</translation>
 <translation id="1812527064848182527">ແນວນອນ</translation>
-<translation id="1814698615734239189">ແອັບນີ້ຖືກອອກແບບມາສຳລັບອຸປະກອນມືຖື. ມັນກຳລັງເຮັດວຽກໃນໂໝດຄວາມເຂົ້າກັນໄດ້. ການອະນຸຍາດໃຫ້ມີການປັບຂະໜາດອາດພົບບັນຫາຕ່າງໆ ຮວມທັງການຣີສະຕາດແອັບນຳ.</translation>
 <translation id="1821930232296380041">ການຮ້ອງຂໍ ຫຼືພາຣາມີເຕີການຮ້ອງຂໍໃຊ້ບໍ່ໄດ້</translation>
 <translation id="1822540298136254167">ເວັບໄຊທີທ່ານເຂົ້າເຖິງ ແລະ ເວລາທີ່ໃຊ້ໃນເວັບໄຊເຫຼົ່ານັ້ນ</translation>
 <translation id="1826516787628120939">ກໍາລັງກວດເບິ່ງ</translation>
@@ -680,7 +679,6 @@
 <translation id="3431636764301398940">ບັນທຶກບັດນີ້ໃສ່ອຸປະກອນນີ້</translation>
 <translation id="3432601291244612633">ປິດໜ້າ</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
-<translation id="3435896845095436175">ເປີດໃຊ້ງານ</translation>
 <translation id="3438829137925142401">ໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">ເຈົ້າ​ຂອງ​ອຸ​ປະ​ກອນ​ນີ້​ປິດ​ເກມ​ໄດ​ໂນ​ເສົາ​ໄວ້.</translation>
@@ -817,6 +815,7 @@
 <translation id="3946209740501886391">ຖາມໃນເວັບໄຊນີ້ທຸກເທື່ອ</translation>
 <translation id="3949571496842715403">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າມັນຢູ່ໃນ <ph name="DOMAIN" />, ໃບຮັບຮອງຄວາມປອດໄພບໍ່ລະບຸຊື່ທາງເລືອກອື່ນຂອງຫົວຂໍ້. ນີ້ອາດຈະເກີດຈາກການກຳນົດຄ່າຜິດ ຫຼື ຜູ້ໂຈມຕີທີ່ດັກສະກັດການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="3949601375789751990">ປະຫວັດການທ່ອງເວັບຂອງທ່ານປາກົດຢູ່ບ່ອນນີ້</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">ບໍ່ມີວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້</translation>
 <translation id="3950820424414687140">ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
 <translation id="3961148744525529027">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຈ່າຍເງິນເປີດຢູ່ເຄິ່ງດຽວ</translation>
@@ -824,7 +823,6 @@
 <translation id="3963721102035795474">ໂໝດເຄື່ອງອ່ານ</translation>
 <translation id="3963837677003247395">ສືບຕໍ່ດ້ວຍຕົນເອງບໍ?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ບໍ່ມີ}=1{ຈາກ 1 ເວັບໄຊ }other{ຈາກ # ເວັບໄຊ }}</translation>
-<translation id="3970481983430640194">ຕອນນີ້ທ່ານສາມາດລາກ ແລະ ປັບຂະໜາດແອັບໄດ້ແລ້ວ</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ຖືກບລັອກໄວ້</translation>
 <translation id="3973357910713125165">ເປີດໃຊ້ກວດສອບຄວາມປອດໄພ Chrome, ກົດ Enter ເພື່ອເປີດໃຊ້ການກວດສອບຄວາມປອດໄພໃນ Chrome</translation>
@@ -948,6 +946,7 @@
 <translation id="4346197816712207223">ບັດເຄຣດິດທີ່ຍອມຮັບ</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">ທ່ານຫາກໍປ້ອນລະຫັດຜ່ານຂອງທ່ານໃສ່ເວັບໄຊຫຼອກລວງ. Chrome ຂໍແນະນຳໃຫ້ໄປທີ່ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ແລະ ເວັບໄຊອື່ນໆທີ່ທ່ານໃຊ້ລະຫັດຜ່ານນີ້ ແລ້ວປ່ຽນມັນຕອນນີ້ເລີຍ.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> ຕ້ອງການສະແກນຫາອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງ, ພົບເຫັນອຸປະກອນຕໍ່ໄປນີ້ແລ້ວ:</translation>
 <translation id="4356973930735388585">ຜູ້ໂຈມຕີຢູ່ໃນເວັບໄຊນີ້ອາດຈະພະຍາຍາມຕິດຕັ້ງໂປຣແກຣມອັນຕະລາຍຢູ່ໃນຄອມພິວເຕີຂອງທ່ານທີ່ລັກເອົາ ຫຼື ລຶບຂໍ້ມູນຂອງທ່ານຖິ້ມ (ຕົວຢ່າງ: ຮູບພາບ, ລະຫັດຜ່ານ, ຂໍ້ຄວາມ ແລະ ບັດເຄຣດິດ).</translation>
 <translation id="4358059973562876591">ແມ່ແບບທີ່ທ່ານລະບຸອາດຈະນຳໃຊ້ບໍ່ໄດ້ຍ້ອນມີຂໍ້ຜິດພາດກັບນະໂຍບາຍ DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">ຈັດການວິທີການຈ່າຍເງິນ...</translation>
@@ -1400,7 +1399,6 @@
 <translation id="6032524144326295339">ກ່ອງຈົດໝາຍ 2</translation>
 <translation id="6032955021262906325">ຫຍິບເຫຼັ້ມເບື້ອງຊ້າຍ</translation>
 <translation id="6034000775414344507">ສີເທົາອ່ອນ</translation>
-<translation id="6034062182346928710">ອາດບໍ່ສາມາດປັບຂະໜາດ <ph name="APP_NAME" /> ໄດ້ດີ. ໃຫ້ໃຊ້ຂະໜາດໜ້າຈໍຕາມພຣີເຊັດເພື່ອປ້ອງກັນບໍ່ໃຫ້ແອັບເຮັດວຽກຜິດປົກກະຕິ.</translation>
 <translation id="6034283069659657473">10x14 (ຊອງຈົດໝາຍ)</translation>
 <translation id="6034514109191629503">ພັບແບບຫີບເພງ</translation>
 <translation id="6039846035001940113">ຖ້າບັນຫາຍັງຢູ່, ກະລຸນາຕິດຕໍ່ຫາເຈົ້າຂອງເວັບໄຊ.</translation>
@@ -1430,7 +1428,6 @@
 <translation id="6120179357481664955">ຈື່ UPI ID ຂອງທ່ານໄວ້ບໍ?</translation>
 <translation id="6123290840358279103">ເບິ່ງບັດສະເໝືອນ</translation>
 <translation id="6124432979022149706">ເຄື່ອງມືເຊື່ອມຕໍ່ Chrome Enterprise</translation>
-<translation id="6143538402333184781">ແອັບນີ້ຮອງຮັບຂະໜາດ "ໂທລະສັບ" ເທົ່ານັ້ນ.</translation>
 <translation id="6146055958333702838">ກວດເບິ່ງສາຍໄຟ ແລະປິດເປີດເຣົາເຕີ, ໂມເດັມ, ຫຼືອຸປະກອນເຄືອຂ່າຍ
     ທີ່ທ່ານອາດກຳລັງໃຊ້ຢູ່ຄືນໃໝ່.</translation>
 <translation id="614940544461990577">ລອງ:</translation>
@@ -1980,7 +1977,6 @@
 <translation id="8225771182978767009">ບຸກຄົນຜູ້ທີ່ຕັ້ງຄ່າຄອມພິວເຕີນີ້ໄດ້ເລືອກບລັອກເວັບໄຊນີ້ໄວ້.</translation>
 <translation id="8228419419708659934">ມຸມມອງສອງໜ້າ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">ບໍ່ຕ້ອງຖາມຂ້ອຍອີກສຳລັບແອັບນີ້</translation>
 <translation id="8232343881378637145">ອຸນຫະພູມຂອງແພລດຟອມ</translation>
 <translation id="8238581221633243064">ເປີດໜ້າເວັບໃນແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="8241707690549784388">ໜ້າທີ່ທ່ານກໍາລັງຊອກຫາຂໍ້ມູນໃຊ້ແລ້ວທີ່ທ່ານປ້ອນເຂົ້າໄປ. ການກັບຄືນມາຫາໜ້ານັ້ນອາດຈະເຮັດໃຫ້ການກະທໍາໃດໜຶ່ງທີ່ທ່ານເຮັດແລ້ວຖືກເຮັດຊໍ້າຄືນ. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</translation>
@@ -1993,7 +1989,6 @@
 <translation id="825929999321470778">ສະແດງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ທັງໝົດ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8262952874573525464">ຫຍິບຂອບລຸ່ມສຸດ</translation>
-<translation id="826298712171642726">ເປີດການນຳໃຊ້ການປັບຂະໜາດບໍ?</translation>
 <translation id="8265992338205884890">ຂໍ້ມູນທີ່ເບິ່ງເຫັນໄດ້</translation>
 <translation id="8267698848189296333">ກຳ​ລັງ​ລົງຊື່ເຂົ້າໃຊ້​ເປັນ <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">ເອກະສານແຍກກັນ/ຈັດຊຸດສຳເນົາ</translation>
@@ -2024,6 +2019,7 @@
 <translation id="8355270400102541638">ບໍລິບົດການຂັດຂ້ອງພາຍໃນເຄື່ອງ:</translation>
 <translation id="8363502534493474904">ກຳລັງປິດໂໝດເຮືອບິນ</translation>
 <translation id="8364627913115013041">ບໍ່​ໄດ້ຕັ້ງ​.</translation>
+<translation id="8368027906805972958">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ ຫຼື ບໍ່ຮອງຮັບ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">ບໍລິການ Google Play</translation>
 <translation id="8371889962595521444">ໃບຮັບຮອງຮາກຖານທີ່ກຳນົດເອງ</translation>
 <translation id="8374636051559112948">ຫຼາກຫຼາຍ</translation>

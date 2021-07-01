@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Isitayela samanje sesibonisi siwukuhlanganisa</translation>
 <translation id="1087788677726983142">Fihla izihlungi zokusakaza zomcimbi</translation>
 <translation id="1088402100970133699">Ayikho into yohlu oludlule</translation>
-<translation id="1114836634143403764">Isiphakamiso</translation>
 <translation id="1120743664840974483">{"a": "apula", "b": "baba", "c": "cula", "d": "deda", "e": "enza", "f": "faka", "g": "gubha", "h": "hala", "i": "ima", "j": "jomba","k": "kama", "l": "lima", "m": "mama", "n": "nona", "o": "oma","p": "pela", "q": "qoqa", "r": "randi", "s": "sika", "t": "tota", "u": "umuntu", "v": "vuma", "w": "wena","x": "xoxa", "y": "yebo", "z": "zula"}</translation>
 <translation id="1120938014254001895">Swayiphela iminwe emibili phezulu</translation>
 <translation id="1126928665165112660">Akuyona i-italic</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Ulwazi lokuqukethwe</translation>
 <translation id="2417948780551741035">Amanothi okugcina</translation>
 <translation id="2419852971200420169">Uhlu lwencazelo</translation>
-<translation id="2421113964388408478">Ukususwa</translation>
 <translation id="2422937916923936891">Ibhokisi lokuhlola lento yemenyu</translation>
 <translation id="2428534162001909979">Amamenyu omyalo</translation>
 <translation id="242998846562331953">Umbhalo ongezansi</translation>
 <translation id="2435422727584637732">Okuluhlaza okwesibhakabhaka kwe-Dodger</translation>
+<translation id="2438712309510062123">Phakamisa</translation>
 <translation id="2450814015951372393">Thikha ibhokisi</translation>
 <translation id="2461822463642141190">Okwamanje</translation>
 <translation id="2462626033734746142">Iqembu lenkinobho yerediyo</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Thepha kabili ukuze uqale ukuhlela</translation>
 <translation id="2598495320872286378">Iphutha lohlelo lolimi</translation>
 <translation id="2603828437139726540">Hamba phambili ngohlamvu olulodwa</translation>
+<translation id="2619052155095999743">Faka</translation>
 <translation id="2619344480613750862">Ungahamba naphakathi kwezigaba zesikrini. Ngokwesibonelo, ungahamba phakathi kwesiqalisi, ishalufu, namathebhu akho e-Chrome. Ukuze uye esigabeni esilandelayo, swayipha kusuka kwesobunxele kuya kwesokudla ngeminwe emine. Kuzame manje ukuze uqhubeke.</translation>
 <translation id="2624431853467395961">Vula imodi yokufunda</translation>
 <translation id="2626530649491650971">iyachofozeka</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">I-Fire Brick</translation>
 <translation id="4482330759234983253">Ithebula langaphambilini</translation>
 <translation id="4491109536499578614">Isithombe</translation>
-<translation id="4505167975768625962">Ukufaka</translation>
 <translation id="4511186779140817916">I-Blanched Almond</translation>
 <translation id="451510441928265982">Asikho isihloko esedlule seleveli engu-2</translation>
 <translation id="4515799157838123044">Okuqukethwe kwesithunzi sangemuva</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Shintsha isitayela sokubonisa kusuka kolunye uhlangothi kuye kolunye</translation>
 <translation id="8215202828671303819">Ukukhetha okuningi</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ukukhanyela.</translation>
+<translation id="8261506727792406068">Susa</translation>
 <translation id="826825447994856889">Isingeniso</translation>
 <translation id="827266600368092403">Qala noma qeda ukukhetha</translation>
 <translation id="827422111966801947">I-Indigo</translation>

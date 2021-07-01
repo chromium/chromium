@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Süsteem</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP 2. etapi autentimine</translation>
+<translation id="2783010256799387990">LÄBITUD</translation>
 <translation id="2789486458103222910">Selge</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2862104018715411648">Asetage dokument skannerisse ja valige alustamiseks käsk Skanni.</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ühtegi prinditööd pole pooleli</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> pilti</translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
@@ -229,7 +231,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5691511426247308406">Perekond</translation>
 <translation id="5752751666635965375">Looge ise mäng</translation>
 <translation id="5760715441271661976">Portaali olek</translation>
-<translation id="5797428682393400134">ÕNNESTUS</translation>
 <translation id="5832805196449965646">Lisa inimene</translation>
 <translation id="583281660410589416">Tundmatu</translation>
 <translation id="5849570051105887917">Koduteenuse pakkuja kood</translation>
@@ -296,6 +297,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
 <translation id="714876143603641390">LAN-i ühenduvus</translation>
 <translation id="7162487448488904999">Galerii</translation>
+<translation id="7172721935181587524">1 pilt</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
@@ -345,6 +347,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8294431847097064396">Allikas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
 <translation id="8302368968391049045">HTTPS-i tulemüür</translation>
+<translation id="8318753676953949627">Pilte pole</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
 <translation id="8352772353338965963">Lisage mitmele kontole sisselogimiseks konto. Kõigile kontodele, kuhu on sisse logitud, pääseb juurde ilma paroolita, seega soovitame seda funktsiooni kasutada vaid usaldusväärsete kontodega.</translation>
 <translation id="8364946094152050673">Tühjad nimeserverid</translation>

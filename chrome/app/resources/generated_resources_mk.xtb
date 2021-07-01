@@ -2304,7 +2304,6 @@
 <translation id="3468298837301810372">Ознака</translation>
 <translation id="3468999815377931311">Телефон со Android</translation>
 <translation id="3470442499439619530">Отстрани го овој корисник</translation>
-<translation id="3471350386419633991">Кликнете со десно копче на картичка или кликнете на иконата за обележувач за да додадете картички во списокот за читање. Пристапувајте од лентата со обележувачи.</translation>
 <translation id="3471876058939596279">HDMI-портата и USB-портата од типот C не може да се користат за видео истовремено. Користете друга видеопорта.</translation>
 <translation id="3473241910002674503">Одете на почетен екран, вратете се назад и префрлајте меѓу апликации со копчиња во режим на таблет.</translation>
 <translation id="3473479545200714844">Лупа за екран</translation>
@@ -2773,7 +2772,6 @@
 <translation id="3945513714196326460">Обидете се со пократко име</translation>
 <translation id="3948116654032448504">&amp;Пребарувај слика на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да изменува датотеки во следниве папки</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Увезени од IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Апликацијава може да е опасна}one{Апликацииве може да се опасни}other{Апликацииве може да се опасни}}</translation>
 <translation id="3950820424414687140">Најави се</translation>
@@ -3096,7 +3094,6 @@
 <translation id="4349828822184870497">Корисно</translation>
 <translation id="4350230709416545141">Секогаш блокирај го пристапот на <ph name="HOST" /> до локацијата</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> сака да скенира за уреди со Bluetooth во близина. Најдени се следниве уреди:</translation>
 <translation id="4354073718307267720">Прашувај кога некој сајт сака да создаде 3D-карта на опкружувањето или да ја следи позицијата на камерата</translation>
 <translation id="4354344420232759511">Сајтовите што ќе ги посетите ќе се појават тука</translation>
 <translation id="435527878592612277">Изберете ја вашата фотографија</translation>
@@ -3359,7 +3356,6 @@
 <translation id="4625078469366263107">Овозможи апликација</translation>
 <translation id="4627427111733173920">Колачињата се блокирани</translation>
 <translation id="4627442949885028695">Продолжете од друг уред</translation>
-<translation id="4628757576491864469">Уреди</translation>
 <translation id="4628762811416793313">Поставувањето на контејнерот на Linux не заврши. Обидете се повторно.</translation>
 <translation id="4629521233550547305">Отвори го профилот <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Приспособете ги картичките</translation>
@@ -3526,6 +3522,7 @@
 <translation id="4830502475412647084">Се инсталира ажурирање на ОС</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> не може да се поврзе на интернет преку <ph name="NETWORK_NAME" />. Изберете друга мрежа. <ph name="LEARN_MORE_LINK_START" />Дознајте повеќе<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Најден е 1 печатач од серверот за печатење</translation>
+<translation id="4834007576107377210">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо</translation>
 <translation id="4836046166855586901">Прашувај кога некој сајт ќе сака да знае дали активно го користам уредов</translation>
 <translation id="4836504898754963407">Управувајте со отпечатоците</translation>
 <translation id="4837128290434901661">Да се врати на „Пребарување на Google“?</translation>
@@ -5144,7 +5141,6 @@
 <translation id="6651237644330755633">Имајте доверба во сертификатов за идентификување на веб-сајтовите</translation>
 <translation id="6651495917527016072">Синхронизирајте ги Wi-Fi мрежите со телефонот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Интеграцијата на Chrome <ph name="MS_AD_NAME" /> е поддржана само на платформи x86_64. Оваа функционалност не е поддржана на уреди Chromebook изградени на платформи ARM или x86.</translation>
-<translation id="66537479323396140">Ја брише историјата и автоматското довршување во полето за пребарување. Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Се претпочита мрежа</translation>
 <translation id="6655190889273724601">Режим на програмер</translation>
 <translation id="6655458902729017087">Сокриј сметки</translation>
@@ -6731,7 +6727,6 @@
 <translation id="8363142353806532503">Микрофонот е блокиран</translation>
 <translation id="8366396658833131068">Поврзливоста на мрежата е обновена. Изберете друга мрежа или притиснете го копчето „Продолжи“ подолу за да се активира киоск-апликацијата.</translation>
 <translation id="8366694425498033255">Копчиња за избор</translation>
-<translation id="8368027906805972958">Непознат или неподдржан уред (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Отвори ги сите обележувачи</translation>
 <translation id="8370294614544004647">Режим во мирување кога лаптопот е затворен</translation>
 <translation id="8371695176452482769">Зборувај сега</translation>
@@ -6744,7 +6739,6 @@
 <translation id="8379991678458444070">Ако ја обележите картичкава, ќе може да се вратите тука набрзина</translation>
 <translation id="8382913212082956454">Копирај &amp;адреса на е-пошта</translation>
 <translation id="8386091599636877289">Правилото не е пронајдено.</translation>
-<translation id="838705362287678887">За да избришете <ph name="BEGIN_LINK_SEARCH" />пребарување<ph name="END_LINK_SEARCH" /> или друг тип историја, одете на <ph name="BEGIN_LINK_GOOGLE" />Моја сметка на Google<ph name="END_LINK_GOOGLE" /></translation>
 <translation id="8387361103813440603">Не им е дозволено да ја гледаат локацијата</translation>
 <translation id="8388770971141403598">Секундарните профили не се поддржани</translation>
 <translation id="8389416080014625855">Создајте QR-код за страницава</translation>

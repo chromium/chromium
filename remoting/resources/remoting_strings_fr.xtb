@@ -24,6 +24,7 @@ Pour accorder cette autorisation, cliquez sur "<ph name="BUTTON_NAME" />" ci-des
 Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la, puis cochez-la de nouveau.</translation>
 <translation id="225614027745146050">Bienvenue</translation>
 <translation id="2320166752086256636">Masquer le clavier</translation>
+<translation id="2329392777730037872">Impossible d'ouvrir <ph name="URL" /> sur le client.</translation>
 <translation id="2333212046079545895">Copyright 2021 Google LLC. Tous droits réservés.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2366718077645204424">Impossible de joindre l'hôte, probablement en raison de la configuration du réseau que vous utilisez.</translation>
@@ -88,6 +89,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="4867841927763172006">Envoyer Imp écr</translation>
 <translation id="4974476491460646149">Connexion coupée pour <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Vous devez tout d'abord configurer votre ordinateur pour l'accès à distance.</translation>
+<translation id="4987330545941822761">Le Bureau à distance Chrome ne peut pas déterminer le navigateur à utiliser pour ouvrir les URL localement. Sélectionnez une option de la liste ci-dessous.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (hors connexion)</translation>
 <translation id="507204348399810022">Voulez-vous vraiment désactiver les connexions à distance à <ph name="HOSTNAME" /> ?</translation>
 <translation id="5170982930780719864">ID d'hôte incorrect.</translation>
@@ -135,6 +137,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="7312846573060934304">L'hôte est hors ligne</translation>
 <translation id="7319983568955948908">Arrêter le partage</translation>
+<translation id="7359298090707901886">Le navigateur sélectionné ne peut pas être utilisé pour ouvrir les URL localement.</translation>
 <translation id="7401733114166276557">Bureau à distance Google Chrome</translation>
 <translation id="7434397035092923453">Accès refusé au client : <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Client connecté : <ph name="CLIENT_USERNAME" /></translation>

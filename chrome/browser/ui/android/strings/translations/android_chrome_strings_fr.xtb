@@ -331,6 +331,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3098745985164956033">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions</translation>
 <translation id="3114507951000454849">Lisez les actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Annonces</translation>
+<translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3157842584138209013">Découvrez la quantité de données économisées en cliquant sur le bouton "Plus d'options"</translation>
 <translation id="3166827708714933426">Raccourcis liés aux onglets et aux fenêtres</translation>
@@ -449,6 +450,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="3924911262913579434">Mode <ph name="SAFE_BROWSING_MODE" /> activé</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
+<translation id="3934366560681368531">"</translation>
 <translation id="393697183122708255">Aucune recherche vocale activée dispo.</translation>
 <translation id="3943557322767080599">Une invite de connexion à Chrome s'affiche lorsque vous vous connectez à votre compte Google</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome chargera votre page dès qu'elle sera prête}one{Chrome chargera votre page dès qu'elle sera prête}other{Chrome chargera vos pages dès qu'elles seront prêtes}}</translation>

@@ -866,6 +866,13 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wenn diese Richtlinie konfiguriert wird, verwirft der Browser Tabs, um Arbeitsspeicher zu leeren, sobald das Limit überschritten wird. Es gibt jedoch keine Garantie dafür, dass der Browser immer unterhalb des Limits bleibt. Jeder Wert unter 1024 wird auf 1024 aufgerundet.
 
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Browser versuchen, Arbeitsspeicher zu leeren, wenn der verfügbare Arbeitsspeicher auf dem jeweiligen Gerät gering ist.</translation>
+<translation id="2165567959657265531">Für Cookies, die in Domains festgelegt sind, die diesen Mustern entsprechen, wird das alte Verhalten von „<ph name="ATTRIBUTE_SAMESITE_NAME" />“ wiederhergestellt. Wird es wiederhergestellt, werden Cookies, für die kein „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Attribut angegeben ist, so behandelt, als würden sie „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ auch das Attribut „<ph name="ATTRIBUTE_SECURE_NAME" />“ enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
+
+          Für Cookies, die in Domains festgelegt sind, die diesen Mustern nicht entsprechen, oder für alle Cookies, falls diese Richtlinie nicht konfiguriert ist, wird die persönliche Konfiguration des Nutzers als globaler Standardwert verwendet.
+
+          Genaue Informationen zu gültigen Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+          Beachten Sie, dass die Muster, die Sie hier eintragen, als Domains und nicht als URLs behandelt werden. Geben Sie deshalb kein Schema und keinen Port an.</translation>
 <translation id="2166155400701622446">Es gibt eine in <ph name="PRODUCT_NAME" /> integrierte Liste beschränkter Ports. Verbindungen zu diesen Ports schlagen fehl. Mit dieser Einstellung wird das Umgehen dieser Liste erlaubt. Der Wert ist eine durch Kommas getrennte Liste von null oder mehr Ports, an denen ausgehende Verbindungen erlaubt werden.
 
       Ports sind beschränkt, um zu verhindern, dass <ph name="PRODUCT_NAME" /> als Vektor für die Ausnutzung verschiedener Netzwerk-Sicherheitslücken verwendet wird. Wird diese Richtlinie konfiguriert, kann Ihr Netzwerk dadurch dem Risiko von Angriffen ausgesetzt sein. Diese Richtlinie dient der vorübergehenden Problemumgehung bei Fehlern mit dem Code „ERR_UNSAFE_PORT“, die während der Migration eines Dienstes auftreten, wenn der Dienst an einem gesperrten Port läuft und an einen Standardport migriert wird (z. B. Port 80 oder 443).
@@ -927,17 +934,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wenn Sie "<ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />" festlegen (Wert: 1), werden nur Variationen für <ph name="PRODUCT_OS_NAME" /> angewendet, die als wichtige Sicherheits- oder Stabilitätskorrekturen gewertet werden.
 
       Wenn Sie "<ph name="VARIATIONS_DISABLED_OPTION_NAME" />" festlegen (Wert: 2), werden auf dem Anmeldebildschirm keine Variationen auf den Browser angewendet. Dieser Modus kann die <ph name="PRODUCT_OS_NAME" />-Entwickler möglicherweise daran hindern, wichtige Sicherheitskorrekturen zeitnah durchzuführen. Er wird daher nicht empfohlen.</translation>
-<translation id="2216380260552785166">Diese Richtlinie legt fest, wie <ph name="PRODUCT_NAME" /> Richtlinien zu Websitelisten/Greylists für die Funktion zur Unterstützung älterer Browser interpretiert. Die folgenden Richtlinien sind betroffen: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> und <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
-
-      Wenn die Richtlinie auf „Default“ (0) gesetzt oder nicht konfiguriert ist, ist der URL-Abgleich weniger strikt. Bei Regeln, die nicht „/“ enthalten, wird nach einem Teilstring im Hostnamen der URL gesucht.
-
-      Wenn die Richtlinie auf „Strict“ (1) gesetzt ist, ist der URL-Abgleich strikter. Bei Regeln, die nicht „/“ enthalten, wird nur der letzte Abschnitt des Hostnamen berücksichtigt. Sie müssen außerdem innerhalb des Bereichs für Domainnamen liegen. Das ist besser mit <ph name="MS_IE_PRODUCT_NAME" /> und <ph name="MS_EDGE_PRODUCT_NAME" /> kompatibel.
-
-      Beispiel anhand der Regel „beispiel.de“:
-
-      „http://beispiel.de/“ und „http://subdomain.beispiel.de/“ stimmen unabhängig vom Parsing-Modus überein.
-
-      „http://keinbeispiel.de/“, „http://beispiel.de.ungültig.com/“ und „http://beispiel.deabc/“ stimmen nur im Modus „Default“ überein.</translation>
 <translation id="2221850122314326571">Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
       Ist sie deaktiviert, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mit der von der Plattform stammenden Legacy-Zertifikatsprüfung.
       Wenn diese Einstellung nicht konfiguriert ist, wird die integrierte oder die Legacy-Zertifikatsprüfung verwendet.

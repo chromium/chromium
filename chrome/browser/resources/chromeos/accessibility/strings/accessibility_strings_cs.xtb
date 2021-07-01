@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Aktuální styl zobrazení je prokládání</translation>
 <translation id="1087788677726983142">Skrýt filtry streamů událostí</translation>
 <translation id="1088402100970133699">Žádná předchozí položka seznamu není</translation>
-<translation id="1114836634143403764">Návrh</translation>
 <translation id="1120743664840974483">{"a": "adam", "á": "dlouhé a", "b": "božena", "c": "cyril", "č": "čeněk", "d": "david", "ď": "ďáblice", "e": "emil", "ě": "e s háčkem", "é": "dlouhé e", "f": "františek", "g": "gustav", "h": "helena", "ch": "chrudim", "i": "ivan", "í": "dlouhé měkké i", "j": "josef", "k": "karel", "l": "ludvík", "m": "marie", "n": "neruda", "ň": "ňouma", "o": "otakar", "ó": "dlouhé o", "p": "petr", "q": "quido", "r": "rudolf", "ř": "řehoř", "s": "svatopluk", "š": "šimon", "t": "tomáš", "ť": "těšnov", "u": "urban", "ů": "u s kroužkem", "ú": "u s čárkou", "v": "václav", "w": "dvojité v", "x": "xaver", "y": "ypsilon", "ý": "dlouhé tvrdé y", "z": "zuzana", "ž": "žofie"}</translation>
 <translation id="1120938014254001895">Přejeďte dvěma prsty nahoru</translation>
 <translation id="1126928665165112660">Není kurzíva</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Informace o obsahu</translation>
 <translation id="2417948780551741035">Koncové poznámky</translation>
 <translation id="2419852971200420169">Seznam popisů</translation>
-<translation id="2421113964388408478">Smazání</translation>
 <translation id="2422937916923936891">Položka nabídky – zaškrtávací políčko</translation>
 <translation id="2428534162001909979">Příkazové nabídky</translation>
 <translation id="242998846562331953">Titulek</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Úpravu spustíte dvojitým klepnutím</translation>
 <translation id="2598495320872286378">Gramatická chyba</translation>
 <translation id="2603828437139726540">Přejít o znak dopředu</translation>
+<translation id="2619052155095999743">Vložit</translation>
 <translation id="2619344480613750862">Můžete také přecházet mezi sekcemi obrazovky. Můžete například přecházet mezi spouštěčem, poličkou a kartami prohlížeče Chrome. Na další sekci přejdete přejetím čtyřmi prsty zleva doprava. Zkuste tím pokračovat.</translation>
 <translation id="2624431853467395961">Otevřít režim výuky</translation>
 <translation id="2626530649491650971">klikatelné</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">Cihlová</translation>
 <translation id="4482330759234983253">Předchozí tabulka</translation>
 <translation id="4491109536499578614">Obrázek</translation>
-<translation id="4505167975768625962">Vložení</translation>
 <translation id="4511186779140817916">Mandlová</translation>
 <translation id="451510441928265982">Žádný předchozí nadpis 2. úrovně není</translation>
 <translation id="4515799157838123044">Zastínit obsah na pozadí</translation>
@@ -1009,6 +1007,7 @@
 <translation id="8212109599554677485">Změnit styl zobrazení na vedle sebe</translation>
 <translation id="8215202828671303819">Vícenásobný výběr</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% krytí</translation>
+<translation id="8261506727792406068">Smazat</translation>
 <translation id="826825447994856889">Úvod</translation>
 <translation id="827266600368092403">Zahájit nebo ukončit výběr</translation>
 <translation id="827422111966801947">Indigová</translation>

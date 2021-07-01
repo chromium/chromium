@@ -260,7 +260,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1807246157184219062">Hele</translation>
 <translation id="1807528111851433570">Algusleht</translation>
 <translation id="1812527064848182527">horisontaalpaigutus</translation>
-<translation id="1814698615734239189">See rakendus on mõeldud mobiilseadmetele. Rakendust käitatakse ühilduvusrežiimis. Suuruse muutmise lubamine võib põhjustada probleeme, sealhulgas rakenduse taaskäivitamist.</translation>
 <translation id="1821930232296380041">Taotlus või selle parameetrid on kehtetud</translation>
 <translation id="1822540298136254167">Teie külastatavad veebisaidid ja nendel veedetav aeg</translation>
 <translation id="1826516787628120939">Kontrollimine</translation>
@@ -679,7 +678,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3431636764301398940">Salvesta kaart sellesse seadmesse</translation>
 <translation id="3432601291244612633">Sule leht</translation>
 <translation id="3435738964857648380">Turvalisus</translation>
-<translation id="3435896845095436175">Luba</translation>
 <translation id="3438829137925142401">Kasutage oma Google'i kontole salvestatud paroole</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Seadme omanik lülitas dinosaurusemängu välja.</translation>
@@ -816,6 +814,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3946209740501886391">Küsi sellel saidil alati</translation>
 <translation id="3949571496842715403">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />; selle turvasertifikaat ei määra laiendust Subject Alternative Names. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="3949601375789751990">Siin kuvatakse teie sirvimisajalugu</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Salvestatud makseviise ei ole</translation>
 <translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3961148744525529027">Maksetöötleja leht on poolenisti avatud</translation>
@@ -823,7 +822,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3963721102035795474">Lugejarežiim</translation>
 <translation id="3963837677003247395">Kas jätkata käsitsi?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ükski}=1{1 saidilt }other{# saidilt }}</translation>
-<translation id="3970481983430640194">Nüüd saate seda rakendust lohistada ja selle suurust muuta</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> on blokeeritud</translation>
 <translation id="3973357910713125165">Nupp Käita Chrome'i ohutuskontroll, vajutage sisestusklahvi, et Chrome'i seadetes ohutuskontroll käitada</translation>
@@ -947,6 +945,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4346197816712207223">Aktsepteeritavad krediitkaardid</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Sisestasite äsja oma parooli kahtlasele saidile. Chrome soovitab teil minna veebisaitidele <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ja muudele saitidele, kus seda parooli kasutate, ning kohe oma parooli muuta.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> soovib otsida läheduses olevaid Bluetooth-seadmeid. Leiti järgmised seadmed:</translation>
 <translation id="4356973930735388585">Saidil olevad ründajad võivad proovida installida teie arvutisse ohtlikke programme, mis varastavad teie teavet või kustutavad selle (nt fotod, paroolid, sõnumid ja krediitkaardiandmed).</translation>
 <translation id="4358059973562876591">Teie määratud malle ei pruugita rakendada, kuna reeglis DnsOverHttpsMode on viga.</translation>
 <translation id="4358461427845829800">Halda makseviise …</translation>
@@ -1399,7 +1398,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6032524144326295339">Postkast 2</translation>
 <translation id="6032955021262906325">Köide vasakul</translation>
 <translation id="6034000775414344507">Helehall</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> ei pruugi hästi toimida, kui selle suurust muudetakse. Rakenduse probleemide vältimiseks kasutage akna eelseadistatud suurusi.</translation>
 <translation id="6034283069659657473">10x14 (ümbrik)</translation>
 <translation id="6034514109191629503">Lõõtsvolditud</translation>
 <translation id="6039846035001940113">Kui probleem jätkub, võtke ühendust saidi omanikuga.</translation>
@@ -1429,7 +1427,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6120179357481664955">Kas jätta teie UPI ID meelde?</translation>
 <translation id="6123290840358279103">Kuva virtuaalkaart</translation>
 <translation id="6124432979022149706">Chrome Enterprise'i liidesed</translation>
-<translation id="6143538402333184781">See rakendus toetab ainult telefoni kuvamissuurust.</translation>
 <translation id="6146055958333702838">Kontrollige kaableid ning taaskäivitage kõik ruuterid, modemid ja muud
     kasutuses olevad võrguseadmed.</translation>
 <translation id="614940544461990577">Proovige järgmist.</translation>
@@ -1979,7 +1976,6 @@ Lisateave:
 <translation id="8225771182978767009">Arvuti seadistanud inimene blokeeris selle saidi.</translation>
 <translation id="8228419419708659934">Kahe lehe vaade</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Ära enam selle rakenduse puhul küsi</translation>
 <translation id="8232343881378637145">Platvormi temperatuur</translation>
 <translation id="8238581221633243064">Avage leht uuel inkognito vahekaardil</translation>
 <translation id="8241707690549784388">Teie poolt otsitav lehekülg kasutas teie sisestatud andmeid. Sellele leheküljele naasmine võib kaasa tuua kõikide sooritatud tegevuste kordamise. Soovite jätkata?</translation>
@@ -1992,7 +1988,6 @@ Lisateave:
 <translation id="825929999321470778">Kuva kõik salvestatud paroolid</translation>
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8262952874573525464">Õmblus alaservas</translation>
-<translation id="826298712171642726">Kas lubada suuruse muutmine?</translation>
 <translation id="8265992338205884890">Nähtavad andmed</translation>
 <translation id="8267698848189296333">Sisselogimine kasutajana <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Eraldi dokumendid / järjestatud koopiad</translation>
@@ -2023,6 +2018,7 @@ Lisateave:
 <translation id="8355270400102541638">Kohaliku kokkujooksmise kontekst:</translation>
 <translation id="8363502534493474904">Lülitage lennurežiim välja</translation>
 <translation id="8364627913115013041">Määramata.</translation>
+<translation id="8368027906805972958">Tundmatu või toetamata seade (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play teenused</translation>
 <translation id="8371889962595521444">Kohandatud juursertifikaadid</translation>
 <translation id="8374636051559112948">Varieerub</translation>

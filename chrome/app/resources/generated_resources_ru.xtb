@@ -2289,7 +2289,6 @@
 <translation id="3468298837301810372">Ярлык:</translation>
 <translation id="3468999815377931311">Телефон Android</translation>
 <translation id="3470442499439619530">Удалить профиль</translation>
-<translation id="3471350386419633991">Позволяет использовать нажатие правой кнопкой мыши на вкладку или нажатие на значок закладки для добавления вкладок в список для чтения. Доступно на панели закладок.</translation>
 <translation id="3471876058939596279">Нельзя одновременно использовать порты HDMI и USB Type-C для передачи видеосигнала. Используйте другой видеопорт.</translation>
 <translation id="3473241910002674503">В режиме планшета будут видны кнопки для перехода к панели запуска, возврата на предыдущий экран и переключения между приложениями.</translation>
 <translation id="3473479545200714844">Лупа</translation>
@@ -2758,7 +2757,6 @@
 <translation id="3945513714196326460">Сократите название.</translation>
 <translation id="3948116654032448504">&amp;Найти картинку (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> может изменять файлы в указанных ниже папках.</translation>
-<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Импортированные из IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Это приложение может быть опасным}one{Эти приложения могут быть опасными}few{Эти приложения могут быть опасными}many{Эти приложения могут быть опасными}other{Эти приложения могут быть опасными}}</translation>
 <translation id="3950820424414687140">Вход</translation>
@@ -3081,7 +3079,6 @@
 <translation id="4349828822184870497">Полезно</translation>
 <translation id="4350230709416545141">Не сообщать сайту <ph name="HOST" />, где я нахожусь</translation>
 <translation id="4350782034419308508">Фраза "Окей, Google"</translation>
-<translation id="4351060348582610152">Сайт <ph name="ORIGIN" /> ищет устройства Bluetooth поблизости. Обнаружены следующие устройства:</translation>
 <translation id="4354073718307267720">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры</translation>
 <translation id="4354344420232759511">Здесь появятся сайты, на которые вы заходили.</translation>
 <translation id="435527878592612277">Выберите фото</translation>
@@ -3343,7 +3340,6 @@
 <translation id="4625078469366263107">Включить приложение</translation>
 <translation id="4627427111733173920">Файлы cookie заблокированы</translation>
 <translation id="4627442949885028695">Продолжить на другом устройстве</translation>
-<translation id="4628757576491864469">Устройства</translation>
 <translation id="4628762811416793313">Не удалось завершить настройку контейнера Linux. Повторите попытку.</translation>
 <translation id="4629521233550547305">Открыть профиль <ph name="PROFILE_NAME" /></translation>
 <translation id="4632655012900268062">Настроить подсказки</translation>
@@ -3510,6 +3506,7 @@
 <translation id="4830502475412647084">Обновление ОС</translation>
 <translation id="4830573902900904548">Устройству <ph name="DEVICE_TYPE" /> не удается подключиться к Интернету по сети <ph name="NETWORK_NAME" />. Выберите другую сеть. <ph name="LEARN_MORE_LINK_START" />Подробнее…<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">На сервере печати найден 1 принтер.</translation>
+<translation id="4834007576107377210">Изучите инструкции по удалению истории поиска в справочных материалах используемой поисковой системы.</translation>
 <translation id="4836046166855586901">Спрашивать перед передачей на сайт информации об использовании устройства</translation>
 <translation id="4836504898754963407">Управление отпечатками</translation>
 <translation id="4837128290434901661">Вернуться к Google Поиску?</translation>
@@ -5128,7 +5125,6 @@
 <translation id="6651237644330755633">Доверять этому сертификату при идентификации сайтов</translation>
 <translation id="6651495917527016072">Синхронизировать сети Wi-Fi с телефоном. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Интеграция Chrome <ph name="MS_AD_NAME" /> доступна только на платформах x86-64. Устройства Chromebook, разработанные на базе ARM или платформе x86, не поддерживают эту функцию.</translation>
-<translation id="66537479323396140">Удаление истории и вариантов автозаполнения в окне поиска. История браузера также может храниться в вашем аккаунте Google: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">Выбрать предпочитаемую сеть</translation>
 <translation id="6655190889273724601">Режим разработчика</translation>
 <translation id="6655458902729017087">Скрыть аккаунты</translation>
@@ -6712,7 +6708,6 @@
 <translation id="8363142353806532503">Доступ к микрофону запрещен</translation>
 <translation id="8366396658833131068">Подключение к сети восстановлено. Выберите другую сеть или нажмите кнопку "Продолжить", чтобы запустить киоск-приложение.</translation>
 <translation id="8366694425498033255">Клавиши выбора</translation>
-<translation id="8368027906805972958">Неизвестное или неподдерживаемое устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Открыть все закладки</translation>
 <translation id="8370294614544004647">Переход в спящий режим, когда крышка ноутбука закрыта</translation>
 <translation id="8371695176452482769">Говорите</translation>
@@ -6725,7 +6720,6 @@
 <translation id="8379991678458444070">Чтобы вам было проще вернуться на эту вкладку, добавьте ее в закладки.</translation>
 <translation id="8382913212082956454">Копировать &amp;адрес электронной почты</translation>
 <translation id="8386091599636877289">Политика не найдена.</translation>
-<translation id="838705362287678887">Чтобы удалить <ph name="BEGIN_LINK_SEARCH" />поисковые запросы<ph name="END_LINK_SEARCH" /> или другие данные о вашей активности, перейдите на страницу <ph name="BEGIN_LINK_GOOGLE" />Мой аккаунт Google<ph name="END_LINK_GOOGLE" />.</translation>
 <translation id="8387361103813440603">Запретить сайтам определять ваше местоположение</translation>
 <translation id="8388770971141403598">Дополнительные профили не поддерживаются.</translation>
 <translation id="8389416080014625855">Создать QR-код для этой страницы</translation>

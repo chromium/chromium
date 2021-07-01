@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
+<translation id="2783010256799387990">LULUS</translation>
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2862104018715411648">Letakkan dokumen Anda pada pemindai, lalu pilih Pindai untuk memulai</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Sandi kedaluwarsa dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tidak ada tugas pencetakan yang sedang berlangsung</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
@@ -229,7 +231,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5691511426247308406">Keluarga</translation>
 <translation id="5752751666635965375">Buat game Anda sendiri</translation>
 <translation id="5760715441271661976">Status Portal</translation>
-<translation id="5797428682393400134">BERHASIL</translation>
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5849570051105887917">Kode penyedia rumah</translation>
@@ -296,6 +297,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
 <translation id="714876143603641390">Konektivitas LAN</translation>
 <translation id="7162487448488904999">Galeri</translation>
+<translation id="7172721935181587524">1 Gambar</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
@@ -345,6 +347,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8318753676953949627">Tidak Ada Gambar</translation>
 <translation id="8347227221149377169">Pekerjaan cetak</translation>
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>

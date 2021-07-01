@@ -1543,6 +1543,7 @@
 <translation id="2659971421398561408">‏Crostini کی ڈسک کی سائز تبدیل کریں</translation>
 <translation id="2660779039299703961">ایونٹ</translation>
 <translation id="266079277508604648">‏پرنٹر سے منسلک نہیں ہو سکا۔ چیک کریں کہ پرنٹر آن ہے اور Wi-Fi یا USB کے ذریعے آپ کے Chromebook سے منسلک ہے۔</translation>
+<translation id="2661315027005813059">بیک/فارورڈ کیش کردہ صفحہ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">لائٹ موڈ کے ذریعے مزید تیزی سے براؤز کریں اور کم ڈیٹا استعمال کریں۔ مزید جاننے کیلئے کلک کریں۔</translation>
 <translation id="2662876636500006917">‏Chrome ویب اسٹور</translation>
 <translation id="2663302507110284145">زبان</translation>
@@ -1904,6 +1905,7 @@
 <translation id="3021678814754966447">فریم ماخذ &amp;دیکھیں</translation>
 <translation id="3022978424994383087">سمجھ نہیں آئی۔</translation>
 <translation id="3023464535986383522">سننے کیلئے منتخب کریں</translation>
+<translation id="3023517118372899130">سوئچ تفویض کریں: منتخب کریں</translation>
 <translation id="3024374909719388945">24 گھنٹے کی گھڑی استعمال کریں</translation>
 <translation id="3027296729579831126">قریبی آلات کے ساتھ اشتراک آن کریں</translation>
 <translation id="3029466929721441205">شیلف میں اسٹائلس ٹولز دکھائیں</translation>
@@ -2285,7 +2287,6 @@
 <translation id="3468298837301810372">لیبل</translation>
 <translation id="3468999815377931311">‏Android فون</translation>
 <translation id="3470442499439619530">اس صارف کو ہٹائیں</translation>
-<translation id="3471350386419633991">ٹیبز کو پڑھنے کی ایک فہرست میں شامل کرنے کیلئے، کسی ٹیب پر دائیں طرف کلک کریں یا بُک مارک آئیکن پر کلک کریں۔ بُک مارکس بار سے رسائی حاصل کریں۔</translation>
 <translation id="3471876058939596279">‏ویڈیو کیلئے HDMI اور USB ٹائپ سی پورٹس کا ایک ہی وقت پر استعمال نہیں کیا جا سکتا۔ کوئی مختلف ویڈیو پورٹ استعمال کریں۔</translation>
 <translation id="3473241910002674503">ٹیبلیٹ موڈ میں بٹنز کے ساتھ ہوم پر جائیں، واپس جائیں اور ایپس سوئچ کریں۔</translation>
 <translation id="3473479545200714844">اسکرین میگنیفائر</translation>
@@ -2522,6 +2523,7 @@
 <translation id="3722108462506185496">ورچوئل مشین سروس شروع کرنے میں خرابی پیش آ گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="3727187387656390258">پاپ اپ کا معائنہ کریں</translation>
 <translation id="372722114124766626">بس ایک بار</translation>
+<translation id="3727473233247516571">بیک/فارورڈ کیش کردہ کا سب فریم: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">آپ کے فون سے مرر کی اطلاعات</translation>
 <translation id="3728681439294129328">نیٹ ورک پتہ کنفیگر کریں</translation>
 <translation id="3729303374699765035">اس وقت پوچھیں جب کسی سائٹ میں قریبی بلوٹوتھ آلات کو دریافت کرنا مقصود ہو</translation>
@@ -2610,7 +2612,7 @@
 <translation id="381202950560906753">کوئی دوسرا شامل کریں</translation>
 <translation id="3812525830114410218">غلط سرٹیفیکیٹ</translation>
 <translation id="3813296892522778813">‏آپ جو چیز تلاش کر رہے ہیں اگر وہ نہیں مل رہی ہے تو <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome مدد<ph name="END_LINK_CHROMIUM" /> پر جائیں</translation>
-<translation id="3813358687923336574">زبان کا استعمال صفحات کا ترجمہ کرنے اور فوری جوابات کے لیے کیا جاتا ہے</translation>
+<translation id="3813358687923336574">صفحات کا ترجمہ کرنے اور فوری جوابات کے لیے استعمال کردہ زبان</translation>
 <translation id="3814529970604306954">اسکول کا اکاؤنٹ</translation>
 <translation id="3816118180265633665">‏Chrome کے رنگ</translation>
 <translation id="3817524650114746564">اپنے کمپیوٹر کی پراکسی ترتیبات کو کھولیں</translation>
@@ -2753,7 +2755,6 @@
 <translation id="3945513714196326460">کوئی چھوٹا نام آزمائیں</translation>
 <translation id="3948116654032448504">تصویر کیلئے <ph name="SEARCH_ENGINE" /> میں &amp;تلاش کریں</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> مندرجہ ذیل فولڈرز کی فائلز میں ترمیم کر سکتا ہے</translation>
-<translation id="3949790930165450333">‎<ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)‎</translation>
 <translation id="394984172568887996">‏IE سے درآمد کردہ</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{یہ ایپ خطرناک ہو سکتی ہے}other{یہ ایپس خطرناک ہو سکتی ہیں}}</translation>
 <translation id="3950820424414687140">سائن ان کریں</translation>
@@ -3076,7 +3077,6 @@
 <translation id="4349828822184870497">مفید</translation>
 <translation id="4350230709416545141">اپنے مقام تک رسائی حاصل کرنے سے <ph name="HOST" /> کو ہمیشہ مسدود کریں</translation>
 <translation id="4350782034419308508">Ok Google</translation>
-<translation id="4351060348582610152"><ph name="ORIGIN" /> قریبی بلوٹوتھ آلات کے لیے اسکین کرنا چاہتی ہے، مندرجہ ذیل آلات ملے ہیں:</translation>
 <translation id="4354073718307267720">‏جب کوئی سائٹ آپ کے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنا چاہے تو پوچھیں</translation>
 <translation id="4354344420232759511">آپ کی ملاحظہ کردہ سائٹس یہاں ظاہر ہوں گی</translation>
 <translation id="435527878592612277">اپنی تصویر منتخب کریں</translation>
@@ -3338,7 +3338,6 @@
 <translation id="4625078469366263107">ایپ فعال کریں</translation>
 <translation id="4627427111733173920">کوکیز مسدود ہیں</translation>
 <translation id="4627442949885028695">کسی دوسرے آلہ سے جاری رکھیں</translation>
-<translation id="4628757576491864469">آلات</translation>
 <translation id="4628762811416793313">‏Linux کنٹینر کا سیٹ اپ مکمل نہیں ہوا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> پروفائل کھولیں</translation>
 <translation id="4632655012900268062">کارڈز کو حسب ضرورت بنائیں</translation>
@@ -3505,6 +3504,7 @@
 <translation id="4830502475412647084">‏OS اپ ڈیٹ انسٹال کیا جا رہا ہے</translation>
 <translation id="4830573902900904548"><ph name="NETWORK_NAME" /> کا استعمال کرتے ہوئے آپ کا <ph name="DEVICE_TYPE" /> انٹرنیٹ سے منسلک ہونے سے قاصر ہے۔ براہ کرم کوئی دوسرا نیٹ ورک منتخب کریں۔<ph name="LEARN_MORE_LINK_START" />مزید جانیں<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">پرنٹ سرور سے 1 پرنٹر ملا</translation>
+<translation id="4834007576107377210">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کیلئے اپنے سرچ انجن کی ہدایات دیکھیں</translation>
 <translation id="4836046166855586901">پوچھیں کہ کب کوئی سائٹ یہ جاننا چاہتی ہے کہ فعال طور پر آپ اس آلہ کا استعمال کب کر رہے ہیں</translation>
 <translation id="4836504898754963407">فنگر پرنٹس کا نظم کریں</translation>
 <translation id="4837128290434901661">‏Google تلاش پر واپس جائیں؟</translation>
@@ -3741,6 +3741,7 @@
 <translation id="5087748406101774740"><ph name="APP_NAME" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 مع RSA مرموز کاری</translation>
 <translation id="5090637338841444533">آپ کے کیمرا کی پوزیشن کو ٹریک کرنے کی اجازت نہیں ہے</translation>
+<translation id="5093569275467863761">بیک/فارورڈ کیش کردہ پوشیدگی کا سب فریم: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">تعاون کرنے والی اصل ایپلیکیشنز کے ساتھ مواصلت کریں</translation>
 <translation id="5097002363526479830">نیٹ ورک '<ph name="NAME" />' سے منسلک ہونے میں ناکام ہوگیا: <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">ٹول: <ph name="PRINT_NAME" /></translation>
@@ -5122,7 +5123,6 @@
 <translation id="6651237644330755633">ویب سائٹس کی شناخت کرنے کیلئے اس سرٹیفیکیٹ پر بھروسہ کریں</translation>
 <translation id="6651495917527016072">‏اپنے فون کے ساتھ Wi-Fi نیٹ ورکس کو سنک کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">‏Chrome <ph name="MS_AD_NAME" /> انضمام صرف x86_64‎‎ پلیٹ فارمز پر تعاون یافتہ ہے۔ ARM یا x86 پلیٹ فارم پر تیار کردہ Chromebooks اس فعالیت کو سپورٹ نہیں کرتے ہیں۔</translation>
-<translation id="66537479323396140">‏تلاش کے خانہ میں سرگزشت اور خودکار تکمیلات کو صاف کرتا ہے۔ ممکن ہے کہ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="6654509035557065241">نیٹ ورک کو ترجیح دیں</translation>
 <translation id="6655190889273724601">ڈویلپر وضع</translation>
 <translation id="6655458902729017087">اکاؤنٹس چھپائیں</translation>
@@ -6399,6 +6399,7 @@
 <translation id="8032244173881942855">ٹیب کاسٹ کرنے سے قاصر۔</translation>
 <translation id="8033827949643255796">منتخب کردہ</translation>
 <translation id="8033958968890501070">وقت ختم ہو گیا</translation>
+<translation id="8035059678007243127">بیک/فارورڈکیش کردہ پوشیدگی صفحہ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8037117027592400564">سنتھیسائز کردہ اسپیچ کا استعمال کر کے بولے گئے سبھی متن کو پڑھیں</translation>
 <translation id="8037357227543935929">پوچھیں (ڈیفالٹ)</translation>
 <translation id="803771048473350947">فائل</translation>
@@ -6528,6 +6529,7 @@
 <translation id="816095449251911490">‎<ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" />‎</translation>
 <translation id="81610453212785426">‏<ph name="BEGIN_LINK" />رازداری سینڈ باکس<ph name="END_LINK" /> کے ساتھ، Chrome آپ کو اوپن ویب کے تحفظ کے دوران کراس سائٹ کی ٹریکنگ سے محفوظ رکھنے کے لیے نئی ٹیکنالوجیز تیار کر رہا ہے۔</translation>
 <translation id="8161293209665121583">ویب صفحات کے لیے ریڈر وضع</translation>
+<translation id="8162307956032783161">سوئچ تفویض کریں: اگلی</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ٹیب کو نئی ونڈو میں منتقل کریں}other{ٹیبز کو نئی ونڈو میں منتقل کریں}}</translation>
 <translation id="8165997195302308593">‏Crostini پورٹ فارورڈنگ</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{ایک فون نمبر}other{# فون نمبرز}}</translation>
@@ -6668,6 +6670,7 @@
 <translation id="8317671367883557781">نیٹ ورک کنکشن شامل کریں</translation>
 <translation id="8319414634934645341">توسیعی کلید کا استعمال</translation>
 <translation id="8321476692217554900">اطلاعات</translation>
+<translation id="8321492415476219409">سوئچ تفویض کریں: پچھلی</translation>
 <translation id="8321837372750396788">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہوگا۔</translation>
 <translation id="8322814362483282060">اس صفحہ کو آپ کے مائیکروفون تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="8323167517179506834">‏URL ٹائپ کریں</translation>
@@ -6703,7 +6706,6 @@
 <translation id="8363142353806532503">مائیکروفون مسدود ہے</translation>
 <translation id="8366396658833131068">آپ کے نیٹ ورک کی کنیکٹوٹی بحال ہوگئی ہے۔ براہ کرم اپنی کیوسک ایپ شروع کرنے کیلئے ایک مختلف نیٹ ورک منتخب کریں یا ذیل میں 'جاری رکھیں' بٹن دبائیں۔</translation>
 <translation id="8366694425498033255">انتخاب کی کلیدیں</translation>
-<translation id="8368027906805972958">نا معلوم یا غیر تعاون یافتہ آلہ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">سبھی بُک مارکس &amp;کھولیں</translation>
 <translation id="8370294614544004647">لیپ ٹاپ بند ہونے پر سلیپ وضع میں بھیجیں</translation>
 <translation id="8371695176452482769">اب بولیں</translation>
@@ -6716,7 +6718,6 @@
 <translation id="8379991678458444070">اس ٹیب کو بُک مارک کر کے یہاں تیزی سے واپس آئیں</translation>
 <translation id="8382913212082956454">&amp;ای میل پتہ کاپی کریں</translation>
 <translation id="8386091599636877289">پالیسی نہیں ملی۔</translation>
-<translation id="838705362287678887">‏<ph name="BEGIN_LINK_SEARCH" />تلاش<ph name="END_LINK_SEARCH" /> یا کسی اور طرح کی سرگزشت کو صاف کرنے کے لیے <ph name="BEGIN_LINK_GOOGLE" />میرا Google اکاؤنٹ<ph name="END_LINK_GOOGLE" /> ملاحظہ کریں</translation>
 <translation id="8387361103813440603">آپ کا مقام دیکھنے کی اجازت نہیں ہے</translation>
 <translation id="8388770971141403598">ثانوی پروفائلز تعاون یافتہ نہیں ہیں</translation>
 <translation id="8389416080014625855">‏اس صفحہ کیلئے QR کوڈ تخلیق کریں</translation>
@@ -6850,7 +6851,7 @@
 <translation id="8553342806078037065">دوسرے لوگوں کا نظم کریں</translation>
 <translation id="8554899698005018844">کوئی زبان نہیں</translation>
 <translation id="8557022314818157177">آپ کے فنگر پرنٹ کیپچر ہو جانے تک اپنی سیکیورٹی کلید کو ٹچ کرتے رہیں</translation>
-<translation id="8557180006508471423">‏اپنے Mac پر مقام کی سروسز میں Google" Chrome" کو آن کریں</translation>
+<translation id="8557180006508471423">‏اپنے Mac پر مقام کی سروسز میں "Google Chrome" کو آن کریں</translation>
 <translation id="8557930019681227453">مینی فیسٹ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{سبھی کو &amp;نئی ونڈو میں کھولیں}=1{&amp;نئی ونڈو میں کھولیں}other{سبھی ({COUNT}) کو &amp;نئی ونڈو میں کھولیں}}</translation>
 <translation id="8561206103590473338">ہاتھی</translation>

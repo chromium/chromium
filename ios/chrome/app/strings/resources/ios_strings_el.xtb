@@ -680,7 +680,6 @@
 <translation id="7600965453749440009">Να μην γίνεται ποτέ μετάφραση από <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Αποκλεισμ. αναδ. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Διαγραφή κωδικού πρόσβασης</translation>
-<translation id="7616830195948464104"><ph name="TIME" /> λ.</translation>
 <translation id="7638584964844754484">Εσφαλμένη φράση πρόσβασης</translation>
 <translation id="7646772052135772216">Ο συγχρονισμός κωδικών πρόσβασης δεν λειτουργεί</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
@@ -804,6 +803,7 @@
 <translation id="8917490105272468696">Ναι, συμφωνώ</translation>
 <translation id="895541991026785598">Αναφορά προβλήματος</translation>
 <translation id="8976382372951310360">Βοήθεια</translation>
+<translation id="8976414606286374109">Οι κάρτες αποθηκεύονται στον Λογαριασμό σας Google.</translation>
 <translation id="8981454092730389528">Στοιχεία ελέγχου δραστηριότητας Google</translation>
 <translation id="8985320356172329008">Έχετε συνδεθεί στο Google ως</translation>
 <translation id="9000089900434778519">Χρησιμοποιείτε τη μηχανή αναζήτησης <ph name="DSE_NAME" />. Ανατρέξτε στις οδηγίες για διαγραφή του ιστορικού αναζήτησής σας, εφόσον υπάρχουν.</translation>

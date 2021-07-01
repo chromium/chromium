@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">ຮູບແບບການສະແດງຜົນປັດຈຸບັນເປັນຂໍ້ຄວາມແຊກ</translation>
 <translation id="1087788677726983142">ເຊື່ອງຕົວກັ່ນຕອງການຖ່າຍທອດເຫດການ</translation>
 <translation id="1088402100970133699">ບ່ໍມີລາຍການກ່ອນໜ້າ</translation>
-<translation id="1114836634143403764">ການແນະນຳ</translation>
 <translation id="1120743664840974483">{"a": "ອາລຟາ", "b": "ບຣາໂວ", "c": "ຊາລີ", "d": "ເດລຕ້າ", "e": "ອີໂຄ", "f": "ຟັອກຕຣອດ", "g": "ກັອຟ", "h": "ໂຮເຕລ", "i": "ອິນເດຍ", "j": "ຈູລຽດ","k": "ກິໂລ", "l": "ລິມາ", "m": "ໄມຄ໌", "n": "ໂນແວມເບີ", "o": "ອອສກາ","p": "ປະປາ", "q": "ຄິວເບັກ", "r": "ໂຣມິໂອ", "s": "ເຊຍຣາ", "t": "ແທັງໂກ", "u": "ຢູນິຟອມ", "v": "ວິກເຕີ", "w": "ວິສກີ້","x": "ເອັກຊ໌ເຣ", "y": "ແຢງກີ້", "z": "ຊູລູ"}</translation>
 <translation id="1120938014254001895">ປັດສອງນິ້ວມືຂຶ້ນເທິງ</translation>
 <translation id="1126928665165112660">ບໍ່ເປັນຕົວອຽງ</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">ຂໍ້​ມູນ​ເນື້ອ​ໃນ</translation>
 <translation id="2417948780551741035">ບັນທຶກທ້າຍເລື່ອງ</translation>
 <translation id="2419852971200420169">ລາຍການຄຳອະທິບາຍ</translation>
-<translation id="2421113964388408478">ການລຶບ</translation>
 <translation id="2422937916923936891">ຫ້ອງໝາຍຕິກລາຍການເມນູ</translation>
 <translation id="2428534162001909979">ເມນູຄຳສັ່ງ</translation>
 <translation id="242998846562331953">ຄຳແປ</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">ແຕະສອງຄັ້ງເພື່ອເລີ່ມແກ້ໄຂ</translation>
 <translation id="2598495320872286378">ໄວຍະກອນຜິດພາດ</translation>
 <translation id="2603828437139726540">ຍ້າຍໄປໜ້າໜຶ່ງຕົວອັກສອນ</translation>
+<translation id="2619052155095999743">ສອດໃສ່</translation>
 <translation id="2619344480613750862">ທ່ານສາມາດເລື່ອນໄປມາລະຫວ່າງພາກສ່ວນຂອງໜ້າຈໍໄດ້. ຕົວຢ່າງ: ທ່ານສາມາດເລື່ອນໄປມາລະຫວ່າງຕົວເປີດໃຊ້, ຖ້ານ ແລະ ແຖບ Chrome ຂອງທ່ານໄດ້. ເພື່ອເລື່ອນໄປພາກສ່ວນຕໍ່ໄປ, ໃຫ້ປັດຈາກຊ້າຍໄປຂວາດ້ວຍສີ່ນິ້ວ. ລອງເຮັດຕອນນີ້ເພື່ອສືບຕໍ່.</translation>
 <translation id="2624431853467395961">ເປີດໂໝດການຮຽນຮູ້</translation>
 <translation id="2626530649491650971">ສາມາດຄລິກໄດ້</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">ສີແດງໄຟບຣິກ</translation>
 <translation id="4482330759234983253">ຕາ​ຕະ​ລາງ​ຜ່ານ​ມາ</translation>
 <translation id="4491109536499578614">ຮູບ​</translation>
-<translation id="4505167975768625962">ການໃສ່</translation>
 <translation id="4511186779140817916">ສີບລາເຈັດອາລມອນ</translation>
 <translation id="451510441928265982">ບໍ່ມີຫົວຂໍ້ລະດັບ 2 ກ່ອນໜ້າ</translation>
 <translation id="4515799157838123044">ເຮັດໃຫ້ສີຂອງເນື້ອຫາໃນພື້ນຫຼັງຈາງລົງ</translation>
@@ -1009,6 +1007,7 @@
 <translation id="8212109599554677485">ປ່ຽນຮູບແບບການສະແດງຜົນເປັນການສະແດງຄູ່ກັນ</translation>
 <translation id="8215202828671303819">​ເລືອກຫຼາຍອັນ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, ຄວາມໂປ່ງແສງ <ph name="OPACITY_PERCENTAGE" />%.</translation>
+<translation id="8261506727792406068">ລຶບ</translation>
 <translation id="826825447994856889">ການນໍາສະເໜີ</translation>
 <translation id="827266600368092403">ເລີ່ມຕົ້ນ ຫຼື ສິ້ນສຸດການເລືອກ</translation>
 <translation id="827422111966801947">ສີຄາມ</translation>

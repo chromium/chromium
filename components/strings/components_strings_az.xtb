@@ -261,7 +261,6 @@
 <translation id="1807246157184219062">Yüngül</translation>
 <translation id="1807528111851433570">Başlama vərəqi</translation>
 <translation id="1812527064848182527">peyzaj</translation>
-<translation id="1814698615734239189">Bu tətbiq mobil cihazlar üçün nəzərdə tutulmuşdur. Uyğunluq rejimində işləyir. Ölçünün dəyişdirilməsinə icazə versəniz, tətbiqin yenidən başlanması kimi problemlər yarana bilər.</translation>
 <translation id="1821930232296380041">Yanlış sorğu və ya sorğu parametrləri</translation>
 <translation id="1822540298136254167">Daxil olduğunuz veb saytlar və onlarda keçirdiyiniz vaxt</translation>
 <translation id="1826516787628120939">Yoxlanılır...</translation>
@@ -678,7 +677,6 @@
 <translation id="3431636764301398940">Bu kartı bu cihaza yazın</translation>
 <translation id="3432601291244612633">Səhifəni bağlayın</translation>
 <translation id="3435738964857648380">Təhlükəsizlik</translation>
-<translation id="3435896845095436175">Aktivləşdirin</translation>
 <translation id="3438829137925142401">Google Hesabınızda saxlanılan parollardan istifadə edin</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Bu cihazın sahibi dinozavr oyununu söndürüb.</translation>
@@ -813,6 +811,7 @@
 <translation id="3946209740501886391">Həmişə bu saytda sual verin</translation>
 <translation id="3949571496842715403">Server bunun <ph name="DOMAIN" /> olduğunu sübut edə bilmir; onun təhlükəsizlik sertifikatı Subyektiv Alternativ Adı göstərmir. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının blok edilməsi səbəb ola bilər.</translation>
 <translation id="3949601375789751990">Axtarış tarixçəsi burada görünür</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Yadda saxlanmış ödəniş metodu yoxdur</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3961148744525529027">Ödəniş səhifəsi yarım açıqdır</translation>
@@ -820,7 +819,6 @@
 <translation id="3963721102035795474">Oxu Rejimi</translation>
 <translation id="3963837677003247395">Manual olaraq davam edilsin?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yoxdur}=1{1 saytdan }other{# saytdan }}</translation>
-<translation id="3970481983430640194">İndi bu tətbiqi çəkib ölçüsünü dəyişə bilərsiniz</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> blok edilib</translation>
 <translation id="3973357910713125165">Chrome Təhlükəsizlik Yoxlanışını İcra Edin düyməsi, Chrome ayarlarında Təhlükəsizlik Yoxlanışını icra etmək üçün Enter düyməsinə basın</translation>
@@ -943,6 +941,7 @@
 <translation id="4346197816712207223">Qəbul edilən Kredit Kartları</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome indi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> və bu parolu istifadə etdiyiniz digər saytlara keçərək parolunuzu dəyişmənizi tövsiyə edir.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> yaxınlıqdakı Bluetooth cihazlarını axtarmaq istəyir. Aşağıdakı cihazlar tapıldı:</translation>
 <translation id="4356973930735388585">Saytdakı hücumçular kompüterinizə təhlükəli proqramlar yükləyərək məlumatlarınızı (məsələn, foto, parol, mesaj və kredit kart) oğurlamağa və ya silməyə cəhd edə bilər.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode siyasətində xəta olduğuna görə qeyd etdiyiniz şablonlar tətbiq edilməyə bilər.</translation>
 <translation id="4358461427845829800">Ödəniş üsullarını idarə edin...</translation>
@@ -1395,7 +1394,6 @@
 <translation id="6032524144326295339">Poçt qutusu 2</translation>
 <translation id="6032955021262906325">Soldan uclarını qovuşdurun</translation>
 <translation id="6034000775414344507">Açıq-boz</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> ölçüsü lazımi şəkildə dəyişdirilməyə bilər. Tətbiqin yanlış fəaliyyətinin qarşısını almaq üçün əvvəlcədən ayarlanmış pəncərə ölçülərindən istifadə edin.</translation>
 <translation id="6034283069659657473">10x14 (Zərf)</translation>
 <translation id="6034514109191629503">Akkordion qatlama</translation>
 <translation id="6039846035001940113">Problem davam edərsə, sayt sahibi ilə əlaqə saxlayın.</translation>
@@ -1425,7 +1423,6 @@
 <translation id="6120179357481664955">UPI ID'niz yadda saxlansın?</translation>
 <translation id="6123290840358279103">Virtual karta baxın</translation>
 <translation id="6124432979022149706">Chrome Enterprise Birləşdiriciləri</translation>
-<translation id="6143538402333184781">Bu tətbiq yalnız "Telefon" ölçüsünü dəstəkləyir.</translation>
 <translation id="6146055958333702838">Kabelləri yoxlayın və istifadə edəcəyiniz hər hansı router, modem və ya digər
         şəbəkə cihazlarını yenidən yükləyin.</translation>
 <translation id="614940544461990577">Cəhd edin:</translation>
@@ -1975,7 +1972,6 @@
 <translation id="8225771182978767009">Kompüteri quraşdıran şəxs bu saytı blok etməyi seçib.</translation>
 <translation id="8228419419708659934">İki səhifə görünüşü</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Bu tətbiq üçün məndən bir də soruşma</translation>
 <translation id="8232343881378637145">Platforma temperaturu</translation>
 <translation id="8238581221633243064">Yeni Gizli tabda səhifə açın</translation>
 <translation id="8241707690549784388">Baxdığınız səhifə daxil etdiyiniz məlumatı işlədir. Həmin səhifəyə qayıtmaq, etdiyiniz istənilən əməlin təkrarlanmasına səbəb ola bilər. Davam edirsiniz?</translation>
@@ -1988,7 +1984,6 @@
 <translation id="825929999321470778">Yadda Saxlanmış Bütün Parolları Göstərin</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8262952874573525464">Aşağıdan kənarını tikin</translation>
-<translation id="826298712171642726">Yenidən ölçüləndirmə aktiv edilsin?</translation>
 <translation id="8265992338205884890">Görünən data</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> kimi giriş edilir</translation>
 <translation id="8269242089528251720">Ayrıca sənədlər/Sıralanmış nüsxələr</translation>
@@ -2019,6 +2014,7 @@
 <translation id="8355270400102541638">Lokal Xəta Konteksti:</translation>
 <translation id="8363502534493474904">Təyyarə rejimi deaktiv edilir</translation>
 <translation id="8364627913115013041">Ayarlanmayıb</translation>
+<translation id="8368027906805972958">Naməlum və ya dəstəklənməyən cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play xidmətləri</translation>
 <translation id="8371889962595521444">Əsas fərdi sertifikatlar</translation>
 <translation id="8374636051559112948">Fərqlənir</translation>

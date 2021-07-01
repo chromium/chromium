@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Estilo de pantalla actual: intercalado</translation>
 <translation id="1087788677726983142">Ocultar filtros de emisión de eventos</translation>
 <translation id="1088402100970133699">Non hai ningún elemento de lista anterior</translation>
-<translation id="1114836634143403764">Suxestión</translation>
 <translation id="1120743664840974483">{"a": "asa", "b": "bravo", "c": "chuvia", "d": "delta", "e": "eco", "f": "flor", "g": "golf", "h": "hotel", "i": "india", "j": "jazz","k": "karaoke", "l": "lima", "m": "moto", "n": "novembro", "o": "óscar","p": "papa", "q": "queixo", "r": "romeo", "s": "serra", "t": "tango", "u": "uniforme", "v": "víctor", "w": "web","x": "xabaril", "y": "yin", "z": "zapato"}</translation>
 <translation id="1120938014254001895">Pasa dous dedos cara arriba</translation>
 <translation id="1126928665165112660">Texto sen cursiva</translation>
@@ -203,7 +202,6 @@
 <translation id="2417569100218200841">Información do contido</translation>
 <translation id="2417948780551741035">Notas finais</translation>
 <translation id="2419852971200420169">Lista de descricións</translation>
-<translation id="2421113964388408478">Eliminación</translation>
 <translation id="2422937916923936891">Caixa de verificación de elemento do menú</translation>
 <translation id="2428534162001909979">Menús de comandos</translation>
 <translation id="242998846562331953">Subtítulo</translation>
@@ -226,6 +224,7 @@
 <translation id="2592212930811759050">Toca dúas veces para comezar a editar</translation>
 <translation id="2598495320872286378">Erro gramatical</translation>
 <translation id="2603828437139726540">Avanzar un carácter</translation>
+<translation id="2619052155095999743">Inserir</translation>
 <translation id="2619344480613750862">Tamén podes pasar dunha sección da pantalla a outra (por exemplo, o menú de aplicacións, o andel e as pestanas de Chrome). Para ir á seguinte sección, pasa catro dedos da esquerda á dereita. Se queres continuar, próbao agora.</translation>
 <translation id="2624431853467395961">Abrir o modo de aprendizaxe</translation>
 <translation id="2626530649491650971">clicable</translation>
@@ -507,7 +506,6 @@
 <translation id="4479068155583208887">Ladrillo</translation>
 <translation id="4482330759234983253">Táboa anterior</translation>
 <translation id="4491109536499578614">Imaxe</translation>
-<translation id="4505167975768625962">Inserción</translation>
 <translation id="4511186779140817916">Améndoa pálido</translation>
 <translation id="451510441928265982">Non hai ningunha cabeceira anterior de nivel 2</translation>
 <translation id="4515799157838123044">Sombrear contido do fondo</translation>
@@ -1010,6 +1008,7 @@
 <translation id="8212109599554677485">Cambiar estilo da pantalla para mostrar o texto en paralelo</translation>
 <translation id="8215202828671303819">Selección múltiple</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % de opacidade.</translation>
+<translation id="8261506727792406068">Eliminar</translation>
 <translation id="826825447994856889">Introdución</translation>
 <translation id="827266600368092403">Inicia ou finaliza a selección</translation>
 <translation id="827422111966801947">Índigo</translation>

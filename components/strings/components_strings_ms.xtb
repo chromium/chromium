@@ -261,7 +261,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1807528111851433570">Helaian permulaan</translation>
 <translation id="1812527064848182527">landskap</translation>
-<translation id="1814698615734239189">Apl ini direka bentuk untuk peranti mudah alih. Apl ini dijalankan dalam mod keserasian. Jika pengubahan saiz dibenarkan, isu mungkin berlaku termasuk pemulaan semula apl.</translation>
 <translation id="1821930232296380041">Permintaan atau parameter permintaan tidak sah</translation>
 <translation id="1822540298136254167">Tapak web yang anda lawati dan tempoh anda melayarinya</translation>
 <translation id="1826516787628120939">Menyemak</translation>
@@ -680,7 +679,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3431636764301398940">Simpan kad ini pada peranti ini</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
-<translation id="3435896845095436175">Dayakan</translation>
 <translation id="3438829137925142401">Gunakan kata laluan yang disimpan dalam Akaun Google anda</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Pemilik peranti ini telah mematikan permainan dinosaur.</translation>
@@ -818,6 +816,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3946209740501886391">Sentiasa tanya pada tapak ini</translation>
 <translation id="3949571496842715403">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak menyatakan Nama Alternatif Subjek. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintasi sambungan anda.</translation>
 <translation id="3949601375789751990">Sejarah penyemakan imbas anda dipaparkan di sini</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Tiada kaedah pembayaran yang disimpan</translation>
 <translation id="3950820424414687140">Log masuk</translation>
 <translation id="3961148744525529027">Helaian pengendali pembayaran dibuka separuh</translation>
@@ -825,7 +824,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3963721102035795474">Mod Pembaca</translation>
 <translation id="3963837677003247395">Teruskan secara manual?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Tiada}=1{Daripada 1 tapak }other{Daripada # tapak }}</translation>
-<translation id="3970481983430640194">Kini anda dapat menyeret dan mengubah saiz apl ini</translation>
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> disekat</translation>
 <translation id="3973357910713125165">Butang Jalankan Semakan Keselamatan Chrome, tekan Enter untuk menjalankan Semakan Keselamatan dalam tetapan Chrome</translation>
@@ -949,6 +947,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4346197816712207223">Kad Kredit yang Diterima</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Anda baru sahaja memasukkan kata laluan anda pada tapak yang menipu. Chrome mengesyorkan supaya anda pergi ke <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dan tapak lain yang anda gunakan kata laluan ini dan menukar kata laluan tersebut sekarang.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> mahu mengimbas untuk mengesan peranti Bluetooth berdekatan. Peranti berikut telah dijumpai:</translation>
 <translation id="4356973930735388585">Penyerang pada tapak ini mungkin cuba memasang atur cara berbahaya pada komputer anda yang mencuri atau memadamkan maklumat anda (sebagai contoh, foto, kata laluan, mesej dan kad kredit).</translation>
 <translation id="4358059973562876591">Templat yang anda nyatakan tidak dapat digunakan kerana terdapat ralat pada dasar DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Urus kaedah pembayaran...</translation>
@@ -1401,7 +1400,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6032524144326295339">Peti mel 2</translation>
 <translation id="6032955021262906325">Ikatan kiri</translation>
 <translation id="6034000775414344507">Kelabu Cerah</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> mungkin tidak dapat diubah saiz dengan betul. Gunakan saiz tetingkap pratetapan untuk mengelakkan apl daripada bergelagat tidak normal.</translation>
 <translation id="6034283069659657473">10x14 (Sampul Surat)</translation>
 <translation id="6034514109191629503">Lipatan akordion</translation>
 <translation id="6039846035001940113">Jika masalah berterusan, hubungi pemilik tapak.</translation>
@@ -1431,7 +1429,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6120179357481664955">Ingat ID UPI anda?</translation>
 <translation id="6123290840358279103">Lihat kad maya</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
-<translation id="6143538402333184781">Apl ini hanya menyokong saiz "Telefon".</translation>
 <translation id="6146055958333702838">Periksa mana-mana kabel dan but semula mana-mana penghala, modem atau peranti
     rangkaian lain yang mungkin anda gunakan.</translation>
 <translation id="614940544461990577">Cuba:</translation>
@@ -1981,7 +1978,6 @@ Butiran tambahan:
 <translation id="8225771182978767009">Orang yang menyediakan komputer ini telah memilih untuk menyekat tapak ini.</translation>
 <translation id="8228419419708659934">Paparan dua halaman</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Jangan tanya saya lagi untuk apl ini</translation>
 <translation id="8232343881378637145">Suhu platform</translation>
 <translation id="8238581221633243064">Buka halaman dalam tab Inkognito baharu</translation>
 <translation id="8241707690549784388">Halaman yang anda cari untuk maklumat terpakai yang anda masukkan. Kembali ke halaman tersebut mungkin menyebabkan mana-mana tindakan yang anda ambil akan diulang. Adakah anda mahu teruskan?</translation>
@@ -1994,7 +1990,6 @@ Butiran tambahan:
 <translation id="825929999321470778">Tunjukkan Semua Kata Laluan yang Disimpan</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8262952874573525464">Jahitan tepi bawah</translation>
-<translation id="826298712171642726">Dayakan Pengubahan Saiz?</translation>
 <translation id="8265992338205884890">Data yang kelihatan</translation>
 <translation id="8267698848189296333">Log masuk sebagai <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Dokumen berasingan/Salinan dikumpul semak</translation>
@@ -2025,6 +2020,7 @@ Butiran tambahan:
 <translation id="8355270400102541638">Konteks Ranap Sistem Setempat:</translation>
 <translation id="8363502534493474904">Matikan mod pesawat</translation>
 <translation id="8364627913115013041">Tidak ditetapkan.</translation>
+<translation id="8368027906805972958">Peranti tidak diketahui atau tidak disokong (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Perkhidmatan Google Play</translation>
 <translation id="8371889962595521444">Sijil akar tersuai</translation>
 <translation id="8374636051559112948">Berbeza-beza</translation>

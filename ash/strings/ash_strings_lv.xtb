@@ -137,6 +137,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1990046457226896323">Automātisko subtitru faili ir lejupielādēti.</translation>
 <translation id="1993072747612765854">Uzzināt vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu</translation>
 <translation id="1998100899771863792">Pašreizējā darbvieta</translation>
+<translation id="1999628559811343244">Tika sākta tīkla pakešu tveršana</translation>
 <translation id="2016340657076538683">Ierakstiet ziņojumu</translation>
 <translation id="2018630726571919839">Pastāstīt joku</translation>
 <translation id="2021864487439853900">Noklikšķiniet, lai atbloķētu</translation>
@@ -157,7 +158,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2132302418721800944">Ierakstīt visu ekrānu</translation>
 <translation id="2135456203358955318">Dokota lupa</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Mēģināt vēlreiz</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Lai aizvērtu pārskatu, ar trim pirkstiem velciet lejup</translation>
 <translation id="2208323208084708176">Vienots darbvirsmas režīms</translation>
 <translation id="2220572644011485463">PIN vai parole</translation>
@@ -728,6 +728,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6751826523481687655">Veiktspējas izsekošana ir ieslēgta.</translation>
 <translation id="6752912906630585008">Darbvirsma <ph name="REMOVED_DESK" /> ir noņemta un apvienota ar darbvirsmu <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Netiek atskaņots nekāds multivides saturs</translation>
+<translation id="6773040085467426602">Noklikšķiniet uz Apturēt, lai apturētu iesāktās pakešu tveršanas darbības.</translation>
 <translation id="6777216307882431711">Ar USB-C savienojumu notiek vairāku ierīču darbināšana</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6803622936009808957">Nevarēja spoguļot displejus, jo netika atrasta atbalstīta izšķirtspēja. Tā vietā tika aktivizēts paplašinātās darbvirsmas režīms.</translation>
@@ -941,6 +942,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8433977262951327081">Tika mainīti īsinājumtaustiņi, ar kuriem plauktā var parādīt ievades opciju izvēlnes burbuli. Lūdzu, turpmāk izmantojiet <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Darbvirsma <ph name="DESK_TITILE" /> ir aktivizēta</translation>
 <translation id="8452135315243592079">Nav SIM kartes.</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Aizvērt funkciju “Atlasīt, lai izrunātu”</translation>
 <translation id="847056008324733326">Displeja mēroga iestatījumi</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ir <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>

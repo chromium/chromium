@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Isistimu</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Ukufakazela ubuqiniso kabili kwesigaba se-EAP</translation>
+<translation id="2783010256799387990">KUPHUMELELE</translation>
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2805756323405976993">Izinhlelo zokusebenza</translation>
 <translation id="2862104018715411648">Beka idokhumenti yakho kuskena bese ukhetha okuthi Skena ukuze uqalise</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Iphasiwedi iphelelwa isikhathi ngo-<ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ayikho imisebenzi yokuphrinta eqhubekayo</translation>
 <translation id="4297501883039923494">Imile - Iphutha elingaziwa</translation>
+<translation id="4300073214558989">Izithombe <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Akuqaliswanga</translation>
 <translation id="4382484599443659549">I-PDF</translation>
 <translation id="4425149324548788773">IDrayivu yami</translation>
@@ -229,7 +231,6 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5691511426247308406">Umndeni</translation>
 <translation id="5752751666635965375">Yenza igeyimu yakho</translation>
 <translation id="5760715441271661976">Isimo sephothali</translation>
-<translation id="5797428682393400134">IMPUMELELO</translation>
 <translation id="5832805196449965646">Engeza umuntu</translation>
 <translation id="583281660410589416">Akwaziwa</translation>
 <translation id="5849570051105887917">Ikhodi yomhlinzeki wasekhaya</translation>
@@ -296,6 +297,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
 <translation id="714876143603641390">Ukuxhumana kwe-LAN</translation>
 <translation id="7162487448488904999">Igalari</translation>
+<translation id="7172721935181587524">Isithombe esi-1</translation>
 <translation id="7177485034254901881">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />. Abalawuli bangase balungiselele ngokulawula kude idivayisi.</translation>
 <translation id="7216409898977639127">Umhlinzeki weselula</translation>
 <translation id="7271040990581020067">Iskena sisasetshenziswa okwamanje. Zama futhi emuva kwesikhathi.</translation>
@@ -345,6 +347,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8294431847097064396">Umthombo</translation>
 <translation id="8297006494302853456">Buthakathaka</translation>
 <translation id="8302368968391049045">Uhlelo lokuvikela le-HTTPS</translation>
+<translation id="8318753676953949627">Azikho Izithombe</translation>
 <translation id="8347227221149377169">Imisebenzi yokuphrinta</translation>
 <translation id="8352772353338965963">Engeza i-akhawunti ekungeneni ngemvume okuningi. Wonke ama-akhawunti angene ngemvume angafinyelelwa ngaphandle kwephasiwedi, ngakho-ke lesi sici kumele sisetshenziswe kuphela nama-akhawunti athenjiwe.</translation>
 <translation id="8364946094152050673">Amaseva wegama angenalutho</translation>

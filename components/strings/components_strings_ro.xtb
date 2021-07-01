@@ -261,7 +261,6 @@
 <translation id="1807246157184219062">Luminos</translation>
 <translation id="1807528111851433570">Foaia inițială</translation>
 <translation id="1812527064848182527">peisaj</translation>
-<translation id="1814698615734239189">Aplicația a fost creată pentru dispozitive mobile. Aceasta rulează într-un mod de compatibilitate. Dacă permiți redimensionarea, pot să apară probleme, inclusiv repornirea aplicației.</translation>
 <translation id="1821930232296380041">Solicitarea sau parametrii săi sunt greșiți</translation>
 <translation id="1822540298136254167">Site-urile pe care le-ai accesat și timpul petrecut pe ele</translation>
 <translation id="1826516787628120939">Se verifică</translation>
@@ -680,7 +679,6 @@
 <translation id="3431636764301398940">Salvează cardul pe acest dispozitiv</translation>
 <translation id="3432601291244612633">Închide pagina</translation>
 <translation id="3435738964857648380">Securitate</translation>
-<translation id="3435896845095436175">Activează</translation>
 <translation id="3438829137925142401">Folosește parolele salvate în Contul tău Google</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Proprietarul acestui dispozitiv a dezactivat jocul cu dinozaurul.</translation>
@@ -817,6 +815,7 @@
 <translation id="3946209740501886391">Întreabă întotdeauna pe acest site</translation>
 <translation id="3949571496842715403">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; în certificatul său de securitate nu este specificat câmpul Nume alternative subiect. Cauza poate fi o eroare de configurare sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="3949601375789751990">Istoricul de navigare apare aici</translation>
+<translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Nicio metodă de plată salvată</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="3961148744525529027">Foaia handlerului pentru plăți este pe jumătate deschisă</translation>
@@ -824,7 +823,6 @@
 <translation id="3963721102035795474">Modul Cititor</translation>
 <translation id="3963837677003247395">Continui manual?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Niciunul}=1{De la 1 site }few{De la # site-uri }other{De la # de site-uri }}</translation>
-<translation id="3970481983430640194">Acum poți să tragi și să redimensionezi aplicația</translation>
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> este blocat</translation>
 <translation id="3973357910713125165">Butonul Rulează verificarea de siguranță pentru Chrome, apasă pe Enter pentru a rula verificarea de siguranță în setările Chrome</translation>
@@ -948,6 +946,7 @@
 <translation id="4346197816712207223">Carduri de credit acceptate</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Ai introdus parola pe un site înșelător. Chrome recomandă să accesezi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
+<translation id="4351060348582610152"><ph name="ORIGIN" /> vrea să caute dispozitive Bluetooth în apropiere. Următoarele dispozitive au fost găsite:</translation>
 <translation id="4356973930735388585">Atacatorii de pe acest site pot încerca să instaleze programe periculoase pe computerul tău, care să îți fure sau să îți șteargă informațiile (de exemplu, fotografiile, parolele, mesajele sau informațiile despre cardurile de credit).</translation>
 <translation id="4358059973562876591">Șabloanele specificate nu pot fi aplicate din cauza unei erori legate de politica DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gestionează metodele de plată...</translation>
@@ -1400,7 +1399,6 @@
 <translation id="6032524144326295339">Căsuța de e-mail 2</translation>
 <translation id="6032955021262906325">Legare în stânga</translation>
 <translation id="6034000775414344507">Gri deschis</translation>
-<translation id="6034062182346928710"><ph name="APP_NAME" /> poate să nu fie redimensionată corect. Folosește dimensiunile de fereastră presetate pentru a evita comportamentul neadecvat al aplicației.</translation>
 <translation id="6034283069659657473">10x14 (Plic)</translation>
 <translation id="6034514109191629503">Îndoire tip acordeon</translation>
 <translation id="6039846035001940113">Dacă problema persistă, contactează proprietarul site-ului.</translation>
@@ -1430,7 +1428,6 @@
 <translation id="6120179357481664955">Îți amintești ID-ul UPI?</translation>
 <translation id="6123290840358279103">Vezi cardul virtual</translation>
 <translation id="6124432979022149706">Conectori Chrome Enterprise</translation>
-<translation id="6143538402333184781">Aplicația acceptă doar dimensiunea Telefon.</translation>
 <translation id="6146055958333702838">Verifică toate cablurile și repornește routerele, modemurile sau alte
     dispozitive de rețea pe care le folosești.</translation>
 <translation id="614940544461990577">Încearcă:</translation>
@@ -1980,7 +1977,6 @@ Detalii suplimentare:
 <translation id="8225771182978767009">Persoana care a configurat computerul a ales să blocheze acest site.</translation>
 <translation id="8228419419708659934">Afișare cu două pagini</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8230159728600632642">Nu mai întreba pentru această aplicație</translation>
 <translation id="8232343881378637145">Temperatura platformei</translation>
 <translation id="8238581221633243064">Deschide pagina într-o filă incognito nouă</translation>
 <translation id="8241707690549784388">Pagina pe care o cauți a utilizat informațiile pe care le-ai introdus. Întoarcerea la acea pagină ar putea face ca orice acțiune să fie repetată. Vrei să continui?</translation>
@@ -1993,7 +1989,6 @@ Detalii suplimentare:
 <translation id="825929999321470778">Afișează toate parolele salvate</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8262952874573525464">Broșare pe marginea de jos</translation>
-<translation id="826298712171642726">Activezi redimensionarea?</translation>
 <translation id="8265992338205884890">Date vizibile</translation>
 <translation id="8267698848189296333">Te conectezi ca <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documente separate/Copii colaționate</translation>
@@ -2024,6 +2019,7 @@ Detalii suplimentare:
 <translation id="8355270400102541638">Contextul local al blocării:</translation>
 <translation id="8363502534493474904">să dezactivezi modul Avion;</translation>
 <translation id="8364627913115013041">Nesetată.</translation>
+<translation id="8368027906805972958">Dispozitiv necunoscut sau neacceptat (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Servicii Google Play</translation>
 <translation id="8371889962595521444">Certificate rădăcină personalizate</translation>
 <translation id="8374636051559112948">Variază</translation>

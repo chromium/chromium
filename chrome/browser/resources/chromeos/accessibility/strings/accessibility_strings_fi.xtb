@@ -17,7 +17,6 @@
 <translation id="1087148255821848488">Tämänhetkinen näyttötyyli on lomittainen</translation>
 <translation id="1087788677726983142">Piilota tapahtumastreamin suodattimet</translation>
 <translation id="1088402100970133699">Ei edellisiä luettelokohteita</translation>
-<translation id="1114836634143403764">Ehdotus</translation>
 <translation id="1120743664840974483">{"a": "aarne", "b": "bertta", "c": "celcius", "d": "daavid", "e": "eemeli", "f": "faarao", "g": "gideon", "h": "heikki", "i": "iivari", "j": "jussi","k": "kalle", "l": "lauri", "m": "matti", "n": "niilo", "o": "otto","p": "paavo", "q": "kuu", "r": "risto", "s": "sakari", "t": "tyyne", "u": "urho", "v": "vihtori", "w": "wiski","x": "äksä", "y": "yrjö", "z": "tseta", "å": "åke", "ä": "äiti", "ö": "öljy"}</translation>
 <translation id="1120938014254001895">Pyyhkäise ylös kahdella sormella</translation>
 <translation id="1126928665165112660">Ei kursiivia</translation>
@@ -203,11 +202,11 @@
 <translation id="2417569100218200841">Sisällön tiedot</translation>
 <translation id="2417948780551741035">Loppuhuomautukset</translation>
 <translation id="2419852971200420169">Kuvausluettelo</translation>
-<translation id="2421113964388408478">Poisto</translation>
 <translation id="2422937916923936891">Valikkokohteen valintaruutu</translation>
 <translation id="2428534162001909979">Komentovalikot</translation>
 <translation id="242998846562331953">Tekstitys</translation>
 <translation id="2435422727584637732">Vaalea keskisininen</translation>
+<translation id="2438712309510062123">Ehdota</translation>
 <translation id="2450814015951372393">Valintaruutu</translation>
 <translation id="2461822463642141190">Nykyinen</translation>
 <translation id="2462626033734746142">Valintanappiryhmä</translation>
@@ -226,6 +225,7 @@
 <translation id="2592212930811759050">Aloita muokkaus kaksoisnapauttamalla</translation>
 <translation id="2598495320872286378">Kielioppivirhe</translation>
 <translation id="2603828437139726540">Siirry eteenpäin yhden merkin verran</translation>
+<translation id="2619052155095999743">Lisää</translation>
 <translation id="2619344480613750862">Voit myös siirtyä näytön osiosta toiseen. Voit esimerkiksi siirtyä käynnistysohjelman, hyllyn ja Chrome-välilehtien välillä. Siirry seuraavaan osioon pyyhkäisemällä vasemmalta oikealle neljällä sormella. Kokeile tätä jatkaaksesi.</translation>
 <translation id="2624431853467395961">Avaa opettelutila</translation>
 <translation id="2626530649491650971">klikattava</translation>
@@ -507,7 +507,6 @@
 <translation id="4479068155583208887">Tiilenpunainen</translation>
 <translation id="4482330759234983253">Edellinen taulukko</translation>
 <translation id="4491109536499578614">Kuva</translation>
-<translation id="4505167975768625962">Lisäys</translation>
 <translation id="4511186779140817916">Vaalea manteli</translation>
 <translation id="451510441928265982">Ei edellisiä tason 2 otsikoita</translation>
 <translation id="4515799157838123044">Varjosta taustasisältö</translation>
@@ -1010,6 +1009,7 @@
 <translation id="8212109599554677485">Vaihda näyttötyyliksi rinnakkainen</translation>
 <translation id="8215202828671303819">Monivalinta</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, läpinäkyvyys <ph name="OPACITY_PERCENTAGE" /> %</translation>
+<translation id="8261506727792406068">Poista</translation>
 <translation id="826825447994856889">Johdanto</translation>
 <translation id="827266600368092403">Aloita tai lopeta valinta</translation>
 <translation id="827422111966801947">Indigo</translation>

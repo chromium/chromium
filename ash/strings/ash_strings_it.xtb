@@ -137,6 +137,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1990046457226896323">File di contenuti vocali scaricati</translation>
 <translation id="1993072747612765854">Leggi ulteriori informazioni sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Scrivania corrente</translation>
+<translation id="1999628559811343244">Acquisizione del pacchetto di rete avviata</translation>
 <translation id="2016340657076538683">Digita un messaggio</translation>
 <translation id="2018630726571919839">Raccontami una barzelletta</translation>
 <translation id="2021864487439853900">Fai clic per sbloccare</translation>
@@ -157,7 +158,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2132302418721800944">Registra schermo intero</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
-<translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">Scorri con tre dita verso il basso per uscire dalla modalità Panoramica</translation>
 <translation id="2208323208084708176">Modalità desktop unificato</translation>
 <translation id="2220572644011485463">PIN o password</translation>
@@ -729,6 +729,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6751826523481687655">La traccia delle prestazioni è attiva</translation>
 <translation id="6752912906630585008">Scrivania <ph name="REMOVED_DESK" /> rimossa e unita alla scrivania <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Nessun contenuto multimediale in riproduzione</translation>
+<translation id="6773040085467426602">Fai clic su Interrompi per fermare le operazioni di acquisizione dei pacchetti in esecuzione.</translation>
 <translation id="6777216307882431711">Alimentazione dei dispositivi USB-C collegati</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6803622936009808957">Impossibile duplicare i display perché non sono state trovate risoluzioni supportate. È stato attivato il desktop esteso.</translation>
@@ -942,6 +943,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8433977262951327081">La scorciatoia per mostrare il fumetto del menu di opzioni di immissione nella barra delle app è cambiata. Utilizza <ph name="NEW_SHORTCUT" /> invece di <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Scrivania <ph name="DESK_TITILE" /> attivata</translation>
 <translation id="8452135315243592079">Scheda SIM mancante</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Chiudi Seleziona per ascoltare</translation>
 <translation id="847056008324733326">Impostazioni scala di visualizzazione</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ha <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
