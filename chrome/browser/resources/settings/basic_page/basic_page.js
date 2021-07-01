@@ -31,12 +31,12 @@ import '../default_browser_page/default_browser_page.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 // <if expr="chromeos or lacros">
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 // </if>
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
@@ -60,127 +60,104 @@ const CrosSettingsOsBannerInteraction = {
 };
 // </if>
 
+Polymer({
+  is: 'settings-basic-page',
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PrefsBehaviorInterface}
- */
-const SettingsBasicPageElementBase = mixinBehaviors(
-    [
-      MainPageBehavior, RouteObserverBehavior,
-      // <if expr="chromeos or lacros">
-      PrefsBehavior,
-      // </if>
-    ],
-    PolymerElement);
+  _template: html`{__html_template__}`,
 
-/** @polymer */
-export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
-  static get is() {
-    return 'settings-basic-page';
-  }
+  behaviors: [
+    MainPageBehavior, RouteObserverBehavior,
+    // <if expr="chromeos or lacros">
+    PrefsBehavior,
+    // </if>
+  ],
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  properties: {
+    /** Preferences state. */
+    prefs: {
+      type: Object,
+      notify: true,
+    },
 
-  static get properties() {
-    return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
+    /**
+     * Dictionary defining page visibility.
+     * @type {!PageVisibility}
+     */
+    pageVisibility: {
+      type: Object,
+      value() {
+        return {};
       },
+    },
 
-      /**
-       * Dictionary defining page visibility.
-       * @type {!PageVisibility}
-       */
-      pageVisibility: {
-        type: Object,
-        value() {
-          return {};
-        },
+    advancedToggleExpanded: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      observer: 'advancedToggleExpandedChanged_',
+    },
+
+    /**
+     * True if a section is fully expanded to hide other sections beneath it.
+     * False otherwise (even while animating a section open/closed).
+     * @private {boolean}
+     */
+    hasExpandedSection_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * True if the basic page should currently display the reset profile banner.
+     * @private {boolean}
+     */
+    showResetProfileBanner_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('showResetProfileBanner');
       },
+    },
 
-      advancedToggleExpanded: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'advancedToggleExpandedChanged_',
-      },
+    // <if expr="chromeos or lacros">
+    /** @private */
+    showOSSettingsBanner_: {
+      type: Boolean,
+      computed: 'computeShowOSSettingsBanner_(' +
+          'prefs.settings.cros.show_os_banner.value, currentRoute_)',
+    },
+    // </if>
 
-      /**
-       * True if a section is fully expanded to hide other sections beneath it.
-       * False otherwise (even while animating a section open/closed).
-       * @private {boolean}
-       */
-      hasExpandedSection_: {
-        type: Boolean,
-        value: false,
-      },
+    /** @private {!Route|undefined} */
+    currentRoute_: Object,
 
-      /**
-       * True if the basic page should currently display the reset profile
-       * banner.
-       * @private {boolean}
-       */
-      showResetProfileBanner_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showResetProfileBanner');
-        },
-      },
+    /**
+     * Used to avoid handling a new toggle while currently toggling.
+     * @private
+     */
+    advancedTogglingInProgress_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
+  },
 
-      // <if expr="chromeos or lacros">
-      /** @private */
-      showOSSettingsBanner_: {
-        type: Boolean,
-        computed: 'computeShowOSSettingsBanner_(' +
-            'prefs.settings.cros.show_os_banner.value, currentRoute_)',
-      },
-      // </if>
+  hostAttributes: {
+    role: 'main',
+  },
 
-      /** @private {!Route|undefined} */
-      currentRoute_: Object,
-
-      /**
-       * Used to avoid handling a new toggle while currently toggling.
-       * @private
-       */
-      advancedTogglingInProgress_: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-    };
-  }
+  listeners: {
+    'subpage-expand': 'onSubpageExpanded_',
+  },
 
   // <if expr="chromeos or lacros">
-  constructor() {
-    super();
-
-    /** @private {boolean} */
-    this.osBannerShowMetricRecorded_ = false;
-  }
+  /** @private {boolean} */
+  osBannerShowMetricRecorded_: false,
   // </if>
 
   /** @override */
-  ready() {
-    super.ready();
-
-    this.setAttribute('role', 'main');
-    this.addEventListener('subpage-expand', this.onSubpageExpanded_);
-  }
-
-
-  /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
+  attached() {
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
-  }
+  },
 
   /**
    * @param {!Route} newRoute
@@ -204,13 +181,13 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     }
 
     MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
-  }
+  },
 
   // Override MainPageBehavior method.
   containsRoute(route) {
     return !route || routes.BASIC.contains(route) ||
         routes.ADVANCED.contains(route);
-  }
+  },
 
   /**
    * @param {boolean|undefined} visibility
@@ -219,7 +196,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   showPage_(visibility) {
     return visibility !== false;
-  }
+  },
 
   /**
    * Queues a task to search the basic sections, then another for the advanced
@@ -230,17 +207,14 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   searchContents(query) {
     const whenSearchDone = [
-      getSearchManager().search(
-          query, assert(this.shadowRoot.querySelector('#basicPage'))),
+      getSearchManager().search(query, assert(this.$$('#basicPage'))),
     ];
 
     if (this.pageVisibility.advancedSettings !== false) {
-      whenSearchDone.push(this.shadowRoot.querySelector('#advancedPageTemplate')
-                              .get()
-                              .then(function(advancedPage) {
-                                return getSearchManager().search(
-                                    query, advancedPage);
-                              }));
+      whenSearchDone.push(
+          this.$$('#advancedPageTemplate').get().then(function(advancedPage) {
+            return getSearchManager().search(query, advancedPage);
+          }));
     }
 
     return Promise.all(whenSearchDone).then(function(requests) {
@@ -257,7 +231,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         wasClearSearch: requests[0].isSame(''),
       };
     });
-  }
+  },
 
   // <if expr="chromeos or lacros">
   /**
@@ -287,7 +261,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       this.osBannerShowMetricRecorded_ = true;
     }
     return show;
-  }
+  },
 
   /** @private */
   onOSSettingsBannerClick_() {
@@ -296,7 +270,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         OS_BANNER_INTERACTION_METRIC_NAME,
         CrosSettingsOsBannerInteraction.Clicked,
         Object.keys(CrosSettingsOsBannerInteraction).length);
-  }
+  },
 
   /** @private */
   onOSSettingsBannerClosed_() {
@@ -305,13 +279,13 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         OS_BANNER_INTERACTION_METRIC_NAME,
         CrosSettingsOsBannerInteraction.Closed,
         Object.keys(CrosSettingsOsBannerInteraction).length);
-  }
+  },
   // </if>
 
   /** @private */
   onResetProfileBannerClosed_() {
     this.showResetProfileBanner_ = false;
-  }
+  },
 
   /**
    * Hides everything but the newly expanded subpage.
@@ -319,7 +293,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   onSubpageExpanded_() {
     this.hasExpandedSection_ = true;
-  }
+  },
 
   /**
    * Render the advanced page now (don't wait for idle).
@@ -333,44 +307,31 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     // In Polymer2, async() does not wait long enough for layout to complete.
     // beforeNextRender() must be used instead.
     beforeNextRender(this, () => {
-      this.shadowRoot.querySelector('#advancedPageTemplate').get();
+      this.$$('#advancedPageTemplate').get();
     });
-  }
+  },
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
-  }
-
-  /** @private */
   advancedToggleClicked_() {
     if (this.advancedTogglingInProgress_) {
       return;
     }
 
     this.advancedTogglingInProgress_ = true;
-    const toggle = this.shadowRoot.querySelector('#toggleContainer');
+    const toggle = this.$$('#toggleContainer');
     if (!this.advancedToggleExpanded) {
       this.advancedToggleExpanded = true;
-      window.setTimeout(() => {
-        this.shadowRoot.querySelector('#advancedPageTemplate')
-            .get()
-            .then(() => {
-              this.fire_('scroll-to-top', {
-                top: toggle.offsetTop,
-                callback: () => {
-                  this.advancedTogglingInProgress_ = false;
-                }
-              });
-            });
-      }, 0);
+      this.async(() => {
+        this.$$('#advancedPageTemplate').get().then(() => {
+          this.fire('scroll-to-top', {
+            top: toggle.offsetTop,
+            callback: () => {
+              this.advancedTogglingInProgress_ = false;
+            }
+          });
+        });
+      });
     } else {
-      this.fire_('scroll-to-bottom', {
+      this.fire('scroll-to-bottom', {
         bottom: toggle.offsetTop + toggle.offsetHeight + 24,
         callback: () => {
           this.advancedToggleExpanded = false;
@@ -378,7 +339,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         }
       });
     }
-  }
+  },
 
   /**
    * @param {boolean} inSearchMode
@@ -389,7 +350,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   showAdvancedToggle_(inSearchMode, hasExpandedSection) {
     return !inSearchMode && !hasExpandedSection &&
         !loadTimeData.getBoolean('enableLandingPageRedesign');
-  }
+  },
 
   /**
    * @param {!Route} currentRoute
@@ -401,7 +362,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   showBasicPage_(currentRoute, inSearchMode, hasExpandedSection) {
     return !hasExpandedSection || routes.BASIC.contains(currentRoute);
-  }
+  },
 
   /**
    * @param {!Route} currentRoute
@@ -417,7 +378,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     return hasExpandedSection ?
         (routes.ADVANCED && routes.ADVANCED.contains(currentRoute)) :
         advancedToggleExpanded || inSearchMode;
-  }
+  },
 
   /**
    * @param {(boolean|undefined)} visibility
@@ -426,7 +387,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   showAdvancedSettings_(visibility) {
     return visibility !== false;
-  }
+  },
 
   /**
    * @param {boolean} opened Whether the menu is expanded.
@@ -435,7 +396,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   getArrowIcon_(opened) {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
-  }
+  },
 
   /**
    * @param {boolean} bool
@@ -444,7 +405,5 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   boolToString_(bool) {
     return bool.toString();
-  }
-}
-
-customElements.define(SettingsBasicPageElement.is, SettingsBasicPageElement);
+  },
+});

@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrDrawerElement, CrSettingsPrefs, CrToolbarElement, CrToolbarSearchFieldElement, Router, routes, SettingsMenuElement, SettingsUiElement} from 'chrome://settings/settings.js';
+import {CrDrawerElement, CrSettingsPrefs, CrToolbarElement, CrToolbarSearchFieldElement, Router, routes, SettingsMenuElement} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {eventToPromise} from '../test_util.m.js';
@@ -28,10 +28,8 @@ suite('SettingsUIToolbarAndDrawer', function() {
     document.body.appendChild(ui);
     return CrSettingsPrefs.initialized.then(() => {
       flush();
-      toolbar = /** @type {!CrToolbarElement} */ (
-          ui.shadowRoot.querySelector('cr-toolbar'));
-      drawer = /** @type {!CrDrawerElement} */ (
-          ui.shadowRoot.querySelector('#drawer'));
+      toolbar = /** @type {!CrToolbarElement} */ (ui.$$('cr-toolbar'));
+      drawer = /** @type {!CrDrawerElement} */ (ui.$$('#drawer'));
     });
   });
 
@@ -45,7 +43,7 @@ suite('SettingsUIToolbarAndDrawer', function() {
   });
 
   test('app drawer', async () => {
-    assertEquals(null, ui.shadowRoot.querySelector('cr-drawer settings-menu'));
+    assertEquals(null, ui.$$('cr-drawer settings-menu'));
     assertFalse(!!drawer.open);
 
     const drawerOpened = eventToPromise('cr-drawer-opened', drawer);
@@ -54,7 +52,7 @@ suite('SettingsUIToolbarAndDrawer', function() {
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(drawer.open);
-    assertTrue(!!ui.shadowRoot.querySelector('cr-drawer settings-menu'));
+    assertTrue(!!ui.$$('cr-drawer settings-menu'));
 
     await drawerOpened;
     const drawerClosed = eventToPromise('close', drawer);
@@ -64,7 +62,7 @@ suite('SettingsUIToolbarAndDrawer', function() {
     // Drawer is closed, but menu is still stamped so
     // its contents remain visible as the drawer slides
     // out.
-    assertTrue(!!ui.shadowRoot.querySelector('cr-drawer settings-menu'));
+    assertTrue(!!ui.$$('cr-drawer settings-menu'));
   });
 
   test('app drawer closes when exiting narrow mode', async () => {
@@ -94,14 +92,13 @@ suite('SettingsUIAdvanced', function() {
   });
 
   test('advanced UIs stay in sync', function() {
-    const main = ui.shadowRoot.querySelector('settings-main');
+    const main = ui.$$('settings-main');
     const floatingMenu =
-        /** @type {!SettingsMenuElement} */ (
-            ui.shadowRoot.querySelector('#left settings-menu'));
+        /** @type {!SettingsMenuElement} */ (ui.$$('#left settings-menu'));
     assertTrue(!!main);
     assertTrue(!!floatingMenu);
 
-    assertFalse(!!ui.shadowRoot.querySelector('cr-drawer settings-menu'));
+    assertFalse(!!ui.$$('cr-drawer settings-menu'));
     assertFalse(ui.getAdvancedOpenedInMainForTest());
     assertFalse(ui.getAdvancedOpenedInMenuForTest());
     assertFalse(floatingMenu.advancedOpened);
@@ -110,22 +107,22 @@ suite('SettingsUIAdvanced', function() {
     main.advancedToggleExpanded = true;
     flush();
 
-    assertFalse(!!ui.shadowRoot.querySelector('cr-drawer settings-menu'));
+    assertFalse(!!ui.$$('cr-drawer settings-menu'));
     assertTrue(ui.getAdvancedOpenedInMainForTest());
     assertTrue(ui.getAdvancedOpenedInMenuForTest());
     assertTrue(floatingMenu.advancedOpened);
     assertTrue(main.advancedToggleExpanded);
 
-    ui.shadowRoot.querySelector('#drawerTemplate').if = true;
+    ui.$$('#drawerTemplate').if = true;
     flush();
 
-    const drawerMenu = ui.shadowRoot.querySelector('cr-drawer settings-menu');
+    const drawerMenu = ui.$$('cr-drawer settings-menu');
     assertTrue(!!drawerMenu);
     assertTrue(floatingMenu.advancedOpened);
     assertTrue(drawerMenu.advancedOpened);
 
     // Collapse 'Advanced' in the menu
-    drawerMenu.shadowRoot.querySelector('#advancedButton').click();
+    drawerMenu.$$('#advancedButton').click();
     flush();
 
     // Collapsing it in the menu should not collapse it in the main area
@@ -136,7 +133,7 @@ suite('SettingsUIAdvanced', function() {
     assertTrue(ui.getAdvancedOpenedInMainForTest());
 
     // Expand both 'Advanced's again
-    drawerMenu.shadowRoot.querySelector('#advancedButton').click();
+    drawerMenu.$$('#advancedButton').click();
 
     // Collapse 'Advanced' in the main area
     main.advancedToggleExpanded = false;
@@ -167,8 +164,7 @@ suite('SettingsUISearch', function() {
     document.body.appendChild(ui);
     return CrSettingsPrefs.initialized.then(() => {
       flush();
-      toolbar = /** @type {!CrToolbarElement} */ (
-          ui.shadowRoot.querySelector('cr-toolbar'));
+      toolbar = /** @type {!CrToolbarElement} */ (ui.$$('cr-toolbar'));
       searchField =
           /** @type {!CrToolbarSearchFieldElement} */ (
               toolbar.getSearchField());
@@ -224,9 +220,8 @@ suite('SettingsUISearch', function() {
   test('MaintainsFocusOnMenus', async () => {
     // Start in non-narrow mode with focus in the left menu.
     toolbar.narrow = false;
-    ui.shadowRoot.querySelector('#leftMenu').focusFirstItem();
-    assertEquals(
-        ui.shadowRoot.querySelector('#leftMenu'), ui.shadowRoot.activeElement);
+    ui.$$('#leftMenu').focusFirstItem();
+    assertEquals(ui.$$('#leftMenu'), ui.shadowRoot.activeElement);
 
     // Switch to narrow mode and test that focus moves to menu button.
     toolbar.narrow = true;
@@ -237,7 +232,6 @@ suite('SettingsUISearch', function() {
     // Switch back to non-narrow mode and test that focus moves to left menu.
     toolbar.narrow = false;
     flush();
-    assertEquals(
-        ui.shadowRoot.querySelector('#leftMenu'), ui.shadowRoot.activeElement);
+    assertEquals(ui.$$('#leftMenu'), ui.shadowRoot.activeElement);
   });
 });

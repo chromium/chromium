@@ -28,7 +28,7 @@ import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {Debouncer, html, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -37,82 +37,71 @@ import {SettingsPrefsElement} from '../prefs/prefs.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 
+Polymer({
+  is: 'settings-ui',
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
-const SettingsUiElementBase = mixinBehaviors(
-    [RouteObserverBehavior, CrContainerShadowBehavior, FindShortcutBehavior],
-    PolymerElement);
+  _template: html`{__html_template__}`,
 
-/** @polymer */
-export class SettingsUiElement extends SettingsUiElementBase {
-  static get is() {
-    return 'settings-ui';
-  }
+  behaviors: [
+    RouteObserverBehavior,
+    CrContainerShadowBehavior,
+    FindShortcutBehavior,
+  ],
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  properties: {
+    /**
+     * Preferences state.
+     */
+    prefs: Object,
 
-  static get properties() {
-    return {
-      /**
-       * Preferences state.
-       */
-      prefs: Object,
+    /** @private */
+    advancedOpenedInMain_: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      observer: 'onAdvancedOpenedInMainChanged_',
+    },
 
-      /** @private */
-      advancedOpenedInMain_: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'onAdvancedOpenedInMainChanged_',
-      },
+    /** @private */
+    advancedOpenedInMenu_: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      observer: 'onAdvancedOpenedInMenuChanged_',
+    },
 
-      /** @private */
-      advancedOpenedInMenu_: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'onAdvancedOpenedInMenuChanged_',
-      },
+    /** @private {boolean} */
+    toolbarSpinnerActive_: {
+      type: Boolean,
+      value: false,
+    },
 
-      /** @private {boolean} */
-      toolbarSpinnerActive_: {
-        type: Boolean,
-        value: false,
-      },
+    /** @private */
+    narrow_: {
+      type: Boolean,
+      observer: 'onNarrowChanged_',
+    },
 
-      /** @private */
-      narrow_: {
-        type: Boolean,
-        observer: 'onNarrowChanged_',
-      },
+    /**
+     * @private {!PageVisibility}
+     */
+    pageVisibility_: {type: Object, value: pageVisibility},
 
-      /**
-       * @private {!PageVisibility}
-       */
-      pageVisibility_: {type: Object, value: pageVisibility},
+    /** @private */
+    lastSearchQuery_: {
+      type: String,
+      value: '',
+    },
+  },
 
-      /** @private */
-      lastSearchQuery_: {
-        type: String,
-        value: '',
-      },
-    };
-  }
+  listeners: {
+    'refresh-pref': 'onRefreshPref_',
+  },
 
   /** @override */
-  constructor() {
-    super();
-
-    /* @private {?Debouncer} */
-    this.debouncer_ = null;
-
+  created() {
     Router.getInstance().initializeRouteFromUrl();
-  }
+  },
 
   /**
    * @override
@@ -120,8 +109,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
    * ES5 strict mode.
    */
   ready() {
-    super.ready();
-
     // Lazy-create the drawer the first time it is opened or swiped into view.
     listenOnce(this.$.drawer, 'cr-drawer-opening', () => {
       this.$.drawerTemplate.if = true;
@@ -163,16 +150,10 @@ export class SettingsUiElement extends SettingsUiElementBase {
     this.addEventListener('hide-container', () => {
       this.$.container.style.visibility = 'hidden';
     });
-
-    this.addEventListener(
-        'refresh-pref',
-        e => this.onRefreshPref_(/** @type {!CustomEvent<string>} */ (e)));
-  }
+  },
 
   /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
+  attached() {
     document.documentElement.classList.remove('loading');
 
     setTimeout(function() {
@@ -199,11 +180,10 @@ export class SettingsUiElement extends SettingsUiElementBase {
       const behavior = isChromeOS ? 'auto' : 'smooth';
       this.$.container.scrollTo({top: top, behavior: behavior});
       const onScroll = () => {
-        this.debouncer_ =
-            Debouncer.debounce(this.debouncer_, timeOut.after(75), () => {
-              this.$.container.removeEventListener('scroll', onScroll);
-              resolve();
-            });
+        this.debounce('scrollEnd', () => {
+          this.$.container.removeEventListener('scroll', onScroll);
+          resolve();
+        }, 75);
       };
       this.$.container.addEventListener('scroll', onScroll);
     });
@@ -214,15 +194,13 @@ export class SettingsUiElement extends SettingsUiElementBase {
       scrollToTop(e.detail.bottom - this.$.container.clientHeight)
           .then(e.detail.callback);
     });
-  }
+  },
 
   /** @override */
-  disconnectedCallback() {
-    super.disconnectedCallback();
-
+  detached() {
     Router.getInstance().resetRouteForTesting();
     resetGlobalScrollTargetForTesting();
-  }
+  },
 
   /** @param {!Route} route */
   currentRouteChanged(route) {
@@ -234,8 +212,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
 
     this.lastSearchQuery_ = urlSearchQuery;
 
-    const toolbar = /** @type {!CrToolbarElement} */ (
-        this.shadowRoot.querySelector('cr-toolbar'));
+    const toolbar = /** @type {!CrToolbarElement} */ (this.$$('cr-toolbar'));
     const searchField =
         /** @type {CrToolbarSearchFieldElement} */ (toolbar.getSearchField());
 
@@ -248,23 +225,21 @@ export class SettingsUiElement extends SettingsUiElementBase {
     }
 
     this.$.main.searchContents(urlSearchQuery);
-  }
+  },
 
   // Override FindShortcutBehavior methods.
   handleFindShortcut(modalContextOpen) {
     if (modalContextOpen) {
       return false;
     }
-    this.shadowRoot.querySelector('cr-toolbar').getSearchField().showAndFocus();
+    this.$$('cr-toolbar').getSearchField().showAndFocus();
     return true;
-  }
+  },
 
   // Override FindShortcutBehavior methods.
   searchInputHasFocus() {
-    return this.shadowRoot.querySelector('cr-toolbar')
-        .getSearchField()
-        .isSearchFocused();
-  }
+    return this.$$('cr-toolbar').getSearchField().isSearchFocused();
+  },
 
   /**
    * @param {!CustomEvent<string>} e
@@ -272,7 +247,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
    */
   onRefreshPref_(e) {
     return /** @type {SettingsPrefsElement} */ (this.$.prefs).refresh(e.detail);
-  }
+  },
 
   /**
    * Handles the 'search-changed' event fired from the toolbar.
@@ -287,7 +262,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
             new URLSearchParams('search=' + encodeURIComponent(query)) :
             undefined,
         /* removeSearch */ true);
-  }
+  },
 
   /**
    * Called when a section is selected.
@@ -295,12 +270,12 @@ export class SettingsUiElement extends SettingsUiElementBase {
    */
   onIronActivate_() {
     this.$.drawer.close();
-  }
+  },
 
   /** @private */
   onMenuButtonTap_() {
     this.$.drawer.toggle();
-  }
+  },
 
   /**
    * When this is called, The drawer animation is finished, and the dialog no
@@ -325,21 +300,21 @@ export class SettingsUiElement extends SettingsUiElementBase {
     listenOnce(this.$.container, ['blur', 'pointerdown'], () => {
       this.$.container.removeAttribute('tabindex');
     });
-  }
+  },
 
   /** @private */
   onAdvancedOpenedInMainChanged_() {
     if (this.advancedOpenedInMain_) {
       this.advancedOpenedInMenu_ = true;
     }
-  }
+  },
 
   /** @private */
   onAdvancedOpenedInMenuChanged_() {
     if (this.advancedOpenedInMenu_) {
       this.advancedOpenedInMain_ = true;
     }
-  }
+  },
 
   /** @private */
   onNarrowChanged_() {
@@ -356,9 +331,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
       // If changed from narrow to non-narrow and the focus was on the button
       // that opens the drawer menu, move focus to the left menu.
       this.$.leftMenu.focusFirstItem();
-    } else if (
-        !this.narrow_ &&
-        focusedElement === this.shadowRoot.querySelector('#drawerMenu')) {
+    } else if (!this.narrow_ && focusedElement === this.$$('#drawerMenu')) {
       // If changed from narrow to non-narrow and the focus was in the drawer
       // menu, wait for the drawer to close and then move focus on the left
       // menu. The drawer has a dialog element in it so moving focus to an
@@ -369,7 +342,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
       };
       this.$.drawer.addEventListener('close', boundCloseListener);
     }
-  }
+  },
 
   /**
    * Only used in tests.
@@ -377,7 +350,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
    */
   getAdvancedOpenedInMainForTest() {
     return this.advancedOpenedInMain_;
-  }
+  },
 
   /**
    * Only used in tests.
@@ -386,6 +359,4 @@ export class SettingsUiElement extends SettingsUiElementBase {
   getAdvancedOpenedInMenuForTest() {
     return this.advancedOpenedInMenu_;
   }
-}
-
-customElements.define(SettingsUiElement.is, SettingsUiElement);
+});

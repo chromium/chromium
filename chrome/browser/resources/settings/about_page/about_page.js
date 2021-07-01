@@ -21,10 +21,10 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
@@ -32,110 +32,91 @@ import {Router} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsAboutPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement);
+Polymer({
+  is: 'settings-about-page',
 
-/** @polymer */
-export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
-  static get is() {
-    return 'settings-about-page';
-  }
+  _template: html`{__html_template__}`,
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  behaviors: [
+    WebUIListenerBehavior,
+    I18nBehavior,
+  ],
 
-  static get properties() {
-    return {
-      /** @private {?UpdateStatusChangedEvent} */
-      currentUpdateStatusEvent_: {
-        type: Object,
-        value: {
-          message: '',
-          progress: 0,
-          rollback: false,
-          status: UpdateStatus.DISABLED
-        },
+  properties: {
+    /** @private {?UpdateStatusChangedEvent} */
+    currentUpdateStatusEvent_: {
+      type: Object,
+      value: {
+        message: '',
+        progress: 0,
+        rollback: false,
+        status: UpdateStatus.DISABLED
       },
+    },
 
-      /**
-       * Whether the browser/ChromeOS is managed by their organization
-       * through enterprise policies.
-       * @private
-       */
-      isManaged_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isManaged');
-        },
+    /**
+     * Whether the browser/ChromeOS is managed by their organization
+     * through enterprise policies.
+     * @private
+     */
+    isManaged_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isManaged');
       },
+    },
 
-      // <if expr="_google_chrome and is_macosx">
-      /** @private {!PromoteUpdaterStatus} */
-      promoteUpdaterStatus_: Object,
-      // </if>
+    // <if expr="_google_chrome and is_macosx">
+    /** @private {!PromoteUpdaterStatus} */
+    promoteUpdaterStatus_: Object,
+    // </if>
 
-      // <if expr="not chromeos">
-      /** @private {!{obsolete: boolean, endOfLine: boolean}} */
-      obsoleteSystemInfo_: {
-        type: Object,
-        value() {
-          return {
-            obsolete: loadTimeData.getBoolean('aboutObsoleteNowOrSoon'),
-            endOfLine: loadTimeData.getBoolean('aboutObsoleteEndOfTheLine'),
-          };
-        },
+    // <if expr="not chromeos">
+    /** @private {!{obsolete: boolean, endOfLine: boolean}} */
+    obsoleteSystemInfo_: {
+      type: Object,
+      value() {
+        return {
+          obsolete: loadTimeData.getBoolean('aboutObsoleteNowOrSoon'),
+          endOfLine: loadTimeData.getBoolean('aboutObsoleteEndOfTheLine'),
+        };
       },
+    },
 
-      /** @private */
-      showUpdateStatus_: {
-        type: Boolean,
-        value: false,
-      },
+    /** @private */
+    showUpdateStatus_: {
+      type: Boolean,
+      value: false,
+    },
 
-      /** @private */
-      showButtonContainer_: Boolean,
+    /** @private */
+    showButtonContainer_: Boolean,
 
-      /** @private */
-      showRelaunch_: {
-        type: Boolean,
-        value: false,
-      },
-      // </if>
-    };
-  }
+    /** @private */
+    showRelaunch_: {
+      type: Boolean,
+      value: false,
+    },
+    // </if>
+  },
 
-  // <if expr="not chromeos">
-  static get observers() {
-    return [
-      'updateShowUpdateStatus_(' +
-          'obsoleteSystemInfo_, currentUpdateStatusEvent_)',
-      'updateShowRelaunch_(currentUpdateStatusEvent_)',
-      'updateShowButtonContainer_(showRelaunch_)',
-    ];
-  }
-  // </if>
+  observers: [
+    // <if expr="not chromeos">
+    'updateShowUpdateStatus_(' +
+        'obsoleteSystemInfo_, currentUpdateStatusEvent_)',
+    'updateShowRelaunch_(currentUpdateStatusEvent_)',
+    'updateShowButtonContainer_(showRelaunch_)',
+    // </if>
+  ],
 
-  constructor() {
-    super();
+  /** @private {?AboutPageBrowserProxy} */
+  aboutBrowserProxy_: null,
 
-    /** @private {?AboutPageBrowserProxy} */
-    this.aboutBrowserProxy_ = null;
-
-    /** @private {?LifetimeBrowserProxy} */
-    this.lifetimeBrowserProxy_ = null;
-  }
+  /** @private {?LifetimeBrowserProxy} */
+  lifetimeBrowserProxy_: null,
 
   /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
+  attached() {
     this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
     this.aboutBrowserProxy_.pageReady();
 
@@ -149,7 +130,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       this.aboutBrowserProxy_.requestUpdate();
     }
     // </if>
-  }
+  },
 
   /**
    * @return {string}
@@ -163,7 +144,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     // </if>
 
     return '';
-  }
+  },
 
   // <if expr="not chromeos">
   /** @private */
@@ -176,7 +157,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         this.onPromoteUpdaterStatusChanged_.bind(this));
     // </if>
     this.aboutBrowserProxy_.refreshUpdateStatus();
-  }
+  },
 
   /**
    * @param {!UpdateStatusChangedEvent} event
@@ -184,7 +165,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
    */
   onUpdateStatusChanged_(event) {
     this.currentUpdateStatusEvent_ = event;
-  }
+  },
   // </if>
 
   // <if expr="_google_chrome and is_macosx">
@@ -194,7 +175,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
    */
   onPromoteUpdaterStatusChanged_(status) {
     this.promoteUpdaterStatus_ = status;
-  }
+  },
 
   /**
    * If #promoteUpdater isn't disabled, trigger update promotion.
@@ -207,7 +188,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       return;
     }
     this.aboutBrowserProxy_.promoteUpdater();
-  }
+  },
   // </if>
 
   /**
@@ -218,22 +199,22 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
-  }
+  },
 
   /** @private */
   onReleaseNotesTap_() {
     this.aboutBrowserProxy_.launchReleaseNotes();
-  }
+  },
 
   /** @private */
   onHelpTap_() {
     this.aboutBrowserProxy_.openHelpPage();
-  }
+  },
 
   /** @private */
   onRelaunchTap_() {
     this.lifetimeBrowserProxy_.relaunch();
-  }
+  },
 
   // <if expr="not chromeos">
   /** @private */
@@ -244,7 +225,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     }
     this.showUpdateStatus_ =
         this.currentUpdateStatusEvent_.status !== UpdateStatus.DISABLED;
-  }
+  },
 
   /**
    * Hide the button container if all buttons are hidden, otherwise the
@@ -253,12 +234,12 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
    */
   updateShowButtonContainer_() {
     this.showButtonContainer_ = this.showRelaunch_;
-  }
+  },
 
   /** @private */
   updateShowRelaunch_() {
     this.showRelaunch_ = this.checkStatus_(UpdateStatus.NEARLY_UPDATED);
-  }
+  },
 
   /**
    * @return {boolean}
@@ -266,7 +247,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
    */
   shouldShowLearnMoreLink_() {
     return this.currentUpdateStatusEvent_.status === UpdateStatus.FAILED;
-  }
+  },
 
   /**
    * @return {string}
@@ -312,7 +293,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         }
         return result;
     }
-  }
+  },
 
   /**
    * @return {?string}
@@ -336,7 +317,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       default:
         return null;
     }
-  }
+  },
 
   /**
    * @return {?string}
@@ -354,7 +335,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       default:
         return null;
     }
-  }
+  },
   // </if>
 
   /**
@@ -364,12 +345,12 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
    */
   checkStatus_(status) {
     return this.currentUpdateStatusEvent_.status === status;
-  }
+  },
 
   /** @private */
   onManagementPageTap_() {
     window.location.href = 'chrome://management';
-  }
+  },
 
   // <if expr="chromeos">
   /**
@@ -382,7 +363,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     // "advanced" version, it's not possible to inline this link directly in the
     // HTML.
     return this.i18nAdvanced('aboutUpdateOsSettingsLink');
-  }
+  },
   // </if>
 
   /** @private */
@@ -395,13 +376,13 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
           duration: 500,
           easing: 'cubic-bezier(1, 0, 0, 1)',
         });
-  }
+  },
 
   // <if expr="_google_chrome">
   /** @private */
   onReportIssueTap_() {
     this.aboutBrowserProxy_.openFeedbackDialog();
-  }
+  },
   // </if>
 
   /**
@@ -415,7 +396,5 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     }
     // </if>
     return this.showUpdateStatus_;
-  }
-}
-
-customElements.define(SettingsAboutPageElement.is, SettingsAboutPageElement);
+  },
+});
