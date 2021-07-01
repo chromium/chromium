@@ -3165,6 +3165,21 @@
             ]
         }
     ],
+    "DownloadMobileConfigFile": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "DownloadMobileconfigFileEnabled",
+                    "enable_features": [
+                        "DownloadMobileconfigFile"
+                    ]
+                }
+            ]
+        }
+    ],
     "DownloadOfflineContentProvider": [
         {
             "platforms": [
