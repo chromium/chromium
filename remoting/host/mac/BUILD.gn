@@ -44,7 +44,9 @@ source_set("permission_checking") {
 
   deps = [
     ":constants",
+    "//remoting/host:remoting_version",
     "//remoting/resources",
+    "//ui/base:base",
   ]
 
   frameworks = [ "AVFoundation.framework" ]
@@ -58,6 +60,7 @@ executable("remoting_me2me_host_service") {
     "//base",
     "//remoting/base",
     "//remoting/host:base",
+    "//remoting/host:remoting_version",
   ]
 }
 
@@ -186,12 +189,19 @@ target("mac_app_bundle", "remoting_native_messaging_host") {
   deps = [
     ":remoting_native_messaging_host_resources",
     "//base",
+    "//build:chromeos_buildflags",
+    "//mojo/core/embedder:embedder",
     "//net",
+    "//remoting/base:authorization",
+    "//remoting/base:base",
     "//remoting/base:breakpad",
     "//remoting/host",
+    "//remoting/host:base",
     "//remoting/host:remoting_infoplist_strings",
     "//remoting/host/native_messaging",
     "//remoting/host/setup",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
     "//services/network/public/mojom",
   ]
   foreach(locale, remoting_locales_with_underscores) {
