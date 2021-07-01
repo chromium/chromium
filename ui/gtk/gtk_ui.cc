@@ -330,6 +330,8 @@ GtkUi::GtkUi() {
   auto backend = delegate ? delegate->GetBackend() : ui::LinuxUiBackend::kX11;
   platform_ = CreateGtkUiPlatform(backend);
 
+  SelectFileDialogImpl::Initialize();
+
   // Avoid GTK initializing atk-bridge, and let AuraLinux implementation
   // do it once it is ready.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -346,6 +348,8 @@ GtkUi::GtkUi() {
 GtkUi::~GtkUi() {
   DCHECK_EQ(g_gtk_ui, this);
   g_gtk_ui = nullptr;
+
+  SelectFileDialogImpl::Shutdown();
 }
 
 // static

@@ -10,13 +10,16 @@
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
+#include "ui/gtk/select_file_dialog_impl_portal.h"
 
 namespace {
 
-enum UseKdeFileDialogStatus { UNKNOWN, NO_KDE, YES_KDE };
+enum FileDialogChoice { kUnknown, kGtk, kKde, kPortal };
 
-UseKdeFileDialogStatus use_kde_ = UNKNOWN;
+FileDialogChoice dialog_choice_ = kUnknown;
+
 std::string& KDialogVersion() {
   static base::NoDestructor<std::string> version;
   return *version;
@@ -30,41 +33,67 @@ base::FilePath* SelectFileDialogImpl::last_saved_path_ = nullptr;
 base::FilePath* SelectFileDialogImpl::last_opened_path_ = nullptr;
 
 // static
+void SelectFileDialogImpl::Initialize() {
+  SelectFileDialogImplPortal::StartAvailabilityTestInBackground();
+}
+
+// static
+void SelectFileDialogImpl::Shutdown() {
+  SelectFileDialogImplPortal::DestroyPortalConnection();
+}
+
+// static
 ui::SelectFileDialog* SelectFileDialogImpl::Create(
     ui::SelectFileDialog::Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) {
-  if (use_kde_ == UNKNOWN) {
-    // Start out assumimg we are not going to use KDE.
-    use_kde_ = NO_KDE;
+  if (dialog_choice_ == kUnknown) {
+    // Start out assumimg we are going to use GTK.
+    dialog_choice_ = kGtk;
 
-    // Check to see if KDE is the desktop environment.
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    base::nix::DesktopEnvironment desktop =
-        base::nix::GetDesktopEnvironment(env.get());
-    if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE3 ||
-        desktop == base::nix::DESKTOP_ENVIRONMENT_KDE4 ||
-        desktop == base::nix::DESKTOP_ENVIRONMENT_KDE5) {
-      // Check to see if the user dislikes the KDE file dialog.
-      if (!env->HasVar("NO_CHROME_KDE_FILE_DIALOG")) {
-        // Check to see if the KDE dialog works.
-        if (SelectFileDialogImpl::CheckKDEDialogWorksOnUIThread(
-                KDialogVersion())) {
-          use_kde_ = YES_KDE;
+    // Check to see if the portal is available.
+    if (SelectFileDialogImplPortal::IsPortalAvailable()) {
+      dialog_choice_ = kPortal;
+    } else {
+      // Make sure to kill the portal connection.
+      SelectFileDialogImplPortal::DestroyPortalConnection();
+
+      // Check to see if KDE is the desktop environment.
+      std::unique_ptr<base::Environment> env(base::Environment::Create());
+      base::nix::DesktopEnvironment desktop =
+          base::nix::GetDesktopEnvironment(env.get());
+      if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE3 ||
+          desktop == base::nix::DESKTOP_ENVIRONMENT_KDE4 ||
+          desktop == base::nix::DESKTOP_ENVIRONMENT_KDE5) {
+        // Check to see if the user dislikes the KDE file dialog.
+        if (!env->HasVar("NO_CHROME_KDE_FILE_DIALOG")) {
+          // Check to see if the KDE dialog works.
+          if (SelectFileDialogImpl::CheckKDEDialogWorksOnUIThread(
+                  KDialogVersion())) {
+            dialog_choice_ = kKde;
+          }
         }
       }
     }
   }
 
-  if (use_kde_ == NO_KDE) {
-    return SelectFileDialogImpl::NewSelectFileDialogImplGTK(listener,
-                                                            std::move(policy));
+  switch (dialog_choice_) {
+    case kGtk:
+      return SelectFileDialogImpl::NewSelectFileDialogImplGTK(
+          listener, std::move(policy));
+    case kPortal:
+      return SelectFileDialogImpl::NewSelectFileDialogImplPortal(
+          listener, std::move(policy));
+    case kKde: {
+      std::unique_ptr<base::Environment> env(base::Environment::Create());
+      base::nix::DesktopEnvironment desktop =
+          base::nix::GetDesktopEnvironment(env.get());
+      return SelectFileDialogImpl::NewSelectFileDialogImplKDE(
+          listener, std::move(policy), desktop, KDialogVersion());
+    }
+    case kUnknown:
+      NOTREACHED();
+      return nullptr;
   }
-
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  base::nix::DesktopEnvironment desktop =
-      base::nix::GetDesktopEnvironment(env.get());
-  return SelectFileDialogImpl::NewSelectFileDialogImplKDE(
-      listener, std::move(policy), desktop, KDialogVersion());
 }
 
 SelectFileDialogImpl::SelectFileDialogImpl(

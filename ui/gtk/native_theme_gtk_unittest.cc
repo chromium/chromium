@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gtk/gtk_ui_factory.h"
@@ -57,6 +58,7 @@ class NativeThemeGtkRedirectedEquivalenceTest
     }
   }
 
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<views::LinuxUI> gtk_ui_;
 };
 

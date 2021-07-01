@@ -69,6 +69,8 @@ component("gtk") {
     "select_file_dialog_impl_gtk.cc",
     "select_file_dialog_impl_gtk.h",
     "select_file_dialog_impl_kde.cc",
+    "select_file_dialog_impl_portal.cc",
+    "select_file_dialog_impl_portal.h",
     "settings_provider.h",
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
@@ -90,6 +92,8 @@ component("gtk") {
   deps = [
     ":gtk_stubs",
     "//base",
+    "//components/dbus/thread_linux",
+    "//dbus",
     "//skia",
 
     # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
@@ -115,6 +119,7 @@ component("gtk") {
     "//ui/shell_dialogs",
     "//ui/strings",
     "//ui/views",
+    "//url",
   ]
 
   if (enable_basic_printing) {

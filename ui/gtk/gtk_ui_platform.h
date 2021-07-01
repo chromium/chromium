@@ -5,7 +5,10 @@
 #ifndef UI_GTK_GTK_UI_PLATFORM_H_
 #define UI_GTK_GTK_UI_PLATFORM_H_
 
+#include "base/callback_forward.h"
 #include "ui/gfx/native_widget_types.h"
+
+#include <string>
 
 using GdkKeymap = struct _GdkKeymap;
 using GtkWindow = struct _GtkWindow;
@@ -32,6 +35,12 @@ class GtkUiPlatform {
   // object. This function is meant to be used in GtkIM-based IME implementation
   // and is supported only in X11 backend (both Aura and Ozone).
   virtual GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) = 0;
+
+  // Exports a prefixed, platform-dependent (X11 or Wayland) window handle for
+  // an Aura window id, then calls the given callback with the handle.
+  virtual bool ExportWindowHandle(
+      gfx::AcceleratedWidget window_id,
+      base::OnceCallback<void(std::string)> callback) = 0;
 
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.

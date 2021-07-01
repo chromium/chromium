@@ -29,7 +29,7 @@ LinuxUiBackend LinuxUiDelegateWayland::GetBackend() const {
   return LinuxUiBackend::kWayland;
 }
 
-bool LinuxUiDelegateWayland::SetWidgetTransientFor(
+bool LinuxUiDelegateWayland::ExportWindowHandle(
     gfx::AcceleratedWidget parent,
     base::OnceCallback<void(const std::string&)> callback) {
   auto* parent_window =
