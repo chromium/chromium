@@ -225,9 +225,6 @@ js_library("background_manager") {
   ]
 }
 
-js_library("img") {
-}
-
 js_library("i18n_setup") {
   deps = [
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -277,7 +274,6 @@ preprocess_if_expr("preprocess") {
     "background_manager.js",
     "window_proxy.js",
     "new_tab_page_proxy.js",
-    "img.js",
     "lazy_load.js",
     "customize_dialog_types.js",
     "new_tab_page.js",

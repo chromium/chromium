@@ -10,8 +10,8 @@ js_library("module") {
     ":foo_proxy",
     "..:module_descriptor",
     "../..:i18n_setup",
-    "../..:img",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_auto_img",
     "//ui/webui/resources/cr_elements/cr_grid",
   ]
 }

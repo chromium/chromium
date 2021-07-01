@@ -62,7 +62,7 @@ js_type_check("closure_compile") {
     ":nearby_visibility_page",
   ]
   closure_flags =
-      default_closure_args + [
+      default_closure_args + js_modules_args + [
         "js_module_root=../../chrome/browser/resources/nearby_share/shared/",
         "js_module_root=./gen/chrome/browser/resources/nearby_share/shared/",
       ]
@@ -102,6 +102,7 @@ js_library("nearby_device") {
   deps = [
     ":nearby_device_icon",
     "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
+    "//ui/webui/resources/cr_elements/cr_auto_img",
   ]
 }
 

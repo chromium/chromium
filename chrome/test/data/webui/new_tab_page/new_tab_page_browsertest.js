@@ -172,18 +172,6 @@ TEST_F('NewTabPageModulesModuleWrapperTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
-var NewTabPageImgTest = class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/img_test.js';
-  }
-};
-
-TEST_F('NewTabPageImgTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
 var NewTabPageModulesModulesTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

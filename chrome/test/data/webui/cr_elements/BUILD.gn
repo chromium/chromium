@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
 
   deps = [
     ":cr_action_menu_test",
+    ":cr_auto_img_test",
     ":cr_button_tests",
     ":cr_card_radio_button_test",
     ":cr_checkbox_test",
@@ -147,6 +148,11 @@ js_library("cr_icon_button_tests") {
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
   ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("cr_auto_img_test") {
+  deps = [ "//ui/webui/resources/cr_elements/cr_auto_img" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 

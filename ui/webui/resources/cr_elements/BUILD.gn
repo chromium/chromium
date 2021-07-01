@@ -48,6 +48,7 @@ preprocess_if_expr("preprocess_src") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
+    "cr_auto_img/cr_auto_img.js",
     "cr_search_field/cr_search_field_behavior.js",
     "cr_splitter/cr_splitter.js",
     "find_shortcut_behavior.js",
@@ -230,6 +231,7 @@ group("closure_compile") {
   deps = [
     ":cr_elements_resources",
     "cr_action_menu:closure_compile",
+    "cr_auto_img:closure_compile",
     "cr_button:closure_compile",
     "cr_checkbox:closure_compile",
     "cr_dialog:closure_compile",

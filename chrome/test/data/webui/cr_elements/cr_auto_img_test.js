@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ImgElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {assertEquals} from '../chai_assert.js';
 
-suite('NewTabPageImgTest', () => {
-  /** @type {!ImgElement} */
+suite('CrAutoImgElementTest', () => {
+  /** @type {!CrAutoImgElement} */
   let img;
 
   setup(() => {
     document.body.innerHTML = '';
-    img = new ImgElement();
+    img = new CrAutoImgElement();
     document.body.appendChild(img);
   });
 

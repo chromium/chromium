@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
-import '../../img.js';
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '../../strings.m.js';
 import '../module_header.js';
 

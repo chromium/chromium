@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview <ntp-img> is a specialized <img> that facilitates embedding
- * images into WebUIs via its auto-src attribute. <ntp-img> automatically
+ * @fileoverview <cr-auto-img> is a specialized <img> that facilitates embedding
+ * images into WebUIs via its auto-src attribute. <cr-auto-img> automatically
  * determines if the image is local (e.g. data: or chrome://) or external (e.g.
  * https://), and embeds the image directly or via the chrome://image data
  * source accordingly. Usage:
@@ -13,16 +13,16 @@
  *
  *   2. In HTML instantiate
  *
- *      <img is="ntp-img" auto-src="https://foo.com/bar.png"></img>
+ *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png"></img>
  *
- * NOTE: Since <ntp-img> may use the chrome://image data source some images may
- * be transcoded to PNG.
+ * NOTE: Since <cr-auto-img> may use the chrome://image data source some images
+ * may be transcoded to PNG.
  */
 
 /** @type {string} */
 const AUTO_SRC = 'auto-src';
 
-export class ImgElement extends HTMLImageElement {
+export class CrAutoImgElement extends HTMLImageElement {
   static get observedAttributes() {
     return [AUTO_SRC];
   }
@@ -62,4 +62,4 @@ export class ImgElement extends HTMLImageElement {
   }
 }
 
-customElements.define('ntp-img', ImgElement, {extends: 'img'});
+customElements.define('cr-auto-img', CrAutoImgElement, {extends: 'img'});

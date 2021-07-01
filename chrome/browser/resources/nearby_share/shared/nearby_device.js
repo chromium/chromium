@@ -6,6 +6,8 @@
  * @fileoverview The 'nearby-device' component shows details of a remote device.
  */
 
+import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+
 Polymer({
   is: 'nearby-device',
 
@@ -54,21 +56,19 @@ Polymer({
       return '';
     }
 
-    // Need to sanitize the image source for WebUIs with chrome://image/?<URL>.
-    // Also adds the parameter to resize to the desired size.
-    const chromeSafePrefix = 'chrome://image/?';
-    return chromeSafePrefix + this.shareTarget.imageUrl.url + '=s' +
+    // Adds the parameter to resize to the desired size.
+    return this.shareTarget.imageUrl.url + '=s' +
         this.properties.targetImageSize.value;
   },
 
   /** @private */
   listenToTargetImageLoad_() {
-    const imageElement = this.$$('#share-target-image');
-    if (imageElement.complete && imageElement.naturalHeight !== 0) {
+    const autoImg = this.$$('#share-target-image');
+    if (autoImg.complete && autoImg.naturalHeight !== 0) {
       this.onTargetImageLoad_();
     } else {
       const nearbyDevice = this;
-      imageElement.onload = function() {
+      autoImg.onload = function() {
         nearbyDevice.onTargetImageLoad_();
       };
     }

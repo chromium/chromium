@@ -359,3 +359,15 @@ var CrElementsLottieV3Test = class extends CrElementsV3BrowserTest {
 TEST_F('CrElementsLottieV3Test', 'All', function() {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var CrElementsAutoImgTest = class extends CrElementsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_auto_img_test.js';
+  }
+};
+
+TEST_F('CrElementsAutoImgTest', 'All', function() {
+  mocha.run();
+});

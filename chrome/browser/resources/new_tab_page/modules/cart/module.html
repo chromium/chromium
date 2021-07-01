@@ -329,7 +329,7 @@
           <cr-icon-button class="icon-more-vert"
               title="[[i18n('moreActions')]]" on-click="onCartMenuButtonClick_">
           </cr-icon-button>
-          <img class="favicon-image" is="ntp-img"
+          <img class="favicon-image" is="cr-auto-img"
               auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
           <div class="cart-title">
             <span class="merchant">[[item.merchant]]</span>
@@ -346,7 +346,7 @@
                 <template is="dom-repeat"
                     items="[[getImagesToShow_(item.productImageUrls)]]">
                   <li>
-                    <img class="thumbnail-img" is="ntp-img"
+                    <img class="thumbnail-img" is="cr-auto-img"
                         auto-src="[[item.url]]"></img>
                   </li>
                 </template>

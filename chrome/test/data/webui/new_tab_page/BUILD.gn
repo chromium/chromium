@@ -12,7 +12,6 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
-    ":img_test",
     ":metrics_utils_test",
     ":test_support",
     "modules:info_dialog_test",
@@ -20,11 +19,6 @@ js_type_check("closure_compile") {
     "modules:module_registry_test",
     "modules:modules_test",
   ]
-}
-
-js_library("img_test") {
-  deps = [ "//chrome/browser/resources/new_tab_page" ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("metrics_test_support") {

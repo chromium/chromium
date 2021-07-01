@@ -35,7 +35,7 @@ suite('DeviceTest', function() {
       name: 'Default Device Name',
       type: nearbyShare.mojom.ShareTargetType.kPhone,
       imageUrl: {
-        url: 'testImageURL',
+        url: 'http://goog.com/image',
       },
     });
   }
@@ -58,7 +58,7 @@ suite('DeviceTest', function() {
     deviceElement.shareTarget = getDefaultShareTarget();
 
     const renderedSource = deviceElement.$$('#share-target-image').src;
-    assertEquals('chrome://image/?testImageURL=s26', renderedSource);
+    assertEquals('chrome://image/?http://goog.com/image=s26', renderedSource);
   });
 
   test('renders blank target image', function() {
