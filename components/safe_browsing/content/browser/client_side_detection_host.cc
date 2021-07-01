@@ -369,10 +369,9 @@ ClientSideDetectionHost::ClientSideDetectionHost(
 
   // We want to accurately track all active RenderFrameHosts, so make sure we
   // know about any pre-existings ones.
-  for (content::RenderFrameHost* frame : web_contents()->GetAllFrames()) {
-    if (frame->IsRenderFrameCreated())
-      RenderFrameCreated(frame);
-  }
+  web_contents()->ForEachRenderFrameHost(
+      base::BindRepeating(&ClientSideDetectionHost::InitializePhishingDetector,
+                          base::Unretained(this)));
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
@@ -460,14 +459,7 @@ void ClientSideDetectionHost::WebContentsDestroyed() {
 
 void ClientSideDetectionHost::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  mojo::Remote<mojom::PhishingDetector> new_detector;
-  render_frame_host->GetRemoteInterfaces()->GetInterface(
-      new_detector.BindNewPipeAndPassReceiver());
-  new_detector.set_disconnect_handler(
-      base::BindOnce(&ClientSideDetectionHost::RenderFrameDeleted,
-                     weak_factory_.GetWeakPtr(), render_frame_host));
-  phishing_detectors_[render_frame_host] = std::move(new_detector);
-  SetPhishingModel(phishing_detectors_[render_frame_host]);
+  InitializePhishingDetector(render_frame_host);
 }
 
 void ClientSideDetectionHost::RenderFrameDeleted(
@@ -629,6 +621,20 @@ void ClientSideDetectionHost::OnGotAccessToken(
     std::unique_ptr<ClientPhishingRequest> verdict,
     const std::string& access_token) {
   ClientSideDetectionHost::SendRequest(std::move(verdict), access_token);
+}
+
+void ClientSideDetectionHost::InitializePhishingDetector(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->IsRenderFrameCreated()) {
+    mojo::Remote<mojom::PhishingDetector> new_detector;
+    render_frame_host->GetRemoteInterfaces()->GetInterface(
+        new_detector.BindNewPipeAndPassReceiver());
+    new_detector.set_disconnect_handler(
+        base::BindOnce(&ClientSideDetectionHost::RenderFrameDeleted,
+                       weak_factory_.GetWeakPtr(), render_frame_host));
+    phishing_detectors_[render_frame_host] = std::move(new_detector);
+    SetPhishingModel(phishing_detectors_[render_frame_host]);
+  }
 }
 
 bool ClientSideDetectionHost::CanGetAccessToken() {

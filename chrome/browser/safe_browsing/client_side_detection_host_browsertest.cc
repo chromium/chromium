@@ -87,30 +87,34 @@ class ClientSideDetectionHostBrowserTest : public InProcessBrowserTest {
  public:
   ClientSideDetectionHostBrowserTest() = default;
   ~ClientSideDetectionHostBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    model_.set_version(123);
+    model_.set_max_words_per_term(1);
+    VisualTarget* target = model_.mutable_vision_model()->add_targets();
+    target->set_digest("target1_digest");
+    // Create a hash corresponding to a blank screen.
+    std::string hash = "\x30";
+    for (int i = 0; i < 288; i++)
+      hash += "\xff";
+    target->set_hash(hash);
+    target->set_dimension_size(48);
+    MatchRule* match_rule = target->mutable_match_config()->add_match_rule();
+    // The actual hash distance is 76, so set the distance to 200 for safety. A
+    // completely random bitstring would expect a Hamming distance of 1152.
+    match_rule->set_hash_distance(200);
+  }
+
+  ClientSideModel& client_side_model() { return model_; }
+
+ private:
+  ClientSideModel model_;
 };
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
                        VerifyVisualFeatureCollection) {
   FakeClientSideDetectionService fake_csd_service;
-
-  ClientSideModel model;
-  model.set_version(123);
-  model.set_max_words_per_term(1);
-  VisualTarget* target = model.mutable_vision_model()->add_targets();
-
-  target->set_digest("target1_digest");
-  // Create a hash corresponding to a blank screen.
-  std::string hash = "\x30";
-  for (int i = 0; i < 288; i++)
-    hash += "\xff";
-  target->set_hash(hash);
-  target->set_dimension_size(48);
-  MatchRule* match_rule = target->mutable_match_config()->add_match_rule();
-  // The actual hash distance is 76, so set the distance to 200 for safety. A
-  // completely random bitstring would expect a Hamming distance of 1152.
-  match_rule->set_hash_distance(200);
-
-  fake_csd_service.SetModel(model);
+  fake_csd_service.SetModel(client_side_model());
 
   scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
       new StrictMock<MockSafeBrowsingUIManager>();
@@ -182,25 +186,7 @@ class ClientSideDetectionHostPrerenderBrowserTest
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
                        PrerenderShouldNotAffectClientSideDetection) {
   FakeClientSideDetectionService fake_csd_service;
-
-  ClientSideModel model;
-  model.set_version(123);
-  model.set_max_words_per_term(1);
-  VisualTarget* target = model.mutable_vision_model()->add_targets();
-
-  target->set_digest("target1_digest");
-  // Create a hash corresponding to a blank screen.
-  std::string hash = "\x30";
-  for (int i = 0; i < 288; i++)
-    hash += "\xff";
-  target->set_hash(hash);
-  target->set_dimension_size(48);
-  MatchRule* match_rule = target->mutable_match_config()->add_match_rule();
-  // The actual hash distance is 76, so set the distance to 200 for safety. A
-  // completely random bitstring would expect a Hamming distance of 1152.
-  match_rule->set_hash_distance(200);
-
-  fake_csd_service.SetModel(model);
+  fake_csd_service.SetModel(client_side_model());
 
   scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
       new StrictMock<MockSafeBrowsingUIManager>();
@@ -218,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   base::RunLoop run_loop;
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
 
-  // Bypass the pre-classification checks
+  // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(/*should_classify=*/true);
 
   // A prerendered navigation committing should not cancel classification.
@@ -242,9 +228,54 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
       fake_csd_service.saved_request().vision_match(0).matched_target_digest(),
       "target1_digest");
 
-  // Expect an interstitial to be shown
+  // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback()).Run(page_url, true);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
+                       ClassifyPrerenderedPageAfterActivation) {
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(&fake_csd_service);
+  csd_host->SendModelToRenderFrame();
+  csd_host->set_ui_manager(mock_ui_manager.get());
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  // Prerender then activate a phishing page.
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("/safe_browsing/malware.html");
+  prerender_helper().AddPrerender(prerender_url);
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // Bypass the pre-classification checks.
+  csd_host->OnPhishingPreClassificationDone(/*should_classify=*/true);
+
+  run_loop.Run();
+
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+
+  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
+  ASSERT_EQ(fake_csd_service.saved_request().vision_match_size(), 1);
+  EXPECT_EQ(
+      fake_csd_service.saved_request().vision_match(0).matched_target_digest(),
+      "target1_digest");
+
+  // Expect an interstitial to be shown.
+  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
+  std::move(fake_csd_service.saved_callback()).Run(prerender_url, true);
 }
 
 }  // namespace safe_browsing

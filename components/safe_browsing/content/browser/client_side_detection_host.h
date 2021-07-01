@@ -115,6 +115,8 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
                            VerifyVisualFeatureCollection);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            PrerenderShouldNotAffectClientSideDetection);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
+                           ClassifyPrerenderedPageAfterActivation);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers.
@@ -175,6 +177,9 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // Called when token_fetcher_ has fetched the token.
   void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
                         const std::string& access_token);
+
+  // Setup a PhishingDetector Mojo connection for the given render frame.
+  void InitializePhishingDetector(content::RenderFrameHost* render_frame_host);
 
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
