@@ -30,6 +30,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountCapabilities.FetchDuration.{Result}" units="ms"
+    expires_after="2021-11-01">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the fetch duration every time Chrome {Result} account
+    capabilities from network. This is recorded only on Desktop platforms where
+    Chrome implements its own account capabilities fetcher.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="fails to fetch"/>
+    <variant name="Success" summary="successfully fetches"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.AccountCapabilities.FetchResult"
+    enum="AccountCapabilitiesFetchResult" expires_after="2021-11-01">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the outcome of the account capabilities fetch
+    operation. This is recorded only on Desktop platforms where Chrome
+    implements its own account capabilities fetcher.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountCapabilities.GetFromSystemLibraryDuration"
     units="ms" expires_after="2021-11-01">
   <owner>aliceywang@chromium.org</owner>

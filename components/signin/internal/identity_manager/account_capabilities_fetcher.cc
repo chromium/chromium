@@ -4,6 +4,8 @@
 
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -32,11 +34,13 @@ AccountCapabilitiesFetcher::AccountCapabilitiesFetcher(
 AccountCapabilitiesFetcher::~AccountCapabilitiesFetcher() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("AccountFetcherService",
                                   "AccountCapabilitiesFetcher", this);
+  RecordFetchResultAndDuration(FetchResult::kCancelled);
 }
 
 void AccountCapabilitiesFetcher::Start() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("AccountFetcherService", "GetAccessToken",
                                     this);
+  fetch_start_time_ = base::TimeTicks::Now();
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kAccountCapabilitiesOAuth2Scope);
   login_token_request_ =
@@ -69,6 +73,7 @@ void AccountCapabilitiesFetcher::OnGetTokenFailure(
   VLOG(1) << "OnGetTokenFailure: " << error.ToString();
   DCHECK_EQ(request, login_token_request_.get());
   login_token_request_.reset();
+  RecordFetchResultAndDuration(FetchResult::kGetTokenFailure);
   service_->OnAccountCapabilitiesFetchFailure(account_id_);
 }
 
@@ -81,10 +86,12 @@ void AccountCapabilitiesFetcher::OnGetAccountCapabilitiesResponse(
   if (!parsed_capabilities) {
     VLOG(1) << "Failed to parse account capabilities for " << account_id_
             << ". Response body: " << account_capabilities->DebugString();
+    RecordFetchResultAndDuration(FetchResult::kParseResponseFailure);
     service_->OnAccountCapabilitiesFetchFailure(account_id_);
     return;
   }
 
+  RecordFetchResultAndDuration(FetchResult::kSuccess);
   service_->OnAccountCapabilitiesFetchSuccess(account_id_,
                                               parsed_capabilities.value());
 }
@@ -94,6 +101,7 @@ void AccountCapabilitiesFetcher::OnOAuthError() {
                                   "GetAccountCapabilities", this, "error",
                                   "OAuthError");
   VLOG(1) << "OnOAuthError";
+  RecordFetchResultAndDuration(FetchResult::kOAuthError);
   service_->OnAccountCapabilitiesFetchFailure(account_id_);
 }
 
@@ -102,5 +110,32 @@ void AccountCapabilitiesFetcher::OnNetworkError(int response_code) {
       "AccountFetcherService", "GetAccountCapabilities", this, "error",
       "NetworkError", "response_code", response_code);
   VLOG(1) << "OnNetworkError " << response_code;
+  RecordFetchResultAndDuration(FetchResult::kNetworkError);
   service_->OnAccountCapabilitiesFetchFailure(account_id_);
+}
+
+void AccountCapabilitiesFetcher::RecordFetchResultAndDuration(
+    FetchResult result) {
+  if (fetch_histograms_recorded_) {
+    // Record histograms only once.
+    return;
+  }
+  fetch_histograms_recorded_ = true;
+
+  base::UmaHistogramEnumeration("Signin.AccountCapabilities.FetchResult",
+                                result);
+
+  if (fetch_start_time_.is_null()) {
+    // Cannot record duration for a fetch that hasn't started.
+    DCHECK_EQ(result, FetchResult::kCancelled);
+    return;
+  }
+  base::TimeDelta duration = base::TimeTicks::Now() - fetch_start_time_;
+  if (result == FetchResult::kSuccess) {
+    base::UmaHistogramMediumTimes(
+        "Signin.AccountCapabilities.FetchDuration.Success", duration);
+  } else {
+    base::UmaHistogramMediumTimes(
+        "Signin.AccountCapabilities.FetchDuration.Failure", duration);
+  }
 }

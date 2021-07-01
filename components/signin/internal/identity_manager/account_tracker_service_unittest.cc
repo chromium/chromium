@@ -21,6 +21,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -32,6 +33,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
@@ -311,6 +313,12 @@ class AccountTrackerServiceTest : public testing::Test {
             .WithExpirationTime(base::Time::Max())
             .build());
   }
+  void SimulateIssueAccessTokenPersistentError(AccountKey account_key) {
+    fake_oauth2_token_service_.IssueErrorForAllPendingRequestsForAccount(
+        AccountKeyToAccountId(account_key),
+        GoogleServiceAuthError(
+            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  }
 
   std::string GenerateValidTokenInfoResponse(AccountKey account_key) {
     return base::StringPrintf(kTokenInfoResponseFormat,
@@ -582,6 +590,7 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesSuccess) {
   SimulateTokenAvailable(kAccountKeyAlpha);
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 
+  base::HistogramTester tester;
   // AccountUpdated notification requires account's gaia to be known.
   // Set account's user info first to receive an UPDATED event when capabilities
   // are fetched.
@@ -598,12 +607,21 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesSuccess) {
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
   CheckAccountCapabilities(kAccountKeyAlpha, account_info);
+
+  tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Success",
+                          1);
+  tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Failure",
+                          0);
+  tester.ExpectUniqueSample("Signin.AccountCapabilities.FetchResult",
+                            AccountCapabilitiesFetcher::FetchResult::kSuccess,
+                            1);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesFailed) {
   SimulateTokenAvailable(kAccountKeyAlpha);
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 
+  base::HistogramTester tester;
   ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
   ClearAccountTrackerEvents();
 
@@ -613,6 +631,62 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesFailed) {
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_FALSE(account_info.capabilities.AreAllCapabilitiesKnown());
+
+  tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Success",
+                          0);
+  tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Failure",
+                          1);
+  tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.FetchResult",
+      AccountCapabilitiesFetcher::FetchResult::kOAuthError, 1);
+}
+
+TEST_F(AccountTrackerServiceTest,
+       TokenAvailable_AccountCapabilitiesTokenFailure) {
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+
+  base::HistogramTester tester;
+
+  SimulateIssueAccessTokenPersistentError(kAccountKeyAlpha);
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+  EXPECT_TRUE(CheckAccountTrackerEvents({}));
+  AccountInfo account_info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_FALSE(account_info.capabilities.AreAllCapabilitiesKnown());
+
+  tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Success",
+                          0);
+  tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Failure",
+                          1);
+  tester.ExpectUniqueSample(
+      "Signin.AccountCapabilities.FetchResult",
+      AccountCapabilitiesFetcher::FetchResult::kGetTokenFailure, 1);
+}
+
+TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesCancelled) {
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+
+  base::HistogramTester tester;
+
+  // Issue an access token first to not get the `kGetTokenFailure` error.
+  IssueAccessToken(kAccountKeyAlpha);
+  // Revoking a token will cancel an ongoing request.
+  SimulateTokenRevoked(kAccountKeyAlpha);
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+  EXPECT_TRUE(CheckAccountTrackerEvents({}));
+  AccountInfo account_info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_FALSE(account_info.capabilities.AreAllCapabilitiesKnown());
+
+  tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Success",
+                          0);
+  tester.ExpectTotalCount("Signin.AccountCapabilities.FetchDuration.Failure",
+                          1);
+  tester.ExpectUniqueSample("Signin.AccountCapabilities.FetchResult",
+                            AccountCapabilitiesFetcher::FetchResult::kCancelled,
+                            1);
 }
 
 TEST_F(AccountTrackerServiceTest,

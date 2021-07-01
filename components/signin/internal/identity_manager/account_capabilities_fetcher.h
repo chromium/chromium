@@ -22,6 +22,18 @@ class GoogleServiceAuthError;
 class AccountCapabilitiesFetcher : public OAuth2AccessTokenManager::Consumer,
                                    public gaia::GaiaOAuthClient::Delegate {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FetchResult {
+    kSuccess = 0,
+    kGetTokenFailure = 1,
+    kParseResponseFailure = 2,
+    kOAuthError = 3,
+    kNetworkError = 4,
+    kCancelled = 5,
+    kMaxValue = kCancelled
+  };
+
   AccountCapabilitiesFetcher(
       ProfileOAuth2TokenService* token_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -50,6 +62,8 @@ class AccountCapabilitiesFetcher : public OAuth2AccessTokenManager::Consumer,
   void OnNetworkError(int response_code) override;
 
  private:
+  void RecordFetchResultAndDuration(FetchResult result);
+
   ProfileOAuth2TokenService* token_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   AccountFetcherService* service_;
@@ -57,6 +71,10 @@ class AccountCapabilitiesFetcher : public OAuth2AccessTokenManager::Consumer,
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> login_token_request_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
+
+  // Used for metrics:
+  base::TimeTicks fetch_start_time_;
+  bool fetch_histograms_recorded_ = false;
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_H_
