@@ -131,9 +131,9 @@ TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
   SystemEngine engine(/*platform=*/nullptr);
 
   mojo::Remote<mojom::InputMethod> input_method;
-  EXPECT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  EXPECT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
 
   ASSERT_TRUE(input_method.is_bound());
   EXPECT_TRUE(input_method.is_connected());
@@ -148,18 +148,18 @@ TEST_F(SystemEngineTest, BindRequestSendsMessageToSharedLib) {
 
   EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
 }
 
 TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
 
   auto info = mojom::InputFieldInfo::New(mojom::InputFieldType::kNumber,
@@ -179,9 +179,9 @@ TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
 TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
 
   ime::Wrapper expected_proto;
@@ -196,9 +196,9 @@ TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
 TEST_F(SystemEngineTest, ProcessKeyEventRepliesWithCallback) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
 
   auto key_event = mojom::PhysicalKeyEvent::New(
@@ -233,9 +233,9 @@ TEST_F(SystemEngineTest, ProcessKeyEventRepliesWithCallback) {
 TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
   const auto selection = mojom::SelectionRange::New(/*anchor=*/3, /*focus=*/2);
   ime::Wrapper expected_proto;
@@ -252,9 +252,9 @@ TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
 TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
@@ -269,9 +269,9 @@ TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
 TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
   input_method.FlushForTesting();
   ime::Wrapper proto;
@@ -295,9 +295,9 @@ TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
   ime::Wrapper proto;
   proto.mutable_public_message()->mutable_set_composition()->set_text("hello");
@@ -321,9 +321,9 @@ TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, SetCompositionRangeSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
   ime::Wrapper proto;
   proto.mutable_public_message()
@@ -344,9 +344,9 @@ TEST_F(SystemEngineTest, SetCompositionRangeSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, FinishCompositionSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
   ime::Wrapper proto;
   *proto.mutable_public_message()->mutable_finish_composition() =
@@ -363,9 +363,9 @@ TEST_F(SystemEngineTest, FinishCompositionSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, DeleteSurroundingTextSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
   ime::Wrapper proto;
   proto.mutable_public_message()
@@ -389,9 +389,9 @@ using RequestSuggestionsCallback =
 TEST_F(SystemEngineTest, SuggestionsRequestSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
 
   ime::Wrapper proto;
@@ -427,9 +427,9 @@ TEST_F(SystemEngineTest, SuggestionsRequestSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
 
   ime::Wrapper expected_response_proto;
@@ -476,9 +476,9 @@ TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {
 TEST_F(SystemEngineTest, DisplaySuggestionsSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
 
   ime::Wrapper proto;
@@ -509,9 +509,9 @@ TEST_F(SystemEngineTest, DisplaySuggestionsSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, RecordUkmSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      host_receiver_.BindNewPipeAndPassRemote(), base::DoNothing()));
+  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+                                 input_method.BindNewPipeAndPassReceiver(),
+                                 host_receiver_.BindNewPipeAndPassRemote()));
   input_method.FlushForTesting();
   Wrapper proto;
   proto.mutable_public_message()

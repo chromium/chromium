@@ -89,15 +89,15 @@ void ImeService::ConnectToImeEngine(
   //
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
-  if (is_privileged_connection_) {
+  if (input_engine_ && input_engine_->IsConnected()) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
 
-  auto decoder_engine = std::make_unique<DecoderEngine>(this);
-  bool bound = decoder_engine->BindRequest(
+  input_engine_.reset();
+  decoder_engine_ = std::make_unique<DecoderEngine>(this);
+  bool bound = decoder_engine_->BindRequest(
       ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
-  input_engine_ = std::move(decoder_engine);
   std::move(callback).Run(bound);
 }
 
@@ -106,6 +106,8 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingReceiver<mojom::InputMethod> input_method,
     mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
+  decoder_engine_.reset();
+
   if (IsRuleBasedInputMethod(ime_spec)) {
     input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(input_method),
                                             std::move(input_method_host));
@@ -119,16 +121,8 @@ void ImeService::ConnectToInputMethod(
   }
 
   auto system_engine = std::make_unique<SystemEngine>(this);
-  bool bound = system_engine->BindRequest(
-      ime_spec, std::move(input_method), std::move(input_method_host),
-      base::BindOnce(
-          [](bool& is_privileged_connection_) {
-            is_privileged_connection_ = false;
-          },
-          std::ref(is_privileged_connection_)));
-  if (bound) {
-    is_privileged_connection_ = bound;
-  }
+  bool bound = system_engine->BindRequest(ime_spec, std::move(input_method),
+                                          std::move(input_method_host));
   input_engine_ = std::move(system_engine);
   std::move(callback).Run(bound);
 }

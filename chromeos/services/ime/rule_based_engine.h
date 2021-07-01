@@ -33,6 +33,9 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
   RuleBasedEngine& operator=(const RuleBasedEngine& other) = delete;
   ~RuleBasedEngine() override;
 
+  // InputEngine:
+  bool IsConnected() override;
+
   // mojom::InputMethod overrides:
   // Most of these methods are deliberately empty because rule-based input
   // methods do not need to listen to these events.

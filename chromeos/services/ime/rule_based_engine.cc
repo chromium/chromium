@@ -101,6 +101,12 @@ std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
 
 RuleBasedEngine::~RuleBasedEngine() = default;
 
+bool RuleBasedEngine::IsConnected() {
+  // `receiver_` will reset upon disconnection, so bound state is equivalent to
+  // connected state.
+  return receiver_.is_bound();
+}
+
 void RuleBasedEngine::OnCompositionCanceledBySystem() {
   engine_.Reset();
   is_alt_right_key_down_ = false;
@@ -150,7 +156,9 @@ RuleBasedEngine::RuleBasedEngine(
 
   engine_.Activate(GetIdFromImeSpec(ime_spec));
 
-  // TODO(https://crbug.com/837156): Registry connection error handler.
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&mojo::Receiver<mojom::InputMethod>::reset,
+                     base::Unretained(&receiver_)));
 }
 
 }  // namespace ime

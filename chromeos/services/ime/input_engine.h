@@ -11,6 +11,9 @@ namespace ime {
 // Base class for all input engines.
 struct InputEngine {
   virtual ~InputEngine() = default;
+
+  // Whether the input engine is still connected to the client.
+  virtual bool IsConnected() = 0;
 };
 
 }  // namespace ime

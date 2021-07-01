@@ -34,8 +34,10 @@ class SystemEngine : public InputEngine, public mojom::InputMethod {
   // the given ime_spec is supported by the engine.
   bool BindRequest(const std::string& ime_spec,
                    mojo::PendingReceiver<mojom::InputMethod> receiver,
-                   mojo::PendingRemote<mojom::InputMethodHost> host,
-                   base::OnceCallback<void()> disconnect_callback);
+                   mojo::PendingRemote<mojom::InputMethodHost> host);
+
+  // InputEngine:
+  bool IsConnected() override;
 
   // mojom::InputChannel:
   void OnFocus(mojom::InputFieldInfoPtr input_field_info) override;

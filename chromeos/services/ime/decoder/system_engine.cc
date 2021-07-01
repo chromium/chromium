@@ -106,8 +106,7 @@ bool SystemEngine::TryLoadDecoder() {
 bool SystemEngine::BindRequest(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<ime::mojom::InputMethodHost> host,
-    base::OnceCallback<void()> disconnect_callback) {
+    mojo::PendingRemote<ime::mojom::InputMethodHost> host) {
   if (!IsImeSupportedByDecoder(ime_spec)) {
     return false;
   }
@@ -124,10 +123,20 @@ bool SystemEngine::BindRequest(
   }
 
   receiver_.Bind(std::move(receiver));
-  receiver_.set_disconnect_handler(std::move(disconnect_callback));
+
+  // Reset the receiver upon disconnection.
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&mojo::Receiver<mojom::InputMethod>::reset,
+                     base::Unretained(&receiver_)));
 
   OnInputMethodChanged(ime_spec);
   return true;
+}
+
+bool SystemEngine::IsConnected() {
+  // `receiver_` will reset upon disconnection, so bound state is equivalent to
+  // connected state.
+  return receiver_.is_bound();
 }
 
 bool SystemEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {

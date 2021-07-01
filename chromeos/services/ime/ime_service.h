@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "chromeos/services/ime/decoder/decoder_engine.h"
 #include "chromeos/services/ime/input_engine.h"
 #include "chromeos/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/services/ime/public/mojom/ime_service.mojom.h"
@@ -80,16 +81,13 @@ class ImeService : public mojom::ImeService,
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   // For the duration of this service lifetime, there should be only one
-  // input engine instance.
+  // decoder engine or input engine instance.
+  std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<InputEngine> input_engine_;
 
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
-
-  // If the current connection is privileged, then `ConnectToImeEngine` cannot
-  // override the connection.
-  bool is_privileged_connection_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ImeService);
 };
