@@ -120,6 +120,7 @@ TEST_F(TrayBluetoothHelperLegacyTest, Basics) {
   EXPECT_FALSE(devices.empty());
   EXPECT_TRUE(ExistInFilteredDevices(kDisplayPinCodeAddress, devices));
   EXPECT_FALSE(ExistInFilteredDevices(kLowEnergyAddress, devices));
+  ASSERT_FALSE(devices[0]->is_blocked_by_policy);
 
   helper.StartBluetoothDiscovering();
   base::RunLoop().RunUntilIdle();

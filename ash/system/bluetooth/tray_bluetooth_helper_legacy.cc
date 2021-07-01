@@ -103,6 +103,7 @@ BluetoothDeviceInfoPtr GetBluetoothDeviceInfo(device::BluetoothDevice* device) {
   info->address = AddressStrToBluetoothAddress(device->GetAddress());
   info->name = device->GetName();
   info->is_paired = device->IsPaired();
+  info->is_blocked_by_policy = device->IsBlockedByPolicy();
   if (device->battery_percentage()) {
     info->battery_info =
         BluetoothDeviceBatteryInfo::New(device->battery_percentage().value());

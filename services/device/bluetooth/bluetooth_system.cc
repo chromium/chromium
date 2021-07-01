@@ -227,6 +227,8 @@ void BluetoothSystem::GetAvailableDevices(
             ? mojom::BluetoothDeviceInfo::ConnectionState::kConnected
             : mojom::BluetoothDeviceInfo::ConnectionState::kNotConnected;
     device_info->is_paired = properties->paired.value();
+    device_info->is_blocked_by_policy =
+        properties->is_blocked_by_policy.value();
 
     // TODO(ortuno): Get the DeviceType from the device Class and Appearance.
     devices.push_back(std::move(device_info));
