@@ -38,6 +38,7 @@
 #include "base/trace_event/trace_event_filter.h"
 #include "base/trace_event/trace_event_filter_test_utils.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -3011,11 +3012,7 @@ TEST_F(TraceEventTestFixture, ContextLambda) {
   const Value* value = nullptr;
   EXPECT_TRUE(args_dict->Get("arg", &value));
   ASSERT_TRUE(value->is_string());
-  EXPECT_EQ(value->GetString(),
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-            "2\x6"
-#endif
-            "foobar");
+  EXPECT_EQ(value->GetString(), "Unsupported (crbug.com/1225176)");
 }
 
 }  // namespace trace_event
