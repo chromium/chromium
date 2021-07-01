@@ -25,7 +25,7 @@ class DeviceNamePolicyHandlerTest : public testing::Test {
         std::make_unique<chromeos::NetworkHandlerTestHelper>();
   }
 
-  void TearDown() override { handler_->Shutdown(); }
+  void TearDown() override { handler_.reset(); }
 
   // Sets kDeviceHostnameTemplate policy which will eventually cause
   // OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded() to run
@@ -54,13 +54,12 @@ class DeviceNamePolicyHandlerTest : public testing::Test {
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
-// Check that device name policy set to kUnmanagedDevice by default.
+// Check that device name policy set to kNoPolicy by default.
 TEST_F(DeviceNamePolicyHandlerTest, DeviceNamePolicyUnmanaged) {
   InitializeHandler();
   DeviceNamePolicyHandler::DeviceNamePolicy initial =
       handler_->GetDeviceNamePolicy();
-  EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::kUnmanagedDevice,
-            initial);
+  EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy, initial);
 
   // GetHostnameChosenByAdministrator() should therefore return null.
   const absl::optional<std::string> hostname =
@@ -69,21 +68,20 @@ TEST_F(DeviceNamePolicyHandlerTest, DeviceNamePolicyUnmanaged) {
 }
 
 // Check outputs are correct when device name policy is set to
-// kHostnameChosenByAdministrator.
+// kPolicyHostnameChosenByAdmin.
 TEST_F(DeviceNamePolicyHandlerTest, HostnameChosenByAdministrator) {
   InitializeHandler();
-  // Check that DeviceNamePolicy changes from kUnmanagedDevice to
-  // kHostnameChosenByAdministrator on setting template.
+  // Check that DeviceNamePolicy changes from kNoPolicy to
+  // kPolicyHostnameChosenByAdmin on setting template.
   DeviceNamePolicyHandler::DeviceNamePolicy initial =
       handler_->GetDeviceNamePolicy();
-  EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::kUnmanagedDevice,
-            initial);
+  EXPECT_EQ(DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy, initial);
   const std::string hostname_template = "chromebook";
   SetTemplate(hostname_template);
   DeviceNamePolicyHandler::DeviceNamePolicy after =
       handler_->GetDeviceNamePolicy();
   EXPECT_EQ(
-      DeviceNamePolicyHandler::DeviceNamePolicy::kHostnameChosenByAdministrator,
+      DeviceNamePolicyHandler::DeviceNamePolicy::kPolicyHostnameChosenByAdmin,
       after);
 
   // Check that GetDeviceHostname() and GetHostnameChosenByAdministrator()

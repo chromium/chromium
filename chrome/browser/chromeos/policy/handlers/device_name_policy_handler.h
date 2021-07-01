@@ -25,11 +25,11 @@ class DeviceNamePolicyHandler : public chromeos::NetworkStateHandlerObserver {
   // Types of policies for device name functionality.
   enum class DeviceNamePolicy {
     // No policy in place for administrator to choose a hostname.
-    kUnmanagedDevice,
+    kNoPolicy,
 
     // Policy in place allowing administrator to specify a template
     // used to generate and format the hostname.
-    kHostnameChosenByAdministrator,
+    kPolicyHostnameChosenByAdmin,
   };
 
   explicit DeviceNamePolicyHandler(ash::CrosSettings* cros_settings);
@@ -37,8 +37,6 @@ class DeviceNamePolicyHandler : public chromeos::NetworkStateHandlerObserver {
 
   // NetworkStateHandlerObserver overrides
   void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
-
-  void Shutdown();
 
   // Returns the device hostname that DeviceNamePolicyHandler has last set in
   // shill. This is the hostname after formatting (by FormatHostname()).
@@ -65,7 +63,7 @@ class DeviceNamePolicyHandler : public chromeos::NetworkStateHandlerObserver {
   ash::CrosSettings* cros_settings_;
   chromeos::system::StatisticsProvider* statistics_provider_;
 
-  DeviceNamePolicy device_name_policy_ = DeviceNamePolicy::kUnmanagedDevice;
+  DeviceNamePolicy device_name_policy_ = DeviceNamePolicy::kNoPolicy;
   base::CallbackListSubscription policy_subscription_;
   std::string hostname_;
   base::WeakPtrFactory<DeviceNamePolicyHandler> weak_factory_{this};

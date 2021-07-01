@@ -40,9 +40,7 @@ DeviceNamePolicyHandler::DeviceNamePolicyHandler(
   OnDeviceHostnamePropertyChanged();
 }
 
-DeviceNamePolicyHandler::~DeviceNamePolicyHandler() = default;
-
-void DeviceNamePolicyHandler::Shutdown() {
+DeviceNamePolicyHandler::~DeviceNamePolicyHandler() {
   if (chromeos::NetworkHandler::IsInitialized()) {
     chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
         this, FROM_HERE);
@@ -60,8 +58,7 @@ DeviceNamePolicyHandler::GetDeviceNamePolicy() const {
 
 absl::optional<std::string>
 DeviceNamePolicyHandler::GetHostnameChosenByAdministrator() const {
-  if (GetDeviceNamePolicy() ==
-      DeviceNamePolicy::kHostnameChosenByAdministrator) {
+  if (GetDeviceNamePolicy() == DeviceNamePolicy::kPolicyHostnameChosenByAdmin) {
     return hostname_;
   }
   return absl::nullopt;
@@ -95,13 +92,13 @@ void DeviceNamePolicyHandler::
     // Do not set an empty hostname (which would overwrite any custom hostname
     // set) if DeviceHostnameTemplate is not specified by policy.
     // No policy is set for administrator to choose hostname.
-    device_name_policy_ = DeviceNamePolicy::kUnmanagedDevice;
+    device_name_policy_ = DeviceNamePolicy::kNoPolicy;
     return;
   }
 
   // If we reach here, we know that the administrator specified a template
   // to generate the hostname of the device.
-  device_name_policy_ = DeviceNamePolicy::kHostnameChosenByAdministrator;
+  device_name_policy_ = DeviceNamePolicy::kPolicyHostnameChosenByAdmin;
 
   const std::string serial = chromeos::system::StatisticsProvider::GetInstance()
                                  ->GetEnterpriseMachineID();
@@ -141,11 +138,11 @@ std::ostream& operator<<(
     std::ostream& stream,
     const DeviceNamePolicyHandler::DeviceNamePolicy& state) {
   switch (state) {
-    case DeviceNamePolicyHandler::DeviceNamePolicy::kUnmanagedDevice:
+    case DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy:
       stream << "[No policy]";
       break;
     case DeviceNamePolicyHandler::DeviceNamePolicy::
-        kHostnameChosenByAdministrator:
+        kPolicyHostnameChosenByAdmin:
       stream << "[Admin chooses hostname template]";
       break;
   }

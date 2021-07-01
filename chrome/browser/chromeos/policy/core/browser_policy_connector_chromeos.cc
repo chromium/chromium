@@ -351,7 +351,7 @@ void BrowserPolicyConnectorChromeOS::Shutdown() {
   minimum_version_policy_handler_.reset();
 
   if (device_name_policy_handler_)
-    device_name_policy_handler_->Shutdown();
+    device_name_policy_handler_.reset();
 
   for (auto& device_cloud_external_data_policy_handler :
        device_cloud_external_data_policy_handlers_) {
