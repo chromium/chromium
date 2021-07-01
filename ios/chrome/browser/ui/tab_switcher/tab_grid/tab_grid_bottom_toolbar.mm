@@ -99,7 +99,7 @@
 
 - (void)setSelectedTabsCount:(int)count {
   _selectedTabsCount = count;
-  [self updateSelectionButtonsTitle];
+  [self updateSelectionButtons];
 }
 
 - (void)setNewTabButtonTarget:(id)target action:(SEL)action {
@@ -244,7 +244,7 @@
     _closeTabsButton = [[UIBarButtonItem alloc] init];
     _closeTabsButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
     _closeTabsButton.accessibilityIdentifier = kTabGridCloseButtonIdentifier;
-    [self updateSelectionButtonsTitle];
+    [self updateSelectionButtons];
   }
 
   _compactConstraints = @[
@@ -290,9 +290,12 @@
   _newTabButtonItem.title = _largeNewTabButton.accessibilityLabel;
 }
 
-- (void)updateSelectionButtonsTitle {
+- (void)updateSelectionButtons {
   _closeTabsButton.title = l10n_util::GetPluralNSStringF(
       IDS_IOS_TAB_GRID_CLOSE_TABS_BUTTON, _selectedTabsCount);
+  _addToButton.enabled = _selectedTabsCount > 0;
+  _closeTabsButton.enabled = _selectedTabsCount > 0;
+  _shareButton.enabled = _selectedTabsCount > 0;
 }
 
 - (void)updateLayout {
