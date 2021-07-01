@@ -733,7 +733,7 @@
         "origin-trial-test-property",
         "subtree-visibility",
         "math-superscript-shift-style",
-        "start"
+        "start",
         "accent-color",
     ],
     "properties": {}
