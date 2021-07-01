@@ -885,6 +885,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1225522")
     public void testOutOfOrder1() throws TimeoutException {
         TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
