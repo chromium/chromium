@@ -19,6 +19,7 @@
 #include "chrome/browser/chromeos/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -252,6 +253,52 @@ bool DeviceCommandStartCRDSessionJob::AreServicesReady() const {
          oauth_service() != nullptr;
 }
 
+bool DeviceCommandStartCRDSessionJob::UserTypeSupportsCRD() const {
+  const UserType current_user_type = GetUserType();
+
+  CRD_DVLOG(2) << "User is of type " << UserTypeToString(current_user_type);
+
+  if (base::FeatureList::IsEnabled(features::kCRDForManagedUserSessions)) {
+    switch (current_user_type) {
+      case UserType::kAffiliatedUser:
+      case UserType::kAutoLaunchedKiosk:
+      case UserType::kManagedGuestSession:
+        return true;
+      case UserType::kNoUser:
+      case UserType::kNonAutoLaunchedKiosk:
+      case UserType::kOther:
+        return false;
+    }
+    NOTREACHED();
+    return false;
+  } else {
+    return current_user_type == UserType::kAutoLaunchedKiosk;
+  }
+}
+
+DeviceCommandStartCRDSessionJob::UserType
+DeviceCommandStartCRDSessionJob::GetUserType() const {
+  const auto* user_manager = user_manager::UserManager::Get();
+
+  if (!user_manager->IsUserLoggedIn())
+    return UserType::kNoUser;
+
+  if (user_manager->IsLoggedInAsAnyKioskApp()) {
+    if (IsRunningAutoLaunchedKiosk())
+      return UserType::kAutoLaunchedKiosk;
+    else
+      return UserType::kNonAutoLaunchedKiosk;
+  }
+
+  if (user_manager->IsLoggedInAsPublicAccount())
+    return UserType::kManagedGuestSession;
+
+  if (user_manager->GetActiveUser()->IsAffiliated())
+    return UserType::kAffiliatedUser;
+
+  return UserType::kOther;
+}
+
 bool DeviceCommandStartCRDSessionJob::IsRunningAutoLaunchedKiosk() const {
   const auto* user_manager = user_manager::UserManager::Get();
   const auto* kiosk_app_manager =
@@ -331,8 +378,8 @@ void DeviceCommandStartCRDSessionJob::RunImpl(
     return;
   }
 
-  if (!IsRunningAutoLaunchedKiosk()) {
-    FinishWithError(ResultCode::FAILURE_NOT_A_KIOSK, "");
+  if (!UserTypeSupportsCRD()) {
+    FinishWithError(ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, "");
     return;
   }
 
@@ -391,6 +438,26 @@ void DeviceCommandStartCRDSessionJob::TerminateImpl() {
   failed_callback_.Reset();
   weak_factory_.InvalidateWeakPtrs();
   delegate_->TerminateSession(base::OnceClosure());
+}
+
+const char* DeviceCommandStartCRDSessionJob::UserTypeToString(
+    UserType value) const {
+  switch (value) {
+    case UserType::kAutoLaunchedKiosk:
+      return "kAutoLaunchedKiosk";
+    case UserType::kNonAutoLaunchedKiosk:
+      return "kNonAutoLaunchedKiosk";
+    case UserType::kNoUser:
+      return "kNoUser";
+    case UserType::kAffiliatedUser:
+      return "kAffiliatedUser";
+    case UserType::kManagedGuestSession:
+      return "kManagedGuestSession";
+    case UserType::kOther:
+      return "kOther";
+  }
+  NOTREACHED();
+  return "<invalid user type>";
 }
 
 }  // namespace policy
