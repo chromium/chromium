@@ -40,7 +40,7 @@ TrackEvent::TrackEvent() = default;
 TrackEvent::TrackEvent(const AtomicString& type,
                        const TrackEventInit* initializer)
     : Event(type, initializer) {
-  if (!initializer->hasTrack())
+  if (!(initializer->hasTrack() && initializer->track()))
     return;
 
   const V8UnionAudioTrackOrTextTrackOrVideoTrack* track = initializer->track();
