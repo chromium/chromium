@@ -8,7 +8,6 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_BASE_H_
 
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/extensions/file_manager/files_extension_function.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -21,7 +20,7 @@ namespace extensions {
 // set_log_on_completion(true) to enable it, if they want. However, even if
 // the logging is turned off, a warning is emitted when a function call is
 // very slow. See the implementation of OnResponded() for details.
-class LoggedExtensionFunction : public FilesExtensionFunction {
+class LoggedExtensionFunction : public ExtensionFunction {
  public:
   LoggedExtensionFunction();
 
