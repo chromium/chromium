@@ -8,6 +8,7 @@
 #include <mferror.h>   // NOLINT(build/include_order)
 #include <wrl.h>       // NOLINT(build/include_order)
 
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
@@ -67,6 +68,93 @@ MFVideoRotationFormat VideoRotationToMF(VideoRotation rotation) {
   }
 }
 
+MFVideoPrimaries VideoPrimariesToMF(
+    media::VideoColorSpace::PrimaryID primary_id) {
+  DVLOG(2) << __func__ << ": primary_id=" << static_cast<int>(primary_id);
+
+  switch (primary_id) {
+    case VideoColorSpace::PrimaryID::INVALID:
+      return MFVideoPrimaries_Unknown;
+    case VideoColorSpace::PrimaryID::BT709:
+      return MFVideoPrimaries_BT709;
+    case VideoColorSpace::PrimaryID::UNSPECIFIED:
+      return MFVideoPrimaries_Unknown;
+    case VideoColorSpace::PrimaryID::BT470M:
+      return MFVideoPrimaries_BT470_2_SysM;
+    case VideoColorSpace::PrimaryID::BT470BG:
+      return MFVideoPrimaries_BT470_2_SysBG;
+    case VideoColorSpace::PrimaryID::SMPTE170M:
+      return MFVideoPrimaries_SMPTE170M;
+    case VideoColorSpace::PrimaryID::SMPTE240M:
+      return MFVideoPrimaries_SMPTE240M;
+    case VideoColorSpace::PrimaryID::FILM:
+      return MFVideoPrimaries_Unknown;
+    case VideoColorSpace::PrimaryID::BT2020:
+      return MFVideoPrimaries_BT2020;
+    case VideoColorSpace::PrimaryID::SMPTEST428_1:
+      return MFVideoPrimaries_Unknown;
+    case VideoColorSpace::PrimaryID::SMPTEST431_2:
+      return MFVideoPrimaries_Unknown;
+    case VideoColorSpace::PrimaryID::SMPTEST432_1:
+      return MFVideoPrimaries_Unknown;
+    case VideoColorSpace::PrimaryID::EBU_3213_E:
+      return MFVideoPrimaries_EBU3213;
+    default:
+      DLOG(ERROR) << "VideoPrimariesToMF failed due to invalid Video Primary.";
+  }
+
+  return MFVideoPrimaries_Unknown;
+}
+
+MFVideoTransferFunction VideoTransferFunctionToMF(
+    media::VideoColorSpace::TransferID transfer_id) {
+  DVLOG(2) << __func__ << ": transfer_id=" << static_cast<int>(transfer_id);
+
+  switch (transfer_id) {
+    case VideoColorSpace::TransferID::INVALID:
+      return MFVideoTransFunc_Unknown;
+    case VideoColorSpace::TransferID::BT709:
+      return MFVideoTransFunc_709;
+    case VideoColorSpace::TransferID::UNSPECIFIED:
+      return MFVideoTransFunc_Unknown;
+    case VideoColorSpace::TransferID::GAMMA22:
+      return MFVideoTransFunc_22;
+    case VideoColorSpace::TransferID::GAMMA28:
+      return MFVideoTransFunc_28;
+    case VideoColorSpace::TransferID::SMPTE170M:
+      return MFVideoTransFunc_709;
+    case VideoColorSpace::TransferID::SMPTE240M:
+      return MFVideoTransFunc_240M;
+    case VideoColorSpace::TransferID::LINEAR:
+      return MFVideoTransFunc_10;
+    case VideoColorSpace::TransferID::LOG:
+      return MFVideoTransFunc_Log_100;
+    case VideoColorSpace::TransferID::LOG_SQRT:
+      return MFVideoTransFunc_Unknown;
+    case VideoColorSpace::TransferID::IEC61966_2_4:
+      return MFVideoTransFunc_Unknown;
+    case VideoColorSpace::TransferID::BT1361_ECG:
+      return MFVideoTransFunc_Unknown;
+    case VideoColorSpace::TransferID::IEC61966_2_1:
+      return MFVideoTransFunc_sRGB;
+    case VideoColorSpace::TransferID::BT2020_10:
+      return MFVideoTransFunc_2020;
+    case VideoColorSpace::TransferID::BT2020_12:
+      return MFVideoTransFunc_2020;
+    case VideoColorSpace::TransferID::SMPTEST2084:
+      return MFVideoTransFunc_2084;
+    case VideoColorSpace::TransferID::SMPTEST428_1:
+      return MFVideoTransFunc_Unknown;
+    case VideoColorSpace::TransferID::ARIB_STD_B67:
+      return MFVideoTransFunc_HLG;
+    default:
+      DLOG(ERROR) << "VideoTransferFunctionToMF failed due to invalid Transfer "
+                     "Function.";
+  }
+
+  return MFVideoTransFunc_Unknown;
+}
+
 //
 // https://docs.microsoft.com/en-us/windows/win32/api/mfobjects/ns-mfobjects-mfoffset
 // The value of the MFOffset number is value + (fract / 65536.0f).
@@ -117,6 +205,23 @@ HRESULT GetVideoType(const VideoDecoderConfig& decoder_config,
         VideoRotationToMF(decoder_config.video_transformation().rotation);
     RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_VIDEO_ROTATION, mf_rotation));
   }
+
+  MFVideoTransferFunction mf_transfer_function =
+      VideoTransferFunctionToMF(decoder_config.color_space_info().transfer);
+  RETURN_IF_FAILED(
+      media_type->SetUINT32(MF_MT_TRANSFER_FUNCTION, mf_transfer_function));
+
+  MFVideoPrimaries mf_video_primary =
+      VideoPrimariesToMF(decoder_config.color_space_info().primaries);
+  RETURN_IF_FAILED(
+      media_type->SetUINT32(MF_MT_VIDEO_PRIMARIES, mf_video_primary));
+
+  base::UmaHistogramEnumeration(
+      "Media.MediaFoundation.VideoColorSpace.TransferID",
+      decoder_config.color_space_info().transfer);
+  base::UmaHistogramEnumeration(
+      "Media.MediaFoundation.VideoColorSpace.PrimaryID",
+      decoder_config.color_space_info().primaries);
 
   *media_type_out = media_type.Detach();
   return S_OK;
