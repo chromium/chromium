@@ -102,6 +102,7 @@ fi
 
 distro_codename=$(lsb_release --codename --short)
 distro_id=$(lsb_release --id --short)
+# TODO(crbug.com/1199405): Remove 14.04 (trusty) and 16.04 (xenial).
 supported_codenames="(trusty|xenial|bionic|disco|eoan|focal|groovy)"
 supported_ids="(Debian)"
 if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
@@ -113,7 +114,7 @@ if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
       "\tUbuntu 18.04 LTS (bionic with EoL April 2028)\n" \
       "\tUbuntu 20.04 LTS (focal with Eol April 2030)\n" \
       "\tUbuntu 20.10 (groovy)\n" \
-      "\tDebian 8 (jessie) or later" >&2
+      "\tDebian 10 (buster) or later" >&2
     exit 1
   fi
 
