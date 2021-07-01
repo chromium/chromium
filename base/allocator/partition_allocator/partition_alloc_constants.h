@@ -265,6 +265,8 @@ static_assert(kAlignment <= 16,
 //
 // In practice, this means 8 bytes alignment on 32 bit architectures, and 16
 // bytes on 64 bit ones.
+//
+// Keep in sync with //tools/memory/partition_allocator/objects_per_size_py.
 constexpr size_t kMinBucketedOrder =
     kAlignment == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
 // The largest bucketed order is 1 << (20 - 1), storing [512 KiB, 1 MiB):
