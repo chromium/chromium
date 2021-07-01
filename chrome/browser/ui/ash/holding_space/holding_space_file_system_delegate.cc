@@ -280,12 +280,18 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
   const bool arc_file_system_disconnected =
       IsArcFileSystemDisconnected(profile());
   for (const HoldingSpaceItem* item : items) {
-    if (item->IsInitialized()) {
+    if (item->IsInitialized() && item->progress().IsComplete()) {
       // Watch the directory containing `item`'s backing file. If the directory
-      // is already being watched, this will no-op.
+      // is already being watched, this will no-op. Note that it is not
+      // necessary to register a watch if the `item` is in-progress since
+      // in-progress items are not subject to validity checks.
       AddWatchForParent(item->file_path());
       continue;
     }
+
+    // In-progress items are not subject to validity checks.
+    if (!item->progress().IsComplete())
+      continue;
 
     // If the item has not yet been initialized, check whether it's path can be
     // resolved to a file system URL - failure to do so may indicate that the
@@ -328,7 +334,10 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsRemoved(
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  AddWatchForParent(item->file_path());
+
+  // In-progress items are not subject to validity checks.
+  if (item->progress().IsComplete())
+    AddWatchForParent(item->file_path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemInitialized(
@@ -531,6 +540,10 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
       [](bool arc_file_system_disconnected,
          const std::vector<base::FilePath>* invalid_paths,
          const HoldingSpaceItem* item) {
+        // In-progress items are not subject to validity checks.
+        if (!item->progress().IsComplete())
+          return false;
+
         // Avoid removing Android files if connection to ARC file system has
         // been lost (e.g. Android container might have crashed). Validity
         // checks will be re-run once the file system gets connected.

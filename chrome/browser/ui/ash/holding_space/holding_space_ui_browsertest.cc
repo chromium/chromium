@@ -1366,6 +1366,13 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
                 base::ScopedAllowBlockingForTesting allow_blocking;
                 ASSERT_TRUE(base::DeleteFile(file_path));
               }
+              // Any subsequent calls to `download::DownloadItem::GetState()`
+              // should indicate that the `mock_download_item` is cancelled.
+              ON_CALL(*mock_download_item, GetState)
+                  .WillByDefault(
+                      testing::Return(download::DownloadItem::CANCELLED));
+              // Calling `download::DownloadItem::Cancel()` results in updates.
+              mock_download_item->NotifyObserversDownloadUpdated();
             }));
 
     // Mock `download::DownloadItem::GetFullPath()`.

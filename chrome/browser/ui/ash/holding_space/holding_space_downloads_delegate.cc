@@ -442,6 +442,16 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
 
 void HoldingSpaceDownloadsDelegate::OnDownloadFailed(
     const InProgressDownload* in_progress_download) {
+  // If the `in_progress_download` resulted in the creation of a holding space
+  // `item`, that `item` should be removed when the underlying download fails.
+  const HoldingSpaceItem* item = in_progress_download->GetHoldingSpaceItem();
+  if (item) {
+    // NOTE: Removing `item` from the `model()` will result in the
+    // `in_progress_download` being erased.
+    model()->RemoveItem(item->id());
+    DCHECK(!base::Contains(in_progress_downloads_, in_progress_download));
+    return;
+  }
   EraseDownload(in_progress_download);
 }
 
