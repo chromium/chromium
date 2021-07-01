@@ -268,7 +268,7 @@ class BASE_EXPORT ProcessMemoryDump {
       int importance,
       bool is_weak);
 
-  MemoryAllocatorDump* GetBlackHoleMad();
+  MemoryAllocatorDump* GetBlackHoleMad(const std::string& absolute_name);
 
   UnguessableToken process_token_;
   AllocatorDumpsMap allocator_dumps_;

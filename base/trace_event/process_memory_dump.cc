@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_infra_background_allowlist.h"
 #include "base/trace_event/trace_event_impl.h"
@@ -267,7 +268,7 @@ MemoryAllocatorDump* ProcessMemoryDump::AddAllocatorDumpInternal(
   // given.
   if (dump_args_.level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND &&
       !IsMemoryAllocatorDumpNameInAllowlist(mad->absolute_name())) {
-    return GetBlackHoleMad();
+    return GetBlackHoleMad(mad->absolute_name());
   }
 
   auto insertion_result = allocator_dumps_.insert(
@@ -515,8 +516,11 @@ void ProcessMemoryDump::AddSuballocation(const MemoryAllocatorDumpGuid& source,
   AddOwnershipEdge(source, target_child_mad->guid());
 }
 
-MemoryAllocatorDump* ProcessMemoryDump::GetBlackHoleMad() {
-  DCHECK(is_black_hole_non_fatal_for_testing_);
+MemoryAllocatorDump* ProcessMemoryDump::GetBlackHoleMad(
+    const std::string& absolute_name) {
+  DCHECK(is_black_hole_non_fatal_for_testing_)
+      << " unknown dump name " << absolute_name
+      << " this likely means kAllocatorDumpNameAllowlist needs to be updated";
   if (!black_hole_mad_) {
     std::string name = "discarded";
     black_hole_mad_ = std::make_unique<MemoryAllocatorDump>(

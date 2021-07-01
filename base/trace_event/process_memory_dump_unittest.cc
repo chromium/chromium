@@ -384,7 +384,7 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
       new ProcessMemoryDump(background_args));
   ProcessMemoryDump::is_black_hole_non_fatal_for_testing_ = true;
   SetAllocatorDumpNameAllowlistForTesting(kTestDumpNameWhitelist);
-  MemoryAllocatorDump* black_hole_mad = pmd->GetBlackHoleMad();
+  MemoryAllocatorDump* black_hole_mad = pmd->GetBlackHoleMad(std::string());
 
   // GetAllocatorDump works for uncreated dumps.
   EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotWhitelisted/TestName"));
