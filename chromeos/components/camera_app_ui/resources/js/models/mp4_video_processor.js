@@ -7,6 +7,7 @@ import {assert, assertNotReached} from '../chrome_util.js';
 import * as Comlink from '../lib/comlink.js';
 import runFFmpeg from '../lib/ffmpeg.js';
 import {WaitableEvent} from '../waitable_event.js';
+
 // eslint-disable-next-line no-unused-vars
 import {AsyncWriter} from './async_writer.js';
 // eslint-disable-next-line no-unused-vars
@@ -46,6 +47,12 @@ class InputDevice {
     this.data_ = [];
 
     /**
+     * Whether the writing is canceled.
+     * @type {boolean}
+     */
+    this.isCanceled_ = false;
+
+    /**
      * Whether the writing is ended. If true, no more data would be pushed.
      * @type {boolean}
      */
@@ -53,10 +60,19 @@ class InputDevice {
 
     /**
      * The callback to be triggered when the device is ready to read(). The
-     * callback would be called only once and reset to null afterward.
-     * @type {?function(): void}
+     * callback would be called only once and reset to null afterward. It should
+     * be called with 1 if the device is readable or 0 if it is canceled.
+     * @type {?function(number): void}
      */
     this.readableCallback_ = null;
+  }
+
+  /**
+   * Returns 1 if the device is readable or 0 if it is canceled.
+   * @return {number}
+   */
+  isDeviceReadable_() {
+    return this.isCanceled_ ? 0 : 1;
   }
 
   /**
@@ -68,7 +84,7 @@ class InputDevice {
     }
     const callback = this.readableCallback_;
     this.readableCallback_ = null;
-    callback();
+    callback(this.isDeviceReadable_());
   }
 
   /**
@@ -140,15 +156,23 @@ class InputDevice {
   /**
    * Sets the readable callback. The callback would be called immediately if
    * the device is in a readable state.
-   * @param {function(): undefined} callback
+   * @param {function(number): undefined} callback
    */
   setReadableCallback(callback) {
     if (this.data_.length > 0 || this.ended_) {
-      callback();
+      callback(this.isDeviceReadable_());
       return;
     }
     assert(this.readableCallback_ === null);
     this.readableCallback_ = callback;
+  }
+
+  /**
+   * Marks the input device as canceled so that ffmpeg can handle it properly.
+   */
+  cancel() {
+    this.isCanceled_ = true;
+    this.endPush();
   }
 }
 
@@ -252,7 +276,6 @@ class Mp4VideoProcessor {
     this.inputDevice_ = new InputDevice();
     this.outputDevice_ = new OutputDevice(output);
     this.jobQueue_ = new AsyncJobQueue();
-    this.quitCallback_ = null;
 
     const args = [
       // Make the procssing pipeline start earlier by shorten the initial
@@ -313,7 +336,6 @@ class Mp4VideoProcessor {
         assert(stdin.fd === 0);
         assert(stdout.fd === 1);
         assert(stderr.fd === 2);
-        this.quitCallback_ = fs.quit;
       },
     };
 
@@ -365,19 +387,17 @@ class Mp4VideoProcessor {
   }
 
   /**
-   * Cancels all the remaining tasks and quits the processor.
-   * @return {!Promise} Resolved when the processor quits.
+   * Cancels all the remaining tasks and notifies ffmpeg that the writing is
+   * canceled.
+   * @return {!Promise}
    */
   async cancel() {
-    await this.jobQueue_.clear();
-    await this.output_.close();
+    // Clear and make sure there is no pending task.
+    this.jobQueue_.clear();
+    await this.jobQueue_.flush();
 
-    // We quit the processor directly instead of calling close() to avoid mp4
-    // video processor crashing and entering an unrecoverable state when trying
-    // to encode video file without receiving any data chunk.
-    if (this.quitCallback_ !== null) {
-      this.quitCallback_();
-    }
+    this.inputDevice_.cancel();
+    this.outputDevice_.close();
   }
 
   /**
