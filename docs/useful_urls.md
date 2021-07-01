@@ -7,6 +7,7 @@ This page aims to be a repository of useful links that people may find useful.
 
 * https://ci.chromium.org/p/chromium/g/main/console: Main build console
 * https://chromium-status.appspot.com/status_viewer: Tree uptime stats
+* https://commondatastorage.googleapis.com/chromium-browser-clang/build-time.html: Build time tracking
 
 ## For Sheriffs
 
@@ -21,6 +22,7 @@ This page aims to be a repository of useful links that people may find useful.
 * https://cs.chromium.org/: Code search
 * https://chromium.googlesource.com/chromium/src/: Gitiles source code browser
 * https://chromium.googlesource.com/chromium/src/+log/b6cfa6a..9a2e0a8?pretty=fuller: Git changelog
+* https://commondatastorage.googleapis.com/chromium-browser-clang/include-analysis.html: Chrome #include Analysis
 
 ## Communication
 
