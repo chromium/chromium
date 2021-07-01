@@ -1569,6 +1569,22 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   EXPECT_EQ(secondary_label->GetText(), u"Paused, 1.0/2.0 MB");
 
+  // Mock `download::DownloadItem::GetReceivedBytes()` to indicate that all
+  // bytes have been received.
+  ON_CALL(*in_progress_download, GetReceivedBytes)
+      .WillByDefault(testing::Return(in_progress_download->GetTotalBytes()));
+  in_progress_download->NotifyObserversDownloadUpdated();
+
+  // Because the download has not yet been marked complete, the number of bytes
+  // received will not equal the total number of expected bytes but in most
+  // cases that will be imperceivable to the user due to rounding. This is to
+  // prevent giving the impression of completion before download progress is
+  // truly complete (which does not occur until after renaming, etc).
+  EXPECT_TRUE(primary_label->GetVisible());
+  EXPECT_EQ(primary_label->GetText(), target_file_name);
+  EXPECT_TRUE(secondary_label->GetVisible());
+  EXPECT_EQ(secondary_label->GetText(), u"Paused, 2.0/2.0 MB");
+
   // Complete the download.
   ON_CALL(*in_progress_download, GetState())
       .WillByDefault(testing::Return(download::DownloadItem::COMPLETE));
