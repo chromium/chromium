@@ -57,9 +57,15 @@ class SystemNotificationManager {
       int message_id);
 
   /**
-   * Processes general extension events and can creates a system notification.
+   * Processes general extension events and can create a system notification.
    */
   void HandleEvent(const extensions::Event& event);
+
+  /**
+   * Processes copy progress events and updates the system notification.
+   */
+  void HandleCopyEvent(int copy_id,
+                       file_manager_private::CopyOrMoveProgressStatus& status);
 
   /**
    * Returns the message center display service that manages notifications.

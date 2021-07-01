@@ -419,17 +419,22 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
       std::vector<base::Value> event_args) override {
+    std::unique_ptr<extensions::Event> event =
+        std::make_unique<extensions::Event>(histogram_value, event_name,
+                                            std::move(event_args));
+    system_notification_manager()->HandleEvent(*event.get());
     extensions::EventRouter::Get(profile_)->DispatchEventToExtension(
-        extension_id, std::make_unique<extensions::Event>(
-                          histogram_value, event_name, std::move(event_args)));
+        extension_id, std::move(event));
   }
 
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,
                       const std::string& event_name,
                       std::vector<base::Value> event_args) override {
-    extensions::EventRouter::Get(profile_)->BroadcastEvent(
+    std::unique_ptr<extensions::Event> event =
         std::make_unique<extensions::Event>(histogram_value, event_name,
-                                            std::move(event_args)));
+                                            std::move(event_args));
+    system_notification_manager()->HandleEvent(*event.get());
+    extensions::EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
   }
 
   Profile* const profile_;
@@ -663,6 +668,7 @@ void EventRouter::OnCopyCompleted(int copy_id,
     status.error = std::make_unique<std::string>(FileErrorToErrorName(error));
   }
 
+  notification_manager_->HandleCopyEvent(copy_id, status);
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_COPY_PROGRESS,
                  file_manager_private::OnCopyProgress::kEventName,
@@ -710,6 +716,7 @@ void EventRouter::OnCopyProgress(
   if (!ShouldSendProgressEvent(always, &last_copy_progress_event_))
     return;
 
+  notification_manager_->HandleCopyEvent(copy_id, status);
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_COPY_PROGRESS,
                  file_manager_private::OnCopyProgress::kEventName,

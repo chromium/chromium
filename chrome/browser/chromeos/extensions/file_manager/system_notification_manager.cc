@@ -124,6 +124,10 @@ void SystemNotificationManager::HandleDeviceEvent(
 
 void SystemNotificationManager::HandleEvent(const extensions::Event& event) {}
 
+void SystemNotificationManager::HandleCopyEvent(
+    int copy_id,
+    file_manager_private::CopyOrMoveProgressStatus& status) {}
+
 NotificationDisplayService*
 SystemNotificationManager::GetNotificationDisplayService() {
   return NotificationDisplayServiceFactory::GetForProfile(profile_);
