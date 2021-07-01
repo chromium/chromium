@@ -18,7 +18,7 @@ Are you a Google employee? See
 *   You must have Git and Python v3 installed already (and `python3` must point
     to a Python v3 binary).
 
-Most development is done on Ubuntu (currently 16.04, Xenial Xerus). There are
+Most development is done on Ubuntu (currently 18.04, Bionic Beaver). There are
 some instructions for other distros below, but they are mostly unsupported.
 
 ## Install `depot_tools`
