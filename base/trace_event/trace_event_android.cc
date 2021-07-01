@@ -24,7 +24,8 @@ namespace trace_event {
 namespace {
 
 int g_atrace_fd = -1;
-const char kATraceMarkerFile[] = "/sys/kernel/debug/tracing/trace_marker";
+const char kATraceMarkerFile[] = "/sys/kernel/tracing/trace_marker";
+const char kLegacyATraceMarkerFile[] = "/sys/kernel/debug/tracing/trace_marker";
 
 void WriteToATrace(int fd, const char* buffer, size_t size) {
   size_t total_written = 0;
@@ -40,7 +41,7 @@ void WriteToATrace(int fd, const char* buffer, size_t size) {
   // error in that case to avoid logging an error for every trace event.
   if (total_written < size && errno != EBADF) {
     PLOG(WARNING) << "Failed to write buffer '" << std::string(buffer, size)
-                  << "' to " << kATraceMarkerFile;
+                  << "' to trace_marker";
   }
 }
 
@@ -77,6 +78,18 @@ void WriteEvent(char phase,
   WriteToATrace(g_atrace_fd, out.c_str(), out.size());
 }
 
+int OpenATraceMarkerFile(int mode) {
+  int fd = HANDLE_EINTR(open(kATraceMarkerFile, mode));
+  if (fd == -1)
+    fd = HANDLE_EINTR(open(kLegacyATraceMarkerFile, mode));
+  if (fd == -1) {
+    PLOG(WARNING) << "Couldn't open " << kATraceMarkerFile << " or "
+                  << kLegacyATraceMarkerFile;
+    return -1;
+  }
+  return fd;
+}
+
 }  // namespace
 
 // These functions support Android systrace.py when 'webview' category is
@@ -93,11 +106,9 @@ void TraceLog::StartATrace(const std::string& category_filter) {
   if (g_atrace_fd != -1)
     return;
 
-  g_atrace_fd = HANDLE_EINTR(open(kATraceMarkerFile, O_WRONLY));
-  if (g_atrace_fd == -1) {
-    PLOG(WARNING) << "Couldn't open " << kATraceMarkerFile;
+  g_atrace_fd = OpenATraceMarkerFile(O_WRONLY);
+  if (g_atrace_fd == -1)
     return;
-  }
   TraceConfig trace_config(category_filter);
   trace_config.SetTraceRecordMode(RECORD_CONTINUOUSLY);
   SetEnabled(trace_config, TraceLog::RECORDING_MODE);
@@ -160,11 +171,9 @@ void TraceEvent::SendToATrace() {
 }
 
 void TraceLog::AddClockSyncMetadataEvent() {
-  int atrace_fd = HANDLE_EINTR(open(kATraceMarkerFile, O_WRONLY | O_APPEND));
-  if (atrace_fd == -1) {
-    PLOG(WARNING) << "Couldn't open " << kATraceMarkerFile;
+  int atrace_fd = OpenATraceMarkerFile(O_WRONLY | O_APPEND);
+  if (atrace_fd == -1)
     return;
-  }
 
   // Android's kernel trace system has a trace_marker feature: this is a file on
   // debugfs that takes the written data and pushes it onto the trace
