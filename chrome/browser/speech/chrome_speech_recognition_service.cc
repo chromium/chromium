@@ -4,6 +4,7 @@
 
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "chrome/browser/service_sandbox_type.h"
@@ -115,9 +116,12 @@ base::FilePath ChromeSpeechRecognitionService::GetSodaConfigPath(
           prefs->GetString(prefs::kLiveCaptionLanguageCode));
 
   if (language_config) {
+    base::UmaHistogramEnumeration("Accessibility.LiveCaption.SodaLanguage",
+                                  language_config.value().language_code);
     return g_browser_process->local_state()->GetFilePath(
         language_config.value().config_path_pref);
   }
+
   return base::FilePath();
 }
 }  // namespace speech

@@ -75649,6 +75649,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="wss"/>
 </enum>
 
+<enum name="SodaLanguageCode">
+  <int value="0" label="None"/>
+  <int value="1" label="en-US"/>
+  <int value="2" label="ja-JP"/>
+  <int value="3" label="de-DE"/>
+  <int value="4" label="es-ES"/>
+  <int value="5" label="fr-FR"/>
+  <int value="6" label="it-IT"/>
+</enum>
+
 <enum name="SoftwareImageDecodeState">
   <int value="0" label="Wasted"/>
   <int value="1" label="Used"/>

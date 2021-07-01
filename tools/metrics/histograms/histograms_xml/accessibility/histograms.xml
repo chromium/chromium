@@ -933,6 +933,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveCaption.SpeechRecognitionServiceLanguage"
+    enum="SodaLanguageCode" expires_after="2021-12-31">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The language code used to initialize the speech recognition service. Logged
+    once when getting the Speech On-Device API (SODA) config path to use with
+    the speech recognition service.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption.UseSodaForLiveCaption"
     enum="BooleanEnabled" expires_after="2021-11-07">
   <owner>abigailbklein@google.com</owner>
