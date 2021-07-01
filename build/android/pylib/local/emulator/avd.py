@@ -263,6 +263,7 @@ class AvdConfig(object):
             'hw.lcd.density': density,
             'hw.lcd.height': height,
             'hw.lcd.width': width,
+            'hw.mainKeys': 'no',  # Show nav buttons on screen
         })
 
         if self.avd_settings.ram_size:
