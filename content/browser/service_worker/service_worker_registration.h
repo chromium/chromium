@@ -74,6 +74,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   // tests.
   ServiceWorkerRegistration(
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
+      const blink::StorageKey& key,
       int64_t registration_id,
       base::WeakPtr<ServiceWorkerContextCore> context);
 

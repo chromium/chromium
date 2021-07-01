@@ -48,6 +48,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 #include "url/url_util.h"
 
 namespace content {
@@ -122,18 +123,21 @@ class ServiceWorkerContainerHostTest : public testing::Test {
 
     blink::mojom::ServiceWorkerRegistrationOptions options1;
     options1.scope = GURL("https://www.example.com/");
-    registration1_ =
-        new ServiceWorkerRegistration(options1, 1L, context_->AsWeakPtr());
+    blink::StorageKey key1(url::Origin::Create(options1.scope));
+    registration1_ = new ServiceWorkerRegistration(options1, key1, 1L,
+                                                   context_->AsWeakPtr());
 
     blink::mojom::ServiceWorkerRegistrationOptions options2;
     options2.scope = GURL("https://www.example.com/example");
-    registration2_ =
-        new ServiceWorkerRegistration(options2, 2L, context_->AsWeakPtr());
+    blink::StorageKey key2(url::Origin::Create(options2.scope));
+    registration2_ = new ServiceWorkerRegistration(options2, key2, 2L,
+                                                   context_->AsWeakPtr());
 
     blink::mojom::ServiceWorkerRegistrationOptions options3;
     options3.scope = GURL("https://other.example.com/");
-    registration3_ =
-        new ServiceWorkerRegistration(options3, 3L, context_->AsWeakPtr());
+    blink::StorageKey key3(url::Origin::Create(options3.scope));
+    registration3_ = new ServiceWorkerRegistration(options3, key3, 3L,
+                                                   context_->AsWeakPtr());
   }
 
   void TearDown() override {
@@ -553,33 +557,6 @@ TEST_F(ServiceWorkerContainerHostTest,
   EXPECT_EQ(key3, GetCorrectStorageKeyForWebSecurityState(container_host.get(),
                                                           url3));
 }
-
-class MockServiceWorkerRegistration : public ServiceWorkerRegistration {
- public:
-  MockServiceWorkerRegistration(
-      const blink::mojom::ServiceWorkerRegistrationOptions& options,
-      int64_t registration_id,
-      base::WeakPtr<ServiceWorkerContextCore> context)
-      : ServiceWorkerRegistration(options, registration_id, context) {}
-
-  void AddListener(ServiceWorkerRegistration::Listener* listener) override {
-    listeners_.insert(listener);
-  }
-
-  void RemoveListener(ServiceWorkerRegistration::Listener* listener) override {
-    listeners_.erase(listener);
-  }
-
-  const std::set<ServiceWorkerRegistration::Listener*>& listeners() {
-    return listeners_;
-  }
-
- protected:
-  ~MockServiceWorkerRegistration() override {}
-
- private:
-  std::set<ServiceWorkerRegistration::Listener*> listeners_;
-};
 
 TEST_F(ServiceWorkerContainerHostTest, RemoveProvider) {
   // Create a container host connected with the renderer process.

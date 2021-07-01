@@ -227,14 +227,15 @@ class ServiceWorkerRegistrationTest : public testing::Test {
 
 TEST_F(ServiceWorkerRegistrationTest, SetAndUnsetVersions) {
   const GURL kScope("http://www.example.not/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   const GURL kScript("http://www.example.not/service_worker.js");
   int64_t kRegistrationId = 1L;
 
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
   scoped_refptr<ServiceWorkerRegistration> registration =
-      base::MakeRefCounted<ServiceWorkerRegistration>(options, kRegistrationId,
-                                                      context()->AsWeakPtr());
+      base::MakeRefCounted<ServiceWorkerRegistration>(
+          options, kKey, kRegistrationId, context()->AsWeakPtr());
 
   const int64_t version_1_id = 1L;
   const int64_t version_2_id = 2L;
@@ -304,11 +305,12 @@ TEST_F(ServiceWorkerRegistrationTest, SetAndUnsetVersions) {
 
 TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
   const GURL kScope("http://www.example.not/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   int64_t kRegistrationId = 1L;
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
   auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
-      options, kRegistrationId, context()->AsWeakPtr());
+      options, kKey, kRegistrationId, context()->AsWeakPtr());
   // Prepare a ServiceWorkerContainerHost.
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
