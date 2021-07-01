@@ -11,7 +11,7 @@
     </div>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.BLOCK]]"
+        category-subtype="[[contentSettingEnum_.BLOCK]]"
         category-header="[[blockHeader]]"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]"
@@ -19,14 +19,14 @@
     </site-list>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.SESSION_ONLY]]"
+        category-subtype="[[contentSettingEnum_.SESSION_ONLY]]"
         category-header="$i18n{siteSettingsSessionOnly}"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]">
     </site-list>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.ALLOW]]"
+        category-subtype="[[contentSettingEnum_.ALLOW]]"
         category-header="[[allowHeader]]"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]"

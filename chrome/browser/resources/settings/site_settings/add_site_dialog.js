@@ -14,60 +14,74 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 
-Polymer({
-  is: 'add-site-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SiteSettingsBehaviorInterface}
+ */
+const AddSiteDialogElementBase =
+    mixinBehaviors([SiteSettingsBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class AddSiteDialogElement extends AddSiteDialogElementBase {
+  static get is() {
+    return 'add-site-dialog';
+  }
 
-  behaviors: [SiteSettingsBehavior, WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * What kind of setting, e.g. Location, Camera, Cookies, and so on.
-     * @type {ContentSettingsTypes}
-     */
-    category: String,
+  static get properties() {
+    return {
+      /**
+       * What kind of setting, e.g. Location, Camera, Cookies, and so on.
+       * @type {ContentSettingsTypes}
+       */
+      category: String,
 
-    /**
-     * Whether this is about an Allow, Block, SessionOnly, or other.
-     * @type {ContentSetting}
-     */
-    contentSetting: String,
+      /**
+       * Whether this is about an Allow, Block, SessionOnly, or other.
+       * @type {ContentSetting}
+       */
+      contentSetting: String,
 
-    hasIncognito: {
-      type: Boolean,
-      observer: 'hasIncognitoChanged_',
-    },
+      hasIncognito: {
+        type: Boolean,
+        observer: 'hasIncognitoChanged_',
+      },
 
-    /**
-     * The site to add an exception for.
-     * @private
-     */
-    site_: String,
+      /**
+       * The site to add an exception for.
+       * @private
+       */
+      site_: String,
 
-    /**
-     * The error message to display when the pattern is invalid.
-     * @private
-     */
-    errorMessage_: String,
-  },
+      /**
+       * The error message to display when the pattern is invalid.
+       * @private
+       */
+      errorMessage_: String,
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     assert(this.category);
     assert(this.contentSetting);
     assert(typeof this.hasIncognito !== 'undefined');
 
     this.$.dialog.showModal();
-  },
+  }
 
   /**
    * Validates that the pattern entered is valid.
@@ -88,12 +102,12 @@ Polymer({
           this.$.add.disabled = !isValid;
           this.errorMessage_ = reason || '';
         });
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /**
    * The tap handler for the Add [Site] button (adds the pattern and closes
@@ -115,20 +129,20 @@ Polymer({
         this.$.incognito.checked);
 
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   showIncognitoSessionOnly_() {
     return this.hasIncognito && !loadTimeData.getBoolean('isGuest') &&
         this.contentSetting !== ContentSetting.SESSION_ONLY;
-  },
+  }
 
   /** @private */
   hasIncognitoChanged_() {
     if (!this.hasIncognito) {
       this.$.incognito.checked = false;
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -136,5 +150,7 @@ Polymer({
    */
   shouldHideThirdPartyCookieCheckbox_() {
     return this.category !== ContentSettingsTypes.COOKIES;
-  },
-});
+  }
+}
+
+customElements.define(AddSiteDialogElement.is, AddSiteDialogElement);

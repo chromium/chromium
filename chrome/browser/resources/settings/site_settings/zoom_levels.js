@@ -14,49 +14,63 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 import {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'zoom-levels',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SiteSettingsBehaviorInterface}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const ZoomLevelsElementBase = mixinBehaviors(
+    [ListPropertyUpdateBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ZoomLevelsElement extends ZoomLevelsElementBase {
+  static get is() {
+    return 'zoom-levels';
+  }
 
-  behaviors: [
-    ListPropertyUpdateBehavior,
-    SiteSettingsBehavior,
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Array of sites that are zoomed in or out.
-     * @type {!Array<ZoomLevelEntry>}
-     */
-    sites_: {
-      type: Array,
-      value: () => [],
-    },
+  static get properties() {
+    return {
+      /**
+       * Array of sites that are zoomed in or out.
+       * @type {!Array<ZoomLevelEntry>}
+       */
+      sites_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @private */
-    showNoSites_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @private */
+      showNoSites_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'onZoomLevelsChanged', this.onZoomLevelsChanged_.bind(this));
     this.browserProxy.fetchZoomLevels();
-  },
+  }
 
   /**
    * A handler for when zoom levels change.
@@ -66,7 +80,7 @@ Polymer({
   onZoomLevelsChanged_(sites) {
     this.updateList('sites_', item => item.origin, sites);
     this.showNoSites_ = this.sites_.length === 0;
-  },
+  }
 
   /**
    * A handler for when a zoom level for a site is deleted.
@@ -76,5 +90,7 @@ Polymer({
   removeZoomLevel_(event) {
     const site = this.sites_[event.model.index];
     this.browserProxy.removeZoomLevel(site.origin);
-  },
-});
+  }
+}
+
+customElements.define(ZoomLevelsElement.is, ZoomLevelsElement);

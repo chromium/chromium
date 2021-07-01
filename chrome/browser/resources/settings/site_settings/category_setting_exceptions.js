@@ -9,103 +9,133 @@
  */
 import './site_list.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 
-Polymer({
-  is: 'category-setting-exceptions',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SiteSettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const CategorySettingExceptionsElementBase = mixinBehaviors(
+    [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  behaviors: [I18nBehavior, SiteSettingsBehavior, WebUIListenerBehavior],
+/** @polymer */
+export class CategorySettingExceptionsElement extends
+    CategorySettingExceptionsElementBase {
+  static get is() {
+    return 'category-setting-exceptions';
+  }
 
-  properties: {
-    /**
-     * The string description shown below the header.
-     */
-    description: {
-      type: String,
-      value() {
-        return this.i18n('siteSettingsCustomizedBehaviorsDescription');
-      }
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The string ID of the category that this element is displaying data for.
-     * See site_settings/constants.js for possible values.
-     * @type {!ContentSettingsTypes}
-     */
-    category: String,
+  static get properties() {
+    return {
+      /**
+       * The string description shown below the header.
+       */
+      description: {
+        type: String,
+        value() {
+          return this.i18n('siteSettingsCustomizedBehaviorsDescription');
+        }
+      },
 
-    /**
-     * Some content types (like Location) do not allow the user to manually
-     * edit the exception list from within Settings.
-     * @private
-     */
-    readOnlyList: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * The string ID of the category that this element is displaying data for.
+       * See site_settings/constants.js for possible values.
+       * @type {!ContentSettingsTypes}
+       */
+      category: String,
 
-    /**
-     * True if the default value is managed by a policy.
-     * @private
-     */
-    defaultManaged_: Boolean,
+      /**
+       * Some content types (like Location) do not allow the user to manually
+       * edit the exception list from within Settings.
+       * @private
+       */
+      readOnlyList: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * The heading text for the blocked exception list.
-     */
-    blockHeader: String,
+      /**
+       * True if the default value is managed by a policy.
+       * @private
+       */
+      defaultManaged_: Boolean,
 
-    /** @private */
-    enableContentSettingsRedesign_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableContentSettingsRedesign');
-      }
-    },
+      /**
+       * The heading text for the blocked exception list.
+       */
+      blockHeader: String,
 
-    /**
-     * The heading text for the allowed exception list.
-     */
-    allowHeader: String,
+      /** @private */
+      enableContentSettingsRedesign_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableContentSettingsRedesign');
+        }
+      },
 
-    searchFilter: String,
+      /**
+       * The heading text for the allowed exception list.
+       */
+      allowHeader: String,
 
-    /**
-     * If true, displays the Allow site list. Defaults to true.
-     * @private
-     */
-    showAllowSiteList_: {
-      type: Boolean,
-      computed: 'computeShowAllowSiteList_(category)',
-    },
+      searchFilter: String,
 
-    /**
-     * If true, displays the Block site list. Defaults to true.
-     */
-    showBlockSiteList_: {
-      type: Boolean,
-      value: true,
-    },
-  },
+      /**
+       * If true, displays the Allow site list. Defaults to true.
+       * @private
+       */
+      showAllowSiteList_: {
+        type: Boolean,
+        computed: 'computeShowAllowSiteList_(category)',
+      },
 
-  observers: [
-    'updateDefaultManaged_(category)',
-  ],
+      /**
+       * If true, displays the Block site list. Defaults to true.
+       */
+      showBlockSiteList_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Expose ContentSetting enum to HTML bindings.
+       * @private
+       */
+      contentSettingEnum_: {
+        type: Object,
+        value: ContentSetting,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'updateDefaultManaged_(category)',
+    ];
+  }
 
   /** @override */
   ready() {
-    this.ContentSetting = ContentSetting;
+    super.ready();
+
     this.addWebUIListener(
         'contentSettingCategoryChanged', this.updateDefaultManaged_.bind(this));
-  },
+  }
 
   /**
    * Hides particular category subtypes if |this.category| does not support the
@@ -115,7 +145,7 @@ Polymer({
    */
   computeShowAllowSiteList_() {
     return this.category !== ContentSettingsTypes.FILE_SYSTEM_WRITE;
-  },
+  }
 
   /**
    * Updates whether or not the default value is managed by a policy.
@@ -130,7 +160,7 @@ Polymer({
         .then(update => {
           this.defaultManaged_ = update.source === SiteSettingSource.POLICY;
         });
-  },
+  }
 
   /**
    * Returns true if this list is explicitly marked as readonly by a consumer
@@ -143,4 +173,7 @@ Polymer({
   getReadOnlyList_() {
     return this.readOnlyList || this.defaultManaged_;
   }
-});
+}
+
+customElements.define(
+    CategorySettingExceptionsElement.is, CategorySettingExceptionsElement);

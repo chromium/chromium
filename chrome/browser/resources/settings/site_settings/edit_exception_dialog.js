@@ -10,61 +10,75 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'settings-edit-exception-dialog',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class SettingsEditExceptionDialogElement extends PolymerElement {
+  static get is() {
+    return 'settings-edit-exception-dialog';
+  }
 
-  properties: {
-    /**
-     * @type {!SiteException}
-     */
-    model: {
-      type: Object,
-      observer: 'modelChanged_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    origin_: String,
+  static get properties() {
+    return {
+      /**
+       * @type {!SiteException}
+       */
+      model: {
+        type: Object,
+        observer: 'modelChanged_',
+      },
 
-    /**
-     * The localized error message to display when the pattern is invalid.
-     * @private
-     */
-    errorMessage_: String,
+      /** @private */
+      origin_: String,
 
-    /**
-     * Whether the current input is invalid.
-     * @private
-     */
-    invalid_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * The localized error message to display when the pattern is invalid.
+       * @private
+       */
+      errorMessage_: String,
 
-  /** @private {?SiteSettingsPrefsBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * Whether the current input is invalid.
+       * @private
+       */
+      invalid_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?SiteSettingsPrefsBrowserProxy} */
+    this.browserProxy_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
     this.origin_ = this.model.origin;
 
     this.$.dialog.showModal();
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onActionButtonTap_() {
@@ -80,11 +94,11 @@ Polymer({
     }
 
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   validate_() {
-    if (this.$$('cr-input').value.trim() === '') {
+    if (this.shadowRoot.querySelector('cr-input').value.trim() === '') {
       this.invalid_ = true;
       return;
     }
@@ -94,12 +108,15 @@ Polymer({
           this.invalid_ = !isValid;
           this.errorMessage_ = reason || '';
         });
-  },
+  }
 
   /** @private */
   modelChanged_() {
     if (!this.model) {
       this.$.dialog.cancel();
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsEditExceptionDialogElement.is, SettingsEditExceptionDialogElement);

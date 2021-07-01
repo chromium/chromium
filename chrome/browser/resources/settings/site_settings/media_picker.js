@@ -11,41 +11,58 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 import {MediaPickerEntry} from './site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'media-picker',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SiteSettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const MediaPickerElementBase = mixinBehaviors(
+    [SiteSettingsBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [SiteSettingsBehavior, WebUIListenerBehavior],
+/** @polymer */
+class MediaPickerElement extends MediaPickerElementBase {
+  static get is() {
+    return 'media-picker';
+  }
 
-  properties: {
-    /**
-     * The type of media picker, either 'camera' or 'mic'.
-     */
-    type: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** Label for a11y purposes. */
-    label: String,
+  static get properties() {
+    return {
+      /**
+       * The type of media picker, either 'camera' or 'mic'.
+       */
+      type: String,
 
-    /**
-     * The devices available to pick from.
-     * @type {Array<MediaPickerEntry>}
-     */
-    devices: Array,
-  },
+      /** Label for a11y purposes. */
+      label: String,
+
+      /**
+       * The devices available to pick from.
+       * @type {Array<MediaPickerEntry>}
+       */
+      devices: Array,
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'updateDevicesMenu', this.updateDevicesMenu_.bind(this));
     this.browserProxy.getDefaultCaptureDevices(this.type);
-  },
+  }
 
   /**
    * Updates the microphone/camera devices menu with the given entries.
@@ -63,11 +80,11 @@ Polymer({
       this.devices = devices;
 
       // Wait for <select> to be populated.
-      this.async(() => {
+      microTask.run(() => {
         this.$.mediaPicker.value = defaultDevice;
       });
     }
-  },
+  }
 
   /**
    * A handler for when an item is selected in the media picker.
@@ -76,5 +93,7 @@ Polymer({
   onChange_() {
     this.browserProxy.setDefaultCaptureDevice(
         this.type, this.$.mediaPicker.value);
-  },
-});
+  }
+}
+
+customElements.define(MediaPickerElement.is, MediaPickerElement);

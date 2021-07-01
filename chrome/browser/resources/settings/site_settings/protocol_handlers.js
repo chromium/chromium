@@ -22,13 +22,12 @@ import '../privacy_page/collapse_radio_button.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 
 /**
  * All possible actions in the menu.
@@ -55,61 +54,76 @@ export let HandlerEntry;
  */
 export let ProtocolEntry;
 
-Polymer({
-  is: 'protocol-handlers',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SiteSettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const ProtocolHandlersElementBase = mixinBehaviors(
+    [SiteSettingsBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    SiteSettingsBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class ProtocolHandlersElement extends ProtocolHandlersElementBase {
+  static get is() {
+    return 'protocol-handlers';
+  }
 
-  properties: {
-    /**
-     * Array of protocols and their handlers.
-     * @type {!Array<!ProtocolEntry>}
-     */
-    protocols: Array,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The targetted object for menu operations.
-     * @private {?HandlerEntry}
-     */
-    actionMenuModel_: Object,
+  static get properties() {
+    return {
+      /**
+       * Array of protocols and their handlers.
+       * @type {!Array<!ProtocolEntry>}
+       */
+      protocols: Array,
 
-    /* Labels for the toggle on/off positions. */
-    toggleOffLabel: String,
-    toggleOnLabel: String,
+      /**
+       * The targeted object for menu operations.
+       * @private {?HandlerEntry}
+       */
+      actionMenuModel_: Object,
 
-    /**
-     * Array of ignored (blocked) protocols.
-     * @type {!Array<!HandlerEntry>}
-     */
-    ignoredProtocols: Array,
+      /* Labels for the toggle on/off positions. */
+      toggleOffLabel: String,
+      toggleOnLabel: String,
 
-    /** @private */
-    enableContentSettingsRedesign_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableContentSettingsRedesign');
-      }
-    },
+      /**
+       * Array of ignored (blocked) protocols.
+       * @type {!Array<!HandlerEntry>}
+       */
+      ignoredProtocols: Array,
 
-    /** @private {chrome.settingsPrivate.PrefObject} */
-    handlersEnabledPref_: {
-      type: Object,
-      value() {
-        return /** @type {chrome.settingsPrivate.PrefObject} */ ({
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        });
+      /** @private */
+      enableContentSettingsRedesign_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableContentSettingsRedesign');
+        }
       },
-    },
-  },
+
+      /** @private {chrome.settingsPrivate.PrefObject} */
+      handlersEnabledPref_: {
+        type: Object,
+        value() {
+          return /** @type {chrome.settingsPrivate.PrefObject} */ ({
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          });
+        },
+      },
+
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'setHandlersEnabled', this.setHandlersEnabled_.bind(this));
     this.addWebUIListener(
@@ -118,7 +132,7 @@ Polymer({
         'setIgnoredProtocolHandlers',
         this.setIgnoredProtocolHandlers_.bind(this));
     this.browserProxy.observeProtocolHandlers();
-  },
+  }
 
   /**
    * Obtains the description for the main toggle.
@@ -128,7 +142,7 @@ Polymer({
   computeHandlersDescription_() {
     return this.handlersEnabledPref_.value ? this.toggleOnLabel :
                                              this.toggleOffLabel;
-  },
+  }
 
   /**
    * Updates the main toggle to set it enabled/disabled.
@@ -137,7 +151,7 @@ Polymer({
    */
   setHandlersEnabled_(enabled) {
     this.set('handlersEnabledPref_.value', enabled);
-  },
+  }
 
   /**
    * Updates the list of protocol handlers.
@@ -146,7 +160,7 @@ Polymer({
    */
   setProtocolHandlers_(protocols) {
     this.protocols = protocols;
-  },
+  }
 
   /**
    * Updates the list of ignored protocol handlers.
@@ -156,16 +170,16 @@ Polymer({
    */
   setIgnoredProtocolHandlers_(ignoredProtocols) {
     this.ignoredProtocols = ignoredProtocols;
-  },
+  }
 
   /**
    * Closes action menu and resets action menu model
    * @private
    */
   closeActionMenu_() {
-    this.$$('cr-action-menu').close();
+    this.shadowRoot.querySelector('cr-action-menu').close();
     this.actionMenuModel_ = null;
-  },
+  }
 
   /**
    * A handler when the toggle is flipped.
@@ -174,7 +188,7 @@ Polymer({
   onToggleChange_() {
     this.browserProxy.setProtocolHandlerDefault(
         !!this.handlersEnabledPref_.value);
-  },
+  }
 
   /**
    * The handler for when "Set Default" is selected in the action menu.
@@ -184,7 +198,7 @@ Polymer({
     const item = this.actionMenuModel_;
     this.browserProxy.setProtocolDefault(item.protocol, item.spec);
     this.closeActionMenu_();
-  },
+  }
 
   /**
    * The handler for when "Remove" is selected in the action menu.
@@ -194,7 +208,7 @@ Polymer({
     const item = this.actionMenuModel_;
     this.browserProxy.removeProtocolHandler(item.protocol, item.spec);
     this.closeActionMenu_();
-  },
+  }
 
   /**
    * Handler for removing handlers that were blocked
@@ -203,7 +217,7 @@ Polymer({
   onRemoveIgnored_(event) {
     const item = event.model.item;
     this.browserProxy.removeProtocolHandler(item.protocol, item.spec);
-  },
+  }
 
   /**
    * A handler to show the action menu next to the clicked menu button.
@@ -212,8 +226,11 @@ Polymer({
    */
   showMenu_(event) {
     this.actionMenuModel_ = event.model.item;
-    /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('cr-action-menu'))
         .showAt(
             /** @type {!Element} */ (/** @type {!Event} */ (event).target));
   }
-});
+}
+
+customElements.define(ProtocolHandlersElement.is, ProtocolHandlersElement);

@@ -28,7 +28,7 @@ export const kControlledByLookup = {
 
 
 /** @polymerBehavior */
-const SiteSettingsBehaviorImpl = {
+export const SiteSettingsBehavior = {
   properties: {
     /**
      * The string ID of the category this element is displaying data for.
@@ -180,5 +180,19 @@ const SiteSettingsBehaviorImpl = {
 
 };
 
-/** @polymerBehavior */
-export const SiteSettingsBehavior = [SiteSettingsBehaviorImpl];
+/** @interface */
+export class SiteSettingsBehaviorInterface {
+  constructor() {
+    /** @type {SiteSettingsPrefsBrowserProxy} */
+    this.browserProxy;
+
+    /** @type {!ContentSettingsTypes} */
+    this.category;
+  }
+
+  /**
+   * @param {string} setting
+   * @return {boolean}
+   */
+  computeIsSettingEnabled(setting) {}
+}
