@@ -831,6 +831,8 @@ void FormStructure::ProcessQueryResponse(
     const std::vector<FormSignature>& queried_form_signatures,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
+  using FieldSuggestion =
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion;
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
   if (log_manager) {
     log_manager->Log() << LoggingScope::kParsing
@@ -841,34 +843,32 @@ void FormStructure::ProcessQueryResponse(
   bool query_response_overrode_heuristics = false;
 
   std::map<std::pair<FormSignature, FieldSignature>,
-           std::deque<AutofillQueryResponse::FormSuggestion::FieldSuggestion>>
+           std::deque<FieldSuggestion>>
       field_types;
   for (int form_idx = 0;
        form_idx < std::min(response.form_suggestions_size(),
                            static_cast<int>(queried_form_signatures.size()));
        ++form_idx) {
-    FormSignature form_sig = queried_form_signatures.at(form_idx);
+    FormSignature form_sig = queried_form_signatures[form_idx];
     for (const auto& field :
          response.form_suggestions(form_idx).field_suggestions()) {
       FieldSignature field_sig(field.field_signature());
-      field_types[std::make_pair(form_sig, field_sig)].push_back(field);
+      field_types[{form_sig, field_sig}].push_back(field);
     }
   }
 
   // Copy the field types into the actual form.
   for (FormStructure* form : forms) {
-    bool query_response_has_no_server_data = true;
     for (auto& field : form->fields_) {
       auto it = field_types.find(
-          std::make_pair(form->form_signature(), field->GetFieldSignature()));
+          {form->form_signature(), field->GetFieldSignature()});
       if (it == field_types.end())
         continue;
 
       // Get the next suggestion for this signature. If this is the last
       // suggestion, keep it for all subsequent fields with this signature.
       DCHECK(!it->second.empty());
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion current_field =
-          it->second.front();
+      FieldSuggestion current_field = it->second.front();
       if (it->second.size() > 1)
         it->second.pop_front();
 
@@ -876,22 +876,8 @@ void FormStructure::ProcessQueryResponse(
       if (heuristic_type != UNKNOWN_TYPE)
         heuristics_detected_fillable_field = true;
 
-      std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-                      FieldPrediction>
-          server_predictions;
-
-      if (current_field.predictions_size() == 0) {
-        AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-            field_prediction;
-        field_prediction.set_type(NO_SERVER_DATA);
-        server_predictions.push_back(field_prediction);
-      } else {
-        server_predictions.assign(current_field.predictions().begin(),
-                                  current_field.predictions().end());
-      }
-      query_response_has_no_server_data &=
-          server_predictions[0].type() == NO_SERVER_DATA;
-      field->set_server_predictions(std::move(server_predictions));
+      field->set_server_predictions({current_field.predictions().begin(),
+                                     current_field.predictions().end()});
       field->set_may_use_prefilled_placeholder(
           current_field.may_use_prefilled_placeholder());
 
@@ -902,8 +888,9 @@ void FormStructure::ProcessQueryResponse(
         field->SetPasswordRequirements(current_field.password_requirements());
     }
 
-    AutofillMetrics::LogServerResponseHasDataForForm(
-        !query_response_has_no_server_data);
+    AutofillMetrics::LogServerResponseHasDataForForm(base::ranges::any_of(
+        form->fields_, [](ServerFieldType t) { return t != NO_SERVER_DATA; },
+        &AutofillField::server_type));
 
     form->UpdateAutofillCount();
     form->RationalizeRepeatedFields(form_interactions_ukm_logger, log_manager);
