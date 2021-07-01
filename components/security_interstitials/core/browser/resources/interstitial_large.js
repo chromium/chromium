@@ -82,8 +82,10 @@ function setupEvents() {
 
   if (ssl || originPolicy || blockedInterception || legacyTls) {
     $('body').classList.add(badClock ? 'bad-clock' : 'ssl');
-    $('error-code').textContent = loadTimeData.getString('errorCode');
-    $('error-code').classList.remove(HIDDEN_CLASS);
+    if (loadTimeData.valueExists('errorCode')) {
+      $('error-code').textContent = loadTimeData.getString('errorCode');
+      $('error-code').classList.remove(HIDDEN_CLASS);
+    }
   } else if (captivePortal) {
     $('body').classList.add('captive-portal');
   } else if (billing) {
