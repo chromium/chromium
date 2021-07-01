@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -23,21 +24,6 @@ namespace {
 
 const char kAccessDenied[] = "Access denied.";
 
-// Whether device attributes can be accessed for the current profile.
-bool CanGetDeviceAttributes() {
-  const Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
-    return true;
-
-  if (profile->IsOffTheRecord())
-    return false;
-
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  return user->IsAffiliated();
-}
-
 }  // namespace
 
 DeviceAttributesAsh::DeviceAttributesAsh() = default;
@@ -50,7 +36,9 @@ void DeviceAttributesAsh::BindReceiver(
 
 void DeviceAttributesAsh::GetDirectoryDeviceId(
     GetDirectoryDeviceIdCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
@@ -66,7 +54,9 @@ void DeviceAttributesAsh::GetDirectoryDeviceId(
 
 void DeviceAttributesAsh::GetDeviceSerialNumber(
     GetDeviceSerialNumberCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
@@ -80,7 +70,9 @@ void DeviceAttributesAsh::GetDeviceSerialNumber(
 }
 
 void DeviceAttributesAsh::GetDeviceAssetId(GetDeviceAssetIdCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
@@ -96,7 +88,9 @@ void DeviceAttributesAsh::GetDeviceAssetId(GetDeviceAssetIdCallback callback) {
 
 void DeviceAttributesAsh::GetDeviceAnnotatedLocation(
     GetDeviceAnnotatedLocationCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }
@@ -112,7 +106,9 @@ void DeviceAttributesAsh::GetDeviceAnnotatedLocation(
 
 void DeviceAttributesAsh::GetDeviceHostname(
     GetDeviceHostnameCallback callback) {
-  if (!CanGetDeviceAttributes()) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  if (!browser_util::IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
     return;
   }

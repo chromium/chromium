@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -603,6 +604,58 @@ TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockBadJson) {
   ASSERT_TRUE(base::WriteFile(path, kContent));
 
   EXPECT_FALSE(browser_util::GetRootfsLacrosVersionMayBlock(path).IsValid());
+}
+
+TEST_F(BrowserUtilTest, IsSigninProfileOrBelongsToAffiliatedUserSigninProfile) {
+  TestingProfile::Builder builder;
+  builder.SetPath(base::FilePath(FILE_PATH_LITERAL(chrome::kInitialProfile)));
+  std::unique_ptr<Profile> signin_profile = builder.Build();
+
+  EXPECT_TRUE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
+      signin_profile.get()));
+}
+
+TEST_F(BrowserUtilTest, IsSigninProfileOrBelongsToAffiliatedUserOffTheRecord) {
+  Profile* otr_profile = testing_profile_.GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
+
+  EXPECT_FALSE(
+      browser_util::IsSigninProfileOrBelongsToAffiliatedUser(otr_profile));
+}
+
+TEST_F(BrowserUtilTest,
+       IsSigninProfileOrBelongsToAffiliatedUserAffiliatedUser) {
+  AccountId account_id = AccountId::FromUserEmail("user@test.com");
+  const User* user = fake_user_manager_->AddUserWithAffiliation(
+      account_id, /*is_affiliated=*/true);
+  fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                   /*browser_restart=*/false,
+                                   /*is_child=*/false);
+  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+      user, &testing_profile_);
+
+  EXPECT_TRUE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
+      &testing_profile_));
+}
+
+TEST_F(BrowserUtilTest,
+       IsSigninProfileOrBelongsToAffiliatedUserNotAffiliatedUser) {
+  AddRegularUser("user@test.com");
+
+  EXPECT_FALSE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
+      &testing_profile_));
+}
+
+TEST_F(BrowserUtilTest,
+       IsSigninProfileOrBelongsToAffiliatedUserLockScreenProfile) {
+  TestingProfile::Builder builder;
+  builder.SetPath(
+      base::FilePath(FILE_PATH_LITERAL(chrome::kLockScreenProfile)));
+  std::unique_ptr<Profile> lock_screen_profile = builder.Build();
+
+  EXPECT_FALSE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
+      lock_screen_profile.get()));
 }
 
 }  // namespace crosapi

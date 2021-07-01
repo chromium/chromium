@@ -727,5 +727,19 @@ base::Version GetRootfsLacrosVersionMayBlock(
   return base::Version{version->GetString()};
 }
 
+bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile) {
+  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+    return true;
+
+  if (profile->IsOffTheRecord())
+    return false;
+
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  if (!user)
+    return false;
+  return user->IsAffiliated();
+}
+
 }  // namespace browser_util
 }  // namespace crosapi

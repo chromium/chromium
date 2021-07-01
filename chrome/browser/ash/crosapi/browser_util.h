@@ -17,6 +17,7 @@
 
 class PrefRegistrySimple;
 class PrefService;
+class Profile;
 
 namespace aura {
 class Window;
@@ -160,6 +161,10 @@ bool IsLacrosWindow(const aura::Window* window);
 // version, and that lacros versions supports the new backwards-incompatible
 // account_manager logic.
 bool DoesMetadataSupportNewAccountManager(base::Value* metadata);
+
+// Checks for the given profile if the user is affiliated or belongs to the
+// sign-in profile.
+bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile);
 
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
