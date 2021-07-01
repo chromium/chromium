@@ -7,6 +7,7 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace exo {
 class Surface;
@@ -71,6 +72,13 @@ class SurfaceDelegate {
   // Whether the current client window can go back, as per its navigation list.
   virtual void SetCanGoBack() = 0;
   virtual void UnsetCanGoBack() = 0;
+
+  // Called when surface was requested to enter pip.
+  virtual void SetPip() = 0;
+  virtual void UnsetPip() = 0;
+
+  // Called when surface was requested to maintain an aspect ratio.
+  virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio) = 0;
 
  protected:
   virtual ~SurfaceDelegate() {}

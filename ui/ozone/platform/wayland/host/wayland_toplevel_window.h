@@ -62,6 +62,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetDecorationInsets(gfx::Insets insets_px) override;
   void SetOpaqueRegion(std::vector<gfx::Rect> region_px) override;
   void SetInputRegion(gfx::Rect region_px) override;
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
 
   // WaylandWindow overrides:
   absl::optional<std::vector<gfx::Rect>> GetWindowShape() const override;
@@ -100,6 +101,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void ShowSnapPreview(WaylandWindowSnapDirection snap) override;
   void CommitSnap(WaylandWindowSnapDirection snap) override;
   void SetCanGoBack(bool value) override;
+  void SetPip() override;
 
   void TriggerStateChanges();
   void SetWindowState(PlatformWindowState state);

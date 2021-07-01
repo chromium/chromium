@@ -11,6 +11,7 @@
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace base {
 namespace trace_event {
@@ -70,6 +71,9 @@ class SubSurface : public SurfaceDelegate, public SurfaceObserver {
   void UnsetSnap() override {}
   void SetCanGoBack() override {}
   void UnsetCanGoBack() override {}
+  void SetPip() override {}
+  void UnsetPip() override {}
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override {}
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

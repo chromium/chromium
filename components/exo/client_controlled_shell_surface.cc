@@ -414,21 +414,6 @@ void ClientControlledShellSurface::SetFullscreen(bool fullscreen) {
                                      : chromeos::WindowStateType::kNormal;
 }
 
-void ClientControlledShellSurface::SetSnappedToLeft() {
-  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToLeft");
-  pending_window_state_ = chromeos::WindowStateType::kPrimarySnapped;
-}
-
-void ClientControlledShellSurface::SetSnappedToRight() {
-  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToRight");
-  pending_window_state_ = chromeos::WindowStateType::kSecondarySnapped;
-}
-
-void ClientControlledShellSurface::SetPip() {
-  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetPip");
-  pending_window_state_ = chromeos::WindowStateType::kPip;
-}
-
 void ClientControlledShellSurface::SetPinned(chromeos::WindowPinType type) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetPinned", "type",
                static_cast<int>(type));
@@ -792,6 +777,26 @@ void ClientControlledShellSurface::OnSetFrameColors(SkColor active_color,
     window->SetProperty(chromeos::kFrameActiveColorKey, active_color);
     window->SetProperty(chromeos::kFrameInactiveColorKey, inactive_color);
   }
+}
+
+void ClientControlledShellSurface::SetSnappedToLeft() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToLeft");
+  pending_window_state_ = chromeos::WindowStateType::kPrimarySnapped;
+}
+
+void ClientControlledShellSurface::SetSnappedToRight() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetSnappedToRight");
+  pending_window_state_ = chromeos::WindowStateType::kSecondarySnapped;
+}
+
+void ClientControlledShellSurface::SetPip() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetPip");
+  pending_window_state_ = chromeos::WindowStateType::kPip;
+}
+
+void ClientControlledShellSurface::UnsetPip() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::UnsetPip");
+  SetRestored();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1391,22 +1396,6 @@ void ClientControlledShellSurface::UpdateFrameType() {
 
   if (suppress_mouse_event)
     UpdateSurfaceBounds();
-}
-
-void ClientControlledShellSurface::UpdateCornerRadius() {
-  if (!widget_)
-    return;
-  if (!ash::features::IsPipRoundedCornersEnabled())
-    return;
-
-  ash::WindowState* window_state = GetWindowState();
-  // The host window's transform scales by |1/scale_| but we do not want the
-  // rounded corners scaled that way. So we multiply the radius by |scale_|.
-  ash::SetCornerRadius(
-      window_state->window(), host_window()->layer(),
-      window_state->IsPip()
-          ? base::ClampRound(scale_ * ash::kPipRoundedCornerRadius)
-          : 0);
 }
 
 void ClientControlledShellSurface::

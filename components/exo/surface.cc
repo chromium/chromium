@@ -668,6 +668,21 @@ int32_t Surface::GetWindowSessionId() {
   return window_->GetProperty(kWindowSessionId);
 }
 
+void Surface::SetPip() {
+  if (delegate_)
+    delegate_->SetPip();
+}
+
+void Surface::UnsetPip() {
+  if (delegate_)
+    delegate_->UnsetPip();
+}
+
+void Surface::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
+  if (delegate_)
+    delegate_->SetAspectRatio(aspect_ratio);
+}
+
 void Surface::SetEmbeddedSurfaceId(
     base::RepeatingCallback<viz::SurfaceId()> surface_id_callback) {
   get_current_surface_id_ = std::move(surface_id_callback);

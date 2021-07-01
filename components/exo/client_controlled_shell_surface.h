@@ -98,9 +98,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Called when the client changed the fullscreen state.
   void SetFullscreen(bool fullscreen);
 
-  // Called when the client was set to PIP.
-  void SetPip();
-
   // Returns true if this shell surface is currently being dragged.
   bool IsDragging();
 
@@ -198,6 +195,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void OnSetFrameColors(SkColor active_color, SkColor inactive_color) override;
   void SetSnappedToLeft() override;
   void SetSnappedToRight() override;
+  void SetPip() override;
+  void UnsetPip() override;
 
   // Overridden from views::WidgetDelegate:
   bool CanMaximize() const override;
@@ -279,8 +278,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void UpdateFrameWidth();
 
   void UpdateFrameType() override;
-
-  void UpdateCornerRadius();
 
   void AttemptToStartDrag(int component, const gfx::PointF& location);
 

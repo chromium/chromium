@@ -25,6 +25,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -91,6 +92,12 @@ class MockSurfaceDelegate : public SurfaceDelegate {
   MOCK_METHOD(void, UnsetSnap, (), (override));
   MOCK_METHOD(void, SetCanGoBack, (), (override));
   MOCK_METHOD(void, UnsetCanGoBack, (), (override));
+  MOCK_METHOD(void, SetPip, (), (override));
+  MOCK_METHOD(void, UnsetPip, (), (override));
+  MOCK_METHOD(void,
+              SetAspectRatio,
+              (const gfx::SizeF& aspect_ratio),
+              (override));
 };
 
 }  // namespace

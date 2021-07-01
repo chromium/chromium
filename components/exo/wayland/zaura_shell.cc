@@ -198,6 +198,22 @@ void aura_surface_unset_can_go_back(wl_client* client, wl_resource* resource) {
   GetUserDataAs<AuraSurface>(resource)->UnsetCanGoBack();
 }
 
+void aura_surface_set_pip(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraSurface>(resource)->SetPip();
+}
+
+void aura_surface_unset_pip(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraSurface>(resource)->UnsetPip();
+}
+
+void aura_surface_set_aspect_ratio(wl_client* client,
+                                   wl_resource* resource,
+                                   int32_t width,
+                                   int32_t height) {
+  GetUserDataAs<AuraSurface>(resource)->SetAspectRatio(
+      gfx::SizeF(width, height));
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -218,7 +234,10 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_unset_snap,
     aura_surface_set_window_session_id,
     aura_surface_set_can_go_back,
-    aura_surface_unset_can_go_back};
+    aura_surface_unset_can_go_back,
+    aura_surface_set_pip,
+    aura_surface_unset_pip,
+    aura_surface_set_aspect_ratio};
 
 }  // namespace
 
@@ -347,6 +366,18 @@ void AuraSurface::SetCanGoBack() {
 
 void AuraSurface::UnsetCanGoBack() {
   surface_->UnsetCanGoBack();
+}
+
+void AuraSurface::SetPip() {
+  surface_->SetPip();
+}
+
+void AuraSurface::UnsetPip() {
+  surface_->UnsetPip();
+}
+
+void AuraSurface::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
+  surface_->SetAspectRatio(aspect_ratio);
 }
 
 // Overridden from SurfaceObserver:

@@ -267,6 +267,14 @@ void WaylandToplevelWindow::SetInputRegion(gfx::Rect region_px) {
   NOTIMPLEMENTED();
 }
 
+void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_SET_ASPECT_RATIO_SINCE_VERSION) {
+    zaura_surface_set_aspect_ratio(aura_surface_.get(), aspect_ratio.width(),
+                                   aspect_ratio.height());
+  }
+}
+
 absl::optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
     const {
   return window_shape_in_dips_;
@@ -527,6 +535,13 @@ void WaylandToplevelWindow::SetCanGoBack(bool value) {
       zaura_surface_set_can_go_back(aura_surface_.get());
     else
       zaura_surface_unset_can_go_back(aura_surface_.get());
+  }
+}
+
+void WaylandToplevelWindow::SetPip() {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_SET_PIP_SINCE_VERSION) {
+    zaura_surface_set_pip(aura_surface_.get());
   }
 }
 

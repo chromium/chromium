@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/transform.h"
 
@@ -345,6 +346,15 @@ class Surface final : public ui::PropertyHandler {
   // full_restore component.
   void SetWindowSessionId(int32_t window_session_id);
   int32_t GetWindowSessionId();
+
+  // Requests that the surface enters PIP mode.
+  void SetPip();
+
+  // Requests that the surface exits PIP mode.
+  void UnsetPip();
+
+  // Requests that the surface maintains the given aspect ratio.
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio);
 
  private:
   struct State {

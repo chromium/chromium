@@ -103,6 +103,9 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void UnsetSnap() override {}
   void SetCanGoBack() override {}
   void UnsetCanGoBack() override {}
+  void SetPip() override {}
+  void UnsetPip() override {}
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

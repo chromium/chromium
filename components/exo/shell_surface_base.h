@@ -123,9 +123,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Set the miniumum size for the surface.
   void SetMinimumSize(const gfx::Size& size);
 
-  // Set the aspect ratio for the surface.
-  void SetAspectRatio(const gfx::SizeF& aspect_ratio);
-
   // Set the flag if the surface can maximize or not.
   void SetCanMinimize(bool can_minimize);
 
@@ -186,6 +183,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnSetServerStartResize() override;
   void SetCanGoBack() override;
   void UnsetCanGoBack() override;
+  void SetPip() override;
+  void UnsetPip() override;
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
@@ -272,6 +272,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Creates, deletes and update the shadow bounds based on
   // |shadow_bounds_|.
   void UpdateShadow();
+
+  // Updates the corner radius depending on whether the |widget_| is in pip or
+  // not.
+  void UpdateCornerRadius();
 
   virtual void UpdateFrameType();
 
@@ -369,6 +373,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size maximum_size_;
   gfx::Size pending_maximum_size_;
   gfx::SizeF pending_aspect_ratio_;
+  bool pending_pip_ = false;
 
   // Overlay members.
   std::unique_ptr<views::Widget> overlay_widget_;

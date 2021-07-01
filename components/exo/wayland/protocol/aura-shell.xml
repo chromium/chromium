@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="19">
+  <interface name="zaura_shell" version="20">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -95,7 +95,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_surface" version="19">
+  <interface name="zaura_surface" version="20">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -349,6 +349,27 @@
         Unsets that the surface can go back as per its navigation list.
         See above.
       </description>
+    </request>
+
+    <!-- Version 20 additions -->
+    <request name="set_pip" since="20">
+      <description summary="Set pip for the surface.">
+        Requests that the surface is set to Picture-in-Picture (PIP).
+      </description>
+    </request>
+
+    <request name="unset_pip" since="20">
+      <description summary="Unset pip for the surface.">
+        Requests that the surface is unset from Picture-in-Picture (PIP).
+      </description>
+    </request>
+
+    <request name="set_aspect_ratio" since="20">
+      <description summary="Set aspect ratio for the surface.">
+        Sets the aspect ratio of the surface.
+      </description>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
     </request>
 
   </interface>

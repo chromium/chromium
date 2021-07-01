@@ -65,6 +65,12 @@
 #include "ui/base/win/shell.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/aura/window_tree_host.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#endif
+
 namespace {
 
 // Lower bound size of the window is a fixed value to allow for minimal sizes
@@ -851,6 +857,19 @@ void OverlayWindowViews::ShowInactive() {
 
   views::Widget::ShowInactive();
   views::Widget::SetVisibleOnAllWorkspaces(true);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros is based on Ozone/Wayland, which uses ui::PlatformWindow and
+  // views::DesktopWindowTreeHostLinux.
+  auto* desktop_window_tree_host =
+      views::DesktopWindowTreeHostLinux::From(GetNativeWindow()->GetHost());
+
+  // At this point, the aura surface will be created so we can set it to pip and
+  // its aspect ratio. Let Exo handle adding a rounded corner decorartor.
+  desktop_window_tree_host->GetWaylandExtension()->SetPip();
+  desktop_window_tree_host->SetAspectRatio(gfx::SizeF(natural_size_));
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For rounded corners.
   if (ash::features::IsPipRoundedCornersEnabled()) {
@@ -1078,13 +1097,22 @@ void OverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
       UpdateControlsVisibility(true);
       break;
 
-    case ui::ET_MOUSE_EXITED:
+    case ui::ET_MOUSE_EXITED: {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // On Lacros, the |event| will always occur within |video_bounds_| despite
+      // the mouse exiting the respective surface so always hide the controls.
+      const bool should_update_control_visibility = true;
+#else
       // On Windows, ui::ET_MOUSE_EXITED is triggered when hovering over the
       // media controls because of the HitTest. This check ensures the controls
       // are visible if the mouse is still over the window.
-      if (!video_bounds_.Contains(event->location()))
+      const bool should_update_control_visibility =
+          !video_bounds_.Contains(event->location());
+#endif
+      if (should_update_control_visibility)
         UpdateControlsVisibility(false);
       break;
+    }
 
     default:
       break;
