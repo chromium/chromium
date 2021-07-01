@@ -503,7 +503,7 @@ bool ChromeAutocompleteProviderClient::IsTabOpenWithURL(
 }
 
 bool ChromeAutocompleteProviderClient::IsIncognitoModeAvailable() const {
-  if (profile_->IsGuestSession() || profile_->IsEphemeralGuestProfile()) {
+  if (profile_->IsGuestSession()) {
     return false;
   }
   return IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
