@@ -622,15 +622,11 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(MediaDialogViewBrowserTest);
 };
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222873
-#define MAYBE_ShowsMetadataAndControlsMedia \
-  DISABLED_ShowsMetadataAndControlsMedia
-#else
-#define MAYBE_ShowsMetadataAndControlsMedia ShowsMetadataAndControlsMedia
-#endif
+// This test was first disabled on defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// for https://crbug.com/1222873.
+// Then got disabled on all platforms for https://crbug.com/1225531.
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       MAYBE_ShowsMetadataAndControlsMedia) {
+                       DISABLED_ShowsMetadataAndControlsMedia) {
   // The toolbar icon should not start visible.
   EXPECT_FALSE(IsToolbarIconVisible());
 
