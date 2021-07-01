@@ -231,9 +231,7 @@ class CORE_EXPORT FrameLoader final {
 
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
-  WebFrameLoadType DetermineFrameLoadType(const KURL& url,
-                                          const KURL& failing_url,
-                                          WebFrameLoadType);
+  WebFrameLoadType DetermineFrameLoadType(const KURL& url, WebFrameLoadType);
 
   bool ShouldPerformFragmentNavigation(bool is_form_submission,
                                        const String& http_method,

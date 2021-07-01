@@ -452,7 +452,6 @@ void FrameLoader::DidFinishSameDocumentNavigation(
 
 WebFrameLoadType FrameLoader::DetermineFrameLoadType(
     const KURL& url,
-    const KURL& failing_url,
     WebFrameLoadType frame_load_type) {
   // TODO(dgozman): this method is rewriting the load type, which makes it hard
   // to reason about various navigations and their desired load type. We should
@@ -472,14 +471,7 @@ WebFrameLoadType FrameLoader::DetermineFrameLoadType(
       return WebFrameLoadType::kStandard;
     }
   }
-  if (frame_load_type != WebFrameLoadType::kStandard)
-    return frame_load_type;
-
-  if (failing_url == document_loader_->UrlForHistory() &&
-      document_loader_->LoadType() == WebFrameLoadType::kReload)
-    return WebFrameLoadType::kReload;
-
-  return WebFrameLoadType::kStandard;
+  return frame_load_type;
 }
 
 bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
@@ -635,7 +627,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   }
 
   frame_load_type =
-      DetermineFrameLoadType(resource_request.Url(), KURL(), frame_load_type);
+      DetermineFrameLoadType(resource_request.Url(), frame_load_type);
 
   bool same_document_navigation =
       request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
@@ -949,8 +941,7 @@ void FrameLoader::CommitNavigation(
     frame_owner->CancelPendingLazyLoad();
 
   navigation_params->frame_load_type = DetermineFrameLoadType(
-      navigation_params->url, navigation_params->unreachable_url,
-      navigation_params->frame_load_type);
+      navigation_params->url, navigation_params->frame_load_type);
 
   // Note: we might actually classify this navigation as same document
   // right here in the following circumstances:

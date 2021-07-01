@@ -2419,17 +2419,53 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     previous_entry = controller.GetLastCommittedEntry();
   }
 
+  auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+      base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+        network::URLLoaderCompletionStatus status;
+        status.error_code = net::ERR_NOT_IMPLEMENTED;
+        params->client->OnComplete(status);
+        return true;
+      }));
+
   {
     // Navigate to the same URL (browser-initiated), but this time we hit a
-    // network error and end up in an error page.
-    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
-        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
-          network::URLLoaderCompletionStatus status;
-          status.error_code = net::ERR_NOT_IMPLEMENTED;
-          params->client->OnComplete(status);
-          return true;
-        }));
+    // network error and end up in an error page. This will result in
+    // replacement.
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_FALSE(NavigateToURL(shell(), url1));
+    capturer.Wait();
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
 
+    // The navigation replaced the previously committed entry with a new entry
+    // because the navigation resulted in an error page.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate to the same URL (through reload), and hit a network error
+    // again. This will reload the previous entry.
+    FrameNavigateParamsCapturer capturer(root);
+    shell()->Reload();
+    capturer.Wait();
+    // We're classifying this as EXISTING_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+
+    // The navigation reused the previously committed error page entry.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate to the same URL (browser-initiated), and hit a network error
+    // again. This will result in replacement.
     FrameNavigateParamsCapturer capturer(root);
     EXPECT_FALSE(NavigateToURL(shell(), url1));
     capturer.Wait();
