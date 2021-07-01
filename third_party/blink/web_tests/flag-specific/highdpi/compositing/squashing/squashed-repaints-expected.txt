@@ -19,7 +19,8 @@ CASE 1, original layer tree:
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
       "position": [120, 120],
-      "bounds": [390, 390],
+      "bounds": [210, 210],
+      "backgroundColor": "#FF00FF",
       "transform": 1
     }
   ],
@@ -55,7 +56,8 @@ CASE 2, overlap1 changes color:
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
       "position": [120, 120],
-      "bounds": [390, 390],
+      "bounds": [210, 210],
+      "backgroundColor": "#FF00FF",
       "invalidations": [
         [0, 0, 150, 150]
       ],
@@ -94,9 +96,10 @@ CASE 3, overlap1 and overlap2 change color:
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
       "position": [120, 120],
-      "bounds": [390, 390],
+      "bounds": [210, 210],
+      "backgroundColor": "#FF00FF",
       "invalidations": [
-        [120, 120, 150, 150],
+        [30, 30, 150, 150],
         [0, 0, 150, 150]
       ],
       "transform": 1
@@ -134,10 +137,11 @@ CASE 4, overlap2 and overlap3 change color:
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
       "position": [120, 120],
-      "bounds": [390, 390],
+      "bounds": [210, 210],
+      "backgroundColor": "#008000",
       "invalidations": [
-        [240, 240, 150, 150],
-        [120, 120, 150, 150]
+        [60, 60, 150, 150],
+        [30, 30, 150, 150]
       ],
       "transform": 1
     }
@@ -174,9 +178,10 @@ CASE 5, overlap3 and overlap1 change color:
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
       "position": [120, 120],
-      "bounds": [390, 390],
+      "bounds": [210, 210],
+      "backgroundColor": "#0000FF",
       "invalidations": [
-        [240, 240, 150, 150],
+        [60, 60, 150, 150],
         [0, 0, 150, 150]
       ],
       "transform": 1

@@ -16,11 +16,19 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='mv-tile'",
       "position": [8, 8],
-      "bounds": [1000, 105],
-      "contentsOpaqueForText": true,
+      "bounds": [100, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#ADD8E6",
       "invalidations": [
-        [0, 0, 1000, 105]
+        [0, 0, 100, 50]
       ]
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='mv-tile'",
+      "position": [8, 63],
+      "bounds": [1000, 50],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
     },
     {
       "name": "HorizontalScrollbar",

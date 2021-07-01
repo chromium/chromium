@@ -15,7 +15,7 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
-      "bounds": [280, 280],
+      "bounds": [150, 150],
       "contentsOpaqueForText": true
     }
   ],

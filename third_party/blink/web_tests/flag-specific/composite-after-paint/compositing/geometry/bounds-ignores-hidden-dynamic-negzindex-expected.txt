@@ -8,8 +8,15 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
-      "bounds": [500, 250],
+      "bounds": [150, 150],
       "contentsOpaqueForText": true
+    },
+    {
+      "name": "LayoutImage (positioned) IMG class='to-visible'",
+      "position": [400, 150],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
@@ -19,7 +26,22 @@
     },
     {
       "name": "LayoutNGBlockFlow PRE id='layers'",
-      "bounds": [792, 350]
+      "position": [8, 8],
+      "bounds": [784, 16],
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='indicator box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='indicator box'",
+      "position": [0, 250],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
     }
   ],
   "transforms": [

@@ -16,10 +16,17 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "position": [8, 0],
-      "bounds": [300, 655],
+      "bounds": [100, 500],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "position": [8, 500],
+      "bounds": [300, 155],
       "invalidations": [
-        [8, 508, 29, 19],
-        [285, 500, 15, 150]
+        [8, 8, 29, 19],
+        [285, 0, 15, 150]
       ]
     },
     {

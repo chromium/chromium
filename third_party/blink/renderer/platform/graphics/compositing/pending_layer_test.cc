@@ -150,6 +150,22 @@ TEST(PendingLayerTest, MergeWithBothTransforms) {
   EXPECT_EQ(PropertyTreeState::Root(), pending_layer.GetPropertyTreeState());
 }
 
+TEST(PendingLayerTest, MergeSparseTinyLayers) {
+  TestPaintArtifact artifact;
+  artifact.Chunk()
+      .Bounds(IntRect(0, 0, 3, 4))
+      .RectKnownToBeOpaque(IntRect(0, 0, 3, 4));
+  artifact.Chunk()
+      .Bounds(IntRect(20, 20, 3, 4))
+      .RectKnownToBeOpaque(IntRect(20, 20, 3, 4));
+  PaintChunkSubset chunks(artifact.Build());
+
+  PendingLayer pending_layer(chunks, chunks.begin());
+  ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
+  EXPECT_EQ(FloatRect(0, 0, 23, 24), pending_layer.Bounds());
+  EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0, 1));
+}
+
 TEST(PendingLayerTest, DontMergeSparse) {
   TestPaintArtifact artifact;
   artifact.Chunk()

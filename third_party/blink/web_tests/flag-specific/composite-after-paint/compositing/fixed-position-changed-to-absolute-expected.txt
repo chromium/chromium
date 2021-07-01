@@ -16,8 +16,15 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='layer-A'",
       "position": [20, 20],
-      "bounds": [226, 180],
+      "bounds": [226, 60],
       "contentsOpaqueForText": true
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='layer-B'",
+      "position": [100, 100],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#F26835"
     }
   ],
   "transforms": [

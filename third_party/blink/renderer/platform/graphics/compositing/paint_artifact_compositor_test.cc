@@ -234,11 +234,11 @@ class PaintArtifactCompositorTest : public testing::Test,
                                            bool include_subsequent_chunk) {
     TestPaintArtifact artifact;
     if (include_preceding_chunk)
-      artifact.Chunk().RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
-    artifact.Chunk().EffectivelyInvisible().RectDrawing(
-        IntRect(100, 0, 100, 100), Color(255, 0, 0));
+      artifact.Chunk().RectDrawing(IntRect(0, 0, 10, 10), Color::kBlack);
+    artifact.Chunk().EffectivelyInvisible().RectDrawing(IntRect(10, 0, 10, 10),
+                                                        Color(255, 0, 0));
     if (include_subsequent_chunk)
-      artifact.Chunk().RectDrawing(IntRect(0, 100, 100, 100), Color::kWhite);
+      artifact.Chunk().RectDrawing(IntRect(0, 10, 10, 10), Color::kWhite);
     Update(artifact.Build());
   }
 
@@ -293,7 +293,7 @@ TEST_P(PaintArtifactCompositorTest, OneTransform) {
       .RectDrawing(IntRect(0, 0, 100, 100), Color::kWhite);
   artifact.Chunk().RectDrawing(IntRect(0, 0, 100, 100), Color::kGray);
   artifact.Chunk(*transform, c0(), e0())
-      .RectDrawing(IntRect(100, 100, 200, 100), Color::kBlack);
+      .RectDrawing(IntRect(100, 0, 100, 100), Color::kBlack);
   Update(artifact.Build());
 
   ASSERT_EQ(2u, LayerCount());
@@ -305,7 +305,7 @@ TEST_P(PaintArtifactCompositorTest, OneTransform) {
     rects_with_color.push_back(
         RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(100, 100, 200, 100), Color::kBlack));
+        RectWithColor(FloatRect(100, 0, 100, 100), Color::kBlack));
 
     EXPECT_THAT(layer->GetPicture(),
                 Pointee(DrawsRectangles(rects_with_color)));
@@ -335,7 +335,7 @@ TEST_P(PaintArtifactCompositorTest, OneTransformWithAlias) {
       .RectDrawing(IntRect(0, 0, 100, 100), Color::kWhite);
   artifact.Chunk().RectDrawing(IntRect(0, 0, 100, 100), Color::kGray);
   artifact.Chunk(*transform, c0(), e0())
-      .RectDrawing(IntRect(100, 100, 200, 100), Color::kBlack);
+      .RectDrawing(IntRect(100, 0, 100, 100), Color::kBlack);
   Update(artifact.Build());
 
   ASSERT_EQ(2u, LayerCount());
@@ -347,7 +347,7 @@ TEST_P(PaintArtifactCompositorTest, OneTransformWithAlias) {
     rects_with_color.push_back(
         RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(100, 100, 200, 100), Color::kBlack));
+        RectWithColor(FloatRect(100, 0, 100, 100), Color::kBlack));
 
     EXPECT_THAT(layer->GetPicture(),
                 Pointee(DrawsRectangles(rects_with_color)));
@@ -843,37 +843,36 @@ TEST_P(PaintArtifactCompositorTest, DeeplyNestedClips) {
 
 TEST_P(PaintArtifactCompositorTest, SiblingClipsWithAlias) {
   auto real_common_clip =
-      CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 800, 600));
+      CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 80, 60));
   auto common_clip = ClipPaintPropertyNodeAlias::Create(*real_common_clip);
   auto real_clip1 =
-      CreateClip(*common_clip, t0(), FloatRoundedRect(0, 0, 300, 200));
+      CreateClip(*common_clip, t0(), FloatRoundedRect(0, 0, 30, 20));
   auto clip1 = ClipPaintPropertyNodeAlias::Create(*real_clip1);
   auto real_clip2 =
-      CreateClip(*common_clip, t0(), FloatRoundedRect(400, 0, 400, 600));
+      CreateClip(*common_clip, t0(), FloatRoundedRect(40, 0, 40, 60));
   auto clip2 = ClipPaintPropertyNodeAlias::Create(*real_clip2);
 
   TestPaintArtifact artifact;
   artifact.Chunk(t0(), *clip1, e0())
-      .RectDrawing(IntRect(0, 0, 111, 222), Color::kWhite);
+      .RectDrawing(IntRect(0, 0, 11, 22), Color::kWhite);
   artifact.Chunk(t0(), *clip2, e0())
-      .RectDrawing(IntRect(333, 444, 555, 666), Color::kBlack);
+      .RectDrawing(IntRect(33, 44, 55, 66), Color::kBlack);
   Update(artifact.Build());
 
   // The two chunks are merged together.
   ASSERT_EQ(1u, LayerCount());
   const cc::Layer* layer = LayerAt(0);
-  EXPECT_THAT(
-      layer->GetPicture(),
-      Pointee(DrawsRectangles(Vector<RectWithColor>{
-          // This is the first RectDrawing with real_clip1 applied.
-          RectWithColor(FloatRect(0, 0, 111, 200), Color::kWhite),
-          // This is the second RectDrawing with real_clip2 applied.
-          RectWithColor(FloatRect(400, 444, 400, 156), Color::kBlack)})));
+  EXPECT_THAT(layer->GetPicture(),
+              Pointee(DrawsRectangles(Vector<RectWithColor>{
+                  // This is the first RectDrawing with real_clip1 applied.
+                  RectWithColor(FloatRect(0, 0, 11, 20), Color::kWhite),
+                  // This is the second RectDrawing with real_clip2 applied.
+                  RectWithColor(FloatRect(40, 44, 40, 16), Color::kBlack)})));
   EXPECT_EQ(gfx::Transform(), layer->ScreenSpaceTransform());
   const cc::ClipNode* clip_node =
       GetPropertyTrees().clip_tree.Node(layer->clip_tree_index());
   EXPECT_EQ(cc::ClipNode::ClipType::APPLIES_LOCAL_CLIP, clip_node->clip_type);
-  ASSERT_EQ(gfx::RectF(0, 0, 800, 600), clip_node->clip);
+  ASSERT_EQ(gfx::RectF(0, 0, 80, 60), clip_node->clip);
 }
 
 TEST_P(PaintArtifactCompositorTest, SiblingClipsWithCompositedTransform) {
@@ -2444,52 +2443,52 @@ TEST_P(PaintArtifactCompositorTest, DecompositedEffectNotMergingDueToOverlap) {
   auto transform = CreateTransform(t0(), TransformationMatrix(), FloatPoint3D(),
                                    CompositingReason::k3DTransform);
   TestPaintArtifact artifact;
-  artifact.Chunk().RectDrawing(IntRect(0, 0, 50, 50), Color::kGray);
+  artifact.Chunk().RectDrawing(IntRect(0, 0, 40, 40), Color::kGray);
   artifact.Chunk(t0(), c0(), *effect1)
-      .RectDrawing(IntRect(100, 0, 50, 50), Color::kGray);
+      .RectDrawing(IntRect(50, 0, 40, 40), Color::kGray);
   // This chunk has a transform that must be composited, thus causing effect1
   // to be composited too.
   artifact.Chunk(*transform, c0(), *effect1)
-      .RectDrawing(IntRect(200, 0, 50, 50), Color::kGray);
+      .RectDrawing(IntRect(100, 0, 40, 40), Color::kGray);
   artifact.Chunk(t0(), c0(), *effect2)
-      .RectDrawing(IntRect(200, 100, 50, 50), Color::kGray);
+      .RectDrawing(IntRect(100, 50, 40, 40), Color::kGray);
   // This chunk overlaps with the 2nd chunk, but is seemingly safe to merge.
   // However because effect1 gets composited due to a composited transform,
   // we can't merge with effect1 nor skip it to merge with the first chunk.
   artifact.Chunk(t0(), c0(), *effect2)
-      .RectDrawing(IntRect(100, 0, 50, 50), Color::kGray);
+      .RectDrawing(IntRect(50, 0, 40, 40), Color::kGray);
 
   Update(artifact.Build());
   ASSERT_EQ(4u, LayerCount());
 
   const cc::Layer* layer1 = LayerAt(0);
   EXPECT_EQ(gfx::Vector2dF(0.f, 0.f), layer1->offset_to_transform_parent());
-  EXPECT_EQ(gfx::Size(50, 50), layer1->bounds());
+  EXPECT_EQ(gfx::Size(40, 40), layer1->bounds());
   EXPECT_EQ(1, layer1->effect_tree_index());
 
   const cc::Layer* layer2 = LayerAt(1);
-  EXPECT_EQ(gfx::Vector2dF(100.f, 0.f), layer2->offset_to_transform_parent());
-  EXPECT_EQ(gfx::Size(50, 50), layer2->bounds());
+  EXPECT_EQ(gfx::Vector2dF(50.f, 0.f), layer2->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(40, 40), layer2->bounds());
   const cc::EffectNode* effect_node =
       GetPropertyTrees().effect_tree.Node(layer2->effect_tree_index());
   EXPECT_EQ(1, effect_node->parent_id);
   EXPECT_EQ(0.1f, effect_node->opacity);
 
   const cc::Layer* layer3 = LayerAt(2);
-  EXPECT_EQ(gfx::Vector2dF(200.f, 0.f), layer3->offset_to_transform_parent());
-  EXPECT_EQ(gfx::Size(50, 50), layer3->bounds());
+  EXPECT_EQ(gfx::Vector2dF(100.f, 0.f), layer3->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(40, 40), layer3->bounds());
   EXPECT_EQ(effect_node->id, layer3->effect_tree_index());
 
   const cc::Layer* layer4 = LayerAt(3);
-  EXPECT_EQ(gfx::Vector2dF(100.f, 0.f), layer4->offset_to_transform_parent());
-  EXPECT_EQ(gfx::Size(150, 150), layer4->bounds());
+  EXPECT_EQ(gfx::Vector2dF(50.f, 0.f), layer4->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(90, 90), layer4->bounds());
   EXPECT_EQ(1, layer4->effect_tree_index());
 }
 
 TEST_P(PaintArtifactCompositorTest, EffectivelyInvisibleChunk) {
   UpdateWithEffectivelyInvisibleChunk(false, false);
   ASSERT_EQ(1u, LayerCount());
-  EXPECT_EQ(gfx::Size(100, 100), LayerAt(0)->bounds());
+  EXPECT_EQ(gfx::Size(10, 10), LayerAt(0)->bounds());
   EXPECT_FALSE(LayerAt(0)->DrawsContent());
   EXPECT_FALSE(LayerAt(0)->GetPicture());
 }
@@ -2498,35 +2497,34 @@ TEST_P(PaintArtifactCompositorTest,
        EffectivelyInvisibleChunkWithPrecedingChunk) {
   UpdateWithEffectivelyInvisibleChunk(true, false);
   ASSERT_EQ(1u, LayerCount());
-  EXPECT_EQ(gfx::Size(200, 100), LayerAt(0)->bounds());
+  EXPECT_EQ(gfx::Size(20, 10), LayerAt(0)->bounds());
   EXPECT_TRUE(LayerAt(0)->DrawsContent());
   EXPECT_THAT(LayerAt(0)->GetPicture(),
               Pointee(DrawsRectangles(
-                  {RectWithColor(FloatRect(0, 0, 100, 100), Color::kBlack)})));
+                  {RectWithColor(FloatRect(0, 0, 10, 10), Color::kBlack)})));
 }
 
 TEST_P(PaintArtifactCompositorTest,
        EffectivelyInvisibleChunkWithSubsequentChunk) {
   UpdateWithEffectivelyInvisibleChunk(false, true);
   ASSERT_EQ(1u, LayerCount());
-  EXPECT_EQ(gfx::Size(200, 200), LayerAt(0)->bounds());
+  EXPECT_EQ(gfx::Size(20, 20), LayerAt(0)->bounds());
   EXPECT_TRUE(LayerAt(0)->DrawsContent());
   EXPECT_THAT(LayerAt(0)->GetPicture(),
-              Pointee(DrawsRectangles({RectWithColor(
-                  FloatRect(0, 100, 100, 100), Color::kWhite)})));
+              Pointee(DrawsRectangles(
+                  {RectWithColor(FloatRect(0, 10, 10, 10), Color::kWhite)})));
 }
 
 TEST_P(PaintArtifactCompositorTest,
        EffectivelyInvisibleChunkWithPrecedingAndSubsequentChunks) {
   UpdateWithEffectivelyInvisibleChunk(true, true);
   ASSERT_EQ(1u, LayerCount());
-  EXPECT_EQ(gfx::Size(200, 200), LayerAt(0)->bounds());
+  EXPECT_EQ(gfx::Size(20, 20), LayerAt(0)->bounds());
   EXPECT_TRUE(LayerAt(0)->DrawsContent());
-  EXPECT_THAT(
-      LayerAt(0)->GetPicture(),
-      Pointee(DrawsRectangles(
-          {RectWithColor(FloatRect(0, 0, 100, 100), Color::kBlack),
-           RectWithColor(FloatRect(0, 100, 100, 100), Color::kWhite)})));
+  EXPECT_THAT(LayerAt(0)->GetPicture(),
+              Pointee(DrawsRectangles(
+                  {RectWithColor(FloatRect(0, 0, 10, 10), Color::kBlack),
+                   RectWithColor(FloatRect(0, 10, 10, 10), Color::kWhite)})));
 }
 
 TEST_P(PaintArtifactCompositorTest, UpdateManagesLayerElementIds) {

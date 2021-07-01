@@ -25,8 +25,9 @@ Should be composited
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test1 box'",
       "position": [11, 21],
-      "bounds": [220, 150],
-      "contentsOpaqueForText": true,
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFA500",
       "transform": 2
     },
     {

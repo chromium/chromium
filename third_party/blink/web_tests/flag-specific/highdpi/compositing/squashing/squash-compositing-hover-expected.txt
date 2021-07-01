@@ -25,7 +25,8 @@ Case 1, original layer tree:
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
       "position": [120, 120],
-      "bounds": [390, 390],
+      "bounds": [210, 210],
+      "backgroundColor": "#00FFFF",
       "transform": 2
     }
   ],
@@ -82,8 +83,9 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
     },
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle2')",
-      "position": [120, 120],
-      "bounds": [270, 270],
+      "position": [30, 30],
+      "bounds": [180, 180],
+      "backgroundColor": "#00FFFF",
       "transform": 3
     }
   ],
@@ -156,7 +158,7 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
     },
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top')",
-      "position": [120, 120],
+      "position": [30, 30],
       "bounds": [150, 150],
       "backgroundColor": "#00FFFF",
       "transform": 3
@@ -187,7 +189,7 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [390, 390, 0, 1]
+        [300, 300, 0, 1]
       ]
     }
   ]
@@ -218,7 +220,8 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
       "position": [120, 120],
-      "bounds": [270, 270],
+      "bounds": [180, 180],
+      "backgroundColor": "#FF00FF",
       "transform": 2
     },
     {
@@ -254,7 +257,7 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [510, 510, 0, 1]
+        [330, 330, 0, 1]
       ]
     }
   ]
@@ -285,7 +288,8 @@ Case 5: back to situation in case 1
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
       "position": [120, 120],
-      "bounds": [390, 390],
+      "bounds": [210, 210],
+      "backgroundColor": "#00FFFF",
       "transform": 2
     }
   ],

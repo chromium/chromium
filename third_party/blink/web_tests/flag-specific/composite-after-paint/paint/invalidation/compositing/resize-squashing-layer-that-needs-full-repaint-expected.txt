@@ -18,10 +18,7 @@
       "position": [55, 55],
       "bounds": [500, 500],
       "contentsOpaque": true,
-      "backgroundColor": "#ADD8E6",
-      "invalidations": [
-        [0, 0, 500, 500]
-      ]
+      "backgroundColor": "#ADD8E6"
     }
   ],
   "transforms": [

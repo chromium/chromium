@@ -19,7 +19,8 @@ CASE 1, original layer tree:
     {
       "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
       "position": [80, 80],
-      "bounds": [260, 260],
+      "bounds": [140, 140],
+      "backgroundColor": "#FF00FF",
       "transform": 1
     }
   ],
@@ -45,8 +46,8 @@ CASE 2, The original composited layer is no longer composited, which then also r
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [300, 300, 100, 100],
-        [220, 220, 100, 100],
+        [180, 180, 100, 100],
+        [160, 160, 100, 100],
         [140, 140, 100, 100],
         [60, 60, 100, 100]
       ]

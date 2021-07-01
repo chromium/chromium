@@ -147,9 +147,9 @@ bool PendingLayer::MayDrawContent() const {
   return Chunks().size() > 1 || FirstPaintChunk().size() > 0;
 }
 
-// We will only allow merging if the merged-area:home-area+guest-area doesn't
-// exceed the ratio |kMergingSparsityTolerance|:1.
-static constexpr float kMergeSparsityTolerance = 6;
+// We will only allow merging if
+// merged_area - (home_area + guest_area) <= kMergeSparsityAreaTolerance
+static constexpr float kMergeSparsityAreaTolerance = 10000;
 
 bool PendingLayer::MergeInternal(const PendingLayer& guest,
                                  const PropertyTreeState& guest_state,
@@ -180,7 +180,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
       UnionRect(new_home_bounds.Rect(), new_guest_bounds.Rect());
   float sum_area = new_home_bounds.Rect().Size().Area() +
                    new_guest_bounds.Rect().Size().Area();
-  if (merged_bounds.Size().Area() > kMergeSparsityTolerance * sum_area)
+  if (merged_bounds.Size().Area() - sum_area > kMergeSparsityAreaTolerance)
     return false;
 
   FloatRect merged_rect_known_to_be_opaque =

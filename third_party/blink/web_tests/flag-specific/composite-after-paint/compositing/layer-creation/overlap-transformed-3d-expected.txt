@@ -57,7 +57,16 @@ After:
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box top left'",
       "position": [8, 8],
-      "bounds": [300, 371]
+      "bounds": [100, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box top right'",
+      "position": [208, 8],
+      "bounds": [100, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080"
     }
   ],
   "transforms": [

@@ -17,7 +17,7 @@ CASE 1, original layer tree
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [4, 4],
-      "bounds": [276, 276],
+      "bounds": [146, 146],
       "contentsOpaqueForText": true
     }
   ],
@@ -53,7 +53,7 @@ CASE 2, hovering over the outer div
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [4, 4],
-      "bounds": [276, 276],
+      "bounds": [146, 146],
       "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 132, 132]
@@ -92,10 +92,10 @@ CASE 3, hovering over the inner div
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [4, 4],
-      "bounds": [276, 276],
+      "bounds": [146, 146],
       "contentsOpaqueForText": true,
       "invalidations": [
-        [0, 0, 132, 132]
+        [46, 46, 100, 100]
       ]
     }
   ],
