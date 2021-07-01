@@ -29,12 +29,6 @@ namespace base {
 
 namespace internal {
 
-namespace tools {
-
-class ThreadCacheInspector;
-
-}
-
 class ThreadCache;
 
 extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
@@ -119,8 +113,6 @@ class BASE_EXPORT ThreadCacheRegistry {
   static constexpr size_t kMinCachedMemoryForPurging = 500 * 1024;
 
  private:
-  friend class tools::ThreadCacheInspector;
-
   void PeriodicPurge();
   void PostDelayedPurgeTask();
   friend class NoDestructor<ThreadCacheRegistry>;
@@ -256,7 +248,7 @@ class BASE_EXPORT ThreadCache {
   void Purge();
   // Amount of cached memory for this thread's cache, in bytes.
   size_t CachedMemory() const;
-  void AccumulateStats(ThreadCacheStats* stats, bool with_alloc_stats) const;
+  void AccumulateStats(ThreadCacheStats* stats) const;
 
   // Purge the thread cache of the current thread, if one exists.
   static void PurgeCurrentThread();
@@ -264,8 +256,6 @@ class BASE_EXPORT ThreadCache {
   size_t bucket_count_for_testing(size_t index) const {
     return buckets_[index].count;
   }
-
-  PlatformThreadId thread_id() const { return thread_id_; }
 
   // Sets the maximum size of allocations that may be cached by the thread
   // cache. This applies to all threads. However, the maximum size is bounded by
@@ -290,8 +280,6 @@ class BASE_EXPORT ThreadCache {
                 "");
 
  private:
-  friend class tools::ThreadCacheInspector;
-
   struct Bucket {
     PartitionFreelistEntry* freelist_head = nullptr;
     // Want to keep sizeof(Bucket) small, using small types.
@@ -350,7 +338,6 @@ class BASE_EXPORT ThreadCache {
   std::atomic<bool> should_purge_;
   ThreadCacheStats stats_;
   PartitionRoot<ThreadSafe>* const root_;
-  const PlatformThreadId thread_id_;
 #if DCHECK_IS_ON()
   bool is_in_thread_cache_ = false;
 #endif
