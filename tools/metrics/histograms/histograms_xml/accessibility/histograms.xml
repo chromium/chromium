@@ -1002,7 +1002,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ManuallyEnabled" enum="BooleanEnabled"
-    expires_after="M93">
+    expires_after="M99">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
