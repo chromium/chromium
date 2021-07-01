@@ -397,7 +397,7 @@ void ContentMainDelegateImpl::InitializeResourceBundle() {
         .LoadSecondaryLocaleDataWithPakFileRegion(base::File(pak_fd),
                                                   pak_region);
 
-    std::vector<std::pair<int, ui::ScaleFactor>> extra_paks = {
+    std::vector<std::pair<int, ui::ResourceScaleFactor>> extra_paks = {
         {kWebLayerMainPakDescriptor, ui::SCALE_FACTOR_NONE},
         {kWebLayer100PercentPakDescriptor, ui::SCALE_FACTOR_100P}};
 

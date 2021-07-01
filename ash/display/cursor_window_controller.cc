@@ -331,8 +331,8 @@ void CursorWindowController::UpdateCursorImage() {
                                    ->GetDisplayInfo(display_.id())
                                    .device_scale_factor();
   // And use the nearest resource scale factor.
-  float cursor_scale =
-      ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(original_scale));
+  float cursor_scale = ui::GetScaleForResourceScaleFactor(
+      ui::GetSupportedResourceScaleFactor(original_scale));
 
   gfx::ImageSkia image;
   gfx::Point hot_point_in_physical_pixels;
