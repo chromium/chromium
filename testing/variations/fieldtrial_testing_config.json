@@ -688,24 +688,6 @@
             ]
         }
     ],
-    "AndroidSpellChecker": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_NonLowEnd",
-                    "enable_features": [
-                        "AndroidSpellCheckerNonLowEnd"
-                    ],
-                    "disable_features": [
-                        "AndroidSpellChecker"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSwitchToTab": [
         {
             "platforms": [
@@ -2576,25 +2558,6 @@
             ]
         }
     ],
-    "DeleteOverwrittenDownloads": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeleteOverwrittenDownloads"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeprecateFtp": [
         {
             "platforms": [
@@ -3320,22 +3283,6 @@
                     "name": "CloseAllTabsConfirmationEnabled",
                     "enable_features": [
                         "EnableCloseAllTabsConfirmation"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableDynamicUpdate": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GPayAppDynamicUpdate"
                     ]
                 }
             ]
@@ -6099,28 +6046,6 @@
             ]
         }
     ],
-    "ParallelDownloadWithQUICAndHTTP2": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableHTTP2",
-                    "enable_features": [
-                        "UseParallelRequestsForHTTP2"
-                    ]
-                },
-                {
-                    "name": "EnableQuic",
-                    "enable_features": [
-                        "UseParallelRequestsForQUIC"
-                    ]
-                }
-            ]
-        }
-    ],
     "ParkableImages": [
         {
             "platforms": [
@@ -7823,28 +7748,6 @@
             ]
         }
     ],
-    "SyncSendInterestedDataTypes": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncSendInterestedDataTypes"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncTriggerFullKeystoreMigration": [
         {
             "platforms": [
@@ -7876,22 +7779,6 @@
                     "name": "Async",
                     "disable_features": [
                         "SyncWindowDestruction"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SynchronousPageFlipTesting": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SynchronousPageFlipTesting",
-                        "UseRealBuffersForPageFlipTest"
                     ]
                 }
             ]
