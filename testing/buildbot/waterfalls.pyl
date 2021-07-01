@@ -6067,6 +6067,7 @@
           'components/mirroring:mirroring_tests',
           'components/mirroring:mirroring_unittests',
           'components/openscreen_platform',
+          'third_party/openscreen/src/cast/cast_core/api',
         ],
       },
       'chromium_mac_debug': {
