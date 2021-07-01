@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -38,6 +40,8 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -60,11 +64,12 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ChromeContextMenuPopulatorTest {
-    private static final String PAGE_URL = "http://www.blah.com";
+    private static final String PAGE_URL = "http://www.blah.com/page_url";
     private static final String LINK_URL = "http://www.blah.com/other_blah";
     private static final String LINK_TEXT = "BLAH!";
     private static final String IMAGE_SRC_URL = "http://www.blah.com/image.jpg";
     private static final String IMAGE_TITLE_TEXT = "IMAGE!";
+    private static final String RETRIEVED_IMAGE_URL = "http://www.blah.com/retrieved_image.jpg";
 
     @Mock
     private Activity mActivity;
@@ -604,5 +609,29 @@ public class ChromeContextMenuPopulatorTest {
         SharedPreferencesManager.getInstance().removeKey(
                 CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST);
         TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.setForTesting(true);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testGetLensIntentParams() {
+        when(mItemDelegate.isIncognito()).thenReturn(true);
+        ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
+                new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), new GURL(IMAGE_SRC_URL),
+                IMAGE_TITLE_TEXT, null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+
+        LensIntentParams lensIntentParams = mPopulator.getLensIntentParams(
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, Uri.parse(RETRIEVED_IMAGE_URL));
+        assertEquals("Lens intent parameters has incorrect image URI.", RETRIEVED_IMAGE_URL,
+                lensIntentParams.getImageUri().toString());
+        assertTrue("Lens intent parameters has incorrect incognito value.",
+                lensIntentParams.getIsIncognito());
+        assertEquals("Lens intent parameters has incorrect src URL.", IMAGE_SRC_URL,
+                lensIntentParams.getSrcUrl());
+        assertEquals("Lens intent parameters has incorrect title or alt text.", IMAGE_TITLE_TEXT,
+                lensIntentParams.getImageTitleOrAltText());
+        assertEquals("Lens intent parameters has incorrect page URL.", PAGE_URL,
+                lensIntentParams.getPageUrl());
     }
 }

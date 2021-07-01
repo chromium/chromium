@@ -38,7 +38,9 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
@@ -910,10 +912,26 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      */
     protected void searchWithGoogleLens(@LensEntryPoint int lensEntryPoint) {
         mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.PNG, (Uri imageUri) -> {
-            ShareHelper.shareImageWithGoogleLens(getWindow(), imageUri, mItemDelegate.isIncognito(),
-                    mParams.getSrcUrl(), mParams.getTitleText(), mParams.getPageUrl(),
-                    lensEntryPoint);
+            LensIntentParams intentParams = getLensIntentParams(lensEntryPoint, imageUri);
+            LensController.getInstance().startLens(getWindow(), intentParams);
         });
+    }
+
+    /**
+     * Build the intent params for Lens Context Menu features.
+     * @param lensEntryPoint The entry point that launches the Lens app.
+     * @param imageUri The image url that the context menu was triggered on.
+     * @return A LensIntentParams. Will be used to launch the Lens app.
+     */
+    @VisibleForTesting
+    protected LensIntentParams getLensIntentParams(
+            @LensEntryPoint int lensEntryPoint, Uri imageUri) {
+        return new LensIntentParams.Builder(lensEntryPoint, isIncognito())
+                .withImageUri(imageUri)
+                .withImageTitleOrAltText(mParams.getTitleText())
+                .withSrcUrl(mParams.getSrcUrl().getValidSpecOrEmpty())
+                .withPageUrl(mParams.getPageUrl().getValidSpecOrEmpty())
+                .build();
     }
 
     @Override

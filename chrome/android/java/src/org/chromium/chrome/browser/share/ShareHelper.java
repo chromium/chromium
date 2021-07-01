@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.share;
 
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.util.Pair;
 import android.view.MenuItem;
 
@@ -28,16 +26,12 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lens.LensController;
-import org.chromium.chrome.browser.lens.LensEntryPoint;
-import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -122,45 +116,6 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         } else {
             shareIntent.setComponent(name);
             fireIntent(window, shareIntent, null);
-        }
-    }
-
-    /**
-     * Share an image URI with Google Lens.
-     * @param window The current window.
-     * @param imageUri The url to share with the app.
-     * @param isIncognito Whether the current tab is in incognito mode.
-     * @param srcUrl The 'src' attribute of the image.
-     * @param titleOrAltText The 'title' or, if empty, the 'alt' attribute of the image.
-     * @param pageUrl The page url.
-     * @param lensEntryPoint The entry point that launches the Lens app.
-     * @param requiresConfirmation Whether the request requires an account dialog.
-     */
-    public static void shareImageWithGoogleLens(final WindowAndroid window, Uri imageUri,
-            boolean isIncognito, GURL srcUrl, String titleOrAltText, GURL pageUrl,
-            @LensEntryPoint int lensEntryPoint) {
-        if (LensUtils.useDirectIntentSdkIntegration(ContextUtils.getApplicationContext())
-                || LensUtils.useLensIntentApi()) {
-            LensIntentParams intentParams = LensUtils.buildLensIntentParams(imageUri, isIncognito,
-                    srcUrl.getValidSpecOrEmpty(), titleOrAltText, pageUrl.getValidSpecOrEmpty(),
-                    lensEntryPoint);
-            LensController.getInstance().startLens(window, intentParams);
-        } else {
-            Intent shareIntent =
-                    LensUtils.getShareWithGoogleLensIntent(ContextUtils.getApplicationContext(),
-                            imageUri, isIncognito, SystemClock.elapsedRealtimeNanos(), srcUrl,
-                            titleOrAltText, pageUrl, lensEntryPoint);
-            try {
-                // Pass an empty callback to ensure the triggered activity can identify the source
-                // of the intent (startActivityForResult allows app identification).
-                fireIntent(window, shareIntent, (w, resultCode, data) -> {});
-            } catch (ActivityNotFoundException e) {
-                // The initial version check should guarantee that the activity is available.
-                // However, the exception may be thrown in test environments after mocking out the
-                // version check.
-                if (Boolean.TRUE.equals(sIgnoreActivityNotFoundException)) return;
-                throw e;
-            }
         }
     }
 
