@@ -114,6 +114,11 @@ class AppListBubbleViewTest : public AshTestBase {
     GetEventGenerator()->ReleaseKey(key, ui::EF_NONE);
   }
 
+  void ClickButton(views::Button* button) {
+    GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+    GetEventGenerator()->ClickLeftButton();
+  }
+
   base::test::ScopedFeatureList scoped_features_;
 };
 
@@ -189,6 +194,24 @@ TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
   PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(view->assistant_button()->GetVisible());
   EXPECT_TRUE(view->close_button()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
+  ShowAppList();
+  PressAndReleaseKey(ui::VKEY_A);
+
+  // Close button is visible after typing text.
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_FALSE(search_box_view->search_box()->GetText().empty());
+
+  // Clicking the close button clears the search, but the search box is still
+  // focused/active.
+  ClickButton(search_box_view->close_button());
+  EXPECT_FALSE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->is_search_box_active());
 }
 
 TEST_F(AppListBubbleViewTest, AppsPageShownByDefault) {

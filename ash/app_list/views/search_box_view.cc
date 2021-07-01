@@ -28,7 +28,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_delegate.h"
-#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -239,12 +238,6 @@ int SearchBoxView::GetFocusRingSpacing() {
 
 void SearchBoxView::SetupCloseButton() {
   views::ImageButton* close = close_button();
-  close->SetCallback(base::BindRepeating(
-      [](SearchBoxView* view) {
-        view->SetSearchBoxActive(false, ui::ET_UNKNOWN);
-        view->ClearSearch();
-      },
-      this));
   close->SetImage(
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(views::kIcCloseIcon, kSearchBoxIconSize,

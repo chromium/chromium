@@ -42,7 +42,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -200,6 +199,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 
   void AssistantButtonPressed() override {}
   void BackButtonPressed() override {}
+  void CloseButtonPressed() override {}
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void SearchBoxFocusChanged(SearchBoxViewBase* sender) override {}
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
@@ -234,36 +234,6 @@ TEST_F(SearchBoxViewTest, CloseButtonVisibleAfterTyping) {
 TEST_F(SearchBoxViewTest, CloseButtonIVisibleInZeroStateSearchBox) {
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
   EXPECT_TRUE(view()->close_button()->GetVisible());
-}
-
-// Tests that the close button becomes invisible after close button is clicked.
-TEST_F(SearchBoxViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
-  KeyPress(ui::VKEY_A);
-  views::test::ButtonTestApi(view()->close_button())
-      .NotifyClick(ui::MouseEvent(
-          ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-          ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_FALSE(view()->close_button()->GetVisible());
-}
-
-// Tests that the search box becomes empty after close button is clicked.
-TEST_F(SearchBoxViewTest, SearchBoxEmptyAfterCloseButtonClicked) {
-  KeyPress(ui::VKEY_A);
-  views::test::ButtonTestApi(view()->close_button())
-      .NotifyClick(ui::MouseEvent(
-          ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-          ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(view()->search_box()->GetText().empty());
-}
-
-// Tests that the search box is no longer active after close button is clicked.
-TEST_F(SearchBoxViewTest, SearchBoxActiveAfterCloseButtonClicked) {
-  KeyPress(ui::VKEY_A);
-  views::test::ButtonTestApi(view()->close_button())
-      .NotifyClick(ui::MouseEvent(
-          ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-          ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_FALSE(view()->is_search_box_active());
 }
 
 // Tests that the search box is inactive by default.

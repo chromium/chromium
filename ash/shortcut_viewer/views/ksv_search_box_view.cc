@@ -8,7 +8,6 @@
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/shortcut_viewer/vector_icons/vector_icons.h"
-#include "base/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -105,13 +104,6 @@ void KSVSearchBoxView::UpdateSearchBoxBorder() {
 
 void KSVSearchBoxView::SetupCloseButton() {
   views::ImageButton* close = close_button();
-  close->SetCallback(base::BindRepeating(
-      [](ash::SearchBoxViewBase* view) {
-        // Focus on the search box text field after clicking close button.
-        view->search_box()->RequestFocus();
-        view->ClearSearch();
-      },
-      this));
   close->SetHasInkDropActionOnClick(true);
   close->SetImage(
       views::ImageButton::STATE_NORMAL,

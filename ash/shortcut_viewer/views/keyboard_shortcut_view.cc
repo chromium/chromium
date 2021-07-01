@@ -340,6 +340,12 @@ void KeyboardShortcutView::BackButtonPressed() {
   search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
 }
 
+void KeyboardShortcutView::CloseButtonPressed() {
+  // After clicking search box close button focus the search box text field.
+  search_box_view_->search_box()->RequestFocus();
+  search_box_view_->ClearSearch();
+}
+
 void KeyboardShortcutView::ActiveChanged(ash::SearchBoxViewBase* sender) {
   const bool is_search_box_active = sender->is_search_box_active();
   is_search_box_empty_ = sender->IsSearchBoxTrimmedQueryEmpty();

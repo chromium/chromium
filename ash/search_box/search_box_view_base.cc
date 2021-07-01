@@ -289,7 +289,7 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   content_container_->AddChildView(assistant_button_);
 
   close_button_ = new SearchBoxImageButton(base::BindRepeating(
-      &SearchBoxViewBase::ClearSearch, base::Unretained(this)));
+      &SearchBoxViewDelegate::CloseButtonPressed, base::Unretained(delegate_)));
   content_container_->AddChildView(close_button_);
 }
 

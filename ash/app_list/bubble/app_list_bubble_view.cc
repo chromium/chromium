@@ -193,6 +193,12 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   view_delegate_->StartSearch(query);
 }
 
+void AppListBubbleView::CloseButtonPressed() {
+  // Activate and focus the search box.
+  search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
+  search_box_view_->ClearSearch();
+}
+
 void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
   // Nothing to do. Search box starts focused, and FocusManager handles arrow
   // key traversal from there.

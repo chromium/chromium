@@ -24,7 +24,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_model.h"
 #include "ui/views/widget/widget.h"
@@ -48,8 +51,11 @@ class AppListMainViewTest : public views::ViewsTestBase,
   void SetUp() override {
     AppListView::SetShortAnimationForTesting(true);
     views::ViewsTestBase::SetUp();
-    feature_list.InitWithFeatureState(app_list_features::kNewDragSpecInLauncher,
-                                      GetParam());
+    // Allow TEST_F for tests that don't need to be parameterized.
+    if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
+      feature_list_.InitWithFeatureState(
+          app_list_features::kNewDragSpecInLauncher, GetParam());
+    }
 
     // Create, and show the app list is fullscreen apps grid state.
     delegate_ = std::make_unique<AppListTestViewDelegate>();
@@ -220,18 +226,50 @@ class AppListMainViewTest : public views::ViewsTestBase,
 
   bool IsPaginationPreviewActive() { return GetParam(); }
 
+  void PressKeyInSearchBox(ui::KeyboardCode key_code) {
+    ui::KeyEvent press(ui::ET_KEY_PRESSED, key_code, ui::EF_NONE);
+    search_box_view()->search_box()->OnKeyEvent(&press);
+  }
+
+  void ClickButton(views::Button* button) {
+    views::test::ButtonTestApi(button).NotifyClick(ui::MouseEvent(
+        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
+        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  }
+
  protected:
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
 
  private:
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AppListMainViewTest, testing::Bool());
 
 }  // namespace
+
+// Tests that the close button becomes invisible after close button is clicked.
+TEST_F(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
+  PressKeyInSearchBox(ui::VKEY_A);
+  ClickButton(search_box_view()->close_button());
+  EXPECT_FALSE(search_box_view()->close_button()->GetVisible());
+}
+
+// Tests that the search box becomes empty after close button is clicked.
+TEST_F(AppListMainViewTest, SearchBoxEmptyAfterCloseButtonClicked) {
+  PressKeyInSearchBox(ui::VKEY_A);
+  ClickButton(search_box_view()->close_button());
+  EXPECT_TRUE(search_box_view()->search_box()->GetText().empty());
+}
+
+// Tests that the search box is no longer active after close button is clicked.
+TEST_F(AppListMainViewTest, SearchBoxActiveAfterCloseButtonClicked) {
+  PressKeyInSearchBox(ui::VKEY_A);
+  ClickButton(search_box_view()->close_button());
+  EXPECT_FALSE(search_box_view()->is_search_box_active());
+}
 
 // Tests changing the AppListModel when switching profiles.
 TEST_P(AppListMainViewTest, ModelChanged) {

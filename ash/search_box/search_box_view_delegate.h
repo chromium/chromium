@@ -24,6 +24,10 @@ class SearchBoxViewDelegate {
   // Invoked when the back button has been pressed.
   virtual void BackButtonPressed() = 0;
 
+  // Invoked when the close button has been pressed. Implementations should
+  // clear the search box, but may or may not want to take focus.
+  virtual void CloseButtonPressed() = 0;
+
   // Invoked when search box active status has changed.
   virtual void ActiveChanged(SearchBoxViewBase* sender) = 0;
 
