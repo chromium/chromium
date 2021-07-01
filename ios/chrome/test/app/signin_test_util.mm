@@ -102,9 +102,10 @@ void SignOutAndClearIdentities() {
 }
 
 bool HasIdentities() {
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  return identity_service->HasIdentities();
+  ChromeAccountManagerService* account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          GetOriginalBrowserState());
+  return account_manager_service->HasIdentities();
 }
 
 void ResetMockAuthentication() {
