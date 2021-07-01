@@ -389,7 +389,7 @@ void ServiceWorkerRegisterJob::RegisterAndContinue() {
   blink::mojom::ServiceWorkerRegistrationOptions options(
       scope_, worker_script_type_, update_via_cache_);
   context_->registry()->CreateNewRegistration(
-      options,
+      options, key_,
       base::BindOnce(&ServiceWorkerRegisterJob::ContinueWithNewRegistration,
                      weak_factory_.GetWeakPtr()));
 }

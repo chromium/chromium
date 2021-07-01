@@ -61,6 +61,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 using blink::mojom::CacheStorageError;
 
@@ -411,7 +412,8 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     options.scope = scope;
     options.type = script_type;
     registration_ = CreateNewServiceWorkerRegistration(
-        wrapper()->context()->registry(), options);
+        wrapper()->context()->registry(), options,
+        blink::StorageKey(url::Origin::Create(scope)));
     // Set the update check time to avoid triggering updates in the middle of
     // tests.
     registration_->set_last_update_check(base::Time::Now());

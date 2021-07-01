@@ -27,6 +27,10 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class EmbeddedWorkerTestHelper;
@@ -145,7 +149,8 @@ std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
 // Calls CreateNewRegistration() synchronously.
 scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
     ServiceWorkerRegistry* registry,
-    const blink::mojom::ServiceWorkerRegistrationOptions& options);
+    const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    const blink::StorageKey& key);
 
 // Calls CreateNewVersion() synchronously.
 scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
@@ -161,6 +166,7 @@ scoped_refptr<ServiceWorkerRegistration>
 CreateServiceWorkerRegistrationAndVersion(ServiceWorkerContextCore* context,
                                           const GURL& scope,
                                           const GURL& script,
+                                          const blink::StorageKey& key,
                                           int64_t resource_id);
 
 // Writes the script down to |storage| synchronously. This should not be used in

@@ -37,9 +37,11 @@
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -361,7 +363,8 @@ std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
 
 scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
     ServiceWorkerRegistry* registry,
-    const blink::mojom::ServiceWorkerRegistrationOptions& options) {
+    const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    const blink::StorageKey& key) {
   scoped_refptr<ServiceWorkerRegistration> registration;
   // Using nestable run loop because:
   // * The CreateNewRegistration() internally uses a mojo remote and the
@@ -374,7 +377,7 @@ scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
   // problematic.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   registry->CreateNewRegistration(
-      options,
+      options, key,
       base::BindLambdaForTesting(
           [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
             registration = std::move(new_registration);
@@ -410,12 +413,13 @@ scoped_refptr<ServiceWorkerRegistration>
 CreateServiceWorkerRegistrationAndVersion(ServiceWorkerContextCore* context,
                                           const GURL& scope,
                                           const GURL& script,
+                                          const blink::StorageKey& key,
                                           int64_t resource_id) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope;
 
   scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateNewServiceWorkerRegistration(context->registry(), options);
+      CreateNewServiceWorkerRegistration(context->registry(), options, key);
   scoped_refptr<ServiceWorkerVersion> version =
       CreateNewServiceWorkerVersion(context->registry(), registration.get(),
                                     script, blink::mojom::ScriptType::kClassic);

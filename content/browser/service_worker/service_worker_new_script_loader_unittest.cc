@@ -33,8 +33,10 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 namespace service_worker_new_script_loader_unittest {
@@ -173,13 +175,16 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
   void SetUpRegistration(const GURL& script_url) {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = script_url.GetWithoutFilename();
-    SetUpRegistrationWithOptions(script_url, options);
+    SetUpRegistrationWithOptions(
+        script_url, options,
+        blink::StorageKey(url::Origin::Create(options.scope)));
   }
   void SetUpRegistrationWithOptions(
       const GURL& script_url,
-      blink::mojom::ServiceWorkerRegistrationOptions options) {
+      blink::mojom::ServiceWorkerRegistrationOptions options,
+      const blink::StorageKey& key) {
     registration_ =
-        CreateNewServiceWorkerRegistration(context()->registry(), options);
+        CreateNewServiceWorkerRegistration(context()->registry(), options, key);
     SetUpVersion(script_url);
   }
 
@@ -531,6 +536,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_PathRestriction) {
   // Service-Worker-Allowed header allows it.
   const GURL kScriptURL("https://example.com/out-of-scope/normal.js");
   const GURL kScope("https://example.com/in-scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   mock_server_.Set(kScriptURL,
                    MockHTTPServer::Response(
                        std::string("HTTP/1.1 200 OK\n"
@@ -539,7 +545,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_PathRestriction) {
                        std::string("٩( ’ω’ )و I'm body!")));
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
-  SetUpRegistrationWithOptions(kScriptURL, options);
+  SetUpRegistrationWithOptions(kScriptURL, options, kKey);
   DoRequest(kScriptURL, &client, &loader);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
@@ -570,6 +576,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest,
   // Service-Worker-Allowed header allows it.
   const GURL kImportedScriptURL(kNormalImportedScriptURL);
   const GURL kScope("https://example.com/in-scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   mock_server_.Set(
       kImportedScriptURL,
       MockHTTPServer::Response(std::string("HTTP/1.1 200 OK\n"
@@ -578,7 +585,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest,
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
   options.type = blink::mojom::ScriptType::kModule;
-  SetUpRegistrationWithOptions(kImportedScriptURL, options);
+  SetUpRegistrationWithOptions(kImportedScriptURL, options, kKey);
   DoRequest(kImportedScriptURL, &client, &loader);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
@@ -608,6 +615,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Error_PathRestriction) {
   // Service-Worker-Allowed header is not specified.
   const GURL kScriptURL("https://example.com/out-of-scope/normal.js");
   const GURL kScope("https://example.com/in-scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   mock_server_.Set(
       kScriptURL,
       MockHTTPServer::Response(std::string("HTTP/1.1 200 OK\n"
@@ -615,7 +623,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Error_PathRestriction) {
                                std::string()));
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
-  SetUpRegistrationWithOptions(kScriptURL, options);
+  SetUpRegistrationWithOptions(kScriptURL, options, kKey);
   DoRequest(kScriptURL, &client, &loader);
   client->RunUntilComplete();
 

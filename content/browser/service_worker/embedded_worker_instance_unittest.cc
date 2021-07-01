@@ -32,11 +32,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -118,8 +120,9 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
     RegistrationAndVersionPair pair;
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope;
-    pair.first =
-        CreateNewServiceWorkerRegistration(context()->registry(), options);
+    pair.first = CreateNewServiceWorkerRegistration(
+        context()->registry(), options,
+        blink::StorageKey(url::Origin::Create(scope)));
     pair.second = CreateNewServiceWorkerVersion(
         context()->registry(), pair.first, script_url,
         blink::mojom::ScriptType::kClassic);

@@ -331,13 +331,14 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
 
 TEST_F(ServiceWorkerRegistrationTest, NavigationPreload) {
   const GURL kScope("http://www.example.not/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   const GURL kScript("https://www.example.not/service_worker.js");
   // Setup.
 
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
   scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateNewServiceWorkerRegistration(context()->registry(), options);
+      CreateNewServiceWorkerRegistration(context()->registry(), options, kKey);
   scoped_refptr<ServiceWorkerVersion> version_1 = CreateNewServiceWorkerVersion(
       context()->registry(), registration.get(), kScript,
       blink::mojom::ScriptType::kClassic);
@@ -379,12 +380,13 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
 
     const GURL kUrl("https://www.example.not/");
     const GURL kScope("https://www.example.not/");
+    const blink::StorageKey kKey(url::Origin::Create(kScope));
     const GURL kScript("https://www.example.not/service_worker.js");
 
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = kScope;
-    registration_ =
-        CreateNewServiceWorkerRegistration(context()->registry(), options);
+    registration_ = CreateNewServiceWorkerRegistration(context()->registry(),
+                                                       options, kKey);
 
     // Create an active version.
     scoped_refptr<ServiceWorkerVersion> version_1 =
@@ -875,7 +877,9 @@ class ServiceWorkerRegistrationObjectHostTest
       const GURL& scope) {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope;
-    return CreateNewServiceWorkerRegistration(context()->registry(), options);
+    blink::StorageKey key(url::Origin::Create(scope));
+    return CreateNewServiceWorkerRegistration(context()->registry(), options,
+                                              key);
   }
 
   scoped_refptr<ServiceWorkerVersion> CreateVersion(

@@ -102,6 +102,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       scoped_refptr<ServiceWorkerRegistration> registration)>;
   void CreateNewRegistration(
       blink::mojom::ServiceWorkerRegistrationOptions options,
+      const blink::StorageKey& key,
       NewRegistrationCallback callback);
 
   // Create a new instance of ServiceWorkerVersion which is associated with the
@@ -377,6 +378,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   void DidGetNewRegistrationId(
       blink::mojom::ServiceWorkerRegistrationOptions options,
+      const blink::StorageKey& key,
       NewRegistrationCallback callback,
       int64_t registration_id);
 

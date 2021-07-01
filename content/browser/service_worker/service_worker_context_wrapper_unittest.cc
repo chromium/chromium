@@ -19,6 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/origin.h"
 
@@ -121,9 +122,10 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
 TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
   // Make a service worker.
   GURL scope("https://example.com/");
+  blink::StorageKey key(url::Origin::Create(scope));
   GURL script("https://example.com/sw.js");
   scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope, script,
+      CreateServiceWorkerRegistrationAndVersion(context(), scope, script, key,
                                                 /*resource_id=*/1);
 
   // Store it.
@@ -161,14 +163,16 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameOrigin) {
 
   // Make two registrations for same origin.
   GURL scope1("https://example1.com/abc/");
+  blink::StorageKey key(url::Origin::Create(scope1));
   GURL script1("https://example1.com/abc/sw.js");
   scoped_refptr<ServiceWorkerRegistration> registration1 =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1,
+      CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1, key,
                                                 /*resource_id=*/1);
   GURL scope2("https://example1.com/xyz/");
   GURL script2("https://example1.com/xyz/sw.js");
   scoped_refptr<ServiceWorkerRegistration> registration2 =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope2, script2, 1);
+      CreateServiceWorkerRegistrationAndVersion(context(), scope2, script2, key,
+                                                1);
 
   // Store both registrations.
   ASSERT_EQ(StoreRegistration(registration1),
@@ -211,9 +215,10 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistration) {
 
   // Make registration.
   GURL scope1("https://example2.com/");
+  blink::StorageKey key(url::Origin::Create(scope1));
   GURL script1("https://example2.com/");
   scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1,
+      CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1, key,
                                                 /*resource_id=*/1);
 
   // Store registration.

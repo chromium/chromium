@@ -166,12 +166,13 @@ ServiceWorkerRegistry::~ServiceWorkerRegistry() = default;
 
 void ServiceWorkerRegistry::CreateNewRegistration(
     blink::mojom::ServiceWorkerRegistrationOptions options,
+    const blink::StorageKey& key,
     NewRegistrationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetNewRegistrationId,
       base::BindOnce(&ServiceWorkerRegistry::DidGetNewRegistrationId,
-                     weak_factory_.GetWeakPtr(), std::move(options),
+                     weak_factory_.GetWeakPtr(), std::move(options), key,
                      std::move(callback)));
 }
 
@@ -1368,6 +1369,7 @@ void ServiceWorkerRegistry::DidGetUserDataForAllRegistrations(
 
 void ServiceWorkerRegistry::DidGetNewRegistrationId(
     blink::mojom::ServiceWorkerRegistrationOptions options,
+    const blink::StorageKey& key,
     NewRegistrationCallback callback,
     int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
