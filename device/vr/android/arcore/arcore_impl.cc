@@ -875,8 +875,6 @@ gfx::Size ArCoreImpl::GetUncroppedCameraImageSize() const {
 }
 
 mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
-  DVLOG(3) << __func__;
-
   TRACE_EVENT0("gpu", "ArCoreImpl Update");
 
   DCHECK(IsOnGlThread());
@@ -884,9 +882,10 @@ mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
   DCHECK(arcore_frame_.is_valid());
   DCHECK(camera_updated);
 
+  ArStatus status;
+
   TRACE_EVENT_BEGIN0("gpu", "ArCore Update");
-  ArStatus status =
-      ArSession_update(arcore_session_.get(), arcore_frame_.get());
+  status = ArSession_update(arcore_session_.get(), arcore_frame_.get());
   TRACE_EVENT_END0("gpu", "ArCore Update");
 
   if (status != AR_SUCCESS) {
@@ -895,15 +894,8 @@ mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
     return nullptr;
   }
 
-  if (plane_manager_) {
-    TRACE_EVENT0("gpu", "ArCorePlaneManager Update");
-    plane_manager_->Update(arcore_frame_.get());
-  }
-
-  if (anchor_manager_) {
-    TRACE_EVENT0("gpu", "ArCoreAnchorManager Update");
-    anchor_manager_->Update(arcore_frame_.get());
-  }
+  // TODO(https://crbug.com/1192844): If the call was successful, we should
+  // Update() the ArCore entity managers.
 
   // If we get here, assume we have a valid camera image, but we don't know yet
   // if tracking is working.
@@ -961,6 +953,16 @@ mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
 
   auto mojo_from_viewer =
       GetMojomVRPoseFromArPose(arcore_session_.get(), arcore_pose.get());
+
+  if (plane_manager_) {
+    TRACE_EVENT0("gpu", "ArCorePlaneManager Update");
+    plane_manager_->Update(arcore_frame_.get());
+  }
+
+  if (anchor_manager_) {
+    TRACE_EVENT0("gpu", "ArCoreAnchorManager Update");
+    anchor_manager_->Update(arcore_frame_.get());
+  }
 
   return mojo_from_viewer;
 }
