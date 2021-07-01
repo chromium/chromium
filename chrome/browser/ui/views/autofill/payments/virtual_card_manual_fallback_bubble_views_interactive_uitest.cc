@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -177,27 +178,85 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string clipboard_text;
 
-  // Explicitly override the card number for testing.
-  CreditCard card = test::GetFullServerCard();
-  card.SetNumber(u"5454545454545454");
+  CreditCard card(CreditCard::FULL_SERVER_CARD, "c123");
+  test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1");
   ShowBubble(&card, u"345");
+
   // Verify the displayed text. We change the format of card number in the ui.
-  EXPECT_EQ(GetValueForField(VirtualCardManualFallbackBubbleField::kCvc),
-            u"345");
   EXPECT_EQ(GetValueForField(VirtualCardManualFallbackBubbleField::kCardNumber),
             u"5454 5454 5454 5454");
+  EXPECT_EQ(
+      GetValueForField(VirtualCardManualFallbackBubbleField::kExpirationMonth),
+      base::ASCIIToUTF16(test::NextMonth().c_str()));
+  EXPECT_EQ(
+      GetValueForField(VirtualCardManualFallbackBubbleField::kExpirationYear),
+      base::ASCIIToUTF16(test::NextYear().c_str()));
+  EXPECT_EQ(
+      GetValueForField(VirtualCardManualFallbackBubbleField::kCardholderName),
+      u"John Smith");
+  EXPECT_EQ(GetValueForField(VirtualCardManualFallbackBubbleField::kCvc),
+            u"345");
 
-  // Simulate clicking on the cvc field. Copy cvc value to the clipboard.
-  ClickOnField(VirtualCardManualFallbackBubbleField::kCvc);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-                      &clipboard_text);
-  EXPECT_EQ(clipboard_text, u"345");
-  // Simluate clicking on the card number field, ensure that the copied card
-  // number doesn't contain spaces.
+  // Simulate clicking on each field in the bubble, ensuring that it was
+  // copied to the clipboard and the selection was logged in UMA.
+  base::HistogramTester histogram_tester;
+
+  // Card number (also ensure it doesn't contain spaces):
   ClickOnField(VirtualCardManualFallbackBubbleField::kCardNumber);
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &clipboard_text);
   EXPECT_EQ(clipboard_text, u"5454545454545454");
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
+      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARD_NUMBER,
+      1);
+
+  // Expiration month:
+  ClickOnField(VirtualCardManualFallbackBubbleField::kExpirationMonth);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextMonth().c_str()));
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
+      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_MONTH,
+      1);
+
+  // Expiration year:
+  ClickOnField(VirtualCardManualFallbackBubbleField::kExpirationYear);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, base::ASCIIToUTF16(test::NextYear().c_str()));
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
+      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_YEAR,
+      1);
+
+  // Cardholder name:
+  ClickOnField(VirtualCardManualFallbackBubbleField::kCardholderName);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"John Smith");
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
+      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARDHOLDER_NAME,
+      1);
+
+  // CVC:
+  ClickOnField(VirtualCardManualFallbackBubbleField::kCvc);
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"345");
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardManualFallbackBubble.FieldClicked",
+      AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CVC,
+      1);
 }
 
 // Disabled on Mac due to flakiness: crbug.com/1223042

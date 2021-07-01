@@ -183,8 +183,7 @@ void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
 
 void VirtualCardManualFallbackBubbleControllerImpl::OnFieldClicked(
     VirtualCardManualFallbackBubbleField field) const {
-  // TODO(crbug.com/1196021): Add metric for each field so that we could know
-  // form filling accuracy.
+  LogVirtualCardManualFallbackBubbleFieldClicked(field);
   // Strip the whitespaces that were added to the card number for legibility.
   UpdateClipboard(field == VirtualCardManualFallbackBubbleField::kCardNumber
                       ? CreditCard::StripSeparators(GetValueForField(field))
@@ -196,6 +195,40 @@ void VirtualCardManualFallbackBubbleControllerImpl::UpdateClipboard(
   // TODO(crbug.com/1196021): Add metrics for user interaction with manual
   // fallback bubble UI elements.
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
+}
+
+void VirtualCardManualFallbackBubbleControllerImpl::
+    LogVirtualCardManualFallbackBubbleFieldClicked(
+        VirtualCardManualFallbackBubbleField field) const {
+  AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric metric;
+  switch (field) {
+    case VirtualCardManualFallbackBubbleField::kCardNumber:
+      metric =
+          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARD_NUMBER;
+      break;
+    case VirtualCardManualFallbackBubbleField::kExpirationMonth:
+      metric =
+          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_MONTH;
+      break;
+    case VirtualCardManualFallbackBubbleField::kExpirationYear:
+      metric =
+          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_EXPIRATION_YEAR;
+      break;
+    case VirtualCardManualFallbackBubbleField::kCardholderName:
+      metric =
+          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CARDHOLDER_NAME;
+      break;
+    case VirtualCardManualFallbackBubbleField::kCvc:
+      metric =
+          AutofillMetrics::VirtualCardManualFallbackBubbleFieldClickedMetric::
+              VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_FIELD_CLICKED_CVC;
+      break;
+  }
+  AutofillMetrics::LogVirtualCardManualFallbackBubbleFieldClicked(metric);
 }
 
 VirtualCardManualFallbackBubbleControllerImpl::

@@ -6602,6 +6602,14 @@ others/histograms.xml -->
   <int value="2" label="IBAN"/>
 </enum>
 
+<enum name="AutofillVirtualCardManualFallbackBubbleFieldClicked">
+  <int value="0" label="Card number"/>
+  <int value="1" label="Expiration month"/>
+  <int value="2" label="Expiration year"/>
+  <int value="3" label="Cardholder name"/>
+  <int value="4" label="CVC"/>
+</enum>
+
 <enum name="AutofillVirtualCardManualFallbackBubbleResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="User closed bubble via corner X"/>

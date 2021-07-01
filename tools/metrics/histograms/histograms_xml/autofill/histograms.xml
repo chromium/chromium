@@ -2386,6 +2386,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.VirtualCardManualFallbackBubble.FieldClicked"
+    enum="AutofillVirtualCardManualFallbackBubbleFieldClicked"
+    expires_after="2022-05-31">
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records which field in the virtual card manual fallback bubble was selected
+    by the user and had its contents copied to the clipboard. Recorded on every
+    click of a field in the bubble.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.VirtualCardManualFallbackBubble.Result.{ShowType}"
     enum="AutofillVirtualCardManualFallbackBubbleResult"
     expires_after="2022-05-31">

@@ -78,6 +78,11 @@ class VirtualCardManualFallbackBubbleControllerImpl
   // Updates the system clipboard with the |text|.
   void UpdateClipboard(const std::u16string& text) const;
 
+  // Logs which field was clicked when the user selects a field from the manual
+  // fallback bubble.
+  void LogVirtualCardManualFallbackBubbleFieldClicked(
+      VirtualCardManualFallbackBubbleField field) const;
+
   // Returns whether the webcontents related to the controller is active.
   bool IsWebContentsActive();
 

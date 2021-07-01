@@ -1237,6 +1237,13 @@ void AutofillMetrics::LogVirtualCardManualFallbackBubbleResultMetric(
 }
 
 // static
+void AutofillMetrics::LogVirtualCardManualFallbackBubbleFieldClicked(
+    VirtualCardManualFallbackBubbleFieldClickedMetric metric) {
+  base::UmaHistogramEnumeration(
+      "Autofill.VirtualCardManualFallbackBubble.FieldClicked", metric);
+}
+
+// static
 void AutofillMetrics::LogSaveCardWithFirstAndLastNameOffered(bool is_local) {
   std::string histogram_name = "Autofill.SaveCardWithFirstAndLastNameOffered.";
   histogram_name += is_local ? "Local" : "Server";
