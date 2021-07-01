@@ -23,7 +23,6 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
-#include "components/optimization_guide/core/model_validator.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
@@ -207,9 +206,6 @@ void OptimizationGuideKeyedService::Initialize() {
   // old paths. Remove this code in 04/2022 since it should be assumed that all
   // clients that had the previous path have had their previous stores deleted.
   DeleteOldStorePaths(profile_path);
-
-  // Perform model validation when enabled via command line.
-  optimization_guide::DoValidateModel(this);
 }
 
 OptimizationGuideHintsManager*
@@ -300,14 +296,14 @@ void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
 void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-  prediction_manager_->RemoveObserverForOptimizationTargetModel(
-      optimization_target, observer);
+    prediction_manager_->RemoveObserverForOptimizationTargetModel(
+        optimization_target, observer);
 }
 
 void OptimizationGuideKeyedService::RegisterOptimizationTypes(
     const std::vector<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-  hints_manager_->RegisterOptimizationTypes(optimization_types);
+    hints_manager_->RegisterOptimizationTypes(optimization_types);
 }
 
 optimization_guide::OptimizationGuideDecision

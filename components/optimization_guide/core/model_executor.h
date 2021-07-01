@@ -26,9 +26,6 @@
 
 namespace optimization_guide {
 
-template <class OutputType, class... InputTypes>
-class ModelHandler;
-
 namespace {
 
 // Util class for recording the result of loading the detection model. The
@@ -98,8 +95,7 @@ class ModelExecutor {
   void InitializeAndMoveToBackgroundThread(
       proto::OptimizationTarget optimization_target,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
-      base::WeakPtr<ModelHandler<OutputType, InputTypes...>> model_handler) {
+      scoped_refptr<base::SequencedTaskRunner> reply_task_runner) {
     DCHECK(!background_task_runner_);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_NE(optimization_target,
@@ -109,7 +105,6 @@ class ModelExecutor {
     optimization_target_ = optimization_target;
     background_task_runner_ = background_task_runner;
     reply_task_runner_ = reply_task_runner;
-    model_handler_ = std::move(model_handler);
   }
 
   // Called when a model file is available to load. Depending on feature flags,
@@ -239,7 +234,6 @@ class ModelExecutor {
                      optimization_target_));
     DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(reply_task_runner_);
 
     ScopedModelExecutorLoadingResultRecorder scoped_model_loading_recorder(
         optimization_target_, ModelExecutorLoadingState::kModelFileInvalid);
@@ -265,11 +259,6 @@ class ModelExecutor {
       scoped_model_loading_recorder.set_model_loading_state(
           ModelExecutorLoadingState::kModelFileValidAndMemoryMapped);
     }
-    reply_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ModelHandler<OutputType,
-                                     InputTypes...>::OnModelExecutionTaskLoaded,
-                       model_handler_));
 
     return !!loaded_model_;
   }
@@ -280,9 +269,6 @@ class ModelExecutor {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
-
-  // ModelHandler that should be referenced only on the |reply_task_runner_|
-  base::WeakPtr<ModelHandler<OutputType, InputTypes...>> model_handler_;
 
   // The time that the model was last executed. Logged in metrics for the second
   // and following runs.
@@ -337,7 +323,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
         optimization_target_, model_metadata, this);
     background_executor_->InitializeAndMoveToBackgroundThread(
         optimization_target_, background_task_runner_,
-        base::SequencedTaskRunnerHandle::Get(), weak_ptr_factory_.GetWeakPtr());
+        base::SequencedTaskRunnerHandle::Get());
   }
   ~ModelHandler() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -419,10 +405,6 @@ class ModelHandler : public OptimizationTargetModelObserver {
     return ParsedAnyMetadata<T>(*supported_features_for_loaded_model_);
   }
 
-  // Called when the model execution task load completed either successfully or
-  // failed.
-  virtual void OnModelExecutionTaskLoaded() {}
-
  private:
   // This is called by |background_executor_|. This method does not have to be
   // static, but because it is stateless we've made it static so that we don't
@@ -472,8 +454,6 @@ class ModelHandler : public OptimizationTargetModelObserver {
   bool model_available_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<ModelHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide

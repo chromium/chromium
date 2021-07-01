@@ -32,8 +32,6 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationShare";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
       return "SegmentationVoice";
-    case proto::OPTIMIZATION_TARGET_MODEL_VALIDATION:
-      return "ModelValidation";
   }
   NOTREACHED();
   return std::string();
