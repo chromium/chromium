@@ -135,7 +135,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   // Owned by DeviceCommandsFactoryChromeOS.
   Delegate* delegate_;
 
-  bool terminate_session_attemtpted_;
+  bool terminate_session_attempted_ = false;
 
   base::WeakPtrFactory<DeviceCommandStartCRDSessionJob> weak_factory_{this};
 
