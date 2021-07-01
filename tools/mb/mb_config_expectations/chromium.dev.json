@@ -47,6 +47,15 @@
       "use_goma": true
     }
   },
+  "linux-ssd-rel-swarming": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_goma": true
+    }
+  },
   "mac-rel-swarming": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",

@@ -2315,6 +2315,11 @@
            'gtest_tests': 'chromium_swarm_linux_gtests',
         },
       },
+      'linux-ssd-rel-swarming': {
+        'mixins': [
+          'linux-bionic',
+        ],
+      },
       'mac-rel-swarming': {
         'mixins': [
           'mac_x64',

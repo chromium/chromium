@@ -10,6 +10,7 @@ luci.console_view(
         luci.console_view_entry(builder = "ci/android-lollipop-arm-rel-swarming"),
         luci.console_view_entry(builder = "ci/android-marshmallow-arm64-rel-swarming"),
         luci.console_view_entry(builder = "ci/linux-rel-swarming"),
+        luci.console_view_entry(builder = "ci/linux-ssd-rel-swarming"),
         luci.console_view_entry(builder = "ci/mac-rel-swarming"),
         luci.console_view_entry(builder = "ci/win-rel-swarming"),
     ],

@@ -84,6 +84,12 @@ ci_builder(
 )
 
 ci_builder(
+    name = "linux-ssd-rel-swarming",
+    description_html = "Ensures builders are using available local SSDs",
+    builderless = False
+)
+
+ci_builder(
     name = "mac-rel-swarming",
     os = os.MAC_DEFAULT,
 )
