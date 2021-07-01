@@ -5,10 +5,12 @@
   <body>
     This page has a script which creates anchor tags that declare impressions.
     <script>
-      createImpressionTag("impression_tag",
-                          "page_with_conversion_redirect.html",
-                          "1" /* impression_data*/,
-                          window.location /* conversion_destination */);
+createImpressionTag({
+  id: 'impression_tag',
+  url: 'page_with_conversion_redirect.html',
+  data: '1',
+  destination: window.location,
+});
     </script>
   </body>
 </html>

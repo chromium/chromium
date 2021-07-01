@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(
   std::unique_ptr<TestConversionHost> host =
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
-  EXPECT_TRUE(ExecJs(web_contents(), "registerConversion(123)"));
+  EXPECT_TRUE(ExecJs(web_contents(), "registerConversion({data: 123})"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   EXPECT_EQ(0u, host->num_conversions());
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
   std::unique_ptr<TestConversionHost> host =
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
-  EXPECT_TRUE(ExecJs(web_contents(), "registerConversion(123)"));
+  EXPECT_TRUE(ExecJs(web_contents(), "registerConversion({data: 123})"));
   EXPECT_EQ(123UL, host->WaitForNumConversions(1));
   EXPECT_EQ(0UL, host->last_conversion()->event_source_trigger_data);
   EXPECT_EQ(0, host->last_conversion()->priority);
@@ -173,7 +173,9 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
   std::unique_ptr<TestConversionHost> host =
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
-  EXPECT_TRUE(ExecJs(web_contents(), "registerConversion(123, 456)"));
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             "registerConversion({data: 123, eventSourceTriggerData: 456})"));
   EXPECT_EQ(123UL, host->WaitForNumConversions(1));
   EXPECT_EQ(456UL, host->last_conversion()->event_source_trigger_data);
 }
@@ -186,9 +188,8 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
   std::unique_ptr<TestConversionHost> host =
       TestConversionHost::ReplaceAndGetConversionHost(web_contents());
 
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     "registerConversion(123, "
-                     " undefined /*eventSourceTriggerData*/, 456)"));
+  EXPECT_TRUE(
+      ExecJs(web_contents(), "registerConversion({data: 123, priority: 456})"));
   EXPECT_EQ(123UL, host->WaitForNumConversions(1));
   EXPECT_EQ(456, host->last_conversion()->priority);
 }

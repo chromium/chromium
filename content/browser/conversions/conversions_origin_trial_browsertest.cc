@@ -106,10 +106,10 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
       shell(), GURL("https://example.test/impression_with_origin_trial.html")));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
-    createImpressionTag("link" /* id */,
-                        "https://example.test/page_with_conversion_redirect.html" /* url */,
-                        "1" /* impression data */,
-                        "https://example.test/" /* conversion_destination */);)"));
+    createImpressionTag({id: 'link',
+                        url: 'https://example.test/page_with_conversion_redirect.html',
+                        data: '1',
+                        destination: 'https://example.test/'});)"));
 
   TestNavigationObserver observer(web_contents());
   EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));

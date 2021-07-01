@@ -147,10 +147,10 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
-    createImpressionTag("link" /* id */,
-                        $1 /* url */,
-                        "1" /* impression data */,
-                        $2 /* conversion_destination */);)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
                        conversion_url, url::Origin::Create(conversion_url))));
 
   TestNavigationObserver observer(web_contents());
@@ -158,9 +158,9 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   observer.Wait();
 
   // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace("registerConversionForOrigin(7, $1)",
-                                       url::Origin::Create(impression_url))));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("registerConversion({data: 7, origin: $1})",
+                               url::Origin::Create(impression_url))));
 
   expected_report.WaitForReport();
 }
@@ -191,9 +191,9 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   observer.Wait();
 
   // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace("registerConversionForOrigin(7, $1)",
-                                       url::Origin::Create(impression_url))));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("registerConversion({data: 7, origin: $1})",
+                               url::Origin::Create(impression_url))));
 
   // TODO(johnidel): This API surface was removed due to
   // https://crbug.com/1187881. This test should be updated to verify the
@@ -235,9 +235,9 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   observer.Wait();
 
   // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace("registerConversionForOrigin(7, $1)",
-                                       url::Origin::Create(impression_url))));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("registerConversion({data: 7, origin: $1})",
+                               url::Origin::Create(impression_url))));
 
   expected_report.WaitForReport();
 }
@@ -265,11 +265,11 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   GURL conversion_url = https_server()->GetURL(
       "b.test", "/conversions/page_with_conversion_redirect.html");
   EXPECT_TRUE(ExecJs(subframe, JsReplace(R"(
-    createImpressionTagWithTarget("link" /* id */,
-                        $1 /* url */,
-                        "1" /* impression data */,
-                        $2 /* conversion_destination */,
-                        "new_frame" /* target */);)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2,
+                        target: 'new_frame'});)",
                                          conversion_url,
                                          url::Origin::Create(conversion_url))));
 
@@ -281,9 +281,9 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   observer.Wait();
 
   // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(
-      ExecJs(popup_contents, JsReplace("registerConversionForOrigin(7, $1)",
-                                       url::Origin::Create(page_url))));
+  EXPECT_TRUE(ExecJs(popup_contents,
+                     JsReplace("registerConversion({data: 7, origin: $1})",
+                               url::Origin::Create(page_url))));
 
   expected_report.WaitForReport();
 }
@@ -307,11 +307,11 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
-    createImpressionTagWithTarget("link" /* id */,
-                        $1 /* url */,
-                        "1" /* impression data */,
-                        $2 /* conversion_destination */,
-                        "_blank");)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2,
+                        target: '_blank'});)",
                        conversion_url, url::Origin::Create(conversion_url))));
 
   TestNavigationObserver observer(nullptr);
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   observer.Wait();
 
   EXPECT_TRUE(ExecJs(Shell::windows()[1]->web_contents(),
-                     JsReplace("registerConversionForOrigin(7, $1)",
+                     JsReplace("registerConversion({data: 7, origin: $1})",
                                url::Origin::Create(impression_url))));
   expected_report.WaitForReport();
 }
@@ -347,10 +347,10 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   EXPECT_TRUE(ExecJs(
       web_contents(),
       JsReplace(R"(
-    createImpressionTag("link" /* id */,
-                        $1 /* url */,
-                        "1" /* impression data */,
-                        $2 /* conversion_destination */);)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
                 conversion_url, url::Origin::Create(conversion_dest_url))));
 
   TestNavigationObserver observer(web_contents());
@@ -358,9 +358,9 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   observer.Wait();
 
   // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace("registerConversionForOrigin(7, $1)",
-                                       url::Origin::Create(impression_url))));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("registerConversion({data: 7, origin: $1})",
+                               url::Origin::Create(impression_url))));
 
   expected_report.WaitForReport();
 }
@@ -387,10 +387,10 @@ IN_PROC_BROWSER_TEST_F(
       "sub.b.test", "/conversions/page_with_conversion_redirect.html");
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace(R"(
-    createImpressionTag("link" /* id */,
-                        $1 /* url */,
-                        "1" /* impression data */,
-                        $2 /* conversion_destination */);)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
                                conversion_landing_url,
                                url::Origin::Create(conversion_dest_url))));
 
@@ -405,9 +405,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
 
   // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace("registerConversionForOrigin(7, $1)",
-                                       url::Origin::Create(impression_url))));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("registerConversion({data: 7, origin: $1})",
+                               url::Origin::Create(impression_url))));
 
   expected_report.WaitForReport();
 }
@@ -438,11 +438,11 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin reporting_origin =
       url::Origin::Create(https_server()->GetURL("d.test", "/"));
   std::string impression_js = R"(
-    createImpressionTagWithReporting("link" /* id */,
-                        $1 /* url */,
-                        $2 /* impression data */,
-                        $3 /* conversion_destination */,
-                        $4 /* reporting_origin */);)";
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: $2,
+                        destination: $3,
+                        reportOrigin: $4});)";
 
   TestNavigationObserver first_nav_observer(shell()->web_contents());
   EXPECT_TRUE(
@@ -461,8 +461,9 @@ IN_PROC_BROWSER_TEST_F(
   second_nav_observer.Wait();
 
   // Register a conversion after both impressions have been registered.
-  EXPECT_TRUE(ExecJs(shell2, JsReplace("registerConversionForOrigin(7, $1)",
-                                       reporting_origin)));
+  EXPECT_TRUE(
+      ExecJs(shell2, JsReplace("registerConversion({data: 7, origin: $1})",
+                               reporting_origin)));
 
   expected_report.WaitForReport();
 }
@@ -494,12 +495,12 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin reporting_origin =
       url::Origin::Create(https_server()->GetURL("d.test", "/"));
   std::string impression_js = R"(
-    createImpressionTagWithReportingAndPriority("link" /* id */,
-                        $1 /* url */,
-                        $2 /* impression data */,
-                        $3 /* conversion_destination */,
-                        $4 /* reporting_origin */,
-                        $5 /* priority */);)";
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: $2,
+                        destination: $3,
+                        reportOrigin: $4,
+                        priority: $5});)";
 
   TestNavigationObserver first_nav_observer(shell()->web_contents());
   EXPECT_TRUE(ExecJs(shell(), JsReplace(impression_js, conversion_url,
@@ -518,8 +519,9 @@ IN_PROC_BROWSER_TEST_F(
   second_nav_observer.Wait();
 
   // Register a conversion after both impressions have been registered.
-  EXPECT_TRUE(ExecJs(shell2, JsReplace("registerConversionForOrigin(7, $1)",
-                                       reporting_origin)));
+  EXPECT_TRUE(
+      ExecJs(shell2, JsReplace("registerConversion({data: 7, origin: $1})",
+                               reporting_origin)));
   expected_report.WaitForReport();
 }
 
@@ -546,10 +548,10 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
-    createImpressionTag("link" /* id */,
-                        $1 /* url */,
-                        "1" /* impression data */,
-                        $2 /* conversion_destination */);)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
                        conversion_url, url::Origin::Create(conversion_url))));
 
   TestNavigationObserver observer(web_contents());
@@ -557,9 +559,9 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   observer.Wait();
 
   // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace("registerConversionForOrigin(7, $1)",
-                                       url::Origin::Create(impression_url))));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("registerConversion({data: 7, origin: $1})",
+                               url::Origin::Create(impression_url))));
 
   // Since we want to verify that a report _isn't_ sent, we can't really wait on
   // any event here. The best thing we can do is just impose a short delay and
@@ -578,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
                        EventSourceImpressionConversion_ReportSent) {
   // Expected reports must be registered before the server starts.
-  // 123 in the `registerConversionForOrigin` call below is sanitized to 1 in
+  // 123 in the `registerConversion` call below is sanitized to 1 in
   // the report's `trigger_data`.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
@@ -596,21 +598,21 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
-    createImpressionTagWithRegisterAttributionSource("link" /* id */,
-                        $1 /* url */,
-                        "7" /* impression data */,
-                        $2 /* conversion_destination */);)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '7',
+                        destination: $2,
+                        registerAttributionSource: true});)",
                        conversion_url, url::Origin::Create(conversion_url))));
 
   EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
 
   // Register a conversion with the original page as the reporting origin.
   EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace(R"(registerConversionForOrigin(0 /* conversion_data */,
-                                       $1,
-                                       123 /* event_source_trigger_data */);)",
-                       url::Origin::Create(impression_url))));
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
+                                       origin: $1,
+                                       eventSourceTriggerData: 123});)",
+                                       url::Origin::Create(impression_url))));
 
   expected_report.WaitForReport();
 }
@@ -618,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
                        EventSourceImpressionTwoConversions_OneReportSent) {
   // Expected reports must be registered before the server starts.
-  // 123 in the `registerConversionForOrigin` call below is sanitized to 1 in
+  // 123 in the `registerConversion` call below is sanitized to 1 in
   // the report's `trigger_data`.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
@@ -640,10 +642,11 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   EXPECT_TRUE(
       ExecJs(web_contents(),
              JsReplace(R"(
-    createImpressionTagWithRegisterAttributionSource("link" /* id */,
-                        $1 /* url */,
-                        "7" /* impression data */,
-                        $2 /* conversion_destination */);)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '7',
+                        destination: $2,
+                        registerAttributionSource: true});)",
                        conversion_url, url::Origin::Create(conversion_url))));
 
   EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
@@ -651,11 +654,10 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   // Register two conversions with the original page as the reporting origin.
   for (int i = 0; i < 2; i++) {
     EXPECT_TRUE(
-        ExecJs(web_contents(),
-               JsReplace(R"(registerConversionForOrigin(0 /* conversion_data */,
-                                       $1,
-                                       123 /* event_source_trigger_data */);)",
-                         url::Origin::Create(impression_url))));
+        ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
+                                       origin: $1,
+                                       eventSourceTriggerData: 123});)",
+                                         url::Origin::Create(impression_url))));
   }
 
   expected_report.WaitForReport();
@@ -675,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
                        EventSourceImpressionConversionFromJS_ReportSent) {
   // Expected reports must be registered before the server starts.
-  // 123 in the `registerConversionForOrigin` call below is sanitized to 1 in
+  // 123 in the `registerConversion` call below is sanitized to 1 in
   // the report's `trigger_data`.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
@@ -701,11 +703,10 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
 
   // Register a conversion with the original page as the reporting origin.
   EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace(R"(registerConversionForOrigin(0 /* conversion_data */,
-                                       $1,
-                                       123 /* event_source_trigger_data */);)",
-                       url::Origin::Create(impression_url))));
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 0,
+                                       origin: $1,
+                                       eventSourceTriggerData: 123});)",
+                                       url::Origin::Create(impression_url))));
 
   expected_report.WaitForReport();
 }

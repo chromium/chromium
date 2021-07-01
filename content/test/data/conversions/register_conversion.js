@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function registerConversion(data, eventSourceTriggerData, priority) {
-  // Use a relative URL for conversion registration.
-  registerConversionForOrigin(data, "", eventSourceTriggerData, priority);
-}
-
-function registerConversionForOrigin(
-    data, origin, eventSourceTriggerData, priority) {
-  let img = document.createElement("img");
+function registerConversion({
+  data,
+  origin = '',  // use a relative URL for conversion registration
+  eventSourceTriggerData,
+  priority,
+} = {}) {
+  let img = document.createElement('img');
   img.src = origin + '/server-redirect?.well-known/attribution-reporting' +
       '/trigger-attribution?trigger-data=' + data +
       (eventSourceTriggerData === undefined ?
            '' :
            '&event-source-trigger-data=' + eventSourceTriggerData) +
       (priority === undefined ? '' : '&priority=' + priority);
-  img.onerror = function () { document.title = "converted"; };
+  img.onerror = function() {
+    document.title = 'converted';
+  };
   document.body.appendChild(img);
 }
 
 function createTrackingPixel(url) {
-  let img = document.createElement("img");
+  let img = document.createElement('img');
   img.src = url;
   document.body.appendChild(img);
 }

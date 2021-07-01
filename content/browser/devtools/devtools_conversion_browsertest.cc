@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsConversionBrowserTest,
   EXPECT_EQ(notifications_.size(), 0ul);
 
   // 3) Trigger the conversion redirect.
-  EXPECT_TRUE(ExecJs(web_contents(), "registerConversion(123)"));
+  EXPECT_TRUE(ExecJs(web_contents(), "registerConversion({data: 123})"));
 
   // 4) Verify the request is marked as successful and not as failed.
   WaitForNotification("Network.loadingFinished", true);

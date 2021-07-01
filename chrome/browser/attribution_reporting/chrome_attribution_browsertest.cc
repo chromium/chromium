@@ -60,14 +60,15 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                      "/conversions/page_with_impression_creator.html")));
 
   // Create an anchor tag with impression attributes which opens a link in a
-  // new.
+  // new window.
   GURL link_url = server_.GetURL(
       "b.test", "/conversions/page_with_conversion_redirect.html");
   EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
-    createImpressionTagWithTarget("link" /* id */,
-                        $1 /* url */,
-                        "1" /* impression data */,
-                        "https://b.test" /* conversion_destination */, "_blank");)",
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: 'https://b.test',
+                        target: '_blank'});)",
                                                       link_url)));
 
   // Click the impression, and wait for the new window to open. Then switch to
@@ -103,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Register a conversion with the original page as the reporting origin.
-  EXPECT_TRUE(ExecJs(web_contents, "registerConversion(7)"));
+  EXPECT_TRUE(ExecJs(web_contents, "registerConversion({data: 7})"));
 
   // Wait for the conversion redirect to be intercepted. This is indicated by
   // window title changing when the img element for the conversion request fires

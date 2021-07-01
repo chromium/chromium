@@ -12,64 +12,52 @@ function simulateMiddleClick(target) {
 
 function simulateClickWithButton(target, button) {
   target = document.getElementById(target);
-  var evt = new MouseEvent("click", {"button": button});
+  let evt = new MouseEvent('click', {'button': button});
   return target.dispatchEvent(evt);
 }
 
-function createImpressionTag(id, url, data, destination) {
-  createImpressionTagWithTarget(id, url, data, destination, "_top");
-}
-
-function createImpressionTagAtLocation(id, url, data, destination, left, top) {
-  let anchor =
-      createImpressionTagWithTarget(id, url, data, destination, "_top");
-  const style =  "position: absolute; left: " + (left - 10) + "px; top: " +
-      (top - 10) + "px; width: 20px; height: 20px;";
-  anchor.setAttribute("style", style);
-}
-
-function createImpressionTagWithReportingAndExpiry(
-    id, url, data, destination, report_origin, expiry) {
-  let anchor = createImpressionTagWithTarget(
-      id, url, data, destination, "_top");
-  anchor.setAttribute('attributionreportto', report_origin);
-  anchor.setAttribute('attributionexpiry', expiry);
-}
-
-function createImpressionTagWithReporting(
-    id, url, data, destination, report_origin) {
-  let anchor = createImpressionTagWithTarget(
-      id, url, data, destination, "_top");
-  anchor.setAttribute('attributionreportto', report_origin);
-}
-
-function createImpressionTagWithRegisterAttributionSource(
-    id, url, data, destination) {
-  let anchor = createImpressionTagWithTarget(
-      id, url, data, destination, "_top");
-  anchor.setAttribute("registerattributionsource", "");
-}
-
-function createImpressionTagWithReportingAndPriority(
-  id, url, data, destination, report_origin, priority) {
-  let anchor = createImpressionTagWithTarget(
-      id, url, data, destination, "_top");
-  anchor.setAttribute('attributionreportto', report_origin);
-  anchor.setAttribute("attributionsourcepriority", priority);
-}
-
-function createImpressionTagWithTarget(id, url, data, destination, target) {
-  let anchor = document.createElement("a");
+function createImpressionTag({
+  id,
+  url,
+  data,
+  destination,
+  target = '_top',
+  reportOrigin,
+  expiry,
+  priority,
+  registerAttributionSource = false,
+  left,
+  top,
+} = {}) {
+  let anchor = document.createElement('a');
   anchor.href = url;
   anchor.setAttribute('attributionsourceeventid', data);
   anchor.setAttribute('attributiondestination', destination);
-  anchor.setAttribute("target", target);
+  anchor.setAttribute('target', target);
   anchor.width = 100;
   anchor.height = 100;
   anchor.id = id;
 
+  if (reportOrigin !== undefined)
+    anchor.setAttribute('attributionreportto', reportOrigin);
+
+  if (expiry !== undefined)
+    anchor.setAttribute('attributionexpiry', expiry);
+
+  if (priority !== undefined)
+    anchor.setAttribute('attributionsourcepriority', priority);
+
+  if (registerAttributionSource)
+    anchor.setAttribute('registerattributionsource', '');
+
+  if (left !== undefined && top !== undefined) {
+    const style = 'position: absolute; left: ' + (left - 10) +
+        'px; top: ' + (top - 10) + 'px; width: 20px; height: 20px;';
+    anchor.setAttribute('style', style);
+  }
+
   // Create the text node for anchor element.
-  var link = document.createTextNode("This is link");
+  let link = document.createTextNode('This is link');
 
   // Append the text node to anchor element.
   anchor.appendChild(link);
