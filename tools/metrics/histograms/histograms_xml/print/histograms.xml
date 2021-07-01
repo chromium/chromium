@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetInitialSettings"
-    enum="PrintPreviewInitializationEvents" expires_after="2021-11-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -53,7 +53,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPreview"
-    enum="PrintPreviewInitializationEvents" expires_after="2021-11-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -64,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinterCapabilities"
-    enum="PrintPreviewInitializationEvents" expires_after="2021-11-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -75,7 +75,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinters.Cloud"
-    enum="PrintPreviewInitializationEvents" expires_after="2021-11-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -86,7 +86,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinters.Extension"
-    enum="PrintPreviewInitializationEvents" expires_after="2021-11-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -97,7 +97,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinters.Local"
-    enum="PrintPreviewInitializationEvents" expires_after="2021-11-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>chrome-print@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -109,7 +109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinters.PDF"
-    enum="PrintPreviewInitializationEvents" expires_after="2021-11-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -120,7 +120,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinters.Privet"
-    enum="PrintPreviewInitializationEvents" expires_after="2021-11-14">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -188,7 +188,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithErrorStatus"
-    enum="Boolean" expires_after="2021-10-17">
+    enum="Boolean" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -198,7 +198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithGoodStatus"
-    enum="Boolean" expires_after="2021-10-17">
+    enum="Boolean" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -208,7 +208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrinterStatus.AttemptedPrintWithUnknownStatus"
-    enum="Boolean" expires_after="2021-10-17">
+    enum="Boolean" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

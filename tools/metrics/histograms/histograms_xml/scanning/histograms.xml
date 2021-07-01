@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Scanning.NumCompletedScansInSession" units="scans"
-    expires_after="2021-11-17">
+    expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -33,7 +33,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.NumDetectedScanners" units="scanners"
-    expires_after="2021-12-04">
+    expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -43,7 +43,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.NumFilesCreated" units="files"
-    expires_after="2021-12-04">
+    expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the number of files created in a successful scan.</summary>
@@ -57,7 +57,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.NumScanSettingChanges" units="changes"
-    expires_after="2021-10-01">
+    expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -65,7 +65,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Scanning.ReadyTime" units="ms" expires_after="2021-12-04">
+<histogram name="Scanning.ReadyTime" units="ms" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.ScanAppEntryPoint" enum="ScanAppEntryPoint"
-    expires_after="2021-12-04">
+    expires_after="2022-06-15">
   <obsolete>
     Data no longer needed 2021-02.
   </obsolete>
@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
-    expires_after="2021-09-19">
+    expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -99,14 +99,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.ScanJobFailureReason" enum="ScanJobFailureReason"
-    expires_after="2021-12-04">
+    expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the reason a scan job failed.</summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.ColorMode"
-    enum="ScanJobSettingsColorMode" expires_after="2021-12-04">
+    enum="ScanJobSettingsColorMode" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -115,7 +115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.FileType"
-    enum="ScanJobSettingsFileType" expires_after="2021-12-04">
+    enum="ScanJobSettingsFileType" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -124,7 +124,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.PageSize"
-    enum="ScanJobSettingsPageSize" expires_after="2021-12-04">
+    enum="ScanJobSettingsPageSize" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -133,7 +133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Resolution"
-    enum="ScanJobSettingsResolution" expires_after="2021-12-04">
+    enum="ScanJobSettingsResolution" expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -142,7 +142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Source" enum="ScanJobSettingsSource"
-    expires_after="2021-12-04">
+    expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -151,7 +151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
-    expires_after="2021-12-04">
+    expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
