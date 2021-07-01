@@ -1354,8 +1354,8 @@ void Shell::InitializeDisplayManager() {
     }
   }
 
-  display_color_manager_ = std::make_unique<DisplayColorManager>(
-      display_manager_->configurator(), display::Screen::GetScreen());
+  display_color_manager_ =
+      std::make_unique<DisplayColorManager>(display_manager_->configurator());
 
   if (!display_initialized)
     display_manager_->InitDefaultDisplay();

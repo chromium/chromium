@@ -27,7 +27,6 @@ class SequencedTaskRunner;
 
 namespace display {
 class DisplaySnapshot;
-class Screen;
 struct GammaRampRGBEntry;
 }  // namespace display
 
@@ -53,8 +52,7 @@ class ASH_EXPORT DisplayColorManager
     kMaxValue = kAll,
   };
 
-  DisplayColorManager(display::DisplayConfigurator* configurator,
-                      display::Screen* screen_to_observe);
+  DisplayColorManager(display::DisplayConfigurator* configurator);
   ~DisplayColorManager() override;
 
   DisplayCtmSupport displays_ctm_support() const {
@@ -168,8 +166,7 @@ class ASH_EXPORT DisplayColorManager
 
   DisplayCtmSupport displays_ctm_support_;
 
-  // This is null in DisplayColorManagerTest.
-  display::Screen* screen_to_observe_;
+  display::ScopedOptionalDisplayObserver display_observer_{this};
 
   // Factory for callbacks.
   base::WeakPtrFactory<DisplayColorManager> weak_ptr_factory_{this};

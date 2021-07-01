@@ -196,23 +196,17 @@ bool HasColorCorrectionMatrix(display::DisplayConfigurator* configurator,
 }  // namespace
 
 DisplayColorManager::DisplayColorManager(
-    display::DisplayConfigurator* configurator,
-    display::Screen* screen_to_observe)
+    display::DisplayConfigurator* configurator)
     : configurator_(configurator),
       matrix_buffer_(9, 0.0f),  // 3x3 matrix.
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      displays_ctm_support_(DisplayCtmSupport::kNone),
-      screen_to_observe_(screen_to_observe) {
+      displays_ctm_support_(DisplayCtmSupport::kNone) {
   configurator_->AddObserver(this);
-  if (screen_to_observe_)
-    screen_to_observe_->AddObserver(this);
 }
 
 DisplayColorManager::~DisplayColorManager() {
-  if (screen_to_observe_)
-    screen_to_observe_->RemoveObserver(this);
   configurator_->RemoveObserver(this);
 }
 

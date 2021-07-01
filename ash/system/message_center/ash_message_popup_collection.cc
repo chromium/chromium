@@ -51,8 +51,6 @@ AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
 }
 
 AshMessagePopupCollection::~AshMessagePopupCollection() {
-  if (screen_)
-    screen_->RemoveObserver(this);
   shelf_->RemoveObserver(this);
   for (views::Widget* widget : tracked_widgets_)
     widget->RemoveObserver(this);
@@ -64,7 +62,7 @@ void AshMessagePopupCollection::StartObserving(
     const display::Display& display) {
   screen_ = screen;
   work_area_ = display.work_area();
-  screen->AddObserver(this);
+  display_observer_.emplace(this);
   if (tray_bubble_height_ > 0)
     UpdateWorkArea();
 }

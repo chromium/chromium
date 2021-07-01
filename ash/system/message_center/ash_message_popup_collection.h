@@ -104,6 +104,8 @@ class ASH_EXPORT AshMessagePopupCollection
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   display::Screen* screen_;
   gfx::Rect work_area_;
   Shelf* shelf_;

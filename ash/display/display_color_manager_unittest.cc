@@ -37,7 +37,7 @@ class DisplayColorManagerForTest : public DisplayColorManager {
  public:
   explicit DisplayColorManagerForTest(
       display::DisplayConfigurator* configurator)
-      : DisplayColorManager(configurator, nullptr /* display_to_observe */) {}
+      : DisplayColorManager(configurator) {}
 
   void SetOnFinishedForTest(base::OnceClosure on_finished_for_test) {
     on_finished_for_test_ = std::move(on_finished_for_test);
