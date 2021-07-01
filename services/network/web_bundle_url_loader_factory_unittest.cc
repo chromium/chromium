@@ -208,7 +208,8 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     factory_->StartSubresourceRequest(
         result.loader.BindNewPipeAndPassReceiver(), request,
         result.client->CreateRemote(),
-        mojo::Remote<mojom::TrustedHeaderClient>());
+        mojo::Remote<mojom::TrustedHeaderClient>(), base::Time::Now(),
+        base::TimeTicks::Now());
     return result;
   }
 

@@ -160,7 +160,9 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   URLLoader(mojo::PendingReceiver<mojom::URLLoader> loader,
             const ResourceRequest& request,
             mojo::PendingRemote<mojom::URLLoaderClient> client,
-            mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client)
+            mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client,
+            base::Time request_start_time,
+            base::TimeTicks request_start_time_ticks)
       : url_(request.url),
         request_mode_(request.mode),
         request_initiator_(request.request_initiator),
@@ -174,6 +176,10 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
       trusted_header_client_.set_disconnect_handler(
           base::BindOnce(&URLLoader::OnMojoDisconnect, GetWeakPtr()));
     }
+    load_timing_.request_start_time = request_start_time;
+    load_timing_.request_start = request_start_time_ticks;
+    load_timing_.send_start = request_start_time_ticks;
+    load_timing_.send_end = request_start_time_ticks;
   }
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -208,6 +214,11 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   void OnWriteCompleted(MojoResult result) {
     URLLoaderCompletionStatus status(
         result == MOJO_RESULT_OK ? net::OK : net::ERR_INVALID_WEB_BUNDLE);
+    status.encoded_data_length = body_length_ + headers_bytes_;
+    // For these values we use the same `body_length_` as we don't currently
+    // provide encoding in WebBundles.
+    status.encoded_body_length = body_length_;
+    status.decoded_body_length = body_length_;
     client_->OnComplete(status);
     delete this;
   }
@@ -249,6 +260,14 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     return trusted_header_client_;
   }
 
+  net::LoadTimingInfo load_timing() { return load_timing_; }
+  void SetBodyLength(uint64_t body_length) { body_length_ = body_length; }
+  void SetHeadersBytes(size_t headers_bytes) { headers_bytes_ = headers_bytes; }
+  void SetResponseStartTime(base::TimeTicks response_start_time) {
+    load_timing_.receive_headers_start = response_start_time;
+    load_timing_.receive_headers_end = response_start_time;
+  }
+
  private:
   // mojom::URLLoader
   void FollowRedirect(
@@ -276,6 +295,11 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
   mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client_;
+  uint64_t body_length_;
+  size_t headers_bytes_;
+  net::LoadTimingInfo load_timing_;
+  base::TimeTicks request_send_time_;
+  base::TimeTicks response_start_time_;
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
 
@@ -512,11 +536,14 @@ void WebBundleURLLoaderFactory::StartSubresourceRequest(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     const ResourceRequest& url_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
-    mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client) {
+    mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client,
+    base::Time request_start_time,
+    base::TimeTicks request_start_time_ticks) {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::StartSubresourceRequest");
   URLLoader* loader =
       new URLLoader(std::move(receiver), url_request, std::move(client),
-                    std::move(trusted_header_client));
+                    std::move(trusted_header_client), request_start_time,
+                    request_start_time_ticks);
 
   // Verify that WebBundle URL associated with the request is correct.
   DCHECK(url_request.web_bundle_token_params.has_value());
@@ -669,6 +696,9 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
   // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-responses.
   response->response_headers["X-Content-Type-Options"] = "nosniff";
   const std::string header_string = web_package::CreateHeaderString(response);
+
+  loader->SetResponseStartTime(base::TimeTicks::Now());
+  loader->SetHeadersBytes(header_string.size());
   if (!loader->trusted_header_client()) {
     SendResponseToLoader(loader, header_string, response->payload_offset,
                          response->payload_length);
@@ -718,6 +748,9 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   }
 
   response_head->web_bundle_url = bundle_url_;
+
+  response_head->load_timing = loader->load_timing();
+  loader->SetBodyLength(payload_length);
 
   auto corb_analyzer =
       std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(

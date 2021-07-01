@@ -20,11 +20,15 @@ struct WebBundlePendingSubresourceRequest {
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       const ResourceRequest& url_request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
-      mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client)
+      mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client,
+      base::Time request_start_time,
+      base::TimeTicks request_start_time_ticks)
       : receiver(std::move(receiver)),
         url_request(url_request),
         client(std::move(client)),
-        trusted_header_client(std::move(trusted_header_client)) {}
+        trusted_header_client(std::move(trusted_header_client)),
+        request_start_time(request_start_time),
+        request_start_time_ticks(request_start_time_ticks) {}
   ~WebBundlePendingSubresourceRequest() = default;
 
   WebBundlePendingSubresourceRequest(
@@ -36,6 +40,8 @@ struct WebBundlePendingSubresourceRequest {
   const ResourceRequest url_request;
   mojo::PendingRemote<mojom::URLLoaderClient> client;
   mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client;
+  base::Time request_start_time;
+  base::TimeTicks request_start_time_ticks;
 };
 
 class WebBundleManager::MemoryQuotaConsumer
@@ -108,7 +114,9 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
       factory->StartSubresourceRequest(
           std::move(pending_request->receiver), pending_request->url_request,
           std::move(pending_request->client),
-          std::move(pending_request->trusted_header_client));
+          std::move(pending_request->trusted_header_client),
+          pending_request->request_start_time,
+          pending_request->request_start_time_ticks);
     }
     pending_requests_.erase(it);
   }
@@ -146,17 +154,21 @@ void WebBundleManager::StartSubresourceRequest(
   base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
       GetWebBundleURLLoaderFactory(*url_request.web_bundle_token_params,
                                    process_id);
+  base::Time request_start_time = base::Time::Now();
+  base::TimeTicks request_start_time_ticks = base::TimeTicks::Now();
   if (web_bundle_url_loader_factory) {
     web_bundle_url_loader_factory->StartSubresourceRequest(
         std::move(receiver), url_request, std::move(client),
-        std::move(trusted_header_client));
+        std::move(trusted_header_client), request_start_time,
+        request_start_time_ticks);
     return;
   }
   // A request for subresource arrives earlier than a request for a webbundle.
   pending_requests_[{process_id, url_request.web_bundle_token_params->token}]
       .push_back(std::make_unique<WebBundlePendingSubresourceRequest>(
           std::move(receiver), url_request, std::move(client),
-          std::move(trusted_header_client)));
+          std::move(trusted_header_client), request_start_time,
+          request_start_time_ticks));
 }
 
 void WebBundleManager::DisconnectHandler(

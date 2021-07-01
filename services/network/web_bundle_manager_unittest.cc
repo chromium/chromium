@@ -127,7 +127,8 @@ StartSubresourceLoad(WebBundleURLLoaderFactory& factory) {
   request.web_bundle_token_params->bundle_url = GURL(kBundleUrl);
   factory.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
                                   client->CreateRemote(),
-                                  mojo::Remote<mojom::TrustedHeaderClient>());
+                                  mojo::Remote<mojom::TrustedHeaderClient>(),
+                                  base::Time::Now(), base::TimeTicks::Now());
   return std::forward_as_tuple(std::move(loader), std::move(client));
 }
 

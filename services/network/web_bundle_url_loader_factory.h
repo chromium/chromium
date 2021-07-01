@@ -55,7 +55,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       const ResourceRequest& url_request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
-      mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client);
+      mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client,
+      base::Time request_start_time,
+      base::TimeTicks request_start_time_ticks);
 
   void OnWebBundleFetchFailed();
 
