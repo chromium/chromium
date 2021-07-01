@@ -36,6 +36,8 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,7 +78,10 @@ class MockRemoveUserManager : public ChromeUserManagerImpl {
 
 class UserManagerTest : public testing::Test {
  public:
-  UserManagerTest() {}
+  UserManagerTest() {
+    session_type_ = extensions::ScopedCurrentFeatureSessionType(
+        extensions::GetCurrentFeatureSessionType());
+  }
 
  protected:
   void SetUp() override {
@@ -180,6 +185,18 @@ class UserManagerTest : public testing::Test {
       AccountId::FromUserEmailGaiaId("user1@invalid.domain", "9012345678");
 
  protected:
+  // The call chain
+  // - `ProfileRequiresPolicyUnknown`
+  // - `UserManagerBase::UserLoggedIn()`
+  // - `ChromeUserManagerImpl::NotifyOnLogin()`
+  // - `UserSessionManager::InitNonKioskExtensionFeaturesSessionType()`
+  // calls
+  // `extensions::SetCurrentFeatureSessionType(FeatureSessionType::kRegular)`
+  //
+  // |session_type_| is used to capture the original session type during |SetUp|
+  // and set it back to what it was during |TearDown|.
+  std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
+      session_type_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 
