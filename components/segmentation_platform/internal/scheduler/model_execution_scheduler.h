@@ -12,6 +12,9 @@
 using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
+namespace proto {
+class SegmentInfo;
+}  // namespace proto
 
 // Central class responsible for scheduling model execution. Determines which
 // models are eligible for execution based on various criteria e.g. cached
@@ -28,8 +31,9 @@ class ModelExecutionScheduler {
 
   virtual ~ModelExecutionScheduler() = default;
 
-  // Called whenever a new or updated model is available.
-  virtual void OnNewModelInfoReady(OptimizationTarget segment_id) = 0;
+  // Called whenever a new or updated model is available. Must be a valid
+  // SegmentInfo with valid metadata and features.
+  virtual void OnNewModelInfoReady(const proto::SegmentInfo& segment_info) = 0;
 
   // Central method to determine which all models to execute. Called in response
   // to segmentation requests from clients, or periodic tasks. Can be called

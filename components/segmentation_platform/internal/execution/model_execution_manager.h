@@ -12,6 +12,9 @@
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 
 namespace segmentation_platform {
+namespace proto {
+class SegmentInfo;
+}  // namespace proto
 
 // The ModelExecutionManager is the core class for interacting with the ML
 // framework. The only requirement is to pass in the segment ID to execute the
@@ -24,6 +27,11 @@ class ModelExecutionManager {
   // The float value is only valid when ModelExecutionStatus == SUCCESS.
   using ModelExecutionCallback =
       base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
+
+  // Invoked whenever there are changes to the state of a segmentation model.
+  // Will not be invoked unless the proto::SegmentInfo is valid.
+  using SegmentationModelUpdatedCallback =
+      base::RepeatingCallback<void(proto::SegmentInfo)>;
 
   // Called to execute a given model. This assumes that data has been collected
   // for long enough for each of the individual ML features.

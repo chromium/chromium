@@ -43,10 +43,6 @@ class SegmentSelectorImpl : public SegmentSelector {
   // best segment, and writes it to the pref.
   void OnModelExecutionCompleted(OptimizationTarget segment_id) override;
 
-  // Must be invoked before Initialize.
-  void set_model_execution_scheduler(
-      ModelExecutionScheduler* model_execution_scheduler);
-
  private:
   // For testing.
   friend class SegmentSelectorTest;
@@ -75,9 +71,6 @@ class SegmentSelectorImpl : public SegmentSelector {
                              const std::string& mapping_key,
                              float score,
                              const proto::SegmentationModelMetadata& metadata);
-
-  // The scheduler for requesting model execution.
-  ModelExecutionScheduler* model_execution_scheduler_;
 
   // The database storing metadata and results.
   SegmentInfoDatabase* segment_database_;

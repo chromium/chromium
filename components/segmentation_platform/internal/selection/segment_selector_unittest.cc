@@ -9,7 +9,6 @@
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
-#include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +19,10 @@ using testing::Return;
 using testing::SaveArg;
 
 namespace segmentation_platform {
+namespace proto {
+class SegmentInfo;
+}  // namespace proto
+
 namespace {
 
 Config CreateTestConfig() {
@@ -44,19 +47,6 @@ class MockSegmentationResultPrefs : public SegmentationResultPrefs {
               (const std::string&));
 };
 
-class MockModelExecutionScheduler : public ModelExecutionScheduler {
- public:
-  MockModelExecutionScheduler() = default;
-  ~MockModelExecutionScheduler() override = default;
-  MOCK_METHOD(void, OnNewModelInfoReady, (OptimizationTarget));
-  MOCK_METHOD(void, RequestModelExecutionForEligibleSegments, (bool));
-  MOCK_METHOD(void, RequestModelExecution, (OptimizationTarget));
-  MOCK_METHOD(void,
-              OnModelExecutionCompleted,
-              (OptimizationTarget,
-               (const std::pair<float, ModelExecutionStatus>&)));
-};
-
 class SegmentSelectorTest : public testing::Test {
  public:
   SegmentSelectorTest() = default;
@@ -68,8 +58,6 @@ class SegmentSelectorTest : public testing::Test {
     prefs_ = std::make_unique<MockSegmentationResultPrefs>();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
         segment_database_.get(), prefs_.get(), &config_);
-    segment_selector_->set_model_execution_scheduler(
-        &model_execution_scheduler_);
   }
 
   int ConvertToDiscreteScore(OptimizationTarget segment_id,
@@ -100,7 +88,6 @@ class SegmentSelectorTest : public testing::Test {
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSegmentationResultPrefs> prefs_;
   std::unique_ptr<SegmentSelectorImpl> segment_selector_;
-  MockModelExecutionScheduler model_execution_scheduler_;
 };
 
 TEST_F(SegmentSelectorTest, CheckDiscreteMapping) {
@@ -201,7 +188,6 @@ TEST_F(SegmentSelectorTest,
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_database_.get(), prefs_.get(), &config_);
-  segment_selector_->set_model_execution_scheduler(&model_execution_scheduler_);
 
   base::RunLoop loop;
   segment_selector_->Initialize(loop.QuitClosure());

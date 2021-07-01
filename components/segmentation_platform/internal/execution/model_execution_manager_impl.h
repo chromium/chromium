@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_executor.h"
@@ -49,7 +50,8 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
  public:
   using ModelHandlerCreator =
       base::RepeatingCallback<std::unique_ptr<SegmentationModelHandler>(
-          optimization_guide::proto::OptimizationTarget)>;
+          optimization_guide::proto::OptimizationTarget,
+          const SegmentationModelHandler::ModelUpdatedCallback&)>;
 
   explicit ModelExecutionManagerImpl(
       std::vector<OptimizationTarget> segment_ids,
@@ -57,7 +59,8 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       base::Clock* clock,
       SegmentInfoDatabase* segment_database,
       SignalDatabase* signal_database,
-      std::unique_ptr<FeatureAggregator> feature_aggregator);
+      std::unique_ptr<FeatureAggregator> feature_aggregator,
+      const SegmentationModelUpdatedCallback& model_updated_callback);
   ~ModelExecutionManagerImpl() override;
 
   // Disallow copy/assign.
@@ -70,13 +73,16 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
                     ModelExecutionCallback callback) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SegmentationPlatformServiceImplTest,
+                           InitializationFlow);
   struct ExecutionState;
   struct FeatureState;
 
   // Callback method for when the SegmentInfo (segment metadata) has been
   // loaded.
-  void OnSegmentInfoFetched(std::unique_ptr<ExecutionState> state,
-                            absl::optional<proto::SegmentInfo> segment_info);
+  void OnSegmentInfoFetchedForExecution(
+      std::unique_ptr<ExecutionState> state,
+      absl::optional<proto::SegmentInfo> segment_info);
 
   // ProcessFeatures is the core function for processing all the required ML
   // features in the correct order. It fetches samples for one feature at a
@@ -107,6 +113,28 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
                                  float result,
                                  ModelExecutionStatus status);
 
+  // Callback for whenever a SegmentationModelHandler is informed that the
+  // underlying ML model file has been updated. If there is an available
+  // model, this will be called at least once per session.
+  void OnSegmentationModelUpdated(
+      optimization_guide::proto::OptimizationTarget segment_id,
+      proto::SegmentationModelMetadata metadata);
+
+  // Callback after fetching the current SegmentInfo from the
+  // SegmentInfoDatabase. This is part of the flow for informing the
+  // SegmentationModelUpdatedCallback about a changed model.
+  // Merges the PredictionResult from the previously stored SegmentInfo with the
+  // newly updated one, and stores the new version in the DB.
+  void OnSegmentInfoFetchedForModelUpdate(
+      optimization_guide::proto::OptimizationTarget segment_id,
+      proto::SegmentationModelMetadata metadata,
+      absl::optional<proto::SegmentInfo> segment_info);
+
+  // Callback after storing the updated version of the SegmentInfo. Responsible
+  // for invoking the SegmentationModelUpdatedCallback.
+  void OnUpdatedSegmentInfoStored(proto::SegmentInfo segment_info,
+                                  bool success);
+
   // All the relevant handlers for each of the segments.
   std::map<OptimizationTarget, std::unique_ptr<SegmentationModelHandler>>
       model_handlers_;
@@ -122,6 +150,9 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
 
   // The FeatureAggregator aggregates all the data based on metadata and input.
   std::unique_ptr<FeatureAggregator> feature_aggregator_;
+
+  // Invoked whenever there is an update to any of the relevant ML models.
+  SegmentationModelUpdatedCallback model_updated_callback_;
 
   base::WeakPtrFactory<ModelExecutionManagerImpl> weak_ptr_factory_{this};
 };

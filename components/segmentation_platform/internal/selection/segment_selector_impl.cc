@@ -45,8 +45,6 @@ void SegmentSelectorImpl::GetSelectedSegment(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), selected_segment_last_session_));
-
-  // TODO(shaktisahu): Should we request model execution as well?
 }
 
 void SegmentSelectorImpl::GetSegmentScore(
@@ -74,13 +72,6 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(
       config_->segment_ids,
       base::BindOnce(&SegmentSelectorImpl::FindBestSegment,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SegmentSelectorImpl::set_model_execution_scheduler(
-    ModelExecutionScheduler* model_execution_scheduler) {
-  model_execution_scheduler_ = model_execution_scheduler;
-  // TODO(shaktisahu): After this change, this field is unused. Remove it.
-  // This will also cleanup weird dependency issue in the service constructor.
 }
 
 void SegmentSelectorImpl::FindBestSegment(
