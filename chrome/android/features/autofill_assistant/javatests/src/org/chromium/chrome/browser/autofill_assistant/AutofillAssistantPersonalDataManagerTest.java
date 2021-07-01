@@ -47,6 +47,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.withTextId;
 
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.widget.RadioButton;
 
@@ -61,6 +62,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -492,6 +494,8 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Build(message = "https://crbug.com/1225378", supported_abis_includes = "x86",
+        sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void testEditOfSelectedProfile() throws Exception {
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
         mHelper.addDummyProfile("John Doe", "johndoe@google.com");
