@@ -17,6 +17,7 @@
 #include "base/posix/global_descriptors.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
@@ -151,8 +152,17 @@ base::FilePath PlatformCrashpadInitialization(
 
     annotations["plat"] = std::string("Linux");
 
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
-    // crash_reporter provides it's own Chromium OS values for lsb-release.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Chromium OS: save board and builder path for 'tast symbolize'.
+    annotations["chromeos-board"] = base::SysInfo::GetLsbReleaseBoard();
+    std::string builder_path;
+    if (base::SysInfo::GetLsbReleaseValue("CHROMEOS_RELEASE_BUILDER_PATH",
+                                          &builder_path)) {
+      annotations["chromeos-builder-path"] = builder_path;
+    }
+#else
+    // Other Linux: save lsb-release. This isn't needed on Chromium OS,
+    // where crash_reporter provides it's own values for lsb-release.
     annotations["lsb-release"] = base::GetLinuxDistro();
 #endif
 
