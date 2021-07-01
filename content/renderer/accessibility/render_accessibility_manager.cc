@@ -117,7 +117,9 @@ RenderAccessibilityManager::GetOrCreateRemoteRenderAccessibilityHost() {
 void RenderAccessibilityManager::CloseConnection() {
   if (render_accessibility_host_) {
     render_accessibility_host_.reset();
-    render_accessibility_->ConnectionClosed();
+    if (render_accessibility_) {
+      render_accessibility_->ConnectionClosed();
+    }
   }
 }
 
