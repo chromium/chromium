@@ -269,9 +269,6 @@ class SyncServiceImpl : public SyncService,
   void AccountStateChanged();
   void CredentialsChanged();
 
-  // Callbacks for SyncUserSettingsImpl.
-  void SyncAllowedByPlatformChanged(bool allowed);
-
   // A wrapper around SyncUserSettings::SetSyncRequested(), such that the
   // notification which is synchronously triggered will be ignored in the
   // implementation of OnSyncRequestedPrefChange().

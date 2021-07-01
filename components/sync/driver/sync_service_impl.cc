@@ -1139,19 +1139,6 @@ ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
   return data_type_manager_->GetActiveDataTypes();
 }
 
-void SyncServiceImpl::SyncAllowedByPlatformChanged(bool allowed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!allowed) {
-    StopImpl(KEEP_DATA);
-    // Try to start up again (in transport-only mode).
-    // TODO(crbug.com/856179): Evaluate whether we can get away without a full
-    // restart (i.e. just reconfigure). See also similar comment in
-    // OnSyncRequestedPrefChange().
-    startup_controller_->TryStart(/*force_immediate=*/true);
-  }
-}
-
 void SyncServiceImpl::SetSyncRequestedAndIgnoreNotification(bool is_requested) {
   // For a no-op, OnSyncRequestedPrefChange() wouldn't be called and
   // |is_setting_sync_requested_| wouldn't get reset, so check.
