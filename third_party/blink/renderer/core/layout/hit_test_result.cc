@@ -513,26 +513,40 @@ bool HitTestResult::IsContentEditable() const {
   return HasEditableStyle(*inner_node_);
 }
 
-ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
+std::tuple<bool, ListBasedHitTestBehavior>
+HitTestResult::AddNodeToListBasedTestResultInternal(
     Node* node,
-    const HitTestLocation& location,
-    const PhysicalRect& rect) {
+    const HitTestLocation& location) {
   // If we are in the process of retargeting for `inert`, continue.
   if (GetHitTestRequest().RetargetForInert() && InertNode() && !InnerNode())
-    return kContinueHitTesting;
+    return std::make_tuple(false, kContinueHitTesting);
 
   // If not a list-based test, stop testing because the hit has been found.
   if (!GetHitTestRequest().ListBased())
-    return kStopHitTesting;
+    return std::make_tuple(false, kStopHitTesting);
 
   if (!node)
-    return kContinueHitTesting;
+    return std::make_tuple(false, kContinueHitTesting);
 
   MutableListBasedTestResult().insert(node);
 
   if (GetHitTestRequest().PenetratingList())
-    return kContinueHitTesting;
+    return std::make_tuple(false, kContinueHitTesting);
 
+  // The second argument will be ignored.
+  return std::make_tuple(true, kContinueHitTesting);
+}
+
+ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
+    Node* node,
+    const HitTestLocation& location,
+    const PhysicalRect& rect) {
+  bool should_check_containment;
+  ListBasedHitTestBehavior behavior;
+  std::tie(should_check_containment, behavior) =
+      AddNodeToListBasedTestResultInternal(node, location);
+  if (!should_check_containment)
+    return behavior;
   return rect.Contains(location.BoundingBox()) ? kStopHitTesting
                                                : kContinueHitTesting;
 }
@@ -541,22 +555,12 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
     Node* node,
     const HitTestLocation& location,
     const Region& region) {
-  // If we are in the process of retargeting for `inert`, continue.
-  if (GetHitTestRequest().RetargetForInert() && InertNode() && !InnerNode())
-    return kContinueHitTesting;
-
-  // If not a list-based test, stop testing because the hit has been found.
-  if (!GetHitTestRequest().ListBased())
-    return kStopHitTesting;
-
-  if (!node)
-    return kContinueHitTesting;
-
-  MutableListBasedTestResult().insert(node);
-
-  if (GetHitTestRequest().PenetratingList())
-    return kContinueHitTesting;
-
+  bool should_check_containment;
+  ListBasedHitTestBehavior behavior;
+  std::tie(should_check_containment, behavior) =
+      AddNodeToListBasedTestResultInternal(node, location);
+  if (!should_check_containment)
+    return behavior;
   return region.Contains(location.EnclosingIntRect()) ? kStopHitTesting
                                                       : kContinueHitTesting;
 }
