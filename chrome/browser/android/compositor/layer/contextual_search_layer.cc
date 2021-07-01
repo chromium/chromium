@@ -286,7 +286,7 @@ void ContextualSearchLayer::SetProperties(
     gfx::Size related_searches_size(search_panel_width,
                                     related_searches_height);
     if (related_searches_in_content_->parent() != layer_)
-      layer_->InsertChild(related_searches_in_content_, 0);
+      layer_->AddChild(related_searches_in_content_);
     related_searches_in_content_->SetUIResourceId(
         related_searches_resource->ui_resource()->id());
     related_searches_in_content_->SetBounds(related_searches_size);
