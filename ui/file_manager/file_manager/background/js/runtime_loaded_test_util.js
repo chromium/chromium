@@ -433,16 +433,18 @@ test.util.sync.setScrollTop = (contentWindow, query, position) => {
  * @param {Window} contentWindow Window to be tested.
  * @param {string} query Query for the test element.
  * @param {!Object<?, string>} properties CSS Property name/values to set.
+ * @return {boolean} Whether styles were set or not.
  */
 test.util.sync.setElementStyles = (contentWindow, query, properties) => {
   const element = contentWindow.document.querySelector(query);
+  if (element === null) {
+    console.error(`Failed to locate element using query "${query}"`);
+    return false;
+  }
   for (const [key, value] of Object.entries(properties)) {
     element.style[key] = value;
   }
-  if (element === null) {
-    console.error(`Failed to locate element using query "${query}"`);
-  }
-  return element != null;
+  return true;
 };
 
 /**
@@ -1107,7 +1109,7 @@ test.util.executeTestMessage = (request, sendResponse) => {
       sendResponse(test.util.sync[request.func].apply(null, args));
     } catch (e) {
       console.error(`Failure executing ${request.func}: ${e}`);
-      sendResponse(false);
+      sendResponse(null);
     }
     return false;
   } else {
