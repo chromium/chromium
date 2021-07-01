@@ -10,7 +10,14 @@
 #include "base/values.h"
 #include "components/dom_distiller/core/distillable_page_detector.h"
 #include "components/dom_distiller/core/page_features.h"
+#include "components/infobars/core/infobar_manager.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
+#include "ios/chrome/browser/infobars/infobar_ios.h"
+#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -53,6 +60,8 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
     // Ignore malformed responses.
     return;
   }
+  // The JavaScript shouldn't be executed in incognito pages.
+  DCHECK(!web_state->GetBrowserState()->IsOffTheRecord());
 
   absl::optional<GURL> url = message.request_url();
   if (!url.has_value() || UrlHasChromeScheme(url.value()) ||
@@ -146,12 +155,37 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
                                 estimated_read_time);
   }
 
-  if (score > 0 && estimated_read_time > kReadTimeThreshold &&
+  ReadingListModel* model = ReadingListModelFactory::GetForBrowserState(
+      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  const ReadingListEntry* entry = model->GetEntryByURL(url.value());
+  if (entry) {
+    // Update an existing Reading List entry with the estimated time to read.
+    // Either way, return early to not show a Messages banner for an existing
+    // Reading List entry.
+    if (entry->EstimatedReadTime().is_zero()) {
+      model->SetEstimatedReadTime(
+          url.value(), base::TimeDelta::FromMinutes(estimated_read_time));
+    }
+    return;
+  }
+  if (!web_state->IsVisible()) {
+    // Do not show the Messages banner if the WebState is not visible, but delay
+    // this check in case the estimated read time can be set for an existing
+    // entry.
+    return;
+  }
+
+  infobars::InfoBarManager* manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  if (manager && score > 0 && estimated_read_time > kReadTimeThreshold &&
       CanShowReadingListMessages()) {
-    // TODO(crbug.com/1195978): Insert Reading List Banner Overlay Request after
-    // a three second delay. Also check if the page is already in the Reading
-    // List before adding.
     SaveReadingListMessagesShownTime();
+    auto delegate = std::make_unique<IOSAddToReadingListInfobarDelegate>(
+        web_state->GetVisibleURL(), web_state->GetTitle(),
+        static_cast<int>(estimated_read_time), model, web_state);
+    std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
+        InfobarType::kInfobarTypeAddToReadingList, std::move(delegate), false);
+    manager->AddInfoBar(std::move(infobar), true);
   }
 }
 

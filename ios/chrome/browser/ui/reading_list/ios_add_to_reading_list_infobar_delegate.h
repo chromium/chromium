@@ -7,6 +7,10 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
+namespace web {
+class WebState;
+}
+
 class ReadingListModel;
 
 // Shows an add to Reading List prompt in iOS
@@ -15,7 +19,8 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   IOSAddToReadingListInfobarDelegate(const GURL& URL,
                                      const std::u16string& title,
                                      int estimated_read_time_,
-                                     ReadingListModel* model);
+                                     ReadingListModel* model,
+                                     web::WebState* web_state);
   ~IOSAddToReadingListInfobarDelegate() override;
 
   // Returns |delegate| as an IOSAddToReadingListInfobarDelegate, or nullptr
@@ -48,7 +53,9 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   // The estimated time to read of the page.
   int estimated_read_time_;
   // Reference to save |url_| to Reading List.
-  ReadingListModel* model_;
+  ReadingListModel* model_ = nullptr;
+  // WebState pointer that is showing |url_|.
+  web::WebState* web_state_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_IOS_ADD_TO_READING_LIST_INFOBAR_DELEGATE_H_

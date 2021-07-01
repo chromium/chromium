@@ -122,6 +122,8 @@ class ReadingListModel {
   // Methods to mutate an entry. Will locate the relevant entry by URL. Does
   // nothing if the entry is not found.
   virtual void SetEntryTitle(const GURL& url, const std::string& title) = 0;
+  virtual void SetEstimatedReadTime(const GURL& url,
+                                    base::TimeDelta estimated_read_time) = 0;
   virtual void SetEntryDistilledState(
       const GURL& url,
       ReadingListEntry::DistillationState state) = 0;

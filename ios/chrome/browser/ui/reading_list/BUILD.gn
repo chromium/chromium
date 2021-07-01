@@ -89,7 +89,13 @@ source_set("reading_list_javascript_feature") {
     ":distiller_js",
     "//base",
     "//components/dom_distiller/core",
+    "//components/infobars/core",
+    "//components/reading_list/core",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/ui/reading_list:infobar",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/web/public",
     "//ios/web/public/js_messaging:js_messaging",
@@ -115,6 +121,9 @@ source_set("infobar") {
   deps = [
     "//components/infobars/core",
     "//components/reading_list/core",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/web/public",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 

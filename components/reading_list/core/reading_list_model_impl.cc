@@ -429,6 +429,31 @@ void ReadingListModelImpl::SetEntryTitle(const GURL& url,
   }
 }
 
+void ReadingListModelImpl::SetEstimatedReadTime(
+    const GURL& url,
+    base::TimeDelta estimated_read_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(loaded());
+  auto iterator = entries_->find(url);
+  if (iterator == entries_->end()) {
+    return;
+  }
+  ReadingListEntry& entry = iterator->second;
+  if (entry.EstimatedReadTime() == estimated_read_time) {
+    return;
+  }
+  for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListWillUpdateEntry(this, url);
+  }
+  entry.SetEstimatedReadTime(estimated_read_time);
+  if (storage_layer_) {
+    storage_layer_->SaveEntry(entry);
+  }
+  for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListDidApplyChanges(this);
+  }
+}
+
 void ReadingListModelImpl::SetEntryDistilledInfo(
     const GURL& url,
     const base::FilePath& distilled_path,

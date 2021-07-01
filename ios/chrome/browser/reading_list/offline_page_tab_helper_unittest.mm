@@ -128,6 +128,11 @@ class FakeReadingListModel : public ReadingListModel {
     NOTREACHED();
   }
 
+  void SetEstimatedReadTime(const GURL& url,
+                            base::TimeDelta estimated_read_time) override {
+    NOTREACHED();
+  }
+
   void SetEntryDistilledInfo(const GURL& url,
                              const base::FilePath& distilled_path,
                              const GURL& distilled_url,

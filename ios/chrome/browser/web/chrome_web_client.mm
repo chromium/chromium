@@ -309,7 +309,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   features.push_back(print_feature.get());
 
-  if (IsReadingListMessagesEnabled()) {
+  if (!browser_state->IsOffTheRecord() && IsReadingListMessagesEnabled()) {
     static base::NoDestructor<ReadingListJavaScriptFeature>
         reading_list_feature;
     features.push_back(reading_list_feature.get());
