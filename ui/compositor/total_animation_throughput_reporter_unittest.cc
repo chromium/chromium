@@ -19,7 +19,27 @@
 #include "ui/compositor/test/animation_throughput_reporter_test_base.h"
 #include "ui/compositor/test/throughput_report_checker.h"
 
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    defined(THREAD_SANITIZER) || defined(LEAK_SANITIZER) ||    \
+    defined(UNDEFINED_SANITIZER)
+#define SANITIZER_ENABLED
+#endif
+
 namespace ui {
+namespace {
+
+#if !defined(SANITIZER_ENABLED)
+// Returns the delta from current time to the (start + duration) time.
+// This is used to compute how long it should wait from now to reach
+// the `start + duration` time.
+base::TimeDelta DeltaFromNowToTarget(const base::TimeTicks start,
+                                     int duration) {
+  return start + base::TimeDelta::FromMilliseconds(duration) -
+         base::TimeTicks::Now();
+}
+#endif
+
+}  // namespace
 
 using TotalAnimationThroughputReporterTest =
     AnimationThroughputReporterTestBase;
@@ -92,11 +112,20 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimations) {
     settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(96));
     layer2.SetOpacity(1.0f);
   }
+#if !defined(SANITIZER_ENABLED)
+  auto start = base::TimeTicks::Now();
+#endif
+  Advance(base::TimeDelta::FromMilliseconds(32));
+  EXPECT_FALSE(checker.reported());
 
-  Advance(base::TimeDelta::FromMilliseconds(32));
+  // The following check may fail on sanitizer builds which
+  // runs slwer.
+#if !defined(SANITIZER_ENABLED)
+  auto sixty_four_ms_from_start = DeltaFromNowToTarget(start, 64);
+  ASSERT_TRUE(sixty_four_ms_from_start > base::TimeDelta());
+  Advance(sixty_four_ms_from_start);
   EXPECT_FALSE(checker.reported());
-  Advance(base::TimeDelta::FromMilliseconds(32));
-  EXPECT_FALSE(checker.reported());
+#endif
   EXPECT_TRUE(checker.WaitUntilReported());
 }
 
@@ -146,7 +175,9 @@ TEST_F(TotalAnimationThroughputReporterTest, AddAnimationWhileAnimating) {
     settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
     layer1.SetOpacity(1.0f);
   }
-
+#if !defined(SANITIZER_ENABLED)
+  base::TimeTicks start = base::TimeTicks::Now();
+#endif
   Advance(base::TimeDelta::FromMilliseconds(32));
   EXPECT_FALSE(checker.reported());
 
@@ -163,9 +194,15 @@ TEST_F(TotalAnimationThroughputReporterTest, AddAnimationWhileAnimating) {
     layer2.SetOpacity(1.0f);
   }
 
-  // The animation time is extended.
-  Advance(base::TimeDelta::FromMilliseconds(32));
+  // The following check may fail on sanitizer builds which
+  // runs slwer.
+#if !defined(SANITIZER_ENABLED)
+  // The animation time is extended by 32ms.
+  auto sixty_four_ms_from_start = DeltaFromNowToTarget(start, 64);
+  ASSERT_TRUE(sixty_four_ms_from_start > base::TimeDelta());
+  Advance(sixty_four_ms_from_start);
   EXPECT_FALSE(checker.reported());
+#endif
 
   EXPECT_TRUE(checker.WaitUntilReported());
 }
