@@ -1,0 +1,100 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.quickactionsearchwidget;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+
+import androidx.core.app.ActivityOptionsCompat;
+
+import org.chromium.base.IntentUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
+
+/**
+ * This class serves as the delegate for the {@link QuickActionSearchWidgetReceiver}. This
+ * class contains as much of the business logic for the Quick Action Search Widget as possible.
+ */
+public class QuickActionSearchWidgetReceiverDelegate {
+    private final ComponentName mSearchComponent;
+    private final ComponentName mChromeLauncherComponent;
+
+    // These are the actions that the QuickActionSearchWidgetReceiver will subscribe to
+    // in the AndroidManifest.xml. Keep these values in sync with the values found in the
+    // AndroidManifest.
+    static final String ACTION_START_TEXT_QUERY =
+            "org.chromium.chrome.browser.ui.quickactionsearchwidget.START_TEXT_QUERY";
+    static final String ACTION_START_DINO_GAME =
+            "org.chromium.chrome.browser.ui.quickactionsearchwidget.START_DINO_GAME";
+
+    /**
+     * Constructor for the {@link QuickActionSearchWidgetReceiverDelegate}
+     *
+     * @param searchComponent The component that will be launched when ACTION_START_TEXT_QUERY is
+     *         received. Generally this component is {@link SearchActivity}.
+     * @param chromeLauncherComponent The component that will be used to dispatch intents to the
+     *         appropriate Chrome activities. Generally this component is {@link
+     *         ChromeLauncherActivity}.
+     */
+    public QuickActionSearchWidgetReceiverDelegate(
+            ComponentName searchComponent, ComponentName chromeLauncherComponent) {
+        mSearchComponent = searchComponent;
+        mChromeLauncherComponent = chromeLauncherComponent;
+    }
+
+    /**
+     * Handles the intent actions sent to the widget.
+     *
+     * @param context The {@link Context} in which the QuickActionSearchWidgetReceiver is running.
+     * @param intent  The {@link Intent} that specifies which quick action is being received.
+     */
+    public void handleAction(final Context context, final Intent intent) {
+        String action = intent.getAction();
+        if (ACTION_START_TEXT_QUERY.equals(action)) {
+            startSearchActivity(context);
+        } else if (ACTION_START_DINO_GAME.equals(action)) {
+            startDinoGame(context);
+        } else {
+            assert false : "Unsupported QuickActionSearchWidget action";
+        }
+    }
+
+    /**
+     * Starts the component specified by mSearchComponent. Generally this component is {@link
+     * SearchActivity}.
+     *
+     * @param context the {@link Context} in which we will launch the activity.
+     */
+    private void startSearchActivity(final Context context) {
+        Intent searchIntent = new Intent();
+        searchIntent.setComponent(mSearchComponent);
+        searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+
+        Bundle optionsBundle =
+                ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)
+                        .toBundle();
+        IntentUtils.safeStartActivity(context, searchIntent, optionsBundle);
+    }
+
+    /**
+     * Launches a new tab with chrome://dino URL.
+     *
+     * @param context the {@link Context} in which we will launch the activity.
+     */
+    private void startDinoGame(final Context context) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(UrlConstants.CHROME_DINO_URL));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        intent.setComponent(mChromeLauncherComponent);
+
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        IntentUtils.safeStartActivity(context, intent,
+                ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)
+                        .toBundle());
+    }
+}

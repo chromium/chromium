@@ -954,6 +954,16 @@
         android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: a3a6e991
+    <receiver  # DIFF-ANCHOR: 585b7cc1
+        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: d3e4f3ee
+        <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_DINO_GAME"/>
+      </intent-filter>  # DIFF-ANCHOR: d3e4f3ee
+      <intent-filter>  # DIFF-ANCHOR: b2859f10
+        <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_TEXT_QUERY"/>
+      </intent-filter>  # DIFF-ANCHOR: b2859f10
+    </receiver>  # DIFF-ANCHOR: 585b7cc1
     <receiver  # DIFF-ANCHOR: a0d83ae5
         android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
         android:exported="true"

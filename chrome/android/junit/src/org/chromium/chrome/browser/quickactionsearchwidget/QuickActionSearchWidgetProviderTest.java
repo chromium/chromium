@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.quickactionsearchwidget;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +23,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
@@ -62,33 +59,6 @@ public class QuickActionSearchWidgetProviderTest {
                 .thenReturn(mAppWidgetManagerMock);
     }
 
-    @After
-    public void tearDown() {
-        IntentUtils.setForceIsTrustedIntentForTesting(false);
-    }
-
-    @Test
-    @SmallTest
-    public void testNonChromeIntentsDoNotInvokeHandleAction() {
-        Intent nonChromeIntent = new Intent("SOME_NON_CHROME_INTENT");
-
-        mWidgetProvider.onReceive(mContextMock, nonChromeIntent);
-
-        verify(mDelegateMock, never()).handleAction(any(), any());
-    }
-
-    @Test
-    @SmallTest
-    public void testTrustedChromeIntentsInvokesHandleAction() {
-        Intent trustedChromeIntent = new Intent("SOME_CHROME_INTENT");
-        IntentUtils.setForceIsTrustedIntentForTesting(true);
-
-        mWidgetProvider.onReceive(mContextMock, trustedChromeIntent);
-
-        verify(mDelegateMock, times(1)).handleAction(mContextMock, trustedChromeIntent);
-        verify(mDelegateMock, times(1)).handleAction(any(), any());
-    }
-
     @Test
     @SmallTest
     public void testAppWidgetUpdateInvokesUpdateWidgets() {
@@ -103,7 +73,5 @@ public class QuickActionSearchWidgetProviderTest {
         verify(mDelegateMock, times(1))
                 .updateWidgets(mContextMock, mAppWidgetManagerMock, WIDGET_IDS);
         verify(mDelegateMock, times(1)).updateWidgets(any(), any(), any());
-
-        verify(mDelegateMock, never()).handleAction(mContextMock, appWidgetUpdateIntent);
     }
 }

@@ -8,33 +8,20 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 
 /**
- * Widget that provides an entry point for users to quickly perform actions in Chrome.
+ * {@link AppWidgetProvider} for a widget that provides an entry point for users to quickly perform
+ * actions in Chrome.
  */
 public class QuickActionSearchWidgetProvider extends AppWidgetProvider {
     private QuickActionSearchWidgetProviderDelegate mDelegate;
-
-    @Override
-    public void onReceive(final Context context, final Intent intent) {
-        if (IntentHandler.wasIntentSenderChrome(intent)) {
-            handleIntentFromChrome(context, intent);
-        } else {
-            QuickActionSearchWidgetProvider.super.onReceive(context, intent);
-        }
-    }
 
     @Override
     public void onUpdate(
@@ -52,35 +39,12 @@ public class QuickActionSearchWidgetProvider extends AppWidgetProvider {
      */
     private QuickActionSearchWidgetProviderDelegate getDelegate(final Context context) {
         if (mDelegate == null) {
-            ComponentName searchComponent = new ComponentName(context, SearchActivity.class);
-            ComponentName widgetComponent =
-                    new ComponentName(context, QuickActionSearchWidgetProvider.class);
-            ComponentName chromeLauncherComponent =
-                    new ComponentName(context, ChromeLauncherActivity.class);
+            ComponentName widgetReceiverComponent =
+                    new ComponentName(context, QuickActionSearchWidgetReceiver.class);
 
-            mDelegate = new QuickActionSearchWidgetProviderDelegate(
-                    searchComponent, widgetComponent, chromeLauncherComponent);
+            mDelegate = new QuickActionSearchWidgetProviderDelegate(widgetReceiverComponent);
         }
         return mDelegate;
-    }
-
-    /**
-     * If FRE is necessary, this function launches FRE, and the intent is re-broadcast once FRE is
-     * complete. If FRE is not necessary, the intent is passed to the delegate where the logic for
-     * the widget is contained.
-     *
-     * @param intent The intent received from the widget.
-     */
-    private void handleIntentFromChrome(Context context, Intent intent) {
-        boolean isFirstRunNecessary = FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
-                /*preferLightweightFre=*/false, intent);
-
-        if (isFirstRunNecessary) {
-            FirstRunFlowSequencer.launch(context, intent, /*requiresBroadcast=*/
-                    true, /*preferLightweightFre=*/false);
-        } else {
-            getDelegate(context).handleAction(context, intent);
-        }
     }
 
     /**
