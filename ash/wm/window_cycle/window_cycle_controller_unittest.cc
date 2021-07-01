@@ -1496,8 +1496,7 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
   std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  auto* shell = Shell::Get();
-  auto* cycle_controller = shell->window_cycle_controller();
+  auto* cycle_controller = Shell::Get()->window_cycle_controller();
   auto* event_generator = GetEventGenerator();
 
   // Start cycling.
@@ -1577,6 +1576,34 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
   EXPECT_TRUE(base::IsApproximatelyEqual(
       drag_dest.x(), preview_items[3]->GetBoundsInScreen().CenterPoint().x(),
       10));
+}
+
+// Tests that a vertical touch scroll doesn't crash. See crbug.com/1224969.
+TEST_F(WindowCycleControllerTest, VerticalTouchScroll) {
+  const gfx::Rect bounds(0, 0, 200, 200);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  auto* cycle_controller = Shell::Get()->window_cycle_controller();
+  auto* event_generator = GetEventGenerator();
+
+  // Start cycling.
+  cycle_controller->StartCycling();
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  ASSERT_TRUE(cycle_controller->IsCycling());
+  ASSERT_EQ(window2.get(), GetTargetWindow());
+
+  // Vertical touch scroll from the second item. This will cause a
+  // ui::ET_SCROLL_FLING_START event to be generated. This should not crash and
+  // do nothing to the window cycle list.
+  auto preview_items = GetWindowCycleItemViews();
+  auto drag_origin = preview_items[0]->GetBoundsInScreen().CenterPoint();
+  auto drag_dest = drag_origin + gfx::Vector2d(0, 200);
+  event_generator->GestureScrollSequence(
+      drag_origin, drag_dest, base::TimeDelta::FromMilliseconds(10), 10);
+  EXPECT_EQ(drag_origin, preview_items[0]->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(window2.get(), GetTargetWindow());
 }
 
 // When a user taps on an item, it should set the focus ring to that item. After

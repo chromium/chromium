@@ -260,7 +260,11 @@ void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
       if (!window_cycle_controller->IsEventInCycleView(event))
         return;
 
-      window_cycle_controller->StartFling(event->details().velocity_x());
+      // Only start a fling if the x-velocity is non-zero to avoid crashing when
+      // creating a fling curve. See crbug.com/1224969.
+      float velocity_x = event->details().velocity_x();
+      if (velocity_x != 0.f)
+        window_cycle_controller->StartFling(velocity_x);
       break;
     }
     case ui::ET_GESTURE_END: {
@@ -268,10 +272,9 @@ void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
         // Defer calling WindowCycleController::CompleteCycling() until we've
         // set |event| to handled and stop its propagation.
         should_complete_cycling = true;
-      } else {
-        tapped_window_ = nullptr;
-        touch_scrolling_ = false;
       }
+      tapped_window_ = nullptr;
+      touch_scrolling_ = false;
       break;
     }
     default:
