@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DOWNLOAD_DRIVER_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DOWNLOAD_DRIVER_H_
 
+#include <stddef.h>
 #include <set>
 #include <string>
 
 #include "components/download/internal/background_service/driver_entry.h"
-#include "components/download/internal/background_service/memory_tracker.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,7 +36,7 @@ enum class FailureType {
 
 // The interface that includes all the operations to interact with low level
 // download library functionalities.
-class DownloadDriver : public MemoryTracker {
+class DownloadDriver {
  public:
   // The client to receive updates from content download library.
   // The update events for all downloads will pass through, so it's the
@@ -74,7 +74,7 @@ class DownloadDriver : public MemoryTracker {
                                   uint64_t bytes_uploaded) const = 0;
   };
 
-  ~DownloadDriver() override = default;
+  virtual ~DownloadDriver() = default;
 
   // Initialize the driver to receive download updates.
   virtual void Initialize(Client* client) = 0;
@@ -114,6 +114,9 @@ class DownloadDriver : public MemoryTracker {
   // Called to query the current set of active downloads.  This doesn't
   // necessarily mean downloads started by the service.
   virtual std::set<std::string> GetActiveDownloads() = 0;
+
+  // Returns the estimate of dynamically allocated memory in bytes.
+  virtual size_t EstimateMemoryUsage() const = 0;
 };
 
 }  // namespace download

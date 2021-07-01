@@ -64,7 +64,6 @@ if (!is_ios) {
 
     deps = [
       ":common",
-      ":memory_tracker",
       ":storage",
       "//base",
       "//components/download/network",
@@ -133,12 +132,6 @@ source_set("common") {
   ]
 }
 
-source_set("memory_tracker") {
-  sources = [ "memory_tracker.h" ]
-  visibility = [ ":*" ]
-  deps = [ "//base" ]
-}
-
 source_set("storage") {
   sources = [
     "download_store.cc",
@@ -166,7 +159,6 @@ source_set("storage") {
   ]
 
   deps = [
-    ":memory_tracker",
     "//base",
     "//components/download/internal/background_service/proto",
     "//components/download/public/background_service:public",
