@@ -39,3 +39,7 @@ http/tests/inspector-protocol/conversion/impression-insecure-main-frame-with-ifr
 # Fix to unblock wpt-importer
 crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
 crbug.com/1209223 virtual/synchronous_html_parser/http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
+
+# Fix to unblock wpt-importer
+crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
+crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
