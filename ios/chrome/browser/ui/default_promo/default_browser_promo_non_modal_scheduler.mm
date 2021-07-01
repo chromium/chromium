@@ -39,7 +39,7 @@ const NSTimeInterval kShowPromoPostShareWaitTime = 1;
 const int kPromoShownTimesLimit = 2;
 
 bool PromoCanBeDisplayed() {
-  return !UserInPromoCooldown() &&
+  return !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown() &&
          UserInteractionWithNonModalPromoCount() < kPromoShownTimesLimit;
 }
 
