@@ -4,7 +4,6 @@
 
 #include "chrome/browser/dom_distiller/test_distillation_observers.h"
 #include "components/dom_distiller/core/url_constants.h"
-#include "url/gurl.h"
 
 namespace dom_distiller {
 
