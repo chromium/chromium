@@ -74,18 +74,6 @@ class UserTypeFilterTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-class GuestUserTypeFilterTest : public UserTypeFilterTest,
-                                public ::testing::WithParamInterface<bool> {
- public:
-  GuestUserTypeFilterTest() {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(UserTypeFilterTest, ChildUser) {
   const auto profile = CreateProfile();
@@ -97,7 +85,7 @@ TEST_F(UserTypeFilterTest, ChildUser) {
 }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-TEST_P(GuestUserTypeFilterTest, GuestUser) {
+TEST_F(UserTypeFilterTest, GuestUser) {
   auto profile = CreateGuestProfile();
   EXPECT_FALSE(Match(profile, CreateJsonWithFilter({kUserTypeUnmanaged})));
   EXPECT_TRUE(Match(profile, CreateJsonWithFilter({kUserTypeGuest})));
@@ -123,7 +111,7 @@ TEST_F(UserTypeFilterTest, EmptyFilter) {
   EXPECT_FALSE(Match(CreateProfile(), CreateJsonWithFilter({})));
 }
 
-TEST_P(GuestUserTypeFilterTest, DefaultFilter) {
+TEST_F(UserTypeFilterTest, DefaultFilter) {
   auto profile = CreateProfile();
   base::ListValue default_filter;
   default_filter.Append(base::Value(kUserTypeUnmanaged));
@@ -143,9 +131,5 @@ TEST_P(GuestUserTypeFilterTest, DefaultFilter) {
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   EXPECT_FALSE(MatchDefault(profile, default_filter));
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestUserTypeFilterTest,
-                         /*is_ephemeral=*/testing::Bool());
 
 }  // namespace apps

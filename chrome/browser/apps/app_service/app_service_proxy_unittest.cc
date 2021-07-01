@@ -197,19 +197,7 @@ TEST_F(AppServiceProxyTest, IconCoalescer) {
   EXPECT_EQ(6, NumOuterFinishedCallbacks());
 }
 
-class GuestAppServiceProxyTest : public AppServiceProxyTest,
-                                 public ::testing::WithParamInterface<bool> {
- public:
-  GuestAppServiceProxyTest() {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(GuestAppServiceProxyTest, ProxyAccessPerProfile) {
+TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   TestingProfile::Builder profile_builder;
 
   // We expect an App Service in a regular profile.
@@ -244,7 +232,3 @@ TEST_P(GuestAppServiceProxyTest, ProxyAccessPerProfile) {
   EXPECT_TRUE(guest_proxy);
   EXPECT_NE(guest_proxy, proxy);
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestAppServiceProxyTest,
-                         /*is_ephemeral=*/testing::Bool());
