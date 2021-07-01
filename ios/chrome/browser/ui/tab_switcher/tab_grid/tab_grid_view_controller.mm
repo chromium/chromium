@@ -1469,6 +1469,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                               completion:cleanup];
 }
 
+// Updates the labels and the buttons on the top and the bottom toolbars based
+// based on the selected tabs count.
+- (void)updateSelectionModeToolbars {
+  GridViewController* currentGridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  NSUInteger selectedItemsCount =
+      [currentGridViewController.selectedItemIDsForEditing count];
+  self.topToolbar.selectedTabsCount = selectedItemsCount;
+  self.bottomToolbar.selectedTabsCount = selectedItemsCount;
+  [self.bottomToolbar setCloseAllButtonEnabled:selectedItemsCount > 0];
+}
+
 // Records when the user switches between incognito and regular pages in the tab
 // grid. Switching to a different TabGridPage can either be driven by dragging
 // the scrollView or tapping on the pageControl.
@@ -1648,12 +1660,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gridViewController:(GridViewController*)gridViewController
        didSelectItemWithID:(NSString*)itemID {
   if (self.tabGridMode == TabGridModeSelection) {
-    NSUInteger selectedItemsCount =
-        [gridViewController.selectedItemIDsForEditing count];
-    self.topToolbar.selectedTabsCount = selectedItemsCount;
-    self.bottomToolbar.selectedTabsCount = selectedItemsCount;
-
-    [self.bottomToolbar setCloseAllButtonEnabled:selectedItemsCount > 0];
+    [self updateSelectionModeToolbars];
     return;
   }
 
@@ -1726,9 +1733,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
-  if (self.tabGridMode == TabGridModeSelection && count == 0) {
+  if (self.tabGridMode == TabGridModeSelection) {
     // Exit selection mode if there are no more tabs.
-    self.tabGridMode = TabGridModeNormal;
+    if (count == 0)
+      self.tabGridMode = TabGridModeNormal;
+    [self updateSelectionModeToolbars];
   }
 
   if (count > 0) {
@@ -1812,6 +1821,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
   [gridViewController selectAllItemsForEditing];
+  [self updateSelectionModeToolbars];
 }
 
 // Shows an action sheet that asks for confirmation when 'Close All' button is
