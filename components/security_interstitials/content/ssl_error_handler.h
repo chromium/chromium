@@ -205,6 +205,8 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
  private:
   friend class content::WebContentsUserData<SSLErrorHandler>;
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerTest, CalculateOptionsMask);
+  FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerTest,
+                           NonPrimaryMainframeShouldNotAffectSSLErrorHandler);
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerNameMismatchTest,
                            ShouldShowCustomInterstitialOnCaptivePortalResult);
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerNameMismatchTest,

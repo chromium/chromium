@@ -34,6 +34,7 @@
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
@@ -1603,4 +1604,39 @@ TEST_F(SSLErrorHandlerTest, LegacyTLSInterstitial) {
   histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
                                SSLErrorHandler::SHOW_LEGACY_TLS_INTERSTITIAL,
                                1);
+}
+
+// Tests that non-primary main frame navigations should not affect
+// SSLErrorHandler.
+TEST_F(SSLErrorHandlerTest, NonPrimaryMainframeShouldNotAffectSSLErrorHandler) {
+  net::SSLInfo ssl_info;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), kOkayCertName);
+  ssl_info.cert_status = net::CERT_STATUS_LEGACY_TLS;
+  ssl_info.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
+
+  std::unique_ptr<TestSSLErrorHandlerDelegate> delegate(
+      new TestSSLErrorHandlerDelegate(web_contents(), ssl_info));
+
+  auto error_handler = std::make_unique<TestSSLErrorHandler>(
+      std::move(delegate), web_contents(),
+      net::MapCertStatusToNetError(ssl_info.cert_status), ssl_info,
+      /*network_time_tracker=*/nullptr, /*request_url=*/GURL(),
+      /*captive_portal_service=*/nullptr);
+
+  auto* error_handler_ptr = error_handler.get();
+  web_contents()->SetUserData(SSLErrorHandler::UserDataKey(),
+                              std::move(error_handler));
+
+  std::unique_ptr<content::MockNavigationHandle> handle =
+      std::make_unique<content::MockNavigationHandle>(GURL(), main_rfh());
+  handle->set_is_in_primary_main_frame(false);
+  error_handler_ptr->DidStartNavigation(handle.get());
+  // Make sure that the |SSLErrorHandler| is not deleted.
+  EXPECT_TRUE(SSLErrorHandler::FromWebContents(web_contents()));
+
+  handle->set_is_in_primary_main_frame(true);
+  error_handler_ptr->DidStartNavigation(handle.get());
+  // Make sure that the |SSLErrorHandler| is deleted.
+  EXPECT_FALSE(SSLErrorHandler::FromWebContents(web_contents()));
 }
