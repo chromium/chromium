@@ -211,6 +211,7 @@ class TestAppsGridViewFolderDelegate : public AppsGridViewFolderDelegate {
 
   void HandleKeyboardReparent(AppListItemView* reparented_item,
                               ui::KeyboardCode key_code) override {}
+  void UpdateFolderBounds() override {}
 };
 
 class AppsGridViewTest : public views::ViewsTestBase {
@@ -1084,6 +1085,83 @@ TEST_F(AppsGridViewTest, FolderColsAndRows) {
   EXPECT_EQ(17, items_grid_view->view_model()->view_size());
   EXPECT_EQ(4, items_grid_view->cols());
   EXPECT_EQ(4, items_grid_view->rows_per_page());
+  app_list_folder_view()->CloseFolderPage();
+}
+
+TEST_F(AppsGridViewTest, RemoveItemsInFolderShouldUpdateBounds) {
+  // Populate two folders with different number of apps.
+  model_->CreateAndPopulateFolderWithApps(2);
+  AppListFolderItem* folder_2 = model_->CreateAndPopulateFolderWithApps(4);
+
+  // Record the bounds of the folder view with 2 items in it.
+  AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
+  test_api_->PressItemAt(0);
+  EXPECT_TRUE(contents_view_->apps_container_view()->IsInFolderView());
+  gfx::Rect one_row_folder_view = items_grid_view->GetBoundsInScreen();
+  app_list_folder_view()->CloseFolderPage();
+
+  // Record the bounds of the folder view with 4 items in it and keep the folder
+  // view open for further testing.
+  test_api_->PressItemAt(1);
+  EXPECT_TRUE(contents_view_->apps_container_view()->IsInFolderView());
+  gfx::Rect two_rows_folder_view = items_grid_view->GetBoundsInScreen();
+  EXPECT_NE(one_row_folder_view.size(), two_rows_folder_view.size());
+
+  // Remove one item from the folder with 4 items. The bound should stay the
+  // same as there are still two rows in the folder view.
+  model_->DeleteItem(folder_2->item_list()->item_at(0)->id());
+  EXPECT_TRUE(contents_view_->apps_container_view()->IsInFolderView());
+  items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
+            two_rows_folder_view.size());
+
+  // Remove another item from the folder. The bound should update and become the
+  // folder view with one row.
+  model_->DeleteItem(folder_2->item_list()->item_at(0)->id());
+  EXPECT_TRUE(contents_view_->apps_container_view()->IsInFolderView());
+  items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
+            one_row_folder_view.size());
+}
+
+TEST_F(AppsGridViewTest, AddItemsToFolderShouldUpdateBounds) {
+  // Populate two folders with different number of apps.
+  AppListFolderItem* folder_1 = model_->CreateAndPopulateFolderWithApps(2);
+  model_->CreateAndPopulateFolderWithApps(4);
+
+  // Record the bounds of the folder view with 4 items in it.
+  AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
+  test_api_->PressItemAt(1);
+  EXPECT_TRUE(contents_view_->apps_container_view()->IsInFolderView());
+  gfx::Rect two_rows_folder_view = items_grid_view->GetBoundsInScreen();
+  app_list_folder_view()->CloseFolderPage();
+
+  // Record the bounds of the folder view with 2 items in it and keep the folder
+  // view open for further testing.
+  test_api_->PressItemAt(0);
+  EXPECT_TRUE(contents_view_->apps_container_view()->IsInFolderView());
+  gfx::Rect one_row_folder_view = items_grid_view->GetBoundsInScreen();
+  EXPECT_NE(one_row_folder_view.size(), two_rows_folder_view.size());
+
+  // Add an item to the folder so that there are two rows in the folder view.
+  model_->AddItemToFolder(model_->CreateItem("Extra 1"), folder_1->id());
+  EXPECT_TRUE(contents_view_->apps_container_view()->IsInFolderView());
+  items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
+            two_rows_folder_view.size());
+  app_list_folder_view()->CloseFolderPage();
+
+  // Create a folder with a full page of apps. Add an item to the folder should
+  // not change the size of the folder view.
+  AppListFolderItem* folder_full = model_->CreateAndPopulateFolderWithApps(
+      GetAppListConfig().max_folder_items_per_page());
+  test_api_->PressItemAt(2);
+  EXPECT_TRUE(contents_view_->apps_container_view()->IsInFolderView());
+  gfx::Rect full_folder_view = items_grid_view->GetBoundsInScreen();
+
+  model_->AddItemToFolder(model_->CreateItem("Extra 2"), folder_full->id());
+  EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
+            full_folder_view.size());
   app_list_folder_view()->CloseFolderPage();
 }
 

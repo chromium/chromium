@@ -143,6 +143,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void SetRootLevelDragViewVisible(bool visible) override;
   void HandleKeyboardReparent(AppListItemView* reparented_view,
                               ui::KeyboardCode key_code) override;
+  void UpdateFolderBounds() override;
 
   const AppListConfig& GetAppListConfig() const;
 

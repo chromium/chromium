@@ -58,6 +58,10 @@ class ASH_EXPORT AppsGridViewFolderDelegate {
   virtual void HandleKeyboardReparent(AppListItemView* reparented_view,
                                       ui::KeyboardCode key_code) = 0;
 
+  // Updates the preferred folder bounds. Called when the expected folder items
+  // grid dimensions change.
+  virtual void UpdateFolderBounds() = 0;
+
  protected:
   virtual ~AppsGridViewFolderDelegate() {}
 };

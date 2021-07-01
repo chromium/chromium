@@ -561,6 +561,7 @@ gfx::Size AppListFolderView::CalculatePreferredSize() const {
 void AppListFolderView::Layout() {
   CalculateIdealBounds();
   views::ViewModelUtils::SetViewBoundsToIdealBounds(*view_model_);
+  background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
 }
 
 bool AppListFolderView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -795,6 +796,16 @@ void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
   container_view_->ReparentFolderItemTransit(folder_item_);
   container_view_->apps_grid_view()->HandleKeyboardReparent(reparented_view,
                                                             key_code);
+}
+
+void AppListFolderView::UpdateFolderBounds() {
+  if (!GetActivatedFolderItemView())
+    return;
+
+  // Update the bounds of the folder view and mark the layout invalidated for
+  // relayout. Note that there is no animation when the folder view shrinks.
+  UpdatePreferredBounds();
+  PreferredSizeChanged();
 }
 
 void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

@@ -1598,11 +1598,19 @@ void AppsGridView::UpdateColsAndRowsForFolder() {
   if (!folder_delegate_ || !item_list_->item_count())
     return;
 
+  int prev_cols = cols_;
+  int prev_rows = rows_per_page_;
+
   // Try to shape the apps grid into a square.
   int items_in_one_page = std::min(
       GetAppListConfig().max_folder_items_per_page(), item_list_->item_count());
   cols_ = std::sqrt(items_in_one_page - 1) + 1;
   rows_per_page_ = (items_in_one_page - 1) / cols_ + 1;
+
+  // Update the folder bounds if the number of columns or rows changed.
+  if (prev_cols != cols_ || prev_rows != rows_per_page_) {
+    folder_delegate_->UpdateFolderBounds();
+  }
 }
 
 void AppsGridView::DispatchDragEventForReparent(Pointer pointer,
