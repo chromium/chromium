@@ -559,10 +559,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   // Set the supported scale factors to 1x and 2x such that
   // BookmarkModel::GetFavicon() requests both 1x and 2x.
   // 1x -> for sync, 2x -> for the UI.
-  std::vector<ui::ScaleFactor> supported_scale_factors;
+  std::vector<ui::ResourceScaleFactor> supported_scale_factors;
   supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
   supported_scale_factors.push_back(ui::SCALE_FACTOR_200P);
-  ui::SetSupportedScaleFactors(supported_scale_factors);
+  ui::SetSupportedResourceScaleFactors(supported_scale_factors);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 

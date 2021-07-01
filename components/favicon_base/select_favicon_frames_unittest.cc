@@ -18,18 +18,18 @@ using std::vector;
 
 namespace {
 
-const ui::ScaleFactor FaviconScaleFactor1x[] = {
-  ui::SCALE_FACTOR_100P,
+const ui::ResourceScaleFactor FaviconScaleFactor1x[] = {
+    ui::SCALE_FACTOR_100P,
 };
 
-const ui::ScaleFactor FaviconScaleFactor1xAnd2x[] = {
-  ui::SCALE_FACTOR_100P,
-  ui::SCALE_FACTOR_200P,
+const ui::ResourceScaleFactor FaviconScaleFactor1xAnd2x[] = {
+    ui::SCALE_FACTOR_100P,
+    ui::SCALE_FACTOR_200P,
 };
 
-#define SCOPED_FAVICON_SCALE_FACTOR(list)          \
-  ui::test::ScopedSetSupportedScaleFactors scoped( \
-      std::vector<ui::ScaleFactor>(list, list + base::size(list)))
+#define SCOPED_FAVICON_SCALE_FACTOR(list)                  \
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped( \
+      std::vector<ui::ResourceScaleFactor>(list, list + base::size(list)))
 
 #define SCOPED_FAVICON_SCALE_FACTOR_1X \
   SCOPED_FAVICON_SCALE_FACTOR(FaviconScaleFactor1x)

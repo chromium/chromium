@@ -57,8 +57,8 @@ TEST_F(FaviconUrlParserTest, LegacyParsingSizeParam) {
   EXPECT_EQ(32, parsed.size_in_dip);
   EXPECT_EQ(1.4f, parsed.device_scale_factor);
 
-  // Test that we pick the ui::ScaleFactor which is closest to the passed in
-  // scale factor.
+  // Test that we pick the ui::ResourceScaleFactor which is closest to the
+  // passed in scale factor.
   const std::string path4 = "size/16@1.41x/" + url;
   EXPECT_TRUE(chrome::ParseFaviconPath(
       path4, chrome::FaviconUrlFormat::kFaviconLegacy, &parsed));

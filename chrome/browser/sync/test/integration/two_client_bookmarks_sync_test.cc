@@ -222,10 +222,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_SetFaviconHiDPI) {
   // Set the supported scale factors to include 2x such that CreateFavicon()
   // creates a favicon with hidpi representations and that methods in the
   // FaviconService request hidpi favicons.
-  std::vector<ui::ScaleFactor> supported_scale_factors;
+  std::vector<ui::ResourceScaleFactor> supported_scale_factors;
   supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
   supported_scale_factors.push_back(ui::SCALE_FACTOR_200P);
-  ui::SetSupportedScaleFactors(supported_scale_factors);
+  ui::SetSupportedResourceScaleFactors(supported_scale_factors);
 
   const GURL page_url(kGenericURL);
   const GURL icon_url1("http://www.google.com/favicon1.ico");
@@ -277,9 +277,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
                        SC_UpdatingTitleDoesNotUpdateFaviconLastUpdatedTime) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  std::vector<ui::ScaleFactor> supported_scale_factors;
+  std::vector<ui::ResourceScaleFactor> supported_scale_factors;
   supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
-  ui::SetSupportedScaleFactors(supported_scale_factors);
+  ui::SetSupportedResourceScaleFactors(supported_scale_factors);
 
   const GURL page_url(kGenericURL);
   const GURL icon_url("http://www.google.com/favicon.ico");

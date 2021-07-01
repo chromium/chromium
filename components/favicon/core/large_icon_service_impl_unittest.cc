@@ -118,7 +118,8 @@ class LargeIconServiceTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  ui::test::ScopedSetSupportedScaleFactors scoped_set_supported_scale_factors_;
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      scoped_set_supported_scale_factors_;
   NiceMock<MockImageFetcher>* mock_image_fetcher_;
   testing::NiceMock<MockFaviconService> mock_favicon_service_;
   LargeIconServiceImpl large_icon_service_;

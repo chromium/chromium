@@ -114,8 +114,8 @@ class FaviconService : public CoreFaviconService, public LargeFaviconProvider {
   // Set the favicon for |page_url| for |icon_type| in the thumbnail database.
   // Unlike SetFavicons(), this method will not delete preexisting bitmap data
   // which is associated to |page_url| if at all possible. Use this method if
-  // the favicon bitmaps for any of ui::GetSupportedScaleFactors() are not
-  // known.
+  // the favicon bitmaps for any of ui::GetSupportedResourceScaleFactors() are
+  // not known.
   virtual void MergeFavicon(const GURL& page_url,
                             const GURL& icon_url,
                             favicon_base::IconType icon_type,
