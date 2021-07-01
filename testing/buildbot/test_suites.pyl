@@ -3925,6 +3925,7 @@
           # Dawn which ANGLE adapter Chromium is using. This will help match the test
           # usage to be the same as the browser.
           '--additional-driver-flag=--use-gpu-in-tests',
+          '--additional-driver-flag=--enable-dawn-features=use_tint_generator',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
@@ -3966,6 +3967,7 @@
           # Dawn which ANGLE adapter Chromium is using. This will help match the test
           # usage to be the same as the browser.
           '--additional-driver-flag=--use-gpu-in-tests',
+          '--additional-driver-flag=--enable-dawn-features=use_tint_generator',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
@@ -4010,6 +4012,7 @@
           # Dawn which ANGLE adapter Chromium is using. This will help match the test
           # usage to be the same as the browser.
           '--additional-driver-flag=--use-gpu-in-tests',
+          '--additional-driver-flag=--enable-dawn-features=use_tint_generator',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
