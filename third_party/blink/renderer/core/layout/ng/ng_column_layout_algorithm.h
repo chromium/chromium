@@ -76,16 +76,19 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
 
   LayoutUnit CalculateBalancedColumnBlockSize(
       const LogicalSize& column_size,
+      LayoutUnit row_offset,
       const NGBlockBreakToken* child_break_token);
 
   // Stretch the column length. We do this during column balancing, when we
   // discover that the current length isn't large enough to fit all content.
   LayoutUnit StretchColumnBlockSize(LayoutUnit minimal_space_shortage,
-                                    LayoutUnit current_column_size) const;
+                                    LayoutUnit current_column_size,
+                                    LayoutUnit row_offset) const;
 
-  LayoutUnit ConstrainColumnBlockSize(LayoutUnit size) const;
-  LayoutUnit CurrentContentBlockOffset() const {
-    return intrinsic_block_size_ - BorderScrollbarPadding().block_start;
+  LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
+                                      LayoutUnit row_offset) const;
+  LayoutUnit CurrentContentBlockOffset(LayoutUnit border_box_row_offset) const {
+    return border_box_row_offset - BorderScrollbarPadding().block_start;
   }
 
   // Get the percentage resolution size to use for column content (i.e. not
