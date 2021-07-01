@@ -51,7 +51,9 @@ file_manager_private::DriveConfirmDialogType ConvertDialogReasonType(
 
 }  // namespace
 
-DriveFsEventRouter::DriveFsEventRouter() = default;
+DriveFsEventRouter::DriveFsEventRouter(
+    SystemNotificationManager* notification_manager)
+    : notification_manager_(notification_manager) {}
 DriveFsEventRouter::~DriveFsEventRouter() = default;
 
 DriveFsEventRouter::SyncingStatusState::SyncingStatusState() = default;

@@ -12,6 +12,7 @@
 
 #include "base/macros.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 #include "chromeos/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -35,7 +36,7 @@ namespace file_manager {
 // Files app's event router handling DriveFS-related events.
 class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
  public:
-  DriveFsEventRouter();
+  explicit DriveFsEventRouter(SystemNotificationManager* notification_manager);
   virtual ~DriveFsEventRouter();
 
   // Triggers an event in the UI to display a confirmation dialog.
@@ -46,6 +47,11 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   // Called from the UI to notify the caller of DisplayConfirmDialog() of the
   // dialog's result.
   void OnDialogResult(drivefs::mojom::DialogResult result);
+
+ protected:
+  SystemNotificationManager* system_notification_manager() {
+    return notification_manager_;
+  }
 
  private:
   struct SyncingStatusState {
@@ -109,6 +115,9 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   CreateFileTransferStatus(
       const std::vector<drivefs::mojom::ItemEvent*>& item_events,
       SyncingStatusState* state);
+
+  // This is owned by EventRouter and only shared with this class.
+  SystemNotificationManager* notification_manager_;
 
   SyncingStatusState sync_status_state_;
   SyncingStatusState pin_status_state_;

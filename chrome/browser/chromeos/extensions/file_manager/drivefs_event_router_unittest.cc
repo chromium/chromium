@@ -71,7 +71,7 @@ testing::Matcher<const base::Value&> MatchFileWatchEvent(
 
 class TestDriveFsEventRouter : public DriveFsEventRouter {
  public:
-  TestDriveFsEventRouter() {
+  TestDriveFsEventRouter() : DriveFsEventRouter(nullptr) {
     ON_CALL(*this, IsPathWatched).WillByDefault(testing::Return(true));
     ON_CALL(*this, GetEventListenerURLs)
         .WillByDefault(testing::Return(std::set<GURL>{

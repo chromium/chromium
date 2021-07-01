@@ -13,6 +13,7 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
+#include "extensions/browser/event_router.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -54,6 +55,11 @@ class SystemNotificationManager {
       const std::string& notification_id,
       int title_id,
       int message_id);
+
+  /**
+   * Processes general extension events and can creates a system notification.
+   */
+  void HandleEvent(const extensions::Event& event);
 
   /**
    * Returns the message center display service that manages notifications.

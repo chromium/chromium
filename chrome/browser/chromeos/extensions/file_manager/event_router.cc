@@ -360,10 +360,13 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
 class DriveFsEventRouterImpl : public DriveFsEventRouter {
  public:
   DriveFsEventRouterImpl(
+      SystemNotificationManager* notification_manager,
       Profile* profile,
       const std::map<base::FilePath, std::unique_ptr<FileWatcher>>*
           file_watchers)
-      : profile_(profile), file_watchers_(file_watchers) {}
+      : DriveFsEventRouter(notification_manager),
+        profile_(profile),
+        file_watchers_(file_watchers) {}
 
  private:
   std::set<GURL> GetEventListenerURLs(const std::string& event_name) override {
@@ -447,7 +450,9 @@ EventRouter::EventRouter(Profile* profile)
           std::make_unique<DeviceEventRouterImpl>(notification_manager_.get(),
                                                   profile)),
       drivefs_event_router_(
-          std::make_unique<DriveFsEventRouterImpl>(profile, &file_watchers_)),
+          std::make_unique<DriveFsEventRouterImpl>(notification_manager_.get(),
+                                                   profile,
+                                                   &file_watchers_)),
       dispatch_directory_change_event_impl_(
           base::BindRepeating(&EventRouter::DispatchDirectoryChangeEventImpl,
                               base::Unretained(this))) {

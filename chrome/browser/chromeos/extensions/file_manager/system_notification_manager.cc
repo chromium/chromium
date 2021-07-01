@@ -122,6 +122,8 @@ void SystemNotificationManager::HandleDeviceEvent(
   }
 }
 
+void SystemNotificationManager::HandleEvent(const extensions::Event& event) {}
+
 NotificationDisplayService*
 SystemNotificationManager::GetNotificationDisplayService() {
   return NotificationDisplayServiceFactory::GetForProfile(profile_);
