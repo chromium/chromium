@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
 #include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
@@ -82,6 +83,9 @@ class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
                       base::OnceClosure resume) override;
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;
+
+  void DelegateMessage(const chrome_browser_nearby_sharing_instantmessaging::
+                           ReceiveMessagesResponse& response);
 
   // StreamParser callbacks:
   void OnFastPathReady();
