@@ -74,7 +74,7 @@ class VIEWS_EXPORT ImageButton : public Button {
   virtual gfx::ImageSkia GetImageToPaint();
 
   // Updates button background for |scale_factor|.
-  void UpdateButtonBackground(ui::ScaleFactor scale_factor);
+  void UpdateButtonBackground(ui::ResourceScaleFactor scale_factor);
 
   // The images used to render the different states of this button.
   gfx::ImageSkia images_[STATE_COUNT];

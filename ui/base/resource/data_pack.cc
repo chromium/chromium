@@ -261,13 +261,13 @@ class DataPack::BufferDataSource : public DataPack::DataSource {
   DISALLOW_COPY_AND_ASSIGN(BufferDataSource);
 };
 
-DataPack::DataPack(ui::ScaleFactor scale_factor)
+DataPack::DataPack(ResourceScaleFactor resource_scale_factor)
     : resource_table_(nullptr),
       resource_count_(0),
       alias_table_(nullptr),
       alias_count_(0),
       text_encoding_type_(BINARY),
-      scale_factor_(scale_factor) {
+      resource_scale_factor_(resource_scale_factor) {
   // Static assert must be within a DataPack member to appease visiblity rules.
   static_assert(sizeof(Entry) == 6, "size of Entry must be 6");
   static_assert(sizeof(Alias) == 4, "size of Alias must be 4");
@@ -482,8 +482,8 @@ ResourceHandle::TextEncodingType DataPack::GetTextEncodingType() const {
   return text_encoding_type_;
 }
 
-ui::ScaleFactor DataPack::GetScaleFactor() const {
-  return scale_factor_;
+ResourceScaleFactor DataPack::GetResourceScaleFactor() const {
+  return resource_scale_factor_;
 }
 
 #if DCHECK_IS_ON()
@@ -491,9 +491,11 @@ void DataPack::CheckForDuplicateResources(
     const std::vector<std::unique_ptr<ResourceHandle>>& packs) {
   for (size_t i = 0; i < resource_count_ + 1; ++i) {
     const uint16_t resource_id = resource_table_[i].resource_id;
-    const float resource_scale = GetScaleForScaleFactor(scale_factor_);
+    const float resource_scale =
+        GetScaleForResourceScaleFactor(resource_scale_factor_);
     for (const auto& handle : packs) {
-      if (GetScaleForScaleFactor(handle->GetScaleFactor()) != resource_scale)
+      if (GetScaleForResourceScaleFactor(handle->GetResourceScaleFactor()) !=
+          resource_scale)
         continue;
       DCHECK(!handle->HasResource(resource_id)) << "Duplicate resource "
                                                 << resource_id << " with scale "

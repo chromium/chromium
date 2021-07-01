@@ -17,7 +17,7 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
 
   MOCK_METHOD2(GetPathForResourcePack,
                base::FilePath(const base::FilePath& pack_path,
-                              ScaleFactor scale_factor));
+                              ResourceScaleFactor scale_factor));
   MOCK_METHOD2(GetPathForLocalePack,
                base::FilePath(const base::FilePath& pack_path,
                               const std::string& locale));
@@ -25,12 +25,12 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
   MOCK_METHOD1(GetNativeImageNamed, gfx::Image(int resource_id));
   MOCK_METHOD2(LoadDataResourceBytes,
                base::RefCountedMemory*(int resource_id,
-                                       ScaleFactor scale_factor));
+                                       ResourceScaleFactor scale_factor));
   MOCK_METHOD1(LoadDataResourceString,
                absl::optional<std::string>(int resource_id));
   MOCK_CONST_METHOD3(GetRawDataResource,
                      bool(int resource_id,
-                          ScaleFactor scale_factor,
+                          ResourceScaleFactor scale_factor,
                           base::StringPiece* value));
   MOCK_CONST_METHOD2(GetLocalizedString,
                      bool(int message_id, std::u16string* value));

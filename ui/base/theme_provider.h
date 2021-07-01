@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(UI_BASE) ThemeProvider {
   // implementations of ThemeProvider. Returns NULL on error.
   virtual base::RefCountedMemory* GetRawData(
       int id,
-      ui::ScaleFactor scale_factor) const = 0;
+      ui::ResourceScaleFactor scale_factor) const = 0;
 };
 
 }  // namespace ui

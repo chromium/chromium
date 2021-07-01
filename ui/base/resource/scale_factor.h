@@ -14,8 +14,7 @@ namespace ui {
 // SCALE_FACTOR_NONE is used for density independent resources such as
 // string, html/js files or an image that can be used for any scale factors
 // (such as wallpapers).
-// TODO(oshima): Rename to ResourceScaleFactor.
-enum ScaleFactor : int {
+enum ResourceScaleFactor : int {
   SCALE_FACTOR_NONE = 0,
   SCALE_FACTOR_100P,
   SCALE_FACTOR_200P,
@@ -25,7 +24,15 @@ enum ScaleFactor : int {
 };
 
 // Returns the image scale for the scale factor passed in.
-UI_DATA_PACK_EXPORT float GetScaleForScaleFactor(ScaleFactor scale_factor);
+UI_DATA_PACK_EXPORT float GetScaleForResourceScaleFactor(
+    ResourceScaleFactor scale_factor);
+
+// Followings are deprecated.
+using ScaleFactor = ResourceScaleFactor;
+
+inline float GetScaleForScaleFactor(ScaleFactor scale_factor) {
+  return GetScaleForResourceScaleFactor(scale_factor);
+}
 
 }  // namespace ui
 

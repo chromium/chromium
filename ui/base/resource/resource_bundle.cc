@@ -186,7 +186,7 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
     SkBitmap image;
     bool fell_back_to_1x = false;
-    ScaleFactor scale_factor = GetSupportedScaleFactor(scale);
+    ResourceScaleFactor scale_factor = GetSupportedResourceScaleFactor(scale);
     bool found = rb_->LoadBitmap(resource_id_, &scale_factor,
                                  &image, &fell_back_to_1x);
     if (!found) {
@@ -213,7 +213,7 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
           base::ClampCeil(image.width() * scale),
           base::ClampCeil(image.height() * scale));
     } else {
-      scale = GetScaleForScaleFactor(scale_factor);
+      scale = GetScaleForResourceScaleFactor(scale_factor);
     }
     return gfx::ImageSkiaRep(image, scale);
   }
@@ -325,18 +325,19 @@ bool ResourceBundle::LocaleDataPakExists(const std::string& locale) {
 #endif  // !defined(OS_ANDROID)
 
 void ResourceBundle::AddDataPackFromPath(const base::FilePath& path,
-                                         ScaleFactor scale_factor) {
+                                         ResourceScaleFactor scale_factor) {
   AddDataPackFromPathInternal(path, scale_factor, false);
 }
 
-void ResourceBundle::AddOptionalDataPackFromPath(const base::FilePath& path,
-                                                 ScaleFactor scale_factor) {
+void ResourceBundle::AddOptionalDataPackFromPath(
+    const base::FilePath& path,
+    ResourceScaleFactor scale_factor) {
   AddDataPackFromPathInternal(path, scale_factor, true);
 }
 
 void ResourceBundle::AddDataPackFromBuffer(base::span<const uint8_t> buffer,
-                                           ScaleFactor scale_factor) {
-  auto data_pack = std::make_unique<DataPack>(scale_factor);
+                                           ResourceScaleFactor scale_factor) {
+  std::unique_ptr<DataPack> data_pack(new DataPack(scale_factor));
   if (data_pack->LoadFromBuffer(buffer)) {
     AddDataPack(std::move(data_pack));
   } else {
@@ -347,7 +348,7 @@ void ResourceBundle::AddDataPackFromBuffer(base::span<const uint8_t> buffer,
 void ResourceBundle::AddDataPackFromFileRegion(
     base::File file,
     const base::MemoryMappedFile::Region& region,
-    ScaleFactor scale_factor) {
+    ResourceScaleFactor scale_factor) {
   auto data_pack = std::make_unique<DataPack>(scale_factor);
   if (data_pack->LoadFromFileRegion(std::move(file), region)) {
     AddDataPack(std::move(data_pack));
@@ -424,11 +425,12 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
 void ResourceBundle::LoadTestResources(const base::FilePath& path,
                                        const base::FilePath& locale_path) {
   is_test_resources_ = true;
-  DCHECK(!ui::GetSupportedScaleFactors().empty());
+  DCHECK(!ui::GetSupportedResourceScaleFactors().empty());
   // Use the given resource pak for both common and localized resources.
 
   if (!path.empty()) {
-    const ScaleFactor scale_factor(ui::GetSupportedScaleFactors()[0]);
+    const ResourceScaleFactor scale_factor(
+        ui::GetSupportedResourceScaleFactors()[0]);
     auto data_pack = std::make_unique<DataPack>(scale_factor);
     CHECK(data_pack->LoadFromPath(path));
     AddDataPack(std::move(data_pack));
@@ -527,14 +529,13 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
     DCHECK(!data_packs_.empty()) << "Missing call to SetResourcesDataDLL?";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ui::ScaleFactor scale_factor_to_load = GetMaxScaleFactor();
+    ResourceScaleFactor scale_factor_to_load = GetMaxScaleFactor();
 #elif defined(OS_WIN)
-    ui::ScaleFactor scale_factor_to_load =
-        display::win::GetDPIScale() > 1.25
-            ? GetMaxScaleFactor()
-            : ui::SCALE_FACTOR_100P;
+    ResourceScaleFactor scale_factor_to_load =
+        display::win::GetDPIScale() > 1.25 ? GetMaxScaleFactor()
+                                           : ui::SCALE_FACTOR_100P;
 #else
-    ui::ScaleFactor scale_factor_to_load = ui::SCALE_FACTOR_100P;
+    ResourceScaleFactor scale_factor_to_load = ui::SCALE_FACTOR_100P;
 #endif
     // TODO(oshima): Consider reading the image size from png IHDR chunk and
     // skip decoding here and remove #ifdef below.
@@ -543,7 +544,7 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
     // destroyed before the resource bundle is destroyed.
     gfx::ImageSkia image_skia(
         std::make_unique<ResourceBundleImageSource>(this, resource_id),
-        GetScaleForScaleFactor(scale_factor_to_load));
+        GetScaleForResourceScaleFactor(scale_factor_to_load));
     if (image_skia.isNull()) {
       LOG(WARNING) << "Unable to load image with id " << resource_id;
       NOTREACHED();  // Want to assert in debug mode.
@@ -569,7 +570,7 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytes(
 
 base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
     int resource_id,
-    ScaleFactor scale_factor) const {
+    ResourceScaleFactor scale_factor) const {
   TRACE_EVENT("ui", "ResourceBundle::LoadDataResourceBytesForScale",
               [&](perfetto::EventContext ctx) {
                 auto* event =
@@ -605,7 +606,7 @@ base::StringPiece ResourceBundle::GetRawDataResource(int resource_id) const {
 
 base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     int resource_id,
-    ScaleFactor scale_factor) const {
+    ResourceScaleFactor scale_factor) const {
   base::StringPiece data;
   if (delegate_ &&
       delegate_->GetRawDataResource(resource_id, scale_factor, &data)) {
@@ -614,7 +615,7 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
 
   if (scale_factor != ui::SCALE_FACTOR_100P) {
     for (size_t i = 0; i < data_packs_.size(); i++) {
-      if (data_packs_[i]->GetScaleFactor() == scale_factor &&
+      if (data_packs_[i]->GetResourceScaleFactor() == scale_factor &&
           data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
                                          &data))
         return data;
@@ -622,10 +623,10 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
   }
 
   for (size_t i = 0; i < data_packs_.size(); i++) {
-    if ((data_packs_[i]->GetScaleFactor() == ui::SCALE_FACTOR_100P ||
-         data_packs_[i]->GetScaleFactor() == ui::SCALE_FACTOR_200P ||
-         data_packs_[i]->GetScaleFactor() == ui::SCALE_FACTOR_300P ||
-         data_packs_[i]->GetScaleFactor() == ui::SCALE_FACTOR_NONE) &&
+    if ((data_packs_[i]->GetResourceScaleFactor() == ui::SCALE_FACTOR_100P ||
+         data_packs_[i]->GetResourceScaleFactor() == ui::SCALE_FACTOR_200P ||
+         data_packs_[i]->GetResourceScaleFactor() == ui::SCALE_FACTOR_300P ||
+         data_packs_[i]->GetResourceScaleFactor() == ui::SCALE_FACTOR_NONE) &&
         data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
                                        &data)) {
       return data;
@@ -648,7 +649,7 @@ std::string ResourceBundle::LoadDataResourceString(int resource_id) const {
 
 std::string ResourceBundle::LoadDataResourceStringForScale(
     int resource_id,
-    ScaleFactor scaling_factor) const {
+    ResourceScaleFactor scaling_factor) const {
   std::string output;
   DecompressIfNeeded(GetRawDataResourceForScale(resource_id, scaling_factor),
                      &output);
@@ -809,17 +810,17 @@ void ResourceBundle::ReloadFonts() {
   font_cache_.clear();
 }
 
-ScaleFactor ResourceBundle::GetMaxScaleFactor() const {
+ResourceScaleFactor ResourceBundle::GetMaxScaleFactor() const {
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   return max_scale_factor_;
 #else
-  return GetSupportedScaleFactors().back();
+  return GetSupportedResourceScaleFactors().back();
 #endif
 }
 
-bool ResourceBundle::IsScaleFactorSupported(ScaleFactor scale_factor) {
-  const std::vector<ScaleFactor>& supported_scale_factors =
-      ui::GetSupportedScaleFactors();
+bool ResourceBundle::IsScaleFactorSupported(ResourceScaleFactor scale_factor) {
+  const std::vector<ResourceScaleFactor>& supported_scale_factors =
+      ui::GetSupportedResourceScaleFactors();
   return base::Contains(supported_scale_factors, scale_factor);
 }
 
@@ -847,7 +848,7 @@ ResourceBundle::~ResourceBundle() {
 void ResourceBundle::InitSharedInstance(Delegate* delegate) {
   DCHECK(g_shared_instance_ == nullptr) << "ResourceBundle initialized twice";
   g_shared_instance_ = new ResourceBundle(delegate);
-  std::vector<ScaleFactor> supported_scale_factors;
+  std::vector<ResourceScaleFactor> supported_scale_factors;
 #if defined(OS_IOS)
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   if (display.device_scale_factor() > 2.0) {
@@ -868,7 +869,7 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
   supported_scale_factors.push_back(SCALE_FACTOR_200P);
 #endif
 #endif
-  ui::SetSupportedScaleFactors(supported_scale_factors);
+  ui::SetSupportedResourceScaleFactors(supported_scale_factors);
 }
 
 void ResourceBundle::FreeImages() {
@@ -892,7 +893,7 @@ void ResourceBundle::LoadChromeResources() {
 
 void ResourceBundle::AddDataPackFromPathInternal(
     const base::FilePath& path,
-    ScaleFactor scale_factor,
+    ResourceScaleFactor scale_factor,
     bool optional) {
   // Do not pass an empty |path| value to this method. If the absolute path is
   // unknown pass just the pack file name.
@@ -920,9 +921,9 @@ void ResourceBundle::AddDataPack(std::unique_ptr<DataPack> data_pack) {
   data_pack->CheckForDuplicateResources(data_packs_);
 #endif
 
-  if (GetScaleForScaleFactor(data_pack->GetScaleFactor()) >
-      GetScaleForScaleFactor(max_scale_factor_))
-    max_scale_factor_ = data_pack->GetScaleFactor();
+  if (GetScaleForResourceScaleFactor(data_pack->GetResourceScaleFactor()) >
+      GetScaleForResourceScaleFactor(max_scale_factor_))
+    max_scale_factor_ = data_pack->GetResourceScaleFactor();
 
   data_packs_.push_back(std::move(data_pack));
 }
@@ -977,19 +978,19 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
 }
 
 bool ResourceBundle::LoadBitmap(int resource_id,
-                                ScaleFactor* scale_factor,
+                                ResourceScaleFactor* scale_factor,
                                 SkBitmap* bitmap,
                                 bool* fell_back_to_1x) const {
   DCHECK(fell_back_to_1x);
   for (const auto& pack : data_packs_) {
-    if (pack->GetScaleFactor() == ui::SCALE_FACTOR_NONE &&
+    if (pack->GetResourceScaleFactor() == ui::SCALE_FACTOR_NONE &&
         LoadBitmap(*pack, resource_id, bitmap, fell_back_to_1x)) {
       DCHECK(!*fell_back_to_1x);
       *scale_factor = ui::SCALE_FACTOR_NONE;
       return true;
     }
 
-    if (pack->GetScaleFactor() == *scale_factor &&
+    if (pack->GetResourceScaleFactor() == *scale_factor &&
         LoadBitmap(*pack, resource_id, bitmap, fell_back_to_1x)) {
       return true;
     }
@@ -999,7 +1000,7 @@ bool ResourceBundle::LoadBitmap(int resource_id,
   // resources.
   if (is_test_resources_ && *scale_factor != ui::SCALE_FACTOR_100P) {
     for (const auto& pack : data_packs_) {
-      if (pack->GetScaleFactor() == ui::SCALE_FACTOR_100P &&
+      if (pack->GetResourceScaleFactor() == ui::SCALE_FACTOR_100P &&
           LoadBitmap(*pack, resource_id, bitmap, fell_back_to_1x)) {
         *fell_back_to_1x = true;
         return true;

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/base/resource/scale_factor.h"
 #include "ui/gfx/native_widget_types.h"
@@ -19,43 +18,63 @@ namespace ui {
 // Use ScopedSetSupportedScaleFactors for unit tests as not to affect the
 // state of other tests.
 COMPONENT_EXPORT(UI_BASE)
-void SetSupportedScaleFactors(const std::vector<ScaleFactor>& scale_factors);
+void SetSupportedResourceScaleFactors(
+    const std::vector<ResourceScaleFactor>& scale_factors);
 
 // Returns a vector with the scale factors which are supported by this
 // platform, in ascending order.
 COMPONENT_EXPORT(UI_BASE)
-const std::vector<ScaleFactor>& GetSupportedScaleFactors();
+const std::vector<ResourceScaleFactor>& GetSupportedResourceScaleFactors();
 
-// Returns the supported ScaleFactor which most closely matches |scale|.
-// Converting from float to ScaleFactor is inefficient and should be done as
-// little as possible.
+// Returns the supported ResourceScaleFactor which most closely matches |scale|.
+// Converting from float to ResourceScaleFactor is inefficient and should be
+// done as little as possible.
 COMPONENT_EXPORT(UI_BASE)
-ScaleFactor GetSupportedScaleFactor(float image_scale);
+ResourceScaleFactor GetSupportedResourceScaleFactor(float image_scale);
 
-// Returns the ScaleFactor used by |view|.
+// Returns the ResourceScaleFactor used by |view|.
 COMPONENT_EXPORT(UI_BASE)
 float GetScaleFactorForNativeView(gfx::NativeView view);
 
 // Returns true if the scale passed in is the list of supported scales for
 // the platform.
+// TODO(oshima): Deprecate this.
 COMPONENT_EXPORT(UI_BASE) bool IsSupportedScale(float scale);
 
 namespace test {
-// Class which changes the value of GetSupportedScaleFactors() to
+// Class which changes the value of GetSupportedResourceScaleFactors() to
 // |new_scale_factors| for the duration of its lifetime.
-class COMPONENT_EXPORT(UI_BASE) ScopedSetSupportedScaleFactors {
+class COMPONENT_EXPORT(UI_BASE) ScopedSetSupportedResourceScaleFactors {
  public:
-  explicit ScopedSetSupportedScaleFactors(
-      const std::vector<ui::ScaleFactor>& new_scale_factors);
-  ~ScopedSetSupportedScaleFactors();
+  explicit ScopedSetSupportedResourceScaleFactors(
+      const std::vector<ResourceScaleFactor>& new_scale_factors);
+  ScopedSetSupportedResourceScaleFactors(
+      const ScopedSetSupportedResourceScaleFactors&) = delete;
+  ScopedSetSupportedResourceScaleFactors& operator=(
+      const ScopedSetSupportedResourceScaleFactors&) = delete;
+  ~ScopedSetSupportedResourceScaleFactors();
 
  private:
-  std::vector<ui::ScaleFactor>* original_scale_factors_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetSupportedScaleFactors);
+  std::vector<ResourceScaleFactor>* original_scale_factors_;
 };
 
+using ScopedSetSupportedScaleFactors = ScopedSetSupportedResourceScaleFactors;
+
 }  // namespace test
+
+// Following are deprecated.
+inline void SetSupportedScaleFactors(
+    const std::vector<ScaleFactor>& scale_factors) {
+  SetSupportedResourceScaleFactors(scale_factors);
+}
+
+inline const std::vector<ScaleFactor>& GetSupportedScaleFactors() {
+  return GetSupportedResourceScaleFactors();
+}
+
+inline ScaleFactor GetSupportedScaleFactor(float image_scale) {
+  return GetSupportedResourceScaleFactor(image_scale);
+}
 
 }  // namespace ui
 

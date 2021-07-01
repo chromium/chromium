@@ -29,11 +29,11 @@ class RefCountedStaticMemory;
 }
 
 namespace ui {
-enum ScaleFactor : int;
+enum ResourceScaleFactor : int;
 
 class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
  public:
-  explicit DataPack(ui::ScaleFactor scale_factor);
+  explicit DataPack(ResourceScaleFactor resource_scale_factor);
   ~DataPack() override;
 
   // Load a pack file from |path|, returning false on error. If the final
@@ -71,7 +71,7 @@ class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;
   TextEncodingType GetTextEncodingType() const override;
-  ui::ScaleFactor GetScaleFactor() const override;
+  ResourceScaleFactor GetResourceScaleFactor() const override;
 
 #if DCHECK_IS_ON()
   // Checks to see if any resource in this DataPack already exists in the list
@@ -112,7 +112,7 @@ class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
 
   // The scale of the image in this resource pack relative to images in the 1x
   // resource pak.
-  ui::ScaleFactor scale_factor_;
+  ResourceScaleFactor resource_scale_factor_;
 
   DISALLOW_COPY_AND_ASSIGN(DataPack);
 };

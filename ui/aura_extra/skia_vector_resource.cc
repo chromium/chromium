@@ -42,13 +42,13 @@ std::unique_ptr<gfx::SkiaVectorAnimation> GetVectorAnimationNamed(
 
   auto& rb = ui::ResourceBundle::GetSharedInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::ScaleFactor scale_factor_to_load = rb.GetMaxScaleFactor();
+  ui::ResourceScaleFactor scale_factor_to_load = rb.GetMaxScaleFactor();
 #elif defined(OS_WIN)
-  ui::ScaleFactor scale_factor_to_load = display::win::GetDPIScale() > 1.25
-                                             ? rb.GetMaxScaleFactor()
-                                             : ui::SCALE_FACTOR_100P;
+  ui::ResourceScaleFactor scale_factor_to_load =
+      display::win::GetDPIScale() > 1.25 ? rb.GetMaxScaleFactor()
+                                         : ui::SCALE_FACTOR_100P;
 #else
-  ui::ScaleFactor scale_factor_to_load = ui::SCALE_FACTOR_100P;
+  ui::ResourceScaleFactor scale_factor_to_load = ui::SCALE_FACTOR_100P;
 #endif
   // Clamp the scale factor to 2x. At most we will only be needing 2 versions
   // for a given file.

@@ -16,37 +16,39 @@
 namespace ui {
 
 TEST(LayoutTest, GetScaleFactorFromScalePartlySupported) {
-  std::vector<ScaleFactor> supported_factors;
+  std::vector<ResourceScaleFactor> supported_factors;
   supported_factors.push_back(SCALE_FACTOR_100P);
   supported_factors.push_back(SCALE_FACTOR_200P);
-  test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
-  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedScaleFactor(0.1f));
-  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedScaleFactor(0.9f));
-  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedScaleFactor(1.0f));
-  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedScaleFactor(1.41f));
-  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedScaleFactor(1.6f));
-  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedScaleFactor(2.0f));
-  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedScaleFactor(999.0f));
+  test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
+  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedResourceScaleFactor(0.1f));
+  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedResourceScaleFactor(0.9f));
+  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedResourceScaleFactor(1.0f));
+  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedResourceScaleFactor(1.41f));
+  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedResourceScaleFactor(1.6f));
+  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedResourceScaleFactor(2.0f));
+  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedResourceScaleFactor(999.0f));
 }
 
 TEST(LayoutTest, GetScaleFactorFromScaleAllSupported) {
-  std::vector<ScaleFactor> supported_factors;
+  std::vector<ResourceScaleFactor> supported_factors;
   for (int factor = SCALE_FACTOR_100P; factor < NUM_SCALE_FACTORS; ++factor) {
-    supported_factors.push_back(static_cast<ScaleFactor>(factor));
+    supported_factors.push_back(static_cast<ResourceScaleFactor>(factor));
   }
-  test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
+  test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
 
-  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedScaleFactor(0.1f));
-  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedScaleFactor(0.9f));
-  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedScaleFactor(1.0f));
-  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedScaleFactor(1.49f));
-  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedScaleFactor(1.51f));
-  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedScaleFactor(2.0f));
-  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedScaleFactor(2.49f));
-  EXPECT_EQ(SCALE_FACTOR_300P, GetSupportedScaleFactor(2.51f));
-  EXPECT_EQ(SCALE_FACTOR_300P, GetSupportedScaleFactor(3.0f));
-  EXPECT_EQ(SCALE_FACTOR_300P, GetSupportedScaleFactor(3.1f));
-  EXPECT_EQ(SCALE_FACTOR_300P, GetSupportedScaleFactor(999.0f));
+  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedResourceScaleFactor(0.1f));
+  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedResourceScaleFactor(0.9f));
+  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedResourceScaleFactor(1.0f));
+  EXPECT_EQ(SCALE_FACTOR_100P, GetSupportedResourceScaleFactor(1.49f));
+  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedResourceScaleFactor(1.51f));
+  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedResourceScaleFactor(2.0f));
+  EXPECT_EQ(SCALE_FACTOR_200P, GetSupportedResourceScaleFactor(2.49f));
+  EXPECT_EQ(SCALE_FACTOR_300P, GetSupportedResourceScaleFactor(2.51f));
+  EXPECT_EQ(SCALE_FACTOR_300P, GetSupportedResourceScaleFactor(3.0f));
+  EXPECT_EQ(SCALE_FACTOR_300P, GetSupportedResourceScaleFactor(3.1f));
+  EXPECT_EQ(SCALE_FACTOR_300P, GetSupportedResourceScaleFactor(999.0f));
 }
 
 }  // namespace ui

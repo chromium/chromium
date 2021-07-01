@@ -22,44 +22,45 @@ namespace ui {
 
 namespace {
 
-std::vector<ScaleFactor>* g_supported_scale_factors = nullptr;
+std::vector<ResourceScaleFactor>* g_supported_resource_scale_factors = nullptr;
 
 }  // namespace
 
-void SetSupportedScaleFactors(
-    const std::vector<ui::ScaleFactor>& scale_factors) {
-  if (g_supported_scale_factors != nullptr)
-    delete g_supported_scale_factors;
+void SetSupportedResourceScaleFactors(
+    const std::vector<ResourceScaleFactor>& scale_factors) {
+  if (g_supported_resource_scale_factors != nullptr)
+    delete g_supported_resource_scale_factors;
 
-  g_supported_scale_factors = new std::vector<ScaleFactor>(scale_factors);
-  std::sort(g_supported_scale_factors->begin(),
-            g_supported_scale_factors->end(),
-            [](ScaleFactor lhs, ScaleFactor rhs) {
-    return GetScaleForScaleFactor(lhs) < GetScaleForScaleFactor(rhs);
-  });
+  g_supported_resource_scale_factors =
+      new std::vector<ResourceScaleFactor>(scale_factors);
+  std::sort(g_supported_resource_scale_factors->begin(),
+            g_supported_resource_scale_factors->end(),
+            [](ResourceScaleFactor lhs, ResourceScaleFactor rhs) {
+              return GetScaleForResourceScaleFactor(lhs) <
+                     GetScaleForResourceScaleFactor(rhs);
+            });
 
   // Set ImageSkia's supported scales.
   std::vector<float> scales;
-  for (std::vector<ScaleFactor>::const_iterator it =
-          g_supported_scale_factors->begin();
-       it != g_supported_scale_factors->end(); ++it) {
-    scales.push_back(GetScaleForScaleFactor(*it));
+  for (std::vector<ResourceScaleFactor>::const_iterator it =
+           g_supported_resource_scale_factors->begin();
+       it != g_supported_resource_scale_factors->end(); ++it) {
+    scales.push_back(GetScaleForResourceScaleFactor(*it));
   }
   gfx::ImageSkia::SetSupportedScales(scales);
 }
 
-const std::vector<ScaleFactor>& GetSupportedScaleFactors() {
-  DCHECK(g_supported_scale_factors != nullptr);
-  return *g_supported_scale_factors;
+const std::vector<ResourceScaleFactor>& GetSupportedResourceScaleFactors() {
+  DCHECK(g_supported_resource_scale_factors != nullptr);
+  return *g_supported_resource_scale_factors;
 }
 
-ScaleFactor GetSupportedScaleFactor(float scale) {
-  DCHECK(g_supported_scale_factors != nullptr);
-  ScaleFactor closest_match = SCALE_FACTOR_100P;
+ResourceScaleFactor GetSupportedResourceScaleFactor(float scale) {
+  DCHECK(g_supported_resource_scale_factors != nullptr);
+  ResourceScaleFactor closest_match = SCALE_FACTOR_100P;
   float smallest_diff =  std::numeric_limits<float>::max();
-  for (size_t i = 0; i < g_supported_scale_factors->size(); ++i) {
-    ScaleFactor scale_factor = (*g_supported_scale_factors)[i];
-    float diff = std::abs(GetScaleForScaleFactor(scale_factor) - scale);
+  for (auto scale_factor : *g_supported_resource_scale_factors) {
+    float diff = std::abs(GetScaleForResourceScaleFactor(scale_factor) - scale);
     if (diff < smallest_diff) {
       closest_match = scale_factor;
       smallest_diff = diff;
@@ -70,8 +71,8 @@ ScaleFactor GetSupportedScaleFactor(float scale) {
 }
 
 bool IsSupportedScale(float scale) {
-  for (auto scale_factor_idx : *g_supported_scale_factors) {
-    if (GetScaleForScaleFactor(scale_factor_idx) == scale)
+  for (auto scale_factor_idx : *g_supported_resource_scale_factors) {
+    if (GetScaleForResourceScaleFactor(scale_factor_idx) == scale)
       return true;
   }
   return false;
@@ -79,24 +80,25 @@ bool IsSupportedScale(float scale) {
 
 namespace test {
 
-ScopedSetSupportedScaleFactors::ScopedSetSupportedScaleFactors(
-    const std::vector<ui::ScaleFactor>& new_scale_factors) {
-  if (g_supported_scale_factors) {
-    original_scale_factors_ =
-        new std::vector<ScaleFactor>(*g_supported_scale_factors);
+ScopedSetSupportedResourceScaleFactors::ScopedSetSupportedResourceScaleFactors(
+    const std::vector<ResourceScaleFactor>& new_scale_factors) {
+  if (g_supported_resource_scale_factors) {
+    original_scale_factors_ = new std::vector<ResourceScaleFactor>(
+        *g_supported_resource_scale_factors);
   } else {
     original_scale_factors_ = nullptr;
   }
-  SetSupportedScaleFactors(new_scale_factors);
+  SetSupportedResourceScaleFactors(new_scale_factors);
 }
 
-ScopedSetSupportedScaleFactors::~ScopedSetSupportedScaleFactors() {
+ScopedSetSupportedResourceScaleFactors::
+    ~ScopedSetSupportedResourceScaleFactors() {
   if (original_scale_factors_) {
-    SetSupportedScaleFactors(*original_scale_factors_);
+    SetSupportedResourceScaleFactors(*original_scale_factors_);
     delete original_scale_factors_;
   } else {
-    delete g_supported_scale_factors;
-    g_supported_scale_factors = nullptr;
+    delete g_supported_resource_scale_factors;
+    g_supported_resource_scale_factors = nullptr;
   }
 }
 

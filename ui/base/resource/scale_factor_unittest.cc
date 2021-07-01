@@ -8,10 +8,10 @@
 
 namespace ui {
 
-TEST(ScaleFactorTest, GetScaleFactorScale) {
-  EXPECT_FLOAT_EQ(1.0f, GetScaleForScaleFactor(SCALE_FACTOR_100P));
-  EXPECT_FLOAT_EQ(2.0f, GetScaleForScaleFactor(SCALE_FACTOR_200P));
-  EXPECT_FLOAT_EQ(3.0f, GetScaleForScaleFactor(SCALE_FACTOR_300P));
+TEST(ScaleFactorTest, GetResourceScaleFactorScale) {
+  EXPECT_FLOAT_EQ(1.0f, GetScaleForResourceScaleFactor(SCALE_FACTOR_100P));
+  EXPECT_FLOAT_EQ(2.0f, GetScaleForResourceScaleFactor(SCALE_FACTOR_200P));
+  EXPECT_FLOAT_EQ(3.0f, GetScaleForResourceScaleFactor(SCALE_FACTOR_300P));
 }
 
 }  // namespace ui

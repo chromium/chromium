@@ -26,7 +26,7 @@ class ResourceDataDLL : public ResourceHandle {
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;
   TextEncodingType GetTextEncodingType() const override;
-  ScaleFactor GetScaleFactor() const override;
+  ResourceScaleFactor GetResourceScaleFactor() const override;
 
  private:
   const HINSTANCE module_;

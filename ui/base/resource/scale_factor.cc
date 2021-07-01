@@ -10,14 +10,14 @@ namespace ui {
 
 namespace {
 
-const float kScaleFactorScales[] = {1.0f, 1.0f, 2.0f, 3.0f};
-static_assert(NUM_SCALE_FACTORS == base::size(kScaleFactorScales),
+const float kResourceScaleFactorScales[] = {1.0f, 1.0f, 2.0f, 3.0f};
+static_assert(NUM_SCALE_FACTORS == base::size(kResourceScaleFactorScales),
               "kScaleFactorScales has incorrect size");
 
 }  // namespace
 
-float GetScaleForScaleFactor(ScaleFactor scale_factor) {
-  return kScaleFactorScales[scale_factor];
+float GetScaleForResourceScaleFactor(ResourceScaleFactor scale_factor) {
+  return kResourceScaleFactorScales[scale_factor];
 }
 
 }  // namespace ui

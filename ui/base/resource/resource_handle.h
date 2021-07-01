@@ -47,7 +47,7 @@ class UI_DATA_PACK_EXPORT ResourceHandle {
 
   // The scale of images in this resource pack relative to images in the 1x
   // resource pak.
-  virtual ScaleFactor GetScaleFactor() const = 0;
+  virtual ResourceScaleFactor GetResourceScaleFactor() const = 0;
 };
 
 }  // namespace ui
