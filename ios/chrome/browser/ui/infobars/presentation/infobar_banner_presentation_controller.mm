@@ -129,6 +129,7 @@ const CGFloat kMinimumSizeChange = 0.5;
       std::fabs(newFrame.size.width - bannerView.frame.size.width) >
           kMinimumSizeChange) {
     bannerView.frame = newFrame;
+    containerView.frame = newFrame;
     self.needsLayout = YES;
   }
 
