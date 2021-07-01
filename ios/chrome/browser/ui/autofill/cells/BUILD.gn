@@ -18,6 +18,7 @@ source_set("cells") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/autofill/core/common:features",
     "//components/resources",
     "//components/strings",

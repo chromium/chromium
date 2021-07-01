@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialTypography.h>
 
 #import "base/feature_list.h"
+#import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -127,6 +128,13 @@ const CGFloat kGooglePayBadgeHeight = 22;
       googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
       googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
       googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+// IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      if (UITraitCollection.currentTraitCollection.userInterfaceStyle ==
+          UIUserInterfaceStyleDark) {
+        googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK);
+      }
+#endif
       [contentView addSubview:googlePayBadge];
     }
 

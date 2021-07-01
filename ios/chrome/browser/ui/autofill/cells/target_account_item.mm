@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/cells/target_account_item.h"
 
 #import "base/mac/foundation_util.h"
+#import "build/branding_buildflags.h"
 #import "components/grit/components_scaled_resources.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -77,6 +78,13 @@ const CGFloat kAccountCellSpacing = 7;
   googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
   googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
   googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+// IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (UITraitCollection.currentTraitCollection.userInterfaceStyle ==
+      UIUserInterfaceStyleDark) {
+    googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK);
+  }
+#endif
   [self.contentView addSubview:googlePayBadge];
 
   [NSLayoutConstraint activateConstraints:@[
