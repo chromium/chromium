@@ -15256,6 +15256,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePullGestureReloadNTP">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    Emitted on Android when a pull-to-refresh touch gesture initiates a NTP
+    reload. This fires only after the triggering touch is released while the
+    refresh effect has been pulled beyond the activation threshold.
+  </description>
+</action>
+
 <action name="MobileQRScannerClose">
   <owner>jif@chromium.org</owner>
   <description>User closed the QR Scanner without scanning a code.</description>

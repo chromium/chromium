@@ -27,6 +27,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -579,8 +580,12 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                String accessibilityRefreshString =
+                        mActivity.getResources().getString(R.string.accessibility_swipe_refresh);
+                swipeRefreshLayout.announceForAccessibility(accessibilityRefreshString);
                 mStream.triggerRefresh(
                         (Boolean success) -> { swipeRefreshLayout.setRefreshing(false); });
+                RecordUserAction.record("MobilePullGestureReloadNTP");
             }
         });
         return swipeRefreshLayout;
