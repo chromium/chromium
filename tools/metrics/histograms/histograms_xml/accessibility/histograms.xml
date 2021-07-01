@@ -234,6 +234,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.CrosChromeVoxNext" enum="BooleanEnabled"
     expires_after="M93">
+  <obsolete>
+    Marked obsolete in 07/2021, since ChromeVox Next has been default for a long
+    time, and the code that output this histogram was previously removed.
+  </obsolete>
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
