@@ -5,9 +5,10 @@
  * @fileoverview Tests that enum metrics are recorded correctly.
  */
 
-import {getHistogramCount} from '../test_util.js';
+import {ENTRIES, getHistogramCount, RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
+import {setupAndWaitUntilReady} from './background.js';
 import {remoteCall} from './background.js';
 
 testcase.metricsRecordEnum = async () => {
@@ -28,4 +29,20 @@ testcase.metricsRecordEnum = async () => {
   for (let i = 0; i < validValues.length; ++i) {
     chrome.test.assertEq(1, await getHistogramCount(fullHistogramName, i));
   }
+};
+
+testcase.metricsOpenSwa = async () => {
+  // Open Files SWA:
+  await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+
+  // Value basd on DialogType in file_manager/foreground/js/dialog_type.js:
+  const FileDialogTypeValues = {
+    FULL_PAGE: 5,
+  };
+
+  // Check that the UMA for SWA was incremented.
+  chrome.test.assertEq(
+      1,
+      await getHistogramCount(
+          'FileBrowser.SWA.Create', FileDialogTypeValues.FULL_PAGE));
 };

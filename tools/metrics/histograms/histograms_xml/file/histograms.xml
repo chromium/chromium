@@ -703,6 +703,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.SWA.Create" enum="FileDialogType"
+    expires_after="M99">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: When running as SWA, the mode in which the SWA was
+    opened. For the non-SWA, see `FileBrowser.Create`.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.TeamDrivesCount" units="Team Drives"
     expires_after="M98">
   <owner>simmonsjosh@google.com</owner>

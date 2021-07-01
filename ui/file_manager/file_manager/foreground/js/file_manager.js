@@ -1020,7 +1020,8 @@ export class FileManager extends EventTarget {
     // Record stats of dialog types. New values must NOT be inserted into the
     // array enumerating the types. It must be in sync with
     // FileDialogType enum in tools/metrics/histograms/histogram.xml.
-    metrics.recordEnum('Create', this.dialogType, [
+    const metricName = window.isSWA ? 'SWA.Create' : 'Create';
+    metrics.recordEnum(metricName, this.dialogType, [
       DialogType.SELECT_FOLDER,
       DialogType.SELECT_UPLOAD_FOLDER,
       DialogType.SELECT_SAVEAS_FILE,

@@ -1058,7 +1058,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metrics, /* metrics.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("metricsRecordEnum")));
+    ::testing::Values(TestCase("metricsRecordEnum"),
+                      TestCase("metricsOpenSwa").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Breadcrumbs, /* breadcrumbs.js */
