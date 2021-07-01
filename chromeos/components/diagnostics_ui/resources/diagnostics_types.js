@@ -359,6 +359,12 @@ export let ConnectionType =
 export let PhysicalLayout = chromeos.diagnostics.mojom.PhysicalLayout;
 
 /**
+ * Type alias for MechanicalLayout.
+ * @typedef {chromeos.diagnostics.mojom.MechanicalLayout}
+ */
+export let MechanicalLayout = chromeos.diagnostics.mojom.MechanicalLayout;
+
+/**
  * Type alias for KeyboardInfo.
  * @typedef {chromeos.diagnostics.mojom.KeyboardInfo}
  */

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PhysicalLayout, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PhysicalLayout, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -321,6 +321,7 @@ export let fakeKeyboards = [
     connectionType: ConnectionType.kInternal,
     name: 'AT Translated Set 2 keyboard',
     physicalLayout: PhysicalLayout.kChromeOS,
+    mechanicalLayout: MechanicalLayout.kAnsi,
     hasAssistantKey: true,
   },
 ];

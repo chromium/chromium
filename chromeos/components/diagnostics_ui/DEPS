@@ -3,6 +3,8 @@ include_rules = [
   "-chrome",
   "+chromeos/grit/chromeos_diagnostics_app_resources.h",
   "+chromeos/strings/grit/chromeos_strings.h",
+  "+chromeos/system/fake_statistics_provider.h",
+  "+chromeos/system/statistics_provider.h",
   "+components",
   "+content/public/browser",
   "+content/public/test",

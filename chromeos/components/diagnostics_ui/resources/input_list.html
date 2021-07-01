@@ -4,7 +4,9 @@
     <dom-repeat items="[[keyboards_]]" as="keyboard">
       <template>
         <li>
-          [[keyboard.name]] ([[keyboard.physicalLayout]])
+          [[keyboard.name]]
+          ([[keyboard.physicalLayout]],
+          [[keyboard.mechanicalLayout]])
           <template is="dom-if" if="[[keyboard.hasAssistantKey]]">
             (with Assistant key)
           </template>

@@ -9,6 +9,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/system/statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -93,6 +95,11 @@ class TestInputDataProvider : public InputDataProvider {
 class InputDataProviderTest : public testing::Test {
  public:
   InputDataProviderTest() {
+    statistics_provider_.SetMachineStatistic(
+        chromeos::system::kKeyboardMechanicalLayoutKey, "ANSI");
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &statistics_provider_);
+
     auto manager = std::make_unique<FakeDeviceManager>();
     manager_ = manager.get();
     provider_ = std::make_unique<TestInputDataProvider>(std::move(manager));
@@ -105,6 +112,7 @@ class InputDataProviderTest : public testing::Test {
 
  protected:
   FakeDeviceManager* manager_;
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
   std::unique_ptr<InputDataProvider> provider_;
 
  private:
@@ -232,6 +240,9 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_Remove) {
 
 TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
   base::RunLoop run_loop;
+  statistics_provider_.SetMachineStatistic(
+      chromeos::system::kKeyboardMechanicalLayoutKey, "ISO");
+
   ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
                          ui::DeviceEvent::ActionType::ADD,
                          base::FilePath("/dev/input/event0"));
@@ -254,16 +265,22 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
         EXPECT_EQ(0u, builtin_keyboard->id);
         EXPECT_EQ(mojom::PhysicalLayout::kChromeOS,
                   builtin_keyboard->physical_layout);
+        EXPECT_EQ(mojom::MechanicalLayout::kIso,
+                  builtin_keyboard->mechanical_layout);
 
         mojom::KeyboardInfoPtr external_keyboard = keyboards[1].Clone();
         EXPECT_EQ(4u, external_keyboard->id);
         EXPECT_EQ(mojom::PhysicalLayout::kUnknown,
                   external_keyboard->physical_layout);
+        EXPECT_EQ(mojom::MechanicalLayout::kUnknown,
+                  external_keyboard->mechanical_layout);
 
         mojom::KeyboardInfoPtr dell_internal_keyboard = keyboards[2].Clone();
         EXPECT_EQ(5u, dell_internal_keyboard->id);
         EXPECT_EQ(mojom::PhysicalLayout::kChromeOSDellEnterprise,
                   dell_internal_keyboard->physical_layout);
+        EXPECT_EQ(mojom::MechanicalLayout::kIso,
+                  dell_internal_keyboard->mechanical_layout);
 
         run_loop.Quit();
       }));

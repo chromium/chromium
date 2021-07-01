@@ -116,6 +116,8 @@ COMPONENT_EXPORT(CHROMEOS_SYSTEM) extern const char kRegionKey[];
 COMPONENT_EXPORT(CHROMEOS_SYSTEM) extern const char kInitialLocaleKey[];
 COMPONENT_EXPORT(CHROMEOS_SYSTEM) extern const char kInitialTimezoneKey[];
 COMPONENT_EXPORT(CHROMEOS_SYSTEM) extern const char kKeyboardLayoutKey[];
+COMPONENT_EXPORT(CHROMEOS_SYSTEM)
+extern const char kKeyboardMechanicalLayoutKey[];
 
 // The key that will be present in RO VPD to indicate what identifier is used
 // for attestation-based registration of a device.

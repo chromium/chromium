@@ -22,6 +22,14 @@ enum PhysicalLayout {
   kChromeOSDellEnterprise,
 };
 
+// The international standard that the layout follows.
+enum MechanicalLayout {
+  kUnknown,
+  kAnsi,
+  kIso,
+  kJis,
+};
+
 // Describes a connected keyboard.
 struct KeyboardInfo {
   // The number of the keyboard's /dev/input/event* node.
@@ -29,6 +37,7 @@ struct KeyboardInfo {
   ConnectionType connection_type;
   string name;
   PhysicalLayout physical_layout;
+  MechanicalLayout mechanical_layout;
   bool has_assistant_key;
 };
 

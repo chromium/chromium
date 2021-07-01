@@ -87,6 +87,7 @@ const base::CommandLine::CharType kOemManifestFilePath[] =
 const char kKeyboardsPath[] = "keyboards";
 const char kLocalesPath[] = "locales";
 const char kTimeZonesPath[] = "time_zones";
+const char kKeyboardMechanicalLayoutPath[] = "keyboard_mechanical_layout";
 
 // These are the machine serial number keys that we check in order until we find
 // a non-empty serial number.
@@ -162,6 +163,16 @@ bool GetKeyboardLayoutFromRegionalData(const base::Value& region_dict,
   return JoinListValuesToString(region_dict, kKeyboardsPath, result);
 }
 
+bool GetKeyboardMechanicalLayoutFromRegionalData(const base::Value& region_dict,
+                                                 std::string* result) {
+  const std::string* value =
+      region_dict.FindStringPath(kKeyboardMechanicalLayoutPath);
+  if (value == nullptr)
+    return false;
+  *result = *value;
+  return true;
+}
+
 bool GetInitialTimezoneFromRegionalData(const base::Value& region_dict,
                                         std::string* result) {
   return GetFirstListValueAsString(region_dict, kTimeZonesPath, result);
@@ -210,6 +221,7 @@ const char kSerialNumberKeyForTest[] = "serial_number";
 const char kInitialLocaleKey[] = "initial_locale";
 const char kInitialTimezoneKey[] = "initial_timezone";
 const char kKeyboardLayoutKey[] = "keyboard_layout";
+const char kKeyboardMechanicalLayoutKey[] = "keyboard_mechanical_layout";
 const char kAttestedDeviceIdKey[] = "attested_device_id";
 
 // OEM specific statistics. Must be prefixed with "oem_".
@@ -450,6 +462,8 @@ StatisticsProviderImpl::StatisticsProviderImpl()
       &GetInitialLocaleFromRegionalData;
   regional_data_extractors_[kKeyboardLayoutKey] =
       &GetKeyboardLayoutFromRegionalData;
+  regional_data_extractors_[kKeyboardMechanicalLayoutKey] =
+      &GetKeyboardMechanicalLayoutFromRegionalData;
   regional_data_extractors_[kInitialTimezoneKey] =
       &GetInitialTimezoneFromRegionalData;
 }

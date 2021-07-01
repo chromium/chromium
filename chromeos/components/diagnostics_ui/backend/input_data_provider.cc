@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "chromeos/system/statistics_provider.h"
 
 namespace chromeos {
 namespace diagnostics {
@@ -40,6 +41,27 @@ mojom::ConnectionType ConnectionTypeFromInputDeviceType(
       return mojom::ConnectionType::kBluetooth;
     case ui::InputDeviceType::INPUT_DEVICE_UNKNOWN:
       return mojom::ConnectionType::kUnknown;
+  }
+}
+
+mojom::MechanicalLayout GetSystemMechanicalLayout() {
+  chromeos::system::StatisticsProvider* stats_provider =
+      chromeos::system::StatisticsProvider::GetInstance();
+  std::string layout_string;
+  if (!stats_provider->GetMachineStatistic(
+          chromeos::system::kKeyboardMechanicalLayoutKey, &layout_string)) {
+    LOG(ERROR) << "Couldn't determine mechanical layout";
+    return mojom::MechanicalLayout::kUnknown;
+  }
+  if (layout_string == "ANSI") {
+    return mojom::MechanicalLayout::kAnsi;
+  } else if (layout_string == "ISO") {
+    return mojom::MechanicalLayout::kIso;
+  } else if (layout_string == "JIS") {
+    return mojom::MechanicalLayout::kJis;
+  } else {
+    LOG(ERROR) << "Unknown mechanical layout " << layout_string;
+    return mojom::MechanicalLayout::kUnknown;
   }
 }
 
@@ -188,6 +210,7 @@ void InputDataProvider::AddKeyboard(int id,
     }
     // TODO(crbug.com/1207678): set internal keyboard as unknown on CloudReady
     // (board names chromeover64 or reven).
+    keyboards_[id]->mechanical_layout = GetSystemMechanicalLayout();
   } else {
     keyboards_[id]->physical_layout = mojom::PhysicalLayout::kUnknown;
     // TODO(crbug.com/1207678): support WWCB keyboards, Chromebase keyboards,
