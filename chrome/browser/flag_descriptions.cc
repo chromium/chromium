@@ -1918,6 +1918,11 @@ const char kOptimizationGuideModelDownloadingName[] =
 const char kOptimizationGuideModelDownloadingDescription[] =
     "Enables the optimization guide to download prediction models.";
 
+const char kOptimizationGuideModelPushNotificationName[] =
+    "Enable optimization guide push notifications";
+const char kOptimizationGuideModelPushNotificationDescription[] =
+    "Enables the optimization guide to receive push notifications.";
+
 const char kEnableDeJellyName[] = "Experimental de-jelly effect";
 const char kEnableDeJellyDescription[] =
     "Enables an experimental effect which attempts to mitigate "

@@ -1092,6 +1092,9 @@ extern const char kOopRasterizationDDLDescription[];
 extern const char kOptimizationGuideModelDownloadingName[];
 extern const char kOptimizationGuideModelDownloadingDescription[];
 
+extern const char kOptimizationGuideModelPushNotificationName[];
+extern const char kOptimizationGuideModelPushNotificationDescription[];
+
 extern const char kOsSettingsAppNotificationsPageName[];
 extern const char kOsSettingsAppNotificationsPageDescription[];
 
