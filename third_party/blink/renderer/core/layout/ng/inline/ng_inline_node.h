@@ -96,7 +96,9 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   bool HasLineEvenIfEmpty() { return EnsureData().has_line_even_if_empty_; }
   bool HasRuby() const { return Data().has_ruby_; }
 
-  bool IsEmptyInline() { return EnsureData().is_empty_inline_; }
+  bool IsEmptyInline() {
+    return !HasLineEvenIfEmpty() && EnsureData().is_empty_inline_;
+  }
 
   bool IsBlockLevel() { return EnsureData().is_block_level_; }
 
