@@ -1,4 +1,2 @@
-per-file DisableAnimationsTestRule.java=yliuyliu@google.com
-per-file *DummyUiActivity*.java=yliuyliu@google.com
 per-file RenderTestRule.java=peconn@chromium.org
 per-file RENDER_TESTS.md=peconn@chromium.org
