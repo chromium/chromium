@@ -26,4 +26,9 @@ Polymer({
       notify: true,
     },
   },
+
+  /** @private */
+  onCheckboxClick_() {
+    this.multiPageScanChecked = !this.multiPageScanChecked;
+  },
 });

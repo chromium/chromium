@@ -6,6 +6,7 @@
   #checkboxDiv {
     align-items: center;
     color: var(--scanning-multi-page-checkbox-text-color);
+    cursor: pointer;
     display: flex;
     font-family: var(--scanning-multi-page-checkbox-font-family);
     font-size: var(--scanning-multi-page-checkbox-font-size);
@@ -25,7 +26,7 @@
 <scan-settings-section>
   <span slot="label"></span>
   <div slot="settings">
-    <div id="checkboxDiv">
+    <div id="checkboxDiv" on-click="onCheckboxClick_">
       <cr-checkbox class="no-label" checked="{{multiPageScanChecked}}">
       </cr-checkbox>
       <span id="checkboxText">[[i18n('multiPageCheckboxText')]]</span>
