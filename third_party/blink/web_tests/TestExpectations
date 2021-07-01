@@ -7064,7 +7064,6 @@ crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-o
 # Flaky on Webkit Linux Leak
 crbug.com/1223601 [ Linux ] fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Failure Pass ]
 crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failure Pass ]
-crbug.com/1223773 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass ]
 
 # Sheriff 2021-06-29
 # Flaky on Mac11 Tests
@@ -7081,3 +7080,7 @@ crbug.com/1187573 http/tests/devtools/throttling/mobile-throttling.js [ Skip ]
 
 # Sheriff 2021-06-30
 crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
+
+# Sheriff 2021-07-01
+# Now also flakily timing-out.
+crbug.com/1223773 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
