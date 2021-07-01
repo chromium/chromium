@@ -5,8 +5,8 @@ PASS Test that we don't get more than kGridMaxTracks repetitions even on very wi
 PASS Test that we don't get more than kGridMaxTracks repetitions even on very tall grids (auto repeat tracks clamped).
 FAIL Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps. assert_equals: expected 30 but got 20
 FAIL Test that we don't get more than kGridMaxTracks repetitions even on very tall grids with gaps. assert_equals: expected 30 but got 20
-PASS Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps and min-width.
-PASS Test that we don't get more than kGridMaxTracks repetitions even on very tall grids with gaps and min-height.
+FAIL Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps and min-width. assert_equals: expected "20px" but got "19.9896px"
+FAIL Test that we don't get more than kGridMaxTracks repetitions even on very tall grids with gaps and min-height. assert_equals: expected "20px" but got "19.9896px"
 PASS Test that we don't crash when there are exactly kGridMaxTracks auto repeat rows on very tall grids.
 PASS Test that we don't crash when there are exactly kGridMaxTracks auto repeat columns on very wide grids.
 PASS Test that we don't crash when there are exactly kGridMaxTracks (normal and auto-repeat) rows on very tall grids.

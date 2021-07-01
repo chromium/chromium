@@ -1,0 +1,21 @@
+transform "translate3d(0, 0, 10px)" expected "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1)" : PASS
+transform "translateZ(10px)" expected "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1)" : PASS
+transform "rotate3d(0, 1, 0, 180deg)" expected "matrix3d(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)" : PASS
+transform "rotate3d(0, 0, 0, 180deg)" expected "matrix3d(1, 0, 0, 1, 0, 0)" : PASS
+transform "translate3d(0, 0, 10px)" expected "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1)" : PASS
+transform "translate3d(0, 0, 10%)" expected "none" : PASS
+transform "translate3d(0, 0, 10)" expected "none" : PASS
+transform "translateZ(10%)" expected "none" : PASS
+transform "translateZ(10)" expected "none" : PASS
+transform "rotate3d(0, 1, 0, 180)" expected "none" : PASS
+transform "rotate3d(0, 1, 0, 180px)" expected "none" : PASS
+transform "rotate3d(0, 1, 0, 180px)" expected "none" : PASS
+transform "perspective(400)" expected "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.0025, 0, 0, 0, 1)" : PASS
+transform "perspective(400px)" expected "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.0025, 0, 0, 0, 1)" : PASS
+transform "perspective(400em)" expected "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.00015625, 0, 0, 0, 1)" : PASS
+transform "perspective(50%)" expected "none" : PASS
+transform "perspective(-400)" expected "none" : PASS
+transform "perspective(0)" expected "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1, 0, 0, 0, 1)", got "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1.5, 0, 0, 0, 1)" : FAIL
+transform "perspective(400deg)" expected "none" : PASS
+transform "perspective(banana)" expected "none" : PASS
+
