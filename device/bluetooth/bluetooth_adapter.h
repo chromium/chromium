@@ -174,6 +174,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     virtual void DeviceConnectedStateChanged(BluetoothAdapter* adapter,
                                              BluetoothDevice* device,
                                              bool is_now_connected) {}
+
+    // Called when blocked by policy property of the |device| known to the
+    // |adapter| changes.
+    virtual void DeviceBlockedByPolicyChanged(BluetoothAdapter* adapter,
+                                              BluetoothDevice* device,
+                                              bool new_blocked_status) {}
 #endif
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)

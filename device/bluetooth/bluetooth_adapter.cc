@@ -327,7 +327,10 @@ void BluetoothAdapter::NotifyDeviceBatteryChanged(BluetoothDevice* device) {
 void BluetoothAdapter::NotifyDeviceIsBlockedByPolicyChanged(
     BluetoothDevice* device,
     bool new_blocked_status) {
-  NOTIMPLEMENTED();
+  DCHECK_EQ(device->GetAdapter(), this);
+
+  for (auto& observer : observers_)
+    observer.DeviceBlockedByPolicyChanged(this, device, new_blocked_status);
 }
 #endif
 
