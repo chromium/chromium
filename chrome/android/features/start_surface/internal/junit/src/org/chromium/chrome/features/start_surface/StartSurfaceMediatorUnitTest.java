@@ -58,7 +58,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.jank_tracker.FakeJankTracker;
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -1232,7 +1232,7 @@ public class StartSurfaceMediatorUnitTest {
                 isStartSurfaceEnabled ? mSecondaryTasksSurfaceInitializer : null,
                 isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
                 mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
-                mStartSurfaceSupplier, hadWarmStart, new FakeJankTracker());
+                mStartSurfaceSupplier, hadWarmStart, new DummyJankTracker());
         return mediator;
     }
 }

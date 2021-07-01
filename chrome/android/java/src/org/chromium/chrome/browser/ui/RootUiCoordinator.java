@@ -22,6 +22,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -134,6 +135,7 @@ public class RootUiCoordinator
                    MenuOrKeyboardActionController.MenuOrKeyboardActionHandler, AppMenuBlocker {
     private final UnownedUserDataSupplier<TabObscuringHandler> mTabObscuringHandlerSupplier =
             new TabObscuringHandlerSupplier();
+    private final JankTracker mJankTracker;
 
     protected ChromeActivity mActivity;
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
@@ -236,7 +238,8 @@ public class RootUiCoordinator
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
-            @NonNull ActivityWindowAndroid windowAndroid) {
+            @NonNull ActivityWindowAndroid windowAndroid, JankTracker jankTracker) {
+        mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -758,7 +761,7 @@ public class RootUiCoordinator
                     mStartSurfaceParentTabSupplier, mBottomSheetController,
                     mActivity::isWarmOnResume, mActivity.getTabContentManager(),
                     /* tabCreatorManager= */ mActivity, mActivity.getOverviewModeBehaviorSupplier(),
-                    mActivity.getSnackbarManager());
+                    mActivity.getSnackbarManager(), mJankTracker);
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

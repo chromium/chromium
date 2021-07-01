@@ -44,9 +44,10 @@ public class JankMetricUMARecorderTest {
 
         JankMetrics metric = new JankMetrics(timestampsNs, durationsNs, jankBurstsNs, missedFrames);
 
-        JankMetricUMARecorder.recordJankMetricsToUMA(metric, JankScenario.OMNIBOX);
+        JankMetricUMARecorder.recordJankMetricsToUMA(metric, JankScenario.OMNIBOX_FOCUS);
 
         // Ensure that the relevant fields are sent down to native.
-        verify(mNativeMock).recordJankMetrics("Omnibox", durationsNs, jankBurstsNs, missedFrames);
+        verify(mNativeMock)
+                .recordJankMetrics("OmniboxFocus", durationsNs, jankBurstsNs, missedFrames);
     }
 }

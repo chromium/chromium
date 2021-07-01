@@ -505,7 +505,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/MultiprocessTestClientService8.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientService9.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientServiceDelegate.java",
-      "android/java/src/org/chromium/base/jank_tracker/FakeJankTracker.java",
     ]
   }
 

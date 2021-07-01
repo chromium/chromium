@@ -3873,6 +3873,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/compat/ApiHelperForQ.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForR.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForS.java",
+      "android/java/src/org/chromium/base/jank_tracker/DummyJankTracker.java",
       "android/java/src/org/chromium/base/jank_tracker/FrameMetrics.java",
       "android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java",
       "android/java/src/org/chromium/base/jank_tracker/FrameMetricsStore.java",

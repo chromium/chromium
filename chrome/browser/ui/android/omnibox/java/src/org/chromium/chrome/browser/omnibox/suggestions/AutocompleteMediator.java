@@ -20,6 +20,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.Callback;
+import org.chromium.base.jank_tracker.JankScenario;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -82,6 +84,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private final @NonNull DropdownItemViewInfoListManager mDropdownViewInfoListManager;
     private final @NonNull Callback<Tab> mBringTabToFrontCallback;
     private final @NonNull Supplier<TabWindowManager> mTabWindowManagerSupplier;
+    private final @NonNull JankTracker mJankTracker;
 
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     private @Nullable Runnable mCurrentAutocompleteRequest;
@@ -143,11 +146,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
-            @NonNull BookmarkState bookmarkState) {
+            @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker) {
         mContext = context;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
         mListPropertyModel = listPropertyModel;
+        mJankTracker = jankTracker;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mHandler = handler;
         mDataProvider = locationBarDataProvider;
@@ -285,6 +289,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         if (hasFocus) {
             mOmniboxFocusResultedInNavigation = false;
             mUrlFocusTime = System.currentTimeMillis();
+            mJankTracker.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
+
             setSuggestionVisibilityState(SuggestionVisibilityState.PENDING_ALLOW);
 
             // Ask directly for zero-suggestions related to current input, unless the user is
@@ -303,6 +309,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 onTextChanged(text, text);
             }
         } else {
+            mJankTracker.finishTrackingScenario(JankScenario.OMNIBOX_FOCUS);
             cancelAutocompleteRequests();
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);

@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.SysUtils;
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -424,7 +425,7 @@ public class VoiceRecognitionHandlerTest {
             // clang-format off
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
                     () -> mModalDialogManager, null, null, mDataProvider,
-                    mProfileSupplier, (tab) -> {}, null, (url) -> false);
+                    mProfileSupplier, (tab) -> {}, null, (url) -> false, new DummyJankTracker());
             // clang-format on
         }
 

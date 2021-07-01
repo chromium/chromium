@@ -32,6 +32,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -383,7 +384,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            @NonNull SnackbarManager snackbarManager) {
+            @NonNull SnackbarManager snackbarManager, JankTracker jankTracker) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -541,6 +542,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                             postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
             ChromePageInfo toolbarPageInfo =
                     new ChromePageInfo(modalDialogManagerSupplier, null, OpenedFromSource.TOOLBAR);
+            // clang-format off
             LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
                     mActivity.findViewById(R.id.location_bar), toolbarLayout, profileSupplier,
                     PrivacyPreferencesManagerImpl.getInstance(), mLocationBarModel,
@@ -550,12 +552,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     activityLifecycleDispatcher, overrideUrlLoadingDelegate,
                     new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
                     () -> AutofillAssistantPreferenceFragment.launchSettings(mActivity),
-                    toolbarPageInfo::show,
-                    IntentHandler::bringTabToFront, DownloadUtils::isAllowedToDownloadPage,
-                    NewTabPageUma::recordOmniboxNavigation, TabWindowManagerSingleton::getInstance,
+                    toolbarPageInfo::show, IntentHandler::bringTabToFront,
+                    DownloadUtils::isAllowedToDownloadPage, NewTabPageUma::recordOmniboxNavigation,
+                    TabWindowManagerSingleton::getInstance,
                     (url) -> mBookmarkBridgeSupplier.hasValue()
                             && mBookmarkBridgeSupplier.get().isBookmarked(url),
-                    VoiceToolbarButtonController::isToolbarMicEnabled);
+                    VoiceToolbarButtonController::isToolbarMicEnabled, jankTracker);
+            // clang-format on
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mLocationBar = locationBarCoordinator;
         }

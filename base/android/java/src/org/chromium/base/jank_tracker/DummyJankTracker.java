@@ -7,7 +7,7 @@ package org.chromium.base.jank_tracker;
 /**
  * Dummy implementation of JankTracker.
  */
-public class FakeJankTracker implements JankTracker {
+public class DummyJankTracker implements JankTracker {
     @Override
     public void startTrackingScenario(int scenario) {}
 

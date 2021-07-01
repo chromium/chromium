@@ -21,6 +21,7 @@ import androidx.core.app.ActivityOptionsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
@@ -191,7 +192,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 IntentHandler::bringTabToFront,
                 /*saveOfflineButtonState=*/(tab) -> false, /*omniboxUma*/(url, transition) -> {},
                 TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
-                VoiceToolbarButtonController::isToolbarMicEnabled);
+                VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker());
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);

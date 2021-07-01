@@ -15,6 +15,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -203,12 +204,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
-            ActivityWindowAndroid windowAndroid) {
+            ActivityWindowAndroid windowAndroid, JankTracker jankTracker) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, contextualSearchManagerSupplier,
                 tabModelSelectorSupplier, startSurfaceSupplier, intentMetadataOneshotSupplier,
                 layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier,
-                browserControlsManager, windowAndroid);
+                browserControlsManager, windowAndroid, jankTracker);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mCanAnimateBrowserControls = () -> {
             // These null checks prevent any exceptions that may be caused by callbacks after

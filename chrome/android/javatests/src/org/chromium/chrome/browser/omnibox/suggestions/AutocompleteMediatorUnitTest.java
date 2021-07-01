@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -219,7 +220,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                 mAutocompleteDelegate, mTextStateProvider, mListModel,
                 mHandler, () -> mModalDialogManager, null, null,
-                mLocationBarDataProvider, tab -> {}, null, url -> false);
+                mLocationBarDataProvider, tab -> {}, null, url -> false, new DummyJankTracker());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mMediator.setAutocompleteProfile(mProfile);

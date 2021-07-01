@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -45,7 +46,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
                 bookmarkBridgeSupplier, contextualSearchManagerSupplier, tabModelSelectorSupplier,
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(), () -> null, browserControlsManager, windowAndroid);
+                new OneshotSupplierImpl<>(),
+                () -> null, browserControlsManager, windowAndroid, new DummyJankTracker());
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
     }

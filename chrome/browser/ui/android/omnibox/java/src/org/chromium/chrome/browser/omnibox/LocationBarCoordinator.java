@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -145,7 +146,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
-            @NonNull BooleanSupplier isToolbarMicEnabledSupplier) {
+            @NonNull BooleanSupplier isToolbarMicEnabledSupplier, JankTracker jankTracker) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -170,7 +171,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
                 mUrlCoordinator, modalDialogManagerSupplier, activityTabSupplier,
                 shareDelegateSupplier, locationBarDataProvider, profileObservableSupplier,
-                bringTabToFrontCallback, tabWindowManagerSupplier, bookmarkState);
+                bringTabToFrontCallback, tabWindowManagerSupplier, bookmarkState, jankTracker);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,

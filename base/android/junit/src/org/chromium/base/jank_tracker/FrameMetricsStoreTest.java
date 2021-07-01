@@ -53,12 +53,12 @@ public class FrameMetricsStoreTest {
 
         FrameMetrics periodicReportingMetrics =
                 store.stopTrackingScenario(JankScenario.PERIODIC_REPORTING);
-        store.startTrackingScenario(JankScenario.OMNIBOX);
+        store.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
         store.addFrameMeasurement(1_040_000_000L, 20_000_000L, 0);
         store.addFrameMeasurement(1_060_000_000L, 8_000_000L, 0);
 
-        FrameMetrics omniboxMetrics = store.stopTrackingScenario(JankScenario.OMNIBOX);
+        FrameMetrics omniboxMetrics = store.stopTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
         assertArrayEquals(
                 new Long[] {10_000_000L, 12_000_000L}, periodicReportingMetrics.durationsNs);
@@ -79,7 +79,7 @@ public class FrameMetricsStoreTest {
         store.addFrameMeasurement(1_040_000_000L, 50_000_000L, 0);
         store.addFrameMeasurement(1_060_000_000L, 30_000_000L, 0);
 
-        store.startTrackingScenario(JankScenario.OMNIBOX);
+        store.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
         store.addFrameMeasurement(1_080_000_000L, 10_000_000L, 0);
         store.addFrameMeasurement(1_100_000_000L, 30_000_000L, 0);
@@ -89,7 +89,7 @@ public class FrameMetricsStoreTest {
 
         store.addFrameMeasurement(1_120_000_000L, 10_000_000L, 0);
 
-        FrameMetrics omniboxMetrics = store.stopTrackingScenario(JankScenario.OMNIBOX);
+        FrameMetrics omniboxMetrics = store.stopTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
         assertArrayEquals(
                 new Long[] {15_000_000L, 50_000_000L, 30_000_000L, 10_000_000L, 30_000_000L},
@@ -136,8 +136,8 @@ public class FrameMetricsStoreTest {
         FrameMetrics periodicReportingMetrics =
                 store.stopTrackingScenario(JankScenario.PERIODIC_REPORTING);
 
-        store.startTrackingScenario(JankScenario.OMNIBOX);
-        FrameMetrics omniboxMetrics = store.stopTrackingScenario(JankScenario.OMNIBOX);
+        store.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
+        FrameMetrics omniboxMetrics = store.stopTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
         assertEquals(0, periodicReportingMetrics.durationsNs.length);
         assertEquals(0, omniboxMetrics.durationsNs.length);
@@ -150,7 +150,7 @@ public class FrameMetricsStoreTest {
         FrameMetricsStore store = new FrameMetricsStore();
 
         // Start a scenario just to start recording.
-        store.startTrackingScenario(JankScenario.OMNIBOX);
+        store.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
         // Add a frame measurement.
         store.addFrameMeasurement(1_060_000_000L, 8_000_000L, 0);
@@ -173,7 +173,7 @@ public class FrameMetricsStoreTest {
         FrameMetrics periodicReportingMetrics =
                 store.stopTrackingScenario(JankScenario.PERIODIC_REPORTING);
 
-        FrameMetrics omniboxMetrics = store.stopTrackingScenario(JankScenario.OMNIBOX);
+        FrameMetrics omniboxMetrics = store.stopTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
         assertEquals(0, periodicReportingMetrics.durationsNs.length);
         assertEquals(0, omniboxMetrics.durationsNs.length);
@@ -189,11 +189,11 @@ public class FrameMetricsStoreTest {
 
         store.addFrameMeasurement(1_020_000_000L, 15_000_000L, 0);
         store.addFrameMeasurement(1_040_000_000L, 50_000_000L, 0);
-        // This frame should be kept after PERIODIC_REPORTING ends because OMNIBOX uses its
+        // This frame should be kept after PERIODIC_REPORTING ends because OMNIBOX_FOCUS uses its
         // timestamp to track the scenario's start.
         store.addFrameMeasurement(1_060_000_000L, 33_333_333L, 0);
 
-        store.startTrackingScenario(JankScenario.OMNIBOX);
+        store.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
         store.addFrameMeasurement(1_080_000_000L, 10_000_000L, 0);
         store.addFrameMeasurement(1_100_000_000L, 30_000_000L, 0);
@@ -203,7 +203,7 @@ public class FrameMetricsStoreTest {
 
         store.addFrameMeasurement(1_120_000_000L, 10_000_000L, 0);
 
-        store.stopTrackingScenario(JankScenario.OMNIBOX);
+        store.stopTrackingScenario(JankScenario.OMNIBOX_FOCUS);
         FrameMetrics storedMetricsAfterOmnibox = store.getAllStoredMetricsForTesting();
 
         // When we stop tracking periodic reporting we should remove all frames that aren't used by

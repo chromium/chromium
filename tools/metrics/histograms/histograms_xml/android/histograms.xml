@@ -44,7 +44,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </variant>
   <variant name=".NewTabPage" summary="while NTP is open"/>
-  <variant name=".Omnibox" summary="while Omnibox is open"/>
+  <variant name=".OmniboxFocus" summary="while Omnibox is focused"/>
   <variant name=".OpenLinkInNewTab"
       summary="while opening a link in a new tab using the long press menu"/>
   <variant name=".StartSurfaceHomepage"

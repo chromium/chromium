@@ -27,8 +27,8 @@ public class JankMetricUMARecorder {
         switch (scenario) {
             case JankScenario.PERIODIC_REPORTING:
                 return "Total";
-            case JankScenario.OMNIBOX:
-                return "Omnibox";
+            case JankScenario.OMNIBOX_FOCUS:
+                return "OmniboxFocus";
             case JankScenario.NEW_TAB_PAGE:
                 return "NewTabPage";
             case JankScenario.STARTUP:

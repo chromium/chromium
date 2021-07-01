@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -143,7 +144,7 @@ public class ShareIntentTest {
                             -> null,
                     new BrowserControlsManager(
                             mockActivity, BrowserControlsManager.ControlsPosition.TOP),
-                    mActivityTestRule.getActivity().getWindowAndroid());
+                    mActivityTestRule.getActivity().getWindowAndroid(), new DummyJankTracker());
         });
         ShareHelper.setLastShareComponentName(
                 null, new ComponentName("test.package", "test.activity"));

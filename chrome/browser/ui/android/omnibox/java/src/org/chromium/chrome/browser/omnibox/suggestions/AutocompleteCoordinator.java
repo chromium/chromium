@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -81,7 +82,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull ObservableSupplier<Profile> profileObservableSupplier,
             @NonNull Callback<Tab> bringToForegroundCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
-            @NonNull BookmarkState bookmarkState) {
+            @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker) {
         mParent = parent;
         Context context = parent.getContext();
 
@@ -96,7 +97,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         mMediator = new AutocompleteMediator(context, delegate, urlBarEditingTextProvider,
                 listModel, new Handler(), modalDialogManagerSupplier, activityTabSupplier,
                 shareDelegateSupplier, locationBarDataProvider, bringToForegroundCallback,
-                tabWindowManagerSupplier, bookmarkState);
+                tabWindowManagerSupplier, bookmarkState, jankTracker);
         mMediator.initDefaultProcessors(mQueryTileCoordinator::setTiles);
 
         listModel.set(SuggestionListProperties.OBSERVER, mMediator);
