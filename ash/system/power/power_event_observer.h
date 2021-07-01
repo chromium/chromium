@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/login_status.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -19,6 +20,8 @@ class CompositorObserver;
 }
 
 namespace ash {
+
+class LockOnSuspendUsage;
 
 // A class that observes power-management-related events - in particular, it
 // observes the device suspend state and updates display states accordingly.
@@ -54,6 +57,7 @@ class ASH_EXPORT PowerEventObserver
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // SessionObserver overrides:
+  void OnLoginStatusChanged(LoginStatus login_status) override;
   void OnLockStateChanged(bool locked) override;
 
  private:
@@ -113,6 +117,8 @@ class ASH_EXPORT PowerEventObserver
   // StopCompositingAndSuspendDisplays(). This will only be set while the device
   // is suspending.
   base::UnguessableToken block_suspend_token_;
+
+  std::unique_ptr<LockOnSuspendUsage> lock_on_suspend_usage_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerEventObserver);
 };

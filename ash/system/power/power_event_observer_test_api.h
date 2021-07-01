@@ -30,6 +30,8 @@ class PowerEventObserverTestApi {
 
   bool SimulateCompositorsReadyForSuspend();
 
+  bool TrackingLockOnSuspendUsage() const;
+
  private:
   PowerEventObserver* power_event_observer_;
 

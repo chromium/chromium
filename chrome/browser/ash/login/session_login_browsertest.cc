@@ -4,7 +4,10 @@
 
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
+#include "ash/system/power/power_event_observer_test_api.h"
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -16,6 +19,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/user_flow.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -130,7 +134,6 @@ IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, PRE_RegularUser) {
 }
 
 IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, RegularUser) {
-  login_mixin_.LoginAsNewRegularUser();
   ash::LoginScreenTestApi::SubmitPassword(regular_user_, "password",
                                           /*check_if_submittable=*/false);
   login_mixin_.WaitForActiveSession();
@@ -149,6 +152,24 @@ IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, ChildUser) {
   ash::test::UserSessionManagerTestApi test_api(
       ash::UserSessionManager::GetInstance());
   ASSERT_FALSE(test_api.get_onboarding_user_activity_counter());
+}
+
+class LockOnSuspendUsageTest : public LoginManagerTest {
+ protected:
+  LoginManagerMixin login_mixin_{&mixin_host_};
+};
+
+// Verifies that tracking of the lock-on-suspend feature usage is started after
+// user login.
+IN_PROC_BROWSER_TEST_F(LockOnSuspendUsageTest, RegularUser) {
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  ash::WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.LoginAsNewRegularUser();
+  login_mixin_.WaitForActiveSession();
+
+  ash::PowerEventObserverTestApi test_api(
+      ash::Shell::Get()->power_event_observer());
+  ASSERT_TRUE(test_api.TrackingLockOnSuspendUsage());
 }
 
 }  // namespace chromeos

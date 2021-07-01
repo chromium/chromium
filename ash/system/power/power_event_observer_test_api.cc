@@ -54,4 +54,8 @@ bool PowerEventObserverTestApi::SimulateCompositorsReadyForSuspend() {
   return true;
 }
 
+bool PowerEventObserverTestApi::TrackingLockOnSuspendUsage() const {
+  return power_event_observer_->lock_on_suspend_usage_.get();
+}
+
 }  // namespace ash

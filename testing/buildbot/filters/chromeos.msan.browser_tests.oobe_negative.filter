@@ -81,6 +81,7 @@
 -KioskTest.*
 -KioskUpdateTest.*
 -KioskVirtualKeyboardTest.*
+-LockOnSuspendUsageTest.*
 -LoginCursorTest.*
 -LoginOfflineTest.*
 -LoginPolicyTestBase.*

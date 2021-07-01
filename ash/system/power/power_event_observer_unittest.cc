@@ -15,9 +15,12 @@
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/test_session_state_animator.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
@@ -596,6 +599,57 @@ TEST_F(PowerEventObserverTest, DisplayRemovedDuringWallpaperAnimation) {
   test_api.CompositeFrame(compositor);
   EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
+}
+
+class LockOnSuspendUsageTest : public PowerEventObserverTest {
+ public:
+  LockOnSuspendUsageTest() { set_start_session(false); }
+};
+
+TEST_F(LockOnSuspendUsageTest, LockOnSuspendUsage) {
+  SetCanLockScreen(true);
+  SetShouldLockScreenAutomatically(true);
+
+  SimulateNewUserFirstLogin("user@gmail.com");
+  PowerEventObserverTestApi test_api(observer_.get());
+  ASSERT_TRUE(test_api.TrackingLockOnSuspendUsage());
+
+  base::HistogramTester histogram_tester;
+  observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("ChromeOS.FeatureUsage.LockOnSuspend"),
+      ::testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(
+                  feature_usage::FeatureUsageMetrics::Event::kEligible),
+              1),
+          base::Bucket(static_cast<int>(
+                           feature_usage::FeatureUsageMetrics::Event::kEnabled),
+                       1),
+          base::Bucket(
+              static_cast<int>(
+                  feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess),
+              1)));
+}
+
+TEST_F(LockOnSuspendUsageTest, No_ShouldLockScreenAutomatically) {
+  SetCanLockScreen(true);
+  SetShouldLockScreenAutomatically(false);
+
+  SimulateNewUserFirstLogin("user@gmail.com");
+  PowerEventObserverTestApi test_api(observer_.get());
+  ASSERT_TRUE(test_api.TrackingLockOnSuspendUsage());
+
+  base::HistogramTester histogram_tester;
+  observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
+  histogram_tester.ExpectTotalCount("ChromeOS.FeatureUsage.LockOnSuspend", 0);
+}
+
+TEST_F(LockOnSuspendUsageTest, No_CanLockScreen) {
+  SetCanLockScreen(false);
+  SimulateNewUserFirstLogin("user@gmail.com");
+  PowerEventObserverTestApi test_api(observer_.get());
+  ASSERT_FALSE(test_api.TrackingLockOnSuspendUsage());
 }
 
 }  // namespace ash

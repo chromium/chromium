@@ -52,6 +52,7 @@ include_rules = [
   # Only allow Chrome OS services and D-Bus clients accessible to the mustash
   # ash process.
   "-chromeos",
+  "+chromeos/components/feature_usage/feature_usage_metrics.h",
   "+chromeos/components/multidevice/logging/logging.h",
   "+chromeos/components/phonehub",
   "+chromeos/components/proximity_auth/public/mojom",

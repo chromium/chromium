@@ -5,8 +5,10 @@
 #include "ash/system/power/power_event_observer.h"
 
 #include <map>
+#include <memory>
 #include <utility>
 
+#include "ash/login_status.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -19,6 +21,7 @@
 #include "base/location.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -208,7 +211,29 @@ class CompositorWatcher : public ui::CompositorObserver {
   DISALLOW_COPY_AND_ASSIGN(CompositorWatcher);
 };
 
+const char kLockOnSuspendFeature[] = "LockOnSuspend";
+
 }  // namespace
+
+class LockOnSuspendUsage : public feature_usage::FeatureUsageMetrics::Delegate {
+ public:
+  LockOnSuspendUsage() = default;
+
+  void RecordUsage() { lock_on_suspend_usage_.RecordUsage(/*success=*/true); }
+
+  // feature_usage::FeatureUsageMetrics::Delegate:
+  bool IsEligible() const final {
+    // We only track lock-on-suspend usage by real users. Thus
+    // LockOnSuspendUsage should be created only for such users.
+    DCHECK(ash::Shell::Get()->session_controller()->CanLockScreen());
+    return true;
+  }
+  bool IsEnabled() const final { return ShouldLockOnSuspend(); }
+
+ private:
+  feature_usage::FeatureUsageMetrics lock_on_suspend_usage_{
+      kLockOnSuspendFeature, this};
+};
 
 PowerEventObserver::PowerEventObserver()
     : lock_state_(Shell::Get()->session_controller()->IsScreenLocked()
@@ -216,6 +241,9 @@ PowerEventObserver::PowerEventObserver()
                       : LockState::kUnlocked),
       session_observer_(this) {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
+
+  if (Shell::Get()->session_controller()->CanLockScreen())
+    lock_on_suspend_usage_ = std::make_unique<LockOnSuspendUsage>();
 }
 
 PowerEventObserver::~PowerEventObserver() {
@@ -263,6 +291,8 @@ void PowerEventObserver::SuspendImminent(
       VLOG(1) << "Requesting screen lock from PowerEventObserver";
       lock_state_ = LockState::kLocking;
       Shell::Get()->lock_state_controller()->LockWithoutAnimation();
+      if (lock_on_suspend_usage_)
+        lock_on_suspend_usage_->RecordUsage();
     } else if (lock_state_ != LockState::kLocking) {
       // If the screen is still being locked (i.e. in kLocking state),
       // EndPendingWallpaperAnimations() will be called in
@@ -285,6 +315,16 @@ void PowerEventObserver::SuspendDone(base::TimeDelta sleep_duration) {
   block_suspend_token_ = {};
 
   StartRootWindowCompositors();
+}
+
+void PowerEventObserver::OnLoginStatusChanged(LoginStatus) {
+  // Bail if usage tracker is already created.
+  if (lock_on_suspend_usage_)
+    return;
+  // We only care about users who could lock the screen.
+  if (!ash::Shell::Get()->session_controller()->CanLockScreen())
+    return;
+  lock_on_suspend_usage_ = std::make_unique<LockOnSuspendUsage>();
 }
 
 void PowerEventObserver::OnLockStateChanged(bool locked) {
@@ -311,6 +351,8 @@ void PowerEventObserver::OnLockStateChanged(bool locked) {
       if (ShouldLockOnSuspend()) {
         lock_state_ = LockState::kLocking;
         Shell::Get()->lock_state_controller()->LockWithoutAnimation();
+        if (lock_on_suspend_usage_)
+          lock_on_suspend_usage_->RecordUsage();
       } else if (block_suspend_token_) {
         StopCompositingAndSuspendDisplays();
       }
