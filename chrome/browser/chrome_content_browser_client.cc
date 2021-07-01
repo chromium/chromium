@@ -621,6 +621,7 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/chrome_pdf_stream_delegate.h"
 #include "components/pdf/browser/pdf_navigation_throttle.h"
+#include "components/pdf/browser/pdf_url_loader_request_interceptor.h"
 #include "components/pdf/common/internal_plugin_helpers.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -4922,6 +4923,16 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   interceptors.push_back(
       std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
           navigation_ui_data, frame_tree_node_id));
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+  {
+    std::unique_ptr<content::URLLoaderRequestInterceptor> pdf_interceptor =
+        pdf::PdfURLLoaderRequestInterceptor::MaybeCreateInterceptor(
+            frame_tree_node_id, std::make_unique<ChromePdfStreamDelegate>());
+    if (pdf_interceptor)
+      interceptors.push_back(std::move(pdf_interceptor));
+  }
 #endif
 
   if (base::FeatureList::IsEnabled(features::kIsolatePrerenders)) {

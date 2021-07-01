@@ -50,7 +50,12 @@ if (enable_pdf) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "pdf_navigation_throttle_unittest.cc" ]
+    sources = [
+      "fake_pdf_stream_delegate.cc",
+      "fake_pdf_stream_delegate.h",
+      "pdf_navigation_throttle_unittest.cc",
+      "pdf_url_loader_request_interceptor_unittest.cc",
+    ]
 
     deps = [
       ":interceptors",

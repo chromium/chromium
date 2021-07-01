@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/pdf/browser/fake_pdf_stream_delegate.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -21,13 +22,8 @@
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace pdf {
 
@@ -37,21 +33,8 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-class MockPdfStreamDelegate : public PdfStreamDelegate {
- public:
-  MOCK_METHOD(absl::optional<StreamInfo>,
-              GetStreamInfo,
-              (content::WebContents * contents),
-              (override));
-};
-
 class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
  protected:
-  PdfNavigationThrottleTest() {
-    ON_CALL(*stream_delegate_, GetStreamInfo(_))
-        .WillByDefault(Return(stream_info_));
-  }
-
   content::RenderFrameHost* CreateChildFrame() {
     content::RenderFrameHostTester::For(main_rfh())
         ->InitializeRenderFrameIfNeeded();
@@ -78,17 +61,18 @@ class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
                                                    std::move(stream_delegate_));
   }
 
-  const GURL& stream_url() const { return stream_info_.stream_url; }
-  const GURL& original_url() const { return stream_info_.original_url; }
+  GURL stream_url() const {
+    return GURL(FakePdfStreamDelegate::kDefaultStreamUrl);
+  }
+
+  GURL original_url() const {
+    return GURL(FakePdfStreamDelegate::kDefaultOriginalUrl);
+  }
 
   base::test::ScopedFeatureList features_;
 
-  PdfStreamDelegate::StreamInfo stream_info_{
-      .stream_url = GURL("chrome-extension://id/stream-url"),
-      .original_url = GURL("https://example.test/fake.pdf"),
-  };
-  std::unique_ptr<NiceMock<MockPdfStreamDelegate>> stream_delegate_ =
-      std::make_unique<NiceMock<MockPdfStreamDelegate>>();
+  std::unique_ptr<FakePdfStreamDelegate> stream_delegate_ =
+      std::make_unique<FakePdfStreamDelegate>();
 
   std::unique_ptr<NiceMock<content::MockNavigationHandle>> navigation_handle_;
 };
@@ -130,7 +114,7 @@ TEST_F(PdfNavigationThrottleUnseasonedEnabledTest,
       navigation_handle_.get(), std::move(stream_delegate_)));
 }
 
-TEST_F(PdfNavigationThrottleUnseasonedEnabledTest, WillStartRequest) {
+TEST_F(PdfNavigationThrottleTest, WillStartRequest) {
   auto navigation_throttle = CreateNavigationThrottle(stream_url());
   NiceMock<content::MockWebContentsObserver> web_contents_observer(
       web_contents());
@@ -154,8 +138,7 @@ TEST_F(PdfNavigationThrottleUnseasonedEnabledTest, WillStartRequest) {
   navigation_simulator->Commit();
 }
 
-TEST_F(PdfNavigationThrottleUnseasonedEnabledTest,
-       WillStartRequestDeleteContents) {
+TEST_F(PdfNavigationThrottleTest, WillStartRequestDeleteContents) {
   auto navigation_throttle = CreateNavigationThrottle(stream_url());
   NiceMock<content::MockWebContentsObserver> web_contents_observer(
       web_contents());
@@ -171,16 +154,14 @@ TEST_F(PdfNavigationThrottleUnseasonedEnabledTest,
   run_loop.Run();
 }
 
-TEST_F(PdfNavigationThrottleUnseasonedEnabledTest,
-       WillStartRequestNoStreamInfo) {
-  EXPECT_CALL(*stream_delegate_, GetStreamInfo(_))
-      .WillRepeatedly(Return(absl::nullopt));
+TEST_F(PdfNavigationThrottleTest, WillStartRequestNoStreamInfo) {
+  stream_delegate_->clear_stream_info();
   auto navigation_throttle = CreateNavigationThrottle(stream_url());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             navigation_throttle->WillStartRequest().action());
 }
 
-TEST_F(PdfNavigationThrottleUnseasonedEnabledTest, WillStartRequestOtherUrl) {
+TEST_F(PdfNavigationThrottleTest, WillStartRequestOtherUrl) {
   auto navigation_throttle =
       CreateNavigationThrottle(GURL("https://example.test"));
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
