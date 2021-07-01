@@ -25,6 +25,7 @@ struct CrossOriginEmbedderPolicy;
 
 namespace content {
 
+struct GlobalRenderFrameHostId;
 class ServiceWorkerContextWrapper;
 
 // This class is used to manage the lifetime of ServiceWorkerContainerHosts
@@ -62,15 +63,13 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info);
 
   // Called when the navigation is ready to commit.
-  // Provides |render_process_id|, |render_frame_id|, and
-  // |cross_origin_embedder_policy| to the pre-created container host. Fills in
-  // |out_container_info| so the caller can send it to the renderer process as
-  // part of the navigation commit IPC.
+  // Provides |rfh_id|, and |cross_origin_embedder_policy| to the pre-created
+  // container host. Fills in |out_container_info| so the caller can send it to
+  // the renderer process as part of the navigation commit IPC.
   // |out_container_info| can be filled as null if we failed to pre-create the
   // container host for some security reasons.
   void OnBeginNavigationCommit(
-      int render_process_id,
-      int render_frame_id,
+      const GlobalRenderFrameHostId& rfh_id,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,

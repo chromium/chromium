@@ -1258,9 +1258,10 @@ TEST_F(ServiceWorkerVersionTest,
   // worker. This should cause the worker to stop being considered foreground
   // priority.
   container_host->OnBeginNavigationCommit(
-      version_->embedded_worker()->process_id(),
-      /* render_frame_id = */ 1, network::CrossOriginEmbedderPolicy(),
-      std::move(reporter), ukm::UkmRecorder::GetNewSourceID());
+      GlobalRenderFrameHostId(version_->embedded_worker()->process_id(),
+                              /*frame_routing_id=*/1),
+      network::CrossOriginEmbedderPolicy(), std::move(reporter),
+      ukm::UkmRecorder::GetNewSourceID());
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();

@@ -135,8 +135,8 @@ ServiceWorkerContainerHost::ServiceWorkerContainerHost(
 ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (IsContainerForClient()) {
-    auto* rfh = RenderFrameHostImpl::FromID(process_id(), frame_id());
+  if (IsContainerForWindowClient()) {
+    auto* rfh = RenderFrameHostImpl::FromID(GetRenderFrameHostId());
     if (rfh)
       rfh->RemoveServiceWorkerContainerHost(client_uuid());
   }
@@ -217,7 +217,7 @@ void ServiceWorkerContainerHost::Register(
   // ordering.
   DCHECK_NE(process_id_, ChildProcessHost::kInvalidUniqueID);
   DCHECK_NE(frame_routing_id_, MSG_ROUTING_NONE);
-  GlobalRenderFrameHostId global_frame_id(process_id_, frame_routing_id_);
+  GlobalRenderFrameHostId global_frame_id = GetRenderFrameHostId();
 
   // Registrations could come from different origins when "disable-web-security"
   // is active, we need to make sure we get the correct key.
@@ -777,8 +777,7 @@ ServiceWorkerClientInfo ServiceWorkerContainerHost::GetServiceWorkerClientInfo()
 }
 
 void ServiceWorkerContainerHost::OnBeginNavigationCommit(
-    int container_process_id,
-    int container_frame_id,
+    const GlobalRenderFrameHostId& rfh_id,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
@@ -787,14 +786,14 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   DCHECK(IsContainerForWindowClient());
 
   DCHECK_EQ(ChildProcessHost::kInvalidUniqueID, process_id_);
-  DCHECK_NE(ChildProcessHost::kInvalidUniqueID, container_process_id);
-  process_id_ = container_process_id;
+  DCHECK_NE(ChildProcessHost::kInvalidUniqueID, rfh_id.child_id);
+  process_id_ = rfh_id.child_id;
   if (controller_)
     controller_->UpdateForegroundPriority();
 
   DCHECK_EQ(MSG_ROUTING_NONE, frame_routing_id_);
-  DCHECK_NE(MSG_ROUTING_NONE, container_frame_id);
-  frame_routing_id_ = container_frame_id;
+  DCHECK_NE(MSG_ROUTING_NONE, rfh_id.frame_routing_id);
+  frame_routing_id_ = rfh_id.frame_routing_id;
 
   DCHECK(!cross_origin_embedder_policy_.has_value());
   cross_origin_embedder_policy_ = cross_origin_embedder_policy;
@@ -813,7 +812,7 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
                                      std::move(coep_reporter_to_be_passed));
   }
 
-  auto* rfh = RenderFrameHostImpl::FromID(container_process_id, frame_id());
+  auto* rfh = RenderFrameHostImpl::FromID(rfh_id);
   // |rfh| may be null in tests (but it should not happen in production).
   if (rfh)
     rfh->AddServiceWorkerContainerHost(client_uuid(), GetWeakPtr());
@@ -832,8 +831,8 @@ void ServiceWorkerContainerHost::OnEndNavigationCommit() {
   navigation_commit_ended_ = true;
 
   if (controller_) {
-    controller_->OnControlleeNavigationCommitted(client_uuid_, process_id_,
-                                                 frame_routing_id_);
+    controller_->OnControlleeNavigationCommitted(client_uuid_,
+                                                 GetRenderFrameHostId());
   }
 }
 
@@ -978,18 +977,6 @@ ServiceWorkerContainerHost::GetRemoteControllerServiceWorker() {
 
 namespace {
 
-void ReportServiceWorkerAccess(int process_id,
-                               int frame_id,
-                               const GURL& scope,
-                               AllowServiceWorkerResult allowed) {
-  RenderFrameHost* rfh = RenderFrameHost::FromID(process_id, frame_id);
-  if (!rfh)
-    return;
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
-  web_contents->OnServiceWorkerAccessed(rfh, scope, allowed);
-}
-
 }  // namespace
 
 bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
@@ -1000,7 +987,13 @@ bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
       GetContentClient()->browser()->AllowServiceWorker(
           scope, site_for_cookies().RepresentativeUrl(), top_frame_origin(),
           script_url, context_->wrapper()->browser_context());
-  ReportServiceWorkerAccess(process_id(), frame_id(), scope, allowed);
+  if (IsContainerForWindowClient()) {
+    auto* rfh = RenderFrameHostImpl::FromID(GetRenderFrameHostId());
+    auto* web_contents =
+        static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
+    if (web_contents)
+      web_contents->OnServiceWorkerAccessed(rfh, scope, allowed);
+  }
   return allowed;
 }
 
@@ -1056,6 +1049,13 @@ bool ServiceWorkerContainerHost::is_execution_ready() const {
   DCHECK(IsContainerForClient());
 
   return client_phase_ == ClientPhase::kExecutionReady;
+}
+
+GlobalRenderFrameHostId ServiceWorkerContainerHost::GetRenderFrameHostId()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsContainerForWindowClient());
+  return GlobalRenderFrameHostId(process_id_, frame_routing_id_);
 }
 
 const std::string& ServiceWorkerContainerHost::client_uuid() const {
@@ -1127,7 +1127,7 @@ void ServiceWorkerContainerHost::EvictFromBackForwardCache(
   DCHECK(IsContainerForWindowClient());
   is_in_back_forward_cache_ = false;
 
-  auto* rfh = RenderFrameHostImpl::FromID(process_id(), frame_id());
+  auto* rfh = RenderFrameHostImpl::FromID(GetRenderFrameHostId());
   // |rfh| could be evicted before this function is called.
   if (rfh && rfh->IsInBackForwardCache())
     rfh->EvictFromBackForwardCacheWithReason(reason);

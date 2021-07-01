@@ -887,10 +887,10 @@ ServiceWorkerContextWrapper::GetWindowClientFrameRoutingIds(
     const blink::StorageKey& key) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids(
+  std::unique_ptr<std::vector<GlobalRenderFrameHostId>> rfh_ids(
       new std::vector<GlobalRenderFrameHostId>());
   if (!context_core_)
-    return frame_routing_ids;
+    return rfh_ids;
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
            context_core_->GetWindowClientContainerHostIterator(
                key,
@@ -898,11 +898,10 @@ ServiceWorkerContextWrapper::GetWindowClientFrameRoutingIds(
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();
     DCHECK(container_host->IsContainerForWindowClient());
-    frame_routing_ids->push_back(GlobalRenderFrameHostId(
-        container_host->process_id(), container_host->frame_id()));
+    rfh_ids->push_back(container_host->GetRenderFrameHostId());
   }
 
-  return frame_routing_ids;
+  return rfh_ids;
 }
 
 void ServiceWorkerContextWrapper::FindReadyRegistrationForClientUrl(

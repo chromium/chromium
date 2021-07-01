@@ -19,6 +19,7 @@ class StorageKey;
 
 namespace content {
 
+struct GlobalRenderFrameHostId;
 class ServiceWorkerContainerHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
@@ -61,13 +62,12 @@ void OpenWindow(const GURL& url,
                 WindowType type,
                 NavigationCallback callback);
 
-// Navigates the client specified by `process_id` and `frame_id` to `url`.
-// `callback` is called with the client information on completion.
+// Navigates the client specified by `rfh_id` to `url`. `callback` is called
+// with the client information on completion.
 void NavigateClient(const GURL& url,
                     const GURL& script_url,
                     const blink::StorageKey& key,
-                    int process_id,
-                    int frame_id,
+                    const GlobalRenderFrameHostId& rfh_id,
                     const base::WeakPtr<ServiceWorkerContextCore>& context,
                     NavigationCallback callback);
 
@@ -82,18 +82,22 @@ void GetClients(const base::WeakPtr<ServiceWorkerVersion>& controller,
                 blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
                 blink::mojom::ServiceWorkerHost::GetClientsCallback callback);
 
-// Finds the provider host for `key` in `context` then uses
-// `render_process_id` and `render_process_host` to create a relevant
-// blink::mojom::ServiceWorkerClientInfo struct and calls `callback` with it.
-// Must be called on the core thread.
+// Called after a navigation. Uses `rfh_id` to find the
+// ServiceWorkerContainerHost where the navigation occurred and calls
+// `callback` with its info once
+// ServiceWorkerContainerHost::is_execution_ready() is true. May call
+// the callback with OK status but nullptr if the host is already
+// destroyed, or call the callback with an error status on error.
+//
+// `origin` is only used for a CHECK_EQ check to ensure we don't accidentally
+// get a cross-origin ServiceWorkerContainerHost.
 // TODO(crbug.com/1199077): Remove `origin` once DidGetExecutionReadyClient
 // implements StorageKey.
 void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
                  const GURL& origin,
                  const blink::StorageKey& key,
                  NavigationCallback callback,
-                 int render_process_id,
-                 int render_frame_id);
+                 GlobalRenderFrameHostId rfh_id);
 
 }  // namespace service_worker_client_utils
 

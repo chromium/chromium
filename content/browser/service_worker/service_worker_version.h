@@ -389,8 +389,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Called when the navigation for a window client commits to a render frame
   // host.
   void OnControlleeNavigationCommitted(const std::string& client_uuid,
-                                       int process_id,
-                                       int frame_id);
+                                       const GlobalRenderFrameHostId& rfh_id);
 
   // Called when a controllee goes into back-forward cache.
   void MoveControlleeToBackForwardCacheMap(const std::string& client_uuid);

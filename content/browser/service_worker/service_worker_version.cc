@@ -171,7 +171,7 @@ void DidShowPaymentHandlerWindow(
     service_worker_client_utils::DidNavigate(
         context, url.GetOrigin(), key,
         base::BindOnce(&OnOpenWindowFinished, std::move(callback)),
-        render_process_id, render_frame_id);
+        GlobalRenderFrameHostId(render_process_id, render_frame_id));
   } else {
     OnOpenWindowFinished(std::move(callback),
                          blink::ServiceWorkerStatusCode::kErrorFailed,
@@ -802,8 +802,7 @@ void ServiceWorkerVersion::AddControllee(
   // this container.
   if (container_host->navigation_commit_ended()) {
     OnControlleeNavigationCommitted(container_host->client_uuid(),
-                                    container_host->process_id(),
-                                    container_host->frame_id());
+                                    container_host->GetRenderFrameHostId());
   }
 }
 
@@ -833,8 +832,7 @@ void ServiceWorkerVersion::RemoveControllee(const std::string& client_uuid) {
 
 void ServiceWorkerVersion::OnControlleeNavigationCommitted(
     const std::string& client_uuid,
-    int process_id,
-    int frame_id) {
+    const GlobalRenderFrameHostId& rfh_id) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
 #if DCHECK_IS_ON()
@@ -849,8 +847,7 @@ void ServiceWorkerVersion::OnControlleeNavigationCommitted(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&ServiceWorkerVersion::NotifyControlleeNavigationCommitted,
-                     weak_factory_.GetWeakPtr(), client_uuid,
-                     GlobalRenderFrameHostId(process_id, frame_id)));
+                     weak_factory_.GetWeakPtr(), client_uuid, rfh_id));
 }
 
 void ServiceWorkerVersion::MoveControlleeToBackForwardCacheMap(
@@ -1601,8 +1598,7 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
   }
 
   service_worker_client_utils::NavigateClient(
-      url, script_url_, key_, container_host->process_id(),
-      container_host->frame_id(), context_,
+      url, script_url_, key_, container_host->GetRenderFrameHostId(), context_,
       base::BindOnce(&DidNavigateClient, std::move(callback), url));
 }
 

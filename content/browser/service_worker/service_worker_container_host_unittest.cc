@@ -210,7 +210,8 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     // In production code this is called from NavigationRequest in the browser
     // process right before navigation commit.
     container_host->OnBeginNavigationCommit(
-        helper_->mock_render_process_id(), 1 /* route_id */,
+        GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                1 /* route_id */),
         network::CrossOriginEmbedderPolicy(), std::move(reporter),
         ukm::UkmRecorder::GetNewSourceID());
   }

@@ -166,23 +166,6 @@ bool IsSameOriginWindowClientContainerHost(
          (allow_reserved_client || container_host->is_execution_ready());
 }
 
-// Returns true if any of the frames specified by |frames| is a top-level frame.
-// |frames| is a vector of (render process id, frame id) pairs.
-bool FrameListContainsMainFrameOnUI(
-    std::unique_ptr<std::vector<std::pair<int, int>>> frames) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (const auto& frame : *frames) {
-    RenderFrameHostImpl* render_frame_host =
-        RenderFrameHostImpl::FromID(frame.first, frame.second);
-    if (!render_frame_host)
-      continue;
-    if (!render_frame_host->GetParent())
-      return true;
-  }
-  return false;
-}
-
 class ClearAllServiceWorkersHelper
     : public base::RefCounted<ClearAllServiceWorkersHelper> {
  public:
@@ -397,18 +380,22 @@ void ServiceWorkerContextCore::HasMainFrameWindowClient(
   std::unique_ptr<std::vector<std::pair<int, int>>> render_frames(
       new std::vector<std::pair<int, int>>());
 
+  bool has_main_frame = false;
   while (!container_host_iterator->IsAtEnd()) {
     ServiceWorkerContainerHost* container_host =
         container_host_iterator->GetContainerHost();
     DCHECK(container_host->IsContainerForWindowClient());
-    render_frames->push_back(std::make_pair(container_host->process_id(),
-                                            container_host->frame_id()));
+    auto* render_frame_host =
+        RenderFrameHostImpl::FromID(container_host->GetRenderFrameHostId());
+    if (render_frame_host && !render_frame_host->GetParent()) {
+      has_main_frame = true;
+      break;
+    }
     container_host_iterator->Advance();
   }
 
-  bool result = FrameListContainsMainFrameOnUI(std::move(render_frames));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE, base::BindOnce(std::move(callback), has_main_frame));
 }
 
 base::WeakPtr<ServiceWorkerContainerHost>

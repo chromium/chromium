@@ -3962,8 +3962,7 @@ void NavigationRequest::CommitNavigation() {
     // Notify the service worker navigation handle that navigation commit is
     // about to go.
     service_worker_handle_->OnBeginNavigationCommit(
-        render_frame_host_->GetProcess()->GetID(),
-        render_frame_host_->GetRoutingID(), cross_origin_embedder_policy_,
+        render_frame_host_->GetGlobalId(), cross_origin_embedder_policy_,
         std::move(reporter_remote), &service_worker_container_info,
         commit_params_->document_ukm_source_id);
   }

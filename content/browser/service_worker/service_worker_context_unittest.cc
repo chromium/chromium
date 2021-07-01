@@ -476,9 +476,8 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
   EXPECT_EQ(TestServiceWorkerContextObserver::EventType::ControlleeAdded,
             observer.events()[0].type);
 
-  version->OnControlleeNavigationCommitted(container_host->client_uuid(),
-                                           container_host->process_id(),
-                                           container_host->frame_id());
+  version->OnControlleeNavigationCommitted(
+      container_host->client_uuid(), container_host->GetRenderFrameHostId());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(2u, observer.events().size());

@@ -38,6 +38,7 @@ namespace service_worker_object_host_unittest {
 class ServiceWorkerObjectHostTest;
 }
 
+struct GlobalRenderFrameHostId;
 class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerObjectHost;
@@ -260,9 +261,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // commit. Updates this host with information about the frame committed to.
   // After this is called, is_response_committed() and is_execution_ready()
   // return true.
+  //
+  // TODO(falken): Pass in an RenderFrameHostImpl instead of an ID. Some
+  // tests use a fake id.
   void OnBeginNavigationCommit(
-      int container_process_id,
-      int container_frame_id,
+      const GlobalRenderFrameHostId& rfh_id,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
@@ -415,9 +418,14 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   }
 
   base::TimeTicks create_time() const { return create_time_; }
+
   int process_id() const { return process_id_; }
-  // TODO(falken): Replace with a getter for GlobalRenderFrameHostId.
-  int frame_id() const { return frame_routing_id_; }
+
+  // For service worker window clients. The RFH ID is set only after
+  // navigation commit.
+  GlobalRenderFrameHostId GetRenderFrameHostId() const;
+
+  // For service worker window clients.
   int frame_tree_node_id() const { return client_info_->GetFrameTreeNodeId(); }
 
   // For service worker clients.
