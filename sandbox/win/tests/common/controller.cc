@@ -178,8 +178,7 @@ bool TestRunner::AddFsRule(TargetPolicy::Semantics semantics,
 }
 
 int TestRunner::RunTest(const wchar_t* command) {
-  if (MAX_STATE > 10)
-    return SBOX_TEST_INVALID_PARAMETER;
+  DCHECK_LE(MAX_STATE, 10);
 
   wchar_t state_number[2];
   state_number[0] = static_cast<wchar_t>(L'0' + state_);
