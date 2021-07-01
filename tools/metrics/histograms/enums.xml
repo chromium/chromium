@@ -42949,6 +42949,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Image-Link on a Web page"/>
   <int value="9" label="Link on a Web page"/>
   <int value="10" label="Tab Grid Entry"/>
+  <int value="11" label="Tab Grid Add To"/>
 </enum>
 
 <enum name="IOSMultiWindowConfiguration">

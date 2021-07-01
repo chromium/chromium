@@ -190,6 +190,16 @@
   _shareButton.enabled = enabled;
 }
 
+#pragma mark Add To
+
+- (void)setAddToButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0)) {
+  _addToButton.menu = menu;
+}
+
+- (void)setAddToButtonEnabled:(BOOL)enabled {
+  _addToButton.enabled = enabled;
+}
+
 #pragma mark - Private
 
 - (void)setupViews {

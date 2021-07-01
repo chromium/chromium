@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class GridViewController;
+
 // Commands issued to a model backing a grid UI.
 @protocol GridCommands
 // Tells the receiver to insert a new item at the end of the list.
@@ -54,6 +56,10 @@
 // Shows a share sheet to share |items|, anchored to the |buttonAnchor|.
 - (void)shareItems:(NSArray<NSString*>*)items
             anchor:(UIBarButtonItem*)buttonAnchor;
+// Returns the items to display in the menu presented when the Add To button is
+// selected.
+- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForGridViewController:
+    (GridViewController*)gridViewController;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_COMMANDS_H_

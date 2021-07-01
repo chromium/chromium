@@ -63,6 +63,11 @@
 // Set |enabled| on the close tabs button.
 - (void)setShareTabsButtonEnabled:(BOOL)enabled;
 
+// Sets the |menu| displayed on tapping the Add To button.
+- (void)setAddToButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0));
+// Set |enabled| on the Add To button.
+- (void)setAddToButtonEnabled:(BOOL)enabled;
+
 // Hides components and uses a black background color for tab grid transition
 // animation.
 - (void)hide;

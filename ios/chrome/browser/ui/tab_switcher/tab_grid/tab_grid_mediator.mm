@@ -31,8 +31,10 @@
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
+#import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -455,6 +457,23 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   [self.delegate tabGridMediator:self shareURLs:URLs anchor:buttonAnchor];
 }
 
+- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForGridViewController:
+    (GridViewController*)gridViewController {
+  ActionFactory* actionFactory =
+      [[ActionFactory alloc] initWithBrowser:self.browser
+                                    scenario:MenuScenario::kTabGridAddTo];
+  __weak GridViewController* weakGrid = gridViewController;
+  __weak TabGridMediator* weakSelf = self;
+  return @[
+    [actionFactory actionToAddToReadingListWithBlock:^{
+      [weakSelf addItemsToReadingList:weakGrid.selectedItemIDsForEditing];
+    }],
+    [actionFactory actionToBookmarkWithBlock:^{
+      [weakSelf addItemsToBookmarks:weakGrid.selectedItemIDsForEditing];
+    }]
+  ];
+}
+
 #pragma mark GridCommands helpers
 
 - (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
@@ -679,6 +698,14 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   if (!self.browser)
     return nil;
   return SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_cache();
+}
+
+- (void)addItemsToReadingList:(NSArray<NSString*>*)items {
+  // TODO(crbug.com/1196907): Implement add items to reading list.
+}
+
+- (void)addItemsToBookmarks:(NSArray<NSString*>*)items {
+  // TODO(crbug.com/1196906): Implement add items to bookmarks.
 }
 
 @end

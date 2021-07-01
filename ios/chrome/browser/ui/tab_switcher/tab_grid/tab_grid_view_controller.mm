@@ -1272,6 +1272,30 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.bottomToolbar.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
 
+  if (@available(iOS 14, *)) {
+    GridViewController* gridViewController =
+        [self gridViewControllerForPage:self.currentPage];
+    UIMenu* menu = nil;
+    switch (self.currentPage) {
+      case TabGridPageIncognitoTabs:
+        menu = [UIMenu
+            menuWithChildren:[self.incognitoTabsDelegate
+                                 addToButtonMenuElementsForGridViewController:
+                                     gridViewController]];
+        break;
+      case TabGridPageRegularTabs:
+        menu = [UIMenu
+            menuWithChildren:[self.regularTabsDelegate
+                                 addToButtonMenuElementsForGridViewController:
+                                     gridViewController]];
+        break;
+      case TabGridPageRemoteTabs:
+        // No-op, Add To button inaccessible in remote tabs page.
+        break;
+    }
+    [self.bottomToolbar setAddToButtonMenu:menu];
+  }
+
   // When current page is a remote tabs page.
   if (self.currentPage == TabGridPageRemoteTabs) {
     if (self.pageConfiguration ==
