@@ -107,3 +107,37 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithPrerenderingTest,
             prerender_helper().GetHostForUrl(prerender_url));
   EXPECT_FALSE(pending_probe_status_count());
 }
+
+IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithPrerenderingTest,
+                       ShowErrorPagesInPrerender) {
+  GURL initial_url =
+      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  // Overrides the last committed origin to treat the network error as the same
+  // url with the non-opaque origins.
+  content::OverrideLastCommittedOrigin(GetWebContents()->GetMainFrame(),
+                                       url::Origin::Create(initial_url));
+
+  GURL prerender_url =
+      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetWebContents());
+
+  // Start prerendering `prerender_url`.
+  prerender_helper().AddPrerenderAsync(prerender_url);
+  registry_observer.WaitForTrigger(prerender_url);
+
+  int_fast64_t host_id = prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, host_id);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+
+  // PrerenderHost is destroyed by net::ERR_NAME_NOT_RESOLVED and it stops
+  // prerendering.
+  host_observer.WaitForDestroyed();
+
+  // The prerender host should be destroyed.
+  host_id = prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_EQ(content::RenderFrameHost::kNoFrameTreeNodeId, host_id);
+}
