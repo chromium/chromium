@@ -18,11 +18,10 @@
     <script src="error_page_controller_ios.js"></script>
   </if>
 </head>
-<body id="t" style="font-family: $i18n{fontfamily}; font-size: $i18n{fontsize}">
+<body id="t" class="neterror" style="font-family: $i18n{fontfamily}; font-size: $i18n{fontsize}">
   <div id="main-frame-error" class="interstitial-wrapper">
     <div id="main-content">
-      <div class="icon"
-          jseval="updateIconClass(this.classList, iconClass)" alt=""></div>
+      <div class="icon"></div>
       <div id="main-message">
         <h1>
           <span jsselect="heading" jsvalues=".innerHTML:msg"></span>
@@ -128,8 +127,7 @@
   <div id="sub-frame-error">
     <!-- Show details when hovering over the icon, in case the details are
          hidden because they're too large. -->
-    <div class="icon"
-        jseval="updateIconClass(this.classList, iconClass)"></div>
+    <div class="icon"></div>
     <div id="sub-frame-error-details" jsselect="summary" jsvalues=".innerHTML:msg"></div>
   </div>
 
