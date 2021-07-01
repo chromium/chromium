@@ -214,7 +214,9 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
         const net::SiteForCookies& site_for_cookies,
         const String& user_agent,
         mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
-            handshake_client) override {
+            handshake_client,
+        const absl::optional<base::UnguessableToken>& throttling_profile_id)
+        override {
       connect_args_.push_back(ConnectArgs(url, requested_protocols,
                                           site_for_cookies, user_agent,
                                           std::move(handshake_client)));
@@ -1574,7 +1576,8 @@ class MockWebSocketConnector : public mojom::blink::WebSocketConnector {
        const Vector<String>&,
        const net::SiteForCookies&,
        const String&,
-       mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>));
+       mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>,
+       const absl::optional<base::UnguessableToken>&));
 };
 
 // This can't use WebSocketChannelImplTest because it requires multiple
@@ -1610,9 +1613,8 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
       [&handshake_clients](
           Unused, Unused, Unused, Unused,
           mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
-              handshake_client) {
-        handshake_clients.Add(std::move(handshake_client));
-      };
+              handshake_client,
+          Unused) { handshake_clients.Add(std::move(handshake_client)); };
 
   auto failure_handshake_throttle =
       std::make_unique<StrictMock<MockWebSocketHandshakeThrottle>>();
@@ -1626,7 +1628,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
 
   {
     InSequence s;
-    EXPECT_CALL(connector_, Connect(_, _, _, _, _))
+    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
         .Times(WebSocketChannelImpl::kMaxWebSocketsPerRenderProcess)
         .WillRepeatedly(handshake_client_add_action);
 
@@ -1642,7 +1644,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*successful_handshake_throttle, ThrottleHandshake(_, _));
-    EXPECT_CALL(connector_, Connect(_, _, _, _, _))
+    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
         .WillOnce(handshake_client_add_action);
     EXPECT_CALL(*successful_handshake_throttle, Destructor());
   }

@@ -137,7 +137,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
         process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
             process->GetID(), frame->GetRoutingID()),
         /*auth_handler=*/mojo::NullRemote(),
-        /*header_client=*/mojo::NullRemote());
+        /*header_client=*/mojo::NullRemote(),
+        /*throttling_profile_id=*/absl::nullopt);
   }
 
   net::SpawnedTestServer ws_server_;

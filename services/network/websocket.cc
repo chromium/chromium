@@ -412,7 +412,8 @@ WebSocket::WebSocket(
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
     absl::optional<WebSocketThrottler::PendingConnection>
         pending_connection_tracker,
-    base::TimeDelta delay)
+    base::TimeDelta delay,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id)
     : factory_(factory),
       url_loader_network_observer_(std::move(url_loader_network_observer)),
       handshake_client_(std::move(handshake_client)),

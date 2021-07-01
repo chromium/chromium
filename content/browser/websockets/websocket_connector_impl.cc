@@ -74,7 +74,8 @@ void WebSocketConnectorImpl::Connect(
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<std::string>& user_agent,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
-        handshake_client) {
+        handshake_client,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process) {
@@ -106,7 +107,7 @@ void WebSocketConnectorImpl::Connect(
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           process_id_, frame_id_),
-      mojo::NullRemote(), mojo::NullRemote());
+      mojo::NullRemote(), mojo::NullRemote(), std::move(throttling_profile_id));
 }
 
 void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
@@ -137,7 +138,8 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           process_id, frame_id),
-      std::move(auth_handler), std::move(trusted_header_client));
+      std::move(auth_handler), std::move(trusted_header_client),
+      /*throttling_profile_id=*/absl::nullopt);
 }
 
 }  // namespace content

@@ -54,7 +54,8 @@ class TestNetworkContext : public network::TestNetworkContext {
           url_loader_network_observer,
       mojo::PendingRemote<network::mojom::WebSocketAuthenticationHandler>
           auth_handler,
-      mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client)
+      mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id)
       override {
     CHECK(url.has_path());
 

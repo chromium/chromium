@@ -133,7 +133,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),
       /*auth_handler=*/mojo::NullRemote(),
-      /*header_client=*/mojo::NullRemote());
+      /*header_client=*/mojo::NullRemote(),
+      /*throttling_profile_id=*/absl::nullopt);
 }
 
 FidoTunnelDevice::FidoTunnelDevice(
@@ -191,7 +192,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),
       /*auth_handler=*/mojo::NullRemote(),
-      /*header_client=*/mojo::NullRemote());
+      /*header_client=*/mojo::NullRemote(),
+      /*throttling_profile_id=*/absl::nullopt);
 }
 
 FidoTunnelDevice::~FidoTunnelDevice() {

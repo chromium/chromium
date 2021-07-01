@@ -349,7 +349,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
       url, protocols, GetBaseFetchContext()->GetSiteForCookies(),
       execution_context_->UserAgent(),
       handshake_client_receiver_.BindNewPipeAndPassRemote(
-          execution_context_->GetTaskRunner(TaskType::kWebSocket)));
+          execution_context_->GetTaskRunner(TaskType::kWebSocket)),
+      /*throttling_profile_id=*/devtools_token);
   handshake_client_receiver_.set_disconnect_with_reason_handler(
       WTF::Bind(&WebSocketChannelImpl::OnConnectionError,
                 WrapWeakPersistent(this), FROM_HERE));

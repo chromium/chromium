@@ -1096,6 +1096,11 @@ interface NetworkContext {
   // |header_client| as WebSocket connection errors. They are disconnected when
   // the connection is established, and due to message ordering uncertainty we
   // cannot know what happened.
+  //
+  // |throttling_profile_id| can be provided to allow network conditions
+  // emulation for this web socket connection. Emulated network conditions
+  // can be set by calling SetNetworkConditions with a matching throttling
+  // profile id.
   CreateWebSocket(
       url.mojom.Url url,
       array<string> requested_protocols,
@@ -1109,7 +1114,8 @@ interface NetworkContext {
       pending_remote<WebSocketHandshakeClient> handshake_client,
       pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer,
       pending_remote<WebSocketAuthenticationHandler>? auth_handler,
-      pending_remote<TrustedHeaderClient>? header_client);
+      pending_remote<TrustedHeaderClient>? header_client,
+      mojo_base.mojom.UnguessableToken? throttling_profile_id);
 
   // Creates a WebTransport connection to |url|. |origin| is used for the
   // client indication - see

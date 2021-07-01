@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include "base/unguessable_token.h"
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -41,7 +42,9 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
                const net::SiteForCookies& site_for_cookies,
                const absl::optional<std::string>& user_agent,
                mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
-                   handshake_client) override;
+                   handshake_client,
+               const absl::optional<base::UnguessableToken>&
+                   throttling_profile_id) override;
 
  private:
   static void ConnectCalledByContentBrowserClient(
