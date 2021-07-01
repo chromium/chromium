@@ -50,6 +50,7 @@ component("arcore") {
   deps = [
     "//base",
     "//components/viz/host",
+    "//device/base",
     "//device/vr:vr_util",
     "//device/vr/android:vr_android",
     "//mojo/public/cpp/bindings",

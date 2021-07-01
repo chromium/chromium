@@ -154,6 +154,8 @@ interface XRCompositorHost {
 // about an available XR device should be wrapped in this struct.
 // TODO(crbug.com/1090029): Wrap XRDeviceId + VRDisplayInfo in this struct
 struct XRDeviceData {
+  // List of XR Session Features supported by the device.
+  array<XRSessionFeature> supported_features;
   [EnableIf=is_win]
   // The LUID of the GPU that the device is plugged into.
   gpu.mojom.Luid? luid;

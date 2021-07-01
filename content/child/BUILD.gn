@@ -79,6 +79,7 @@ target(link_target_type, "child") {
     "//content/common:mojo_bindings",
     "//content/public/common:common_sources",
     "//crypto:platform",
+    "//device/base",
     "//device/gamepad/public/cpp:switches",
     "//gpu/command_buffer/client",
     "//media",

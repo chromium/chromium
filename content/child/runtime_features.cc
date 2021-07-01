@@ -20,6 +20,7 @@
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "device/base/features.h"
 #include "device/fido/features.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
 #include "gpu/config/gpu_switches.h"
@@ -315,14 +316,14 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebUsb, features::kWebUsb},
     {wf::EnableWebXR, features::kWebXr},
     {wf::EnableWebXRARModule, features::kWebXrArModule},
-    {wf::EnableWebXRCameraAccess, features::kWebXrIncubations},
-    {wf::EnableWebXRDepth, features::kWebXrIncubations},
-    {wf::EnableWebXRHandInput, features::kWebXrHandInput},
-    {wf::EnableWebXRHitTest, features::kWebXrHitTest},
-    {wf::EnableWebXRImageTracking, features::kWebXrIncubations},
-    {wf::EnableWebXRLightEstimation, features::kWebXrIncubations},
-    {wf::EnableWebXRPlaneDetection, features::kWebXrIncubations},
-    {wf::EnableWebXRViewportScale, features::kWebXrIncubations},
+    {wf::EnableWebXRCameraAccess, device::features::kWebXrIncubations},
+    {wf::EnableWebXRDepth, device::features::kWebXrIncubations},
+    {wf::EnableWebXRHandInput, device::features::kWebXrHandInput},
+    {wf::EnableWebXRHitTest, device::features::kWebXrHitTest},
+    {wf::EnableWebXRImageTracking, device::features::kWebXrIncubations},
+    {wf::EnableWebXRLightEstimation, device::features::kWebXrIncubations},
+    {wf::EnableWebXRPlaneDetection, device::features::kWebXrIncubations},
+    {wf::EnableWebXRViewportScale, device::features::kWebXrIncubations},
     {wf::EnableWheelEventRegions, features::kWheelEventRegions},
     {wf::EnableRemoveMobileViewportDoubleTap,
      features::kRemoveMobileViewportDoubleTap},

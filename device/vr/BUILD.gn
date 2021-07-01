@@ -234,6 +234,7 @@ if (enable_vr) {
       deps += [
         ":openxr_data",
         "//components/version_info",
+        "//device/base",
         "//third_party/openxr",
       ]
     }

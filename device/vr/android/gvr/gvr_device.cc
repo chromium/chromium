@@ -12,6 +12,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "device/vr/android/gvr/gvr_delegate.h"
@@ -112,10 +113,23 @@ mojom::VRDisplayInfoPtr CreateVRDisplayInfo(gvr::GvrApi* gvr_api) {
   return device;
 }
 
+const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
+  static base::NoDestructor<std::vector<mojom::XRSessionFeature>>
+      kSupportedFeatures({
+    mojom::XRSessionFeature::REF_SPACE_VIEWER,
+    mojom::XRSessionFeature::REF_SPACE_LOCAL,
+    mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
+  });
+
+  return *kSupportedFeatures;
+}
+
 }  // namespace
 
 GvrDevice::GvrDevice() : VRDeviceBase(mojom::XRDeviceId::GVR_DEVICE_ID) {
   GvrDelegateProviderFactory::SetDevice(this);
+
+  SetSupportedFeatures(GetSupportedFeatures());
 }
 
 GvrDevice::~GvrDevice() {

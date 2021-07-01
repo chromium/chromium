@@ -504,6 +504,7 @@ source_set("weblayer_lib_base") {
     "//content/public/common",
     "//content/public/renderer",
     "//content/public/utility",
+    "//device/base:base",
     "//device/vr/buildflags",
     "//gpu/config",
     "//net",

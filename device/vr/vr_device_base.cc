@@ -102,4 +102,9 @@ void LogViewerType(VrViewerType type) {
   base::UmaHistogramSparse("VRViewerType", static_cast<int>(type));
 }
 
+void VRDeviceBase::SetSupportedFeatures(
+        const std::vector<mojom::XRSessionFeature>& features) {
+  device_data_.supported_features = features;
+}
+
 }  // namespace device

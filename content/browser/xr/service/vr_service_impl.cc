@@ -25,6 +25,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/origin_util.h"
+#include "device/base/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
 
@@ -462,10 +463,11 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   DCHECK(runtime);
   DCHECK_EQ(runtime->GetId(), request.runtime_id);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(ENABLE_OPENXR)
   if (request.options->mode == device::mojom::XRSessionMode::kImmersiveAr) {
     DCHECK(
-        base::FeatureList::IsEnabled(features::kOpenXrExtendedFeatureSupport));
+        base::FeatureList::IsEnabled(
+            device::features::kOpenXrExtendedFeatureSupport));
   }
 #endif
 

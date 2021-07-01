@@ -6,11 +6,14 @@
 
 #include <algorithm>
 
+#include "base/android/android_hardware_buffer_compat.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/no_destructor.h"
 #include "base/numerics/math_constants.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "device/base/features.h"
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/android/arcore/arcore_gl_thread.h"
@@ -56,6 +59,24 @@ mojom::VRDisplayInfoPtr CreateVRDisplayInfo(const gfx::Size& frame_size) {
   return device;
 }
 
+const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
+  static base::NoDestructor<std::vector<mojom::XRSessionFeature>>
+      kSupportedFeatures({
+    mojom::XRSessionFeature::REF_SPACE_VIEWER,
+    mojom::XRSessionFeature::REF_SPACE_LOCAL,
+    mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
+    mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
+    mojom::XRSessionFeature::DOM_OVERLAY,
+    mojom::XRSessionFeature::LIGHT_ESTIMATION,
+    mojom::XRSessionFeature::ANCHORS,
+    mojom::XRSessionFeature::PLANE_DETECTION,
+    mojom::XRSessionFeature::DEPTH,
+    mojom::XRSessionFeature::IMAGE_TRACKING
+  });
+
+  return *kSupportedFeatures;
+}
+
 }  // namespace
 
 ArCoreDevice::SessionState::SessionState() = default;
@@ -85,6 +106,21 @@ ArCoreDevice::ArCoreDevice(
 
   // ARCORE always support AR blend modes
   SetArBlendModeSupported(true);
+
+  std::vector<mojom::XRSessionFeature> device_features(
+        GetSupportedFeatures());
+
+  // Only support hit test if the feature flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kWebXrHitTest))
+      device_features.emplace_back(mojom::XRSessionFeature::HIT_TEST);
+
+  // Only support camera access if the feature flag is enabled & the device
+  // supports shared buffers.
+  if (base::FeatureList::IsEnabled(features::kWebXrIncubations) &&
+      base::AndroidHardwareBufferCompat::IsSupportAvailable())
+    device_features.emplace_back(mojom::XRSessionFeature::CAMERA_ACCESS);
+
+  SetSupportedFeatures(device_features);
 }
 
 ArCoreDevice::~ArCoreDevice() {

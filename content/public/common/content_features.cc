@@ -495,14 +495,6 @@ const base::Feature kOriginIsolationHeader{"OriginIsolationHeader",
 const base::Feature kOriginPolicy{"OriginPolicy",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Some WebXR features may have been enabled for ARCore, but are not yet ready
-// to be plumbed up from the OpenXR backend. This feature provides a mechanism
-// to gate such support in a generic way. Note that this feature should not be
-// used for features we intend to ship simultaneously on both OpenXR and ArCore.
-// For those features, a feature-specific flag should be created if needed.
-const base::Feature kOpenXrExtendedFeatureSupport{
-    "OpenXrExtendedFeatureSupport", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // History navigation in response to horizontal overscroll (aka gesture-nav).
 const base::Feature kOverscrollHistoryNavigation{
     "OverscrollHistoryNavigation", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1003,18 +995,6 @@ const base::Feature kWebXr{"WebXR", base::FEATURE_ENABLED_BY_DEFAULT};
 // Enables access to AR features via the WebXR API.
 const base::Feature kWebXrArModule{"WebXRARModule",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables access to articulated hand tracking sensor input.
-const base::Feature kWebXrHandInput{"WebXRHandInput",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables access to raycasting against estimated XR scene geometry.
-const base::Feature kWebXrHitTest{"WebXRHitTest",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables access to experimental WebXR features.
-const base::Feature kWebXrIncubations{"WebXRIncubations",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
 // Sets moderate binding to background renderers playing media, when enabled.

@@ -53,6 +53,7 @@
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "device/base/features.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -244,7 +245,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     features.DisableIfNotSet(::features::kWebXrArModule);
 
-    features.DisableIfNotSet(::features::kWebXrHitTest);
+    features.DisableIfNotSet(device::features::kWebXrHitTest);
 
     features.DisableIfNotSet(::features::kDynamicColorGamut);
 

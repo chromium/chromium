@@ -126,42 +126,6 @@ device::mojom::VRDisplayInfoPtr ValidateVRDisplayInfo(
   return ret;
 }
 
-// TODO(crbug.com/995377): Report these from the device runtime instead.
-constexpr device::mojom::XRSessionFeature kOrientationDeviceFeatures[] = {
-    device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
-};
-
-constexpr device::mojom::XRSessionFeature kGVRDeviceFeatures[] = {
-    device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
-};
-
-constexpr device::mojom::XRSessionFeature kARCoreDeviceFeatures[] = {
-    device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
-    device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
-    device::mojom::XRSessionFeature::DOM_OVERLAY,
-    device::mojom::XRSessionFeature::LIGHT_ESTIMATION,
-    device::mojom::XRSessionFeature::ANCHORS,
-    device::mojom::XRSessionFeature::PLANE_DETECTION,
-    device::mojom::XRSessionFeature::DEPTH,
-    device::mojom::XRSessionFeature::IMAGE_TRACKING,
-};
-
-#if BUILDFLAG(ENABLE_OPENXR)
-constexpr device::mojom::XRSessionFeature kOpenXRFeatures[] = {
-    device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
-    device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
-    device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
-    device::mojom::XRSessionFeature::ANCHORS,
-};
-#endif
 }  // anonymous namespace
 
 BrowserXRRuntimeImpl::BrowserXRRuntimeImpl(
@@ -208,47 +172,11 @@ void BrowserXRRuntimeImpl::ExitActiveImmersiveSession() {
 
 bool BrowserXRRuntimeImpl::SupportsFeature(
     device::mojom::XRSessionFeature feature) const {
-  switch (id_) {
-    // Test/fake devices support all features.
-    case device::mojom::XRDeviceId::WEB_TEST_DEVICE_ID:
-    case device::mojom::XRDeviceId::FAKE_DEVICE_ID:
+  if(id_ == device::mojom::XRDeviceId::WEB_TEST_DEVICE_ID ||
+     id_ == device::mojom::XRDeviceId::FAKE_DEVICE_ID)
       return true;
-    case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
-      // Only support hit test if the feature flag is enabled.
-      if (feature == device::mojom::XRSessionFeature::HIT_TEST) {
-        return base::FeatureList::IsEnabled(features::kWebXrHitTest);
-      }
 
-#if defined(OS_ANDROID)
-      // Only support camera access if the feature flag is enabled & the device
-      // supports shared buffers.
-      if (feature == device::mojom::XRSessionFeature::CAMERA_ACCESS) {
-        return base::FeatureList::IsEnabled(features::kWebXrIncubations) &&
-               base::AndroidHardwareBufferCompat::IsSupportAvailable();
-      }
-#endif
-
-      return base::Contains(kARCoreDeviceFeatures, feature);
-    case device::mojom::XRDeviceId::ORIENTATION_DEVICE_ID:
-      return base::Contains(kOrientationDeviceFeatures, feature);
-    case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-      return base::Contains(kGVRDeviceFeatures, feature);
-
-#if BUILDFLAG(ENABLE_OPENXR)
-    case device::mojom::XRDeviceId::OPENXR_DEVICE_ID:
-      // Only support hand input if the feature flag is enabled.
-      if (feature == device::mojom::XRSessionFeature::HAND_INPUT) {
-        return base::FeatureList::IsEnabled(features::kWebXrHandInput);
-      }
-      if (feature == device::mojom::XRSessionFeature::HIT_TEST) {
-        return base::FeatureList::IsEnabled(
-            features::kOpenXrExtendedFeatureSupport);
-      }
-      return base::Contains(kOpenXRFeatures, feature);
-#endif
-  }
-
-  NOTREACHED();
+  return base::Contains(device_data_->supported_features, feature);
 }
 
 bool BrowserXRRuntimeImpl::SupportsAllFeatures(

@@ -6,6 +6,7 @@ include_rules = [
   "+components/version_info",
   "+components/viz/common",
   "+content/public",
+  "+device/base/features.h",
   "+media/base/media_switches.h",
   "+sandbox",
   "+services/network/public/cpp",
