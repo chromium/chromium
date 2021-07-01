@@ -3501,6 +3501,7 @@ static_library("test_support") {
     "policy/dlp/dlp_content_manager_test_helper.h",
     "policy/handlers/minimum_version_policy_test_helpers.cc",
     "policy/handlers/minimum_version_policy_test_helpers.h",
+    "policy/remote_commands/future_value.h",
     "printing/printing_stubs.cc",
     "printing/printing_stubs.h",
     "printing/test_cups_print_job_manager.cc",

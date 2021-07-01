@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/chromeos/policy/remote_commands/future_value.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,67 +78,6 @@ class Message {
   base::Value result{base::Value::Type::DICTIONARY};
 };
 
-// Representation of a value that will be populated asynchronously.
-// Provides accessors to wait for the value to arrive.
-template <typename Type>
-class FutureValue {
- public:
-  FutureValue() = default;
-  FutureValue(const FutureValue&) = delete;
-  FutureValue& operator=(const FutureValue&) = delete;
-  ~FutureValue() = default;
-
-  // Wait for the value to arrive, and return the result.
-  // Will time out if no value arrives.
-  Type& GetWithTimeout(
-      const std::string& error_message = "Timeout waiting for value") {
-    WaitForValueWithTimeout(error_message);
-    return value_.value();
-  }
-
-  // Wait for the value to arrive.
-  // Will time out if no value arrives.
-  void WaitForValueWithTimeout(const std::string& error_message = "Timeout") {
-    if (!value_) {
-      base::test::ScopedRunLoopTimeout timeout(
-          FROM_HERE, base::TimeDelta::FromSeconds(5),
-          base::BindLambdaForTesting(
-              [error_message]() { return error_message; }));
-
-      run_loop_ = std::make_unique<base::RunLoop>();
-      run_loop_->Run();
-    }
-  }
-
-  void SetValue(Type value) {
-    value_ = std::move(value);
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
-  // Get the current value, or DCHECK if no value is set.
-  Type& value() {
-    DCHECK(has_value());
-    return value_.value();
-  }
-  const Type& value() const {
-    DCHECK(has_value());
-    return value_.value();
-  }
-
-  bool has_value() const { return value_.has_value(); }
-
-  // Unset the current value, so this object can be used again for a new value.
-  void Reset() {
-    value_.reset();
-    run_loop_.reset();
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  absl::optional<Type> value_;
-};
-
 // Stub implementation of the |NativeMessageHost| which allows the test to wait
 // for messages to the host and to send replies to the client.
 // The implementation is strict, meaning the test will fail if the client sends
@@ -173,8 +113,7 @@ class NativeMessageHostStub : public extensions::NativeMessageHost {
     if (client_)
       return;  // Start has already been called
 
-    is_started_.WaitForValueWithTimeout(
-        "Timeout waiting for NativeMessageHost::Start");
+    is_started_.WaitWithTimeout("Timeout waiting for start");
   }
 
   void WaitForHello() { WaitForMessageOfType("hello"); }
