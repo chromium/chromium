@@ -15,10 +15,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #if defined(OS_FUCHSIA)
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
-#else
-#include "components/cast/message_port/cast/message_port_cast.h"  // nogncheck
-#include "third_party/blink/public/common/messaging/web_message_port.h"  // nogncheck
 #endif  // defined(OS_FUCHSIA)
+#include "components/cast/message_port/cast/message_port_cast.h"
+#include "third_party/blink/public/common/messaging/web_message_port.h"
 
 #ifdef PostMessage
 #undef PostMessage
@@ -26,13 +25,17 @@
 
 namespace cast_api_bindings {
 
-class MessagePortTest
-    : public ::testing::TestWithParam<void (*)(std::unique_ptr<MessagePort>*,
-                                               std::unique_ptr<MessagePort>*)> {
+using CreatePairFunction = void (*)(std::unique_ptr<MessagePort>*,
+                                    std::unique_ptr<MessagePort>*);
+
+class MessagePortTest : public ::testing::Test {
  public:
-  MessagePortTest()
+  MessagePortTest() : MessagePortTest(&CreatePlatformMessagePortPair) {}
+
+  // Allows parameterized tests to modify which ports are created.
+  explicit MessagePortTest(CreatePairFunction create_pair)
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        create_pair_function_(GetParam()) {
+        create_pair_(create_pair) {
     CreatePair(&client_, &server_);
   }
 
@@ -40,7 +43,7 @@ class MessagePortTest
 
   void CreatePair(std::unique_ptr<MessagePort>* client,
                   std::unique_ptr<MessagePort>* server) {
-    create_pair_function_(client, server);
+    create_pair_(client, server);
   }
 
   void SetDefaultReceivers() {
@@ -91,82 +94,13 @@ class MessagePortTest
 
  private:
   const base::test::TaskEnvironment task_environment_;
-  void (*create_pair_function_)(std::unique_ptr<MessagePort>*,
-                                std::unique_ptr<MessagePort>*);
+  CreatePairFunction create_pair_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    MessagePortTest,
-    MessagePortTest,
-    testing::Values(&CreatePlatformMessagePortPair,
-                    &cast_api_bindings::CreateMessagePortCorePair));
-
-TEST_P(MessagePortTest, Close) {
-  SetDefaultReceivers();
-  ASSERT_TRUE(client_->CanPostMessage());
-  ASSERT_TRUE(server_->CanPostMessage());
-
-  server_->Close();
-
-  // cast_api_bindings::MessagePort reports closure PostMessage is attempted,
-  // but other ports report it proactively
-  client_->PostMessage("");
-  client_receiver_.RunUntilDisconnected();
-  ASSERT_FALSE(client_->CanPostMessage());
-  ASSERT_FALSE(server_->CanPostMessage());
-}
-
-TEST_P(MessagePortTest, OnError) {
-  server_receiver_.SetOnMessageResult(false);
-  SetDefaultReceivers();
-  client_->PostMessage("");
-
-#if defined(OS_FUCHSIA)
-  // blink::WebMessagePort reports failure when PostMessage returns false, but
-  // fuchsia::web::MessagePort will not report the error until the port closes
-  server_receiver_.RunUntilMessageCountEqual(1);
-  server_.reset();
-#endif
-
-  client_receiver_.RunUntilDisconnected();
-}
-
-TEST_P(MessagePortTest, PostMessage) {
-  TestPostMessage();
-}
-
-TEST_P(MessagePortTest, PostMessageMultiple) {
-  SetDefaultReceivers();
-  PostMessages({"c1", "c2", "c3"}, client_.get(), &server_receiver_);
-  PostMessages({"s1", "s2", "s3"}, server_.get(), &client_receiver_);
-}
-
-TEST_P(MessagePortTest, PostMessageWithTransferables) {
-  std::unique_ptr<MessagePort> port0;
-  std::unique_ptr<MessagePort> port1;
-  TestMessagePortReceiver port0_receiver;
-  TestMessagePortReceiver port1_receiver;
-  CreatePair(&port0, &port1);
-
-  // If the ports are represented by multiple types as in the case of
-  // MessagePortFuchsia, make sure both are transferrable
-  SetDefaultReceivers();
-  port0 = PostMessageWithTransferables(std::move(port0), client_.get(),
-                                       &server_receiver_);
-  port1 = PostMessageWithTransferables(std::move(port1), server_.get(),
-                                       &client_receiver_);
-
-  // Make sure the ports are still usable
-  port0->SetReceiver(&port0_receiver);
-  port1->SetReceiver(&port1_receiver);
-  PostMessages({"from port0"}, port0.get(), &port1_receiver);
-  PostMessages({"from port1"}, port1.get(), &port0_receiver);
-}
-
-TEST_P(MessagePortTest, WrapPlatformPort) {
+TEST_F(MessagePortTest, WrapPlatformPort) {
   // Initialize ports from the platform type instead of agnostic CreatePair
 #if BUILDFLAG(USE_MESSAGE_PORT_CORE)
-  cast_api_bindings::CreateMessagePortPair(&client_, &server_);
+  cast_api_bindings::CreateMessagePortCorePair(&client_, &server_);
 #elif defined(OS_FUCHSIA)
   fidl::InterfaceHandle<fuchsia::web::MessagePort> port0;
   fidl::InterfaceRequest<fuchsia::web::MessagePort> port1 = port0.NewRequest();
@@ -182,7 +116,7 @@ TEST_P(MessagePortTest, WrapPlatformPort) {
 }
 
 // Test unwrapping via TakePort (rewrapped for test methods)
-TEST_P(MessagePortTest, UnwrapPlatformPortCast) {
+TEST_F(MessagePortTest, UnwrapPlatformPort) {
   // Workaround for parameterized tests which would create the
   // wrong port type
   CreatePlatformMessagePortPair(&client_, &server_);
@@ -204,6 +138,92 @@ TEST_P(MessagePortTest, UnwrapPlatformPortCast) {
 #endif  // defined(OS_FUCHSIA)
 
   TestPostMessage();
+}
+
+class ParameterizedMessagePortTest
+    : public MessagePortTest,
+      public ::testing::WithParamInterface<CreatePairFunction> {
+ public:
+  ParameterizedMessagePortTest() : MessagePortTest(GetParam()) {}
+  ~ParameterizedMessagePortTest() override = default;
+};
+
+// Run the tests on all port types supported by the platform.
+INSTANTIATE_TEST_SUITE_P(ParameterizedMessagePortTest,
+                         ParameterizedMessagePortTest,
+                         testing::Values(&CreatePlatformMessagePortPair,
+#if defined(OS_FUCHSIA)
+                                         &MessagePortFuchsia::CreatePair,
+#endif  // defined(OS_FUCHSIA)
+                                         &CreateMessagePortCorePair,
+                                         &MessagePortCast::CreatePair));
+
+TEST_P(ParameterizedMessagePortTest, Close) {
+  SetDefaultReceivers();
+  ASSERT_TRUE(client_->CanPostMessage());
+  ASSERT_TRUE(server_->CanPostMessage());
+
+  server_->Close();
+
+  // cast_api_bindings::MessagePort reports closure PostMessage is attempted,
+  // but other ports report it proactively
+  client_->PostMessage("");
+  client_receiver_.RunUntilDisconnected();
+  ASSERT_FALSE(client_->CanPostMessage());
+  ASSERT_FALSE(server_->CanPostMessage());
+}
+
+TEST_P(ParameterizedMessagePortTest, OnError) {
+  server_receiver_.SetOnMessageResult(false);
+  SetDefaultReceivers();
+  client_->PostMessage("");
+
+#if defined(OS_FUCHSIA)
+  // blink::WebMessagePort reports failure when PostMessage returns false, but
+  // fuchsia::web::MessagePort will not report the error until the port closes
+  server_receiver_.RunUntilMessageCountEqual(1);
+  server_.reset();
+#endif
+
+  client_receiver_.RunUntilDisconnected();
+}
+
+TEST_P(ParameterizedMessagePortTest, OnErrorOnClose) {
+  SetDefaultReceivers();
+  server_.reset();
+  client_receiver_.RunUntilDisconnected();
+}
+
+TEST_P(ParameterizedMessagePortTest, PostMessage) {
+  TestPostMessage();
+}
+
+TEST_P(ParameterizedMessagePortTest, PostMessageMultiple) {
+  SetDefaultReceivers();
+  PostMessages({"c1", "c2", "c3"}, client_.get(), &server_receiver_);
+  PostMessages({"s1", "s2", "s3"}, server_.get(), &client_receiver_);
+}
+
+TEST_P(ParameterizedMessagePortTest, PostMessageWithTransferables) {
+  std::unique_ptr<MessagePort> port0;
+  std::unique_ptr<MessagePort> port1;
+  TestMessagePortReceiver port0_receiver;
+  TestMessagePortReceiver port1_receiver;
+  CreatePair(&port1, &port0);
+
+  // If the ports are represented by multiple types as in the case of
+  // MessagePortFuchsia, make sure both are transferrable
+  SetDefaultReceivers();
+  port0 = PostMessageWithTransferables(std::move(port0), client_.get(),
+                                       &server_receiver_);
+  port1 = PostMessageWithTransferables(std::move(port1), server_.get(),
+                                       &client_receiver_);
+
+  // Make sure the ports are still usable
+  port0->SetReceiver(&port0_receiver);
+  port1->SetReceiver(&port1_receiver);
+  PostMessages({"from port0"}, port0.get(), &port1_receiver);
+  PostMessages({"from port1"}, port1.get(), &port0_receiver);
 }
 
 }  // namespace cast_api_bindings

@@ -25,7 +25,7 @@ class MessageConnector {
   // Called when peer is ready to process calls to Accept.
   virtual void OnPeerStarted() = 0;
 
-  // Called when a peer has an error.
+  // Called when a peer has an error or is detached.
   virtual void OnPeerError() = 0;
 
   // Set this connector's peer to |other|, which must be on the same channel.

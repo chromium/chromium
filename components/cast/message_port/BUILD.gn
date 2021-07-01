@@ -74,7 +74,10 @@ source_set("message_port_cast") {
 
   sources = [ "cast/message_port_cast.cc" ]
 
-  public_deps = [ ":public" ]
+  public_deps = [
+    ":public",
+    "//third_party/blink/public/common",
+  ]
 
   deps = [
     ":public",
@@ -112,11 +115,16 @@ source_set("message_port_unittest") {
   deps = [
     ":message_port",
     ":message_port_buildflags",
+    ":message_port_cast",
     ":message_port_core",
     ":test_message_port_receiver",
     "//base/test:test_support",
     "//testing/gtest",
   ]
+
+  if (is_fuchsia) {
+    deps += [ ":message_port_fuchsia" ]
+  }
 }
 
 source_set("test_message_port_receiver") {

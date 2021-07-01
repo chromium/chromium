@@ -29,6 +29,7 @@ void MessageConnector::SetPeer(MessageConnector* other) {
 
 void MessageConnector::DetachPeer() {
   peer_ = nullptr;
+  OnPeerError();
 }
 
 void MessageConnector::Start() {
