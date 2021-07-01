@@ -3590,7 +3590,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(),
                             embedded_test_server()->GetURL(
                                 "/service_worker/create_service_worker.html")));
-  auto rfh = RenderFrameHostImplHolder(current_frame_host());
+  auto rfh = RenderFrameHostImplWrapper(current_frame_host());
 
   int first_worker_version_id;
 

@@ -1276,7 +1276,7 @@ class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 
-  void ExpectCached(const RenderFrameHostImplHolder& rfh,
+  void ExpectCached(const RenderFrameHostImplWrapper& rfh,
                     bool cached,
                     bool backgrounded) {
     EXPECT_FALSE(rfh.IsDestroyed());
@@ -1295,7 +1295,7 @@ IN_PROC_BROWSER_TEST_F(
     CacheEvictionSameSite) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  std::vector<RenderFrameHostImplHolder> rfhs;
+  std::vector<RenderFrameHostImplWrapper> rfhs;
 
   for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
     SCOPED_TRACE(i);
@@ -1345,7 +1345,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLED_CacheEvictionCrossSite) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  std::vector<RenderFrameHostImplHolder> rfhs;
+  std::vector<RenderFrameHostImplWrapper> rfhs;
 
   for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
     SCOPED_TRACE(i);
@@ -1406,7 +1406,7 @@ IN_PROC_BROWSER_TEST_F(
     ChangeToForeground) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  std::vector<RenderFrameHostImplHolder> rfhs;
+  std::vector<RenderFrameHostImplWrapper> rfhs;
 
   // Navigate through a[0-3].com.
   for (size_t i = 0; i < kBackForwardCacheSize; ++i) {
@@ -5494,7 +5494,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   const std::string script_to_store =
       "executeCommandOnServiceWorker('StoreClients')";
   EXPECT_EQ("DONE", EvalJs(tab_to_execute_service_worker, script_to_store));
-  RenderFrameHostImplHolder rfh(
+  RenderFrameHostImplWrapper rfh(
       tab_to_be_bfcached->web_contents()->GetMainFrame());
 
   // 4) Navigate away to B in |tab_to_be_bfcached|.
