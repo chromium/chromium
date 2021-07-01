@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
 #include "mojo/core/data_pipe_control_message.h"
@@ -516,6 +517,9 @@ void DataPipeProducerDispatcher::UpdateSignalsStateNoLock() {
           peer_closed_ = true;
           break;
         }
+
+        TRACE_EVENT0("ipc",
+                     "DataPipeProducerDispatcher received DATA_WAS_READ");
 
         if (static_cast<size_t>(available_capacity_) + m->num_bytes >
             options_.capacity_num_bytes) {
