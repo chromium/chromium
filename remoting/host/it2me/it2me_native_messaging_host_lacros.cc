@@ -390,7 +390,15 @@ void It2MeNativeMessagingHostLacros::ProcessConnect(int message_id,
 
 void It2MeNativeMessagingHostLacros::ProcessDisconnect(int message_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Resetting the observer will cause the host running in ash to disconnect.
   support_host_observer_.reset();
+
+  // Since the mojo channel was disconnected above, we will no longer receive
+  // events from ash-chrome (including the disconnected host state change).
+  // Set the new state here to reflect that we've disconnected the host. This
+  // will cause a message to be sent to the client so it can update its UI.
+  HandleHostStateChange(It2MeHostState::kDisconnected);
 
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetStringKey(kMessageType, kDisconnectResponse);

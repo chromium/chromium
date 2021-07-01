@@ -35,6 +35,9 @@ It2MeNativeMessageHostAsh::Start(
   mojo::PendingReceiver<mojom::SupportHostObserver> observer =
       remote_.BindNewPipeAndPassReceiver();
 
+  remote_.set_disconnect_handler(base::BindOnce(
+      &It2MeNativeMessageHostAsh::Disconnect, base::Unretained(this)));
+
   std::unique_ptr<It2MeHostFactory> host_factory(new It2MeHostFactory());
   native_message_host_ = std::make_unique<It2MeNativeMessagingHost>(
       /*needs_elevation=*/false, std::move(policy_watcher), std::move(context),
