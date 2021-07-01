@@ -392,7 +392,7 @@
 <translation id="4112140312785995938">பின்செல்</translation>
 <translation id="4114315158543974537">Phone Hubபை இயக்குதல்</translation>
 <translation id="412298498316631026">சாளரம்</translation>
-<translation id="4129129681837227511">பூட்டுத் திரையில் அறிவிப்புகளைப் பார்க்க, அமைப்பை மாற்றுவதற்குச் சாதனத்தைத் திறக்கவும்</translation>
+<translation id="4129129681837227511">பூட்டுத் திரையில் அறிவிப்புகளைப் பார்க்க, அமைப்பை மாற்றுவதற்குச் சாதனத்தை அன்லாக் செய்யவும்</translation>
 <translation id="4146833061457621061">இசையை இயக்கு</translation>
 <translation id="4157822100366708405">டார்க் தீம் அமைப்புகள்</translation>
 <translation id="4181841719683918333">மொழிகள்</translation>
@@ -666,7 +666,7 @@
 <translation id="6330012934079202188">எல்லா டெஸ்க்குகளிலும் உள்ள சாளரங்களைக் காட்டுகிறது, தற்போதைய டெஸ்க்கில் உள்ள சாளரங்களைக் காட்ட, மேல்நோக்கிய அம்புக்குறி விசையை அழுத்தவும்</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> என்பது நிர்வகிக்கப்பட்ட ஓர் அமர்வாகும், <ph name="MANAGER" /> இதை நிர்வகிக்கிறது</translation>
 <translation id="6376931439017688372">புளூடூத் இயக்கப்பட்டுள்ளது</translation>
-<translation id="6381109794406942707">சாதனத்தைத் திறக்க உங்கள் பின்னை உள்ளிடவும்.</translation>
+<translation id="6381109794406942707">சாதனத்தை அன்லாக் செய்ய உங்கள் பின்னை உள்ளிடவும்.</translation>
 <translation id="639644700271529076">CAPS LOCK முடக்கப்பட்டுள்ளது</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -786,7 +786,7 @@
 <translation id="7378889811480108604">பேட்டரி சேமிப்பான் பயன்முறை முடக்கத்தில் உள்ளது</translation>
 <translation id="7392563512730092880">அமைப்புகளுக்குச் சென்று பிறகு எப்போது வேண்டுமானாலும் அமைத்துக்கொள்ளலாம்.</translation>
 <translation id="7398254312354928459">நெட்வொர்க் இணைப்பு மாற்றப்பட்டது</translation>
-<translation id="7405710164030118432">இந்தச் சாதனத்தைத் திறக்க உங்கள் Family Linkகின் முதல்நிலை அணுகல் குறியீட்டை உள்ளிடவும்</translation>
+<translation id="7405710164030118432">இந்தச் சாதனத்தை அன்லாக் செய்ய உங்கள் Family Linkகின் முதல்நிலை அணுகல் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="7406608787870898861">மொபைல் நெட்வொர்க் அமைவை நிறைவு செய்யுங்கள்</translation>
 <translation id="741244894080940828">மாற்றம்</translation>
 <translation id="7413851974711031813">மூட, escape விசையை அழுத்தவும்</translation>
@@ -825,7 +825,7 @@
 <translation id="7641938616688887143">ரெக்கார்டு செய்</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />க்கான அமைப்புகளைத் திறக்கும், <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (உரிமையாளர்)</translation>
-<translation id="7647488630410863958">அறிவிப்புகளைப் பார்க்க, சாதனத்தைத் திறக்கவும்</translation>
+<translation id="7647488630410863958">அறிவிப்புகளைப் பார்க்க, சாதனத்தை அன்லாக் செய்யவும்</translation>
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7654687942625752712">பேச்சுவடிவ கருத்தை முடக்க, ஐந்து வினாடிகளுக்கு இரண்டு ஒலியளவு விசைகளையும் அழுத்திப் பிடித்திருக்கவும்.</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>

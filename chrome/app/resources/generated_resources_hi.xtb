@@ -3268,7 +3268,7 @@
 <translation id="4510479820467554003">अभिभावक के खातों की सूची</translation>
 <translation id="4510614391273086606">Linux फ़ाइलों और ऐप्लिकेशन को उनकी बैक अप की गई स्थिति में वापस लाया जा रहा है.</translation>
 <translation id="451102079304155829">कार्ट</translation>
-<translation id="4513946894732546136">Feedback</translation>
+<translation id="4513946894732546136">सुझाव/राय दें</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> के उपयोग से</translation>
 <translation id="4514610446763173167">वीडियो को 'चलाएं' या 'रोकें' पर टॉगल करें</translation>
 <translation id="451515744433878153">निकालें</translation>
@@ -6504,7 +6504,7 @@
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">इमेज के रूप में प्रिंट करें</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन डेटा ऐसा कोई भी डेटा हो सकता है जिसे किसी ऐप्लिकेशन ने (डेवलपर सेटिंग के हिसाब से) सेव किया है, इसमें संपर्क, मैसेज और फ़ोटो जैसा डेटा शामिल है.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />बैकअप डेटा को आपके बच्चे के 'डिस्क' के मेमोरी कोटा में शामिल नहीं किया जाएगा.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH2" />बैकअप डेटा को आपके बच्चे के 'डिस्क' के स्टोरेज कोटा में शामिल नहीं किया जाएगा.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />आप सेटिंग में जाकर इस सेवा को बंद कर सकते हैं.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8074127646604999664">हाल ही में बंद की गई साइटों को डेटा भेजने और पाने की प्रकिया पूरी करने दें</translation>
 <translation id="8076492880354921740">टैब</translation>
@@ -6525,7 +6525,7 @@
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />'Google डिस्क' में बैक अप लें. किसी भी समय अपना डेटा आसानी से बहाल करें या डिवाइस बदलें. आपके बैकअप में आपका ऐप्लिकेशन डेटा शामिल होता है.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />आपके बैकअप आपके Google खाते के पासवर्ड से सुरक्षित करके Google पर अपलोड किए जाते हैं.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ऐप्लिकेशन डेटा ऐसा कोई भी डेटा हो सकता है जिसे किसी ऐप्लिकेशन ने (डेवलपर सेटिंग के हिसाब से) सेव किया है, इसमें संपर्क, मैसेज और फ़ोटो जैसा संवेदनशील हो सकने वाला डेटा शामिल है.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />बैकअप डेटा को आपके 'डिस्क' के मेमोरी कोटा में शामिल नहीं किया जाएगा.<ph name="END_PARAGRAPH4" />
+    <ph name="BEGIN_PARAGRAPH4" />बैकअप डेटा को आपके 'डिस्क' के स्टोरेज कोटा में शामिल नहीं किया जाएगा.<ph name="END_PARAGRAPH4" />
     <ph name="BEGIN_PARAGRAPH5" />आप सेटिंग में जाकर इस सेवा को बंद कर सकते हैं.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="8096740438774030488">बैटरी का इस्तेमाल करते समय डिवाइस काम न करे</translation>
 <translation id="80974698889265265">पिन का मिलान नहीं हो रहा है</translation>

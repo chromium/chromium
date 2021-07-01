@@ -381,7 +381,7 @@
 <translation id="2293443924986248631">Кога е вклучено, сајтовите не може да користат колачиња што ве следат на интернет. Функциите на некои сајтови може да не функционираат.</translation>
 <translation id="2295290966866883927">URL-адресите од страниците што ги посетувате се испраќаат до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се откријат небезбедни веб-сајтови.</translation>
 <translation id="2297722699537546652">B5 (плик)</translation>
-<translation id="2298855485018661510">Копче „Управувај со колачињата“, притиснете Enter за да управувате со претпочитаните вредности за колачиња во поставките за Chrome</translation>
+<translation id="2298855485018661510">Копче „Управувај со колачињата“, притиснете Enter за да управувате со поставките за колачиња во поставките на Chrome</translation>
 <translation id="2300306941146563769">Не е прикачен</translation>
 <translation id="2310021320168182093">Chou 2 (плик)</translation>
 <translation id="2316887270356262533">Ќе ослободи помалку од 1 MB. Некои сајтови може да се вчитуваат побавно при вашата следна посета.</translation>
@@ -1881,7 +1881,7 @@
 <translation id="7938958445268990899">Сертификатот на серверот сѐ уште не е важечки.</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7947285636476623132">Проверете ја годината на истекување и обидете се повторно</translation>
-<translation id="7950027195171824198">Управувајте со претпочитаните вредности за колачиња во поставките за Chrome</translation>
+<translation id="7950027195171824198">Управувајте со поставките за колачиња во поставките на Chrome</translation>
 <translation id="7951415247503192394">(32-бита)</translation>
 <translation id="7953569069500808819">Шиење на работ горе</translation>
 <translation id="7956713633345437162">Мобилни обележувачи</translation>
@@ -2013,7 +2013,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Поставки</translation>
-<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со претпочитаните вредности за колачиња во поставките за Chrome</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со поставките за колачиња во поставките на Chrome</translation>
 <translation id="8433057134996913067">Ова ќе ве одјави од повеќето веб-сајтови.</translation>
 <translation id="8437238597147034694">&amp;Врати преместување</translation>
 <translation id="8438786541497918448">Да се користат камерата и микрофонот?</translation>
