@@ -39,16 +39,17 @@ export function WallpaperBreadcrumbTest() {
   test('shows wallpaper label by default', async () => {
     wallpaperBreadcrumbElement = initElement(WallpaperBreadcrumb.is);
 
-    const span =
+    const p =
         wallpaperBreadcrumbElement.shadowRoot.getElementById('wallpaperLabel');
-    assertEquals(wallpaperBreadcrumbElement.i18n('title'), span.textContent);
+    assertEquals(wallpaperBreadcrumbElement.i18n('title'), p.textContent);
   });
 
-  test('hides page label by default', async () => {
+  test('does not create page label by default', async () => {
     wallpaperBreadcrumbElement = initElement(WallpaperBreadcrumb.is);
 
-    const div = wallpaperBreadcrumbElement.shadowRoot.getElementById('subpage');
-    assertTrue(div.hidden);
+    const pageLabel =
+        wallpaperBreadcrumbElement.shadowRoot.getElementById('pageLabel');
+    assertFalse(!!pageLabel);
   });
 
   test('shows collection name when collection is selected', async () => {
@@ -63,11 +64,10 @@ export function WallpaperBreadcrumbTest() {
 
     await waitAfterNextRender(wallpaperBreadcrumbElement);
 
-    const div = wallpaperBreadcrumbElement.shadowRoot.getElementById('subpage');
-    assertFalse(div.hidden);
-    const span =
+    const label =
         wallpaperBreadcrumbElement.shadowRoot.getElementById('pageLabel');
-    assertEquals(collection.name, span.textContent);
+    assertTrue(!!label && !label.hidden);
+    assertEquals(collection.name, label.textContent.trim());
   });
 
   test('show label when local images subpage is loaded', async () => {
@@ -79,11 +79,11 @@ export function WallpaperBreadcrumbTest() {
 
     await waitAfterNextRender(wallpaperBreadcrumbElement);
 
-    const div = wallpaperBreadcrumbElement.shadowRoot.getElementById('subpage');
-    assertFalse(div.hidden);
-    const span =
+    const label =
         wallpaperBreadcrumbElement.shadowRoot.getElementById('pageLabel');
+    assertTrue(!!label && !label.hidden);
     assertEquals(
-        wallpaperBreadcrumbElement.i18n('myImagesLabel'), span.textContent);
+        wallpaperBreadcrumbElement.i18n('myImagesLabel'),
+        label.textContent.trim());
   });
 }

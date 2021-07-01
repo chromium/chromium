@@ -1,4 +1,4 @@
-<style>
+<style include="common-style">
   #container {
     box-sizing: border-box;
     display: flex;
@@ -6,22 +6,69 @@
     height: 100%;
     padding: 0 8px 20px 8px;
   }
-  img {
+
+  #imageContainer {
     height: 100%;
+    flex: 0 0 auto;
     width: 224px;
   }
+
+  img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
   #textContainer {
+    align-items: flex-start;
     display: flex;
     flex-flow: column nowrap;
+    justify-content: center;
+    margin: 0 8px 0 20px;
+    min-width: 0;
+  }
+
+  #textContainer > * {
+    margin: 0;
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #textContainer > * + * {
+    margin-top: 4px;
+  }
+
+  #textContainer > p:first-child {
+    @apply --personalization-app-typeface-body-2;
+    color: var(--cr-secondary-text-color);
+  }
+
+  #textContainer > p:nth-child(2) {
+    @apply --personalization-app-typeface-display-6;
+    color: var(--cr-primary-text-color);
+  }
+
+  #textContainer > p:nth-child(n+3) {
+    color: var(--cr-secondary-text-color);
+    font-family: var(--personalization-app-font-google-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
   }
 </style>
-<div id="container">
+<header id="container" tabindex="0" aria-label="[[getAriaLabel_(image_)]]"
+  role="heading" aria-level="1">
   <template is="dom-if" if="[[showImage_]]">
-    <img src="[[getImageSrc_(image_)]]">
+    <div id="imageContainer">
+      <img aria-labelledby="imageLabel" src="[[getImageSrc_(image_)]]">
+    </div>
     <div id="textContainer">
+      <p id="currentlySet">[[i18n('currentlySet')]]</p>
       <dom-repeat items="[[image_.attribution]]">
         <template>
-          <p>[[item]]</p>
+          <p title="[[item]]">[[item]]</p>
         </template>
       </dom-repeat>
     </div>
@@ -31,4 +78,4 @@
     <p id="error">There was an error</p>
   </template>
   <paper-spinner-lite active="[[isLoading_]]"></paper-spinner-lite>
-</div>
+</header>

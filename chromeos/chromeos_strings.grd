@@ -1491,6 +1491,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
         Wallpaper
       </message>
+      <message name="IDS_PERSONALIZATION_APP_BACK_BUTTON" desc="Aria label for the back button to return to a prior page">
+        Back to <ph name="PAGE_NAME">$1<ex>Wallpaper</ex></ph>
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_CURRENTLY_SET" desc="Label for the currently set user wallpaper section.">
+        Currently set
+      </message>
       <message name="IDS_PERSONALIZATION_APP_MY_IMAGES" desc="Label for the local images page in wallpaper app.">
         My Images
       </message>

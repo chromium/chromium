@@ -123,6 +123,16 @@ export class WallpaperSelected extends WithPersonalizationStore {
   computeHasError_(image, loading) {
     return !loading && !image;
   }
+
+  /**
+   * @private
+   * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @return {string}
+   */
+  getAriaLabel_(image) {
+    // TODO(b/192195088) figure out aria label when image has no attribution
+    return [this.i18n('currentlySet'), ...(image?.attribution || [])].join(' ');
+  }
 }
 
 customElements.define(WallpaperSelected.is, WallpaperSelected);

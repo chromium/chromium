@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../common/styles.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {isNonEmptyArray} from '../common/utils.js';
 import {Paths} from './personalization_router_element.js';
@@ -60,9 +61,9 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
       },
 
       /** @private */
-      showNavigation_: {
+      showBackButton_: {
         type: Boolean,
-        computed: 'computeShowNavigation_(path)',
+        computed: 'computeShowBackButton_(path)',
       },
     };
   }
@@ -102,8 +103,16 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
    * @param {string} path
    * @returns {boolean}
    */
-  computeShowNavigation_(path) {
+  computeShowBackButton_(path) {
     return path !== Paths.Collections;
+  }
+
+  /**
+   * @private
+   * @return {string}
+   */
+  getBackButtonAriaLabel_() {
+    return this.i18n('back', this.i18n('title'));
   }
 
   /** @private */

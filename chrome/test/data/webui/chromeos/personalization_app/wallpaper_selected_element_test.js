@@ -80,15 +80,25 @@ export function WallpaperSelectedTest() {
         `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
         img.src);
 
-    const attributionLines =
-        wallpaperSelectedElement.shadowRoot.getElementById('textContainer')
-            .querySelectorAll('p');
+    const textContainerElements =
+        wallpaperSelectedElement.shadowRoot.querySelectorAll(
+            '#textContainer p');
+
+    // First p tag is 'Currently Set' text.
+    assertEquals('currentlySet', textContainerElements[0].id);
+    assertEquals(
+        wallpaperSelectedElement.i18n('currentlySet'),
+        textContainerElements[0].textContent);
+
+    // Following text elements are for the photo attribution text.
+    const attributionLines = Array.from(textContainerElements).slice(1);
+
     assertEquals(
         wallpaperProvider.currentWallpaper.attribution.length,
         attributionLines.length);
-    assertEquals(
-        wallpaperProvider.currentWallpaper.attribution[0],
-        attributionLines[0].innerText);
+    wallpaperProvider.currentWallpaper.attribution.forEach((line, i) => {
+      assertEquals(line, attributionLines[i].innerText);
+    });
   });
 
   test('removes high resolution suffix from image url', async () => {

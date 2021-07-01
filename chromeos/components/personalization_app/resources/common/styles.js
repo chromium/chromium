@@ -13,6 +13,30 @@ const styles = document.createElement('dom-module');
 styles.innerHTML = `
 <template>
   <style>
+    :host {
+      --personalization-app-font-google-sans: 'Google Sans', 'Noto Sans',
+          sans-serif;
+      --personalization-app-font-roboto: Roboto, 'Noto Sans', sans-serif;
+
+      --personalization-app-typeface-headline-1: {
+        font-family: var(--personalization-app-font-google-sans);
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 22px;
+      };
+      --personalization-app-typeface-body-2: {
+        font-family: var(--personalization-app-font-roboto);
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 20px;
+      };
+      --personalization-app-typeface-display-6: {
+        font-family: var(--personalization-app-font-google-sans);
+        font-weight: 500;
+        font-size: 22px;
+        line-height: 28px;
+      };
+    }
     iron-list {
       height: 100%;
     }
