@@ -834,12 +834,13 @@ input[type="radio" i] {
 
 input[type="color" i] {
     appearance: auto;
-    width: 44px;
-    height: 23px;
+    width: 50px;
+    height: 27px;
     /* Same as native_theme_base. */
     border: 1px solid -internal-light-dark(#767676, #858585);
     padding: 1px 2px;
     cursor: default;
+    box-sizing: border-box;
     background-color: -internal-light-dark(#efefef, #3B3B3B);
     color: -internal-light-dark(black, white);
 }
@@ -863,8 +864,8 @@ input[type="color" i]::-webkit-color-swatch {
 
 input[type="color" i][list] {
     appearance: auto;
-    width: 88px;
-    height: 23px
+    width: 94px;
+    height: 27px
 }
 
 input[type="color" i][list]::-webkit-color-swatch-wrapper {
