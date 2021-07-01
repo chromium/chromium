@@ -74,6 +74,14 @@ fyi_goma_rbe_canary_builder(
 )
 
 fyi_goma_rbe_canary_builder(
+    name = "Mac M1 Builder (dbg) Goma RBE Canary (clobber)",
+    cores = None,
+    goma_jobs = goma.jobs.J80,
+    os = os.MAC_11,
+    cpu = cpu.ARM64,
+)
+
+fyi_goma_rbe_canary_builder(
     name = "android-archive-dbg-goma-rbe-ats-canary",
     goma_enable_ats = True,
 )

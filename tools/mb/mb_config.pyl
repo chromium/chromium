@@ -384,6 +384,7 @@
 
 
       'Mac Builder (dbg) Goma RBE Canary (clobber)': 'gpu_tests_debug_bot',
+      'Mac M1 Builder (dbg) Goma RBE Canary (clobber)': 'gpu_tests_debug_bot_arm64',
       'Mac Builder (dbg) Goma RBE Latest Client (clobber)': 'gpu_tests_debug_bot',
       'mac-archive-rel-goma-rbe-canary': 'release_bot_mac_strip_minimal_symbols',
       'mac-archive-rel-goma-rbe-latest': 'release_bot_mac_strip_minimal_symbols',
@@ -2139,6 +2140,10 @@
 
     'gpu_tests_debug_bot': [
       'gpu_tests', 'debug_bot',
+    ],
+
+    'gpu_tests_debug_bot_arm64': [
+      'gpu_tests', 'debug_bot', 'arm64',
     ],
 
     'gpu_tests_debug_bot_x86': [

@@ -3579,6 +3579,22 @@
           'gtest_tests': 'goma_mac_gtests',
         },
       },
+      'Mac M1 Builder (dbg) Goma RBE Canary (clobber)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'goma_mac_gtests',
+        },
+	'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'arm-64',
+              'os': 'Mac-11',
+            }
+          ]
+	},
+      },
       'android-archive-dbg-goma-rbe-ats-canary': {
         'additional_compile_targets': [
           'chromedriver_webview_shell_apk',

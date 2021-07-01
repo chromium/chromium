@@ -37,6 +37,17 @@
       "use_goma": true
     }
   },
+  "Mac M1 Builder (dbg) Goma RBE Canary (clobber)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "Win Builder (dbg) Goma RBE ATS Canary": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",

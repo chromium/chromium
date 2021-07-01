@@ -48,6 +48,11 @@ luci.console_view(
             short_name = "clb",
         ),
         luci.console_view_entry(
+            builder = "goma/Mac M1 Builder (dbg) Goma RBE Canary (clobber)",
+            category = "rbe|mac|dbg",
+            short_name = "m1",
+        ),
+        luci.console_view_entry(
             builder = "goma/ios-device-goma-rbe-canary-clobber",
             category = "rbe|ios",
             short_name = "clb",
