@@ -26,7 +26,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface FirstRunCoordinator () <FirstRunScreenDelegate>
+@interface FirstRunCoordinator () <SigninScreenDelegate>
 
 @property(nonatomic, strong) FirstRunScreenProvider* screenProvider;
 @property(nonatomic, strong) ChromeCoordinator* childCoordinator;
@@ -112,6 +112,12 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [handler
       showAdvancedSigninSettingsFromViewController:self.baseViewController];
+}
+
+#pragma mark - SigninScreenDelegate
+
+- (void)userSkippedSignIn {
+  [self.screenProvider userSkippedSignIn];
 }
 
 #pragma mark - Helper

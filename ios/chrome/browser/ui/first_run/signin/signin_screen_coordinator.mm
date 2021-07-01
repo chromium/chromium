@@ -47,7 +47,7 @@
 }
 
 // First run screen delegate.
-@property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
+@property(nonatomic, weak) id<SigninScreenDelegate> delegate;
 // Sign-in screen view controller.
 @property(nonatomic, strong) SigninScreenViewController* viewController;
 // Sign-in screen mediator.
@@ -76,8 +76,8 @@
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
-                                        delegate:(id<FirstRunScreenDelegate>)
-                                                     delegate {
+                                        delegate:
+                                            (id<SigninScreenDelegate>)delegate {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -167,6 +167,7 @@
 }
 
 - (void)didTapSecondaryActionButton {
+  [self.delegate userSkippedSignIn];
   [self finishPresentingAndSkipRemainingScreens:NO];
   base::UmaHistogramEnumeration(
       "FirstRun.Stage", first_run::kSignInScreenCompletionWithoutSignIn);

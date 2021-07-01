@@ -17,6 +17,9 @@
 // Returns the screen type of next screen.
 - (FirstRunScreenType)nextScreenType;
 
+// Removes sync screen if the user skipped sign in.
+- (void)userSkippedSignIn;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_PROVIDER_H_

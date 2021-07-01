@@ -37,6 +37,12 @@
       [self.screens[++self.index] integerValue]);
 }
 
+- (void)userSkippedSignIn {
+  if (static_cast<FirstRunScreenType>(
+          [self.screens[self.index + 1] integerValue]) == kSync)
+    self.index++;
+}
+
 #pragma mark - Private
 
 // Sets the screens up.
