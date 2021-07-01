@@ -72589,7 +72589,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="SecurityAnomaly">
   <int value="0"
-      label="Writable+executable mount found in the init mount namespace."/>
+      label="Writable+executable mount found in the init mount namespace
+             (deprecated)"/>
+  <int value="1"
+      label="Writable+executable mount found in the init mount namespace, on
+             or under /usr/local (this suggests a dev image)"/>
+  <int value="2"
+      label="Writable+executable mount found in the init mount namespace, not
+             on, nor under, /usr/local"/>
 </enum>
 
 <enum name="SecurityFilteredTouchResult">
