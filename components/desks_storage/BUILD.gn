@@ -9,15 +9,31 @@ static_library("desks_storage") {
     "core/desk_model.cc",
     "core/desk_model.h",
     "core/desk_model_observer.h",
+    "core/desk_sync_bridge.cc",
+    "core/desk_sync_bridge.h",
     "core/desk_template.cc",
     "core/desk_template.h",
   ]
   deps = [
     "//base",
+    "//components/sync",
+    "//components/sync/model",
     "//components/sync/protocol",
   ]
 
   defines = [ "IS_DESKS_STORAGE_IMPL" ]
 
   public_deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "core/desk_sync_bridge_unittest.cc" ]
+  deps = [
+    ":desks_storage",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//testing/gtest",
+  ]
 }

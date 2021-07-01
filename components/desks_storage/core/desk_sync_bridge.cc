@@ -1,0 +1,450 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/desks_storage/core/desk_sync_bridge.h"
+
+#include <algorithm>
+
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
+#include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
+#include "base/time/time.h"
+#include "components/desks_storage/core/desk_model_observer.h"
+#include "components/desks_storage/core/desk_template.h"
+#include "components/sync/model/entity_change.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/workspace_desk_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace desks_storage {
+
+namespace {
+
+using syncer::ModelTypeStore;
+
+// Converts a time field from sync protobufs to a time object.
+base::Time ProtoTimeToTime(int64_t proto_t) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(proto_t));
+}
+
+// Allocate a EntityData and copies |specifics| into it.
+std::unique_ptr<syncer::EntityData> CopyToEntityData(
+    const sync_pb::WorkspaceDeskSpecifics& specifics) {
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  *entity_data->specifics.mutable_workspace_desk() = specifics;
+  entity_data->name = specifics.uuid();
+  entity_data->creation_time = ProtoTimeToTime(specifics.created_time_usec());
+  return entity_data;
+}
+
+// Parses the content of |record_list| into |*desk_templates|.
+absl::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
+    std::map<std::string, std::unique_ptr<DeskTemplate>>* desk_templates,
+    std::unique_ptr<ModelTypeStore::RecordList> record_list) {
+  DCHECK(desk_templates);
+  DCHECK(desk_templates->empty());
+  DCHECK(record_list);
+
+  for (const syncer::ModelTypeStore::Record& r : *record_list) {
+    auto specifics = std::make_unique<sync_pb::WorkspaceDeskSpecifics>();
+    if (specifics->ParseFromString(r.value)) {
+      (*desk_templates)[specifics->uuid()] =
+          DeskTemplate::FromProto(*specifics);
+    } else {
+      return syncer::ModelError(
+          FROM_HERE, "Failed to deserialize WorkspaceDeskSpecifics.");
+    }
+  }
+
+  return absl::nullopt;
+}
+
+}  // namespace
+
+DeskSyncBridge::DeskSyncBridge(
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    syncer::OnceModelTypeStoreFactory create_store_callback)
+    : ModelTypeSyncBridge(std::move(change_processor)), is_ready_(false) {
+  std::move(create_store_callback)
+      .Run(syncer::WORKSPACE_DESK,
+           base::BindOnce(&DeskSyncBridge::OnStoreCreated,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+DeskSyncBridge::~DeskSyncBridge() = default;
+
+std::unique_ptr<syncer::MetadataChangeList>
+DeskSyncBridge::CreateMetadataChangeList() {
+  return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+}
+
+absl::optional<syncer::ModelError> DeskSyncBridge::MergeSyncData(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+    syncer::EntityChangeList entity_data) {
+  // MergeSyncData will be called when Desk Template model type is enabled to
+  // start syncing. There could be local desk templates that user has created
+  // before enabling sync or during the time when Desk Template sync is
+  // disabled. We should merge local and server data. We will send all
+  // local-only templates to server and save server templates to local.
+
+  UploadLocalOnlyData(metadata_change_list.get(), entity_data);
+
+  // Apply server changes locally. Currently, if a template exists on both
+  // local and server side, the server version will win.
+  // TODO(yzd) We will add a template update timestamp and update this logic to
+  // be: for templates that exist on both local and server side, we will keep
+  // the one with later update timestamp.
+  return ApplySyncChanges(std::move(metadata_change_list),
+                          std::move(entity_data));
+}
+
+absl::optional<syncer::ModelError> DeskSyncBridge::ApplySyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
+    syncer::EntityChangeList entity_changes) {
+  std::vector<const DeskTemplate*> added_or_updated;
+  std::vector<std::string> removed;
+  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    const std::string& uuid = change->storage_key();
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_DELETE: {
+        if (entries_.find(uuid) != entries_.end()) {
+          entries_.erase(uuid);
+          batch->DeleteData(uuid);
+          removed.push_back(uuid);
+        }
+        break;
+      }
+      case syncer::EntityChange::ACTION_UPDATE:
+      case syncer::EntityChange::ACTION_ADD: {
+        const sync_pb::WorkspaceDeskSpecifics& specifics =
+            change->data().specifics.workspace_desk();
+
+        std::unique_ptr<DeskTemplate> remote_entry =
+            DeskTemplate::FromProto(specifics);
+        if (!remote_entry) {
+          // Skip invalid entries.
+          continue;
+        }
+
+        DCHECK_EQ(uuid, remote_entry->uuid());
+        std::string serialized_remote_entry =
+            remote_entry->AsSyncProto().SerializeAsString();
+
+        // Add/update the remote_entry to the model.
+        entries_[uuid] = std::move(remote_entry);
+        added_or_updated.push_back(GetEntryByUUID(uuid));
+
+        // Write to the store.
+        batch->WriteData(uuid, serialized_remote_entry);
+        break;
+      }
+    }
+  }
+
+  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  Commit(std::move(batch));
+
+  NotifyRemoteDeskTemplateAddedOrUpdated(added_or_updated);
+  NotifyRemoteDeskTemplateDeleted(removed);
+
+  return absl::nullopt;
+}
+
+void DeskSyncBridge::GetData(StorageKeyList storage_keys,
+                             DataCallback callback) {
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+
+  for (const std::string& uuid : storage_keys) {
+    const DeskTemplate* entry = GetEntryByUUID(uuid);
+    if (!entry) {
+      continue;
+    }
+
+    batch->Put(uuid, CopyToEntityData(entry->AsSyncProto()));
+  }
+  std::move(callback).Run(std::move(batch));
+}
+
+void DeskSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const auto& it : entries_) {
+    batch->Put(it.first, CopyToEntityData(it.second->AsSyncProto()));
+  }
+  std::move(callback).Run(std::move(batch));
+}
+
+std::string DeskSyncBridge::GetClientTag(
+    const syncer::EntityData& entity_data) {
+  return GetStorageKey(entity_data);
+}
+
+std::string DeskSyncBridge::GetStorageKey(
+    const syncer::EntityData& entity_data) {
+  return entity_data.specifics.workspace_desk().uuid();
+}
+
+void DeskSyncBridge::GetAllUuids(GetAllUuidsCallback callback) {
+  if (!IsReady()) {
+    std::move(callback).Run(GetAllUuidsStatus::kFailure, {});
+    return;
+  }
+
+  std::move(callback).Run(GetAllUuidsStatus::kOk, GetAllUuids());
+}
+
+void DeskSyncBridge::GetEntryByUUID(const std::string& uuid,
+                                    GetEntryByUuidCallback callback) {
+  if (!IsReady()) {
+    std::move(callback).Run(GetEntryByUuidStatus::kFailure,
+                            std::unique_ptr<DeskTemplate>());
+    return;
+  }
+
+  auto it = entries_.find(uuid);
+  if (it == entries_.end()) {
+    std::move(callback).Run(GetEntryByUuidStatus::kNotFound,
+                            std::unique_ptr<DeskTemplate>());
+  } else {
+    std::move(callback).Run(
+        GetEntryByUuidStatus::kOk,
+        DeskTemplate::FromProto(it->second.get()->AsSyncProto()));
+  }
+}
+
+void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
+                                      AddOrUpdateEntryCallback callback) {
+  if (!IsReady()) {
+    // This sync bridge has not finished initializing. Do not save the new entry
+    // yet.
+    std::move(callback).Run(AddOrUpdateEntryStatus::kFailure);
+    return;
+  }
+
+  std::string uuid = new_entry->uuid();
+  if (uuid.empty()) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kInvalidArgument);
+    return;
+  }
+
+  std::string trimmed_name = "";
+
+  if (base::IsStringUTF8(new_entry->name())) {
+    trimmed_name = base::CollapseWhitespaceASCII(new_entry->name(), false);
+  }
+
+  auto entry = std::make_unique<DeskTemplate>(uuid, trimmed_name,
+                                              new_entry->created_time());
+
+  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  // Add/update this entry to the store and model.
+  auto entity_data = CopyToEntityData(entry->AsSyncProto());
+
+  change_processor()->Put(uuid, std::move(entity_data),
+                          batch->GetMetadataChangeList());
+
+  entries_[uuid] = std::move(entry);
+  const DeskTemplate* result = GetEntryByUUID(uuid);
+
+  batch->WriteData(uuid, result->AsSyncProto().SerializeAsString());
+
+  Commit(std::move(batch));
+
+  std::move(callback).Run(AddOrUpdateEntryStatus::kOk);
+}
+
+void DeskSyncBridge::DeleteEntry(const std::string& uuid,
+                                 DeleteEntryCallback callback) {
+  if (!IsReady()) {
+    // This sync bridge has not finished initializing.
+    // Cannot delete anything.
+    std::move(callback).Run(DeleteEntryStatus::kFailure);
+    return;
+  }
+
+  if (GetEntryByUUID(uuid) == nullptr) {
+    // Consider the deletion successful if the entry does not exist.
+    std::move(callback).Run(DeleteEntryStatus::kOk);
+    return;
+  }
+
+  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  change_processor()->Delete(uuid, batch->GetMetadataChangeList());
+
+  entries_.erase(uuid);
+
+  batch->DeleteData(uuid);
+
+  Commit(std::move(batch));
+
+  std::move(callback).Run(DeleteEntryStatus::kOk);
+}
+
+void DeskSyncBridge::DeleteAllEntries(DeleteEntryCallback callback) {
+  if (!IsReady()) {
+    // This sync bridge has not finished initializing.
+    // Cannot delete anything.
+    std::move(callback).Run(DeleteEntryStatus::kFailure);
+    return;
+  }
+
+  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  std::vector<std::string> all_uuids = GetAllUuids();
+
+  for (const auto& uuid : all_uuids) {
+    change_processor()->Delete(uuid, batch->GetMetadataChangeList());
+    batch->DeleteData(uuid);
+  }
+  entries_.clear();
+
+  std::move(callback).Run(DeleteEntryStatus::kOk);
+}
+
+bool DeskSyncBridge::IsReady() const {
+  if (is_ready_) {
+    DCHECK(store_);
+  }
+  return is_ready_;
+}
+
+bool DeskSyncBridge::IsSyncing() const {
+  return change_processor()->IsTrackingMetadata();
+}
+
+std::vector<std::string> DeskSyncBridge::GetAllUuids() const {
+  std::vector<std::string> keys;
+  for (const auto& it : entries_) {
+    DCHECK_EQ(it.first, it.second->uuid());
+    keys.push_back(it.first);
+  }
+  return keys;
+}
+
+const DeskTemplate* DeskSyncBridge::GetEntryByUUID(
+    const std::string& uuid) const {
+  auto it = entries_.find(uuid);
+  if (it == entries_.end())
+    return nullptr;
+  return it->second.get();
+}
+
+void DeskSyncBridge::NotifyRemoteDeskTemplateAddedOrUpdated(
+    const std::vector<const DeskTemplate*>& new_entries) {
+  if (new_entries.empty()) {
+    return;
+  }
+
+  for (DeskModelObserver& observer : observers_) {
+    observer.EntriesAddedOrUpdatedRemotely(new_entries);
+  }
+}
+
+void DeskSyncBridge::NotifyRemoteDeskTemplateDeleted(
+    const std::vector<std::string>& uuids) {
+  if (uuids.empty()) {
+    return;
+  }
+
+  for (DeskModelObserver& observer : observers_) {
+    observer.EntriesRemovedRemotely(uuids);
+  }
+}
+
+void DeskSyncBridge::OnStoreCreated(
+    const absl::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::ModelTypeStore> store) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+
+  auto stored_desk_templates = std::make_unique<DeskEntries>();
+  DeskEntries* stored_desk_templates_copy = stored_desk_templates.get();
+
+  store_ = std::move(store);
+  store_->ReadAllDataAndPreprocess(
+      base::BindOnce(&ParseDeskTemplatesOnBackendSequence,
+                     base::Unretained(stored_desk_templates_copy)),
+      base::BindOnce(&DeskSyncBridge::OnReadAllData,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(stored_desk_templates)));
+}
+
+void DeskSyncBridge::OnReadAllData(
+    std::unique_ptr<DeskEntries> stored_desk_templates,
+    const absl::optional<syncer::ModelError>& error) {
+  DCHECK(stored_desk_templates);
+
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+
+  entries_ = std::move(*stored_desk_templates);
+
+  store_->ReadAllMetadata(base::BindOnce(&DeskSyncBridge::OnReadAllMetadata,
+                                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeskSyncBridge::OnReadAllMetadata(
+    const absl::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
+  is_ready_ = true;
+}
+
+void DeskSyncBridge::OnCommit(const absl::optional<syncer::ModelError>& error) {
+  if (error) {
+    change_processor()->ReportError(*error);
+  }
+}
+
+void DeskSyncBridge::Commit(std::unique_ptr<ModelTypeStore::WriteBatch> batch) {
+  store_->CommitWriteBatch(std::move(batch),
+                           base::BindOnce(&DeskSyncBridge::OnCommit,
+                                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeskSyncBridge::UploadLocalOnlyData(
+    syncer::MetadataChangeList* metadata_change_list,
+    const syncer::EntityChangeList& entity_data) {
+  std::set<std::string> local_keys_to_upload;
+  for (const auto& it : entries_) {
+    local_keys_to_upload.insert(it.first);
+  }
+
+  // Strip |local_keys_to_upload| of any key (UUID) that is already known to the
+  // server.
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
+    local_keys_to_upload.erase(change->storage_key());
+  }
+
+  // Upload the local-only templates.
+  for (const std::string& storage_key : local_keys_to_upload) {
+    change_processor()->Put(
+        storage_key, CopyToEntityData(entries_[storage_key]->AsSyncProto()),
+        metadata_change_list);
+  }
+}
+
+}  // namespace desks_storage
