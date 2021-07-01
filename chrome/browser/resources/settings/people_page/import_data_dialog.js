@@ -20,6 +20,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 

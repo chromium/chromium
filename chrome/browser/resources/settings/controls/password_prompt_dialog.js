@@ -25,80 +25,89 @@ import '//resources/cr_elements/cr_input/cr_input.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '../settings_shared_css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'settings-password-prompt-dialog',
+/** @polymer */
+class SettingsPasswordPromptDialogElement extends PolymerElement {
+  static get is() {
+    return 'settings-password-prompt-dialog';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The subtext to be displayed above the password input field. Embedders
-     * may choose to change this value for their specific use case.
-     * @type {string}
-     */
-    passwordPromptText: {
-      type: String,
-      notify: true,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /**
+       * The subtext to be displayed above the password input field. Embedders
+       * may choose to change this value for their specific use case.
+       * @type {string}
+       */
+      passwordPromptText: {
+        type: String,
+        notify: true,
+        value: '',
+      },
 
-    /**
-     * @private {string}
-     */
-    inputValue_: {
-      type: String,
-      value: '',
-      observer: 'onInputValueChange_',
-    },
+      /**
+       * @private {string}
+       */
+      inputValue_: {
+        type: String,
+        value: '',
+        observer: 'onInputValueChange_',
+      },
 
-    /**
-     * Helper property which marks password as valid/invalid.
-     * @private {boolean}
-     */
-    passwordInvalid_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Helper property which marks password as valid/invalid.
+       * @private {boolean}
+       */
+      passwordInvalid_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Interface for chrome.quickUnlockPrivate calls. May be overridden by
-     * tests.
-     * @type {Object}
-     */
-    quickUnlockPrivate: {type: Object, value: chrome.quickUnlockPrivate},
+      /**
+       * Interface for chrome.quickUnlockPrivate calls. May be overridden by
+       * tests.
+       * @type {Object}
+       */
+      quickUnlockPrivate: {type: Object, value: chrome.quickUnlockPrivate},
 
-    /** @private {boolean} */
-    waitingForPasswordCheck_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @private {boolean} */
+      waitingForPasswordCheck_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @return {!CrInputElement} */
   get passwordInput() {
     return /** @type {!CrInputElement} */ (this.$.passwordInput);
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.dialog.showModal();
     // This needs to occur at the next paint otherwise the password input will
     // not receive focus.
-    this.async(() => {
+    window.setTimeout(() => {
       // TODO(crbug.com/876377): This is unusual; the 'autofocus' attribute on
       // the cr-input element should work. Investigate.
       this.passwordInput.focus();
-    }, 1 /* waitTime */);
-  },
+    }, 1);
+  }
 
   /** @private */
   onCancelTap_() {
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }
-  },
+  }
 
   /**
    * Run the account password check.
@@ -125,23 +134,29 @@ Polymer({
         return;
       }
 
-      this.fire('token-obtained', tokenInfo);
+      this.dispatchEvent(new CustomEvent(
+          'token-obtained',
+          {bubbles: true, composed: true, detail: tokenInfo}));
       this.passwordInvalid_ = false;
 
       if (this.$.dialog.open) {
         this.$.dialog.close();
       }
     });
-  },
+  }
 
   /** @private */
   onInputValueChange_() {
     this.passwordInvalid_ = false;
-  },
+  }
 
   /** @private */
   isConfirmEnabled_() {
     return !this.waitingForPasswordCheck_ && !this.passwordInvalid_ &&
         this.inputValue_;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsPasswordPromptDialogElement.is,
+    SettingsPasswordPromptDialogElement);

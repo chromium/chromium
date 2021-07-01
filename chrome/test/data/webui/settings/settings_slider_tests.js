@@ -31,7 +31,7 @@ suite('SettingsSlider', function() {
       value: 16,
     };
     document.body.appendChild(slider);
-    crSlider = slider.$$('cr-slider');
+    crSlider = slider.shadowRoot.querySelector('cr-slider');
     return flushTasks();
   });
 
@@ -112,7 +112,7 @@ suite('SettingsSlider', function() {
   test('enforce value', function() {
     // Test that the indicator is not present until after the pref is
     // enforced.
-    let indicator = slider.$$('cr-policy-pref-indicator');
+    let indicator = slider.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertFalse(!!indicator);
     slider.pref = {
       controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
@@ -121,7 +121,7 @@ suite('SettingsSlider', function() {
       value: 16,
     };
     flush();
-    indicator = slider.$$('cr-policy-pref-indicator');
+    indicator = slider.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertTrue(!!indicator);
   });
 

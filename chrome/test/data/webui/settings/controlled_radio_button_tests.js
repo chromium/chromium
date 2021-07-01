@@ -30,11 +30,13 @@ suite('controlled radio button', function() {
         'pref.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
     flush();
     assertTrue(radioButton.disabled);
-    assertFalse(!!radioButton.$$('cr-policy-pref-indicator'));
+    assertFalse(
+        !!radioButton.shadowRoot.querySelector('cr-policy-pref-indicator'));
 
     radioButton.set('name', 'true');
     flush();
-    assertTrue(!!radioButton.$$('cr-policy-pref-indicator'));
+    assertTrue(
+        !!radioButton.shadowRoot.querySelector('cr-policy-pref-indicator'));
 
     // See https://github.com/Polymer/polymer/issues/4652#issuecomment-305471987
     // on why |null| must be used here instead of |undefined|.
@@ -42,6 +44,8 @@ suite('controlled radio button', function() {
     flush();
     assertFalse(radioButton.disabled);
     assertEquals(
-        'none', radioButton.$$('cr-policy-pref-indicator').style.display);
+        'none',
+        radioButton.shadowRoot.querySelector('cr-policy-pref-indicator')
+            .style.display);
   });
 });

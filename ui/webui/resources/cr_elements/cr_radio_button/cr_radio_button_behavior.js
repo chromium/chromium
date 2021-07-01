@@ -145,9 +145,15 @@ const CrRadioButtonBehaviorImpl = {
   CrRadioButtonBehaviorImpl,
 ];
 
+/** @interface */
 /* #export */ class CrRadioButtonBehaviorInterface {
-  /** @return {boolean} */
-  get checked() {}
+  constructor() {
+    /** @type {boolean} */
+    this.checked;
+
+    /** @type {boolean} */
+    this.disabled;
+  }
 
   /** @return  {!PaperRippleElement} */
   getRipple() {}

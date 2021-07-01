@@ -10,59 +10,66 @@ import '//resources/cr_elements/hidden_style_css.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/cr_input/cr_input_style_css.m.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'settings-textarea',
+/** @polymer */
+class SettingsTextareaElement extends PolymerElement {
+  static get is() {
+    return 'settings-textarea';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Whether the text area should automatically get focus when the page
-     * loads.
-     */
-    autofocus: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * Whether the text area should automatically get focus when the page
+       * loads.
+       */
+      autofocus: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    /**
-     * Whether the text area is disabled. When disabled, the text area loses
-     * focus and is not reachable by tabbing.
-     */
-    disabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-      observer: 'onDisabledChanged_'
-    },
+      /**
+       * Whether the text area is disabled. When disabled, the text area loses
+       * focus and is not reachable by tabbing.
+       */
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        observer: 'onDisabledChanged_'
+      },
 
-    /** Number of rows (lines) of the text area. */
-    rows: {
-      type: Number,
-      value: 3,
-      reflectToAttribute: true,
-    },
+      /** Number of rows (lines) of the text area. */
+      rows: {
+        type: Number,
+        value: 3,
+        reflectToAttribute: true,
+      },
 
-    /** Caption of the text area. */
-    label: {
-      type: String,
-      value: '',
-    },
+      /** Caption of the text area. */
+      label: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Text inside the text area. If the text exceeds the bounds of the text
-     * area, i.e. if it has more than |rows| lines, a scrollbar is shown by
-     * default.
-     */
-    value: {
-      type: String,
-      value: '',
-      notify: true,
-    },
-  },
+      /**
+       * Text inside the text area. If the text exceeds the bounds of the text
+       * area, i.e. if it has more than |rows| lines, a scrollbar is shown by
+       * default.
+       */
+      value: {
+        type: String,
+        value: '',
+        notify: true,
+      },
+    };
+  }
 
   /**
    * 'change' event fires when <input> value changes and user presses 'Enter'.
@@ -72,8 +79,9 @@ Polymer({
    * @private
    */
   onInputChange_(e) {
-    this.fire('change', {sourceEvent: e});
-  },
+    this.dispatchEvent(new CustomEvent(
+        'change', {bubbles: true, composed: true, detail: {sourceEvent: e}}));
+  }
 
   /**@private */
   onInputFocusChange_() {
@@ -84,10 +92,12 @@ Polymer({
     } else {
       this.removeAttribute('focused_');
     }
-  },
+  }
 
   /**@private */
   onDisabledChanged_() {
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-  },
-});
+  }
+}
+
+customElements.define(SettingsTextareaElement.is, SettingsTextareaElement);

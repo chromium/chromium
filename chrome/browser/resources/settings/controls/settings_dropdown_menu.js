@@ -16,14 +16,14 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {CrPolicyPrefBehavior} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
+import {CrPolicyPrefBehavior, CrPolicyPrefBehaviorInterface} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
 import {assert} from '//resources/js/assert.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
-import {PrefControlBehavior} from './pref_control_behavior.js';
+import {PrefControlBehavior, PrefControlBehaviorInterface} from './pref_control_behavior.js';
 
 /**
  * The |name| is shown in the gui.  The |value| us use to set or compare with
@@ -40,58 +40,74 @@ let DropdownMenuOption;
  */
 export let DropdownMenuOptionList;
 
-Polymer({
-  is: 'settings-dropdown-menu',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {PrefControlBehaviorInterface}
+ * @implements {CrPolicyPrefBehaviorInterface}
+ */
+const SettingsDropdownMenuElementBase =
+    mixinBehaviors([CrPolicyPrefBehavior, PrefControlBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsDropdownMenuElement extends SettingsDropdownMenuElementBase {
+  static get is() {
+    return 'settings-dropdown-menu';
+  }
 
-  behaviors: [CrPolicyPrefBehavior, PrefControlBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * List of options for the drop-down menu.
-     * @type {!DropdownMenuOptionList}
-     */
-    menuOptions: Array,
+  static get properties() {
+    return {
+      /**
+       * List of options for the drop-down menu.
+       * @type {!DropdownMenuOptionList}
+       */
+      menuOptions: Array,
 
-    /** Whether the dropdown menu should be disabled. */
-    disabled: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: false,
-    },
+      /** Whether the dropdown menu should be disabled. */
+      disabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
 
-    /**
-       If this is a dictionary pref, this is the key for the item
-        we are interested in.
-     */
-    prefKey: {
-      type: String,
-      value: null,
-    },
+      /**
+         If this is a dictionary pref, this is the key for the item
+          we are interested in.
+       */
+      prefKey: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * The value of the "custom" item.
-     * @private
-     */
-    notFoundValue_: {
-      type: String,
-      value: 'SETTINGS_DROPDOWN_NOT_FOUND_ITEM',
-      readOnly: true,
-    },
+      /**
+       * The value of the "custom" item.
+       * @private
+       */
+      notFoundValue_: {
+        type: String,
+        value: 'SETTINGS_DROPDOWN_NOT_FOUND_ITEM',
+        readOnly: true,
+      },
 
-    /** Label for a11y purposes */
-    label: String,
-  },
+      /** Label for a11y purposes */
+      label: String,
+    };
+  }
 
-  observers: [
-    'updateSelected_(menuOptions, pref.value.*, prefKey)',
-  ],
+  static get observers() {
+    return [
+      'updateSelected_(menuOptions, pref.value.*, prefKey)',
+    ];
+  }
 
   /** @override */
   focus() {
     this.$.dropdownMenu.focus();
-  },
+  }
 
   /**
    * Pass the selection change to the pref value.
@@ -116,8 +132,9 @@ Polymer({
 
     // settings-control-change only fires when the selection is changed to
     // a valid property.
-    this.fire('settings-control-change');
-  },
+    this.dispatchEvent(new CustomEvent(
+        'settings-control-change', {bubbles: true, composed: true}));
+  }
 
   /**
    * Updates the selected item when the pref or menuOptions change.
@@ -140,11 +157,11 @@ Polymer({
 
     // Wait for the dom-repeat to populate the <select> before setting
     // <select>#value so the correct option gets selected.
-    this.async(() => {
+    microTask.run(() => {
       this.$.dropdownMenu.value =
           option === undefined ? this.notFoundValue_ : prefValue;
     });
-  },
+  }
 
   /**
    * Gets the current value of the preference as a string.
@@ -158,7 +175,7 @@ Polymer({
     } else {
       return prefToString(assert(this.pref));
     }
-  },
+  }
 
   /**
    * @param {?DropdownMenuOptionList} menuOptions
@@ -180,7 +197,7 @@ Polymer({
       return menuItem.value.toString() === this.prefStringValue_();
     });
     return !option;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -189,5 +206,8 @@ Polymer({
   shouldDisableMenu_() {
     return this.disabled || this.isPrefEnforced() ||
         this.menuOptions === undefined || this.menuOptions.length === 0;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsDropdownMenuElement.is, SettingsDropdownMenuElement);

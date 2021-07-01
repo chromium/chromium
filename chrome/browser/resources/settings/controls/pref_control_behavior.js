@@ -47,3 +47,11 @@ export const PrefControlBehavior = {
     });
   },
 };
+
+/** @interface */
+export class PrefControlBehaviorInterface {
+  constructor() {
+    /** @type {!chrome.settingsPrivate.PrefObject|undefined} */
+    this.pref;
+  }
+}

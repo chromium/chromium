@@ -110,7 +110,8 @@ cr.define('settings_people_page_quick_unlock', function() {
 
         Polymer.dom.flush();
 
-        passwordElement = passwordPromptDialog.$$('#passwordInput');
+        passwordElement =
+            passwordPromptDialog.shadowRoot.querySelector('#passwordInput');
       });
 
       test('PasswordCheckDoesNotChangeActiveMode', function() {
@@ -131,12 +132,15 @@ cr.define('settings_people_page_quick_unlock', function() {
       });
 
       test('InvalidPasswordInteractions', function() {
-        const confirmButton = passwordPromptDialog.$$('#confirmButton');
+        const confirmButton =
+            passwordPromptDialog.shadowRoot.querySelector('#confirmButton');
         quickUnlockPrivateApi.accountPassword = 'bar';
         passwordElement.value = 'foo';
         Polymer.dom.flush();
 
-        passwordPromptDialog.$$('cr-button[class="action-button"]').click();
+        passwordPromptDialog.shadowRoot
+            .querySelector('cr-button[class="action-button"]')
+            .click();
         Polymer.dom.flush();
 
         assertEquals(0, passwordElement.inputElement.selectionStart);
@@ -154,10 +158,13 @@ cr.define('settings_people_page_quick_unlock', function() {
       });
 
       test('TapConfirmButtonWithWrongPasswordRestoresFocus', function() {
-        const confirmButton = passwordPromptDialog.$$('#confirmButton');
+        const confirmButton =
+            passwordPromptDialog.shadowRoot.querySelector('#confirmButton');
         quickUnlockPrivateApi.accountPassword = 'bar';
         passwordElement.value = 'foo';
-        passwordPromptDialog.$$('cr-button[class="action-button"]').click();
+        passwordPromptDialog.shadowRoot
+            .querySelector('cr-button[class="action-button"]')
+            .click();
 
         assertTrue(passwordElement.hasAttribute('focused_'));
       });
@@ -207,7 +214,8 @@ cr.define('settings_people_page_quick_unlock', function() {
 
       test('ConfirmButtonDisabledWhenEmpty', function() {
         // Confirm button is diabled when there is nothing entered.
-        const confirmButton = passwordPromptDialog.$$('#confirmButton');
+        const confirmButton =
+            passwordPromptDialog.shadowRoot.querySelector('#confirmButton');
         assertTrue(!!confirmButton);
         assertTrue(confirmButton.disabled);
 
