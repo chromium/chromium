@@ -143,6 +143,30 @@ public class SyncErrorInfoBarTest {
         // types.
     }
 
+    @Test
+    @LargeTest
+    public void testSyncErrorInfoBarShownForTrustedVaultKeyRequired() throws Exception {
+        showSyncErrorInfoBarForTrustedVaultKeyRequired();
+        mInfoBarObserver.waitUntilInfoBarAppears(false);
+
+        // Resolving the error should not show the infobar again.
+        deleteSyncErrorInfoBarShowTimePref();
+        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(false);
+        mInfoBarObserver.waitUntilInfoBarDisappears();
+    }
+
+    @Test
+    @LargeTest
+    public void testSyncErrorInfoBarShownForTrustedVaultRecoverabilityDegraded() throws Exception {
+        showSyncErrorInfoBarForTrustedVaultRecoverabilityDegraded();
+        mInfoBarObserver.waitUntilInfoBarAppears(false);
+
+        // Resolving the error should not show the infobar again.
+        deleteSyncErrorInfoBarShowTimePref();
+        mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(false);
+        mInfoBarObserver.waitUntilInfoBarDisappears();
+    }
+
     @Test(expected = TimeoutException.class)
     @LargeTest
     public void testSyncErrorInfoBarNotShownWhenNoError() throws Exception {
@@ -248,6 +272,20 @@ public class SyncErrorInfoBarTest {
     private void showSyncErrorInfoBarForClientOutOfDate() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
+    }
+
+    private void showSyncErrorInfoBarForTrustedVaultKeyRequired() {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
+    }
+
+    private void showSyncErrorInfoBarForTrustedVaultRecoverabilityDegraded() {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
         mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
     }
 

@@ -48,7 +48,11 @@ public class SyncErrorInfoBar
 
     @IntDef({SyncErrorInfoBarType.NOT_SHOWN, SyncErrorInfoBarType.AUTH_ERROR,
             SyncErrorInfoBarType.PASSPHRASE_REQUIRED, SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE,
-            SyncErrorInfoBarType.CLIENT_OUT_OF_DATE})
+            SyncErrorInfoBarType.CLIENT_OUT_OF_DATE,
+            SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
+            SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
+            SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
+            SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS})
     @Retention(RetentionPolicy.SOURCE)
     private @interface SyncErrorInfoBarType {
         int NOT_SHOWN = -1;
@@ -56,6 +60,10 @@ public class SyncErrorInfoBar
         int PASSPHRASE_REQUIRED = 1;
         int SYNC_SETUP_INCOMPLETE = 2;
         int CLIENT_OUT_OF_DATE = 3;
+        int TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING = 4;
+        int TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS = 5;
+        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING = 6;
+        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 7;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -186,6 +194,14 @@ public class SyncErrorInfoBar
                 return SyncErrorInfoBarType.SYNC_SETUP_INCOMPLETE;
             case SyncError.CLIENT_OUT_OF_DATE:
                 return SyncErrorInfoBarType.CLIENT_OUT_OF_DATE;
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                return SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING;
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                return SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING;
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
             default:
                 return SyncErrorInfoBarType.NOT_SHOWN;
         }
@@ -206,6 +222,18 @@ public class SyncErrorInfoBar
                 break;
             case SyncErrorInfoBarType.CLIENT_OUT_OF_DATE:
                 name += "ClientOutOfDate";
+                break;
+            case SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                name += "TrustedVaultKeyRequiredForEverything";
+                break;
+            case SyncErrorInfoBarType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                name += "TrustedVaultKeyRequiredForPasswords";
+                break;
+            case SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                name += "TrustedVaultRecoverabilityDegradedForEverything";
+                break;
+            case SyncErrorInfoBarType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                name += "TrustedVaultRecoverabilityDegradedForPasswords";
                 break;
             default:
                 assert false;

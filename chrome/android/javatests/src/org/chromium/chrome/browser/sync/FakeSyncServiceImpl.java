@@ -95,8 +95,11 @@ public class FakeSyncServiceImpl extends SyncServiceImpl {
 
     public void setTrustedVaultKeyRequiredForPreferredDataTypes(
             boolean trustedVaultKeyRequiredForPreferredDataTypes) {
-        mTrustedVaultKeyRequiredForPreferredDataTypes =
-                trustedVaultKeyRequiredForPreferredDataTypes;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTrustedVaultKeyRequiredForPreferredDataTypes =
+                    trustedVaultKeyRequiredForPreferredDataTypes;
+            syncStateChanged();
+        });
     }
 
     @Override
@@ -105,7 +108,10 @@ public class FakeSyncServiceImpl extends SyncServiceImpl {
     }
 
     public void setTrustedVaultRecoverabilityDegraded(boolean recoverabilityDegraded) {
-        mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTrustedVaultRecoverabilityDegraded = recoverabilityDegraded;
+            syncStateChanged();
+        });
     }
 
     @Override
