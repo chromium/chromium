@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class FakeAccountInfoService implements AccountInfoService {
     private final Map<String, AccountInfo> mAccountInfos =
             Collections.synchronizedMap(new HashMap<>());
-    private final ObserverList<Observer> mObservers = new ObserverList<>();
+    protected final ObserverList<Observer> mObservers = new ObserverList<>();
 
     @Override
     public Promise<AccountInfo> getAccountInfoByEmail(String email) {
@@ -58,8 +59,10 @@ public class FakeAccountInfoService implements AccountInfoService {
                         coreAccountInfo.getGaiaId(), fullName, givenName, avatar);
         mAccountInfos.put(email, accountInfo);
 
-        for (Observer observer : mObservers) {
-            observer.onAccountInfoUpdated(accountInfo);
-        }
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            for (Observer observer : mObservers) {
+                observer.onAccountInfoUpdated(accountInfo);
+            }
+        });
     }
 }
