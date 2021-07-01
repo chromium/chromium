@@ -28,12 +28,12 @@ void ViewBuilderCore::AddPropertySetter(
 
 void ViewBuilderCore::CreateChildren(View* parent) {
   for (auto& builder : children_)
-    parent->AddChildView(builder.get().DoBuild());
+    parent->AddChildView(builder->DoBuild());
 }
 
 void ViewBuilderCore::SetProperties(View* view) {
   for (auto& property : property_list_)
-    property.get()->SetProperty(view);
+    property->SetProperty(view);
 }
 
 }  // namespace internal

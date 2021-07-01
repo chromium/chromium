@@ -66,3 +66,51 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
   EXPECT_EQ(scroll_button->GetText(), u"ScrollTest");
   EXPECT_EQ(scroll_button, scroll_view->contents());
 }
+
+TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
+  views::View* parent = nullptr;
+  views::LabelButton* button = nullptr;
+  views::LabelButton* scroll_button = nullptr;
+  views::ScrollView* scroll_view = nullptr;
+  auto view_builder = views::Builder<views::View>();
+  view_builder.CopyAddressTo(&parent)
+      .SetEnabled(false)
+      .SetVisible(true)
+      .SetBackground(views::CreateSolidBackground(SK_ColorWHITE))
+      .SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+  view_builder.AddChild(
+      views::Builder<views::View>()
+          .SetEnabled(false)
+          .SetVisible(true)
+          .SetProperty(views::kMarginsKey, new gfx::Insets(5)));
+  view_builder.AddChild(
+      views::Builder<views::View>().SetGroup(5).SetID(1).SetFocusBehavior(
+          views::View::FocusBehavior::NEVER));
+  view_builder.AddChild(views::Builder<views::LabelButton>()
+                            .CopyAddressTo(&button)
+                            .SetIsDefault(true)
+                            .SetEnabled(true)
+                            .SetText(u"Test"));
+  view_builder.AddChild(views::Builder<views::ScrollView>()
+                            .CopyAddressTo(&scroll_view)
+                            .SetContents(views::Builder<views::LabelButton>()
+                                             .CopyAddressTo(&scroll_button)
+                                             .SetText(u"ScrollTest"))
+                            .SetHeader(views::Builder<views::View>().SetID(2)));
+  auto view = view_builder.Build();
+
+  ASSERT_TRUE(view.get());
+  EXPECT_NE(parent, nullptr);
+  EXPECT_NE(button, nullptr);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_FALSE(view->GetEnabled());
+  ASSERT_GT(view->children().size(), size_t{2});
+  EXPECT_EQ(view->children()[1]->GetFocusBehavior(),
+            views::View::FocusBehavior::NEVER);
+  EXPECT_EQ(view->children()[2], button);
+  EXPECT_EQ(button->GetText(), u"Test");
+  EXPECT_NE(scroll_view, nullptr);
+  EXPECT_NE(scroll_button, nullptr);
+  EXPECT_EQ(scroll_button->GetText(), u"ScrollTest");
+  EXPECT_EQ(scroll_button, scroll_view->contents());
+}

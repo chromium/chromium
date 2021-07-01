@@ -34,14 +34,15 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 
   template <typename Child>
   Builder& AddChild(Child&& child) {
-    children_.push_back(child);
+    children_.emplace_back(child.Release());
     return *static_cast<Builder*>(this);
   }
 
   Builder& AddChildren(
       const std::initializer_list<
           std::reference_wrapper<internal::ViewBuilderCore>>& children) {
-    children_.insert(children_.end(), children.begin(), children.end());
+    for (auto& builder : children)
+      children_.emplace_back(builder.get().Release());
     return *static_cast<Builder*>(this);
   }
 
@@ -109,9 +110,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 // class ViewBuilderT : public BaseViewBuilderT<Builder, ViewClass> {
 //  public:
 //   ViewBuilderT() = default;
-//   ViewBuilderT(const ViewBuilderT&) = default;
+//   ViewBuilderT(const ViewBuilderT&&) = default;
+//   ViewBuilderT& operator=(const ViewBuilderT&&) = default;
 //   ~ViewBuilderT() override = default;
-//   ViewBuilderT& operator=(const ViewBuilderT&) = default;
 //
 //   Builder& SetEnabled(bool value) {
 //     auto setter = std::make_unique<
@@ -137,8 +138,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 //  public:
 //   LabelButtonBuilderT() = default;
 //   LabelButtonBuilderT(LabelButtonBuilderT&&) = default;
-//   ~LabelButtonBuilderT() override = default;
 //   LabelButtonBuilderT& operator=(LabelButtonBuilderT&&) = default;
+//   ~LabelButtonBuilderT() override = default;
 //
 //   Builder& SetIsDefault(bool value) {
 //     auto setter = std::make_unique<
@@ -230,21 +231,24 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 // namespace. Unless 'view_class' is already in the 'views' namespace, it should
 // be fully qualified with the namespace in which it lives.
 
-#define DEFINE_VIEW_BUILDER(export, view_class)                      \
-namespace views {                                                    \
-  template <>                                                        \
-  class export Builder<view_class>                                   \
-      : public view_class##BuilderT<Builder<view_class>> {           \
-   private:                                                          \
-    using ViewClass_ = view_class;                                   \
-   public:                                                           \
-    Builder<ViewClass_>() = default;                                 \
-    explicit Builder<ViewClass_>(ViewClass_* root_view)              \
-        : view_class##BuilderT<Builder<ViewClass_>>(root_view) {}    \
-    Builder<ViewClass_>(Builder&&) = default;                        \
-    Builder<ViewClass_>& operator=(Builder<ViewClass_>&&) = default; \
-    ~Builder<ViewClass_>() = default;                                \
-  };                                                                 \
+#define DEFINE_VIEW_BUILDER(export, view_class)                       \
+namespace views {                                                     \
+  template <>                                                         \
+  class export Builder<view_class>                                    \
+      : public view_class##BuilderT<Builder<view_class>> {            \
+   private:                                                           \
+    using ViewClass_ = view_class;                                    \
+   public:                                                            \
+    Builder<ViewClass_>() = default;                                  \
+    explicit Builder<ViewClass_>(ViewClass_* root_view)               \
+        : view_class##BuilderT<Builder<ViewClass_>>(root_view) {}     \
+    Builder<ViewClass_>(Builder&&) = default;                         \
+    Builder<ViewClass_>& operator=(Builder<ViewClass_>&&) = default;  \
+    ~Builder<ViewClass_>() = default;                                 \
+    std::unique_ptr<internal::ViewBuilderCore> Release() override {   \
+      return std::make_unique<Builder<view_class>>(std::move(*this)); \
+    }                                                                 \
+  };                                                                  \
 }  // namespace views
 
 // clang-format on
