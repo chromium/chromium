@@ -678,14 +678,15 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
             std::min(minimal_space_shortage, space_shortage);
       }
       actual_column_count++;
-      if (result->HasForcedBreak())
-        forced_break_count++;
+
+      if (result->ColumnSpanner())
+        break;
 
       has_violating_break |= result->HasViolatingBreak();
       column_inline_offset += column_inline_progression_;
 
-      if (result->ColumnSpanner())
-        break;
+      if (result->HasForcedBreak())
+        forced_break_count++;
 
       column_break_token = To<NGBlockBreakToken>(column.BreakToken());
 
@@ -752,7 +753,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     // We also need at least one soft break opportunity. If forced breaks cause
     // too many breaks, there's no stretch amount that could prevent the columns
     // from overflowing.
-    if (actual_column_count <= forced_break_count + 1)
+    if (used_column_count_ <= forced_break_count + 1)
       break;
 
     LayoutUnit new_column_block_size =
@@ -1055,6 +1056,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   ContentRuns content_runs;
   scoped_refptr<const NGBlockBreakToken> break_token = child_break_token;
   tallest_unbreakable_block_size_ = LayoutUnit();
+  int forced_break_count = 0;
   do {
     NGBlockLayoutAlgorithm balancing_algorithm(
         {Node(), fragment_geometry, space, break_token.get()});
@@ -1066,29 +1068,35 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
 
     const NGPhysicalBoxFragment& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-    LayoutUnit column_block_size =
-        CalculateColumnContentBlockSize(fragment, space.GetWritingDirection());
 
-    // Encompass the block-size of the (single-strip column) fragment, to
-    // account for any trailing margins. We let them affect the column
-    // block-size, for compatibility reasons, if nothing else. The initial
-    // column balancing pass (i.e. here) is our opportunity to do that fairly
-    // easily. But note that this doesn't guarantee that no margins will ever
-    // get truncated. To avoid that we'd need to add some sort of mechanism that
-    // is invoked in *every* column balancing layout pass, where we'd
-    // essentially have to treat every margin as unbreakable (which kind of
-    // sounds both bad and difficult).
-    //
-    // We might want to revisit this approach, if it's worth it: Maybe it's
-    // better to not make any room at all for margins that might end up getting
-    // truncated. After all, they don't really require any space, so what we're
-    // doing currently might be seen as unnecessary (and slightly unpredictable)
-    // column over-stretching.
-    NGFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
-                                fragment);
-    column_block_size =
-        std::max(column_block_size, logical_fragment.BlockSize());
-    content_runs.AddRun(column_block_size);
+    // Add a content run, as long as we have soft break opportunities. Ignore
+    // content that's doomed to end up in overflowing columns (because of too
+    // many forced breaks).
+    if (forced_break_count < used_column_count_) {
+      LayoutUnit column_block_size = CalculateColumnContentBlockSize(
+          fragment, space.GetWritingDirection());
+
+      // Encompass the block-size of the (single-strip column) fragment, to
+      // account for any trailing margins. We let them affect the column
+      // block-size, for compatibility reasons, if nothing else. The initial
+      // column balancing pass (i.e. here) is our opportunity to do that fairly
+      // easily. But note that this doesn't guarantee that no margins will ever
+      // get truncated. To avoid that we'd need to add some sort of mechanism
+      // that is invoked in *every* column balancing layout pass, where we'd
+      // essentially have to treat every margin as unbreakable (which kind of
+      // sounds both bad and difficult).
+      //
+      // We might want to revisit this approach, if it's worth it: Maybe it's
+      // better to not make any room at all for margins that might end up
+      // getting truncated. After all, they don't really require any space, so
+      // what we're doing currently might be seen as unnecessary (and slightly
+      // unpredictable) column over-stretching.
+      NGFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
+                                  fragment);
+      column_block_size =
+          std::max(column_block_size, logical_fragment.BlockSize());
+      content_runs.AddRun(column_block_size);
+    }
 
     tallest_unbreakable_block_size_ = std::max(
         tallest_unbreakable_block_size_, result->TallestUnbreakableBlockSize());
@@ -1096,6 +1104,9 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
     // Stop when we reach a spanner. That's where this row of columns will end.
     if (result->ColumnSpanner())
       break;
+
+    if (result->HasForcedBreak())
+      forced_break_count++;
 
     break_token = To<NGBlockBreakToken>(fragment.BreakToken());
   } while (break_token);
@@ -1120,8 +1131,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   if (tallest_unbreakable_block_size_ >= content_runs.TallestContentBlockSize())
     return ConstrainColumnBlockSize(tallest_unbreakable_block_size_);
 
-  content_runs.DistributeImplicitBreaks(
-      ResolveUsedColumnCount(ChildAvailableSize().inline_size, Style()));
+  content_runs.DistributeImplicitBreaks(used_column_count_);
   return ConstrainColumnBlockSize(content_runs.TallestColumnBlockSize());
 }
 
