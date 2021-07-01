@@ -144,20 +144,22 @@ void UseAddressAction::OnWaitForElement(const ClientStatus& element_status) {
     return;
   }
 
+  DCHECK(profile_);
+  InitFallbackHandler(*profile_);
+
   if (proto_.use_address().skip_autofill()) {
     ExecuteFallback(OkClientStatus());
     return;
   }
 
   DCHECK(!selector_.empty());
-  DCHECK(profile_ != nullptr);
-  delegate_->FillAddressForm(profile_.get(), selector_,
+  delegate_->FillAddressForm(std::move(profile_), selector_,
                              base::BindOnce(&UseAddressAction::ExecuteFallback,
                                             weak_ptr_factory_.GetWeakPtr()));
 }
 
-void UseAddressAction::ExecuteFallback(const ClientStatus& status) {
-  DCHECK(profile_ != nullptr);
+void UseAddressAction::InitFallbackHandler(
+    const autofill::AutofillProfile& profile) {
   std::vector<RequiredField> required_fields;
   for (const auto& required_field_proto :
        proto_.use_address().required_fields()) {
@@ -173,10 +175,13 @@ void UseAddressAction::ExecuteFallback(const ClientStatus& status) {
   DCHECK(fallback_handler_ == nullptr);
   fallback_handler_ = std::make_unique<RequiredFieldsFallbackHandler>(
       required_fields,
-      field_formatter::CreateAutofillMappings(*profile_,
+      field_formatter::CreateAutofillMappings(profile,
                                               /* locale = */ "en-US"),
       delegate_);
+}
 
+void UseAddressAction::ExecuteFallback(const ClientStatus& status) {
+  DCHECK(fallback_handler_ != nullptr);
   fallback_handler_->CheckAndFallbackRequiredFields(
       status, base::BindOnce(&UseAddressAction::EndAction,
                              weak_ptr_factory_.GetWeakPtr()));

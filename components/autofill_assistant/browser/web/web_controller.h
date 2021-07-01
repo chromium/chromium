@@ -130,7 +130,7 @@ class WebController {
   // Fill the address form given by |selector| with the given address
   // |profile|.
   virtual void FillAddressForm(
-      const autofill::AutofillProfile* profile,
+      std::unique_ptr<autofill::AutofillProfile> profile,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&)> callback);
 

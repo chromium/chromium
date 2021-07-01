@@ -704,16 +704,15 @@ void WebController::OnFindElementResult(
 }
 
 void WebController::FillAddressForm(
-    const autofill::AutofillProfile* profile,
+    std::unique_ptr<autofill::AutofillProfile> profile,
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   VLOG(3) << __func__ << " " << selector;
-  auto unique_profile = user_data::MakeUniqueFromProfile(*profile);
-  autofill::AutofillableData data_to_autofill(unique_profile.get());
+  autofill::AutofillableData data_to_autofill(profile.get());
   GetElementFormAndFieldData(
       selector, base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
                                weak_ptr_factory_.GetWeakPtr(), data_to_autofill,
-                               std::move(unique_profile), std::move(callback)));
+                               std::move(profile), std::move(callback)));
 }
 
 void WebController::FillCardForm(

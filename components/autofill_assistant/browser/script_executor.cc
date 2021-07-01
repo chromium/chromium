@@ -482,10 +482,10 @@ void ScriptExecutor::OnChosen(UserAction::Callback callback,
 }
 
 void ScriptExecutor::FillAddressForm(
-    const autofill::AutofillProfile* profile,
+    std::unique_ptr<autofill::AutofillProfile> profile,
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->FillAddressForm(profile, selector,
+  delegate_->GetWebController()->FillAddressForm(std::move(profile), selector,
                                                  std::move(callback));
 }
 

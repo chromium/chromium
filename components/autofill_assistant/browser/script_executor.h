@@ -165,7 +165,7 @@ class ScriptExecutor : public ActionDelegate,
   void CleanUpAfterPrompt() override;
   void SetBrowseDomainsAllowlist(std::vector<std::string> domains) override;
   void FillAddressForm(
-      const autofill::AutofillProfile* profile,
+      std::unique_ptr<autofill::AutofillProfile> profile,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void FillCardForm(

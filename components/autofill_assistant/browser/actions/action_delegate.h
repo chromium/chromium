@@ -186,9 +186,9 @@ class ActionDelegate {
                            GetFullCardCallback callback) = 0;
 
   // Fill the address form given by |selector| with the given address
-  // |profile|. |profile| cannot be nullptr.
+  // |profile|. Return result asynchronously through |callback|.
   virtual void FillAddressForm(
-      const autofill::AutofillProfile* profile,
+      std::unique_ptr<autofill::AutofillProfile> profile,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 

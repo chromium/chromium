@@ -90,7 +90,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(SetBrowseDomainsAllowlist,
                void(std::vector<std::string> domains));
   MOCK_METHOD3(FillAddressForm,
-               void(const autofill::AutofillProfile* profile,
+               void(std::unique_ptr<autofill::AutofillProfile> profile,
                     const Selector& selector,
                     base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD4(FillCardForm,
