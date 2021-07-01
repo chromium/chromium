@@ -110,17 +110,32 @@
 
 namespace WTF {
 
+namespace {
+static_assert(sizeof(BLINK_CRITICAL_SECTION) == sizeof(CRITICAL_SECTION),
+              "Definition mismatch.");
+static_assert(sizeof(BLINK_CONDITION_VARIABLE) == sizeof(CONDITION_VARIABLE),
+              "Definition mismatch.");
+
+CRITICAL_SECTION* GetCriticalSection(PlatformMutex* mutex) {
+  return reinterpret_cast<CRITICAL_SECTION*>(&mutex->internal_mutex_);
+}
+
+CONDITION_VARIABLE* ToConditionVariable(BLINK_CONDITION_VARIABLE* condition) {
+  return reinterpret_cast<CONDITION_VARIABLE*>(condition);
+}
+}  // namespace
+
 MutexBase::MutexBase(bool recursive) {
   mutex_.recursion_count_ = 0;
-  InitializeCriticalSection(&mutex_.internal_mutex_);
+  InitializeCriticalSection(GetCriticalSection(&mutex_));
 }
 
 MutexBase::~MutexBase() {
-  DeleteCriticalSection(&mutex_.internal_mutex_);
+  DeleteCriticalSection(GetCriticalSection(&mutex_));
 }
 
 void MutexBase::lock() {
-  EnterCriticalSection(&mutex_.internal_mutex_);
+  EnterCriticalSection(GetCriticalSection(&mutex_));
   DCHECK(!mutex_.recursion_count_)
       << "WTF does not support recursive mutex acquisition!";
   ++mutex_.recursion_count_;
@@ -129,7 +144,7 @@ void MutexBase::lock() {
 void MutexBase::unlock() {
   DCHECK(mutex_.recursion_count_);
   --mutex_.recursion_count_;
-  LeaveCriticalSection(&mutex_.internal_mutex_);
+  LeaveCriticalSection(GetCriticalSection(&mutex_));
 }
 
 bool Mutex::TryLock() {
@@ -139,7 +154,7 @@ bool Mutex::TryLock() {
   // treats this as a successful case, it changes the behavior of several
   // tests in WebKit that check to see if the current thread already
   // owned this mutex (see e.g., IconDatabase::getOrCreateIconRecord)
-  DWORD result = TryEnterCriticalSection(&mutex_.internal_mutex_);
+  DWORD result = TryEnterCriticalSection(GetCriticalSection(&mutex_));
 
   if (result != 0) {  // We got the lock
     // If this thread already had the lock, we must unlock and return
@@ -151,7 +166,7 @@ bool Mutex::TryLock() {
     DCHECK(!mutex_.recursion_count_)
         << "WTF does not support recursive mutex acquisition!";
     if (mutex_.recursion_count_ > 0) {
-      LeaveCriticalSection(&mutex_.internal_mutex_);
+      LeaveCriticalSection(GetCriticalSection(&mutex_));
       return false;
     }
     ++mutex_.recursion_count_;
@@ -164,7 +179,7 @@ bool Mutex::TryLock() {
 bool RecursiveMutex::TryLock() {
   // CRITICAL_SECTION is recursive/reentrant so TryEnterCriticalSection will
   // succeed if the current thread is already in the critical section.
-  DWORD result = TryEnterCriticalSection(&mutex_.internal_mutex_);
+  DWORD result = TryEnterCriticalSection(GetCriticalSection(&mutex_));
   if (result == 0) {  // We didn't get the lock.
     return false;
   }
@@ -183,18 +198,18 @@ void ThreadCondition::Wait() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   --mutex_.recursion_count_;
-  BOOL result =
-      SleepConditionVariableCS(&condition_, &mutex_.internal_mutex_, INFINITE);
+  BOOL result = SleepConditionVariableCS(ToConditionVariable(&condition_),
+                                         GetCriticalSection(&mutex_), INFINITE);
   DCHECK_NE(result, 0);
   ++mutex_.recursion_count_;
 }
 
 void ThreadCondition::Signal() {
-  WakeConditionVariable(&condition_);
+  WakeConditionVariable(ToConditionVariable(&condition_));
 }
 
 void ThreadCondition::Broadcast() {
-  WakeAllConditionVariable(&condition_);
+  WakeAllConditionVariable(ToConditionVariable(&condition_));
 }
 
 }  // namespace WTF

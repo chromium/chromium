@@ -81,6 +81,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_context_snapshot_external_references.h"
 #endif
 
+// #if expression should match the one in InitializeCommon
+#if !defined(ARCH_CPU_X86_64) && !defined(ARCH_CPU_ARM64) && defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace blink {
 
 namespace {
@@ -106,6 +111,7 @@ BlinkInitializer& GetBlinkInitializer() {
 }
 
 void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
+// #if expression should match the one around #include <windows.h>
 #if !defined(ARCH_CPU_X86_64) && !defined(ARCH_CPU_ARM64) && defined(OS_WIN)
   // Reserve address space on 32 bit Windows, to make it likelier that large
   // array buffer allocations succeed.

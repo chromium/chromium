@@ -38,7 +38,26 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
+
+// Declare Chrome versions of some Windows structures. These are needed for
+// when we need a concrete type but don't want to pull in Windows.h. We can't
+// declare the Windows types so we declare our types and cast to the Windows
+// types in a few places. static_asserts in threading_win.cc are used to verify
+// that the sizes are correct.
+
+struct BLINK_CRITICAL_SECTION {
+  // The Windows CRITICAL_SECTION struct is 40 bytes on 64-bit and 24 bytes on
+  // 32-bit. The align member variable uses sizeof(void*) bytes so the buffer
+  // to fill out the size needs to be 32/20 bytes. This can be expressed as
+  // sizeof(void*) * 3 + 8.
+  char buffer[sizeof(void*) * 3 + 8];
+  ULONG_PTR align;  // Make sure the alignment requirements match.
+};
+
+struct BLINK_CONDITION_VARIABLE {
+  PVOID Ptr;
+};
+
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <pthread.h>
 #endif
@@ -47,10 +66,10 @@ namespace WTF {
 
 #if defined(OS_WIN)
 struct PlatformMutex {
-  CRITICAL_SECTION internal_mutex_;
+  BLINK_CRITICAL_SECTION internal_mutex_;
   size_t recursion_count_;
 };
-typedef CONDITION_VARIABLE PlatformCondition;
+typedef BLINK_CONDITION_VARIABLE PlatformCondition;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 struct PlatformMutex {
   pthread_mutex_t internal_mutex_;

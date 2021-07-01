@@ -57,6 +57,9 @@
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/platform/language.h"
 
+// To avoid conflicts with the CreateWindow macro from the Windows SDK...
+#undef CreateWindow
+
 namespace blink {
 
 class ViewCreatingClient : public frame_test_helpers::TestWebViewClient {

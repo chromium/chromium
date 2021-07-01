@@ -62,6 +62,9 @@
 #include "third_party/skia/include/utils/SkNullCanvas.h"
 #include "ui/base/ui_base_features.h"
 
+// To avoid conflicts with the DrawText macro from the Windows SDK...
+#undef DrawText
+
 namespace blink {
 
 namespace {
