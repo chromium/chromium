@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 //
 
-#include "components/safe_browsing/core/ping_manager.h"
+#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"

@@ -4,37 +4,6 @@
 
 import("//components/safe_browsing/buildflags.gni")
 
-static_library("ping_manager") {
-  sources = [
-    "ping_manager.cc",
-    "ping_manager.h",
-  ]
-
-  public_deps = [ "//google_apis:google_apis" ]
-
-  deps = [
-    "//base:base",
-    "//components/safe_browsing/core/browser/db:hit_report",
-    "//components/safe_browsing/core/browser/db:util",
-    "//net:net",
-    "//services/network/public/cpp",
-  ]
-}
-
-source_set("ping_manager_unittest") {
-  testonly = true
-  sources = [ "ping_manager_unittest.cc" ]
-
-  deps = [
-    ":ping_manager",
-    "//base:base",
-    "//components/safe_browsing/core/browser/db:v4_test_util",
-    "//net:net",
-    "//net:test_support",
-    "//testing/gtest",
-  ]
-}
-
 source_set("verdict_cache_manager") {
   sources = [
     "verdict_cache_manager.cc",
