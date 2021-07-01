@@ -6,12 +6,9 @@
 
 #include <utility>
 
-#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -22,13 +19,9 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/pref_names_util.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/exo/input_method_surface.h"
-#include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -36,6 +29,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/event_router.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -45,7 +39,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/widget/widget.h"
 
 namespace arc {
 namespace {
@@ -370,22 +363,9 @@ bool ArcAccessibilityHelperBridge::UseFullFocusMode() const {
   return use_full_focus_mode_;
 }
 
-void ArcAccessibilityHelperBridge::OnTaskDestroyed(int32_t task_id) {
-  tree_tracker_.OnTaskDestroyed(task_id);
-}
-
 void ArcAccessibilityHelperBridge::OnNotificationSurfaceAdded(
     ash::ArcNotificationSurface* surface) {
   tree_tracker_.OnNotificationSurfaceAdded(surface);
-}
-
-void ArcAccessibilityHelperBridge::OnWindowFocused(aura::Window* gained_focus,
-                                                   aura::Window* lost_focus) {
-  tree_tracker_.OnWindowFocused(gained_focus, lost_focus);
-}
-
-void ArcAccessibilityHelperBridge::InvokeUpdateEnabledFeatureForTesting() {
-  UpdateEnabledFeature();
 }
 
 aura::Window* ArcAccessibilityHelperBridge::GetFocusedArcWindow() const {
@@ -503,8 +483,7 @@ void ArcAccessibilityHelperBridge::OnAccessibilityStatusChanged(
 }
 
 void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
-  arc::mojom::AccessibilityFilterType new_filter_type = GetFilterType();
-  filter_type_ = new_filter_type;
+  filter_type_ = GetFilterType();
 
   // Let Android know the filter type change.
   accessibility_helper_instance_.SetFilter(filter_type_);
@@ -588,19 +567,6 @@ void ArcAccessibilityHelperBridge::DispatchEventTextAnnouncement(
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_ANNOUNCE_FOR_ACCESSIBILITY,
       extensions::api::accessibility_private::OnAnnounceForAccessibility::
-          kEventName,
-      std::move(event_args)));
-  GetEventRouter()->BroadcastEvent(std::move(event));
-}
-
-void ArcAccessibilityHelperBridge::DispatchCustomSpokenFeedbackToggled(
-    bool enabled) const {
-  auto event_args(extensions::api::accessibility_private::
-                      OnCustomSpokenFeedbackToggled::Create(enabled));
-  std::unique_ptr<extensions::Event> event(new extensions::Event(
-      extensions::events::
-          ACCESSIBILITY_PRIVATE_ON_CUSTOM_SPOKEN_FEEDBACK_TOGGLED,
-      extensions::api::accessibility_private::OnCustomSpokenFeedbackToggled::
           kEventName,
       std::move(event_args)));
   GetEventRouter()->BroadcastEvent(std::move(event));

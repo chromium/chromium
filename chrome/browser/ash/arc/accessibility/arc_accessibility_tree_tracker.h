@@ -27,8 +27,6 @@ class ArcNotificationSurface;
 
 namespace arc {
 
-class ArcAccessibilityHelperBridge;
-
 // ArcAccessibilityTreeTracker is responsible for mapping accessibility tree
 // from android to exo window / surfaces.
 class ArcAccessibilityTreeTracker {
@@ -42,7 +40,7 @@ class ArcAccessibilityTreeTracker {
   using TreeKey = std::tuple<TreeKeyType, int32_t, std::string>;
   using TreeMap = std::map<TreeKey, std::unique_ptr<AXTreeSourceArc>>;
 
-  ArcAccessibilityTreeTracker(ArcAccessibilityHelperBridge* owner,
+  ArcAccessibilityTreeTracker(AXTreeSourceArc::Delegate* tree_source_delegate_,
                               Profile* const profile,
                               const AccessibilityHelperInstanceRemoteProxy&
                                   accessibility_helper_instance,
@@ -105,14 +103,19 @@ class ArcAccessibilityTreeTracker {
   class ArcNotificationSurfaceManagerObserver;
 
   AXTreeSourceArc* GetFromKey(const TreeKey&);
-  AXTreeSourceArc* CreateFromKey(TreeKey, AXTreeSourceArc::Delegate*);
+  AXTreeSourceArc* CreateFromKey(TreeKey);
 
   // Update |window_id_to_task_id_| with a given window if necessary.
   void UpdateWindowIdMapping(aura::Window* window);
 
   void UpdateWindowProperties(aura::Window* window);
 
-  ArcAccessibilityHelperBridge* owner_;
+  // Virtual for testing.
+  virtual void DispatchCustomSpokenFeedbackToggled(bool enabled);
+  virtual aura::Window* GetFocusedArcWindow() const;
+
+  Profile* const profile_;
+  AXTreeSourceArc::Delegate* tree_source_delegate_;
   const AccessibilityHelperInstanceRemoteProxy& accessibility_helper_instance_;
 
   TreeMap trees_;
@@ -127,6 +130,9 @@ class ArcAccessibilityTreeTracker {
       notification_surface_observer_;
 
   std::map<int32_t, int32_t> window_id_to_task_id_;
+
+  arc::mojom::AccessibilityFilterType filter_type_ =
+      arc::mojom::AccessibilityFilterType::OFF;
 
   // Set of task id where TalkBack is enabled. ChromeOS native accessibility
   // support should be disabled for these tasks.

@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
+#include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
@@ -13,9 +14,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
+#include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/connection_observer.h"
@@ -23,6 +25,7 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "extensions/browser/event_router.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
@@ -241,11 +244,12 @@ class ArcAccessibilityTreeTracker::ArcNotificationSurfaceManagerObserver
 };
 
 ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(
-    ArcAccessibilityHelperBridge* owner,
+    AXTreeSourceArc::Delegate* tree_source_delegate,
     Profile* const profile,
     const AccessibilityHelperInstanceRemoteProxy& accessibility_helper_instance,
     ArcBridgeService* const arc_bridge_service)
-    : owner_(owner),
+    : profile_(profile),
+      tree_source_delegate_(tree_source_delegate),
       accessibility_helper_instance_(accessibility_helper_instance),
       app_list_prefs_observer_(
           std::make_unique<AppListPrefsObserver>(this, profile)),
@@ -269,7 +273,7 @@ void ArcAccessibilityTreeTracker::OnWindowFocused(aura::Window* gained_focus,
   bool gained_arc = ash::IsArcWindow(gained_focus);
   bool talkback_enabled = !native_chromevox_enabled_;
   if (talkback_enabled && lost_arc != gained_arc)
-    owner_->DispatchCustomSpokenFeedbackToggled(gained_arc);
+    DispatchCustomSpokenFeedbackToggled(gained_arc);
 
   if (lost_arc)
     window_observer_.reset();
@@ -292,18 +296,19 @@ void ArcAccessibilityTreeTracker::Shutdown() {
 
 void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
     arc::mojom::AccessibilityFilterType filter_type) {
+  filter_type_ = filter_type;
   // Clear trees when filter type is changed to non-ALL.
-  if (filter_type != arc::mojom::AccessibilityFilterType::ALL) {
+  if (filter_type_ != arc::mojom::AccessibilityFilterType::ALL) {
     trees_.clear();
   }
 
   bool add_focus_observer =
-      filter_type == arc::mojom::AccessibilityFilterType::ALL;
+      filter_type_ == arc::mojom::AccessibilityFilterType::ALL;
   bool focus_observer_added = focus_change_observer_.get() != nullptr;
   if (add_focus_observer == focus_observer_added)
     return;
 
-  aura::Window* focused_window = owner_->GetFocusedArcWindow();
+  aura::Window* focused_window = GetFocusedArcWindow();
 
   if (add_focus_observer) {
     focus_change_observer_ = std::make_unique<FocusChangeObserver>(this);
@@ -320,7 +325,7 @@ void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
 // TODO(hirokisato): consider rename to "OnEnableTree"
 bool ArcAccessibilityTreeTracker::RefreshTreeIfInActiveWindow(
     const ui::AXTreeID& tree_id) {
-  aura::Window* focused_shell_surface_window = owner_->GetFocusedArcWindow();
+  aura::Window* focused_shell_surface_window = GetFocusedArcWindow();
   if (!focused_shell_surface_window)
     return false;
 
@@ -364,13 +369,13 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::OnAccessibilityEvent(
 
     auto key = KeyForInputMethod();
     if (GetFromKey(key) == nullptr) {
-      auto* tree = CreateFromKey(key, owner_);
+      auto* tree = CreateFromKey(key);
       input_method_surface->SetChildAxTreeId(tree->ax_tree_id());
     }
 
     return GetFromKey(key);
   } else {
-    aura::Window* focused_window = owner_->GetFocusedArcWindow();
+    aura::Window* focused_window = GetFocusedArcWindow();
     // TODO(b/173658482): Support non-active windows.
     if (!focused_window)
       return nullptr;
@@ -393,7 +398,7 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::OnAccessibilityEvent(
     AXTreeSourceArc* tree_source = GetFromKey(key);
 
     if (!tree_source) {
-      tree_source = CreateFromKey(key, owner_);
+      tree_source = CreateFromKey(key);
       SetChildAxTreeIDForWindow(focused_window, tree_source->ax_tree_id());
       if (ash::AccessibilityManager::Get() &&
           ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
@@ -440,7 +445,7 @@ void ArcAccessibilityTreeTracker::OnNotificationStateChanged(
       if (tree_source)
         return;
 
-      tree_source = CreateFromKey(std::move(key), owner_);
+      tree_source = CreateFromKey(std::move(key));
       UpdateTreeIdOfNotificationSurface(notification_key,
                                         tree_source->ax_tree_id());
       break;
@@ -464,14 +469,14 @@ void ArcAccessibilityTreeTracker::OnToggleNativeChromeVoxArcSupport(
   // This is dispatched from Android when ArcAccessibilityHelperService changes
   // the active screen reader on Android.
   native_chromevox_enabled_ = enabled;
-  owner_->DispatchCustomSpokenFeedbackToggled(!enabled);
+  DispatchCustomSpokenFeedbackToggled(!enabled);
 
   // TODO(hirokisato): Don't we need to do something similar in
   // OnSetNativeChromeVoxArcSupportProcessed()?
 }
 
 void ArcAccessibilityTreeTracker::SetNativeChromeVoxArcSupport(bool enabled) {
-  aura::Window* window = owner_->GetFocusedArcWindow();
+  aura::Window* window = GetFocusedArcWindow();
   if (!window)
     return;
 
@@ -530,10 +535,8 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::GetFromKey(const TreeKey& key) {
   return tree_it->second.get();
 }
 
-AXTreeSourceArc* ArcAccessibilityTreeTracker::CreateFromKey(
-    TreeKey key,
-    AXTreeSourceArc::Delegate* delegate) {
-  auto tree = std::make_unique<AXTreeSourceArc>(delegate);
+AXTreeSourceArc* ArcAccessibilityTreeTracker::CreateFromKey(TreeKey key) {
+  auto tree = std::make_unique<AXTreeSourceArc>(tree_source_delegate_);
   AXTreeSourceArc* tree_ptr = tree.get();
   trees_.insert(std::make_pair(std::move(key), std::move(tree)));
   return tree_ptr;
@@ -582,17 +585,35 @@ void ArcAccessibilityTreeTracker::UpdateWindowProperties(aura::Window* window) {
 
   if (use_talkback) {
     SetChildAxTreeIDForWindow(window, ui::AXTreeIDUnknown());
-  } else if (owner_->GetFilterType() ==
-             arc::mojom::AccessibilityFilterType::ALL) {
+  } else if (filter_type_ == arc::mojom::AccessibilityFilterType::ALL) {
     auto key = KeyForTaskId(*task_id);
     AXTreeSourceArc* tree = GetFromKey(key);
     if (!tree)
-      tree = CreateFromKey(std::move(key), owner_);
+      tree = CreateFromKey(std::move(key));
 
     // Just after the creation of window, widget has not been set yet and this
     // is not dispatched to ShellSurfaceBase. Thus, call this every time.
     SetChildAxTreeIDForWindow(window, tree->ax_tree_id());
   }
+}
+
+void ArcAccessibilityTreeTracker::DispatchCustomSpokenFeedbackToggled(
+    bool enabled) {
+  auto event_args(extensions::api::accessibility_private::
+                      OnCustomSpokenFeedbackToggled::Create(enabled));
+  std::unique_ptr<extensions::Event> event(new extensions::Event(
+      extensions::events::
+          ACCESSIBILITY_PRIVATE_ON_CUSTOM_SPOKEN_FEEDBACK_TOGGLED,
+      extensions::api::accessibility_private::OnCustomSpokenFeedbackToggled::
+          kEventName,
+      std::move(event_args)));
+  extensions::EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
+}
+
+aura::Window* ArcAccessibilityTreeTracker::GetFocusedArcWindow() const {
+  if (!exo::WMHelper::HasInstance())
+    return nullptr;
+  return FindArcWindow(exo::WMHelper::GetInstance()->GetFocusedWindow());
 }
 
 }  // namespace arc

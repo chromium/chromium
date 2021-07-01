@@ -3582,6 +3582,7 @@ source_set("unit_tests") {
     "../ash/arc/accessibility/accessibility_node_info_data_wrapper_unittest.cc",
     "../ash/arc/accessibility/arc_accessibility_helper_bridge_unittest.cc",
     "../ash/arc/accessibility/arc_accessibility_test_util.h",
+    "../ash/arc/accessibility/arc_accessibility_tree_tracker_unittest.cc",
     "../ash/arc/accessibility/arc_accessibility_util_unittest.cc",
     "../ash/arc/accessibility/auto_complete_handler_unittest.cc",
     "../ash/arc/accessibility/ax_tree_source_arc_unittest.cc",

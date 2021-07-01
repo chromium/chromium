@@ -12,6 +12,7 @@
 #include <tuple>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
+#include "base/callback_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
@@ -19,8 +20,6 @@
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "ui/accessibility/ax_action_handler.h"
-#include "ui/aura/window_tracker.h"
 
 class PrefService;
 class Profile;
@@ -28,6 +27,10 @@ class Profile;
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace extensions {
+class EventRouter;
+}
 
 namespace gfx {
 class Rect;
@@ -87,10 +90,6 @@ class ArcAccessibilityHelperBridge
   void OnAction(const ui::AXActionData& data) const override;
   bool UseFullFocusMode() const override;
 
-  // TODO(hirokisato): Remove this method once refactoring finishes.
-  // This exists only to do refactoring without large test change.
-  void OnTaskDestroyed(int32_t task_id);
-
   // ArcNotificationSurfaceManager::Observer overrides.
   // TODO(hirokisato): Remove this method once refactoring finishes.
   // This exists only to do refactoring without large test change.
@@ -99,22 +98,11 @@ class ArcAccessibilityHelperBridge
   void OnNotificationSurfaceRemoved(
       ash::ArcNotificationSurface* surface) override {}
 
-  // TODO(hirokisato): Remove this method once refactoring finishes.
-  // This exists only to do refactoring without large test change.
-  void OnWindowFocused(aura::Window* gained_focus, aura::Window* lost_focus);
-
-  // TODO(hirokisato): Remove this method once refactoring finishes.
-  void InvokeUpdateEnabledFeatureForTesting();
-
   const ArcAccessibilityTreeTracker::TreeMap& trees_for_test() const {
     return tree_tracker_.trees_for_test();
   }
 
  private:
-  // TODO(hirokisato): Remove this friend relationship once refactoring
-  // finishes. Used to access virtual methods below for testing purpose.
-  friend ArcAccessibilityTreeTracker;
-
   // virtual for testing.
   virtual aura::Window* GetFocusedArcWindow() const;
   virtual extensions::EventRouter* GetEventRouter() const;
@@ -139,9 +127,7 @@ class ArcAccessibilityHelperBridge
 
   void DispatchEventTextAnnouncement(
       mojom::AccessibilityEventData* event_data) const;
-  void DispatchCustomSpokenFeedbackToggled(bool enabled) const;
 
-  bool focus_observer_added_ = false;
   bool is_focus_event_enabled_ = false;
   bool use_full_focus_mode_ = false;
   Profile* const profile_;
