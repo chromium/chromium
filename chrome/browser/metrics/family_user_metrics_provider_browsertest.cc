@@ -5,9 +5,7 @@
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/child_accounts/family_features.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
@@ -88,10 +86,6 @@ class FamilyUserMetricsProviderTest
       public testing::WithParamInterface<
           FamilyUserMetricsProvider::FamilyUserLogSegment> {
  public:
-  FamilyUserMetricsProviderTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::kFamilyUserMetricsProvider);
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 
@@ -120,9 +114,6 @@ class FamilyUserMetricsProviderTest
       // PolicyData.
       // TODO(crbug/1112885): Use LocalPolicyTestServer when this is fixed.
       /*use_local_policy_server=*/false};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
@@ -188,15 +179,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 class FamilyUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {
- public:
-  FamilyUserMetricsProviderGuestModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::kFamilyUserMetricsProvider);
-  }
-
  private:
   chromeos::GuestSessionMixin guest_session_mixin_{&mixin_host_};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Prevents a regression to crbug/1137352. Also tests secondary account metrics
@@ -221,10 +205,6 @@ IN_PROC_BROWSER_TEST_F(FamilyUserMetricsProviderGuestModeTest,
 class FamilyUserMetricsProviderEphemeralUserTest
     : public MixinBasedInProcessBrowserTest {
  protected:
-  FamilyUserMetricsProviderEphemeralUserTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::kFamilyUserMetricsProvider);
-  }
-
   // MixinBasedInProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -247,8 +227,6 @@ class FamilyUserMetricsProviderEphemeralUserTest
 
   chromeos::DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   chromeos::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kRegular,

@@ -9,14 +9,6 @@
 
 namespace ash {
 
-// Filters family user metrics into one of four types of family users.
-// TODO(crbug/1103077): If any of the buckets end up being too small, disable
-// this feature for privacy reasons.
-extern const base::Feature kFamilyUserMetricsProvider;
-
-// Filters family link user metrics into one of three types.
-extern const base::Feature kFamilyLinkUserMetricsProvider;
-
 // Enables showing handoff screen to Family Link user during OOBE.
 extern const base::Feature kFamilyLinkOobeHandoff;
 

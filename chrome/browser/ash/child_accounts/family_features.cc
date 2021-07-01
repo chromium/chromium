@@ -6,12 +6,6 @@
 
 namespace ash {
 
-const base::Feature kFamilyUserMetricsProvider{
-    "FamilyUserMetricsProvider", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kFamilyLinkUserMetricsProvider{
-    "FamilyLinkUserMetricsProvider", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kFamilyLinkOobeHandoff{"FamilyLinkOobeHandoff",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 

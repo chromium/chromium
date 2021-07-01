@@ -7,9 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/child_accounts/family_features.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -78,19 +76,10 @@ class FamilyLinkUserMetricsProviderTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<
           FamilyLinkUserMetricsProvider::LogSegment> {
- public:
-  FamilyLinkUserMetricsProviderTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::kFamilyLinkUserMetricsProvider);
-  }
-
  protected:
   chromeos::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, GetLogInType(GetParam()), embedded_test_server(),
       /*test_base=*/this};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(FamilyLinkUserMetricsProviderTest, UserCategory) {
@@ -135,16 +124,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 class FamilyLinkUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {
- public:
-  FamilyLinkUserMetricsProviderGuestModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::kFamilyLinkUserMetricsProvider);
-  }
-
  private:
   chromeos::GuestSessionMixin guest_session_mixin_{&mixin_host_};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that guest users go into the kOther bucket.
