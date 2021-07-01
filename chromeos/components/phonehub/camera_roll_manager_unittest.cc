@@ -75,17 +75,6 @@ class CameraRollManagerTest : public testing::Test {
     camera_roll_manager_.get()->RemoveObserver(&fake_observer_);
   }
 
-  void NotifyFetchCameraRollItemsResponseReceived(
-      proto::FetchCameraRollItemsResponse response) {
-    fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  }
-
-  void NotifyPhoneStatusUpdateReceived(bool has_camera_roll_updates) {
-    proto::PhoneStatusUpdate update;
-    update.set_has_camera_roll_updates(has_camera_roll_updates);
-    fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
-  }
-
   int GetOnCameraRollItemChangedCallCount() const {
     return fake_observer_.GetOnCameraRollItemChangedCallCount();
   }
@@ -94,7 +83,7 @@ class CameraRollManagerTest : public testing::Test {
     return camera_roll_manager_.get()->GetCurrentItems()[index];
   }
 
-  size_t GetReceivedItemsCount() const {
+  size_t GetCurrentItemsCount() const {
     return camera_roll_manager_.get()->GetCurrentItems().size();
   }
 
@@ -107,8 +96,9 @@ class CameraRollManagerTest : public testing::Test {
     return fake_message_sender_.GetRecentFetchCameraRollItemsRequest();
   }
 
- private:
   FakeMessageReceiver fake_message_receiver_;
+
+ private:
   FakeMessageSender fake_message_sender_;
   std::unique_ptr<CameraRollManager> camera_roll_manager_;
   FakeObserver fake_observer_;
@@ -120,10 +110,10 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceived) {
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
 
-  NotifyFetchCameraRollItemsResponseReceived(response);
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
 
   EXPECT_EQ(1, GetOnCameraRollItemChangedCallCount());
-  EXPECT_EQ(3UL, GetReceivedItemsCount());
+  EXPECT_EQ(3UL, GetCurrentItemsCount());
   VerifyMetadataEqual(response.items(0).metadata(),
                       GetReceivedItemAtIndex(0)->metadata());
   VerifyMetadataEqual(response.items(1).metadata(),
@@ -138,9 +128,10 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceivedWithExistingItems) {
   PopulateItemProto(first_response.add_items(), "key2");
   PopulateItemProto(first_response.add_items(), "key1");
 
-  NotifyFetchCameraRollItemsResponseReceived(first_response);
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
+      first_response);
 
-  EXPECT_EQ(3UL, GetReceivedItemsCount());
+  EXPECT_EQ(3UL, GetCurrentItemsCount());
 
   proto::FetchCameraRollItemsResponse second_response;
   PopulateItemProto(second_response.add_items(), "key4");
@@ -151,10 +142,11 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceivedWithExistingItems) {
   PopulateItemProto(second_response.add_items(), "key2");
   second_response.mutable_items(2)->clear_thumbnail();
 
-  NotifyFetchCameraRollItemsResponseReceived(second_response);
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
+      second_response);
 
   EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
-  EXPECT_EQ(3UL, GetReceivedItemsCount());
+  EXPECT_EQ(3UL, GetCurrentItemsCount());
   VerifyMetadataEqual(second_response.items(0).metadata(),
                       GetReceivedItemAtIndex(0)->metadata());
   VerifyMetadataEqual(second_response.items(1).metadata(),
@@ -165,18 +157,32 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceivedWithExistingItems) {
 
 TEST_F(CameraRollManagerTest,
        OnPhoneStatusUpdateReceivedWithoutCameraRollUpdates) {
-  NotifyPhoneStatusUpdateReceived(/*has_camera_roll_updates=*/false);
+  proto::PhoneStatusUpdate update;
+  update.set_has_camera_roll_updates(false);
+  proto::CameraRollAccessState* access_state =
+      update.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  access_state->set_storage_permission_granted(true);
+  fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
 }
 
 TEST_F(CameraRollManagerTest,
        OnPhoneStatusUpdateReceivedWithCameraRollUpdates) {
-  NotifyPhoneStatusUpdateReceived(/*has_camera_roll_updates=*/true);
+  proto::PhoneStatusUpdate update;
+  update.set_has_camera_roll_updates(true);
+  proto::CameraRollAccessState* access_state =
+      update.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  access_state->set_storage_permission_granted(true);
+  fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(0,
             GetSentFetchCameraRollItemsRequest().current_item_metadata_size());
+  EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
 }
 
 TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithExistingItems) {
@@ -184,11 +190,18 @@ TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithExistingItems) {
   PopulateItemProto(response.add_items(), "key3");
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
-  NotifyFetchCameraRollItemsResponseReceived(response);
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
 
-  NotifyPhoneStatusUpdateReceived(/*has_camera_roll_updates=*/true);
+  proto::PhoneStatusUpdate update;
+  update.set_has_camera_roll_updates(true);
+  proto::CameraRollAccessState* access_state =
+      update.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  access_state->set_storage_permission_granted(true);
+  fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(1, GetOnCameraRollItemChangedCallCount());
   EXPECT_EQ(3,
             GetSentFetchCameraRollItemsRequest().current_item_metadata_size());
   VerifyMetadataEqual(
@@ -200,6 +213,93 @@ TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithExistingItems) {
   VerifyMetadataEqual(
       response.items(2).metadata(),
       GetSentFetchCameraRollItemsRequest().current_item_metadata(2));
+}
+
+TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithFeatureDisabled) {
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key2");
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+
+  proto::PhoneStatusUpdate update;
+  proto::CameraRollAccessState* access_state =
+      update.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(false);
+  access_state->set_storage_permission_granted(true);
+  fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
+
+  EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
+  EXPECT_EQ(0UL, GetCurrentItemsCount());
+}
+
+TEST_F(CameraRollManagerTest,
+       OnPhoneStatusUpdateReceivedWithoutStoragePermission) {
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key2");
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+
+  proto::PhoneStatusUpdate update;
+  proto::CameraRollAccessState* access_state =
+      update.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  access_state->set_storage_permission_granted(false);
+  fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
+
+  EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
+  EXPECT_EQ(0UL, GetCurrentItemsCount());
+}
+
+TEST_F(CameraRollManagerTest, OnPhoneStatusSnapshotReceived) {
+  proto::PhoneStatusSnapshot snapshot;
+  proto::CameraRollAccessState* access_state =
+      snapshot.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  access_state->set_storage_permission_granted(true);
+  fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
+
+  EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
+}
+
+TEST_F(CameraRollManagerTest,
+       OnPhoneStatusSnapshotReceivedWithFeatureDisabled) {
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key2");
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+
+  proto::PhoneStatusSnapshot snapshot;
+  proto::CameraRollAccessState* access_state =
+      snapshot.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(false);
+  access_state->set_storage_permission_granted(true);
+  fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
+
+  EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
+  EXPECT_EQ(0UL, GetCurrentItemsCount());
+}
+
+TEST_F(CameraRollManagerTest,
+       OnPhoneStatusSnapshotReceivedWithoutStoragePermission) {
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key2");
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+
+  proto::PhoneStatusSnapshot snapshot;
+  proto::CameraRollAccessState* access_state =
+      snapshot.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  access_state->set_storage_permission_granted(false);
+  fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
+
+  EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(2, GetOnCameraRollItemChangedCallCount());
+  EXPECT_EQ(0UL, GetCurrentItemsCount());
 }
 
 }  // namespace phonehub

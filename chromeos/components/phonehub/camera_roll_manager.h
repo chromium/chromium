@@ -43,12 +43,15 @@ class CameraRollManager : public MessageReceiver::Observer {
 
  private:
   // MessageReceiver::Observer
+  void OnPhoneStatusSnapshotReceived(
+      proto::PhoneStatusSnapshot phone_status_snapshot) override;
   void OnPhoneStatusUpdateReceived(
       proto::PhoneStatusUpdate phone_status_update) override;
   void OnFetchCameraRollItemsResponseReceived(
       const proto::FetchCameraRollItemsResponse& response) override;
 
   void SendFetchCameraRollItemsRequest();
+  void ClearCurrentItems();
 
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;

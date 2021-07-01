@@ -102,6 +102,16 @@ enum FindMyDeviceCapability {
   NOT_ALLOWED = 1;
 }
 
+// Information about access to the camera roll feature on a connected Android
+// device
+message CameraRollAccessState {
+  // Whether the camera roll feature is enabled
+  bool feature_enabled = 1;
+  // Whether necessary storage permissions have been granted to access camera
+  // roll items
+  bool storage_permission_granted = 2;
+}
+
 message PhoneProperties {
   int32 battery_percentage = 1;
   ChargingState charging_state = 2;
@@ -126,6 +136,8 @@ message PhoneProperties {
 
   int32 android_version = 13;
   int64 gmscore_version = 14;
+
+  CameraRollAccessState camera_roll_access_state = 15;
 }
 
 message App {
