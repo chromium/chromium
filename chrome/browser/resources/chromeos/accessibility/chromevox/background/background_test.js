@@ -1287,23 +1287,23 @@ TEST_F('ChromeVoxBackgroundTest', 'ListItem', function() {
       function(root) {
         mockFeedback.call(doCmd('nextLine'))
             .expectSpeech('\u2022 ', 'apple', 'List item')
-            .expectBraille('\u2022 apple lstitm lst +3')
+            .expectBraille('\u2022 lst +3 apple lstitm')
             .call(doCmd('nextLine'))
             .expectSpeech('\u2022 ', 'grape', 'List item')
             .expectBraille('\u2022 grape lstitm')
             .call(doCmd('nextLine'))
             .expectSpeech('\u2022 ', 'banana', 'List item')
-            .expectBraille('\u2022 banana lstitm')
+            .expectBraille('\u2022 banana lst end lstitm')
 
             .call(doCmd('nextLine'))
             .expectSpeech('1. ', 'pork', 'List item')
-            .expectBraille('1. pork lstitm lst +3')
+            .expectBraille('1. lst +3 pork lstitm')
             .call(doCmd('nextLine'))
             .expectSpeech('2. ', 'beef', 'List item')
             .expectBraille('2. beef lstitm')
             .call(doCmd('nextLine'))
             .expectSpeech('3. ', 'chicken', 'List item')
-            .expectBraille('3. chicken lstitm')
+            .expectBraille('3. chicken lst end lstitm')
             .replay();
       });
 });

@@ -55,10 +55,7 @@ OutputRulesStr = class {
     }
 
     /**
-     * @param {{event: string,
-     *          role: string,
-     *          navigation: (string|undefined),
-     *          output: (string|undefined)}} rule
+     * @param {OutputRulesStr.Rule} rule
      */
     writeRule(rule) {
       if (this.disableLogging()) {
@@ -92,3 +89,12 @@ OutputRulesStr = class {
     this.str += '\n';
   }
 };
+
+/**
+ * @typedef {
+ * {event: string,
+ *  role: string,
+    navigation: (string|undefined),
+ *  output: (string|undefined)}}
+ */
+OutputRulesStr.Rule;

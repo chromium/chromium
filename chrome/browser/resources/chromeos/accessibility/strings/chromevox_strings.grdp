@@ -466,6 +466,9 @@
   <message desc="Spoken when the user exits a container." name="IDS_CHROMEVOX_EXITED_CONTAINER">
     Exited <ph name="type">$1</ph>.
   </message>
+  <message desc="Spoken when the user navigates to the end of a container. For example, the user moves to the last button within a toolbar." name="IDS_CHROMEVOX_END_OF_CONTAINER" is_accessibility_with_no_ui="true">
+    <ph name="type">$1</ph> end
+  </message>
   <message desc="Spoken before the list of elements when a live region of a page is removed." name="IDS_CHROMEVOX_LIVE_REGIONS_REMOVED">
     removed:
   </message>

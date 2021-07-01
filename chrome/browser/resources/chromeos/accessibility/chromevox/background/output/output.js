@@ -128,6 +128,13 @@ Output = class {
 
     /** @private {boolean} */
     this.drawFocusRing_ = true;
+
+    /**
+     * Tracks all ancestors which have received primary formatting in
+     * |ancestryHelper_|.
+     * @private {!WeakSet<!AutomationNode>}
+     */
+    this.formattedAncestors_ = new WeakSet();
   }
 
   /**
@@ -226,6 +233,7 @@ Output = class {
    */
   withSpeech(range, prevRange, type) {
     this.formatOptions_ = {speech: true, braille: false, auralStyle: false};
+    this.formattedAncestors_ = new WeakSet();
     this.render_(
         range, prevRange, type, this.speechBuffer_, this.speechRulesStr_);
     return this;
@@ -240,6 +248,7 @@ Output = class {
    */
   withRichSpeech(range, prevRange, type) {
     this.formatOptions_ = {speech: true, braille: false, auralStyle: true};
+    this.formattedAncestors_ = new WeakSet();
     this.render_(
         range, prevRange, type, this.speechBuffer_, this.speechRulesStr_);
     return this;
@@ -254,6 +263,7 @@ Output = class {
    */
   withBraille(range, prevRange, type) {
     this.formatOptions_ = {speech: false, braille: true, auralStyle: false};
+    this.formattedAncestors_ = new WeakSet();
 
     // Braille sometimes shows contextual information depending on role.
     if (range.start.equals(range.end) && range.start.node &&
@@ -285,6 +295,7 @@ Output = class {
    */
   withLocation(range, prevRange, type) {
     this.formatOptions_ = {speech: false, braille: false, auralStyle: false};
+    this.formattedAncestors_ = new WeakSet();
     this.render_(
         range, prevRange, type, [] /*unused output*/,
         new OutputRulesStr('') /*unused log*/);
@@ -422,6 +433,7 @@ Output = class {
     const node = opt_node || null;
 
     this.formatOptions_ = {speech: true, braille: false, auralStyle: false};
+    this.formattedAncestors_ = new WeakSet();
     this.format_({
       node,
       outputFormat: formatStr,
@@ -444,6 +456,7 @@ Output = class {
     const node = opt_node || null;
 
     this.formatOptions_ = {speech: false, braille: true, auralStyle: false};
+    this.formattedAncestors_ = new WeakSet();
     this.format_({
       node,
       outputFormat: formatStr,
@@ -613,9 +626,10 @@ Output = class {
    * @param {EventType|OutputEventType} type
    * @param {!Array<Spannable>} buff Buffer to receive rendered output.
    * @param {!OutputRulesStr} ruleStr
+   * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
    * @private
    */
-  render_(range, prevRange, type, buff, ruleStr) {
+  render_(range, prevRange, type, buff, ruleStr, optionalArgs = {}) {
     if (prevRange && !prevRange.isValid()) {
       prevRange = null;
     }
@@ -643,7 +657,7 @@ Output = class {
     if (range.isSubNode()) {
       this.subNode_(range, prevRange, type, buff, ruleStr);
     } else {
-      this.range_(range, prevRange, type, buff, ruleStr);
+      this.range_(range, prevRange, type, buff, ruleStr, optionalArgs);
     }
 
     this.hint_(range, uniqueAncestors, type, buff, ruleStr);
@@ -1145,7 +1159,9 @@ Output = class {
       prev = cursors.Range.fromNode(node);
     }
     ruleStr.writeToken(token);
-    this.render_(subrange, prev, OutputEventType.NAVIGATE, buff, ruleStr);
+    this.render_(
+        subrange, prev, OutputEventType.NAVIGATE, buff, ruleStr,
+        {suppressStartEndAncestry: true});
   }
 
   /**
@@ -1600,9 +1616,10 @@ Output = class {
    * @param {EventType|OutputEventType} type
    * @param {!Array<Spannable>} rangeBuff
    * @param {!OutputRulesStr} ruleStr
+   * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
    * @private
    */
-  range_(range, prevRange, type, rangeBuff, ruleStr) {
+  range_(range, prevRange, type, rangeBuff, ruleStr, optionalArgs = {}) {
     if (!range.start.node || !range.end.node) {
       return;
     }
@@ -1672,7 +1689,9 @@ Output = class {
       // Since the lca itself needs to be part of the ancestry output, use its
       // first child as a target.
       const target = lca.firstChild || lca;
-      this.ancestry_(target, prevRange.start.node, type, rangeBuff, ruleStr);
+      this.ancestry_(
+          target, prevRange.start.node, type, rangeBuff, ruleStr,
+          {suppressStartEndAncestry: true});
     }
   }
 
@@ -1682,9 +1701,14 @@ Output = class {
    * @param {EventType|OutputEventType} type
    * @param {!Array<Spannable>} buff
    * @param {!OutputRulesStr} ruleStr
+   * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
    * @private
    */
-  ancestry_(node, prevNode, type, buff, ruleStr) {
+  ancestry_(node, prevNode, type, buff, ruleStr, optionalArgs = {}) {
+    if (localStorage['useVerboseMode'] === 'false') {
+      return;
+    }
+
     if (Output.ROLE_INFO_[node.role] &&
         Output.ROLE_INFO_[node.role].ignoreAncestry) {
       return;
@@ -1711,10 +1735,106 @@ Output = class {
       }
       return rest.concat(contextFirst.reverse());
     }
-    const prevUniqueAncestors =
+
+    // Enter, leave ancestry.
+    const leaveAncestors =
         byContextFirst(AutomationUtil.getUniqueAncestors(node, prevNode));
-    const uniqueAncestors =
+    const enterAncestors =
         byContextFirst(AutomationUtil.getUniqueAncestors(prevNode, node));
+    this.ancestryHelper_({
+      node,
+      prevNode,
+      buff,
+      ruleStr,
+      type,
+      ancestors: enterAncestors,
+      formatName: 'enter',
+      secondaryAncestors: leaveAncestors,
+      secondaryFormatName: 'leave'
+    });
+
+    if (optionalArgs.suppressStartEndAncestry) {
+      return;
+    }
+
+    // Start of, end of ancestry.
+    let afterEndNode = AutomationUtil.findNextNode(
+        node, Dir.FORWARD, AutomationPredicate.leafOrStaticText,
+        {skipInitialSubtree: true});
+    if (!afterEndNode) {
+      afterEndNode = AutomationUtil.getTopLevelRoot(node) || node.root;
+    }
+    let afterEndAncestors = [];
+    if (afterEndNode) {
+      afterEndAncestors =
+          byContextFirst(AutomationUtil.getUniqueAncestors(afterEndNode, node));
+    }
+
+    let beforeStartNode = AutomationUtil.findNextNode(
+        node, Dir.BACKWARD, AutomationPredicate.leafOrStaticText,
+        {skipInitialAncestry: true});
+    if (!beforeStartNode) {
+      beforeStartNode = AutomationUtil.getTopLevelRoot(node) || node.root;
+    }
+    let beforeStartAncestors = [];
+    if (beforeStartNode) {
+      beforeStartAncestors = byContextFirst(
+          AutomationUtil.getUniqueAncestors(beforeStartNode, node));
+    }
+
+    // If there are these types of ancestors, we need to prefer the before start
+    // ancestors.
+    if (beforeStartAncestors.length > 0 && afterEndAncestors.length > 0) {
+      const set = new WeakSet();
+      for (let i = 0, item; item = beforeStartAncestors[i]; i++) {
+        set.add(item);
+      }
+
+      for (let i = 0, item; item = afterEndAncestors[i]; i++) {
+        if (set.has(item)) {
+          afterEndAncestors.splice(i, 1);
+        }
+      }
+    }
+    this.ancestryHelper_({
+      node,
+      prevNode,
+      buff,
+      ruleStr,
+      type,
+      ancestors: beforeStartAncestors,
+      formatName: 'startOf',
+      secondaryAncestors: afterEndAncestors,
+      secondaryFormatName: 'endOf'
+    });
+  }
+
+  /**
+   * @param {{
+   * node: !AutomationNode,
+   * prevNode: !AutomationNode,
+   * type: (EventType|OutputEventType),
+   * buff: !Array<Spannable>,
+   * ruleStr: !OutputRulesStr,
+   * ancestors: !Array<!AutomationNode>,
+   * formatName: string,
+   * secondaryAncestors: !Array<!AutomationNode>,
+   * secondaryFormatName: string
+   * }} args
+   * @private
+   */
+  ancestryHelper_(args) {
+    let {
+      node,
+      prevNode,
+      buff,
+      ruleStr,
+      type,
+      ancestors,
+      formatName,
+      secondaryAncestors,
+      secondaryFormatName
+    } = args;
 
     /** Following types are contained: {event, role, navigation, output} */
     const rule = {};
@@ -1725,33 +1845,39 @@ Output = class {
 
     // Hash the roles we've entered.
     const enteredRoleSet = {};
-    for (let j = uniqueAncestors.length - 1, hashNode;
-         (hashNode = uniqueAncestors[j]); j--) {
+    for (let j = ancestors.length - 1, hashNode; (hashNode = ancestors[j]);
+         j--) {
       enteredRoleSet[hashNode.role] = true;
     }
 
-    for (let i = 0, formatPrevNode; (formatPrevNode = prevUniqueAncestors[i]);
-         i++) {
+    for (let i = 0, secondaryFormatNode;
+         (secondaryFormatNode = secondaryAncestors[i]); i++) {
       // This prevents very repetitive announcements.
-      if (enteredRoleSet[formatPrevNode.role] ||
-          node.role === formatPrevNode.role ||
-          localStorage['useVerboseMode'] === 'false') {
+      if (enteredRoleSet[secondaryFormatNode.role] ||
+          node === secondaryFormatNode) {
         continue;
       }
 
+      const secondaryRole = secondaryFormatNode.role;
       const parentRole =
-          (Output.ROLE_INFO_[formatPrevNode.role] || {}).inherits;
-      rule.role = (eventBlock[formatPrevNode.role] || {}).leave !== undefined ?
-          formatPrevNode.role :
-          (eventBlock[parentRole] || {}).leave !== undefined ? parentRole :
-                                                               'default';
-      if (eventBlock[rule.role].leave &&
-          localStorage['useVerboseMode'] === 'true') {
-        rule.navigation = 'leave';
-        ruleStr.writeRule(rule);
+          (Output.ROLE_INFO_[secondaryFormatNode.role] || {}).inherits;
+      if (secondaryRole && eventBlock[secondaryRole] &&
+          eventBlock[secondaryRole][secondaryFormatName]) {
+        rule.role = secondaryRole;
+      } else if (
+          parentRole && eventBlock[parentRole] &&
+          eventBlock[parentRole][secondaryFormatName]) {
+        rule.role = parentRole;
+      } else {
+        rule.role = 'default';
+      }
+
+      if (eventBlock[rule.role][secondaryFormatName]) {
+        rule.navigation = secondaryFormatName;
+        ruleStr.writeRule(/** @type {OutputRulesStr.Rule} */ (rule));
         this.format_({
-          node: formatPrevNode,
-          outputFormat: eventBlock[rule.role].leave,
+          node: secondaryFormatNode,
+          outputFormat: eventBlock[rule.role][secondaryFormatName],
           outputBuffer: buff,
           outputRuleString: ruleStr,
           opt_prevNode: prevNode
@@ -1762,33 +1888,43 @@ Output = class {
     // Customize for braille node annotations.
     const originalBuff = buff;
     const enterRole = {};
-    for (let j = uniqueAncestors.length - 1, formatNode;
-         (formatNode = uniqueAncestors[j]); j--) {
-      const parentRole = (Output.ROLE_INFO_[formatNode.role] || {}).inherits;
-      rule.role = (eventBlock[formatNode.role] || {}).enter !== undefined ?
-          formatNode.role :
-          (eventBlock[parentRole] || {}).enter !== undefined ? parentRole :
-                                                               'default';
-      if (eventBlock[rule.role].enter) {
-        rule.navigation = 'enter';
-        if (enterRole[formatNode.role]) {
-          continue;
-        }
+    for (let j = ancestors.length - 1, formatNode; (formatNode = ancestors[j]);
+         j--) {
+      if (enterRole[formatNode.role]) {
+        continue;
+      }
+      if (this.formattedAncestors_.has(formatNode)) {
+        continue;
+      }
 
-        rule.output = eventBlock[rule.role].enter.speak ? 'speak' : undefined;
+      const parentRole = (Output.ROLE_INFO_[formatNode.role] || {}).inherits;
+      if (eventBlock[formatNode.role] &&
+          eventBlock[formatNode.role][formatName]) {
+        rule.role = formatNode.role;
+      } else if (eventBlock[parentRole] && eventBlock[parentRole][formatName]) {
+        rule.role = parentRole;
+      } else {
+        rule.role = 'default';
+      }
+
+      if (eventBlock[rule.role][formatName]) {
+        rule.navigation = formatName;
+        rule.output =
+            eventBlock[rule.role][formatName].speak ? 'speak' : undefined;
         if (this.formatOptions_.braille) {
           buff = [];
           ruleStr.bufferClear();
-          if (eventBlock[rule.role].enter.braille) {
+          if (eventBlock[rule.role][formatName].braille) {
             rule.output = 'braille';
           }
         }
 
         enterRole[formatNode.role] = true;
-        ruleStr.writeRule(rule);
+        ruleStr.writeRule /** @type {OutputRulesStr.Rule} */ ((rule));
         const enterFormat = rule.output ?
-            eventBlock[rule.role]['enter'][rule.output] :
-            eventBlock[rule.role]['enter'];
+            eventBlock[rule.role][formatName][rule.output] :
+            eventBlock[rule.role][formatName];
+        this.formattedAncestors_.add(formatNode);
         this.format_({
           node: formatNode,
           outputFormat: enterFormat,
@@ -2417,15 +2553,15 @@ Output.ROLE_INFO_ = {
   columnHeader: {msgId: 'role_columnheader', inherits: 'cell'},
   comboBoxMenuButton: {msgId: 'role_combobox', earconId: 'LISTBOX'},
   complementary: {msgId: 'role_complementary', inherits: 'abstractContainer'},
-  comment: {msgId: 'role_comment', inherits: 'abstractContainer'},
+  comment: {msgId: 'role_comment', inherits: 'abstractSpan'},
   contentDeletion: {
     msgId: 'role_content_deletion',
-    inherits: 'abstractContainer',
+    inherits: 'abstractSpan',
     contextOrder: OutputContextOrder.FIRST
   },
   contentInsertion: {
     msgId: 'role_content_insertion',
-    inherits: 'abstractContainer',
+    inherits: 'abstractSpan',
     contextOrder: OutputContextOrder.FIRST
   },
   contentInfo: {msgId: 'role_contentinfo', inherits: 'abstractContainer'},
@@ -2440,11 +2576,11 @@ Output.ROLE_INFO_ = {
     ignoreAncestry: true
   },
   directory: {msgId: 'role_directory', inherits: 'abstractContainer'},
-  docAbstract: {msgId: 'role_doc_abstract', inherits: 'abstractContainer'},
+  docAbstract: {msgId: 'role_doc_abstract', inherits: 'abstractSpan'},
   docAcknowledgments:
-      {msgId: 'role_doc_acknowledgments', inherits: 'abstractContainer'},
+      {msgId: 'role_doc_acknowledgments', inherits: 'abstractSpan'},
   docAfterword: {msgId: 'role_doc_afterword', inherits: 'abstractContainer'},
-  docAppendix: {msgId: 'role_doc_appendix', inherits: 'abstractContainer'},
+  docAppendix: {msgId: 'role_doc_appendix', inherits: 'abstractSpan'},
   docBackLink:
       {msgId: 'role_doc_back_link', earconId: 'LINK', inherits: 'link'},
   docBiblioEntry: {
@@ -2452,17 +2588,16 @@ Output.ROLE_INFO_ = {
     earconId: 'LIST_ITEM',
     inherits: 'abstractItem'
   },
-  docBibliography:
-      {msgId: 'role_doc_bibliography', inherits: 'abstractContainer'},
+  docBibliography: {msgId: 'role_doc_bibliography', inherits: 'abstractSpan'},
   docBiblioRef:
       {msgId: 'role_doc_biblio_ref', earconId: 'LINK', inherits: 'link'},
-  docChapter: {msgId: 'role_doc_chapter', inherits: 'abstractContainer'},
-  docColophon: {msgId: 'role_doc_colophon', inherits: 'abstractContainer'},
-  docConclusion: {msgId: 'role_doc_conclusion', inherits: 'abstractContainer'},
+  docChapter: {msgId: 'role_doc_chapter', inherits: 'abstractSpan'},
+  docColophon: {msgId: 'role_doc_colophon', inherits: 'abstractSpan'},
+  docConclusion: {msgId: 'role_doc_conclusion', inherits: 'abstractSpan'},
   docCover: {msgId: 'role_doc_cover', inherits: 'image'},
-  docCredit: {msgId: 'role_doc_credit', inherits: 'abstractContainer'},
-  docCredits: {msgId: 'role_doc_credits', inherits: 'abstractContainer'},
-  docDedication: {msgId: 'role_doc_dedication', inherits: 'abstractContainer'},
+  docCredit: {msgId: 'role_doc_credit', inherits: 'abstractSpan'},
+  docCredits: {msgId: 'role_doc_credits', inherits: 'abstractSpan'},
+  docDedication: {msgId: 'role_doc_dedication', inherits: 'abstractSpan'},
   docEndnote: {
     msgId: 'role_doc_endnote',
     earconId: 'LIST_ITEM',
@@ -2470,36 +2605,35 @@ Output.ROLE_INFO_ = {
   },
   docEndnotes:
       {msgId: 'role_doc_endnotes', earconId: 'LISTBOX', inherits: 'list'},
-  docEpigraph: {msgId: 'role_doc_epigraph', inherits: 'abstractContainer'},
-  docEpilogue: {msgId: 'role_doc_epilogue', inherits: 'abstractContainer'},
-  docErrata: {msgId: 'role_doc_errata', inherits: 'abstractContainer'},
-  docExample: {msgId: 'role_doc_example', inherits: 'abstractContainer'},
+  docEpigraph: {msgId: 'role_doc_epigraph', inherits: 'abstractSpan'},
+  docEpilogue: {msgId: 'role_doc_epilogue', inherits: 'abstractSpan'},
+  docErrata: {msgId: 'role_doc_errata', inherits: 'abstractSpan'},
+  docExample: {msgId: 'role_doc_example', inherits: 'abstractSpan'},
   docFootnote: {
     msgId: 'role_doc_footnote',
     earconId: 'LIST_ITEM',
     inherits: 'abstractItem'
   },
-  docForeword: {msgId: 'role_doc_foreword', inherits: 'abstractContainer'},
-  docGlossary: {msgId: 'role_doc_glossary', inherits: 'abstractContainer'},
+  docForeword: {msgId: 'role_doc_foreword', inherits: 'abstractSpan'},
+  docGlossary: {msgId: 'role_doc_glossary', inherits: 'abstractSpan'},
   docGlossRef:
       {msgId: 'role_doc_gloss_ref', earconId: 'LINK', inherits: 'link'},
-  docIndex: {msgId: 'role_doc_index', inherits: 'abstractContainer'},
-  docIntroduction:
-      {msgId: 'role_doc_introduction', inherits: 'abstractContainer'},
+  docIndex: {msgId: 'role_doc_index', inherits: 'abstractSpan'},
+  docIntroduction: {msgId: 'role_doc_introduction', inherits: 'abstractSpan'},
   docNoteRef: {msgId: 'role_doc_note_ref', earconId: 'LINK', inherits: 'link'},
-  docNotice: {msgId: 'role_doc_notice', inherits: 'abstractContainer'},
-  docPageBreak: {msgId: 'role_doc_page_break', inherits: 'abstractContainer'},
-  docPageFooter: {msgId: 'role_doc_page_footer', inherits: 'abstractContainer'},
-  docPageHeader: {msgId: 'role_doc_page_header', inherits: 'abstractContainer'},
-  docPageList: {msgId: 'role_doc_page_list', inherits: 'abstractContainer'},
-  docPart: {msgId: 'role_doc_part', inherits: 'abstractContainer'},
-  docPreface: {msgId: 'role_doc_preface', inherits: 'abstractContainer'},
-  docPrologue: {msgId: 'role_doc_prologue', inherits: 'abstractContainer'},
-  docPullquote: {msgId: 'role_doc_pullquote', inherits: 'abstractContainer'},
-  docQna: {msgId: 'role_doc_qna', inherits: 'abstractContainer'},
+  docNotice: {msgId: 'role_doc_notice', inherits: 'abstractSpan'},
+  docPageBreak: {msgId: 'role_doc_page_break', inherits: 'abstractSpan'},
+  docPageFooter: {msgId: 'role_doc_page_footer', inherits: 'abstractSpan'},
+  docPageHeader: {msgId: 'role_doc_page_header', inherits: 'abstractSpan'},
+  docPageList: {msgId: 'role_doc_page_list', inherits: 'abstractSpan'},
+  docPart: {msgId: 'role_doc_part', inherits: 'abstractSpan'},
+  docPreface: {msgId: 'role_doc_preface', inherits: 'abstractSpan'},
+  docPrologue: {msgId: 'role_doc_prologue', inherits: 'abstractSpan'},
+  docPullquote: {msgId: 'role_doc_pullquote', inherits: 'abstractSpan'},
+  docQna: {msgId: 'role_doc_qna', inherits: 'abstractSpan'},
   docSubtitle: {msgId: 'role_doc_subtitle', inherits: 'heading'},
-  docTip: {msgId: 'role_doc_tip', inherits: 'abstractContainer'},
-  docToc: {msgId: 'role_doc_toc', inherits: 'abstractContainer'},
+  docTip: {msgId: 'role_doc_tip', inherits: 'abstractSpan'},
+  docToc: {msgId: 'role_doc_toc', inherits: 'abstractSpan'},
   document: {msgId: 'role_document', inherits: 'abstractContainer'},
   form: {msgId: 'role_form', inherits: 'abstractContainer'},
   graphicsDocument:
@@ -2527,7 +2661,7 @@ Output.ROLE_INFO_ = {
       {msgId: 'role_listitem', earconId: 'LIST_ITEM', inherits: 'abstractItem'},
   log: {msgId: 'role_log', inherits: 'abstractNameFromContents'},
   main: {msgId: 'role_main', inherits: 'abstractContainer'},
-  mark: {msgId: 'role_mark', inherits: 'abstractContainer'},
+  mark: {msgId: 'role_mark', inherits: 'abstractSpan'},
   marquee: {msgId: 'role_marquee', inherits: 'abstractNameFromContents'},
   math: {msgId: 'role_math', inherits: 'abstractContainer'},
   menu: {
@@ -2557,7 +2691,7 @@ Output.ROLE_INFO_ = {
   radioGroup: {msgId: 'role_radiogroup', inherits: 'abstractContainer'},
   region: {msgId: 'role_region', inherits: 'abstractContainer'},
   rootWebArea: {contextOrder: OutputContextOrder.FIRST},
-  row: {msgId: 'role_row', inherits: 'abstractContainer'},
+  row: {msgId: 'role_row'},
   rowHeader: {msgId: 'role_rowheader', inherits: 'cell'},
   scrollBar: {msgId: 'role_scrollbar', inherits: 'abstractRange'},
   section: {msgId: 'role_region', inherits: 'abstractContainer'},
@@ -2573,7 +2707,7 @@ Output.ROLE_INFO_ = {
   status: {msgId: 'role_status', inherits: 'abstractNameFromContents'},
   suggestion: {
     msgId: 'role_suggestion',
-    inherits: 'abstractContainer',
+    inherits: 'abstractSpan',
     contextOrder: OutputContextOrder.FIRST
   },
   tab: {msgId: 'role_tab'},
@@ -2680,6 +2814,9 @@ Output.PRESSED_STATE_MAP = {
  * enter: The rule for when ChromeVox range enters the node's subtree.
  *    Can contain speak and braille properties.
  * leave: The rule for when ChromeVox range exits the node's subtree.
+ * startOf: The rule applied for each ancestor diff of a range and its previous
+ * leaf range. endOf: The rule applied for each ancestor diff of a range and its
+ * next leaf range.
  */
 Output.RULES = {
   navigate: {
@@ -2689,8 +2826,8 @@ Output.RULES = {
       braille: ``
     },
     abstractContainer: {
-      enter: `$nameFromNode $role $state $description`,
-      leave: `@exited_container($role)`
+      startOf: `$nameFromNode $role $state $description`,
+      endOf: `@end_of_container($role)`
     },
     abstractItem: {
       // Note that ChromeVox generally does not output position/count. Only for
@@ -2703,8 +2840,9 @@ Output.RULES = {
           $description $restriction`
     },
     abstractList: {
-      enter: `$nameFromNode $role @@list_with_items($setSize)
-          $restriction $description`
+      startOf: `$nameFromNode $role @@list_with_items($setSize)
+          $restriction $description`,
+      endOf: `@end_of_container($role)`
     },
     abstractNameFromContents: {
       speak: `$nameOrDescendants $node(activeDescendant) $value $state
@@ -2716,6 +2854,10 @@ Output.RULES = {
           $state $restriction
           $if($minValueForRange, @aria_value_min($minValueForRange))
           $if($maxValueForRange, @aria_value_max($maxValueForRange))`
+    },
+    abstractSpan: {
+      enter: `$nameFromNode $role $state $description`,
+      leave: `@exited_container($role)`
     },
     alert: {
       enter: `$name $role $state`,
@@ -2855,7 +2997,7 @@ Output.RULES = {
     rootWebArea: {enter: `$name`, speak: `$if($name, $name, @web_content)`},
     region: {speak: `$state $nameOrTextContent $description $roleDescription`},
     row: {
-      enter: `$node(tableRowHeader) $roleDescription`,
+      startOf: `$node(tableRowHeader) $roleDescription`,
       speak: `$name $node(activeDescendant) $value $state $restriction $role
           $if($selected, @aria_selected_true) $description`
     },
