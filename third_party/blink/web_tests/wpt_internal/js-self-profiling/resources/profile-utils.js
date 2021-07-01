@@ -8,7 +8,7 @@
   // Creates a new profile that captures the execution of when the given
   // function calls the `sample` function passed to it.
   async function profileFunction(func) {
-    const profiler = await performance.profile({
+    const profiler = new Profiler({
       sampleInterval: TEST_SAMPLE_INTERVAL,
     });
 

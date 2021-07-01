@@ -19,7 +19,9 @@
 
 namespace blink {
 
+class ExceptionState;
 class ScriptState;
+class ProfilerInitOptions;
 
 // A web-exposed JS sampling profiler created via blink::ProfilerGroup,
 // wrapping a handle to v8::CpuProfiler. Records samples periodically from the
@@ -43,6 +45,10 @@ class CORE_EXPORT Profiler final : public EventTargetWithInlineData {
         time_origin_(time_origin) {}
 
   ~Profiler() override = default;
+
+  static Profiler* Create(ScriptState*,
+                          const ProfilerInitOptions*,
+                          ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
 

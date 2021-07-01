@@ -6,9 +6,10 @@
 </head>
 <body>
   <script>
-    promise_test(t => {
-      const profiler = performance.profile({ sampleInterval: 10 });
-      return promise_rejects_dom(t, 'NotAllowedError', profiler);
+    test(t => {
+      assert_throws_dom('NotAllowedError', () => {
+        new Profiler({ sampleInterval: 10 });
+      });
     }, 'profiling should throw without passing document policy');
   </script>
 </body>

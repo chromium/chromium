@@ -7,11 +7,11 @@
 <body>
   <script>
     promise_test(async t => {
-      const profiler_a = await performance.profile({
+      const profiler_a = new Profiler({
         sampleInterval: 10,
       });
 
-      const profiler_b = await performance.profile({
+      const profiler_b = new Profiler({
         sampleInterval: 10,
       });
 

@@ -951,34 +951,6 @@ void Performance::clearMeasures(const AtomicString& measure_name) {
   GetUserTiming().ClearMeasures(measure_name);
 }
 
-ScriptPromise Performance::profile(ScriptState* script_state,
-                                   const ProfilerInitOptions* options,
-                                   ExceptionState& exception_state) {
-  auto* execution_context = ExecutionContext::From(script_state);
-  DCHECK(execution_context);
-  DCHECK(
-      RuntimeEnabledFeatures::ExperimentalJSProfilerEnabled(execution_context));
-
-  bool can_profile = false;
-  if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
-    can_profile = ProfilerGroup::CanProfile(window, &exception_state,
-                                            ReportOptions::kReportOnFailure);
-  }
-
-  if (!can_profile)
-    return ScriptPromise();
-
-  auto* profiler_group = ProfilerGroup::From(script_state->GetIsolate());
-  DCHECK(profiler_group);
-
-  auto* profiler = profiler_group->CreateProfiler(
-      script_state, *options, time_origin_, exception_state);
-  if (exception_state.HadException())
-    return ScriptPromise();
-
-  return ScriptPromise::Cast(script_state, ToV8(profiler, script_state));
-}
-
 void Performance::RegisterPerformanceObserver(PerformanceObserver& observer) {
   observer_filter_options_ |= observer.FilterOptions();
   observers_.insert(&observer);

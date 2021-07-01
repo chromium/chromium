@@ -9,7 +9,7 @@
 <body>
   <script>
     promise_test(async t => {
-      const profiler = await performance.profile({
+      const profiler = new Profiler({
         sampleInterval: 10,
         maxBufferSize: 2,
       });
@@ -25,8 +25,8 @@
 
     promise_test(async t => {
       const pf = [];
-      pf[0] = await performance.profile({ sampleInterval: 10 });
-      pf[1] = await performance.profile({ sampleInterval: 10,  maxBufferSize: 1 });
+      pf[0] = new Profiler({ sampleInterval: 10 });
+      pf[1] = new Profiler({ sampleInterval: 10,  maxBufferSize: 1 });
 
       const watcher = new EventWatcher(t, pf[1], ['samplebufferfull']);
       pf[0].addEventListener("samplebufferfull", ()=>{

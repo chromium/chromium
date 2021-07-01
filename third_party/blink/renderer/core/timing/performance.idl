@@ -71,10 +71,6 @@ interface Performance : EventTarget {
     // a dedicated worker is included in the result of the API call in Window.
     [MeasureAs=MeasureMemory, Exposed=(Window,ServiceWorker,SharedWorker), CallWith=ScriptState, RuntimeEnabled=MeasureMemory, RaisesException, CrossOriginIsolated] Promise<MemoryMeasurement> measureUserAgentSpecificMemory();
 
-    // JS Self-Profiling API
-    // https://github.com/WICG/js-self-profiling/
-    [MeasureAs=JSSelfProfiling, CallWith=ScriptState, RuntimeEnabled=ExperimentalJSProfiler, RaisesException] Promise<Profiler> profile(ProfilerInitOptions options);
-
     // Event Timing
     [Exposed=Window, SameObject, SaveSameObject, RuntimeEnabled=EventTiming] readonly attribute EventCounts eventCounts;
 

@@ -6218,7 +6218,6 @@ interface Performance : EventTarget
     method mark
     method measure
     method now
-    method profile
     method setResourceTimingBufferSize
     method toJSON
     setter onresourcetimingbufferfull

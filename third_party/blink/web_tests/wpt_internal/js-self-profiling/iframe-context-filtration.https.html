@@ -14,7 +14,7 @@
                  'wait for load event');
 
     promise_test(async t => {
-      const profiler = await performance.profile({
+      const profiler = new Profiler({
         sampleInterval: 10,
       });
 

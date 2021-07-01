@@ -14,7 +14,7 @@ generate_token.py http://127.0.0.1:8000 ExperimentalJSProfiler --expire-timestam
 test(t => {
   OriginTrialsHelper.check_properties_exist(this,
       {
-        'Performance': ['profile'],
+        'Profiler': ['stop'],
       },
   );
 }, "JS Self-Profiling API exposed in Origin-Trial enabled document.");

@@ -6,10 +6,49 @@
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
+
+Profiler* Profiler::Create(ScriptState* script_state,
+                           const ProfilerInitOptions* options,
+                           ExceptionState& exception_state) {
+  auto* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context);
+  DCHECK(
+      RuntimeEnabledFeatures::ExperimentalJSProfilerEnabled(execution_context));
+
+  Performance* performance = nullptr;
+  bool can_profile = false;
+  if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
+    can_profile = ProfilerGroup::CanProfile(window, &exception_state,
+                                            ReportOptions::kReportOnFailure);
+    performance = DOMWindowPerformance::performance(*window);
+  }
+
+  if (!can_profile) {
+    DCHECK(exception_state.HadException());
+    return nullptr;
+  }
+
+  DCHECK(performance);
+
+  auto* profiler_group = ProfilerGroup::From(script_state->GetIsolate());
+  DCHECK(profiler_group);
+
+  auto* profiler = profiler_group->CreateProfiler(
+      script_state, *options,
+      base::TimeTicks() +
+          base::TimeDelta::FromSecondsD(performance->GetTimeOrigin()),
+      exception_state);
+  if (exception_state.HadException())
+    return nullptr;
+
+  return profiler;
+}
 
 void Profiler::Trace(Visitor* visitor) const {
   visitor->Trace(profiler_group_);

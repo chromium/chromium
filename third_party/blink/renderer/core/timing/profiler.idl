@@ -7,5 +7,7 @@
 interface Profiler : EventTarget {
   readonly attribute DOMHighResTimeStamp sampleInterval;
   readonly attribute boolean stopped;
+
+  [MeasureAs=JSSelfProfiling, CallWith=ScriptState, RaisesException] constructor(ProfilerInitOptions options);
   [CallWith=ScriptState] Promise<ProfilerTrace> stop();
 };
