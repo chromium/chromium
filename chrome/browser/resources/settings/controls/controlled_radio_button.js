@@ -7,33 +7,44 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 import '../settings_shared_css.js';
 
-import {CrRadioButtonBehavior} from '//resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
+import {CrRadioButtonBehavior, CrRadioButtonBehaviorInterface} from '//resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
 import {assert} from '//resources/js/assert.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {prefToString} from '../prefs/pref_util.js';
 
-import {PrefControlBehavior} from './pref_control_behavior.js';
+import {PrefControlBehavior, PrefControlBehaviorInterface} from './pref_control_behavior.js';
 
-Polymer({
-  is: 'controlled-radio-button',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrRadioButtonBehaviorInterface}
+ * @implements {PrefControlBehaviorInterface}
+ */
+const ControlledRadioButtonElementBase = mixinBehaviors(
+    [PrefControlBehavior, CrRadioButtonBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ControlledRadioButtonElement extends ControlledRadioButtonElementBase {
+  static get is() {
+    return 'controlled-radio-button';
+  }
 
-  behaviors: [
-    PrefControlBehavior,
-    CrRadioButtonBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  observers: [
-    'updateDisabled_(pref.enforcement)',
-  ],
+  static get observers() {
+    return [
+      'updateDisabled_(pref.enforcement)',
+    ];
+  }
 
   /** @private */
   updateDisabled_() {
     this.disabled =
         this.pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -41,7 +52,7 @@ Polymer({
    */
   showIndicator_() {
     return this.disabled && this.name === prefToString(assert(this.pref));
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -51,5 +62,8 @@ Polymer({
     // Disallow <controlled-radio-button on-click="..."> when disabled.
     e.preventDefault();
     e.stopPropagation();
-  },
-});
+  }
+}
+
+customElements.define(
+    ControlledRadioButtonElement.is, ControlledRadioButtonElement);

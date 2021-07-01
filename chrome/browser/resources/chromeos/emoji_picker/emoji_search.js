@@ -81,17 +81,19 @@ export class EmojiSearch extends PolymerElement {
     const isUp = ev.key === 'ArrowUp';
     const isDown = ev.key === 'ArrowDown';
     const isEnter = ev.key === 'Enter';
-    if (isEnter) {
-      this.shadowRoot.querySelector('.result:focus-within').click();
+    // get emoji-button which has focus.
+    /** @type {Element} */
+    const focusedResult = this.shadowRoot.querySelector('.result:focus-within');
+
+    if (isEnter && focusedResult) {
+      focusedResult.click();
     }
     if (!isUp && !isDown)
       return;
 
     ev.preventDefault();
     ev.stopPropagation();
-    // get emoji-button which has focus.
-    /** @type {Element} */
-    const focusedResult = this.shadowRoot.querySelector('.result:focus-within');
+
     if (!focusedResult)
       return;
 

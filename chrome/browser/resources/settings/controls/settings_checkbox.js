@@ -10,37 +10,52 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '../settings_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBooleanControlBehavior} from './settings_boolean_control_behavior.js';
+import {SettingsBooleanControlBehavior, SettingsBooleanControlBehaviorInterface} from './settings_boolean_control_behavior.js';
 
-Polymer({
-  is: 'settings-checkbox',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBooleanControlBehaviorInterface}
+ */
+const SettingsCheckboxElementBase =
+    mixinBehaviors([SettingsBooleanControlBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
+  static get is() {
+    return 'settings-checkbox';
+  }
 
-  behaviors: [SettingsBooleanControlBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Alternative source for the sub-label that can contain html markup.
-     * Only use with trusted input.
-     */
-    subLabelHtml: {
-      type: String,
-      value: '',
-      observer: 'onSubLabelHtmlChanged_',
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * Alternative source for the sub-label that can contain html markup.
+       * Only use with trusted input.
+       */
+      subLabelHtml: {
+        type: String,
+        value: '',
+        observer: 'onSubLabelHtmlChanged_',
+      },
+    };
+  }
 
-  observers: [
-    'onSubLabelChanged_(subLabel, subLabelHtml)',
-  ],
+  static get observers() {
+    return [
+      'onSubLabelChanged_(subLabel, subLabelHtml)',
+    ];
+  }
 
   /** @private */
   onSubLabelChanged_() {
     this.$.checkbox.ariaDescription = this.$.subLabel.textContent;
-  },
+  }
 
   /**
    * Don't let clicks on a link inside the secondary label reach the checkbox.
@@ -51,7 +66,7 @@ Polymer({
     links.forEach((link) => {
       link.addEventListener('click', this.stopPropagation);
     });
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -59,7 +74,7 @@ Polymer({
    */
   stopPropagation(event) {
     event.stopPropagation();
-  },
+  }
 
   /**
    * @param {string} subLabel
@@ -69,6 +84,7 @@ Polymer({
    */
   hasSubLabel_(subLabel, subLabelHtml) {
     return !!subLabel || !!subLabelHtml;
-  },
+  }
+}
 
-});
+customElements.define(SettingsCheckboxElement.is, SettingsCheckboxElement);

@@ -114,7 +114,17 @@
  * are used to inform the save as dialog what file should be created. Once the
  * native filesystem api allows, this save as dialog will additionally have the
  * filename input be pre-filled with `suggestedName`.
- * @typedef {{suggestedName: string, mimeType: string}}
+ * If a non-zero startInToken is provided, the corresponding file handle is used
+ * to start the file picker in the same folder as that file.
+ * The `accept` array contains keys of preconfigured file filters to include on
+ * the file picker file type dropdown. These are keys such as "PDF", "JPG",
+ * "PNG", etc. that are known on both sides of API boundary.
+ * @typedef {{
+ *   suggestedName: string,
+ *   mimeType: string,
+ *   startInToken: number,
+ *   accept: !Array<string>
+ * }}
  */
 /* #export */ let RequestSaveFileMessage;
 

@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
+#include "components/arc/arc_util.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -303,13 +304,27 @@ std::string ToLiveStatusString(mojom::AccessibilityLiveRegionType type) {
   return std::string();  // Placeholder.
 }
 
-aura::Window* FindArcWindow(aura::Window* window) {
+bool IsArcOrGhostWindow(const aura::Window* window) {
+  return window && (ash::IsArcWindow(window) ||
+                    arc::GetWindowTaskOrSessionId(window).has_value());
+}
+
+aura::Window* FindWindowToParent(bool (*predicate)(const aura::Window*),
+                                 aura::Window* window) {
   while (window) {
-    if (ash::IsArcWindow(window))
+    if (predicate(window))
       return window;
     window = window->parent();
   }
   return nullptr;
+}
+
+aura::Window* FindArcWindow(aura::Window* window) {
+  return FindWindowToParent(ash::IsArcWindow, window);
+}
+
+aura::Window* FindArcOrGhostWindow(aura::Window* window) {
+  return FindWindowToParent(IsArcOrGhostWindow, window);
 }
 
 }  // namespace arc

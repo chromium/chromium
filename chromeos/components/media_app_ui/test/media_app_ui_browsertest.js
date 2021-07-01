@@ -607,36 +607,34 @@ MediaAppUIBrowserTest.OverwriteOriginalPickerFallback = async () => {
       pickedFile.lastWritable.writes[0], {position: 0, size: 'Foo'.length});
 };
 
-// Tests that invalid characters in file extensions are stripped before being
-// passed to showSaveFilePicker.
+// Tests that extensions in the `accept` option passed to showSaveFilePicker is
+// correctly configured when only a MIME type is provided.
 MediaAppUIBrowserTest.FilePickerValidateExtension = async () => {
-  function pick(suggestedName, mimeType = 'image/jpeg') {
+  const JPG_EXTENSIONS =
+      ['.jpg', '.jpeg', '.jpe', '.jfif', '.jif', '.jfi', '.pjpeg', '.pjp'];
+  function pick(mimeType) {
     return new Promise(resolve => {
       window.showSaveFilePicker = options => {
-        resolve(options.types.map(t => Object.values(t.accept || {})));
+        if (options.types) {
+          assertEquals(!!options.excludeAcceptAllOption, true);
+          resolve(options.types.map(t => Object.values(t.accept || {})));
+        } else {
+          assertEquals(!!options.excludeAcceptAllOption, false);
+          resolve(null);
+        }
         // The handle is unused in the test, but needed to keep closure happy.
         return Promise.resolve(/** @type {!FileSystemFileHandle}*/ (null));
       };
-      pickWritableFile(suggestedName, mimeType);
+      pickWritableFile('foo.foo', mimeType, 0, []);
     });
   }
 
-  assertDeepEquals(await pick('foo.jpg'), [[['.jpg']]]);
-  assertDeepEquals(await pick('foo.jfif'), [[['.jfif']]]);
-  assertDeepEquals(await pick('foo'), [[['.foo']]]);
-  assertDeepEquals(await pick('foo.png'), [[['.png']]]);
-  assertDeepEquals(await pick('foo.jpg.jpg'), [[['.jpg']]]);
-  assertDeepEquals(await pick('jpg.jpg (1)'), [[['.jpg1']]]);
-  assertDeepEquals(await pick(''), [[['.ext']]]);
-  assertDeepEquals(await pick('foo.bar.jpg (1) - _baz'), [[['.jpg1baz']]]);
-  assertDeepEquals(await pick('foo.svg+xml'), [[['.svg+xml']]]);
-  assertDeepEquals(await pick('foo.___'), [[['.ext']]]);
-  assertDeepEquals(
-      await pick('foo.01234567890123456'), [[['.012345678901234']]]);
-
-  // Ideally, double-barrelled extensions like this would be handled better. But
-  // the only way to do that is with a hardcoded list of exceptions.
-  assertDeepEquals(await pick('foo.tar.gz'), [[['.gz']]]);
+  assertDeepEquals(await pick('image/jpeg'), [[JPG_EXTENSIONS]]);
+  assertDeepEquals(await pick('image/png'), [[['.png']]]);
+  assertDeepEquals(await pick('image/webp'), [[['.webp']]]);
+  assertDeepEquals(await pick('application/pdf'), [[['.pdf']]]);
+  assertDeepEquals(await pick('image/unknown'), null);
+  assertDeepEquals(await pick(''), null);
 };
 
 // Tests `MessagePipe.sendMessage()` properly propagates errors.
@@ -991,10 +989,9 @@ MediaAppUIBrowserTest.RenameOriginalIPC = async () => {
           'File without launch directory.');
 };
 
-// Tests the IPC behind the requestSaveFile delegate function.
-MediaAppUIBrowserTest.RequestSaveFileIPC = async () => {
-  // Mock out choose file system entries since it can only be interacted with
-  // via trusted user gestures.
+// Mock out choose file system entries since it can only be interacted with
+// via trusted user gestures.
+function mockShowSaveFilePicker() {
   const newFileHandle = new FakeFileSystemFileHandle();
   const chooseEntries = new Promise(resolve => {
     window.showSaveFilePicker = options => {
@@ -1002,17 +999,53 @@ MediaAppUIBrowserTest.RequestSaveFileIPC = async () => {
       return Promise.resolve(newFileHandle);
     };
   });
+  return chooseEntries;
+}
+
+// Tests the IPC behind the requestSaveFile delegate function.
+MediaAppUIBrowserTest.RequestSaveFileIPC = async () => {
+  const chooseEntries = mockShowSaveFilePicker();
   await launchWithFiles([await createTestImageFile(10, 10)]);
 
-  const result = await sendTestMessage({requestSaveFile: true});
+  const result = await sendTestMessage({simple: 'requestSaveFile'});
   const options = await chooseEntries;
   const lastToken = [...tokenMap.keys()].slice(-1)[0];
   // Check the token matches to confirm the ReceivedFile returned represents the
   // new file created on disk.
   assertMatch(result.testQueryResult, lastToken);
   assertEquals(options.types.length, 1);
-  assertEquals(options.types[0].description, '.png');
+  assertEquals(options.types[0].description, 'PNG');
   assertDeepEquals(options.types[0].accept['image/png'], ['.png']);
+};
+
+// Tests the IPC behind the getExportFile method.
+MediaAppUIBrowserTest.GetExportFileIPC = async () => {
+  const chooseEntries = mockShowSaveFilePicker();
+  const directory = await launchWithFiles([await createTestImageFile(10, 10)]);
+
+  const message = {
+    simple: 'getExportFile',
+    simpleArgs: {accept: ['PNG', 'JPG', 'WEBP']},
+  };
+  const result = await sendTestMessage(message);
+  const options = await chooseEntries;
+  const lastToken = [...tokenMap.keys()].slice(-1)[0];
+
+  assertMatch(result.testQueryResult, lastToken);
+  assertEquals(options.types.length, 3);
+
+  // Contents and order of the `types` array should correspond.
+  assertEquals(options.types[0].description, 'PNG');
+  assertEquals(options.types[1].description, 'JPG');
+  assertEquals(options.types[2].description, 'WEBP');
+  assertDeepEquals(options.types[0].accept['image/png'], ['.png']);
+  assertDeepEquals(options.types[2].accept['image/webp'], ['.webp']);
+
+  // jpg has a bunch of extensions.
+  assertEquals(options.types[1].accept['image/jpeg'].length, 8);
+
+  // The startIn option should be set to the opened file.
+  assertEquals(options.startIn, directory.files[0]);
 };
 
 // Tests the IPC behind the saveAs function on received files.

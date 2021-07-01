@@ -6,12 +6,19 @@ import("//build/config/features.gni")
 
 source_set("browser") {
   sources = [
+    "ping_manager.cc",
+    "ping_manager.h",
     "safe_browsing_url_checker_impl.cc",
     "safe_browsing_url_checker_impl.h",
     "url_checker_delegate.h",
   ]
+
+  public_deps = [ "//google_apis:google_apis" ]
+
   deps = [
+    "//base",
     "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
@@ -19,9 +26,24 @@ source_set("browser") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/security_interstitials/core:unsafe_resource",
+    "//net",
     "//net:extras",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+  ]
+}
+
+source_set("ping_manager_unittest") {
+  testonly = true
+  sources = [ "ping_manager_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base:base",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//net:net",
+    "//net:test_support",
+    "//testing/gtest",
   ]
 }
 

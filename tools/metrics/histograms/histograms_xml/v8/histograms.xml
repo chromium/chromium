@@ -1378,6 +1378,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmDeserializationTimeMilliSeconds" units="ms"
+    expires_after="2022-06-30">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Time to deserialize a WebAssembly module when the WebAssembly module is
+    loaded from the cache. Recorded whenever a WebAssembly module gets
+    deserialized during streaming compilation.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmFinishModuleStreamingMicroSeconds" units="microseconds"
     expires_after="2021-12-05">
   <owner>bbudge@chromium.org</owner>

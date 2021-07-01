@@ -144,7 +144,8 @@ guestMessagePipe.registerHandler(Message.OVERWRITE_FILE, async (message) => {
  * @return {!Promise<!OverwriteViaFilePickerResponse>}
  */
 async function pickFileForFailedOverwrite(fileName, errorName, overwrite) {
-  const fileHandle = await pickWritableFile(fileName, overwrite.blob.type);
+  const fileHandle = await pickWritableFile(
+      fileName, overwrite.blob.type, overwrite.token, []);
   await saveBlobToFile(fileHandle, overwrite.blob);
 
   // Success. Replace the old handle.
@@ -249,9 +250,10 @@ guestMessagePipe.registerHandler(Message.NAVIGATE, async (message) => {
 });
 
 guestMessagePipe.registerHandler(Message.REQUEST_SAVE_FILE, async (message) => {
-  const {suggestedName, mimeType} =
+  const {suggestedName, mimeType, startInToken, accept} =
       /** @type {!RequestSaveFileMessage} */ (message);
-  const handle = await pickWritableFile(suggestedName, mimeType);
+  const handle =
+      await pickWritableFile(suggestedName, mimeType, startInToken, accept);
   /** @type {!RequestSaveFileResponse} */
   const response = {
     pickedFileContext: {
@@ -331,31 +333,44 @@ guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
  * Shows a file picker to get a writable file.
  * @param {string} suggestedName
  * @param {string} mimeType
+ * @param {number} startInToken,
+ * @param {!Array<string>} accept
  * @return {!Promise<!FileSystemFileHandle>}
  */
-function pickWritableFile(suggestedName, mimeType) {
-  // Cast to expose (draft) string.replaceAll() - available since Chrome 85.
-  const suffix = /** @type{{replaceAll: function(*,*): string}} */ (
-      suggestedName.split('.').reverse()[0]);
-  // Try not to rename files opened via MIME sniffing. But there are problems:
-  // Strip non-alphnumeric characters: showSaveFilePicker() will reject them if
-  // they appear in the extension. See b/175625372. This regex should be
-  // consistent with IsValidSuffixCodePoint() in global_file_system_access.cc.
-  // The extension also cannot be empty, so provide a dummy backup since we'd
-  // be renaming anyway if all characters are stripped. showSaveFilePicker()
-  // also rejects extensions longer than 16 characters (including the .).
-  let extension = '.' + (suffix.replaceAll(/[^A-Za-z0-9.+]+/g, '') || 'ext');
-  extension = extension.substr(0, 16);
-  // TODO(b/162541613): Add a `startIn` option when the file token is plumbed
-  // through from receiver.js.
-  /** @type {!FilePickerOptions} */
+function pickWritableFile(suggestedName, mimeType, startInToken, accept) {
+  const JPG_EXTENSIONS =
+      ['.jpg', '.jpeg', '.jpe', '.jfif', '.jif', '.jfi', '.pjpeg', '.pjp'];
+  const ACCEPT_ARGS = {
+    'JPG': {description: 'JPG', accept: {'image/jpeg': JPG_EXTENSIONS}},
+    'PNG': {description: 'PNG', accept: {'image/png': ['.png']}},
+    'WEBP': {description: 'WEBP', accept: {'image/webp': ['.webp']}},
+    'PDF': {description: 'PDF', accept: {'application/pdf': ['.pdf']}},
+  };
+  const acceptTypes = accept.map(k => ACCEPT_ARGS[k]).filter(a => !!a);
+
+  /** @type {!FilePickerOptions|DraftFilePickerOptions} */
   const options = {
-    types: [
-      {description: extension, accept: {[mimeType]: [extension]}},
-    ],
-    excludeAcceptAllOption: true,
     suggestedName,
   };
+
+  if (startInToken) {
+    options.startIn = fileHandleForToken(startInToken);
+  }
+
+  if (acceptTypes.length > 0) {
+    options.excludeAcceptAllOption = true;
+    options.types = acceptTypes;
+  } else {
+    // Search for the mimeType, and add a single entry. If none is found, the
+    // file picker is left "unconfigured"; with just "all files".
+    for (const a of Object.values(ACCEPT_ARGS)) {
+      if (a.accept[mimeType]) {
+        options.excludeAcceptAllOption = true;
+        options.types = [a];
+      }
+    }
+  }
+
   // This may throw an error, but we can handle and recover from it on the
   // unprivileged side.
   return window.showSaveFilePicker(options);

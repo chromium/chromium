@@ -43,42 +43,52 @@ suite('controlled button', function() {
   });
 
   test('controlled prefs', function() {
-    assertFalse(controlledButton.$$('cr-button').disabled);
-    assertFalse(!!controlledButton.$$('cr-policy-pref-indicator'));
+    assertFalse(
+        controlledButton.shadowRoot.querySelector('cr-button').disabled);
+    assertFalse(!!controlledButton.shadowRoot.querySelector(
+        'cr-policy-pref-indicator'));
 
     controlledButton.pref = extensionControlledPref;
     flush();
-    assertTrue(controlledButton.$$('cr-button').disabled);
-    assertTrue(!!controlledButton.$$('cr-policy-pref-indicator'));
+    assertTrue(controlledButton.shadowRoot.querySelector('cr-button').disabled);
+    assertTrue(!!controlledButton.shadowRoot.querySelector(
+        'cr-policy-pref-indicator'));
 
     controlledButton.pref = policyControlledPref;
     flush();
-    assertTrue(controlledButton.$$('cr-button').disabled);
-    const indicator = controlledButton.$$('cr-policy-pref-indicator');
+    assertTrue(controlledButton.shadowRoot.querySelector('cr-button').disabled);
+    const indicator =
+        controlledButton.shadowRoot.querySelector('cr-policy-pref-indicator');
     assertTrue(!!indicator);
     assertGT(indicator.clientHeight, 0);
 
     controlledButton.pref = uncontrolledPref;
     flush();
-    assertFalse(controlledButton.$$('cr-button').disabled);
-    assertFalse(!!controlledButton.$$('cr-policy-pref-indicator'));
+    assertFalse(
+        controlledButton.shadowRoot.querySelector('cr-button').disabled);
+    assertFalse(!!controlledButton.shadowRoot.querySelector(
+        'cr-policy-pref-indicator'));
   });
 
   test('null pref', function() {
     controlledButton.pref = extensionControlledPref;
     flush();
-    assertTrue(controlledButton.$$('cr-button').disabled);
-    assertTrue(!!controlledButton.$$('cr-policy-pref-indicator'));
+    assertTrue(controlledButton.shadowRoot.querySelector('cr-button').disabled);
+    assertTrue(!!controlledButton.shadowRoot.querySelector(
+        'cr-policy-pref-indicator'));
 
     controlledButton.pref = null;
     flush();
-    assertFalse(controlledButton.$$('cr-button').disabled);
-    assertFalse(!!controlledButton.$$('cr-policy-pref-indicator'));
+    assertFalse(
+        controlledButton.shadowRoot.querySelector('cr-button').disabled);
+    assertFalse(!!controlledButton.shadowRoot.querySelector(
+        'cr-policy-pref-indicator'));
   });
 
   test('action-button', function() {
     assertNotEquals(
-        'action-button', controlledButton.$$('cr-button').className);
+        'action-button',
+        controlledButton.shadowRoot.querySelector('cr-button').className);
 
     const controlledActionButton = document.createElement('controlled-button');
     controlledActionButton.pref = uncontrolledPref;
@@ -86,6 +96,7 @@ suite('controlled button', function() {
     document.body.appendChild(controlledActionButton);
     flush();
     assertEquals(
-        'action-button', controlledActionButton.$$('cr-button').className);
+        'action-button',
+        controlledActionButton.shadowRoot.querySelector('cr-button').className);
   });
 });

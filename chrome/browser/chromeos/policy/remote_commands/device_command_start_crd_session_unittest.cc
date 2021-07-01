@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -197,11 +199,30 @@ class DeviceCommandStartCRDSessionJobTest : public ash::DeviceSettingsTestBase {
       const std::string& error_message);
   std::string CreateNotIdlePayload(base::TimeDelta idleness);
 
-  void LogInAsPublicAccountUser() {
+  void LogInAsManagedGuestSessionUser() {
     const AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
 
     user_manager().AddPublicAccountUser(account_id);
     user_manager().LoginUser(account_id);
+  }
+
+  void LogInAsRegularUser() {
+    const AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
+
+    user_manager().AddUser(account_id);
+    user_manager().LoginUser(account_id);
+  }
+
+  void LogInAsAffiliatedUser() {
+    const AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
+
+    user_manager().AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
+    user_manager().LoginUser(account_id);
+  }
+
+  void LogInAsGuestUser() {
+    const user_manager::User* user = user_manager().AddGuestUser();
+    user_manager().LoginUser(user->GetAccountId());
   }
 
   void LogInAsKioskAppUser() {
@@ -398,12 +419,40 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
                DeviceCommandStartCRDSessionJob::FAILURE_SERVICES_NOT_READY);
 }
 
-TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForNonKioskUser) {
-  LogInAsPublicAccountUser();
+TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForManagedGuestUser) {
+  LogInAsManagedGuestSessionUser();
 
   Result result = RunJobAndWaitForResult();
 
-  EXPECT_ERROR(result, DeviceCommandStartCRDSessionJob::FAILURE_NOT_A_KIOSK);
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForGuestUser) {
+  LogInAsGuestUser();
+
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForAffiliatedUser) {
+  LogInAsAffiliatedUser();
+
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForRegularUser) {
+  LogInAsRegularUser();
+
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCRDSessionJobTest,
@@ -415,7 +464,8 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   Result result = RunJobAndWaitForResult();
 
-  EXPECT_ERROR(result, DeviceCommandStartCRDSessionJob::FAILURE_NOT_A_KIOSK);
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCRDSessionJobTest,
@@ -441,7 +491,8 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   Result result = RunJobAndWaitForResult();
 
-  EXPECT_ERROR(result, DeviceCommandStartCRDSessionJob::FAILURE_NOT_A_KIOSK);
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCRDSessionJobTest,
@@ -467,7 +518,8 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 
   Result result = RunJobAndWaitForResult();
 
-  EXPECT_ERROR(result, DeviceCommandStartCRDSessionJob::FAILURE_NOT_A_KIOSK);
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCRDSessionJobTest,
@@ -536,6 +588,88 @@ TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailIfCRDHostReportsAnError) {
   Result result = RunJobAndWaitForResult();
 
   EXPECT_ERROR(result, DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR);
+}
+
+// This test fixture enables the |kCRDForManagedUserSessions| feature flag,
+// and tests the additional functionality enabled by the flag.
+class DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest
+    : public DeviceCommandStartCRDSessionJobTest {
+ public:
+  DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest() = default;
+  DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest(
+      const DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest&) =
+      delete;
+  DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest& operator=(
+      const DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest&) =
+      delete;
+  ~DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList enable_crd_for_user_sessions_{
+      features::kCRDForManagedUserSessions};
+};
+
+TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
+       ShouldSucceedForKioskUserWithZeroDelayAutoLaunch) {
+  SetOAuthToken(kTestOAuthToken);
+
+  LogInAsKioskAppUser();
+  ash::KioskAppManager::Get()
+      ->set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
+
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
+       ShouldFailForRegularUsers) {
+  LogInAsRegularUser();
+
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
+       ShouldFailForGuestUsers) {
+  // Note that guest user != managed guest user
+  LogInAsGuestUser();
+
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
+       ShouldFailIfNoUserIsLoggedIn) {
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_ERROR(result,
+               DeviceCommandStartCRDSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
+       ShouldSucceedForManagedGuestUser) {
+  SetOAuthToken(kTestOAuthToken);
+
+  LogInAsManagedGuestSessionUser();
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
+       ShouldSucceedForAffiliatedUser) {
+  SetOAuthToken(kTestOAuthToken);
+
+  LogInAsAffiliatedUser();
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
 }
 
 }  // namespace policy

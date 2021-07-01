@@ -222,11 +222,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '9e583bfa3f4573dd1894c04d5720d5165496b37e',
+  'skia_revision': '11dd57aeb783e24e5f69893b166430492b41ea66',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '44a06842076d7e583d49055fb0bc938ffe8d6dcf',
+  'v8_revision': '4e72701f71dbf25e8e6d535a883d009b79c8e9b3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling swarming_client
   # and whatever else without interference from each other.
@@ -561,7 +561,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/toji/webvr.info.git' + '@' + 'c58ae99b9ff9e2aa4c524633519570bf33536248',
 
   'src/ios/third_party/earl_grey2/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/EarlGrey.git' + '@' + '6c3680a7074d8958537931833646b67a556042d3',
+      'url': Var('chromium_git') + '/external/github.com/google/EarlGrey.git' + '@' + 'a7cfdf926444c297d5605422c55808dab02baf4b',
       'condition': 'checkout_ios',
   },
 
@@ -1449,7 +1449,7 @@ deps = {
       'packages': [
           {
               'package': 'fuchsia/third_party/aemu/linux-amd64',
-              'version': 'kZbnq1Wh_y69PWihHdedFiEIQANIiZchdysb5-fpBTEC'
+              'version': 'czR22wy3jcAfrw7l4ljto3qX6BpD2DSahnluWvqUockC'
           },
       ],
       'condition': 'host_os == "linux" and checkout_fuchsia',

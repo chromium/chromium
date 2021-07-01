@@ -194,8 +194,7 @@ bool IsInternetExplorer(base::StringPiece path) {
   // We don't treat IExplore.exe as Internet Explorer here. This way, admins can
   // set |AlternativeBrowserPath| to IExplore.exe to disable DDE, if it's
   // causing issues or slowness.
-  return path.empty() ||
-         base::EqualsASCII(base::as_u16cstr(kIExploreKey), path);
+  return path.empty() || base::EqualsASCII(base::as_u16cstr(kIEVarName), path);
 }
 
 bool TryLaunchWithDde(const GURL& url, const std::string& path) {

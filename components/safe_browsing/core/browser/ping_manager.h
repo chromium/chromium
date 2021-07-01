@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_PING_MANAGER_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_PING_MANAGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PING_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PING_MANAGER_H_
 
 // A class that reports basic safebrowsing statistics to Google's SafeBrowsing
 // servers.
@@ -82,4 +82,4 @@ class PingManager {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_PING_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PING_MANAGER_H_

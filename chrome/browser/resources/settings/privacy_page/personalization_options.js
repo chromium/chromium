@@ -21,6 +21,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';

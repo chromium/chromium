@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
@@ -476,7 +477,15 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyVisits) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyEndpoint) {
+// https://crbug.com/1225511
+#if defined(OS_LINUX)
+#define MAYBE_QueryClustersWithEmptyEndpoint \
+  DISABLED_QueryClustersWithEmptyEndpoint
+#else
+#define MAYBE_QueryClustersWithEmptyEndpoint QueryClustersWithEmptyEndpoint
+#endif
+
+TEST_F(HistoryClustersServiceTest, MAYBE_QueryClustersWithEmptyEndpoint) {
   EnableMemoriesWithEndpoint("");
   AddHardcodedTestDataToHistoryService();
 

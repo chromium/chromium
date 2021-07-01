@@ -214,6 +214,10 @@ TEST_F('MediaAppUIGtestBrowserTest', 'RequestSaveFileIPC', () => {
   runMediaAppTest('RequestSaveFileIPC');
 });
 
+TEST_F('MediaAppUIGtestBrowserTest', 'GetExportFileIPC', () => {
+  runMediaAppTest('GetExportFileIPC');
+});
+
 TEST_F('MediaAppUIGtestBrowserTest', 'SaveAsIPC', () => {
   runMediaAppTest('SaveAsIPC');
 });

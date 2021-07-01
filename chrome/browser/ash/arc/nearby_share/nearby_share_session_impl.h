@@ -66,12 +66,11 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   void OnPreparedDirectory(aura::Window* const arc_window,
                            base::File::Error result);
 
-  // Called once streaming shared files to local path from ARC VFS is completed.
-  void OnFileStreamCompleted(aura::Window* const arc_window, bool result);
-
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
-  // Nearby Share user flow.
-  void ShowNearbyShareBubble(aura::Window* const arc_window);
+  // Nearby Share user flow and display bubble in ARC window.
+  void ShowNearbyShareBubbleInArcWindow(
+      aura::Window* const arc_window,
+      absl::optional<base::File::Error> result = absl::nullopt);
 
   // Called back once the session duration exceeds the maximum duration.
   void OnTimerFired();

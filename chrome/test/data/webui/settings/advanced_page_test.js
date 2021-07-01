@@ -6,7 +6,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, SettingsBasicPageElement, SettingsMainElement, SettingsUiElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertGT, assertTrue} from '../chai_assert.js';
 
@@ -20,8 +20,7 @@ suite('AdvancedPage', function() {
 
   suiteSetup(function() {
     document.body.innerHTML = '';
-    const settingsUi = /** @type {SettingsUiElement} */ (
-        document.createElement('settings-ui'));
+    const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);
     return CrSettingsPrefs.initialized
         .then(() => {
@@ -30,7 +29,7 @@ suite('AdvancedPage', function() {
         .then(page => {
           basicPage = page;
           const settingsMain = /** @type {!SettingsMainElement} */ (
-              settingsUi.shadowRoot.querySelector('settings-main'));
+              settingsUi.$$('settings-main'));
           assertTrue(!!settingsMain);
           settingsMain.advancedToggleExpanded = true;
           flush();

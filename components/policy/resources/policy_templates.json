@@ -20824,7 +20824,7 @@
 
       For example, with the rule "example.com":
 
-      "http://example.com/" and "http://subdomain.example.com/" match regardles of parsing mode.
+      "http://example.com/" and "http://subdomain.example.com/" match regardless of parsing mode.
 
       "http://notexample.com/", "http://example.com.invalid.com/" and "http://example.comabc/" only match in 'Default' mode.''',
     },

@@ -6,6 +6,8 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "content/renderer/render_frame_impl.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -105,7 +107,7 @@ void NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
     navigation_params->body_loader.reset(new NavigationBodyLoader(
         original_url, std::move(response_head), std::move(response_body),
         std::move(url_loader_client_endpoints), task_runner,
-        std::move(resource_load_info_notifier_wrapper), render_frame_impl));
+        std::move(resource_load_info_notifier_wrapper), is_main_frame));
   }
 }
 
@@ -117,7 +119,7 @@ NavigationBodyLoader::NavigationBodyLoader(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
-    RenderFrameImpl* render_frame_impl)
+    bool is_main_frame)
     : response_head_(std::move(response_head)),
       response_body_(std::move(response_body)),
       endpoints_(std::move(endpoints)),
@@ -127,7 +129,8 @@ NavigationBodyLoader::NavigationBodyLoader(
                       task_runner_),
       resource_load_info_notifier_wrapper_(
           std::move(resource_load_info_notifier_wrapper)),
-      original_url_(original_url) {}
+      original_url_(original_url),
+      is_main_frame_(is_main_frame) {}
 
 NavigationBodyLoader::~NavigationBodyLoader() {
   if (!has_received_completion_ || !has_seen_end_of_data_) {
@@ -225,7 +228,7 @@ void NavigationBodyLoader::StartLoadingBody(
     code_cache_loader_->FetchFromCodeCache(
         blink::mojom::CodeCacheType::kJavascript, original_url_,
         base::BindOnce(&NavigationBodyLoader::CodeCacheReceived,
-                       weak_factory_.GetWeakPtr(),
+                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                        response_head_response_time));
     return;
   }
@@ -234,9 +237,14 @@ void NavigationBodyLoader::StartLoadingBody(
 }
 
 void NavigationBodyLoader::CodeCacheReceived(
+    base::TimeTicks start_time,
     base::Time response_head_response_time,
     base::Time response_time,
     mojo_base::BigBuffer data) {
+  base::UmaHistogramTimes(
+      base::StrCat({"Navigation.CodeCacheTime.",
+                    is_main_frame_ ? "MainFrame" : "Subframe"}),
+      base::TimeTicks::Now() - start_time);
   // Check that the times match to ensure that the code cache data is for this
   // response. See https://crbug.com/1099587.
   if (response_head_response_time == response_time && client_) {

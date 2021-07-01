@@ -12,62 +12,92 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
-import {afterNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="chromeos">
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 // </if>
 
-import {SettingsBooleanControlBehavior} from './settings_boolean_control_behavior.js';
+import {SettingsBooleanControlBehavior, SettingsBooleanControlBehaviorInterface} from './settings_boolean_control_behavior.js';
 
-Polymer({
-  is: 'settings-toggle-button',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBooleanControlBehaviorInterface}
+ */
+const SettingsToggleButtonElementBase =
+    mixinBehaviors([SettingsBooleanControlBehavior], PolymerElement);
 
-  behaviors: [SettingsBooleanControlBehavior],
+/** @polymer */
+export class SettingsToggleButtonElement extends
+    SettingsToggleButtonElementBase {
+  static get is() {
+    return 'settings-toggle-button';
+  }
 
-  properties: {
-    ariaLabel: {
-      type: String,
-      reflectToAttribute: false,  // Handled by #control.
-      observer: 'onAriaLabelSet_',
-      value: '',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    elideLabel: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+  static get properties() {
+    return {
+      ariaLabel: {
+        type: String,
+        reflectToAttribute: false,  // Handled by #control.
+        observer: 'onAriaLabelSet_',
+        value: '',
+      },
 
-    learnMoreUrl: {
-      type: String,
-      reflectToAttribute: true,
-    },
+      elideLabel: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    // <if expr="chromeos">
-    subLabelWithLink: {
-      type: String,
-      reflectToAttribute: true,
-    },
-    // </if>
+      learnMoreUrl: {
+        type: String,
+        reflectToAttribute: true,
+      },
 
-    subLabelIcon: {
-      type: String,
-    },
-  },
+      // <if expr="chromeos">
+      subLabelWithLink: {
+        type: String,
+        reflectToAttribute: true,
+      },
+      // </if>
 
-  listeners: {
-    'click': 'onHostTap_',
-  },
+      subLabelIcon: {
+        type: String,
+      },
+    };
+  }
 
-  observers: [
-    'onDisableOrPrefChange_(disabled, pref.*)',
-  ],
+  static get observers() {
+    return [
+      'onDisableOrPrefChange_(disabled, pref.*)',
+    ];
+  }
+
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onHostTap_);
+  }
+
+  /**
+   * @param {string} eventName
+   * @private
+   */
+  fire_(eventName) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true}));
+  }
 
   /** @override */
   focus() {
     this.$.control.focus();
-  },
+  }
 
   /**
    * Removes the aria-label attribute if it's added by $i18n{...}.
@@ -79,7 +109,7 @@ Polymer({
       this.removeAttribute('aria-label');
       this.ariaLabel = ariaLabel;
     }
-  },
+  }
 
   /**
    * @return {string}
@@ -87,12 +117,12 @@ Polymer({
    */
   getAriaLabel_() {
     return this.label || this.ariaLabel;
-  },
+  }
 
   /** @private */
   onDisableOrPrefChange_() {
     this.toggleAttribute('effectively-disabled_', this.controlDisabled());
-  },
+  }
 
   /**
    * Handles non cr-toggle button clicks (cr-toggle handles its own click events
@@ -108,8 +138,8 @@ Polymer({
 
     this.checked = !this.checked;
     this.notifyChangedByUserInteraction();
-    this.fire('change');
-  },
+    this.fire_('change');
+  }
 
   /**
    * @param {!CustomEvent<boolean>} e
@@ -117,8 +147,8 @@ Polymer({
    */
   onLearnMoreClick_(e) {
     e.stopPropagation();
-    this.fire('learn-more-clicked');
-  },
+    this.fire_('learn-more-clicked');
+  }
 
   // <if expr="chromeos">
   /**
@@ -130,7 +160,7 @@ Polymer({
     return sanitizeInnerHtml(
         contents,
         {attrs: ['id', 'aria-hidden', 'aria-labelledby', 'tabindex']});
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -138,11 +168,11 @@ Polymer({
    */
   onSubLabelTextWithLinkClick_(e) {
     if (e.target.tagName === 'A') {
-      this.fire('sub-label-link-clicked');
+      this.fire_('sub-label-link-clicked');
       e.preventDefault();
       e.stopPropagation();
     }
-  },
+  }
   // </if>
 
   /**
@@ -152,5 +182,8 @@ Polymer({
   onChange_(e) {
     this.checked = e.detail;
     this.notifyChangedByUserInteraction();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsToggleButtonElement.is, SettingsToggleButtonElement);

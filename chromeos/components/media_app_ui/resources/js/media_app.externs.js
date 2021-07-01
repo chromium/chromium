@@ -89,6 +89,14 @@ mediaApp.AbstractFile.prototype.renameOriginalFile;
  * @type {function(!Blob, number): !Promise<undefined>|undefined}
  */
 mediaApp.AbstractFile.prototype.saveAs;
+/**
+ * A function that will show a file picker using the filename and an appropriate
+ * starting folder for `this` file. Returns a writable file picked by the user.
+ * The argument configures the dialog with the provided set of predefined file
+ * extensions that the user may select from.
+ * @type {function(!Array<string>): !Promise<!mediaApp.AbstractFile>|undefined}
+ */
+mediaApp.AbstractFile.prototype.getExportFile;
 
 /**
  * Wraps an HTML FileList object.

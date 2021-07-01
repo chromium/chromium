@@ -49,8 +49,9 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
                                  ShareInfoFileStreamAdapter,
                                  content::BrowserThread::DeleteOnIOThread> {
  public:
-  // |result| signifies whether all requested files were streamed successfully.
-  using CompletedCallback = base::OnceCallback<void(bool result)>;
+  // |result| signifies state of shared files after streaming has completed.
+  using CompletedCallback =
+      base::OnceCallback<void(absl::optional<base::File::Error> result)>;
 
   ShareInfoFileHandler(Profile* profile,
                        mojom::ShareIntentInfo* share_info,
@@ -66,11 +67,14 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
 
   const std::vector<base::FilePath>& GetFilePaths() const;
   const std::vector<std::string>& GetMimeTypes() const;
-  uint64_t GetTotalSizeOfFiles() const;
+  uint64_t GetTotalSizeOfFiles() const { return file_config_.total_size; }
+  size_t GetNumberOfFiles() const { return file_config_.num_files; }
 
   // Start streaming virtual files to destination file descriptors in
   // preparation for Nearby Share.
-  void StartPreparingFiles(CompletedCallback callback);
+  // |completed_callback| is called when file streaming is completed with
+  // either error or success.
+  void StartPreparingFiles(CompletedCallback completed_callback);
 
  private:
   friend struct content::BrowserThread::DeleteOnThread<
@@ -86,15 +90,23 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
   base::ScopedFD CreateFileForWrite(const base::FilePath& file_path);
 
   // Called when temp directory for Nearby Share cached files is created and
-  // raw bytes of files are streamed from ARC VFS to Chrome local path.
-  void OnCreatedDirectoryAndStreamedFiles(CompletedCallback callback,
-                                          bool result);
+  // started streaming files.
+  void OnCreatedDirectoryAndStreamingFiles(bool result);
 
+  // Called when the raw bytes of files have completed streaming from ARC VFS
+  // to Chrome local path.
   void OnFileStreamReadCompleted(
       const std::string& url_str,
       std::list<scoped_refptr<ShareInfoFileStreamAdapter>>::iterator it,
       const int64_t bytes_read,
       bool result);
+
+  // Called back once file streaming time exceeds the maximum duration.
+  void OnFileStreamingTimeout(const std::string& timeout_message);
+
+  // Notify caller that sharing is completed via |completed_callback_| with
+  // result which could be FILE_OK or some file error.
+  void NotifyFileSharingCompleted(base::File::Error result);
 
   struct FileShareConfig {
     FileShareConfig();
@@ -114,19 +126,30 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
     base::FilePath directory;
 
     // Total size in bytes for all files.
-    uint64_t total_size;
+    uint64_t total_size = 0;
+
+    // Number of files.
+    size_t num_files = 0;
   };
 
   std::list<scoped_refptr<ShareInfoFileStreamAdapter>> file_stream_adapters_;
   std::list<scoped_refptr<storage::FileSystemContext>> contexts_;
   std::list<base::ScopedTempDir> scoped_temp_dirs_;
   FileShareConfig file_config_;
+  CompletedCallback completed_callback_;
 
   // Updated by multiple stream adapters on UI thread.
-  uint64_t num_bytes_read_;
+  uint64_t num_bytes_read_ = 0;
+  size_t num_files_streamed_ = 0;
+
+  // Track whether a file sharing flow has started .
+  bool file_sharing_started_ = false;
 
   // Unowned pointer to profile.
   Profile* const profile_;
+
+  // Timeout timer for asynchronous file streaming tasks.
+  base::OneShotTimer file_streaming_timer_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

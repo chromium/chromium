@@ -295,7 +295,7 @@ polymer_modulizer("lock_screen") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/controls/settings_toggle_button.html|SettingsToggleButtonElement" ]
 }
 
 polymer_modulizer("lock_screen_password_prompt_dialog") {

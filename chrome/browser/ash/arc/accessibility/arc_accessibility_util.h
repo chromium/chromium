@@ -103,7 +103,10 @@ bool HasNonEmptyStringProperty(InfoDataType* node, PropType prop) {
   return !it->second.empty();
 }
 
+bool IsArcOrGhostWindow(const aura::Window* window);
+
 aura::Window* FindArcWindow(aura::Window* child);
+aura::Window* FindArcOrGhostWindow(aura::Window* child);
 
 }  // namespace arc
 

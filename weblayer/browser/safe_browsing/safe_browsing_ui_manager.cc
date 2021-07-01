@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/safe_browsing/safe_browsing_ui_manager.h"
 
-#include "components/safe_browsing/core/ping_manager.h"
+#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"

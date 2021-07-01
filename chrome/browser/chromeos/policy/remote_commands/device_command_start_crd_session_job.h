@@ -28,8 +28,8 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
     // Failed as required services are not launched on the device.
     FAILURE_SERVICES_NOT_READY = 1,
 
-    // Failed as device is not running in Kiosk mode.
-    FAILURE_NOT_A_KIOSK = 2,
+    // Failure as the current user type does not support remotely starting CRD.
+    FAILURE_UNSUPPORTED_USER_TYPE = 2,
 
     // Failed as device is currently in use and no interruptUser flag is set.
     FAILURE_NOT_IDLE = 3,
@@ -38,7 +38,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
     FAILURE_NO_OAUTH_TOKEN = 4,
 
     // Failed as we could not get ICE configuration for whatever reason.
-    FAILURE_NO_ICE_CONFIG = 5,
+    // deprecated FAILURE_NO_ICE_CONFIG = 5,
 
     // Failure during attempt to start CRD host and obtain CRD token.
     FAILURE_CRD_HOST_ERROR = 6,
@@ -89,8 +89,20 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   class OAuthTokenFetcher;
   class ResultPayload;
 
+  enum class UserType {
+    kAutoLaunchedKiosk,
+    kNonAutoLaunchedKiosk,
+    kNoUser,
+    kAffiliatedUser,
+    kManagedGuestSession,
+    kOther,
+  };
+  const char* UserTypeToString(UserType value) const;
+
   // Check if all required system services (singletons) are ready.
   bool AreServicesReady() const;
+  bool UserTypeSupportsCRD() const;
+  UserType GetUserType() const;
   bool IsRunningAutoLaunchedKiosk() const;
   bool IsDeviceIdle() const;
   base::TimeDelta GetDeviceIdlenessPeriod() const;
@@ -135,7 +147,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   // Owned by DeviceCommandsFactoryChromeOS.
   Delegate* delegate_;
 
-  bool terminate_session_attemtpted_;
+  bool terminate_session_attempted_ = false;
 
   base::WeakPtrFactory<DeviceCommandStartCRDSessionJob> weak_factory_{this};
 

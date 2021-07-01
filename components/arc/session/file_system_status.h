@@ -25,7 +25,6 @@ class FileSystemStatus {
     return FileSystemStatus();
   }
 
-  bool is_android_debuggable() const { return is_android_debuggable_; }
   bool is_host_rootfs_writable() const { return is_host_rootfs_writable_; }
   bool is_system_image_ext_format() const {
     return is_system_image_ext_format_;
@@ -37,9 +36,6 @@ class FileSystemStatus {
   const base::FilePath& fstab_path() const { return fstab_path_; }
 
   // Setters for testing.
-  void set_android_debuggable_for_testing(bool is_android_debuggable) {
-    is_android_debuggable_ = is_android_debuggable;
-  }
   void set_host_rootfs_writable_for_testing(bool is_host_rootfs_writable) {
     is_host_rootfs_writable_ = is_host_rootfs_writable;
   }
@@ -63,21 +59,12 @@ class FileSystemStatus {
     fstab_path_ = fstab_path;
   }
 
-  static bool IsAndroidDebuggableForTesting(const base::FilePath& json_path) {
-    return IsAndroidDebuggable(json_path);
-  }
   static bool IsSystemImageExtFormatForTesting(const base::FilePath& path) {
     return IsSystemImageExtFormat(path);
   }
 
  private:
   FileSystemStatus();
-
-  // Parse a JSON file which is like the following and returns a result:
-  //   {
-  //     "ANDROID_DEBUGGABLE": false
-  //   }
-  static bool IsAndroidDebuggable(const base::FilePath& json_path);
 
   static bool IsHostRootfsWritable();
 
@@ -86,7 +73,6 @@ class FileSystemStatus {
   // 0x38: Magic signature (Len=16, value=0xEF53) in little-endian order.
   static bool IsSystemImageExtFormat(const base::FilePath& path);
 
-  bool is_android_debuggable_;
   bool is_host_rootfs_writable_;
   base::FilePath system_image_path_;
   base::FilePath vendor_image_path_;
