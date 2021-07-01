@@ -21,7 +21,7 @@ if (safe_browsing_mode == 1) {
       ":download_type_util",
       "//base",
       "//base:i18n",
-      "//components/safe_browsing/core:file_type_policies",
+      "//components/safe_browsing/content/common:file_type_policies",
       "//crypto",
     ]
     if (is_mac) {
@@ -37,7 +37,7 @@ if (safe_browsing_mode == 1) {
     ]
     deps = [
       "//base",
-      "//components/safe_browsing/core:file_type_policies",
+      "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/core/common",
     ]
     public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
@@ -54,7 +54,7 @@ if (safe_browsing_mode == 1) {
       ":download_type_util",
       "//base",
       "//base:i18n",
-      "//components/safe_browsing/core:file_type_policies",
+      "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/core/common",
       "//third_party/unrar:unrar",
     ]
@@ -131,7 +131,7 @@ source_set("safe_browsing") {
   deps = []
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/core:file_type_policies" ]
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
 
   if (safe_browsing_mode == 1) {

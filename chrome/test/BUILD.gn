@@ -6778,8 +6778,8 @@ test("unit_tests") {
     # TODO(crbug/1056278): Enable this on Fuchsia
     if (!is_fuchsia) {
       deps += [
-        "//components/safe_browsing/core:file_type_policies",
-        "//components/safe_browsing/core:file_type_policies_test_support",
+        "//components/safe_browsing/content/common:file_type_policies",
+        "//components/safe_browsing/content/common:file_type_policies_test_support",
       ]
     }
   }

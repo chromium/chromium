@@ -29,3 +29,46 @@ mojom("interfaces") {
     enabled_features += [ "full_safe_browsing" ]
   }
 }
+
+# TODO(crbug/1056278): Enable this on Fuchsia
+if (safe_browsing_mode != 0 && !is_fuchsia) {
+  source_set("file_type_policies") {
+    sources = [
+      "file_type_policies.cc",
+      "file_type_policies.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//components/safe_browsing/core/common/proto:download_file_types_proto",
+    ]
+
+    deps = [
+      "//components/resources:components_resources",
+      "//ui/base",
+    ]
+  }
+
+  source_set("file_type_policies_test_support") {
+    testonly = true
+    sources = [
+      "file_type_policies_test_util.cc",
+      "file_type_policies_test_util.h",
+    ]
+
+    deps = [ ":file_type_policies" ]
+  }
+
+  source_set("file_type_policies_unittest") {
+    testonly = true
+    sources = [ "file_type_policies_unittest.cc" ]
+
+    deps = [
+      ":file_type_policies",
+      "//base:base",
+      "//build:chromeos_buildflags",
+      "//testing/gmock:gmock",
+      "//testing/gtest:gtest",
+    ]
+  }
+}

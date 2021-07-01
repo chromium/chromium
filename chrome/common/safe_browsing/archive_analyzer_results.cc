@@ -17,7 +17,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
-#include "components/safe_browsing/core/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 

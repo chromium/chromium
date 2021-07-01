@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_
 
 #include "components/download/public/common/download_danger_type.h"
 
@@ -39,4 +39,4 @@ void RecordDownloadOpened(download::DownloadDangerType danger_type,
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_

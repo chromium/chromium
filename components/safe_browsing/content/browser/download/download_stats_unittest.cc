@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/download/download_stats.h"
+#include "components/safe_browsing/content/browser/download/download_stats.h"
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"

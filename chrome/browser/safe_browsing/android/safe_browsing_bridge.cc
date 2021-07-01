@@ -14,8 +14,8 @@
 #include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/file_type_policies.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 using base::android::JavaParamRef;

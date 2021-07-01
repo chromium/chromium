@@ -4,7 +4,7 @@
 
 #include "chrome/browser/download/download_target_info.h"
 
-#include "components/safe_browsing/core/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 
 DownloadTargetInfo::DownloadTargetInfo()
     : target_disposition(download::DownloadItem::TARGET_DISPOSITION_OVERWRITE),

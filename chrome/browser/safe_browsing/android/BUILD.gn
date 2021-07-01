@@ -28,7 +28,7 @@ source_set("android") {
   ]
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/core:file_type_policies" ]
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
 }
 

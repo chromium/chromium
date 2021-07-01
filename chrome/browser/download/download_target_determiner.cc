@@ -28,7 +28,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

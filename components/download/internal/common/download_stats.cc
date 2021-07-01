@@ -23,7 +23,7 @@
 // BUILDFLAGs and nogncheck here.
 #if (BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(SAFE_BROWSING_DB_REMOTE)) && \
     !defined(OS_FUCHSIA)
-#include "components/safe_browsing/core/file_type_policies.h"  // nogncheck
+#include "components/safe_browsing/content/common/file_type_policies.h"  // nogncheck
 #endif
 
 namespace download {

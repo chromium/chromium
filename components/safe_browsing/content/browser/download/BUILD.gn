@@ -13,7 +13,7 @@ source_set("download_stats") {
   deps = [
     "//base",
     "//components/download/public/common:public",
-    "//components/safe_browsing/core:file_type_policies",
+    "//components/safe_browsing/content/common:file_type_policies",
   ]
 }
 

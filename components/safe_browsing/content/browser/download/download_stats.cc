@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/download/download_stats.h"
+#include "components/safe_browsing/content/browser/download/download_stats.h"
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_danger_type.h"
-#include "components/safe_browsing/core/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 
 namespace {
 

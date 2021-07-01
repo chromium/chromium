@@ -13,7 +13,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/core/file_type_policies.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"

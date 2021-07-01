@@ -87,7 +87,7 @@ source_set("internal") {
 
   # TODO(crbug/1056278): Enable this on Fuchsia
   if (safe_browsing_mode > 0 && !is_fuchsia) {
-    deps += [ "//components/safe_browsing/core:file_type_policies" ]
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
 
   if (is_win) {

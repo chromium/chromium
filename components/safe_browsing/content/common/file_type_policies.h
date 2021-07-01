@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_FILE_TYPE_POLICIES_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_FILE_TYPE_POLICIES_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_H_
 
 #include <map>
 #include <memory>
@@ -153,4 +153,4 @@ class FileTypePolicies {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_FILE_TYPE_POLICIES_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_H_

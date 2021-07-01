@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/file_type_policies_test_util.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 
 namespace safe_browsing {
 
