@@ -142,7 +142,6 @@ sk_sp<SkColorFilter> DarkModeFilter::ApplyToImage(const SkPixmap& pixmap,
 }
 
 sk_sp<SkColorFilter> DarkModeFilter::GetImageFilter() const {
-  DCHECK(immutable_.settings.image_policy == DarkModeImagePolicy::kFilterAll);
   DCHECK(immutable_.image_filter);
   return immutable_.image_filter;
 }
