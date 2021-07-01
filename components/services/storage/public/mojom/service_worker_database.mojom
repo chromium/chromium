@@ -10,6 +10,7 @@ import "third_party/blink/public/mojom/script/script_type.mojom";
 import "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_database.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import "url/mojom/url.mojom";
 
@@ -30,12 +31,17 @@ enum ServiceWorkerDatabaseStatus {
 
 // Represents a service worker registration data which is stored persistently
 // in database. The Storage Service (//components/services/storage) supplies
-// this data. The //content consumes data to create in-memory representation of
-// a service worker registration.
+// this data. //content/browser consumes data to create in-memory representation
+// of a service worker registration.
 struct ServiceWorkerRegistrationData {
   // These values are immutable for the life of a registration.
   int64 registration_id = blink.mojom.kInvalidServiceWorkerRegistrationId;
   url.mojom.Url scope;
+  // The `key` field isn't part of the registration data as per the spec but
+  // it's convenient to have here as some internal operations on the
+  // registration data require the storage key (such as
+  // ServiceWorkerDatabase::WriteRegistration).
+  blink.mojom.StorageKey key;
 
   // Versions are first stored once they successfully install and become
   // the waiting version. Then transition to the active version. The stored

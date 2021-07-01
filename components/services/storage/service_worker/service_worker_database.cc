@@ -60,7 +60,8 @@
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
 //   key: "REG:" + <StorageKey 'key'> + '\x00' + <int64_t 'registration_id'>
 //     (ex. "REG:http://example.com\x00123456")
-//   value: <ServiceWorkerRegistrationData serialized as a string>
+//   value: <ServiceWorkerRegistrationData (except for the StorageKey)
+//   serialized as a string>
 //
 //   key: "REG_HAS_USER_DATA:" + <std::string 'user_data_name'> + '\x00'
 //            + <int64_t 'registration_id'>
@@ -665,9 +666,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
   BumpNextRegistrationIdIfNeeded(registration.registration_id, &batch);
   BumpNextVersionIdIfNeeded(registration.version_id, &batch);
 
-  PutUniqueOriginToBatch(
-      blink::StorageKey(url::Origin::Create(registration.scope.GetOrigin())),
-      &batch);
+  PutUniqueOriginToBatch(registration.key, &batch);
 
   DCHECK_EQ(AccumulateResourceSizeInBytes(resources),
             registration.resources_total_size_bytes)
@@ -706,10 +705,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
 
   // Retrieve a previous version to sweep purgeable resources.
   mojom::ServiceWorkerRegistrationDataPtr old_registration;
-  status = ReadRegistrationData(
-      registration.registration_id,
-      blink::StorageKey(url::Origin::Create(registration.scope)),
-      &old_registration);
+  status = ReadRegistrationData(registration.registration_id, registration.key,
+                                &old_registration);
   if (status != Status::kOk && status != Status::kErrorNotFound)
     return status;
   if (status == Status::kOk) {
@@ -1603,6 +1600,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   (*out)->registration_id = data.registration_id();
   (*out)->scope = scope_url;
   (*out)->script = script_url;
+  (*out)->key = key;
   (*out)->version_id = data.version_id();
   (*out)->is_active = data.is_active();
   (*out)->has_fetch_handler = data.has_fetch_handler();
@@ -1725,6 +1723,8 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
   data.set_registration_id(registration.registration_id);
   data.set_scope_url(registration.scope.spec());
   data.set_script_url(registration.script.spec());
+  // Do not store the StorageKey, it's already encoded in the registration key
+  // prefix.
   data.set_version_id(registration.version_id);
   data.set_is_active(registration.is_active);
   data.set_has_fetch_handler(registration.has_fetch_handler);

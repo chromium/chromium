@@ -51,6 +51,7 @@ storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
     int64_t registration_id,
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     const GURL& script_url,
     const std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>&
         resources) {
@@ -58,6 +59,7 @@ storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
   data->registration_id = registration_id;
   data->version_id = version_id;
   data->scope = scope;
+  data->key = key;
   data->script = script_url;
   data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
   data->is_active = true;
@@ -1097,6 +1099,7 @@ TEST_F(ServiceWorkerRegistryTest, OriginTrialsAbsentEntryAndEmptyEntry) {
           /*registration_id=*/100,
           /*version_id=*/1000,
           /*scope=*/scope1,
+          /*key=*/key1,
           /*script_url=*/script1, resources1);
   // Don't set origin_trial_tokens to simulate old database entry.
   StoreRegistrationData(std::move(data1), std::move(resources1));
@@ -1112,6 +1115,7 @@ TEST_F(ServiceWorkerRegistryTest, OriginTrialsAbsentEntryAndEmptyEntry) {
           /*registration_id=*/200,
           /*version_id=*/2000,
           /*scope=*/scope2,
+          /*key=*/key2,
           /*script_url=*/script2, resources2);
   // Set empty origin_trial_tokens.
   data2->origin_trial_tokens = blink::TrialTokenValidator::FeatureToTokensMap();
@@ -1147,6 +1151,7 @@ TEST_F(ServiceWorkerRegistryTest, AbsentNavigationPreloadState) {
           /*registration_id=*/100,
           /*version_id=*/1000,
           /*scope=*/scope1,
+          /*key=*/key1,
           /*script_url=*/script1, resources1);
   // Don't set navigation preload state to simulate old database entry.
   StoreRegistrationData(std::move(data1), std::move(resources1));
@@ -1541,6 +1546,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls) {
 TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
   // Prerequisite: Store two registrations.
   const GURL origin1("https://www.example.com");
+  const blink::StorageKey key1(url::Origin::Create(origin1));
   const GURL scope1("https://www.example.com/foo/");
   const GURL script1(origin1.spec() + "/script.js");
   const int64_t registration_id1 = 1;
@@ -1550,10 +1556,12 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
       CreateRegistrationData(registration_id1,
                              /*version_id=*/1000,
                              /*scope=*/scope1,
+                             /*key=*/key1,
                              /*script_url=*/script1, resources1);
   StoreRegistrationData(std::move(data1), std::move(resources1));
 
   const GURL origin2("https://www.example.com");
+  const blink::StorageKey key2(url::Origin::Create(origin2));
   const GURL scope2("https://www.example.com/bar/");
   const GURL script2(origin2.spec() + "/script.js");
   const int64_t registration_id2 = 2;
@@ -1563,13 +1571,13 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_FindRegistrationForId) {
       CreateRegistrationData(registration_id2,
                              /*version_id=*/2000,
                              /*scope=*/scope2,
+                             /*key=*/key2,
                              /*script_url=*/script2, resources2);
   StoreRegistrationData(std::move(data2), std::move(resources2));
 
   base::RunLoop loop1;
   registry()->FindRegistrationForId(
-      registration_id1,
-      blink::StorageKey(url::Origin::Create(origin1.GetOrigin())),
+      registration_id1, key1,
       base::BindLambdaForTesting(
           [&](blink::ServiceWorkerStatusCode status,
               scoped_refptr<ServiceWorkerRegistration> found_registration) {

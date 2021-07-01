@@ -70,6 +70,7 @@ void VerifyRegistrationData(const RegistrationData& expected,
                             const RegistrationData& actual) {
   EXPECT_EQ(expected.registration_id, actual.registration_id);
   EXPECT_EQ(expected.scope, actual.scope);
+  EXPECT_EQ(expected.key, actual.key);
   EXPECT_EQ(expected.script, actual.script);
   EXPECT_EQ(expected.script_type, actual.script_type);
   EXPECT_EQ(expected.update_via_cache, actual.update_via_cache);
@@ -174,6 +175,7 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_ValidSchemaVersion) {
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   RegistrationData data;
   data.scope = origin;
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
@@ -198,6 +200,7 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_ObsoleteSchemaVersion) {
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   RegistrationData data;
   data.scope = origin;
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
@@ -237,6 +240,7 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_CorruptedSchemaVersion) {
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   RegistrationData data;
   data.scope = origin;
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
@@ -314,6 +318,7 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   data1.registration_id = 100;
   data1.scope = URL(origin, "/foo");
+  data1.key = blink::StorageKey(url::Origin::Create(data1.scope));
   data1.script = URL(origin, "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 300;
@@ -333,6 +338,7 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
   RegistrationData data2;
   data2.registration_id = 10;
   data2.scope = URL(origin, "/bar");
+  data2.key = blink::StorageKey(url::Origin::Create(data2.scope));
   data2.script = URL(origin, "/script2.js");
   data2.version_id = 20;
   data2.resources_total_size_bytes = 400;
@@ -373,6 +379,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   RegistrationData data1;
   data1.registration_id = 123;
   data1.scope = URL(origin1, "/foo");
+  data1.key = key1;
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 456;
   data1.resources_total_size_bytes = 100;
@@ -386,6 +393,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   RegistrationData data2;
   data2.registration_id = 234;
   data2.scope = URL(origin2, "/bar");
+  data2.key = key2;
   data2.script = URL(origin2, "/script2.js");
   data2.version_id = 567;
   data2.resources_total_size_bytes = 200;
@@ -399,6 +407,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   RegistrationData data3;
   data3.registration_id = 345;
   data3.scope = URL(origin3, "/hoge");
+  data3.key = key3;
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 678;
   data3.resources_total_size_bytes = 300;
@@ -411,6 +420,7 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   RegistrationData data4;
   data4.registration_id = 456;
   data4.scope = URL(origin3, "/fuga");
+  data4.key = key3;
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 789;
   data4.resources_total_size_bytes = 400;
@@ -480,6 +490,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(origin1, "/foo");
+  data1.key = key1;
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
@@ -503,6 +514,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   RegistrationData data2;
   data2.registration_id = 200;
   data2.scope = URL(origin2, "/bar");
+  data2.key = key2;
   data2.script = URL(origin2, "/script2.js");
   data2.version_id = 2000;
   data2.resources_total_size_bytes = 200;
@@ -526,6 +538,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   RegistrationData data3;
   data3.registration_id = 300;
   data3.scope = URL(origin3, "/hoge");
+  data3.key = key3;
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
@@ -540,6 +553,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   RegistrationData data4;
   data4.registration_id = 400;
   data4.scope = URL(origin3, "/fuga");
+  data4.key = key3;
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
@@ -587,6 +601,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(origin1, "/foo");
+  data1.key = blink::StorageKey(url::Origin::Create(data1.scope));
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
@@ -600,6 +615,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data2;
   data2.registration_id = 200;
   data2.scope = URL(origin2, "/bar");
+  data2.key = blink::StorageKey(url::Origin::Create(data2.scope));
   data2.script = URL(origin2, "/script2.js");
   data2.version_id = 2000;
   data2.resources_total_size_bytes = 200;
@@ -614,6 +630,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data3;
   data3.registration_id = 300;
   data3.scope = URL(origin3, "/hoge");
+  data3.key = blink::StorageKey(url::Origin::Create(data3.scope));
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
@@ -628,6 +645,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data4;
   data4.registration_id = 400;
   data4.scope = URL(origin3, "/fuga");
+  data4.key = blink::StorageKey(url::Origin::Create(data4.scope));
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
@@ -655,6 +673,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = key;
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 10939 + 200;
@@ -742,6 +761,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 19 + 29129;
@@ -795,6 +815,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = key;
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 10 + 11;
@@ -878,6 +899,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(origin, "/foo");
+  data1.key = key;
   data1.script = URL(origin, "/resource1");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 1451 + 15234;
@@ -892,6 +914,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(origin, "/bar");
+  data2.key = key;
   data2.script = URL(origin, "/resource3");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 5 + 6;
@@ -1024,6 +1047,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(origin1, "/foo");
+  data1.key = blink::StorageKey(url::Origin::Create(data1.scope));
   data1.script = URL(origin1, "/resource1");
   data1.version_id = 100;
   data1.resources_total_size_bytes = 10 + 10000;
@@ -1039,6 +1063,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   RegistrationData data2;
   data2.registration_id = 200;
   data2.scope = URL(origin2, "/bar");
+  data2.key = blink::StorageKey(url::Origin::Create(data2.scope));
   data2.script = URL(origin2, "/resource3");
   data2.version_id = 200;
   data2.resources_total_size_bytes = 20 + 20000;
@@ -1054,6 +1079,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   RegistrationData data3;
   data3.registration_id = 300;
   data3.scope = URL(origin3, "/baz");
+  data3.key = blink::StorageKey(url::Origin::Create(data3.scope));
   data3.script = URL(origin3, "/resource5");
   data3.version_id = 300;
   data3.resources_total_size_bytes = 30 + 30000;
@@ -1106,6 +1132,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.key = key;
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
@@ -1221,12 +1248,13 @@ TEST(ServiceWorkerDatabaseTest,
      UserData_ReadUserDataForAllRegistrationsByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  blink::StorageKey key(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = kKey;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1237,6 +1265,7 @@ TEST(ServiceWorkerDatabaseTest,
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = kKey;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1252,39 +1281,39 @@ TEST(ServiceWorkerDatabaseTest,
   // Write user data associated with the registration1.
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data1.registration_id, key,
+      database->WriteUserData(data1.registration_id, kKey,
                               CreateUserData(data1.registration_id,
                                              {{"key_prefix:key1", "value1"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data1.registration_id, key,
+      database->WriteUserData(data1.registration_id, kKey,
                               CreateUserData(data1.registration_id,
                                              {{"key_prefix:key2", "value2"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data1.registration_id, key,
+      database->WriteUserData(data1.registration_id, kKey,
                               CreateUserData(data1.registration_id,
                                              {{"key_prefix:key3", "value3"}})));
 
   // Write user data associated with the registration2.
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data2.registration_id, key,
+      database->WriteUserData(data2.registration_id, kKey,
                               CreateUserData(data2.registration_id,
                                              {{"key_prefix:key1", "value1"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->WriteUserData(data2.registration_id, key,
+      database->WriteUserData(data2.registration_id, kKey,
                               CreateUserData(data2.registration_id,
                                              {{"key_prefix:key2", "value2"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, key,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id,
                                {{"another_key_prefix:key1", "value1"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, key,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id,
                                {{"another_key_prefix:key2", "value2"}})));
 
@@ -1315,11 +1344,13 @@ TEST(ServiceWorkerDatabaseTest,
 TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const blink::StorageKey kKey(kOrigin);
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.key = kKey;
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
@@ -1332,7 +1363,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
   // Write user data associated with the registration.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, blink::StorageKey(kOrigin),
+                data.registration_id, kKey,
                 CreateUserData(data.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1361,11 +1392,13 @@ TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
 TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const blink::StorageKey kKey(kOrigin);
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.key = kKey;
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
@@ -1378,7 +1411,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
   // Write user data associated with the registration.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data.registration_id, blink::StorageKey(kOrigin),
+                data.registration_id, kKey,
                 CreateUserData(data.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1417,6 +1450,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = key;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1427,6 +1461,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = key;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1520,12 +1555,13 @@ TEST(ServiceWorkerDatabaseTest,
      UserData_DeleteUserDataForAllRegistrationsByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  blink::StorageKey key(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = kKey;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1536,6 +1572,7 @@ TEST(ServiceWorkerDatabaseTest,
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = kKey;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1551,7 +1588,7 @@ TEST(ServiceWorkerDatabaseTest,
   // Write user data associated with registration 1.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, key,
+                data1.registration_id, kKey,
                 CreateUserData(data1.registration_id,
                                {{"key_prefix:key1", "value_a1"},
                                 {"key_prefix:key2", "value_a2"},
@@ -1561,7 +1598,7 @@ TEST(ServiceWorkerDatabaseTest,
   // Write user data associated with registration 2.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, key,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id,
                                {{"key_prefix:key1", "value_c1"},
                                 {"key_prefix:key2", "value_c2"},
@@ -1608,12 +1645,13 @@ TEST(ServiceWorkerDatabaseTest,
 TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  blink::StorageKey key(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = kKey;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1624,6 +1662,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = kKey;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1641,7 +1680,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   std::vector<std::string> user_data_out;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, key,
+                data1.registration_id, kKey,
                 CreateUserData(data1.registration_id, {{"key", "value1"}})));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1656,7 +1695,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   // the data associated with registration1.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, key,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id, {{"key", "value2"}})));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1707,12 +1746,13 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
 TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
-  blink::StorageKey key(kOrigin);
+  const blink::StorageKey kKey(kOrigin);
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
   data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.key = kKey;
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
@@ -1723,6 +1763,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   RegistrationData data2;
   data2.registration_id = 101;
   data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.key = kKey;
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
@@ -1739,11 +1780,11 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   std::vector<std::string> user_data_out;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, key,
+                data1.registration_id, kKey,
                 CreateUserData(data1.registration_id, {{"key1", "value1"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, key,
+                data1.registration_id, kKey,
                 CreateUserData(data1.registration_id, {{"key2", "value2"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1759,7 +1800,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   // Write user data associated with the registration2.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, key,
+                data2.registration_id, kKey,
                 CreateUserData(data2.registration_id, {{"key3", "value3"}})));
   ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
@@ -1770,7 +1811,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   // Delete all data associated with the registration1. This shouldn't delete
   // the data associated with registration2.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data1.registration_id, key,
+            database->DeleteRegistration(data1.registration_id, kKey,
                                          &deleted_version));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kErrorNotFound,
@@ -1836,6 +1877,7 @@ TEST(ServiceWorkerDatabaseTest, UpdateVersionToActive) {
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = key;
   data.script = URL(origin, "/script.js");
   data.version_id = 200;
   data.is_active = false;
@@ -1893,6 +1935,7 @@ TEST(ServiceWorkerDatabaseTest, UpdateLastCheckTime) {
   RegistrationData data;
   data.registration_id = 100;
   data.scope = URL(origin, "/foo");
+  data.key = key;
   data.script = URL(origin, "/script.js");
   data.version_id = 200;
   data.last_update_check = base::Time::Now();
@@ -2003,6 +2046,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
   RegistrationData data1;
   data1.registration_id = 10;
   data1.scope = URL(url1, "/foo");
+  data1.key = key1;
   data1.script = URL(url1, "/resource1");
   data1.version_id = 100;
   data1.resources_total_size_bytes = 2013 + 512;
@@ -2024,6 +2068,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
   RegistrationData data2;
   data2.registration_id = 11;
   data2.scope = URL(url1, "/bar");
+  data2.key = key1;
   data2.script = URL(url1, "/resource3");
   data2.version_id = 101;
   data2.resources_total_size_bytes = 4 + 5;
@@ -2046,6 +2091,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
   RegistrationData data3;
   data3.registration_id = 12;
   data3.scope = URL(url2, "/hoge");
+  data3.key = key2;
   data3.script = URL(url2, "/resource5");
   data3.version_id = 102;
   data3.resources_total_size_bytes = 6 + 7;
@@ -2162,6 +2208,7 @@ TEST(ServiceWorkerDatabaseTest, Corruption_NoMainResource) {
   RegistrationData data;
   data.registration_id = 10;
   data.scope = URL(origin, "/foo");
+  data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.script = URL(origin, "/resource1");
   data.version_id = 100;
   data.resources_total_size_bytes = 2016;
@@ -2199,6 +2246,7 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForStorageKey) {
   RegistrationData data1;
   data1.registration_id = 1;
   data1.scope = URL(origin, "/foo");
+  data1.key = key;
   data1.script = URL(origin, "/resource1");
   data1.version_id = 1;
   data1.resources_total_size_bytes = 2016;
@@ -2210,6 +2258,7 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForStorageKey) {
   RegistrationData data2;
   data2.registration_id = 2;
   data2.scope = URL(origin, "/foo");
+  data2.key = key;
   data2.script = URL(origin, "/resource2");
   data2.version_id = 2;
   data2.resources_total_size_bytes = 2016;
@@ -2301,6 +2350,7 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     RegistrationData data;
     data.registration_id = 123;
     data.scope = URL(origin, "/foo");
+    data.key = blink::StorageKey(url::Origin::Create(data.scope));
     data.script = URL(origin, "/script.js");
     data.version_id = 456;
     data.resources_total_size_bytes = 100;
