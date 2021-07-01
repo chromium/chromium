@@ -409,6 +409,8 @@ public abstract class ChromeFeatureList {
             "OmniboxEnableClipboardProviderImageSuggestions";
     public static final String OMNIBOX_MOST_VISITED_TILES = "OmniboxMostVisitedTiles";
     public static final String OMNIBOX_SPARE_RENDERER = "OmniboxSpareRenderer";
+    public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
+            "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
             "OptimizationGuidePushNotifications";
     public static final String OVERLAY_NEW_LAYOUT = "OverlayNewLayout";

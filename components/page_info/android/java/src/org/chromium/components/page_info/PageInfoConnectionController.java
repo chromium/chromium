@@ -154,9 +154,11 @@ public class PageInfoConnectionController
         rowParams.subtitle = subtitle;
         rowParams.visible = rowParams.title != null || rowParams.subtitle != null;
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
+        // Page info should always show lock icon as the connection security indicator.
         rowParams.iconResId = SecurityStatusIcon.getSecurityIconResource(securityLevel,
                 /*isSmallDevice=*/false,
-                /*skipIconForNeutralState=*/false);
+                /*skipIconForNeutralState=*/false,
+                /*useUpdatedConnectionSecurityIndicators=*/false);
         rowParams.iconTint = getSecurityIconColor(securityLevel);
         if (hasClickCallback) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);

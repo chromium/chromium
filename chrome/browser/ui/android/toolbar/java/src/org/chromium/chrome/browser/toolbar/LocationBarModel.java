@@ -15,9 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -547,8 +549,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
                 || mNtpDelegate.isCurrentlyVisible();
 
-        return SecurityStatusIcon.getSecurityIconResource(
-                securityLevel, isSmallDevice, skipIconForNeutralState);
+        return SecurityStatusIcon.getSecurityIconResource(securityLevel, isSmallDevice,
+                skipIconForNeutralState,
+                FeatureList.isInitialized()
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS));
     }
 
     @Override

@@ -258,7 +258,8 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
                     UrlBarControllerImplJni.get().getConnectionSecurityLevel(
                             mNativeUrlBarController),
                     mBrowserImpl.isWindowOnSmallDevice(),
-                    /* skipIconForNeutralState= */ true);
+                    /*skipIconForNeutralState=*/true,
+                    /*useUpdatedConnectionSecurityIndicators=*/true);
         }
     }
 

@@ -131,7 +131,8 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
     @DrawableRes
     public int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
         return SecurityStatusIcon.getSecurityIconResource(securityLevel, mIsSmallDevice,
-                /*skipIconForNeutralState=*/false);
+                /*skipIconForNeutralState=*/false,
+                /*useUpdatedConnectionSecurityIndicators=*/false);
     }
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
