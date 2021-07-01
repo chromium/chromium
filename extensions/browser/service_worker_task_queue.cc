@@ -648,10 +648,9 @@ void ServiceWorkerTaskQueue::StartObserving(
 
 void ServiceWorkerTaskQueue::StopObserving(
     content::ServiceWorkerContext* service_worker_context) {
-  // TODO(crbug.com/1222759): Investigate when the DCHECK's condition can be
-  // false.
-  DCHECK(observing_worker_contexts_.count(service_worker_context) > 0u);
-  observing_worker_contexts_.erase(service_worker_context);
+  auto iter = observing_worker_contexts_.find(service_worker_context);
+  DCHECK(iter != observing_worker_contexts_.end());
+  observing_worker_contexts_.erase(iter);
   if (!observing_worker_contexts_.count(service_worker_context))
     service_worker_context->RemoveObserver(this);
 }
