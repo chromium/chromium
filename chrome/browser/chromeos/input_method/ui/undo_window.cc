@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/input_method/ui/undo_window.h"
 
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/input_method/ui/border_factory.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -14,11 +16,15 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/wm/core/window_animations.h"
 
+#include <iostream>
 namespace ui {
 namespace ime {
 
 namespace {
-const char16_t kUndoButtonText[] = u"Undo";
+constexpr char16_t kUndoButtonText[] = u"Undo";
+constexpr int kHeight = 28;
+constexpr int kPadding = 0;
+constexpr int kIconSize = 16;
 // TODO(crbug/1099044): Update and use cros_colors.json5
 constexpr SkColor kButtonHighlightColor =
     SkColorSetA(SK_ColorBLACK, 0x0F);  // 6% Black.
@@ -31,29 +37,37 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);
-  set_margins(gfx::Insets());
-
+  set_margins(gfx::Insets(kPadding, kPadding, kPadding, kPadding));
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
-
   undo_button_ = AddChildView(std::make_unique<views::LabelButton>(
       base::BindRepeating(&UndoWindow::UndoButtonPressed,
                           base::Unretained(this)),
       kUndoButtonText));
+  undo_button_->SetText(kUndoButtonText);
   undo_button_->SetImageLabelSpacing(
       views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL));
+          views::DistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL));
   undo_button_->SetBackground(nullptr);
   undo_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  undo_button_->SetMaxSize(
+      gfx::Size(std::numeric_limits<int>::max(), kHeight - 2 * kPadding));
 }
 
 void UndoWindow::OnThemeChanged() {
+  // Without the scoped light mode, default for ash color provider is dark mode,
+  // which is bad.
+  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
   undo_button_->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(kAutocorrectUndoIcon,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_DefaultIconColor)));
+      gfx::CreateVectorIcon(
+          kAutocorrectUndoIcon, kIconSize,
+          ash::ColorProvider::Get()->GetContentLayerColor(
+              ash::ColorProvider::ContentLayerType::kIconColorPrimary)));
+  undo_button_->SetEnabledTextColors(
+      ash::ColorProvider::Get()->GetContentLayerColor(
+          ash::ColorProvider::ContentLayerType::kTextColorPrimary));
   BubbleDialogDelegateView::OnThemeChanged();
 }
 
