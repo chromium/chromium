@@ -1,0 +1,54 @@
+Verifies that Overlay.setShowViewportSizeOnResize works.
+Initial device metrics:
+[
+  {
+    "name": "reset",
+    "data": {
+      "deviceScaleFactor": 1,
+      "emulationScaleFactor": 1,
+      "pageScaleFactor": 1,
+      "viewportSize": {
+        "width": 800,
+        "height": 600
+      },
+      "visualViewportSize": {
+        "width": 800,
+        "height": 600
+      },
+      "pageZoomFactor": 1,
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  }
+]
+Device metrics with changed viewport:
+[
+  {
+    "name": "setOverlay",
+    "data": "viewportSize"
+  },
+  {
+    "name": "reset",
+    "data": {
+      "deviceScaleFactor": 1,
+      "emulationScaleFactor": 1,
+      "pageScaleFactor": 1,
+      "viewportSize": {
+        "width": 500,
+        "height": 500
+      },
+      "visualViewportSize": {
+        "width": 500,
+        "height": 500
+      },
+      "pageZoomFactor": 1,
+      "scrollX": 0,
+      "scrollY": 0
+    }
+  },
+  {
+    "name": "drawViewSize",
+    "data": ""
+  }
+]
+
