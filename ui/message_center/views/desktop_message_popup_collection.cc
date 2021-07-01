@@ -4,29 +4,23 @@
 
 #include "ui/message_center/views/desktop_message_popup_collection.h"
 
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 
 namespace message_center {
 
-DesktopMessagePopupCollection::DesktopMessagePopupCollection()
-    : alignment_(POPUP_ALIGNMENT_BOTTOM | POPUP_ALIGNMENT_RIGHT),
-      primary_display_id_(display::kInvalidDisplayId),
-      screen_(nullptr) {}
+DesktopMessagePopupCollection::DesktopMessagePopupCollection() = default;
 
-DesktopMessagePopupCollection::~DesktopMessagePopupCollection() {
-  if (screen_)
-    screen_->RemoveObserver(this);
-}
+DesktopMessagePopupCollection::~DesktopMessagePopupCollection() = default;
 
-void DesktopMessagePopupCollection::StartObserving(display::Screen* screen) {
+void DesktopMessagePopupCollection::StartObserving() {
+  auto* screen = display::Screen::GetScreen();
   if (screen_ || !screen)
     return;
 
   screen_ = screen;
-  screen_->AddObserver(this);
+  display_observer_.emplace(this);
   display::Display display = screen_->GetPrimaryDisplay();
   primary_display_id_ = display.id();
   RecomputeAlignment(display);

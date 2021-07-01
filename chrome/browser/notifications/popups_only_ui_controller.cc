@@ -4,7 +4,6 @@
 
 #include "chrome/browser/notifications/popups_only_ui_controller.h"
 
-#include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/desktop_message_popup_collection.h"
 
@@ -57,7 +56,7 @@ void PopupsOnlyUiController::ShowOrHidePopupBubbles() {
   if (popups_visible_ && !message_center_->HasPopupNotifications()) {
     popups_visible_ = false;
   } else if (!popups_visible_ && message_center_->HasPopupNotifications()) {
-    popup_collection_->StartObserving(display::Screen::GetScreen());
+    popup_collection_->StartObserving();
     popups_visible_ = true;
   }
 }
