@@ -19,8 +19,6 @@
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/ppapi_migration/graphics.h"
-#include "ppapi/cpp/completion_callback.h"
-#include "ppapi/cpp/module.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"

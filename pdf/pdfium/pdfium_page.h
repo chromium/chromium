@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_engine.h"
-#include "ppapi/cpp/private/pdf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_doc.h"

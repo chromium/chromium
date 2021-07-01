@@ -22,7 +22,6 @@
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
-#include "ppapi/cpp/instance.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"

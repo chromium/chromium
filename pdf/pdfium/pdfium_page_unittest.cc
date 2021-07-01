@@ -21,7 +21,6 @@
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/ui/thumbnail.h"
-#include "ppapi/c/private/ppb_pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
