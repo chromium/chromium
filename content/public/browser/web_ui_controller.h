@@ -39,10 +39,12 @@ class CONTENT_EXPORT WebUIController {
                                           const std::string& message,
                                           const base::ListValue& args);
 
-  // Called when a RenderFrame is created.  This is *not* called for every
+  // Called when a WebUI RenderFrame is created.  This is *not* called for every
   // page load because in some cases a RenderFrame will be reused, for example
   // when reloading or navigating to a same-site URL.
-  virtual void RenderFrameCreated(RenderFrameHost* render_frame_host) {}
+  // This is deliberately named to differentiate from
+  // WebContentsObserver::RenderFrameCreated, as some classes may override both.
+  virtual void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {}
 
   WebUI* web_ui() const { return web_ui_; }
 

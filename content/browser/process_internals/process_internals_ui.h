@@ -23,9 +23,11 @@ class ProcessInternalsUI : public WebUIController {
  public:
   explicit ProcessInternalsUI(WebUI* web_ui);
   ~ProcessInternalsUI() override;
+  ProcessInternalsUI(const ProcessInternalsUI&) = delete;
+  ProcessInternalsUI& operator=(const ProcessInternalsUI&) = delete;
 
   // WebUIController overrides:
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+  void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
   void BindProcessInternalsHandler(
       mojo::PendingReceiver<::mojom::ProcessInternalsHandler> receiver,
@@ -35,8 +37,6 @@ class ProcessInternalsUI : public WebUIController {
   std::unique_ptr<::mojom::ProcessInternalsHandler> ui_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessInternalsUI);
 };
 
 }  // namespace content

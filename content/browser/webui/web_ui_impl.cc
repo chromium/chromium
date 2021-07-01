@@ -112,8 +112,8 @@ void WebUIImpl::Send(const std::string& message, base::Value args) {
   ProcessWebUIMessage(source_url, message, base::Value::AsListValue(args));
 }
 
-void WebUIImpl::RenderFrameCreated(RenderFrameHost* render_frame_host) {
-  controller_->RenderFrameCreated(render_frame_host);
+void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
+  controller_->WebUIRenderFrameCreated(render_frame_host);
 }
 
 void WebUIImpl::RenderFrameReused(RenderFrameHost* render_frame_host) {

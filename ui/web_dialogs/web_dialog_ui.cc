@@ -115,7 +115,7 @@ WebDialogUI::WebDialogUI(content::WebUI* web_ui)
 
 WebDialogUI::~WebDialogUI() = default;
 
-void WebDialogUI::RenderFrameCreated(RenderFrameHost* render_frame_host) {
+void WebDialogUI::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
   HandleRenderFrameCreated(render_frame_host);
 }
 
@@ -129,9 +129,9 @@ MojoWebDialogUI::MojoWebDialogUI(content::WebUI* web_ui)
 
 MojoWebDialogUI::~MojoWebDialogUI() = default;
 
-void MojoWebDialogUI::RenderFrameCreated(
+void MojoWebDialogUI::WebUIRenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  content::WebUIController::RenderFrameCreated(render_frame_host);
+  content::WebUIController::WebUIRenderFrameCreated(render_frame_host);
   HandleRenderFrameCreated(render_frame_host);
 }
 

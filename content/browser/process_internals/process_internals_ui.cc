@@ -51,7 +51,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(ProcessInternalsUI)
 
 ProcessInternalsUI::~ProcessInternalsUI() = default;
 
-void ProcessInternalsUI::RenderFrameCreated(RenderFrameHost* rfh) {
+void ProcessInternalsUI::WebUIRenderFrameCreated(RenderFrameHost* rfh) {
   // Enable the JavaScript Mojo bindings in the renderer process, so the JS
   // code can call the Mojo APIs exposed by this WebUI.
   static_cast<RenderFrameHostImpl*>(rfh)->EnableMojoJsBindings();

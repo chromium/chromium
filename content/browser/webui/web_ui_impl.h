@@ -32,12 +32,14 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   explicit WebUIImpl(WebContentsImpl* contents,
                      RenderFrameHostImpl* frame_host);
   ~WebUIImpl() override;
+  WebUIImpl(const WebUIImpl&) = delete;
+  WebUIImpl& operator=(const WebUIImpl&) = delete;
 
   // Called when a RenderFrame is created for a WebUI (reload after a renderer
   // crash) or when a WebUI is created for a RenderFrame (i.e. navigating from
   // chrome://downloads to chrome://bookmarks) or when both are new (i.e.
   // opening a new tab).
-  void RenderFrameCreated(RenderFrameHost* render_frame_host);
+  void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host);
 
   // Called when a RenderFrame is reused for the same WebUI type (i.e. reload).
   void RenderFrameReused(RenderFrameHost* render_frame_host);
@@ -147,8 +149,6 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
 
   mojo::AssociatedRemote<mojom::WebUI> remote_;
   mojo::AssociatedReceiver<mojom::WebUIHost> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIImpl);
 };
 
 }  // namespace content

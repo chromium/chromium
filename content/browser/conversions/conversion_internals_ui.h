@@ -27,7 +27,7 @@ class CONTENT_EXPORT ConversionInternalsUI : public WebUIController {
   ~ConversionInternalsUI() override;
 
   // WebUIController overrides:
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+  void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
   void BindInterface(
       mojo::PendingReceiver<::mojom::ConversionInternalsHandler> receiver);

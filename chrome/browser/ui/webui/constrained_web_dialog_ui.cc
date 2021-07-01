@@ -40,14 +40,16 @@ class ConstrainedWebDialogDelegateUserData
  public:
   explicit ConstrainedWebDialogDelegateUserData(
       ConstrainedWebDialogDelegate* delegate) : delegate_(delegate) {}
-  ~ConstrainedWebDialogDelegateUserData() override {}
+  ~ConstrainedWebDialogDelegateUserData() override = default;
+  ConstrainedWebDialogDelegateUserData(
+      const ConstrainedWebDialogDelegateUserData&) = delete;
+  ConstrainedWebDialogDelegateUserData& operator=(
+      const ConstrainedWebDialogDelegateUserData&) = delete;
 
   ConstrainedWebDialogDelegate* delegate() { return delegate_; }
 
  private:
   ConstrainedWebDialogDelegate* delegate_;  // unowned
-
-  DISALLOW_COPY_AND_ASSIGN(ConstrainedWebDialogDelegateUserData);
 };
 
 }  // namespace
@@ -59,10 +61,9 @@ ConstrainedWebDialogUI::ConstrainedWebDialogUI(content::WebUI* web_ui)
 #endif
 }
 
-ConstrainedWebDialogUI::~ConstrainedWebDialogUI() {
-}
+ConstrainedWebDialogUI::~ConstrainedWebDialogUI() = default;
 
-void ConstrainedWebDialogUI::RenderFrameCreated(
+void ConstrainedWebDialogUI::WebUIRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Add a "dialogClose" callback which matches WebDialogUI behavior.
   web_ui()->RegisterMessageCallback(

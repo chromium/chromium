@@ -70,12 +70,13 @@ class WEB_DIALOGS_EXPORT WebDialogUI : public WebDialogUIBase,
   // WebContents.
   explicit WebDialogUI(content::WebUI* web_ui);
   ~WebDialogUI() override;
+  WebDialogUI(const WebDialogUI&) = delete;
+  WebDialogUI& operator=(const WebDialogUI&) = delete;
 
  private:
   // content::WebUIController:
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogUI);
+  void WebUIRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
 };
 
 // Displays file URL contents inside a modal web dialog while also enabling
@@ -87,12 +88,13 @@ class WEB_DIALOGS_EXPORT MojoWebDialogUI : public WebDialogUIBase,
   // WebContents.
   explicit MojoWebDialogUI(content::WebUI* web_ui);
   ~MojoWebDialogUI() override;
+  MojoWebDialogUI(const MojoWebDialogUI&) = delete;
+  MojoWebDialogUI& operator=(const MojoWebDialogUI&) = delete;
 
  private:
   // content::WebUIController:
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoWebDialogUI);
+  void WebUIRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
 };
 
 }  // namespace ui
