@@ -85,6 +85,9 @@ uint32_t FindFormsDifferences(const FormData& lhs, const FormData& rhs) {
     if (lhs_field.autocomplete_attribute != rhs_field.autocomplete_attribute)
       differences_bitmask |=
           PasswordFormMetricsRecorder::kAutocompleteAttributes;
+
+    if (lhs_field.name != rhs_field.name)
+      differences_bitmask |= PasswordFormMetricsRecorder::kFormFieldNames;
   }
   return differences_bitmask;
 }

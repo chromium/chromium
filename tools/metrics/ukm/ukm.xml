@@ -12157,7 +12157,7 @@ be describing additional metrics about the same event.
       is seen by Password Manager. Recorded once per a form when the form is
       removed from DOM. Bit 0 - changes in number of fields, bit 1 - changes in
       fields renderer ids, bit 2 - changes in autocomplete attributes, bit 3 -
-      changes in form control types.
+      changes in form control types, bit 4 - changes in field names.
     </summary>
   </metric>
   <metric name="Fill.FirstFillingResultInRenderer"

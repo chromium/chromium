@@ -1759,8 +1759,11 @@ TEST_P(PasswordFormManagerTest, FillForm) {
     base::HistogramTester histogram_tester;
     form_manager_.reset();
     uint32_t expected_differences_mask = 0;
-    if (observed_form_changed)
-      expected_differences_mask = 2;  // renderer_id changes.
+    if (observed_form_changed) {
+      expected_differences_mask |=
+          PasswordFormMetricsRecorder::kRendererFieldIDs;
+      expected_differences_mask |= PasswordFormMetricsRecorder::kFormFieldNames;
+    }
     histogram_tester.ExpectUniqueSample("PasswordManager.DynamicFormChanges",
                                         expected_differences_mask, 1);
   }

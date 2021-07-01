@@ -1116,7 +1116,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     seen by Password Manager. Recorded once per a form when the form is removed
     from DOM. Bit 0 - changes in number of fields, bit 1 - changes in fields
     renderer ids, bit 2 - changes in autocomplete attributes, bit 3 - changes in
-    form control types.
+    form control types, bit 4 - changes in field names.
   </summary>
 </histogram>
 

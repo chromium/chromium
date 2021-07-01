@@ -196,7 +196,8 @@ class PasswordFormMetricsRecorder
     kRendererFieldIDs = 1 << 1,
     kAutocompleteAttributes = 1 << 2,
     kFormControlTypes = 1 << 3,
-    kMaxFormDifferencesValue = 1 << 4,
+    kFormFieldNames = 1 << 4,
+    kMaxFormDifferencesValue = 1 << 5,
   };
 
   // Used in UMA histogram, please do NOT reorder.
