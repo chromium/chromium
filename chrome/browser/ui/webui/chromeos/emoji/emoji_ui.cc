@@ -33,7 +33,9 @@ class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
   EmojiiBubbleDialogView(
       std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
       : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
-        contents_wrapper_(std::move(contents_wrapper)) {}
+        contents_wrapper_(std::move(contents_wrapper)) {
+    set_has_parent(false);
+  }
 
  private:
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
