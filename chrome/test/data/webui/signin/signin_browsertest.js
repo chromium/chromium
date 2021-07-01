@@ -11,7 +11,6 @@ GEN('#include "base/command_line.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
-GEN('#include "chrome/common/chrome_features.h"');
 
 class SigninBrowserTest extends PolymerTest {
   /** @override */
@@ -65,15 +64,6 @@ var DiceWebSigninInterceptTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://signin-dice-web-intercept/test_loader.html?module=signin/dice_web_signin_intercept_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kEnableEphemeralGuestProfilesOnDesktop',
-      ]
-    };
   }
 };
 

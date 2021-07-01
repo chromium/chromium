@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -985,57 +984,33 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
       /*create_if_needed=*/true);
   EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
             profile_metrics::GetBrowserProfileType(otr_profile));
+
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  Browser* guest_browser = CreateGuestBrowser();
+
+  EXPECT_EQ(profile_metrics::BrowserProfileType::kGuest,
+            profile_metrics::GetBrowserProfileType(guest_browser->profile()));
+#endif
 }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(https://crbug.com/1125474): Expand to cover ChromeOS.
-class GuestProfileLifetimeBrowserTest
-    : public ProfileBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  GuestProfileLifetimeBrowserTest() : is_ephemeral_(GetParam()) {
-    // Change the value if Ephemeral is not supported.
-    is_ephemeral_ &=
-        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_);
-  }
-
-  bool is_ephemeral() const { return is_ephemeral_; }
-
- private:
-  bool is_ephemeral_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, TestProfileTypes) {
-  Browser* browser = CreateGuestBrowser();
-  profile_metrics::BrowserProfileType expected_type =
-      is_ephemeral() ? profile_metrics::BrowserProfileType::kEphemeralGuest
-                     : profile_metrics::BrowserProfileType::kGuest;
-
-  EXPECT_EQ(expected_type,
-            profile_metrics::GetBrowserProfileType(browser->profile()));
-}
-
-IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, UnderOneMinute) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, UnderOneMinute) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
   BrowserCloseObserver close_observer(browser);
 
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
   close_observer.Wait();
-  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0,
-                            is_ephemeral() ? 0 : 1);
-  tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 0,
-                            is_ephemeral() ? 1 : 0);
+  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
+  tester.ExpectTotalCount("Profile.Guest.Ephemeral.Lifetime", 0);
   tester.ExpectUniqueSample("Profile.Guest.BlankState.Lifetime", 0, 1);
   tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime", 0);
   // To reduce boilerplate code, |Profile.Guest.SigninTransferred.Lifetime| is
   // tested in DiceWebSigninInterceptorBrowserTest::SwitchToGuest.
 }
 
-IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, OneHour) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
   BrowserCloseObserver close_observer(browser);
@@ -1044,72 +1019,10 @@ IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, OneHour) {
       base::Time::Now() - base::TimeDelta::FromSeconds(60) * 60);
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
   close_observer.Wait();
-  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60,
-                            is_ephemeral() ? 0 : 1);
-  tester.ExpectUniqueSample("Profile.Guest.Ephemeral.Lifetime", 60,
-                            is_ephemeral() ? 1 : 0);
+  tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
+  tester.ExpectTotalCount("Profile.Guest.Ephemeral.Lifetime", 0);
   tester.ExpectUniqueSample("Profile.Guest.BlankState.Lifetime", 60, 1);
   tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime", 0);
-}
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestProfileLifetimeBrowserTest,
-                         /*is_ephemeral=*/testing::Bool());
-
-class EphemeralGuestProfileBrowserTest : public ProfileBrowserTest {
- public:
-  EphemeralGuestProfileBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableEphemeralGuestProfilesOnDesktop);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests profile type functions on an ephemeral Guest profile.
-IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest, TestProfileType) {
-  Profile* guest_profile = CreateGuestBrowser()->profile();
-
-  EXPECT_FALSE(guest_profile->IsRegularProfile());
-  EXPECT_FALSE(guest_profile->IsOffTheRecord());
-  EXPECT_FALSE(guest_profile->IsGuestSession());
-  EXPECT_TRUE(guest_profile->IsEphemeralGuestProfile());
-}
-
-// Tests if ephemeral Guest profile paths are persistent as long as one does not
-// close all Guest browsers.
-IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
-                       TestProfilePathIsStableWhileNotClosed) {
-  Browser* guest1 = CreateGuestBrowser();
-  base::FilePath guest_path1 = guest1->profile()->GetPath();
-
-  Browser* guest2 = CreateGuestBrowser();
-  base::FilePath guest_path2 = guest2->profile()->GetPath();
-
-  EXPECT_EQ(guest_path1, guest_path2);
-
-  CloseBrowserSynchronously(guest1);
-
-  Browser* guest3 = CreateGuestBrowser();
-  base::FilePath guest_path3 = guest3->profile()->GetPath();
-
-  EXPECT_EQ(guest_path1, guest_path3);
-}
-
-// Tests if closing all ephemeral Guest profiles will result in a new path for
-// the next ephemeral Guest profile.
-IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
-                       TestGuestGetsNewPathAfterClosing) {
-  Browser* guest1 = CreateGuestBrowser();
-  base::FilePath guest_path1 = guest1->profile()->GetPath();
-
-  CloseBrowserSynchronously(guest1);
-
-  Browser* guest2 = CreateGuestBrowser();
-  base::FilePath guest_path2 = guest2->profile()->GetPath();
-
-  EXPECT_NE(guest_path1, guest_path2);
 }
 
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

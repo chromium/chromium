@@ -91,8 +91,9 @@ class TestingProfile : public Profile {
   // Sets the feature list to enable/disable ephemeral Guest profiles.
   // Returns true if ephemeral Guest profiles are supported on the platform and
   // feature list is initialized.
-  // TODO(https://crbug.com/1125474): Expand to cover ChromeOS when ChromeOS
-  // code supports ephemeral Guest profiles.
+  // NOTE: Ephemeral Guest profiles are deprecated and code support is under
+  // removal. This function always returns false.
+  // TODO(https://crbug.com/1225156): Delete this function.
   static bool SetScopedFeatureListForEphemeralGuestProfiles(
       base::test::ScopedFeatureList& scoped_feature_list,
       bool enabled);

@@ -429,12 +429,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   Profile* profile = [ac lastProfile];
   ASSERT_TRUE(profile);
   EXPECT_EQ(guest_profile_path, profile->GetPath());
-  if (base::FeatureList::IsEnabled(
-          features::kEnableEphemeralGuestProfilesOnDesktop)) {
-    EXPECT_TRUE(profile->IsEphemeralGuestProfile());
-  } else {
-    EXPECT_TRUE(profile->IsGuestSession());
-  }
+  EXPECT_TRUE(profile->IsGuestSession());
 
   NSMenu* menu = [ac applicationDockMenu:NSApp];
   ASSERT_TRUE(menu);
@@ -477,12 +472,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   Profile* profile = [ac lastProfile];
   ASSERT_TRUE(profile);
   EXPECT_EQ(guest_profile_path, profile->GetPath());
-  if (base::FeatureList::IsEnabled(
-          features::kEnableEphemeralGuestProfilesOnDesktop)) {
-    EXPECT_TRUE(profile->IsEphemeralGuestProfile());
-  } else {
-    EXPECT_TRUE(profile->IsGuestSession());
-  }
+  EXPECT_TRUE(profile->IsGuestSession());
 
   // Tell the browser to open About Chrome.
   EXPECT_EQ(1u, active_browser_list()->size());
@@ -558,12 +548,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   Profile* profile = [ac lastProfile];
   ASSERT_TRUE(profile);
   EXPECT_EQ(guest_profile_path, profile->GetPath());
-  if (base::FeatureList::IsEnabled(
-          features::kEnableEphemeralGuestProfilesOnDesktop)) {
-    EXPECT_TRUE(profile->IsEphemeralGuestProfile());
-  } else {
-    EXPECT_TRUE(profile->IsGuestSession());
-  }
+  EXPECT_TRUE(profile->IsGuestSession());
 
   EXPECT_EQ(1u, active_browser_list()->size());
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];

@@ -383,15 +383,7 @@ bool Profile::IsIncognitoProfile() const {
 
 // static
 bool Profile::IsEphemeralGuestProfileEnabled() {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    defined(OS_MAC)
-  return base::FeatureList::IsEnabled(
-      features::kEnableEphemeralGuestProfilesOnDesktop);
-#else
   return false;
-#endif
 }
 
 bool Profile::IsGuestSession() const {
@@ -418,8 +410,9 @@ PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
 }
 
 bool Profile::IsEphemeralGuestProfile() const {
-  return profile_metrics::GetBrowserProfileType(this) ==
-         profile_metrics::BrowserProfileType::kEphemeralGuest;
+  CHECK_NE(profile_metrics::GetBrowserProfileType(this),
+           profile_metrics::BrowserProfileType::kEphemeralGuest);
+  return false;
 }
 
 bool Profile::IsSystemProfile() const {

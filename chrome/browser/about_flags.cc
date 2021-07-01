@@ -6767,18 +6767,6 @@ const FeatureEntry kFeatureEntries[] = {
          "OmniboxRichEntitiesInLauncher")},
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    defined(OS_MAC)
-    {"enable-ephemeral-guest-profiles-on-desktop",
-     flag_descriptions::kEnableEphemeralGuestProfilesOnDesktopName,
-     flag_descriptions::kEnableEphemeralGuestProfilesOnDesktopDescription,
-     kOsWin | kOsLinux | kOsMac,
-     FEATURE_VALUE_TYPE(features::kEnableEphemeralGuestProfilesOnDesktop)},
-#endif  // defined(OS_WIN) || (defined(OS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_MAC)
-
 #if defined(OS_ANDROID)
     {"decouple-sync-from-android-auto-sync",
      flag_descriptions::kDecoupleSyncFromAndroidAutoSyncName,

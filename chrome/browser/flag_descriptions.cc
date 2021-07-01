@@ -5211,17 +5211,6 @@ const char kWebShareDescription[] =
     "platforms.";
 #endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    defined(OS_MAC)
-const char kEnableEphemeralGuestProfilesOnDesktopName[] =
-    "Enable ephemeral Guest profiles on Desktop";
-const char kEnableEphemeralGuestProfilesOnDesktopDescription[] =
-    "Enables ephemeral Guest profiles on Windows, Linux, and Mac.";
-#endif  // defined(OS_WIN) || (defined(OS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_MAC)
-
 #if defined(OS_LINUX) && defined(USE_OZONE)
 const char kUseOzonePlatformName[] = "Use ozone.";
 const char kUseOzonePlatformDescription[] =

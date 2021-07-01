@@ -195,22 +195,7 @@ const char TestingProfile::kTestUserProfileDir[] = "Default";
 bool TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
     base::test::ScopedFeatureList& scoped_feature_list,
     bool enabled) {
-// This feature is now only supported on Windows, Linux, and Mac.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  if (enabled)
-    scoped_feature_list.InitAndEnableFeature(
-        features::kEnableEphemeralGuestProfilesOnDesktop);
-  else
-    scoped_feature_list.InitAndDisableFeature(
-        features::kEnableEphemeralGuestProfilesOnDesktop);
-  return true;
-#else
   return false;
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS))
 }
 
 TestingProfile::TestingProfile() : TestingProfile(base::FilePath()) {}
