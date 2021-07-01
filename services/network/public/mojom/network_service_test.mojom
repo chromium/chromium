@@ -117,11 +117,6 @@ interface NetworkServiceTest {
   // network service informs the main process when a field trial is activated.
   ActivateFieldTrial(string field_trial_name);
 
-  // Instantiates a net::ScopedTestEVPolicy with the specified fingerprint and
-  // policy oid.
-  [Sync]
-  SetEVPolicy(array<uint8, 32> fingerprint_sha256, string policy_oid) => ();
-
   // Gets the current count of entries in the First-Party sets mapping. Note
   // that each entry is a registered domain mapped to its owner.
   [Sync]

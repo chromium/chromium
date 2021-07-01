@@ -20,20 +20,14 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_host_resolver.h"
-#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "net/base/hash_value.h"
 #include "net/base/ip_address.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
-#include "net/cert/test_root_certs.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
 #include "net/nqe/network_quality_estimator.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/network/cookie_manager.h"
@@ -47,7 +41,6 @@
 
 #if defined(OS_ANDROID)
 #include "base/test/android/url_utils.h"
-#include "base/test/test_support_android.h"
 #endif
 
 namespace content {
@@ -286,19 +279,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     base::FieldTrialList::FindFullName(field_trial_name);
   }
 
-  void SetEVPolicy(const std::vector<uint8_t>& fingerprint_sha256,
-                   const std::string& policy_oid,
-                   SetEVPolicyCallback callback) override {
-    CHECK_EQ(fingerprint_sha256.size(), crypto::kSHA256Length);
-    net::SHA256HashValue fingerprint_sha256_hash;
-    memcpy(&fingerprint_sha256_hash.data, fingerprint_sha256.data(),
-           crypto::kSHA256Length);
-    ev_test_policy_ = std::make_unique<net::ScopedTestEVPolicy>(
-        net::EVRootCAMetadata::GetInstance(), fingerprint_sha256_hash,
-        policy_oid.data());
-    std::move(callback).Run();
-  }
-
   void BindReceiver(
       mojo::PendingReceiver<network::mojom::NetworkServiceTest> receiver) {
     receivers_.Add(this, std::move(receiver));
@@ -330,7 +310,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   base::MemoryPressureListener::MemoryPressureLevel
       latest_memory_pressure_level_ =
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-  std::unique_ptr<net::ScopedTestEVPolicy> ev_test_policy_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkServiceTestImpl);
 };
@@ -345,27 +324,6 @@ void NetworkServiceTestHelper::RegisterNetworkBinders(
   registry->AddInterface(base::BindRepeating(
       &NetworkServiceTestHelper::BindNetworkServiceTestReceiver,
       base::Unretained(this)));
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  auto utility_sub_type =
-      command_line->GetSwitchValueASCII(switches::kUtilitySubType);
-  if (utility_sub_type == network::mojom::NetworkService::Name_) {
-    // Register the EmbeddedTestServer's certs, so that any SSL connections to
-    // it succeed. Only do this when file I/O is allowed in the current process.
-#if defined(OS_ANDROID)
-    base::InitAndroidTestPaths(base::android::GetIsolatedTestRoot());
-#endif
-
-    if (!command_line->HasSwitch(switches::kDisableTestCerts)) {
-      net::EmbeddedTestServer::RegisterTestCerts();
-      net::SpawnedTestServer::RegisterTestCerts();
-
-      // Also add the QUIC test certificate.
-      net::TestRootCerts* root_certs = net::TestRootCerts::GetInstance();
-      root_certs->AddFromFile(
-          net::GetTestCertsDirectory().AppendASCII("quic-root.pem"));
-    }
-  }
 }
 
 void NetworkServiceTestHelper::BindNetworkServiceTestReceiver(
