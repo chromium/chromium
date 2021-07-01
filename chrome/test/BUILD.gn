@@ -5372,6 +5372,7 @@ test("unit_tests") {
       "//chrome/browser:explore_sites_proto",
       "//chrome/browser:profile_token",
       "//chrome/browser:usage_stats_proto",
+      "//chrome/browser/commerce:feature_list",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/continuous_search/internal:unit_tests",
       "//chrome/browser/flags:flags_android",
