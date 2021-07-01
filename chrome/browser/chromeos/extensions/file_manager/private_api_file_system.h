@@ -283,7 +283,7 @@ class FileManagerPrivateInternalStartCopyFunction
 
   // Part of RunAsync(). Called after FreeDiskSpaceIfNeededFor() is completed on
   // IO thread.
-  void RunAfterFreeDiskSpace(bool available);
+  void RunAfterFreeDiskSpace(bool available, int64_t space_needed);
 
   // Part of RunAsync(). Called after Copy() is started on IO thread.
   void RunAfterStartCopy(int operation_id);

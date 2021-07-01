@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
 #include "base/bind.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -37,6 +39,27 @@ SystemNotificationManager::CreateNotification(
 }
 
 std::unique_ptr<message_center::Notification>
+SystemNotificationManager::CreateProgressNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    int progress) {
+  std::unique_ptr<message_center::RichNotificationData> rich_data =
+      std::make_unique<message_center::RichNotificationData>();
+
+  rich_data->progress = progress;
+  return ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
+      message, std::u16string(), GURL(), message_center::NotifierId(),
+      *rich_data.get(),
+      new message_center::HandleNotificationClickDelegate(
+          base::BindRepeating(&SystemNotificationManager::Dismiss,
+                              weak_ptr_factory_.GetWeakPtr(), notification_id)),
+      kNotificationGoogleIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+}
+
+std::unique_ptr<message_center::Notification>
 SystemNotificationManager::CreateNotification(
     const std::string& notification_id,
     int title_id,
@@ -54,7 +77,8 @@ SystemNotificationManager::CreateNotification(
 }
 
 void SystemNotificationManager::Dismiss(const std::string& notification_id) {
-  SystemNotificationHelper::GetInstance()->Close(notification_id);
+  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                         notification_id);
 }
 
 void SystemNotificationManager::HandleDeviceEvent(
@@ -124,9 +148,69 @@ void SystemNotificationManager::HandleDeviceEvent(
 
 void SystemNotificationManager::HandleEvent(const extensions::Event& event) {}
 
+void SystemNotificationManager::HandleCopyStart(
+    int copy_id,
+    file_manager_private::CopyOrMoveProgressStatus& status) {
+  if (status.size) {
+    required_copy_space_[copy_id] = *status.size;
+  }
+}
+
+const char* kSwaFileOperationPrefix = "swa-file-operation-";
+
+namespace file_manager_private = extensions::api::file_manager_private;
+
 void SystemNotificationManager::HandleCopyEvent(
     int copy_id,
-    file_manager_private::CopyOrMoveProgressStatus& status) {}
+    file_manager_private::CopyOrMoveProgressStatus& status) {
+  std::unique_ptr<message_center::Notification> notification;
+  int progress = 0;
+  std::string id =
+      base::StrCat({kSwaFileOperationPrefix, base::NumberToString(copy_id)});
+  // TODO(b/187656842) In legacy Files App this comes from
+  // chrome.runtime.getManifest().name FIX.
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE);
+
+  GURL source_gurl(*status.source_url.get());
+  std::u16string file_name = base::UTF8ToUTF16(source_gurl.ExtractFileName());
+  std::u16string message =
+      l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_COPY_FILE_NAME, file_name);
+
+  auto copy_operation = required_copy_space_.find(copy_id);
+  switch (status.type) {
+    case file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN:
+      notification = CreateProgressNotification(id, title, message, 0);
+      break;
+    case file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS:
+      if (copy_operation != required_copy_space_.end()) {
+        if (status.size) {
+          progress =
+              static_cast<int>((*status.size / copy_operation->second) * 100.0);
+        }
+      }
+      notification = CreateProgressNotification(id, title, message, progress);
+      break;
+    case file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_COPY:
+      notification = CreateProgressNotification(id, title, message, 100);
+      break;
+    case file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_SUCCESS:
+    case file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR:
+      GetNotificationDisplayService()->Close(
+          NotificationHandler::Type::TRANSIENT, id);
+      required_copy_space_.erase(copy_id);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  if (notification) {
+    GetNotificationDisplayService()->Display(
+        NotificationHandler::Type::TRANSIENT, *notification,
+        /*metadata=*/nullptr);
+  }
+}
 
 NotificationDisplayService*
 SystemNotificationManager::GetNotificationDisplayService() {

@@ -648,6 +648,24 @@ void EventRouter::RemoveFileWatch(const base::FilePath& local_path,
     file_watchers_.erase(iter);
 }
 
+void EventRouter::OnCopyStarted(int copy_id,
+                                const GURL& source_url,
+                                const GURL& destination_url,
+                                int64_t space_needed) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  file_manager_private::CopyOrMoveProgressStatus status;
+  // Send started event.
+  status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN;
+  status.source_url = std::make_unique<std::string>(source_url.spec());
+  status.destination_url =
+      std::make_unique<std::string>(destination_url.spec());
+  // Use the bytes copied member to store space needed for this event.
+  status.size = std::make_unique<double>(space_needed);
+
+  notification_manager_->HandleCopyStart(copy_id, status);
+}
+
 void EventRouter::OnCopyCompleted(int copy_id,
                                   const GURL& source_url,
                                   const GURL& destination_url,

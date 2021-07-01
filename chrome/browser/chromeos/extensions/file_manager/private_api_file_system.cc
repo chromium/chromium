@@ -201,12 +201,29 @@ void OnCopyCompleted(
                      source_url, destination_url, error));
 }
 
+// Notifies the start of a copy to extensions via event router.
+void NotifyCopyStart(
+    void* profile_id,
+    storage::FileSystemOperationRunner::OperationID operation_id,
+    const FileSystemURL& source_url,
+    const FileSystemURL& destination_url,
+    int64_t space_needed) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  file_manager::EventRouter* event_router =
+      GetEventRouterByProfileId(profile_id);
+  if (event_router)
+    event_router->OnCopyStarted(operation_id, source_url.ToGURL(),
+                                destination_url.ToGURL(), space_needed);
+}
+
 // Starts the copy operation via FileSystemOperationRunner.
 storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
     void* profile_id,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const FileSystemURL& source_url,
-    const FileSystemURL& destination_url) {
+    const FileSystemURL& destination_url,
+    int64_t space_needed) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // Note: |operation_id| is owned by the callback for
@@ -226,6 +243,10 @@ storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
                           base::Unretained(operation_id)),
       base::BindOnce(&OnCopyCompleted, profile_id, base::Owned(operation_id),
                      source_url, destination_url));
+  // Notify the start of copy to send total size.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&NotifyCopyStart, profile_id, *operation_id,
+                                source_url, destination_url, space_needed));
   return *operation_id;
 }
 
@@ -902,7 +923,7 @@ void FileManagerPrivateInternalStartCopyFunction::RunAfterCheckDiskSpace(
   if (spaces_available.empty()) {
     // It might be a virtual path. In this case we just assume that it has
     // enough space.
-    RunAfterFreeDiskSpace(true);
+    RunAfterFreeDiskSpace(true, space_needed);
     return;
   }
   // If the target is not internal storage or Drive, succeed if sufficient space
@@ -912,27 +933,28 @@ void FileManagerPrivateInternalStartCopyFunction::RunAfterCheckDiskSpace(
       !(drive_integration_service &&
         drive_integration_service->GetMountPointPath().IsParent(
             destination_url_.path()))) {
-    RunAfterFreeDiskSpace(spaces_available[0] > space_needed);
+    RunAfterFreeDiskSpace(spaces_available[0] > space_needed, space_needed);
     return;
   }
 
   // If there isn't enough cloud space, fail.
   if (spaces_available.size() > 1 && spaces_available[1] < space_needed) {
-    RunAfterFreeDiskSpace(false);
+    RunAfterFreeDiskSpace(false, space_needed);
     return;
   }
 
   // If the destination directory is local hard drive or Google Drive we
   // must leave some additional space to make sure we don't break the system.
   if (spaces_available[0] - cryptohome::kMinFreeSpaceInBytes > space_needed) {
-    RunAfterFreeDiskSpace(true);
+    RunAfterFreeDiskSpace(true, space_needed);
     return;
   }
-  RunAfterFreeDiskSpace(false);
+  RunAfterFreeDiskSpace(false, space_needed);
 }
 
 void FileManagerPrivateInternalStartCopyFunction::RunAfterFreeDiskSpace(
-    bool available) {
+    bool available,
+    int64_t space_needed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!available) {
@@ -946,7 +968,7 @@ void FileManagerPrivateInternalStartCopyFunction::RunAfterFreeDiskSpace(
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&StartCopyOnIOThread, profile_, file_system_context,
-                     source_url_, destination_url_),
+                     source_url_, destination_url_, space_needed),
       base::BindOnce(
           &FileManagerPrivateInternalStartCopyFunction::RunAfterStartCopy,
           this));

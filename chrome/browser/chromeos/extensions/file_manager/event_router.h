@@ -95,6 +95,12 @@ class EventRouter
   void RemoveFileWatch(const base::FilePath& local_path,
                        const url::Origin& listener_origin);
 
+  // Called when a copy task is started.
+  void OnCopyStarted(int copy_id,
+                     const GURL& source_url,
+                     const GURL& destination_url,
+                     int64_t space_needed);
+
   // Called when a copy task is completed.
   void OnCopyCompleted(
       int copy_id, const GURL& source_url, const GURL& destination_url,

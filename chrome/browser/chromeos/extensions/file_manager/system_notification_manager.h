@@ -48,6 +48,15 @@ class SystemNotificationManager {
       const std::u16string& message);
 
   /**
+   * Returns an instance of an 'ash' Notiifcation with progress value.
+   */
+  std::unique_ptr<message_center::Notification> CreateProgressNotification(
+      const std::string& notification_id,
+      const std::u16string& title,
+      const std::u16string& message,
+      int progress);
+
+  /**
    *  Returns an instance of an 'ash' Notification with title and message
    *  specified by string ID values (for 110n).
    */
@@ -60,6 +69,12 @@ class SystemNotificationManager {
    * Processes general extension events and can create a system notification.
    */
   void HandleEvent(const extensions::Event& event);
+
+  /**
+   * Called at the start of a copy operation.
+   */
+  void HandleCopyStart(int copy_id,
+                       file_manager_private::CopyOrMoveProgressStatus& status);
 
   /**
    * Processes copy progress events and updates the system notification.
@@ -77,6 +92,11 @@ class SystemNotificationManager {
    * Helper function bound to notification instances that hides notifications.
    */
   void Dismiss(const std::string& notification_id);
+
+  /**
+   * Maps the operation runner copy id to the total size (bytes) for the copy.
+   */
+  std::map<int, double> required_copy_space_;
 
   Profile* const profile_;
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
