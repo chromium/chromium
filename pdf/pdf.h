@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
@@ -31,12 +30,12 @@ class SizeF;
 
 namespace chrome_pdf {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // Create a flattened PDF document from an existing PDF document.
 // `input_buffer` is the buffer that contains the entire PDF document to be
 // flattened.
 std::vector<uint8_t> CreateFlattenedPdf(base::span<const uint8_t> input_buffer);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
 // Printing modes - type to convert PDF to for printing. See PDFium's

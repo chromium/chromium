@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "build/chromeos_buildflags.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_read.h"
@@ -252,14 +251,14 @@ PDFiumPrint::PDFiumPrint(PDFiumEngine* engine) : engine_(engine) {}
 
 PDFiumPrint::~PDFiumPrint() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // static
 std::vector<uint8_t> PDFiumPrint::CreateFlattenedPdf(ScopedFPDFDocument doc) {
   if (!FlattenPrintData(doc.get()))
     return std::vector<uint8_t>();
   return ConvertDocToBuffer(std::move(doc));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 // static
 std::vector<uint8_t> PDFiumPrint::CreateNupPdf(

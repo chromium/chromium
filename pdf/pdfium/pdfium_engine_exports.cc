@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_print.h"
@@ -227,7 +226,7 @@ PDFiumEngineExports::PDFiumEngineExports() {}
 
 PDFiumEngineExports::~PDFiumEngineExports() {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedFPDFDocument doc = LoadPdfData(input_buffer);
@@ -235,7 +234,7 @@ std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
     return std::vector<uint8_t>();
   return PDFiumPrint::CreateFlattenedPdf(std::move(doc));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
 bool PDFiumEngineExports::RenderPDFPageToDC(

@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "build/chromeos_buildflags.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "ui/gfx/geometry/rect.h"
@@ -36,13 +35,13 @@ class ScopedSdkInitializer {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 std::vector<uint8_t> CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/false);
   return PDFEngineExports::Get()->CreateFlattenedPdf(input_buffer);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
 bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
