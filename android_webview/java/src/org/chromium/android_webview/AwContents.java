@@ -178,9 +178,6 @@ public class AwContents implements SmartClipProvider {
     private static final Pattern sDataURLWithSelectorPattern =
             Pattern.compile("^[^#]*(#[A-Za-z][A-Za-z0-9\\-_:.]*)$");
 
-    private static final HashMap<View, AwWindowCoverageTracker> sWindowCoverageTrackers =
-            new HashMap<>();
-
     private static class ForceAuxiliaryBitmapRendering {
         private static final boolean sResult = lazyCheck();
         private static boolean lazyCheck() {
@@ -858,6 +855,9 @@ public class AwContents implements SmartClipProvider {
     private static class AwWindowCoverageTracker {
         private static final long RECALCULATION_DELAY_MS = 200;
 
+        private static final HashMap<View, AwWindowCoverageTracker> sWindowCoverageTrackers =
+                new HashMap<>();
+
         private final View mRootView;
         private List<AwContents> mAwContentsList = new ArrayList<>();
         private long mRecalculationTime;
@@ -865,6 +865,23 @@ public class AwContents implements SmartClipProvider {
 
         private AwWindowCoverageTracker(View rootView) {
             mRootView = rootView;
+
+            sWindowCoverageTrackers.put(rootView, this);
+        }
+
+        public static AwWindowCoverageTracker getOrCreateForRootView(
+                AwContents contents, View rootView) {
+            AwWindowCoverageTracker tracker = sWindowCoverageTrackers.get(rootView);
+
+            if (tracker == null) {
+                if (TRACE) {
+                    Log.i(TAG, "%s creating WindowCoverageTracker for %s", contents, rootView);
+                }
+
+                tracker = new AwWindowCoverageTracker(rootView);
+            }
+
+            return tracker;
         }
 
         public boolean trackContents(AwContents contents) {
@@ -874,10 +891,17 @@ public class AwContents implements SmartClipProvider {
 
         public boolean untrackContents(AwContents contents) {
             contents.mAwWindowCoverageTracker = null;
+
+            // If that was the last AwContents, remove ourselves from the static list.
+            if (!isTracking()) {
+                if (TRACE) Log.i(TAG, "%s removing " + this, contents);
+                sWindowCoverageTrackers.remove(mRootView);
+            }
+
             return mAwContentsList.remove(contents);
         }
 
-        public boolean isTracking() {
+        private boolean isTracking() {
             return mAwContentsList.size() > 0;
         }
 
@@ -3056,40 +3080,17 @@ public class AwContents implements SmartClipProvider {
         mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
         if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
-            AwWindowCoverageTracker tracker = getOrCreateWindowCoverageTracker(mContainerView);
+            AwWindowCoverageTracker tracker = AwWindowCoverageTracker.getOrCreateForRootView(
+                    this, mContainerView.getRootView());
             tracker.trackContents(this);
         }
 
         if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
     }
 
-    private AwWindowCoverageTracker getOrCreateWindowCoverageTracker(ViewGroup viewGroup) {
-        View rootView = viewGroup.getRootView();
-        AwWindowCoverageTracker tracker = sWindowCoverageTrackers.get(rootView);
-
-        if (tracker == null) {
-            if (TRACE) Log.i(TAG, "%s creating WindowCoverageTracker for %s", this, rootView);
-
-            tracker = new AwWindowCoverageTracker(rootView);
-            sWindowCoverageTrackers.put(rootView, tracker);
-        }
-
-        return tracker;
-    }
-
     private void detachWindowCoverageTracker() {
-        View rootView = mContainerView.getRootView();
-        // Don't use getOrCreateWindowCoverageTracker, if we have to create
-        // the listener at this point then something has gone wrong and
-        // we should fail rather than create a new one.
-        AwWindowCoverageTracker tracker = sWindowCoverageTrackers.get(rootView);
-        if (tracker == null) return;
-
-        tracker.untrackContents(this);
-        if (tracker.isTracking()) return;
-
-        if (TRACE) Log.i(TAG, "%s removing " + tracker, this);
-        sWindowCoverageTrackers.remove(rootView);
+        if (mAwWindowCoverageTracker == null) return;
+        mAwWindowCoverageTracker.untrackContents(this);
     }
 
     /**
@@ -3099,9 +3100,7 @@ public class AwContents implements SmartClipProvider {
     public void onDetachedFromWindow() {
         if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", this);
 
-        if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
-            detachWindowCoverageTracker();
-        }
+        detachWindowCoverageTracker();
         mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
     }
