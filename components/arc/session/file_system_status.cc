@@ -11,17 +11,14 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/values.h"
 #include "build/build_config.h"
 
 namespace arc {
 namespace {
 
 constexpr const char kAdbdJson[] = "/etc/arc/adbd.json";
-constexpr const char kArcVmConfigJsonPath[] = "/usr/share/arcvm/config.json";
 constexpr const char kBuiltinPath[] = "/opt/google/vms/android";
 constexpr const char kFstabPath[] = "/run/arcvm/host_generated/fstab";
 constexpr const char kKernel[] = "vmlinux";
@@ -36,47 +33,13 @@ FileSystemStatus& FileSystemStatus::operator=(FileSystemStatus&& other) =
     default;
 
 FileSystemStatus::FileSystemStatus()
-    : is_android_debuggable_(
-          IsAndroidDebuggable(base::FilePath(kArcVmConfigJsonPath))),
-      is_host_rootfs_writable_(IsHostRootfsWritable()),
+    : is_host_rootfs_writable_(IsHostRootfsWritable()),
       system_image_path_(base::FilePath(kBuiltinPath).Append(kRootFs)),
       vendor_image_path_(base::FilePath(kBuiltinPath).Append(kVendorImage)),
       guest_kernel_path_(base::FilePath(kBuiltinPath).Append(kKernel)),
       fstab_path_(kFstabPath),
       is_system_image_ext_format_(IsSystemImageExtFormat(system_image_path_)),
       has_adbd_json_(base::PathExists(base::FilePath(kAdbdJson))) {}
-
-// static
-bool FileSystemStatus::IsAndroidDebuggable(const base::FilePath& json_path) {
-  if (!base::PathExists(json_path))
-    return false;
-
-  std::string content;
-  if (!base::ReadFileToString(json_path, &content))
-    return false;
-
-  base::JSONReader::ValueWithError result(
-      base::JSONReader::ReadAndReturnValueWithError(content,
-                                                    base::JSON_PARSE_RFC));
-  if (!result.value) {
-    LOG(ERROR) << "Error parsing " << json_path
-               << ", message=" << result.error_message << ": " << content;
-    return false;
-  }
-  if (!result.value->is_dict()) {
-    LOG(ERROR) << "Error parsing " << json_path << ": " << *(result.value);
-    return false;
-  }
-
-  const base::Value* debuggable = result.value->FindKeyOfType(
-      "ANDROID_DEBUGGABLE", base::Value::Type::BOOLEAN);
-  if (!debuggable) {
-    LOG(ERROR) << "ANDROID_DEBUGGABLE is not found in " << json_path;
-    return false;
-  }
-
-  return debuggable->GetBool();
-}
 
 // static
 bool FileSystemStatus::IsHostRootfsWritable() {
