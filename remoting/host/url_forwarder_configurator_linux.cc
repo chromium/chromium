@@ -48,8 +48,8 @@ SetUpForwarderAndGetResponseState() {
 }  // namespace
 
 UrlForwarderConfiguratorLinux::UrlForwarderConfiguratorLinux()
-    : io_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
+    : io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives()})) {}
 
 UrlForwarderConfiguratorLinux::~UrlForwarderConfiguratorLinux() = default;
 
