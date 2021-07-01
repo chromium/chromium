@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/security_state/core/security_state.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"

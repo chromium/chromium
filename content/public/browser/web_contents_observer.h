@@ -14,7 +14,6 @@
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
-#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/visibility.h"
@@ -59,6 +58,7 @@ struct LoadCommittedDetails;
 struct MediaPlayerId;
 struct PrunedDetails;
 struct Referrer;
+struct CookieAccessDetails;
 
 // An observer API implemented by classes which are interested in various page
 // events from WebContents.  They also get a chance to filter IPC messages.
