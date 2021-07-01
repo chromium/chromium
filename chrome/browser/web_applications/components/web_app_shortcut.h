@@ -12,7 +12,10 @@
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
@@ -25,6 +28,27 @@ class ImageSkia;
 }
 
 namespace web_app {
+
+struct ShortcutOverrideForTesting {
+  ShortcutOverrideForTesting(const ShortcutOverrideForTesting& other);
+  ShortcutOverrideForTesting();
+  ~ShortcutOverrideForTesting();
+#if defined(OS_WIN)
+  base::FilePath desktop;
+  base::FilePath application_menu;
+  base::FilePath quick_launch;
+  base::FilePath startup;
+#elif defined(OS_MAC)
+  base::FilePath chrome_apps_folder;
+#elif defined(OS_LINUX)
+  base::FilePath desktop;
+#else
+#endif
+};
+
+absl::optional<ShortcutOverrideForTesting>& GetShortcutOverrideForTesting();
+void SetShortcutOverrideForTesting(
+    absl::optional<ShortcutOverrideForTesting> shortcut_override_for_testing);
 
 // Represents the info required to create a shortcut for an app.
 struct ShortcutInfo {
