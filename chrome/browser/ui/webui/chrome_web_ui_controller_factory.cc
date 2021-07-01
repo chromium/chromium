@@ -1152,15 +1152,15 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
 
   std::vector<favicon_base::FaviconRawBitmapResult> favicon_bitmap_results;
 
-  // Use ui::GetSupportedScaleFactors instead of
+  // Use ui::GetSupportedResourceScaleFactors instead of
   // favicon_base::GetFaviconScales() because chrome favicons comes from
   // resources.
-  std::vector<ui::ScaleFactor> resource_scale_factors =
-      ui::GetSupportedScaleFactors();
+  std::vector<ui::ResourceScaleFactor> resource_scale_factors =
+      ui::GetSupportedResourceScaleFactors();
 
   std::vector<gfx::Size> candidate_sizes;
   for (auto scale_factor : resource_scale_factors) {
-    float scale = ui::GetScaleForScaleFactor(scale_factor);
+    float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     // Assume that GetFaviconResourceBytes() returns favicons which are
     // |gfx::kFaviconSize| x |gfx::kFaviconSize| DIP.
     int candidate_edge_size =
@@ -1172,7 +1172,7 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
   SelectFaviconFrameIndices(candidate_sizes, desired_sizes_in_pixel,
                             &selected_indices, nullptr);
   for (size_t selected_index : selected_indices) {
-    ui::ScaleFactor selected_resource_scale =
+    ui::ResourceScaleFactor selected_resource_scale =
         resource_scale_factors[selected_index];
 
     scoped_refptr<base::RefCountedMemory> bitmap(
@@ -1223,7 +1223,7 @@ ChromeWebUIControllerFactory::~ChromeWebUIControllerFactory() = default;
 
 base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     const GURL& page_url,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
 #if !defined(OS_ANDROID)
   // The extension scheme is handled in GetFaviconForURL.
   if (page_url.SchemeIs(extensions::kExtensionScheme)) {

@@ -24,13 +24,14 @@ bool FixupAndValidateStartupPage(const std::string& url_string,
   return valid;
 }
 
-base::RefCountedMemory* GetFaviconResourceBytes(ui::ScaleFactor scale_factor) {
+base::RefCountedMemory* GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_SETTINGS_FAVICON, scale_factor);
 }
 
 base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_FLAGS_FAVICON, scale_factor);
 }

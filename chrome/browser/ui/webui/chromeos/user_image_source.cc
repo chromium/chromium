@@ -66,7 +66,7 @@ void ParseRequest(const GURL& url, std::string* email, int* frame) {
 scoped_refptr<base::RefCountedMemory> LoadUserImageFrameForScaleFactor(
     int resource_id,
     int frame,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   // Load all frames.
   if (frame == -1) {
     return ui::ResourceBundle::GetSharedInstance()
@@ -79,7 +79,7 @@ scoped_refptr<base::RefCountedMemory> LoadUserImageFrameForScaleFactor(
   }
   gfx::ImageSkia* image =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
-  float scale = ui::GetScaleForScaleFactor(scale_factor);
+  float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes);
   gfx::PNGCodec::EncodeBGRASkBitmap(image->GetRepresentation(scale).GetBitmap(),
                                     false /* discard transparency */,
@@ -120,12 +120,12 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
 
-  ui::ScaleFactor scale_factor = ui::SCALE_FACTOR_100P;
+  ui::ResourceScaleFactor scale_factor = ui::SCALE_FACTOR_100P;
   // Use the scaling that matches primary display. These source images are
   // 96x96 and often used at that size in WebUI pages.
   display::Screen* screen = display::Screen::GetScreen();
   if (screen) {
-    scale_factor = ui::GetSupportedScaleFactor(
+    scale_factor = ui::GetSupportedResourceScaleFactor(
         screen->GetPrimaryDisplay().device_scale_factor());
   }
 

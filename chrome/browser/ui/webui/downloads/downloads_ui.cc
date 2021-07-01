@@ -195,7 +195,7 @@ DownloadsUI::~DownloadsUI() = default;
 
 // static
 base::RefCountedMemory* DownloadsUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_DOWNLOADS_FAVICON, scale_factor);
 }

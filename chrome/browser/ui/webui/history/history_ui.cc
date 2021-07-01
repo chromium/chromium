@@ -152,7 +152,7 @@ HistoryUI::~HistoryUI() {}
 
 // static
 base::RefCountedMemory* HistoryUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return static_cast<base::RefCountedMemory*>(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
           IDR_HISTORY_FAVICON, scale_factor));

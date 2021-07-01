@@ -66,7 +66,7 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
   // be updated if this changes.
   base::RefCountedMemory* GetFaviconResourceBytes(
       const GURL& page_url,
-      ui::ScaleFactor scale_factor) const;
+      ui::ResourceScaleFactor scale_factor) const;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeWebUIControllerFactory);
 };

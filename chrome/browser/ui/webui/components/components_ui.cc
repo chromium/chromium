@@ -96,7 +96,7 @@ ComponentsUI::~ComponentsUI() {}
 
 // static
 base::RefCountedMemory* ComponentsUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_PLUGINS_FAVICON, scale_factor);
 }

@@ -28,7 +28,7 @@ class DownloadsUI : public ui::MojoWebUIController,
   ~DownloadsUI() override;
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
-      ui::ScaleFactor scale_factor);
+      ui::ResourceScaleFactor scale_factor);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.

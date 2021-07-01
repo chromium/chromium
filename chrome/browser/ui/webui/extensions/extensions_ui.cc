@@ -406,7 +406,7 @@ void ExtensionsUI::DidStopLoading() {
 
 // static
 base::RefCountedMemory* ExtensionsUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   return rb.LoadDataResourceBytesForScale(IDR_EXTENSIONS_FAVICON, scale_factor);
 }

@@ -571,7 +571,7 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
 
 // static
 base::RefCountedMemory* NewTabPageUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return static_cast<base::RefCountedMemory*>(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
           IDR_NTP_FAVICON, scale_factor));

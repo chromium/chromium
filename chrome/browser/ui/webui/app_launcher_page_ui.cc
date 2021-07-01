@@ -191,7 +191,7 @@ void AppLauncherPageUI::OnHideWebStoreIconChanged() {
 
 // static
 base::RefCountedMemory* AppLauncherPageUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().
       LoadDataResourceBytesForScale(IDR_BOOKMARK_BAR_APPS_SHORTCUT,
                                     scale_factor);

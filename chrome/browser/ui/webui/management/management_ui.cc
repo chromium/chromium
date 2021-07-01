@@ -151,7 +151,7 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
 
 // static
 base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_MANAGEMENT_FAVICON, scale_factor);
 }

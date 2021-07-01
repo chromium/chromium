@@ -19,7 +19,7 @@ class ConflictsUI : public content::WebUIController {
   explicit ConflictsUI(content::WebUI* web_ui);
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
-      ui::ScaleFactor scale_factor);
+      ui::ResourceScaleFactor scale_factor);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ConflictsUI);

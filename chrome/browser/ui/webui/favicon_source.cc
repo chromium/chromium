@@ -142,8 +142,8 @@ void FaviconSource::StartDataRequest(
     if (top_sites) {
       for (const auto& prepopulated_page : top_sites->GetPrepopulatedPages()) {
         if (page_url == prepopulated_page.most_visited.url) {
-          ui::ScaleFactor resource_scale_factor =
-              ui::GetSupportedScaleFactor(parsed.device_scale_factor);
+          ui::ResourceScaleFactor resource_scale_factor =
+              ui::GetSupportedResourceScaleFactor(parsed.device_scale_factor);
           std::move(callback).Run(
               ui::ResourceBundle::GetSharedInstance()
                   .LoadDataResourceBytesForScale(prepopulated_page.favicon_id,
@@ -287,5 +287,5 @@ void FaviconSource::SendDefaultResponse(
 base::RefCountedMemory* FaviconSource::LoadIconBytes(float scale_factor,
                                                      int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-      resource_id, ui::GetSupportedScaleFactor(scale_factor));
+      resource_id, ui::GetSupportedResourceScaleFactor(scale_factor));
 }

@@ -27,7 +27,7 @@ class FlagsUI : public content::WebUIController {
 
   static void AddStrings(content::WebUIDataSource* source);
   static base::RefCountedMemory* GetFaviconResourceBytes(
-      ui::ScaleFactor scale_factor);
+      ui::ResourceScaleFactor scale_factor);
 
  private:
   base::WeakPtrFactory<FlagsUI> weak_factory_{this};

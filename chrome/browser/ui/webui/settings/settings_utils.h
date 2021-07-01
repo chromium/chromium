@@ -36,10 +36,11 @@ void ShowManageSSLCertificates(content::WebContents* web_contents);
 bool FixupAndValidateStartupPage(const std::string& url_string,
                                  GURL* fixed_url);
 
-base::RefCountedMemory* GetFaviconResourceBytes(ui::ScaleFactor scale_factor);
+base::RefCountedMemory* GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor);
 
 base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
-    ui::ScaleFactor scale_factor);
+    ui::ResourceScaleFactor scale_factor);
 
 #if defined(OS_MAC)
 void ValidateSavedFonts(PrefService* prefs);

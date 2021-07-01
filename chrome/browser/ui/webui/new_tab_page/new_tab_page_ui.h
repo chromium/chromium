@@ -127,7 +127,7 @@ class NewTabPageUI
       mojo::PendingReceiver<chrome_cart::mojom::CartHandler> pending_receiver);
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
-      ui::ScaleFactor scale_factor);
+      ui::ResourceScaleFactor scale_factor);
 
  private:
   // new_tab_page::mojom::PageHandlerFactory:

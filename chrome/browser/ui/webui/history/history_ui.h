@@ -20,7 +20,7 @@ class HistoryUI : public content::WebUIController {
   ~HistoryUI() override;
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
-      ui::ScaleFactor scale_factor);
+      ui::ResourceScaleFactor scale_factor);
 
  private:
   void UpdateDataSource();
