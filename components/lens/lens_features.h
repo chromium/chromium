@@ -12,8 +12,16 @@
 namespace lens {
 namespace features {
 
+// Enables context menu search by image sending to the Lens homepage.
 extern const base::Feature kLensStandalone;
+
+// Enables Lens Region Search from the context menu.
+extern const base::Feature kLensRegionSearch;
+
+// Returns the max pixel width/height for the image to be sent to Lens.
 extern int GetMaxPixels();
+
+// The URL for the Lens home page.
 extern std::string GetHomepageURL();
 
 }  // namespace features

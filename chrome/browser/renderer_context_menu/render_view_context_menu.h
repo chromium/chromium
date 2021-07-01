@@ -206,6 +206,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   void AppendSharingItems();
   void AppendClickToCallItem();
   void AppendSharedClipboardItem();
+  void AppendLensRegionSearchItem();
   void AppendQRCodeGeneratorItem(bool for_image, bool draw_icon);
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
@@ -240,6 +241,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   void ExecCopyLinkText();
   void ExecCopyImageAt();
   void ExecSearchLensForImage();
+  void ExecLensRegionSearch();
   void ExecSearchWebForImage();
   void ExecLoadImage();
   void ExecPlayPause();

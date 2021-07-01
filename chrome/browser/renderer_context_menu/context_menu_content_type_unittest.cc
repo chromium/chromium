@@ -72,6 +72,8 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
                     ContextMenuContentType::ITEM_GROUP_LINK));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_ALL_EXTENSION));
+    EXPECT_TRUE(content_type->SupportsGroup(
+        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
     EXPECT_FALSE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_CURRENT_EXTENSION));
   }
@@ -88,6 +90,8 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
                     ContextMenuContentType::ITEM_GROUP_EDITABLE));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_SEARCH_PROVIDER));
+    EXPECT_TRUE(content_type->SupportsGroup(
+        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
   }
 
   {
@@ -100,6 +104,8 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
                     ContextMenuContentType::ITEM_GROUP_COPY));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_EDITABLE));
+    EXPECT_TRUE(content_type->SupportsGroup(
+        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
   }
 
   {
@@ -112,6 +118,8 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
                     ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_PRINT));
+    EXPECT_TRUE(content_type->SupportsGroup(
+        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
 
     EXPECT_FALSE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_VIDEO));
@@ -127,6 +135,8 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
         Create(web_contents(), params));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_VIDEO));
+    EXPECT_TRUE(content_type->SupportsGroup(
+        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
 
     EXPECT_FALSE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE));
@@ -142,6 +152,8 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
         Create(web_contents(), params));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_AUDIO));
+    EXPECT_TRUE(content_type->SupportsGroup(
+        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
 
     EXPECT_FALSE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE));
@@ -159,5 +171,7 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
                     ContextMenuContentType::ITEM_GROUP_FRAME));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_PAGE));
+    EXPECT_TRUE(content_type->SupportsGroup(
+        ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH));
   }
 }

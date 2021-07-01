@@ -389,13 +389,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 112},
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, 113},
        {IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT, 114},
+       {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 115},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 115}});
+       {0, 116}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -422,13 +423,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_GOTOURL, 19},
        {IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 20},
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, 21},
+       {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 22},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 22}});
+       {0, 23}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
                                                       : kSpecificMap);
@@ -944,6 +946,14 @@ void RenderViewContextMenu::InitMenu() {
     DCHECK(!content_type_->SupportsGroup(
         ContextMenuContentType::ITEM_GROUP_ALL_EXTENSION));
     AppendCurrentExtensionItems();
+  }
+
+  if (content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH)) {
+    if (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch)) {
+      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+      AppendLensRegionSearchItem();
+    }
   }
 
   // Accessibility label items are appended to all menus when a screen reader
@@ -1969,6 +1979,11 @@ void RenderViewContextMenu::AppendSharedClipboardItem() {
   shared_clipboard_context_menu_observer_->InitMenu(params_);
 }
 
+void RenderViewContextMenu::AppendLensRegionSearchItem() {
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
+                                  IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH);
+}
+
 // Menu delegate functions -----------------------------------------------------
 
 bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
@@ -2163,6 +2178,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
     case IDC_SEND_TAB_TO_SELF:
     case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
+    case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
       return true;
 
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE:
@@ -2346,6 +2362,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE:
       ExecSearchLensForImage();
+      break;
+
+    case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
+      ExecLensRegionSearch();
       break;
 
     case IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB:
@@ -3118,6 +3138,10 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
     return;
 
   core_tab_helper->SearchWithLensInNewTab(render_frame_host, params().src_url);
+}
+
+void RenderViewContextMenu::ExecLensRegionSearch() {
+  // TODO(crbug.com/1222313): Add click and drag image selection functionality.
 }
 
 void RenderViewContextMenu::ExecSearchWebForImage() {

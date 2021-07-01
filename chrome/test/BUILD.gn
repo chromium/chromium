@@ -5039,6 +5039,7 @@ test("unit_tests") {
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
     "//components/language/core/browser",
+    "//components/lens",
     "//components/leveldb_proto:test_support",
     "//components/live_caption:constants",
     "//components/lookalikes/core:features",

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/lens/lens_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -684,6 +686,26 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
+}
+
+// Verify that the Lens Region Search menu item is displayed when the feature
+// is enabled.
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensRegionSearch);
+  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+
+// Verify that the Lens Region Search menu item is disabled when the feature
+// is disabled.
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(lens::features::kLensRegionSearch);
+  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
 
 // Test FormatUrlForClipboard behavior

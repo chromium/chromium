@@ -749,6 +749,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE" desc="The name of the Search Lens for Image command in the content area context menu">
             Search image with Google Lens
           </message>
+          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH" desc="The name of the Lens Region Search command in the content area context menu">
+            Search part of the page with Google Lens
+          </message>
           <message name="IDS_CONTENT_CONTEXT_GOTOURL" desc="The name of the Go to 'url' command in the content area context menu">
             &amp;Go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
           </message>
@@ -989,6 +992,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE" desc="In Title Case: The name of the Search Lens for Image command in the content area context menu">
             Search Image with Google Lens
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
+            Search Part of the Page with Google Lens
           </message>
           <message name="IDS_CONTENT_CONTEXT_GOTOURL" desc="In Title Case: The name of the Go to url for 'string' command in the content area context menu">
             &amp;Go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
