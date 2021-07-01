@@ -36,6 +36,12 @@ bool EnumTraits<SuggestionMode, TextSuggestionMode>::FromMojom(
     SuggestionMode input,
     TextSuggestionMode* output) {
   switch (input) {
+    case SuggestionMode::kUnknown:
+      // The browser process should never receive an unknown suggestion mode.
+      // When adding a new SuggestionMode, the Chromium side should be updated
+      // first to handle it, before changing the other calling side to send the
+      // new suggestion mode.
+      return false;
     case SuggestionMode::kCompletion:
       *output = TextSuggestionMode::kCompletion;
       return true;
@@ -43,8 +49,6 @@ bool EnumTraits<SuggestionMode, TextSuggestionMode>::FromMojom(
       *output = TextSuggestionMode::kPrediction;
       return true;
   }
-
-  return false;
 }
 
 SuggestionType EnumTraits<SuggestionType, TextSuggestionType>::ToMojom(
@@ -63,6 +67,12 @@ bool EnumTraits<SuggestionType, TextSuggestionType>::FromMojom(
     SuggestionType input,
     TextSuggestionType* output) {
   switch (input) {
+    case SuggestionType::kUnknown:
+      // The browser process should never receive an unknown suggestion type.
+      // When adding a new SuggestionType, the Chromium side should be updated
+      // first to handle it, before changing the other calling side to send the
+      // new suggestion type.
+      return false;
     case SuggestionType::kAssistivePersonalInfo:
       *output = TextSuggestionType::kAssistivePersonalInfo;
       return true;
@@ -73,8 +83,6 @@ bool EnumTraits<SuggestionType, TextSuggestionType>::FromMojom(
       *output = TextSuggestionType::kMultiWord;
       return true;
   }
-
-  return false;
 }
 
 bool StructTraits<SuggestionCandidateDataView, TextSuggestion>::Read(

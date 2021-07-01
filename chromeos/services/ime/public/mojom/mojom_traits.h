@@ -9,6 +9,7 @@
 #include "chromeos/services/ime/public/mojom/input_method_host.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "ui/gfx/range/range.h"
 
 namespace mojo {
 
@@ -72,6 +73,18 @@ struct StructTraits<chromeos::ime::mojom::CompletionCandidateDataView,
 
   static bool Read(CompletionCandidateDataView input,
                    TextCompletionCandidate* output);
+};
+
+template <>
+struct StructTraits<chromeos::ime::mojom::TextRangeDataView, gfx::Range> {
+  static uint32_t start(const gfx::Range& r) { return r.start(); }
+  static uint32_t end(const gfx::Range& r) { return r.end(); }
+  static bool Read(chromeos::ime::mojom::TextRangeDataView data,
+                   gfx::Range* out) {
+    out->set_start(data.start());
+    out->set_end(data.end());
+    return true;
+  }
 };
 
 }  // namespace mojo

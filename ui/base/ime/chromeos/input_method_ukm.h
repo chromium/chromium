@@ -6,6 +6,7 @@
 #define UI_BASE_IME_CHROMEOS_INPUT_METHOD_UKM_H_
 
 #include "base/component_export.h"
+#include "chromeos/services/ime/public/mojom/input_method_host.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -13,10 +14,10 @@ namespace ui {
 
 // Records an event in UKM, under the InputMethod.NonCompliantApi metric.
 // Ignores invalid sources.
-// `operation` is a value in the chromeos.ime.mojom.InputMethodApiOperation
-// enum.
 COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
-void RecordUkmNonCompliantApi(ukm::SourceId source, int64_t operation);
+void RecordUkmNonCompliantApi(
+    ukm::SourceId source,
+    chromeos::ime::mojom::InputMethodApiOperation operation);
 
 // Records an event in UKM, under the InputMethod.Assistive.Match metric.
 // Ignores invalid sources.

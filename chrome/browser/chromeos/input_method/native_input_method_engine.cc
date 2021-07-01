@@ -859,8 +859,7 @@ void NativeInputMethodEngine::ImeObserver::RecordUkm(
   if (entry->is_non_compliant_api()) {
     ui::RecordUkmNonCompliantApi(
         GetInputContext()->GetClientSourceForMetrics(),
-        static_cast<int>(
-            entry->get_non_compliant_api()->non_compliant_operation));
+        entry->get_non_compliant_api()->non_compliant_operation);
   }
 }
 

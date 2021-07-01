@@ -482,8 +482,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   const auto entries =
       test_recorder.GetEntriesByName("InputMethod.NonCompliantApi");
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
-      entries[0], "NonCompliantOperation",
-      (int)ime::mojom::InputMethodApiOperation::kSetCompositionText);
+      entries[0], "NonCompliantOperation", 1);  // kSetCompositionText
 
   InputMethodManager::Shutdown();
 }

@@ -145,6 +145,10 @@ std::string KeyEventCodeToString(const mojom::DomCode code) {
 }
 
 std::string NamedKeyToString(const mojom::NamedDomKey key) {
+  if (key == mojom::NamedDomKey::kOther) {
+    return "Unidentified";
+  }
+
   // Use the "<<" operator to convert the code to a string. Although this is
   // not ideal, this file will be removed soon, so aim for simplicity.
   // TODO(crbug.com/1194372): Delete this code.

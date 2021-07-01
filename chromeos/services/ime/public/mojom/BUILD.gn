@@ -14,7 +14,6 @@ mojom("mojom") {
 
   public_deps = [
     "//mojo/public/mojom/base",
-    "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 
@@ -37,11 +36,18 @@ mojom("mojom") {
           mojom = "chromeos.ime.mojom.SuggestionCandidate"
           cpp = "::chromeos::ime::TextSuggestion"
         },
+        {
+          mojom = "chromeos.ime.mojom.TextRange"
+          cpp = "::gfx::Range"
+        },
       ]
 
       traits_headers = [ "mojom_traits.h" ]
       traits_sources = [ "mojom_traits.cc" ]
-      traits_public_deps = [ "//chromeos/services/ime/public/cpp:structs" ]
+      traits_public_deps = [
+        "//chromeos/services/ime/public/cpp:structs",
+        "//ui/gfx/range",
+      ]
     },
   ]
 }
