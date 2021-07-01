@@ -28,8 +28,8 @@ class HatsHelper : public content::WebContentsObserver,
   explicit HatsHelper(content::WebContents* web_contents);
 
   // contents::WebContentsObserver:
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   Profile* profile() const;
 

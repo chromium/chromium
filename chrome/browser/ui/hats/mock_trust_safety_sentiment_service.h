@@ -22,6 +22,7 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
   explicit MockTrustSafetySentimentService(Profile* profile);
   ~MockTrustSafetySentimentService() override;
 
+  MOCK_METHOD(void, OpenedNewTabPage, (), (override));
   MOCK_METHOD(void,
               InteractedWithPrivacySettings,
               (content::WebContents * web_contents),

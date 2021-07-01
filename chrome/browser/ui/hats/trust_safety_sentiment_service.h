@@ -20,8 +20,8 @@ class TrustSafetySentimentService : public KeyedService {
 
   // Called to indicate to the service that the user opened an NTP. This allows
   // the service to update its eligibility logic, and potentially show a
-  // survey.
-  void OpenedNewTabPage();
+  // survey. Virtual to allow mocking in tests.
+  virtual void OpenedNewTabPage();
 
   // Called to indicate to the service that the user has interacted with the
   // privacy settings on chrome://settings in |web_contents|. Interaction in
