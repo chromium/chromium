@@ -1536,7 +1536,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self
       showTrustedVaultDialogFromViewController:viewController
                                         intent:
-                                            SigninTrustedVaultDialogIntentFetchKeys
+                            SigninTrustedVaultDialogIntentDegradedRecoverability
                                        trigger:trigger];
 }
 
