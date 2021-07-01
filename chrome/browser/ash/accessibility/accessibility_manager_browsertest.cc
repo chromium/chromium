@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/preferences.h"
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -34,6 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -181,6 +183,23 @@ bool IsSelectToSpeakEnabled() {
   return AccessibilityManager::Get()->IsSelectToSpeakEnabled();
 }
 
+void SetDictationEnabled(bool enabled) {
+  AccessibilityManager::Get()->SetDictationEnabled(enabled);
+}
+
+bool IsDictationEnabled() {
+  return AccessibilityManager::Get()->IsDictationEnabled();
+}
+
+std::string GetDictationLocale() {
+  return GetActiveUserPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+}
+
+void ClearDictationLocale() {
+  GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale,
+                                  std::string());
+}
+
 void SetAlwaysShowMenuEnabledPref(bool enabled) {
   GetActiveUserPrefs()->SetBoolean(prefs::kShouldAlwaysShowAccessibilityMenu,
                                    enabled);
@@ -258,6 +277,12 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalAccessibilityDictationOffline);
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
   int default_autoclick_delay() const { return default_autoclick_delay_; }
 
   int default_autoclick_delay_ = 0;
@@ -270,6 +295,39 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(AccessibilityManagerTest);
 };
 
+// Test that a new user's application locale is mapped to a supported Dictation
+// language and stored in the Dictation locale pref on Dictation enabled. See
+// map of default country codes and all supported country codes in
+// chrome/browser/ash/accessibility/dictation.cc.
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       SetsDictationLocalePrefOnUserToggle) {
+  struct {
+    std::string application_locale;
+    std::string expected_pref;
+  } kTestCases[] = {
+      {"en", "en-US"},     // No country code maps to default supported one.
+      {"fr", "fr-FR"},     // Non-English version of above.
+      {"ar-JO", "ar-JO"},  // Supported, non-default country code is not
+                           // re-mapped.
+      {"en-CA", "en-CA"},  // English language version of above.
+      {"es-XX", "es-ES"},  // Unsupported country code maps to default for
+                           // language.
+      {"xx-xx", "en-US"},  // Unsupported code defaults to en-US.
+  };
+  for (const auto& testcase : kTestCases) {
+    g_browser_process->SetApplicationLocale(testcase.application_locale);
+    EXPECT_FALSE(IsDictationEnabled());
+    EXPECT_TRUE(GetDictationLocale().empty());
+    SetDictationEnabled(true);
+    EXPECT_TRUE(IsDictationEnabled());
+    EXPECT_EQ(testcase.expected_pref, GetDictationLocale());
+
+    // Reset state for next test case.
+    SetDictationEnabled(false);
+    ClearDictationLocale();
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   EXPECT_FALSE(IsLargeCursorEnabled());
   EXPECT_FALSE(IsSpokenFeedbackEnabled());
@@ -279,6 +337,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
   EXPECT_FALSE(IsSelectToSpeakEnabled());
+  EXPECT_FALSE(IsDictationEnabled());
 
   SetLargeCursorEnabledPref(true);
   EXPECT_TRUE(IsLargeCursorEnabled());
@@ -304,6 +363,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   SetSelectToSpeakEnabledPref(true);
   EXPECT_TRUE(IsSelectToSpeakEnabled());
 
+  SetDictationEnabled(true);
+  EXPECT_TRUE(IsDictationEnabled());
+
   SetLargeCursorEnabledPref(false);
   EXPECT_FALSE(IsLargeCursorEnabled());
 
@@ -324,6 +386,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
 
   SetSelectToSpeakEnabledPref(false);
   EXPECT_FALSE(IsSelectToSpeakEnabled());
+
+  SetDictationEnabled(false);
+  EXPECT_FALSE(IsDictationEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,

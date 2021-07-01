@@ -58,6 +58,7 @@ ASH_PUBLIC_EXPORT extern const char
 ASH_PUBLIC_EXPORT extern const char
     kAccessibilityTabletModeShelfNavigationButtonsEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityDictationEnabled[];
+ASH_PUBLIC_EXPORT extern const char kAccessibilityDictationLocale[];
 ASH_PUBLIC_EXPORT extern const char kShouldAlwaysShowAccessibilityMenu[];
 
 ASH_PUBLIC_EXPORT extern const char kAltTabPerDesk[];

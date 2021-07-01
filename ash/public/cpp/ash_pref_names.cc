@@ -146,6 +146,9 @@ const char kAccessibilityTabletModeShelfNavigationButtonsEnabled[] =
     "settings.a11y.tablet_mode_shelf_nav_buttons_enabled";
 // A boolean pref which determines whether dictation is enabled.
 const char kAccessibilityDictationEnabled[] = "settings.a11y.dictation";
+// A string pref which determines the locale used for dictation speech
+// recognition. Should be BCP-47 format, e.g. "en-US" or "es-ES".
+const char kAccessibilityDictationLocale[] = "settings.a11y.dictation_locale";
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 const char kShouldAlwaysShowAccessibilityMenu[] = "settings.a11y.enable_menu";

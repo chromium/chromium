@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
@@ -28,6 +29,17 @@ namespace ash {
 class Dictation : public SpeechRecognizerDelegate,
                   public ui::InputMethodObserver {
  public:
+  // Gets the default locale given a user |profile|. If this is a |new_user|,
+  // uses the application language. Otherwise uses previous method of
+  // determining Dictation language with default IME language.
+  // This is guaranteed to return a supported BCP-47 locale.
+  static std::string DetermineDefaultSupportedLocale(Profile* profile,
+                                                     bool new_user);
+
+  // Gets all possible BCP-47 style locale codes supported by Dictation,
+  // and whether they are available offline.
+  static const base::flat_map<std::string, bool> GetAllSupportedLocales();
+
   explicit Dictation(Profile* profile);
   ~Dictation() override;
 

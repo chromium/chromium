@@ -395,7 +395,10 @@ class AccessibilityManager
   void OnAccessibilityCommonChanged(const std::string& pref_name);
   void OnSwitchAccessChanged();
   void OnFocusChangedInPage(const content::FocusedNodeDetails& details);
-  void OnDictationChanged();
+  // |triggered_by_user| is false when Dictation pref is changed at startup,
+  // and true if Dictation enabled changed because the user changed their
+  // setting in Chrome OS settings or using the tray quick settings menu.
+  void OnDictationChanged(bool triggered_by_user);
 
   void CheckBrailleState();
   void ReceiveBrailleDisplayState(

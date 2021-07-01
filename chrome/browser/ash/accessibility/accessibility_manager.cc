@@ -838,20 +838,35 @@ bool AccessibilityManager::IsDictationEnabled() const {
                          prefs::kAccessibilityDictationEnabled);
 }
 
-void AccessibilityManager::OnDictationChanged() {
+void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
   OnAccessibilityCommonChanged(prefs::kAccessibilityDictationEnabled);
   if (!profile_)
     return;
 
-  // Only need to check SODA installation if offline dictation is enabled.
+  // Only need to check SODA installation and locale preference if offline
+  // dictation is enabled.
   if (!::switches::IsExperimentalAccessibilityDictationOfflineEnabled())
     return;
 
-  // Note: OnDictationChanged should not be called at start-up or it will
-  // push back SODA deletion each time start-up occurs with dictation disabled.
   const bool enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityDictationEnabled);
-  if (!enabled) {
+  if (enabled && profile_->GetPrefs()
+                     ->GetString(prefs::kAccessibilityDictationLocale)
+                     .empty()) {
+    // Dictation was turned on but the language pref isn't set yet. Determine if
+    // this is an upgrade (Dictation was enabled at start-up and the toggle was
+    // not triggered by a user) or a new user (Dictation was just enabled in
+    // settings) and pick the language accordingly.
+    const std::string locale = Dictation::DetermineDefaultSupportedLocale(
+        profile_, /*new_user=*/triggered_by_user);
+    profile_->GetPrefs()->SetString(prefs::kAccessibilityDictationLocale,
+                                    locale);
+  }
+
+  if (triggered_by_user && !enabled) {
+    // Note: This should not be called at start-up or it will
+    // push back SODA deletion each time start-up occurs with dictation
+    // disabled.
     speech::SodaInstaller::GetInstance()->SetUninstallTimer(
         profile_->GetPrefs(), g_browser_process->local_state());
   }
@@ -1189,7 +1204,8 @@ void AccessibilityManager::SetProfile(Profile* profile) {
     pref_change_registrar_->Add(
         prefs::kAccessibilityDictationEnabled,
         base::BindRepeating(&AccessibilityManager::OnDictationChanged,
-                            base::Unretained(this)));
+                            base::Unretained(this),
+                            /*triggered_by_user=*/true));
 
     for (const std::string& feature : kAccessibilityCommonFeatures) {
       pref_change_registrar_->Add(
@@ -1240,10 +1256,8 @@ void AccessibilityManager::SetProfile(Profile* profile) {
     OnAccessibilityCommonChanged(feature);
   // Dictation is not in kAccessibilityCommonFeatures because it needs to
   // be handled in OnDictationChanged also. OnDictationChanged will call to
-  // OnAccessibilityCommonChanged. However, OnDictationChanged shouldn't
-  // be called at start-up, so we call OnAccessibilityCommonChanged directly
-  // for dictation.
-  OnAccessibilityCommonChanged(prefs::kAccessibilityDictationEnabled);
+  // OnAccessibilityCommonChanged.
+  OnDictationChanged(/*triggered_by_user=*/false);
 }
 
 void AccessibilityManager::SetProfileByUser(const user_manager::User* user) {
