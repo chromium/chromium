@@ -27,6 +27,12 @@ SettingsAccessibilityV3Test.axeOptions = {
     'color-contrast': {enabled: false},
     // The HTML language attribute isn't set by the test_loader.html dummy file.
     'html-has-lang': {enabled: false},
+    // TODO(crbug.com/1224185): Fails when the device is managed (due to
+    // violations in <managed-footnote>, happens on some Win bots.
+    'region': {enabled: false},
+    // TODO(crbug.com/1224185): Fails when the device is managed (due to
+    // violations in <managed-footnote>, happens on some Win bots.
+    'link-in-text-block': {enabled: false},
   }
 };
 
