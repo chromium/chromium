@@ -503,7 +503,7 @@ TEST_F(CullRectTest, SingleScrollPartialScrollingContents) {
   EXPECT_EQ(IntRect(0, 1010, 7060, 6990), cull_rect4.Rect());
 }
 
-TEST_F(CullRectTest, TransformUnderScrollTranslation) {
+TEST_F(CullRectTest, TranslationUnderScrollTranslation) {
   ScopedCullRectUpdateForTest cull_rect_update(true);
 
   auto t1 = Create2DTranslation(t0(), 1, 2);
@@ -539,6 +539,44 @@ TEST_F(CullRectTest, TransformUnderScrollTranslation) {
   // This result differs from the first result in height (7050 vs 7060)
   // because it's not clipped by the infinite input cull rect.
   EXPECT_EQ(IntRect(-2000, -1990, 7060, 6990), cull_rect4.Rect());
+}
+
+TEST_F(CullRectTest, ScaleUnderScrollTranslation) {
+  ScopedCullRectUpdateForTest cull_rect_update(true);
+
+  auto t1 = Create2DTranslation(t0(), 1, 2);
+  PropertyTreeState state1(*t1, c0(), e0());
+  auto scroll_translation_state = CreateCompositedScrollTranslationState(
+      state1, -3000, -5000, IntRect(20, 10, 40, 50), IntSize(8000, 8000));
+  auto t2 = CreateTransform(scroll_translation_state.Transform(),
+                            TransformationMatrix().Scale(2));
+  PropertyTreeState state2 =
+      scroll_translation_state.GetPropertyTreeState().Unalias();
+  state2.SetTransform(*t2);
+
+  // Cases below are the same as those in SingleScrollPartialScrollingContents,
+  // except that the offset is adjusted with |t2|.
+  CullRect cull_rect1(IntRect(0, 0, 50, 100));
+  cull_rect1.ApplyPaintProperties(state1, state1, state2, absl::nullopt);
+  EXPECT_EQ(IntRect(0, 505, 3525, 3495), cull_rect1.Rect());
+
+  CullRect old_cull_rect(IntRect(0, 500, 3525, 3495));
+  CullRect cull_rect2(IntRect(0, 0, 50, 100));
+  // ChangedEnough() doesn't apply because of the scale.
+  cull_rect2.ApplyPaintProperties(state1, state1, state2, old_cull_rect);
+  EXPECT_EQ(cull_rect1, cull_rect2);
+
+  old_cull_rect.Move(IntSize(1000, 1000));
+  CullRect cull_rect3(IntRect(0, 0, 50, 100));
+  // Use the new cull rect if it changed enough.
+  cull_rect3.ApplyPaintProperties(state1, state1, state2, old_cull_rect);
+  EXPECT_EQ(cull_rect1, cull_rect3);
+
+  CullRect cull_rect4 = CullRect::Infinite();
+  cull_rect4.ApplyPaintProperties(state1, state1, state2, absl::nullopt);
+  // This result differs from the first result in height (3525 vs 3530)
+  // because it's not clipped by the infinite input cull rect.
+  EXPECT_EQ(IntRect(0, 505, 3530, 3495), cull_rect4.Rect());
 }
 
 TEST_F(CullRectTest, TransformEscapingScroll) {
@@ -703,9 +741,9 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   CullRect cull_rect2(IntRect(0, 0, 300, 500));
   CullRect old_cull_rect = cull_rect1;
   old_cull_rect.Move(IntSize(200, 200));
-  // Use old_cull_rect if the new cull rect didn't change enough.
+  // TODO(wangxianzhu): For now ChangedEnough() doesn't apply. Revisit this.
   cull_rect2.ApplyPaintProperties(root, root, state1, old_cull_rect);
-  EXPECT_EQ(old_cull_rect, cull_rect2);
+  EXPECT_EQ(cull_rect1, cull_rect2);
 
   CullRect cull_rect3(IntRect(0, 0, 300, 500));
   old_cull_rect.Move(IntSize(1000, 1000));
