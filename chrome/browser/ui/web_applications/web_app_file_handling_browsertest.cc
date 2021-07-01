@@ -169,10 +169,10 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
   }
 
-  void InstallAnotherFileHandlingPwa(const GURL& url) {
+  void InstallAnotherFileHandlingPwa(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->start_url = url;
-    web_app_info->scope = url.GetWithoutFilename();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"A second app";
 
     // This one handles jpegs.
@@ -372,6 +372,74 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   // Test that file handler dispatches to the normal start URL when the file
   // path is not a handled file type, and `launchParams` remains undefined.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {NewTestFilePath("png")});
+  VerifyPwaDidReceiveFileLaunchParams(false);
+}
+
+// Regression test for crbug.com/1126091
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       LaunchQueueSetOnRedirect) {
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+  // Install an app where the file handling action page redirects.
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url =
+      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
+  web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+  web_app_info->title = u"An app that redirects";
+
+  blink::Manifest::FileHandler entry;
+  entry.action = https_server()->GetURL(
+      "app.com", "/web_app_file_handling/handle_files_with_redirect.html");
+  entry.name = u"text";
+  entry.accept[u"text/*"].push_back(u".txt");
+  web_app_info->file_handlers.push_back(std::move(entry));
+
+  AppId app_id =
+      WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+
+  // The redirect points to handle_files.html, so wait till that navigation is
+  // finished.
+  base::FilePath file = NewTestFilePath("txt");
+  LaunchWithFiles(app_id,
+                  https_server()->GetURL(
+                      "app.com", "/web_app_file_handling/handle_files.html"),
+                  {file});
+
+  // The redirected-to page should get the launch queue.
+  VerifyPwaDidReceiveFileLaunchParams(true, file);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       LaunchQueueNotSetOnCrossOriginRedirect) {
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+  // Install an app where the file handling action page redirects to a page on a
+  // different origin.
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url =
+      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
+  web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+  web_app_info->title = u"An app that redirects to a different origin";
+
+  blink::Manifest::FileHandler entry;
+  entry.action = https_server()->GetURL(
+      "app.com",
+      "/web_app_file_handling/handle_files_with_redirect_to_other_origin.html");
+  entry.name = u"text";
+  entry.accept[u"text/*"].push_back(u".txt");
+  web_app_info->file_handlers.push_back(std::move(entry));
+
+  AppId app_id =
+      WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+
+  // The redirect points to handle_files.html with a different origin, so wait
+  // till that navigation is finished.
+  base::FilePath file = NewTestFilePath("txt");
+  LaunchWithFiles(
+      app_id,
+      https_server()->GetURL("example.com",
+                             "/web_app_file_handling/handle_files.html"),
+      {file});
+
+  // The redirected-to page should NOT get the launch queue.
   VerifyPwaDidReceiveFileLaunchParams(false);
 }
 

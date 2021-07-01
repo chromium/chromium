@@ -14,8 +14,6 @@
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-forward.h"
-#include "third_party/blink/public/mojom/web_launch/web_launch.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -84,15 +82,24 @@ class WebLaunchFilesHelper
   // After a permission check, tries to send the launch entries to the renderer.
   void MaybeSendLaunchEntriesWithPermission(ContentSetting content_setting);
 
+  // Send the launch entries to the renderer.
+  void SendLaunchEntries();
+
   // Called after the user has made a decision in the permission UI.
   void OnGotPermissionDialogResult(ContentSetting content_setting);
 
   // The files causing the launch (may be empty).
   std::vector<base::FilePath> launch_paths_;
-  std::vector<blink::mojom::FileSystemAccessEntryPtr> launch_entries_;
+  base::FilePath launch_dir_;
 
   // The url the launch entries are for.
   GURL launch_url_;
+
+  // Whether the permission has yet been checked.
+  bool permission_was_checked_ = false;
+
+  // Whether the permission check has already been passed for this launch.
+  bool passed_permission_check_ = false;
 
   base::WeakPtrFactory<WebLaunchFilesHelper> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(WebLaunchFilesHelper);
