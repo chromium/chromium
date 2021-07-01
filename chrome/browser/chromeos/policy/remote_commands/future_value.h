@@ -77,7 +77,7 @@ class FutureValue {
   ~FutureValue() = default;
 
   // Wait for the value to arrive, and return the result.
-  Type& Get() {
+  const Type& Get() {
     Wait();
     return value();
   }
@@ -97,12 +97,12 @@ class FutureValue {
   }
 
   // Get the current value, or DCHECK if no value is set.
-  Type& value() {
+  const Type& value() const {
     DCHECK(has_value());
     return value_.value();
   }
 
-  const Type& value() const {
+  Type& mutable_value() {
     DCHECK(has_value());
     return value_.value();
   }
@@ -115,9 +115,10 @@ class FutureValue {
     run_loop_.reset();
   }
 
-  // If specified accessing Get() will time out after the time specified.
+  // Wait for the value to arrive.
+  // Will timeout and fail the test if SetValue() isn't called within the
+  // specified `timeout`.
   // If a timeout happens, the specified `error_message` will be reported.
-  // Returns a reference to |this| so  be chained
   void WaitWithTimeout(const std::string& error_message =
                            std::string(kFutureValueDefaultTimeoutMessage),
                        base::TimeDelta timeout = base::TimeDelta::FromSeconds(
@@ -133,10 +134,11 @@ class FutureValue {
     }
   }
 
-  Type& GetWithTimeout(const std::string& error_message =
-                           std::string(kFutureValueDefaultTimeoutMessage),
-                       base::TimeDelta timeout = base::TimeDelta::FromSeconds(
-                           kFutureValueDefaultTimeoutInSeconds)) {
+  const Type& GetWithTimeout(
+      const std::string& error_message =
+          std::string(kFutureValueDefaultTimeoutMessage),
+      base::TimeDelta timeout =
+          base::TimeDelta::FromSeconds(kFutureValueDefaultTimeoutInSeconds)) {
     WaitWithTimeout(error_message, timeout);
     return value();
   }
