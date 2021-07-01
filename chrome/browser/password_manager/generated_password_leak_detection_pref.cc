@@ -20,7 +20,7 @@ namespace {
 
 // Returns whether a primary account is present and syncing successfully.
 bool IsUserSignedInAndSyncing(Profile* profile) {
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+  if (profile->IsGuestSession())
     return false;
 
   auto* identity_manager =

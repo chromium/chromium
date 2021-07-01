@@ -287,8 +287,7 @@ bool ChromePasswordManagerClient::IsFillingFallbackEnabled(
     const GURL& url) const {
   const Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return IsFillingEnabled(url) && !profile->IsGuestSession() &&
-         !profile->IsEphemeralGuestProfile();
+  return IsFillingEnabled(url) && !profile->IsGuestSession();
 }
 
 bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
@@ -701,14 +700,10 @@ void ChromePasswordManagerClient::PromptUserToEnableAutosignin() {
 #endif
 }
 
+// TODO(https://crbug.com/1225171): If off-the-record Guest is not deprecated,
+// rename this function to IsOffTheRecord for better readability.
 bool ChromePasswordManagerClient::IsIncognito() const {
-  // TODO(https://crbug.com/1125474): After deprecating off-the-record Guest
-  // profile, update this function for better readability.
-  content::BrowserContext* browser_context =
-      web_contents()->GetBrowserContext();
-  const Profile* profile = Profile::FromBrowserContext(browser_context);
-  return browser_context->IsOffTheRecord() ||
-         profile->IsEphemeralGuestProfile();
+  return web_contents()->GetBrowserContext()->IsOffTheRecord();
 }
 
 profile_metrics::BrowserProfileType
