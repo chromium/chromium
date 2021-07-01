@@ -160,7 +160,6 @@ constexpr struct {
     {&kDelayedWarnings, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPasswordProtectionWithToken, true},
-    {&kPromptEsbForDeepScanning, true},
     {&kRealTimeUrlLookupReferrerChain, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},

@@ -90,10 +90,6 @@ std::string ReadNotificationImage(const base::FilePath& file_path) {
   return data;
 }
 
-bool IsPromptEsbForDeepScanningEnabled() {
-  return base::FeatureList::IsEnabled(safe_browsing::kPromptEsbForDeepScanning);
-}
-
 SkBitmap CropImage(const SkBitmap& original_bitmap) {
   DCHECK_NE(0, original_bitmap.width());
   DCHECK_NE(0, original_bitmap.height());
@@ -640,9 +636,8 @@ DownloadItemNotification::GetExtraActions() const {
   std::unique_ptr<std::vector<DownloadCommands::Command>> actions(
       new std::vector<DownloadCommands::Command>());
 
-  if (IsPromptEsbForDeepScanningEnabled() &&
-      item_->GetDangerType() ==
-          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+  if (item_->GetDangerType() ==
+      download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
     actions->push_back(DownloadCommands::DEEP_SCAN);
     actions->push_back(DownloadCommands::KEEP);
     return actions;
@@ -714,9 +709,8 @@ DownloadItemNotification::GetExtraActions() const {
 std::u16string DownloadItemNotification::GetTitle() const {
   std::u16string title_text;
 
-  if (IsPromptEsbForDeepScanningEnabled() &&
-      item_->GetDangerType() ==
-          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+  if (item_->GetDangerType() ==
+      download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
     return l10n_util::GetStringUTF16(
         IDS_PROMPT_SEND_TO_SAFEBROWSING_DOWNLOAD_TITLE);
   }
@@ -817,7 +811,6 @@ std::u16string DownloadItemNotification::GetCommandLabel(
       id = IDS_LEARN_MORE;
       break;
     case DownloadCommands::DEEP_SCAN:
-      DCHECK(IsPromptEsbForDeepScanningEnabled());
       id = IDS_SCAN_DOWNLOAD;
       break;
     case DownloadCommands::ALWAYS_OPEN_TYPE:
@@ -902,9 +895,7 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
     }
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING: {
-      return l10n_util::GetStringFUTF16(IsPromptEsbForDeepScanningEnabled()
-                                            ? IDS_PROMPT_DEEP_SCANNING
-                                            : IDS_PROMPT_APP_DEEP_SCANNING,
+      return l10n_util::GetStringFUTF16(IDS_PROMPT_DEEP_SCANNING,
                                         elided_filename);
     }
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:

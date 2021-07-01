@@ -50,8 +50,7 @@ class CheckFileSystemAccessWriteRequest
       DownloadCheckResultReason reason) override;
   void UploadBinary(DownloadCheckResultReason reason,
                     enterprise_connectors::AnalysisSettings settings) override;
-  bool ShouldPromptForDeepScanning(DownloadCheckResultReason reason,
-                                   bool server_requests_prompt) const override;
+  bool ShouldPromptForDeepScanning(bool server_requests_prompt) const override;
   void NotifyRequestFinished(DownloadCheckResult result,
                              DownloadCheckResultReason reason) override;
   bool IsAllowlistedByPolicy() const override;

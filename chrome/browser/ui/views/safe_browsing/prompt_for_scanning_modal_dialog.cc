@@ -83,12 +83,8 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
   std::vector<size_t> offsets;
   std::u16string message_text = base::ReplaceStringPlaceholders(
       u"$1 $2",
-      {l10n_util::GetStringFUTF16(
-           base::FeatureList::IsEnabled(
-               safe_browsing::kPromptEsbForDeepScanning)
-               ? IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE
-               : IDS_APP_DEEP_SCANNING_INFO_DIALOG_MESSAGE,
-           filename),
+      {l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE,
+                                  filename),
        l10n_util::GetStringUTF16(IDS_LEARN_MORE)},
       &offsets);
 

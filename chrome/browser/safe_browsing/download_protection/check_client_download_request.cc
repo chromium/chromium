@@ -293,26 +293,18 @@ bool CheckClientDownloadRequest::IsUnderAdvancedProtection(
 }
 
 bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
-    DownloadCheckResultReason reason,
     bool server_requests_prompt) const {
-  if (reason != REASON_DOWNLOAD_UNCOMMON)
+  if (!server_requests_prompt)
     return false;
 
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
-  if (base::FeatureList::IsEnabled(safe_browsing::kPromptEsbForDeepScanning)) {
-    if (server_requests_prompt) {
-      return IsUnderAdvancedProtection(profile) ||
-             (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs()));
-    }
+  if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs()))
+    return true;
 
-    return false;
-  }
+  if (IsUnderAdvancedProtection(profile))
+    return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
-#else
-  return IsUnderAdvancedProtection(profile);
-#endif
 }
 
 bool CheckClientDownloadRequest::IsAllowlistedByPolicy() const {

@@ -56,9 +56,6 @@ const int kScanningTimeoutSeconds = 5 * 60;  // 5 minutes
 const char kSbEnterpriseUploadUrl[] =
     "https://safebrowsing.google.com/safebrowsing/uploads/scan";
 
-const char kSbAppUploadUrl[] =
-    "https://safebrowsing.google.com/safebrowsing/uploads/app";
-
 const char kSbConsumerUploadUrl[] =
     "https://safebrowsing.google.com/safebrowsing/uploads/consumer";
 
@@ -246,10 +243,7 @@ void BinaryUploadService::MaybeUploadForDeepScanning(
         profile_ && IsEnhancedProtectionEnabled(*profile_->GetPrefs());
 
     const bool is_deep_scan_authorized =
-        is_advanced_protection ||
-        (base::FeatureList::IsEnabled(
-             safe_browsing::kPromptEsbForDeepScanning) &&
-         is_enhanced_protection);
+        is_advanced_protection || is_enhanced_protection;
     MaybeUploadForDeepScanningCallback(std::move(request),
                                        /*authorized=*/is_deep_scan_authorized);
     return;
@@ -851,11 +845,7 @@ void BinaryUploadService::SetAuthForTesting(const std::string& dm_token,
 // static
 GURL BinaryUploadService::GetUploadUrl(bool is_consumer_scan_eligible) {
   if (is_consumer_scan_eligible) {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kPromptEsbForDeepScanning)) {
-      return GURL(kSbConsumerUploadUrl);
-    }
-    return GURL(kSbAppUploadUrl);
+    return GURL(kSbConsumerUploadUrl);
   } else {
     return GURL(kSbEnterpriseUploadUrl);
   }
