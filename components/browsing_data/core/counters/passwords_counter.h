@@ -11,8 +11,11 @@
 
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/browsing_data/core/counters/sync_tracker.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+
+namespace password_manager {
+class PasswordStoreInterface;
+}
 
 namespace browsing_data {
 namespace {
@@ -51,9 +54,9 @@ class PasswordsCounter : public browsing_data::BrowsingDataCounter {
     DISALLOW_COPY_AND_ASSIGN(PasswordsResult);
   };
 
-  explicit PasswordsCounter(
-      scoped_refptr<password_manager::PasswordStore> profile_store,
-      scoped_refptr<password_manager::PasswordStore> account_store,
+  PasswordsCounter(
+      scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
+      scoped_refptr<password_manager::PasswordStoreInterface> account_store,
       syncer::SyncService* sync_service);
   ~PasswordsCounter() override;
 

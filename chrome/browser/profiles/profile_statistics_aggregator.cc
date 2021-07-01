@@ -23,6 +23,7 @@
 #include "components/browsing_data/core/counters/history_counter.h"
 #include "components/browsing_data/core/counters/passwords_counter.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "content/public/browser/browser_thread.h"
 
 using browsing_data::BrowsingDataCounter;
@@ -76,11 +77,10 @@ void ProfileStatisticsAggregator::StartAggregator() {
       /*sync_service=*/nullptr));
 
   // Initiate stored password counting. Only count local passwords.
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      PasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS);
   AddCounter(std::make_unique<browsing_data::PasswordsCounter>(
-      password_store, /*account_store=*/nullptr, /*sync_service=*/nullptr));
+      PasswordStoreFactory::GetForProfile(profile_,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      /*account_store=*/nullptr, /*sync_service=*/nullptr));
 
   // Initiate autofill counting.
   scoped_refptr<autofill::AutofillWebDataService> autofill_service =

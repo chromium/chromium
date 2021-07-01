@@ -25,6 +25,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/history/core/test/fake_web_history_service.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "content/public/browser/browser_thread.h"

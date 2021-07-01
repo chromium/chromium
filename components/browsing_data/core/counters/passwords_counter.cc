@@ -35,13 +35,14 @@ bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
 
 // PasswordStoreFetcher ----------------------------------
 
-// Fetches passswords and observes a PasswordStore.
+// Fetches passswords and observes a PasswordStoreInterface.
 class PasswordStoreFetcher
     : public password_manager::PasswordStoreConsumer,
       public password_manager::PasswordStoreInterface::Observer {
  public:
-  PasswordStoreFetcher(scoped_refptr<password_manager::PasswordStore> store,
-                       base::RepeatingClosure logins_changed_closure);
+  PasswordStoreFetcher(
+      scoped_refptr<password_manager::PasswordStoreInterface> store,
+      base::RepeatingClosure logins_changed_closure);
   ~PasswordStoreFetcher() override;
   void Fetch(base::Time start,
              base::Time end,
@@ -65,7 +66,7 @@ class PasswordStoreFetcher
   const std::vector<std::string>& domain_examples() { return domain_examples_; }
 
  private:
-  scoped_refptr<password_manager::PasswordStore> store_;
+  scoped_refptr<password_manager::PasswordStoreInterface> store_;
   base::RepeatingClosure logins_changed_closure_;
   base::OnceClosure fetch_complete_;
   base::Time start_;
@@ -76,7 +77,7 @@ class PasswordStoreFetcher
 };
 
 PasswordStoreFetcher::PasswordStoreFetcher(
-    scoped_refptr<password_manager::PasswordStore> store,
+    scoped_refptr<password_manager::PasswordStoreInterface> store,
     base::RepeatingClosure logins_changed_closure)
     : store_(store), logins_changed_closure_(logins_changed_closure) {
   if (store_)
@@ -177,8 +178,8 @@ PasswordsCounter::PasswordsResult::~PasswordsResult() = default;
 // PasswordsCounter ----------------------------------
 
 PasswordsCounter::PasswordsCounter(
-    scoped_refptr<password_manager::PasswordStore> profile_store,
-    scoped_refptr<password_manager::PasswordStore> account_store,
+    scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
+    scoped_refptr<password_manager::PasswordStoreInterface> account_store,
     syncer::SyncService* sync_service)
     : sync_tracker_(this, sync_service) {
   profile_store_fetcher_ = std::make_unique<PasswordStoreFetcher>(

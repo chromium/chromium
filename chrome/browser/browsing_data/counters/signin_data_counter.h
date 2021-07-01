@@ -35,9 +35,9 @@ class SigninDataCounter : public PasswordsCounter {
     ResultInt num_webauthn_credentials_;
   };
 
-  explicit SigninDataCounter(
-      scoped_refptr<password_manager::PasswordStore> profile_store,
-      scoped_refptr<password_manager::PasswordStore> account_store,
+  SigninDataCounter(
+      scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
+      scoped_refptr<password_manager::PasswordStoreInterface> account_store,
       syncer::SyncService* sync_service,
       std::unique_ptr<::device::fido::PlatformCredentialStore>
           opt_platform_credential_store);

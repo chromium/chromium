@@ -6,12 +6,13 @@
 
 #include <string>
 #include <utility>
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace browsing_data {
 
 SigninDataCounter::SigninDataCounter(
-    scoped_refptr<password_manager::PasswordStore> profile_store,
-    scoped_refptr<password_manager::PasswordStore> account_store,
+    scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
+    scoped_refptr<password_manager::PasswordStoreInterface> account_store,
     syncer::SyncService* sync_service,
     std::unique_ptr<::device::fido::PlatformCredentialStore>
         opt_platform_credential_store)

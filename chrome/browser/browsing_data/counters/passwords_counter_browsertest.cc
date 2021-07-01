@@ -5,9 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -18,6 +16,8 @@
 #include "components/browsing_data/core/counters/passwords_counter.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -34,7 +34,8 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     time_ = base::Time::Now();
     times_used_ = 0;
     store_ = PasswordStoreFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+                 browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+                 .get();
     SetPasswordsDeletionPref(true);
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
   }
@@ -44,8 +45,9 @@ class PasswordsCounterTest : public InProcessBrowserTest {
                 bool blocked_by_user) {
     // Add login and wait until the password store actually changes.
     // on the database thread.
-    passwords_helper::AddLogin(
-        store_.get(), CreateCredentials(origin, username, blocked_by_user));
+    store_->AddLogin(CreateCredentials(origin, username, blocked_by_user));
+    // GetLogins() blocks until reading on the background thread is finished.
+    passwords_helper::GetLogins(store_);
   }
 
   void RemoveLogin(const std::string& origin,
@@ -53,8 +55,9 @@ class PasswordsCounterTest : public InProcessBrowserTest {
                    bool blocked_by_user) {
     // Remove login and wait until the password store actually changes
     // on the database thread.
-    passwords_helper::RemoveLogin(
-        store_.get(), CreateCredentials(origin, username, blocked_by_user));
+    store_->RemoveLogin(CreateCredentials(origin, username, blocked_by_user));
+    // GetLogins() blocks until reading on the background thread is finished.
+    passwords_helper::GetLogins(store_);
   }
 
   void SetPasswordsDeletionPref(bool value) {
@@ -74,19 +77,10 @@ class PasswordsCounterTest : public InProcessBrowserTest {
   void SetTimesUsed(int occurrences) { times_used_ = occurrences; }
 
   void WaitForCounting() {
-    // The counting takes place on the database thread. Wait until it finishes.
-    base::WaitableEvent waitable_event(
-        base::WaitableEvent::ResetPolicy::AUTOMATIC,
-        base::WaitableEvent::InitialState::NOT_SIGNALED);
-    store_->ScheduleTask(base::BindOnce(&base::WaitableEvent::Signal,
-                                        base::Unretained(&waitable_event)));
-    waitable_event.Wait();
-
-    // At this point, the calculation on DB thread should have finished, and
-    // a callback should be scheduled on the UI thread. Process the tasks until
-    // we get a finished result.
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
+    // The counting takes place on the background thread. Wait until it
+    // finishes. GetLogins() blocks until reading on the background thread is
+    // finished
+    passwords_helper::GetLogins(store_);
   }
 
   BrowsingDataCounter::ResultInt GetResult() {
@@ -110,8 +104,6 @@ class PasswordsCounterTest : public InProcessBrowserTest {
       result_ = password_result->Value();
       domain_examples_ = password_result->domain_examples();
     }
-    if (run_loop_ && finished_)
-      run_loop_->Quit();
   }
 
   void WaitForUICallbacksFromAddingLogins() {
@@ -134,9 +126,8 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     return result;
   }
 
-  scoped_refptr<password_manager::PasswordStore> store_;
+  password_manager::PasswordStoreInterface* store_;
 
-  std::unique_ptr<base::RunLoop> run_loop_;
   base::Time time_;
   int times_used_;
 
