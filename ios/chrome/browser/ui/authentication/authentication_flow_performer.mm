@@ -248,29 +248,37 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                     viewController:(UIViewController*)viewController {
   DCHECK(browser);
   ChromeBrowserState* browserState = browser->GetBrowserState();
-  BOOL isSignedIn = YES;
-  NSString* lastSignedInEmail =
-      [AuthenticationServiceFactory::GetForBrowserState(browserState)
-              ->GetAuthenticatedIdentity() userEmail];
-  if (!lastSignedInEmail) {
-    lastSignedInEmail =
-        base::SysUTF8ToNSString(browserState->GetPrefs()->GetString(
-            prefs::kGoogleServicesLastUsername));
-    isSignedIn = NO;
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  BOOL isCurrentUserSyncing =
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  std::string lastSyncingEmail;
+  if (isCurrentUserSyncing) {
+    // User is opted in to sync, the current data comes belongs to the syncing
+    // account.
+    lastSyncingEmail =
+        identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
+    DCHECK(!lastSyncingEmail.empty());
+  } else {
+    // User is not opted in to sync, the current data comes may belong to the
+    // previously syncing account (if any).
+    lastSyncingEmail =
+        browserState->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
   }
 
-  if (AuthenticationServiceFactory::GetForBrowserState(browserState)
-          ->IsAuthenticatedIdentityManaged()) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browserState);
-    AccountInfo primary_account_info =
-        identity_manager->FindExtendedAccountInfo(
-            identity_manager->GetPrimaryAccountInfo(
-                signin::ConsentLevel::kSync));
-    DCHECK(!primary_account_info.IsEmpty());
+  if (isCurrentUserSyncing &&
+      authenticationService->IsAuthenticatedIdentityManaged()) {
+    // If the current user is a managed account and sync is enabled, the sign-in
+    // needs to wipe the current data. We need to ask confirm from the user.
+    AccountInfo primaryAccountInfo = identityManager->FindExtendedAccountInfo(
+        identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+    DCHECK(!primaryAccountInfo.IsEmpty());
     NSString* hostedDomain =
-        base::SysUTF8ToNSString(primary_account_info.hosted_domain);
-    [self promptSwitchFromManagedEmail:lastSignedInEmail
+        base::SysUTF8ToNSString(primaryAccountInfo.hosted_domain);
+    [self promptSwitchFromManagedEmail:base::SysUTF8ToNSString(lastSyncingEmail)
                       withHostedDomain:hostedDomain
                                toEmail:[identity userEmail]
                         viewController:viewController
@@ -281,9 +289,9 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
       importDataControllerForBrowser:browser
                             delegate:self
                   importDataDelegate:self
-                           fromEmail:lastSignedInEmail
+                           fromEmail:base::SysUTF8ToNSString(lastSyncingEmail)
                              toEmail:[identity userEmail]
-                          isSignedIn:isSignedIn];
+                           isSyncing:isCurrentUserSyncing];
   [_delegate presentViewController:_navigationController
                           animated:YES
                         completion:nil];

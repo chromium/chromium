@@ -47,7 +47,7 @@ class ImportDataTableViewControllerTest : public ChromeTableViewControllerTest {
  protected:
   void SetUp() override {
     ChromeTableViewControllerTest::SetUp();
-    is_signed_in_ = true;
+    is_syncing_ = true;
   }
 
   ChromeTableViewController* InstantiateController() override {
@@ -56,12 +56,12 @@ class ImportDataTableViewControllerTest : public ChromeTableViewControllerTest {
         initWithDelegate:delegate_
                fromEmail:@"fromEmail@gmail.com"
                  toEmail:@"toEmail@gmail.com"
-              isSignedIn:is_signed_in_];
+               isSyncing:is_syncing_];
   }
 
-  void set_is_signed_in(bool is_signed_in) { is_signed_in_ = is_signed_in; }
+  void set_is_syncing(bool is_syncing) { is_syncing_ = is_syncing; }
 
-  bool is_signed_in_;
+  bool is_syncing_;
   ImportDataControllerTestDelegate* delegate_;
 };
 
@@ -91,7 +91,7 @@ TEST_F(ImportDataTableViewControllerTest, TestModelSignedIn) {
 }
 
 TEST_F(ImportDataTableViewControllerTest, TestModelSignedOut) {
-  set_is_signed_in(false);
+  set_is_syncing(false);
   CreateController();
   CheckController();
   ASSERT_EQ(2, NumberOfSections());
@@ -166,7 +166,7 @@ TEST_F(ImportDataTableViewControllerTest, TestDefaultChoiceSignedIn) {
 // that tapping continue will correctly select it. Regression test for
 // crbug.com/649533
 TEST_F(ImportDataTableViewControllerTest, TestDefaultChoiceSignedOut) {
-  set_is_signed_in(false);
+  set_is_syncing(false);
   CreateController();
 
   EXPECT_FALSE(delegate().didChooseClearDataPolicyCalled);

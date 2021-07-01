@@ -219,12 +219,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                     (id<ImportDataControllerDelegate>)importDataDelegate
                          fromEmail:(NSString*)fromEmail
                            toEmail:(NSString*)toEmail
-                        isSignedIn:(BOOL)isSignedIn {
+                         isSyncing:(BOOL)isSyncing {
   UIViewController* controller =
       [[ImportDataTableViewController alloc] initWithDelegate:importDataDelegate
                                                     fromEmail:fromEmail
                                                       toEmail:toEmail
-                                                   isSignedIn:isSignedIn];
+                                                    isSyncing:isSyncing];
 
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
       initWithRootViewController:controller

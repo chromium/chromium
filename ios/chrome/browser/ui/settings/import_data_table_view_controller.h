@@ -35,13 +35,13 @@ extern NSString* const kImportDataContinueButtonId;
 
 // |fromEmail| is the email of the previously signed in account.
 // |toIdentity| is the email of the account switched to.
-// |isSignedIn| is whether the user is currently signed in.
+// |isSyncing| is whether the user is currently opted in to sync.
 //
 // |fromEmail| and |toEmail| must not be NULL.
 - (instancetype)initWithDelegate:(id<ImportDataControllerDelegate>)delegate
                        fromEmail:(NSString*)fromEmail
                          toEmail:(NSString*)toEmail
-                      isSignedIn:(BOOL)isSignedIn NS_DESIGNATED_INITIALIZER;
+                       isSyncing:(BOOL)isSyncing NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

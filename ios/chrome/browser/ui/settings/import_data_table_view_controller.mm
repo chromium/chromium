@@ -46,7 +46,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   __weak id<ImportDataControllerDelegate> _delegate;
   NSString* _fromEmail;
   NSString* _toEmail;
-  BOOL _isSignedIn;
+  BOOL _isSyncing;
   ShouldClearData _shouldClearData;
   SettingsImageDetailTextItem* _importDataItem;
   SettingsImageDetailTextItem* _keepDataSeparateItem;
@@ -57,7 +57,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (instancetype)initWithDelegate:(id<ImportDataControllerDelegate>)delegate
                        fromEmail:(NSString*)fromEmail
                          toEmail:(NSString*)toEmail
-                      isSignedIn:(BOOL)isSignedIn {
+                       isSyncing:(BOOL)isSyncing {
   DCHECK(fromEmail);
   DCHECK(toEmail);
 
@@ -66,11 +66,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _delegate = delegate;
     _fromEmail = [fromEmail copy];
     _toEmail = [toEmail copy];
-    _isSignedIn = isSignedIn;
-    _shouldClearData = isSignedIn ? SHOULD_CLEAR_DATA_CLEAR_DATA
-                                  : SHOULD_CLEAR_DATA_MERGE_DATA;
+    _isSyncing = isSyncing;
+    _shouldClearData =
+        isSyncing ? SHOULD_CLEAR_DATA_CLEAR_DATA : SHOULD_CLEAR_DATA_MERGE_DATA;
     self.title =
-        isSignedIn
+        isSyncing
             ? l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SWITCH)
             : l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
     [self setShouldHideDoneButton:YES];
@@ -106,7 +106,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierOptions];
   _importDataItem = [self importDataItem];
   _keepDataSeparateItem = [self keepDataSeparateItem];
-  if (_isSignedIn) {
+  if (_isSyncing) {
     [model addItem:_keepDataSeparateItem
         toSectionWithIdentifier:SectionIdentifierOptions];
     [model addItem:_importDataItem
@@ -136,8 +136,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.detailText =
       l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_SUBTITLE,
                               base::SysNSStringToUTF16(_toEmail));
-  item.accessoryType = _isSignedIn ? UITableViewCellAccessoryNone
-                                   : UITableViewCellAccessoryCheckmark;
+  item.accessoryType = _isSyncing ? UITableViewCellAccessoryNone
+                                  : UITableViewCellAccessoryCheckmark;
   item.accessibilityIdentifier = kImportDataImportCellId;
   return item;
 }
@@ -146,7 +146,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeOptionKeepDataSeparate];
   item.text = l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_TITLE);
-  if (_isSignedIn) {
+  if (_isSyncing) {
     item.detailText = l10n_util::GetNSStringF(
         IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SWITCH,
         base::SysNSStringToUTF16(_fromEmail));
@@ -154,8 +154,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     item.detailText = l10n_util::GetNSString(
         IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SUBTITLE_SIGNIN);
   }
-  item.accessoryType = _isSignedIn ? UITableViewCellAccessoryCheckmark
-                                   : UITableViewCellAccessoryNone;
+  item.accessoryType = _isSyncing ? UITableViewCellAccessoryCheckmark
+                                  : UITableViewCellAccessoryNone;
   item.accessibilityIdentifier = kImportDataKeepSeparateCellId;
   return item;
 }
