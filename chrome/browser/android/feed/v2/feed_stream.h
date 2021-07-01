@@ -45,6 +45,10 @@ class FeedStream : public ::feed::FeedStreamSurface {
                 const base::android::JavaParamRef<jobject>& obj,
                 const base::android::JavaParamRef<jobject>& callback_obj);
 
+  void Refresh(JNIEnv* env,
+               const base::android::JavaParamRef<jobject>& obj,
+               const base::android::JavaParamRef<jobject>& callback_obj);
+
   void ProcessThereAndBackAgain(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

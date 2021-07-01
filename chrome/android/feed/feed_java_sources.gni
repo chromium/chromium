@@ -27,6 +27,7 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceScopeDependencyProvider.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceTracker.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSwipeRefreshLayout.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListener.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpFeedSurfaceLifecycleManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpListContentManager.java",

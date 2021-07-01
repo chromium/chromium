@@ -49512,6 +49512,7 @@ from previous Chrome versions.
   <int value="855746780" label="disable-physical-keyboard-autocorrect"/>
   <int value="857391671" label="BluetoothNextHandsfreeProfile:disabled"/>
   <int value="857445869" label="enable-captive-portal-bypass-proxy"/>
+  <int value="857716462" label="FeedInteractiveRefresh:enabled"/>
   <int value="859449217" label="MagnifierPanningImprovements:enabled"/>
   <int value="860336036" label="ChromeModernDesign:enabled"/>
   <int value="862453793" label="TranslateUI2016Q2:enabled"/>
@@ -50031,6 +50032,7 @@ from previous Chrome versions.
   <int value="1292091029" label="OmniboxOneClickUnelide:disabled"/>
   <int value="1292763218" label="SystemTrayUnified:disabled"/>
   <int value="1294131571" label="disable-winrt-midi-api"/>
+  <int value="1294306055" label="FeedInteractiveRefresh:disabled"/>
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>
   <int value="1298734793" label="OsSettingsAppNotificationsPage:disabled"/>

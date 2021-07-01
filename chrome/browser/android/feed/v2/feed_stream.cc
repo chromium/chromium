@@ -104,6 +104,10 @@ void FeedStream::LoadMore(JNIEnv* env,
                             ScopedJavaGlobalRef<jobject>(callback_obj)));
 }
 
+void FeedStream::Refresh(JNIEnv* env,
+                         const JavaParamRef<jobject>& obj,
+                         const JavaParamRef<jobject>& callback_obj) {}
+
 void FeedStream::ProcessThereAndBackAgain(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

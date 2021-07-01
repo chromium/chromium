@@ -616,7 +616,10 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public void triggerRefresh() {}
+    public void triggerRefresh(Callback<Boolean> callback) {
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                () -> FeedStreamJni.get().refresh(mNativeFeedStream, FeedStream.this, callback));
+    }
 
     @Override
     public boolean isPlaceholderShown() {
@@ -1028,6 +1031,7 @@ public class FeedStream implements Stream {
         void reportStreamScrolled(long nativeFeedStream, FeedStream caller, int distanceDp);
         void reportStreamScrollStart(long nativeFeedStream, FeedStream caller);
         void loadMore(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
+        void refresh(long nativeFeedStream, FeedStream caller, Callback<Boolean> callback);
         void processThereAndBackAgain(long nativeFeedStream, FeedStream caller, byte[] data);
         int executeEphemeralChange(long nativeFeedStream, FeedStream caller, byte[] data);
         void commitEphemeralChange(long nativeFeedStream, FeedStream caller, int changeId);

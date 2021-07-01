@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed.shared.stream;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
@@ -64,7 +65,7 @@ public interface Stream {
      *
      * <p>Note: this will assume {@link RequestReason.HOST_REQUESTED}.
      */
-    void triggerRefresh();
+    void triggerRefresh(Callback<Boolean> callback);
 
     /**
      * @return Whether the placeholder is shown.

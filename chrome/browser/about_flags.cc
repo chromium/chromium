@@ -3842,7 +3842,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(feed::kInterestFeedV2)},
     {"feed-interactive-refresh", flag_descriptions::kFeedInteractiveRefreshName,
      flag_descriptions::kFeedInteractiveRefreshDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kInterestFeedV2Hearts)},
+     FEATURE_VALUE_TYPE(feed::kFeedInteractiveRefresh)},
     {"feed-v2-hearts", flag_descriptions::kInterestFeedV2HeartsName,
      flag_descriptions::kInterestFeedV2HeartsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kInterestFeedV2Hearts)},
