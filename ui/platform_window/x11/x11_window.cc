@@ -1738,7 +1738,8 @@ bool X11Window::IsActive() const {
   // a window is topmost iff it has focus, just use the focus state to determine
   // if a window is active.  Note that Activate() and Deactivate() change the
   // stacking order in addition to changing the focus state.
-  return (has_window_focus_ || has_pointer_focus_) && !ignore_keyboard_input_;
+  return (has_window_focus_ || has_pointer_focus_) && !ignore_keyboard_input_ &&
+         !IsMinimized();
 }
 
 bool X11Window::IsMinimized() const {

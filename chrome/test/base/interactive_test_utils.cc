@@ -57,12 +57,6 @@ void BrowserActivationWaiter::OnBrowserSetLastActive(Browser* browser) {
   if (browser != browser_)
     return;
 
-// On Mac, BrowserWindowCocoa::Show() sets the active browser before the
-// window becomes the key window.
-#if !defined(OS_MAC)
-  EXPECT_TRUE(browser->window()->IsActive());
-#endif
-
   observed_ = true;
   BrowserList::RemoveObserver(this);
   if (run_loop_.running())

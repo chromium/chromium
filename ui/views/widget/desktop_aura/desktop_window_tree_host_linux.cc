@@ -216,11 +216,6 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
 }
 
 void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
-  // The input can be disabled and the widget marked as non-active in case of
-  // opened file-dialogs.
-  if (event->IsKeyEvent() && !native_widget_delegate()->AsWidget()->IsActive())
-    return;
-
   // In Windows, the native events sent to chrome are separated into client
   // and non-client versions of events, which we record on our LocatedEvent
   // structures. On X11/Wayland, we emulate the concept of non-client. Before we

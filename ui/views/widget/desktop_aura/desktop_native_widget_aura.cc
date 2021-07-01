@@ -68,6 +68,7 @@
 #include "ui/wm/core/visibility_controller.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_modality_controller.h"
+#include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
 #if defined(OS_WIN)
@@ -403,7 +404,18 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
                                       : focus_manager->GetStoredFocusView();
       if (!view_for_activation || !view_for_activation->GetWidget()) {
         view_for_activation = GetWidget()->GetRootView();
+        activation_client->ActivateWindow(content_window_);
       } else if (view_for_activation == focus_manager->GetStoredFocusView()) {
+        // Update activation before restoring focus to prevent race condition.
+        // RestoreFocusedView() will activate the widget if Widget::IsActive()
+        // is false. Note that IsActive() checks ActivationClient for active
+        // widget, if ActivationClient is updated after focus, we risk running
+        // into an infinite loop.
+        // In practice, infinite loop does not happen because the window tree
+        // host avoids re-entrance to Activate() when the OS's window is active.
+        // But this is still a risk when two DNWAs both try to activate itself.
+        activation_client->ActivateWindow(
+            view_for_activation->GetWidget()->GetNativeView());
         // When desktop native widget has modal transient child, we don't
         // restore focused view here, as the modal transient child window will
         // get activated and focused. Thus, we are not left with multiple
@@ -417,8 +429,7 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
           restore_focus_on_activate_ = false;
         }
       }
-      activation_client->ActivateWindow(
-          view_for_activation->GetWidget()->GetNativeView());
+
       // Refreshes the focus info to IMF in case that IMF cached the old info
       // about focused text input client when it was "inactive".
       GetInputMethod()->OnFocus();
@@ -835,7 +846,7 @@ bool DesktopNativeWidgetAura::IsVisible() const {
 
 void DesktopNativeWidgetAura::Activate() {
   if (content_window_) {
-    bool was_active = IsActive();
+    bool was_tree_active = desktop_window_tree_host_->IsActive();
     desktop_window_tree_host_->Activate();
 
     // If the whole window tree host was already active,
@@ -845,7 +856,7 @@ void DesktopNativeWidgetAura::Activate() {
     // since if client code is calling Widget::Activate() they probably
     // want that particular widget to be activated, not just something
     // within that widget hierarchy.
-    if (was_active && focus_client_->GetFocusedWindow() != content_window_)
+    if (was_tree_active && focus_client_->GetFocusedWindow() != content_window_)
       focus_client_->FocusWindow(content_window_);
   }
 }
@@ -856,7 +867,8 @@ void DesktopNativeWidgetAura::Deactivate() {
 }
 
 bool DesktopNativeWidgetAura::IsActive() const {
-  return content_window_ && desktop_window_tree_host_->IsActive();
+  return content_window_ && desktop_window_tree_host_->IsActive() &&
+         wm::IsActiveWindow(content_window_);
 }
 
 void DesktopNativeWidgetAura::SetZOrderLevel(ui::ZOrderLevel order) {

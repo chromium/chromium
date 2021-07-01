@@ -65,4 +65,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
   views::test::WidgetVisibleWaiter(bubble->GetWidget()).Wait();
 
   EXPECT_TRUE(bubble->GetWidget()->IsActive());
+
+  // Browser view should lose activation.
+  EXPECT_FALSE(browser_view->GetWidget()->IsActive());
 }

@@ -1445,6 +1445,7 @@ source_set("views_interactive_ui_tests") {
 
   if (use_aura) {
     sources += [
+      "bubble/bubble_dialog_delegate_view_interactive_uitest_aura.cc",
       "corewm/desktop_capture_controller_unittest.cc",
       "widget/native_widget_aura_interactive_uitest.cc",
     ]

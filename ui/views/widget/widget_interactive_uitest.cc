@@ -1040,6 +1040,19 @@ TEST_F(WidgetTestInteractive, ShowAfterShowInactive) {
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
 }
 
+TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
+  // TODO(crbug/1217331): This test fails if put under NativeWidgetAuraTest.
+  WidgetAutoclosePtr anchor_widget(CreateTopLevelNativeWidget());
+
+  test::WidgetActivationWaiter waiter(anchor_widget.get(), true);
+  anchor_widget->Show();
+  waiter.Wait();
+  EXPECT_TRUE(anchor_widget->IsActive());
+#if !defined(OS_MAC)
+  EXPECT_TRUE(anchor_widget->GetNativeWindow()->HasFocus());
+#endif
+}
+
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
 TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
