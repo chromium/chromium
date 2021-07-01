@@ -1997,24 +1997,6 @@
             ]
         }
     ],
-    "ClientSideDetectionModelOnAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithModel55",
-                    "params": {
-                        "ModelNum": "55"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionModelOnAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionReferrerChain": [
         {
             "platforms": [
@@ -7145,6 +7127,39 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafeBrowsingBetterTelemetryAcrossReports"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingCSDCompareModelsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledFlatbuffer_20210629",
+                    "params": {
+                        "reporter_omaha_tag": "25"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionModelIsFlatBuffer",
+                        "ClientSideDetectionModelOnAndroid",
+                        "ClientSideDetectionTag"
+                    ]
+                },
+                {
+                    "name": "EnabledProtobuf_20210629",
+                    "params": {
+                        "reporter_omaha_tag": "22"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionModelOnAndroid",
+                        "ClientSideDetectionTag"
+                    ],
+                    "disable_features": [
+                        "ClientSideDetectionModelIsFlatBuffer"
                     ]
                 }
             ]
