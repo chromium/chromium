@@ -22,9 +22,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="V8.ArrayBufferLargeAllocations" units="MB"
-    expires_after="2021-06-07">
+    expires_after="2022-06-30">
   <owner>gdeepti@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
   <summary>
     Number of bytes requested in array buffer allocations greater than one
     megabyte.
@@ -32,9 +33,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.ArrayBufferNewSizeFailures" units="MB"
-    expires_after="2021-06-07">
+    expires_after="2022-06-30">
   <owner>gdeepti@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
   <summary>Array buffer sizes for which V8 failed to allocate memory.</summary>
 </histogram>
 
