@@ -19,7 +19,7 @@ namespace network {
 // This function must remain:
 // - As 'pure' as possible. See [pure-function].
 // - Callable from any processes.
-//   For security reasons, highly proviledged processes must never call it
+//   For security reasons, highly privileged processes must never call it
 //   directly against untrustworthy inputs. See [rule-of-2]. In this case, you
 //   can call it indirectly via NetworkContext.ParseHeaders().
 //
