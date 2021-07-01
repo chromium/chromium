@@ -37,7 +37,7 @@ ExtensionRequestObserverFactory::~ExtensionRequestObserverFactory() {
 
 void ExtensionRequestObserverFactory::OnProfileAdded(Profile* profile) {
   if (profile->IsSystemProfile() || profile->IsGuestSession() ||
-      profile->IsEphemeralGuestProfile() || profile->IsOffTheRecord()) {
+      profile->IsOffTheRecord()) {
     return;
   }
 

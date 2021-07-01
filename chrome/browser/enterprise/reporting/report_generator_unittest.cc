@@ -140,17 +140,13 @@ void AddArcPackageAndApp(ArcAppTest* arc_app_test,
 
 }  // namespace
 
-class ReportGeneratorTest : public ::testing::Test,
-                            public ::testing::WithParamInterface<bool> {
+class ReportGeneratorTest : public ::testing::Test {
  public:
   using ReportRequest = definition::ReportRequest;
 
   ReportGeneratorTest()
       : generator_(&delegate_factory_),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, GetParam());
-  }
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   ~ReportGeneratorTest() override = default;
 
   void SetUp() override {
@@ -299,12 +295,11 @@ class ReportGeneratorTest : public ::testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(ReportGeneratorTest);
 };
 
-TEST_P(ReportGeneratorTest, GenerateBasicReport) {
+TEST_F(ReportGeneratorTest, GenerateBasicReport) {
   auto profile_names = CreateProfiles(/*number*/ 2, kIdle);
   CreatePlugin();
 
@@ -359,7 +354,7 @@ TEST_P(ReportGeneratorTest, GenerateBasicReport) {
                       profile_names, browser_report);
 }
 
-TEST_P(ReportGeneratorTest, GenerateWithoutProfiles) {
+TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
   auto profile_names = CreateProfiles(/*number*/ 2, kActive);
   CreatePlugin();
 
@@ -409,7 +404,7 @@ TEST_P(ReportGeneratorTest, GenerateWithoutProfiles) {
                       profile_names, browser_report);
 }
 
-TEST_P(ReportGeneratorTest, ExtensionRequestOnly) {
+TEST_F(ReportGeneratorTest, ExtensionRequestOnly) {
   auto profile_names = CreateProfiles(/*number*/ 2, kActive);
   CreatePlugin();
 
@@ -435,7 +430,7 @@ TEST_P(ReportGeneratorTest, ExtensionRequestOnly) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_P(ReportGeneratorTest, ReportArcAppInChromeOS) {
+TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
   ArcAppTest arc_app_test;
   TestingProfile primary_profile;
   arc_app_test.SetUp(&primary_profile);
@@ -475,7 +470,7 @@ TEST_P(ReportGeneratorTest, ReportArcAppInChromeOS) {
   arc_app_test.TearDown();
 }
 
-TEST_P(ReportGeneratorTest, ArcPlayStoreDisabled) {
+TEST_F(ReportGeneratorTest, ArcPlayStoreDisabled) {
   ArcAppTest arc_app_test;
   TestingProfile primary_profile;
   arc_app_test.SetUp(&primary_profile);
@@ -501,9 +496,5 @@ TEST_P(ReportGeneratorTest, ArcPlayStoreDisabled) {
 }
 
 #endif
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         ReportGeneratorTest,
-                         /*is_ephemeral=*/testing::Bool());
 
 }  // namespace enterprise_reporting
