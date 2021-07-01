@@ -65,6 +65,7 @@ class ASH_EXPORT QuickAnswersView : public views::Button {
  private:
   void InitLayout();
   void InitWidget();
+  void AddContentView();
   void AddDogfoodButton();
   void AddSettingsButton();
   void AddAssistantIcon();
