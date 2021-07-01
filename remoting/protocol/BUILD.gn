@@ -288,7 +288,11 @@ static_library("protocol") {
       "webrtc_video_track_source.h",
     ]
 
-    deps += [ "//remoting/codec:encoder" ]
+    deps += [
+      "//media:media",
+      "//media:shared_memory_support",
+      "//remoting/codec:encoder",
+    ]
   }
 }
 
