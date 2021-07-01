@@ -81,11 +81,18 @@ void FakeChromeTrustedVaultService::ReauthenticationForFetchKeys(
 }
 
 void FakeChromeTrustedVaultService::CancelDialog(BOOL animated,
-                                                 void (^callback)(void)) {}
+                                                 void (^callback)(void)) {
+  DCHECK(trusted_vault_view_controller_);
+  [trusted_vault_view_controller_.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:callback];
+  trusted_vault_view_controller_ = nil;
+}
 
 void FakeChromeTrustedVaultService::SimulateUserCancel() {
   DCHECK(trusted_vault_view_controller_);
   [trusted_vault_view_controller_ simulateUserCancel];
+  trusted_vault_view_controller_ = nil;
 }
 
 }  // namespace ios
