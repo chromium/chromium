@@ -911,6 +911,45 @@ StoragePartition, a separate frame tree, and restricts postMessage communication
 by default. However, `<webview>` does not support Site Isolation and
 therefore it is not advisable to use for any sensitive content.
 
+## JavaScript Error Reporting
+
+By default, errors in the JavaScript of a WebUI page will generate error reports
+which appear in Google's internal crash/ reports page. These error reports will
+only be generated for Google Chrome builds, not Chromium or other Chromium-based
+browsers.
+
+Specifically, an error report will be generated when the JavaScript for a
+WebUI-based chrome:// page does one of the following:
+* Generates an uncaught exception,
+* Has a promise which is rejected, and no rejection handler is provided, or
+* Calls `console.error()`.
+
+Such errors will appear alongside other crashes in the
+`product_name=Chrome_ChromeOS` or `product_name=Chrome_Linux` lists on crash/.
+The signature of the error is simply the error message. To avoid
+spamming the system, only one error report with a given message will be
+generated per hour.
+
+If you are getting error reports for an expected condition, you can turn off the
+reports simply by changing `console.error()` into `console.warn()`.
+
+If you wish to get more control of the JavaScript error messages, for example
+to change the product name or to add additional data, you may wish to switch to
+using `CrashReportPrivate.reportError()`. If you do so, be sure to override
+`WebUIController::IsJavascriptErrorReportingEnabled()` to return false for your
+page; this will avoid generating redundant error reports.
+
+Known issues:
+1. Error reporting is currently enabled only on ChromeOS and Linux.
+2. Errors are only reported for chrome:// URLs.
+3. Unhandled promise rejections do not have a good stack.
+4. The line numbers and column numbers in the stacks are for the minified
+   JavaScript and do not correspond to the line and column numbers of the
+   original source files.
+5. Error messages with variable strings do not group well. For example, if the
+   error message includes the name of a network, each network name will be its
+   own signature.
+
 
 ## See also
 
