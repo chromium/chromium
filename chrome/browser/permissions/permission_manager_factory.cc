@@ -30,7 +30,6 @@
 #include "components/embedder_support/permission_context_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/contexts/font_access_permission_context.h"
-#include "components/permissions/contexts/webxr_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -79,12 +78,6 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   // Add additional Chrome specific permission contexts. Please add a comment
   // when adding new contexts here explaining why it can't be shared with other
   // Content embedders by adding it to CreateDefaultPermissionContexts().
-
-  // TODO(crbug.com/1057106): Move this to default contexts once WebLayer
-  // supports WebXR.
-  permission_contexts[ContentSettingsType::AR] =
-      std::make_unique<permissions::WebXrPermissionContext>(
-          profile, ContentSettingsType::AR);
 
   // Depends on Chrome-only DownloadRequestLimiter.
   permission_contexts[ContentSettingsType::BACKGROUND_FETCH] =
@@ -145,12 +138,6 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   // WebLayer yet.
   permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
       std::make_unique<StorageAccessGrantPermissionContext>(profile);
-
-  // TODO(crbug.com/1057106): Move this to default contexts once WebLayer
-  // supports WebXR.
-  permission_contexts[ContentSettingsType::VR] =
-      std::make_unique<permissions::WebXrPermissionContext>(
-          profile, ContentSettingsType::VR);
 
   // TODO(crbug.com/897300): Still in development for Android so we don't
   // support it on WebLayer yet.

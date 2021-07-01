@@ -17,6 +17,7 @@
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/contexts/sensor_permission_context.h"
 #include "components/permissions/contexts/wake_lock_permission_context.h"
+#include "components/permissions/contexts/webxr_permission_context.h"
 
 #if defined(OS_ANDROID)
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
@@ -54,6 +55,9 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
   permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =
       std::make_unique<permissions::AccessibilityPermissionContext>(
           browser_context);
+  permission_contexts[ContentSettingsType::AR] =
+      std::make_unique<permissions::WebXrPermissionContext>(
+          browser_context, ContentSettingsType::AR);
   permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
       std::make_unique<BackgroundSyncPermissionContext>(browser_context);
   permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
@@ -103,6 +107,9 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
           browser_context);
   permission_contexts[ContentSettingsType::SENSORS] =
       std::make_unique<permissions::SensorPermissionContext>(browser_context);
+  permission_contexts[ContentSettingsType::VR] =
+      std::make_unique<permissions::WebXrPermissionContext>(
+          browser_context, ContentSettingsType::VR);
   permission_contexts[ContentSettingsType::WAKE_LOCK_SCREEN] =
       std::make_unique<permissions::WakeLockPermissionContext>(
           browser_context, ContentSettingsType::WAKE_LOCK_SCREEN);
