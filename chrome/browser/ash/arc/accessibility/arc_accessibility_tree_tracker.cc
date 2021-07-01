@@ -54,6 +54,10 @@ ArcAccessibilityTreeTracker::TreeKey KeyForTaskId(int32_t task_id) {
           {} /* notification_key */};
 }
 
+bool ShouldTrackWindow(aura::Window* window) {
+  return arc::IsArcOrGhostWindow(window);
+}
+
 void SetChildAxTreeIDForWindow(aura::Window* window,
                                const ui::AXTreeID& treeID) {
   DCHECK(window);
@@ -103,8 +107,8 @@ class ArcAccessibilityTreeTracker::FocusChangeObserver
 
   void OnWindowFocused(aura::Window* original_gained_focus,
                        aura::Window* original_lost_focus) override {
-    aura::Window* gained_focus = FindArcWindow(original_gained_focus);
-    aura::Window* lost_focus = FindArcWindow(original_lost_focus);
+    aura::Window* gained_focus = FindArcOrGhostWindow(original_gained_focus);
+    aura::Window* lost_focus = FindArcOrGhostWindow(original_lost_focus);
     if (gained_focus == lost_focus)
       return;
 
@@ -269,8 +273,8 @@ void ArcAccessibilityTreeTracker::OnWindowFocused(aura::Window* gained_focus,
   // ToggleNativeChromeVoxArcSupport event.
   //  - When non-ChromeVox ARC window becomes inactive, dispatch |true|.
   //  - When non-ChromeVox ARC window becomes active, dispatch |false|.
-  bool lost_arc = ash::IsArcWindow(lost_focus);
-  bool gained_arc = ash::IsArcWindow(gained_focus);
+  bool lost_arc = ShouldTrackWindow(lost_focus);
+  bool gained_arc = ShouldTrackWindow(gained_focus);
   bool talkback_enabled = !native_chromevox_enabled_;
   if (talkback_enabled && lost_arc != gained_arc)
     DispatchCustomSpokenFeedbackToggled(gained_arc);
@@ -312,7 +316,7 @@ void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
 
   if (add_focus_observer) {
     focus_change_observer_ = std::make_unique<FocusChangeObserver>(this);
-    if (ash::IsArcWindow(focused_window))
+    if (ShouldTrackWindow(focused_window))
       window_observer_ = std::make_unique<WindowObserver>(this, focused_window);
   } else {
     focus_change_observer_.reset();
@@ -613,7 +617,7 @@ void ArcAccessibilityTreeTracker::DispatchCustomSpokenFeedbackToggled(
 aura::Window* ArcAccessibilityTreeTracker::GetFocusedArcWindow() const {
   if (!exo::WMHelper::HasInstance())
     return nullptr;
-  return FindArcWindow(exo::WMHelper::GetInstance()->GetFocusedWindow());
+  return FindArcOrGhostWindow(exo::WMHelper::GetInstance()->GetFocusedWindow());
 }
 
 }  // namespace arc

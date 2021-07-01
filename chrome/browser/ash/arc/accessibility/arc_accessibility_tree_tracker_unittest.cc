@@ -188,6 +188,41 @@ TEST_F(ArcAccessibilityTreeTrackerTest, WindowIdTaskIdMapping) {
   ASSERT_NE(tree1, tree4);
 }
 
+TEST_F(ArcAccessibilityTreeTrackerTest, TrackArcGhostWindow) {
+  auto& tree_tracker = accessibility_tree_tracker();
+
+  tree_tracker.OnEnabledFeatureChanged(
+      arc::mojom::AccessibilityFilterType::ALL);
+
+  // Simulate a ghost window. Apply NON_APP type and session ID.
+  std::unique_ptr<aura::Window> test_window =
+      CreateWindow(ash::AppType::NON_APP);
+  exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.session.1");
+  tree_tracker.window_ = test_window.get();
+  tree_tracker.OnWindowFocused(test_window.get(), nullptr);
+
+  const auto& key_to_tree = tree_tracker.trees_for_test();
+  ASSERT_EQ(0U, key_to_tree.size());
+
+  auto event = arc::mojom::AccessibilityEventData::New();
+  event->source_id = 1;
+  event->task_id = kNoTaskId;
+  event->window_id = 10;
+
+  // The window properties are not updated yet. a11y event is ignored.
+  tree_tracker.OnAccessibilityEvent(event.Clone().get());
+  ASSERT_EQ(0U, key_to_tree.size());
+
+  // A ghost window is replaced with an actual ARC window.
+  exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
+  exo::SetShellClientAccessibilityId(test_window.get(), 10);
+  test_window->SetProperty(aura::client::kAppType,
+                           static_cast<int>(ash::AppType::ARC_APP));
+
+  tree_tracker.OnAccessibilityEvent(event.Clone().get());
+  ASSERT_EQ(1U, key_to_tree.size());
+}
+
 TEST_F(ArcAccessibilityTreeTrackerTest, FilterTypeChange) {
   using arc::mojom::AccessibilityFilterType;
 
