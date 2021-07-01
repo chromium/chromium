@@ -99,6 +99,7 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
   void ReportTabDurationHistogram(const char* histogram_fragment,
                                   int tab_count,
                                   base::TimeDelta duration);
+  gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
 
   Browser* const browser_;
   TabStripUIEmbedder* const embedder_;

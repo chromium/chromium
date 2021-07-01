@@ -270,8 +270,10 @@ export class TabListElement extends CustomElement {
     this.addWebUIListener_(
         'layout-changed', layout => this.applyCSSDictionary_(layout));
     this.addWebUIListener_('theme-changed', () => {
+      // Refetch theme colors, group color and tab favicons on theme change.
       this.fetchAndUpdateColors_();
       this.fetchAndUpdateGroupData_();
+      this.fetchAndUpdateTabs_();
     });
     this.tabStripEmbedderProxy_.observeThemeChanges();
 
@@ -493,6 +495,13 @@ export class TabListElement extends CustomElement {
         tabGroupElement.updateVisuals(
             assert(data[tabGroupElement.dataset.groupId]));
       });
+    });
+  }
+
+  /** @private */
+  fetchAndUpdateTabs_() {
+    this.tabsApi_.getTabs().then(tabs => {
+      tabs.forEach(tab => this.onTabUpdated_(tab));
     });
   }
 

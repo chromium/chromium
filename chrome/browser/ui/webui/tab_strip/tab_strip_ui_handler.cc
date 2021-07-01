@@ -565,9 +565,12 @@ base::DictionaryValue TabStripUIHandler::GetTabData(
   tab_data.SetString("url", tab_renderer_data.visible_url.GetContent());
 
   if (!tab_renderer_data.favicon.isNull()) {
-    tab_data.SetString("favIconUrl", webui::EncodePNGAndMakeDataURI(
-                                         tab_renderer_data.favicon,
-                                         web_ui()->GetDeviceScaleFactor()));
+    tab_data.SetString("favIconUrl",
+                       webui::EncodePNGAndMakeDataURI(
+                           tab_renderer_data.should_themify_favicon
+                               ? ThemeFavicon(tab_renderer_data.favicon)
+                               : tab_renderer_data.favicon,
+                           web_ui()->GetDeviceScaleFactor()));
     tab_data.SetBoolean("isDefaultFavicon",
                         tab_renderer_data.favicon.BackedBySameObjectAs(
                             favicon::GetDefaultFavicon().AsImageSkia()));
@@ -1025,4 +1028,13 @@ void TabStripUIHandler::ReportTabDurationHistogram(
   std::string histogram_name = base::JoinString(
       {"WebUITabStrip", histogram_fragment, tab_count_bucket}, ".");
   base::UmaHistogramTimes(histogram_name, duration);
+}
+
+gfx::ImageSkia TabStripUIHandler::ThemeFavicon(const gfx::ImageSkia& source) {
+  return favicon::ThemeFavicon(
+      source, embedder_->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
+      embedder_->GetColor(
+          ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE),
+      embedder_->GetColor(
+          ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE));
 }
