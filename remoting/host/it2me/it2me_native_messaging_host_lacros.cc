@@ -87,9 +87,9 @@ class It2MeNativeMessagingHostLacros : public extensions::NativeMessageHost,
   void OnSupportSessionStarted(mojom::StartSupportSessionResponsePtr response);
 
  private:
-  void ProcessHello();
-  void ProcessConnect(base::Value message);
-  void ProcessDisconnect(base::Value message);
+  void ProcessHello(int message_id);
+  void ProcessConnect(int message_id, base::Value message);
+  void ProcessDisconnect(int message_id);
   void SendMessageToClient(base::Value message) const;
   void SendErrorAndExit(const protocol::ErrorCode error_code,
                         int message_id = kInvalidMessageId) const;
@@ -105,6 +105,7 @@ class It2MeNativeMessagingHostLacros : public extensions::NativeMessageHost,
   base::TimeDelta access_code_lifetime_;
   std::string remote_username_;
   int connect_response_id_ = kInvalidMessageId;
+  int hello_response_id_ = kInvalidMessageId;
 
   bool hello_response_pending_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   mojom::SupportHostDetailsPtr host_details_
@@ -131,21 +132,22 @@ void It2MeNativeMessagingHostLacros::OnMessage(const std::string& message) {
     return;
   }
 
+  int message_id = GetMessageId(contents);
   if (type.empty()) {
     LOG(ERROR) << "'type' not found in request.";
-    SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL);
+    SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL, message_id);
     return;
   }
 
   if (type == kHelloMessage) {
-    ProcessHello();
+    ProcessHello(message_id);
   } else if (type == kConnectMessage) {
-    ProcessConnect(std::move(contents));
+    ProcessConnect(message_id, std::move(contents));
   } else if (type == kDisconnectMessage) {
-    ProcessDisconnect(std::move(contents));
+    ProcessDisconnect(message_id);
   } else {
     LOG(ERROR) << "Unsupported request type: " << type;
-    SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL);
+    SendErrorAndExit(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL, message_id);
   }
 }
 
@@ -293,17 +295,21 @@ void It2MeNativeMessagingHostLacros::OnSupportHostDetailsReceived(
 
   if (hello_response_pending_) {
     hello_response_pending_ = false;
-    ProcessHello();
+    int response_id = hello_response_id_;
+    hello_response_id_ = kInvalidMessageId;
+    ProcessHello(response_id);
   }
 }
 
 void It2MeNativeMessagingHostLacros::OnSupportSessionStarted(
     mojom::StartSupportSessionResponsePtr mojo_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  int response_id = connect_response_id_;
+  connect_response_id_ = kInvalidMessageId;
   if (mojo_response->is_support_session_error()) {
     SendErrorAndExit(SupportSessionErrorToProtocolError(
                          mojo_response->get_support_session_error()),
-                     connect_response_id_);
+                     response_id);
     return;
   }
 
@@ -312,24 +318,28 @@ void It2MeNativeMessagingHostLacros::OnSupportSessionStarted(
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetStringKey(kMessageType, kConnectResponse);
 
-  if (connect_response_id_ != kInvalidMessageId) {
-    response.SetIntKey(kMessageId, connect_response_id_);
-    connect_response_id_ = kInvalidMessageId;
+  if (response_id != kInvalidMessageId) {
+    response.SetIntKey(kMessageId, response_id);
   }
 
   SendMessageToClient(std::move(response));
 }
 
-void It2MeNativeMessagingHostLacros::ProcessHello() {
+void It2MeNativeMessagingHostLacros::ProcessHello(int message_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (host_details_.is_null()) {
     // We haven't received the host details from ash so wait before responding.
     hello_response_pending_ = true;
+    hello_response_id_ = message_id;
     return;
   }
 
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetStringKey(kMessageType, kHelloResponse);
+  if (message_id != kInvalidMessageId) {
+    response.SetIntKey(kMessageId, message_id);
+  }
+
   response.SetStringKey(kHostVersion, host_details_.get()->host_version);
 
   std::vector<base::Value> features;
@@ -340,9 +350,10 @@ void It2MeNativeMessagingHostLacros::ProcessHello() {
   SendMessageToClient(std::move(response));
 }
 
-void It2MeNativeMessagingHostLacros::ProcessConnect(base::Value message) {
+void It2MeNativeMessagingHostLacros::ProcessConnect(int message_id,
+                                                    base::Value message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int message_id = GetMessageId(message);
+
   if (message_id != kInvalidMessageId) {
     connect_response_id_ = message_id;
   }
@@ -377,16 +388,17 @@ void It2MeNativeMessagingHostLacros::ProcessConnect(base::Value message) {
               base::Unretained(this)));
 }
 
-void It2MeNativeMessagingHostLacros::ProcessDisconnect(base::Value message) {
+void It2MeNativeMessagingHostLacros::ProcessDisconnect(int message_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   support_host_observer_.reset();
 
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetStringKey(kMessageType, kDisconnectResponse);
-  int message_id = GetMessageId(message);
+
   if (message_id != kInvalidMessageId) {
     response.SetIntKey(kMessageId, message_id);
   }
+
   SendMessageToClient(std::move(response));
 }
 
