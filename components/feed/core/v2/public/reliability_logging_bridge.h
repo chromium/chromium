@@ -19,17 +19,6 @@ namespace feed {
  */
 class ReliabilityLoggingBridge {
  public:
-  // Set stream metadata needed for logging and send any launch events that were
-  // logged before the metadata was set.
-  // Note: these methods correspond to FeedLaunchReliabilityLogger's
-  // SendPendingEvents() and CancelPendingEvents(). "Launch" is added to their
-  // names here because this interface is a bridge for all reliability logging
-  // events, not just feed launch ones.
-  virtual void SendPendingLaunchEvents(StreamType stream_type,
-                                       SurfaceId stream_id) = 0;
-  // Drop any pending events and reset the launch logger.
-  virtual void CancelPendingLaunchEvents() = 0;
-
   // Methods for logging various events.
   virtual void LogFeedLaunchOtherStart(base::TimeTicks timestamp) = 0;
 

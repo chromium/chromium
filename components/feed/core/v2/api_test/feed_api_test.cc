@@ -264,17 +264,6 @@ std::string TestReliabilityLoggingBridge::GetEventsString() const {
   return oss.str();
 }
 
-void TestReliabilityLoggingBridge::SendPendingLaunchEvents(
-    StreamType stream_type,
-    SurfaceId stream_id) {
-  events_.push_back(base::StrCat(
-      {"SendPendingLaunchEvents stream_type=", stream_type.ToString()}));
-}
-
-void TestReliabilityLoggingBridge::CancelPendingLaunchEvents() {
-  events_.push_back("CancelPendingLaunchEvents");
-}
-
 void TestReliabilityLoggingBridge::LogFeedLaunchOtherStart(
     base::TimeTicks timestamp) {
   events_.push_back("LogFeedLaunchOtherStart");

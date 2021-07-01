@@ -96,18 +96,6 @@ FeedReliabilityLoggingBridge::FeedReliabilityLoggingBridge(
 
 FeedReliabilityLoggingBridge::~FeedReliabilityLoggingBridge() = default;
 
-void FeedReliabilityLoggingBridge::SendPendingLaunchEvents(
-    StreamType stream_type,
-    SurfaceId stream_id) {
-  Java_FeedReliabilityLoggingBridge_sendPendingEvents(
-      base::android::AttachCurrentThread(), java_ref_,
-      static_cast<int>(stream_type.GetType()), stream_id.GetUnsafeValue());
-}
-void FeedReliabilityLoggingBridge::CancelPendingLaunchEvents() {
-  Java_FeedReliabilityLoggingBridge_cancelPendingEvents(
-      base::android::AttachCurrentThread(), java_ref_);
-}
-
 void FeedReliabilityLoggingBridge::LogFeedLaunchOtherStart(
     base::TimeTicks timestamp) {
   Java_FeedReliabilityLoggingBridge_logOtherLaunchStart(

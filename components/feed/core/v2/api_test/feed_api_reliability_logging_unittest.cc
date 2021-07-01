@@ -26,7 +26,6 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_LogFeedLaunchOtherStart) {
   TestForYouSurface surface(stream_.get());
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n",
       surface.reliability_logging_bridge.GetEventsString());
@@ -36,7 +35,6 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_EulaNotAccepted) {
   is_eula_accepted_ = false;
   TestForYouSurface surface(stream_.get());
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLaunchFinishedAfterStreamUpdate "
       "result=INELIGIBLE_EULA_NOT_ACCEPTED\n"
@@ -48,7 +46,6 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_ArticlesListHidden) {
   profile_prefs_.SetBoolean(prefs::kArticlesListVisible, false);
   TestForYouSurface surface(stream_.get());
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLaunchFinishedAfterStreamUpdate result=FEED_HIDDEN\n"
       "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
@@ -60,7 +57,6 @@ TEST_F(FeedApiReliabilityLoggingTest,
   profile_prefs_.SetBoolean(prefs::kEnableSnippets, false);
   TestForYouSurface surface(stream_.get());
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLaunchFinishedAfterStreamUpdate "
       "result=INELIGIBLE_DISCOVER_DISABLED_BY_ENTERPRISE_POLICY\n"
@@ -75,7 +71,6 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_ClearAllInProgress) {
 
   EXPECT_EQ(
       // First load attempt from attaching surface.
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -83,7 +78,6 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_ClearAllInProgress) {
       "LogAboveTheFoldRender result=FULL_FEED_ERROR\n"
 
       // Second load attempt triggered by clear all.
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -108,7 +102,6 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_DataInStoreForAnotherUser) {
 
   EXPECT_EQ(
       // First load attempt from attaching surface.
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
 
       "LogLaunchFinishedAfterStreamUpdate "
@@ -116,7 +109,6 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_DataInStoreForAnotherUser) {
       "LogAboveTheFoldRender result=FULL_FEED_ERROR\n"
 
       // Second load attempt triggered by clear all.
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -141,7 +133,6 @@ TEST_F(FeedApiReliabilityLoggingTest, MultipleSurfaces_SimultaneousLoad) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -156,7 +147,6 @@ TEST_F(FeedApiReliabilityLoggingTest, MultipleSurfaces_SimultaneousLoad) {
       "LogAboveTheFoldRender result=SUCCESS\n",
       surface2.reliability_logging_bridge.GetEventsString());
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -183,7 +173,6 @@ TEST_F(FeedApiReliabilityLoggingTest,
 
   EXPECT_EQ(
       // `surface` attached
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -200,7 +189,6 @@ TEST_F(FeedApiReliabilityLoggingTest,
 
   // `surface2` should only have logged from SurfaceUpdater::AttachSurface().
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogAboveTheFoldRender result=SUCCESS\n",
       surface2.reliability_logging_bridge.GetEventsString());
@@ -212,7 +200,6 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Success) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -234,7 +221,6 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_ZeroCards) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -260,7 +246,6 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NetworkOffline) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -280,7 +265,6 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NoResponseReceived) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -306,7 +290,6 @@ TEST_F(FeedApiReliabilityLoggingTest,
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -342,7 +325,6 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Stale) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -376,7 +358,6 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_StaleWithNetworkError) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -401,7 +382,6 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Okay) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 
@@ -420,7 +400,6 @@ TEST_F(FeedApiReliabilityLoggingTest, UploadActions) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
-      "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
       "LogLoadingIndicatorShown\n"
 

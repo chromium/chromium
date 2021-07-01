@@ -29,10 +29,6 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLoggingBridge {
   void Destroy(JNIEnv* env);
 
   // ::feed::ReliabilityLogger implementation.
-  void SendPendingLaunchEvents(StreamType stream_type,
-                               SurfaceId stream_id) override;
-  void CancelPendingLaunchEvents() override;
-
   void LogFeedLaunchOtherStart(base::TimeTicks timestamp) override;
   void LogCacheReadStart(base::TimeTicks timestamp) override;
   void LogCacheReadEnd(base::TimeTicks timestamp,

@@ -20,10 +20,8 @@ LaunchReliabilityLogger::~LaunchReliabilityLogger() = default;
 
 void LaunchReliabilityLogger::LogFeedLaunchOtherStart() {
   for (FeedStreamSurface& surface : *surfaces_) {
-    ReliabilityLoggingBridge& logger = surface.GetReliabilityLoggingBridge();
-    logger.SendPendingLaunchEvents(surface.GetStreamType(),
-                                   surface.GetSurfaceId());
-    logger.LogFeedLaunchOtherStart(base::TimeTicks::Now());
+    surface.GetReliabilityLoggingBridge().LogFeedLaunchOtherStart(
+        base::TimeTicks::Now());
   }
 }
 

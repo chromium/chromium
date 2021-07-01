@@ -78,10 +78,6 @@ class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
   std::string GetEventsString() const;
 
   // ReliabilityLoggingBridge implementation.
-  void SendPendingLaunchEvents(StreamType stream_type,
-                               SurfaceId stream_id) override;
-  void CancelPendingLaunchEvents() override;
-
   void LogFeedLaunchOtherStart(base::TimeTicks timestamp) override;
   void LogCacheReadStart(base::TimeTicks timestamp) override;
   void LogCacheReadEnd(base::TimeTicks timestamp,

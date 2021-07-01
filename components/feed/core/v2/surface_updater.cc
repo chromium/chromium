@@ -234,8 +234,6 @@ void SurfaceUpdater::SurfaceAdded(
     FeedStreamSurface* surface,
     feedwire::DiscoverLaunchResult loading_not_allowed_reason) {
   ReliabilityLoggingBridge& logger = surface->GetReliabilityLoggingBridge();
-  logger.SendPendingLaunchEvents(surface->GetStreamType(),
-                                 surface->GetSurfaceId());
   logger.LogFeedLaunchOtherStart(base::TimeTicks::Now());
 
   if (loading_not_allowed_reason !=

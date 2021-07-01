@@ -201,7 +201,7 @@ void FeedStream::ReportSliceViewed(JNIEnv* env,
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportSliceViewed(
-      GetSurfaceId(), GetStreamType(),
+      FeedStreamSurface::GetSurfaceId(), GetStreamType(),
       base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
@@ -210,7 +210,7 @@ void FeedStream::ReportFeedViewed(
     const base::android::JavaParamRef<jobject>& obj) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->ReportFeedViewed(GetSurfaceId());
+  feed_stream_api_->ReportFeedViewed(FeedStreamSurface::GetSurfaceId());
 }
 
 void FeedStream::ReportPageLoaded(JNIEnv* env,
@@ -241,6 +241,11 @@ void FeedStream::ReportOtherUserAction(JNIEnv* env,
                                        int action_type) {
   feed_stream_api_->ReportOtherUserAction(
       GetStreamType(), static_cast<FeedUserActionType>(action_type));
+}
+
+int FeedStream::GetSurfaceId(JNIEnv* env,
+                             const base::android::JavaParamRef<jobject>& obj) {
+  return FeedStreamSurface::GetSurfaceId().GetUnsafeValue();
 }
 
 }  // namespace android

@@ -44,16 +44,6 @@ public class FeedReliabilityLoggingBridge {
     }
 
     @CalledByNative
-    public void sendPendingEvents(int streamType, int streamId) {
-        mLogger.sendPendingEvents(streamType, streamId);
-    }
-
-    @CalledByNative
-    public void cancelPendingEvents() {
-        mLogger.cancelPendingEvents();
-    }
-
-    @CalledByNative
     public void logOtherLaunchStart(long timestamp) {
         mLogger.logFeedLaunchOtherStart(timestamp);
     }
