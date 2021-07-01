@@ -16,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "url/gurl.h"
 
@@ -66,10 +67,12 @@ struct CONTENT_EXPORT ServiceWorkerRegistrationInfo {
   enum DeleteFlag { IS_NOT_DELETED, IS_DELETED };
   ServiceWorkerRegistrationInfo();
   ServiceWorkerRegistrationInfo(const GURL& scope,
+                                const blink::StorageKey& key,
                                 int64_t registration_id,
                                 DeleteFlag delete_flag);
   ServiceWorkerRegistrationInfo(
       const GURL& scope,
+      const blink::StorageKey& key,
       blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
       int64_t registration_id,
       DeleteFlag delete_flag,
@@ -83,6 +86,7 @@ struct CONTENT_EXPORT ServiceWorkerRegistrationInfo {
   ~ServiceWorkerRegistrationInfo();
 
   GURL scope;
+  blink::StorageKey key;
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache;
   int64_t registration_id;
   DeleteFlag delete_flag;

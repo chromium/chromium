@@ -226,8 +226,10 @@ TEST_F(ServiceWorkerContextWatcherTest, StoredServiceWorkers) {
   ASSERT_EQ(2u, watcher_callback.registrations().size());
   EXPECT_EQ(scope_1,
             watcher_callback.registrations().at(registration_id_1).scope);
+  EXPECT_EQ(key_1, watcher_callback.registrations().at(registration_id_1).key);
   EXPECT_EQ(scope_2,
             watcher_callback.registrations().at(registration_id_2).scope);
+  EXPECT_EQ(key_2, watcher_callback.registrations().at(registration_id_2).key);
   ASSERT_EQ(2u, watcher_callback.versions().size());
   EXPECT_EQ(script_1, watcher_callback.versions()
                           .at(registration_id_1)
@@ -258,6 +260,7 @@ TEST_F(ServiceWorkerContextWatcherTest, RegisteredServiceWorker) {
   ASSERT_EQ(1u, watcher_callback.registrations().size());
   EXPECT_EQ(scope_1,
             watcher_callback.registrations().at(registration_id_1).scope);
+  EXPECT_EQ(key_1, watcher_callback.registrations().at(registration_id_1).key);
   ASSERT_EQ(1u, watcher_callback.versions().size());
   EXPECT_EQ(script_1, watcher_callback.versions()
                           .at(registration_id_1)
@@ -272,8 +275,10 @@ TEST_F(ServiceWorkerContextWatcherTest, RegisteredServiceWorker) {
   ASSERT_EQ(2u, watcher_callback.registrations().size());
   EXPECT_EQ(scope_1,
             watcher_callback.registrations().at(registration_id_1).scope);
+  EXPECT_EQ(key_1, watcher_callback.registrations().at(registration_id_1).key);
   EXPECT_EQ(scope_2,
             watcher_callback.registrations().at(registration_id_2).scope);
+  EXPECT_EQ(key_2, watcher_callback.registrations().at(registration_id_2).key);
   ASSERT_EQ(2u, watcher_callback.versions().size());
   EXPECT_EQ(script_1, watcher_callback.versions()
                           .at(registration_id_1)
@@ -310,8 +315,10 @@ TEST_F(ServiceWorkerContextWatcherTest, UnregisteredServiceWorker) {
   ASSERT_EQ(2u, watcher_callback.registrations().size());
   EXPECT_EQ(scope_1,
             watcher_callback.registrations().at(registration_id_1).scope);
+  EXPECT_EQ(key_1, watcher_callback.registrations().at(registration_id_1).key);
   EXPECT_EQ(scope_2,
             watcher_callback.registrations().at(registration_id_2).scope);
+  EXPECT_EQ(key_2, watcher_callback.registrations().at(registration_id_2).key);
   ASSERT_EQ(2u, watcher_callback.versions().size());
 
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
@@ -320,6 +327,7 @@ TEST_F(ServiceWorkerContextWatcherTest, UnregisteredServiceWorker) {
   ASSERT_EQ(1u, watcher_callback.registrations().size());
   EXPECT_EQ(scope_2,
             watcher_callback.registrations().at(registration_id_2).scope);
+  EXPECT_EQ(key_2, watcher_callback.registrations().at(registration_id_2).key);
 
   watcher->Stop();
   base::RunLoop().RunUntilIdle();
@@ -338,6 +346,7 @@ TEST_F(ServiceWorkerContextWatcherTest, ErrorReport) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, watcher_callback.registrations().size());
   EXPECT_EQ(scope, watcher_callback.registrations().at(registration_id).scope);
+  EXPECT_EQ(key, watcher_callback.registrations().at(registration_id).key);
   ASSERT_EQ(1u, watcher_callback.versions().size());
   EXPECT_EQ(script, watcher_callback.versions()
                         .at(registration_id)

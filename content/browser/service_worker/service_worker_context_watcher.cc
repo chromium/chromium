@@ -14,10 +14,12 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -133,6 +135,7 @@ void ServiceWorkerContextWatcher::StoreVersionInfo(
 void ServiceWorkerContextWatcher::SendRegistrationInfo(
     int64_t registration_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     ServiceWorkerRegistrationInfo::DeleteFlag delete_flag) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::unique_ptr<std::vector<ServiceWorkerRegistrationInfo>> registrations =
@@ -142,8 +145,8 @@ void ServiceWorkerContextWatcher::SendRegistrationInfo(
   if (registration) {
     registrations->push_back(registration->GetInfo());
   } else {
-    registrations->push_back(
-        ServiceWorkerRegistrationInfo(scope, registration_id, delete_flag));
+    registrations->push_back(ServiceWorkerRegistrationInfo(
+        scope, key, registration_id, delete_flag));
   }
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -194,7 +197,10 @@ void ServiceWorkerContextWatcher::RunWorkerErrorReportedCallback(
 void ServiceWorkerContextWatcher::OnNewLiveRegistration(int64_t registration_id,
                                                         const GURL& scope) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(crbug.com/1199077): Pipe in StorageKey when it's available in this
+  // function.
   SendRegistrationInfo(registration_id, scope,
+                       blink::StorageKey(url::Origin::Create(scope)),
                        ServiceWorkerRegistrationInfo::IS_NOT_DELETED);
 }
 
@@ -356,14 +362,20 @@ void ServiceWorkerContextWatcher::OnRegistrationCompleted(
     int64_t registration_id,
     const GURL& scope) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(crbug.com/1199077): Pipe in StorageKey when it's available in this
+  // function.
   SendRegistrationInfo(registration_id, scope,
+                       blink::StorageKey(url::Origin::Create(scope)),
                        ServiceWorkerRegistrationInfo::IS_NOT_DELETED);
 }
 
 void ServiceWorkerContextWatcher::OnRegistrationDeleted(int64_t registration_id,
                                                         const GURL& scope) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(crbug.com/1199077): Pipe in StorageKey when it's available in this
+  // function.
   SendRegistrationInfo(registration_id, scope,
+                       blink::StorageKey(url::Origin::Create(scope)),
                        ServiceWorkerRegistrationInfo::IS_DELETED);
 }
 

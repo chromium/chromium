@@ -1111,6 +1111,7 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
 
     ServiceWorkerRegistrationInfo info;
     info.scope = registration_data->scope;
+    info.key = registration_data->key;
     info.update_via_cache = registration_data->update_via_cache;
     info.registration_id = registration_data->registration_id;
     info.stored_version_size_bytes =

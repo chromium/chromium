@@ -155,7 +155,7 @@ void ServiceWorkerRegistration::NotifyVersionAttributesChanged(
 ServiceWorkerRegistrationInfo ServiceWorkerRegistration::GetInfo() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   return ServiceWorkerRegistrationInfo(
-      scope(), update_via_cache(), registration_id_,
+      scope(), key(), update_via_cache(), registration_id_,
       is_deleted() ? ServiceWorkerRegistrationInfo::IS_DELETED
                    : ServiceWorkerRegistrationInfo::IS_NOT_DELETED,
       GetVersionInfo(active_version_.get()),

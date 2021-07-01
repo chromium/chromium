@@ -17,6 +17,10 @@
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/common/content_export.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
 class ServiceWorkerContextWrapper;
@@ -65,6 +69,7 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
   void SendRegistrationInfo(
       int64_t registration_id,
       const GURL& scope,
+      const blink::StorageKey& key,
       ServiceWorkerRegistrationInfo::DeleteFlag delete_flag);
   void SendVersionInfo(const ServiceWorkerVersionInfo& version);
 

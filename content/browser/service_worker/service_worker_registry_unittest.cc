@@ -1085,6 +1085,7 @@ TEST_F(ServiceWorkerRegistryTest, RegistrationInfoFields) {
 
   ServiceWorkerRegistrationInfo info = all_registrations[0];
   EXPECT_EQ(info.scope, registration->scope());
+  EXPECT_EQ(info.key, registration->key());
   EXPECT_EQ(info.update_via_cache, registration->update_via_cache());
   EXPECT_EQ(info.registration_id, registration->id());
   EXPECT_EQ(info.navigation_preload_enabled,
