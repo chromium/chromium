@@ -28,7 +28,7 @@ namespace {
 // Maximum time to wait for the ARC window to be initialized.
 // ARC Wayland messages and Mojo messages are sent across the same pipe. The
 // order in which the messages are sent is not deterministic. If the ARC
-// activity starts NearbyShare before the wayland message for the new has been
+// activity starts Nearby Share before the wayland message for the new has been
 // processed, the corresponding aura::Window for a given ARC activity task ID
 // will not be found. To get around this, NearbyShareSessionImpl will wait a
 // little while for the Wayland message to be processed and the window to be
@@ -64,10 +64,9 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
   } else {
     VLOG(1) << "No ARC window found for task ID " << task_id_;
     env_observation_.Observe(aura::Env::GetInstance());
-    window_initialization_timer_.Start(
-        FROM_HERE, kWindowInitializationTimeout,
-        base::BindOnce(&NearbyShareSessionImpl::OnTimerFired,
-                       weak_ptr_factory_.GetWeakPtr()));
+    window_initialization_timer_.Start(FROM_HERE, kWindowInitializationTimeout,
+                                       this,
+                                       &NearbyShareSessionImpl::OnTimerFired);
   }
 }
 
@@ -78,6 +77,10 @@ NearbyShareSessionImpl::~NearbyShareSessionImpl() {
 
 void NearbyShareSessionImpl::OnNearbyShareClosed() {
   session_instance_->OnNearbyShareViewClosed();
+
+  if (window_initialization_timer_.IsRunning()) {
+    window_initialization_timer_.Stop();
+  }
 }
 
 // Overridden from aura::EnvObserver:
@@ -99,7 +102,9 @@ void NearbyShareSessionImpl::OnWindowVisibilityChanged(
 
   if (visible && (arc::GetWindowTaskId(window) == task_id_)) {
     VLOG(1) << "ARC Window is visible";
-    window_initialization_timer_.Stop();
+    if (window_initialization_timer_.IsRunning()) {
+      window_initialization_timer_.Stop();
+    }
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
                                   weak_ptr_factory_.GetWeakPtr(), window));
@@ -128,7 +133,7 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
                        weak_ptr_factory_.GetWeakPtr(), arc_window));
   } else {
     // Sharing text.
-    ShowNearbyShareBubble(arc_window);
+    ShowNearbyShareBubbleInArcWindow(arc_window);
   }
 }
 
@@ -148,7 +153,7 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
     const auto share_file_paths = file_handler_->GetFilePaths();
     DCHECK_GT(share_file_paths.size(), 0);
     const auto share_file_mime_types = file_handler_->GetMimeTypes();
-    const size_t expected_total_files = share_file_mime_types.size();
+    const size_t expected_total_files = file_handler_->GetNumberOfFiles();
     DCHECK_GT(expected_total_files, 0);
 
     if (share_file_paths.size() != expected_total_files) {
@@ -184,9 +189,9 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
   PLOG_IF(WARNING, result != base::File::FILE_OK)
       << "Prepare Directory was not successful";
 
-  VLOG(1) << "Starting preparing files and stream from ARC virtual filesystem";
+  VLOG(1) << "Preparing files and start streaming from ARC virtual filesystem";
   file_handler_->StartPreparingFiles(
-      base::BindOnce(&NearbyShareSessionImpl::OnFileStreamCompleted,
+      base::BindOnce(&NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow,
                      weak_ptr_factory_.GetWeakPtr(), arc_window));
 }
 
@@ -214,24 +219,19 @@ void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
   }
 }
 
-void NearbyShareSessionImpl::OnFileStreamCompleted(
+void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     aura::Window* const arc_window,
-    bool result) {
+    absl::optional<base::File::Error> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(arc_window);
 
-  if (!result) {
-    LOG(ERROR) << "Failed to stream shared files from ARC.";
+  // Only applicable if sharing files.
+  if (result.has_value() && result.value() != base::File::FILE_OK) {
+    LOG(ERROR) << "Failed to complete file streaming with error: "
+               << base::File::ErrorToString(result.value());
     std::move(session_finished_callback_).Run(task_id_);
     return;
   }
-  ShowNearbyShareBubble(arc_window);
-}
-
-void NearbyShareSessionImpl::ShowNearbyShareBubble(
-    aura::Window* const arc_window) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window);
 
   VLOG(1) << "Getting Sharesheet service";
   sharesheet::SharesheetService* sharesheet_service =
@@ -261,9 +261,10 @@ void NearbyShareSessionImpl::ShowNearbyShareBubble(
 
 void NearbyShareSessionImpl::OnTimerFired() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // TODO(phshah): Handle error case and add UMA metric.
   LOG(ERROR) << "ARC window didn't get initialized within "
-             << kWindowInitializationTimeout.InSeconds() << " second";
+             << kWindowInitializationTimeout.InSeconds() << " second(s)";
   OnNearbyShareClosed();
   std::move(session_finished_callback_).Run(task_id_);
 }

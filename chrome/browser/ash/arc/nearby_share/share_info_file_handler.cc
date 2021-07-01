@@ -34,6 +34,26 @@ namespace arc {
 namespace {
 constexpr int kStreamReaderBufSizeInBytes = 32 * 1024;
 
+// Since most shareable Android app content lives in a virtual file system,
+// it will take some measurable amount of time to stream images / videos
+// from ContentProviders in ARC to local files in the Chrome OS filesystem
+// before Nearby Share can consume it.  Since we don't have limit on number
+// of files or size of files users can share via Nearby Share, set to some
+// reasonable number of minutes per GB of transfer.
+constexpr base::TimeDelta kFileStreamingTimeoutPerGB =
+    base::TimeDelta::FromMinutes(2);
+
+int64_t GetTimeoutInSecondsFromBytes(uint64_t transfer_bytes) {
+  constexpr double kGBInBytes = 1 * 1024 * 1024 * 1024;
+  const int64_t transfer_bytes_in_gb = base::checked_cast<int64_t>(
+      std::ceil(base::checked_cast<double>(transfer_bytes) / kGBInBytes));
+
+  // Always set timeout to at least |kFileStreamingTimeoutPerGB|.
+  return (transfer_bytes_in_gb > 0)
+             ? transfer_bytes_in_gb * kFileStreamingTimeoutPerGB.InSeconds()
+             : kFileStreamingTimeoutPerGB.InSeconds();
+}
+
 // Returns scoped_refptr to FileSystemContext for an url.
 scoped_refptr<storage::FileSystemContext> GetScopedFileSystemContext(
     Profile* const profile,
@@ -85,6 +105,7 @@ ShareInfoFileHandler::ShareInfoFileHandler(Profile* profile,
       file_config_.sizes.emplace_back(file_info->size);
       file_config_.total_size += base::checked_cast<uint64_t>(file_info->size);
     }
+    file_config_.num_files = file_config_.external_urls.size();
   }
 }
 
@@ -112,23 +133,23 @@ const std::vector<std::string>& ShareInfoFileHandler::GetMimeTypes() const {
   return file_config_.mime_types;
 }
 
-uint64_t ShareInfoFileHandler::GetTotalSizeOfFiles() const {
-  return file_config_.total_size;
-}
-
-void ShareInfoFileHandler::StartPreparingFiles(CompletedCallback callback) {
+void ShareInfoFileHandler::StartPreparingFiles(
+    CompletedCallback completed_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  DCHECK(!completed_callback.is_null());
+
+  completed_callback_ = std::move(completed_callback);
+  file_sharing_started_ = true;
 
   if (!base::PathExists(file_config_.directory)) {
     LOG(ERROR) << "Share directory does not exist: " << file_config_.directory;
-    std::move(callback).Run(false);
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_EXISTS);
     return;
   }
 
   if (!g_browser_process) {
     LOG(ERROR) << "Unexpected null g_browser_process";
-    std::move(callback).Run(false);
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }
 
@@ -137,13 +158,13 @@ void ShareInfoFileHandler::StartPreparingFiles(CompletedCallback callback) {
   if (g_browser_process->profile_manager() &&
       !g_browser_process->profile_manager()->IsValidProfile(profile_)) {
     LOG(ERROR) << "Invalid profile: " << profile_->GetProfileUserName();
-    std::move(callback).Run(false);
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }
 
   if (file_config_.directory.empty()) {
     LOG(ERROR) << "Base directory is empty.";
-    std::move(callback).Run(false);
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_NOT_A_DIRECTORY);
     return;
   }
 
@@ -154,8 +175,8 @@ void ShareInfoFileHandler::StartPreparingFiles(CompletedCallback callback) {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ShareInfoFileHandler::CreateDirectoryAndStreamFiles,
                      this),
-      base::BindOnce(&ShareInfoFileHandler::OnCreatedDirectoryAndStreamedFiles,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool ShareInfoFileHandler::CreateDirectoryAndStreamFiles() {
@@ -242,20 +263,28 @@ base::ScopedFD ShareInfoFileHandler::CreateFileForWrite(
   return base::ScopedFD(dest_file.TakePlatformFile());
 }
 
-void ShareInfoFileHandler::OnCreatedDirectoryAndStreamedFiles(
-    CompletedCallback callback,
-    bool result) {
+void ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles(bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
 
-  VLOG(1) << "Called OnCreatedDirectoryAndStreamedFiles";
   if (!result) {
     LOG(ERROR) << "Failed to prepare temp directory and stream files.";
-    std::move(callback).Run(false);
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_FAILED);
     return;
   }
 
-  std::move(callback).Run(true);
+  // TODO(alanding): Add UMA metrics to measure how long file stream transfers
+  // can take. From local testing on caroline for 1.2GB takes around 1 minute.
+  const int64_t timeout_seconds =
+      GetTimeoutInSecondsFromBytes(GetTotalSizeOfFiles());
+  const std::string timeout_message = base::StringPrintf(
+      "File streaming did not complete within %" PRId64 " second(s).",
+      timeout_seconds);
+  if (!file_streaming_timer_.IsRunning()) {
+    file_streaming_timer_.Start(
+        FROM_HERE, base::TimeDelta::FromSeconds(timeout_seconds),
+        base::BindOnce(&ShareInfoFileHandler::OnFileStreamingTimeout,
+                       weak_ptr_factory_.GetWeakPtr(), timeout_message));
+  }
 }
 
 void ShareInfoFileHandler::OnFileStreamReadCompleted(
@@ -264,16 +293,64 @@ void ShareInfoFileHandler::OnFileStreamReadCompleted(
     const int64_t bytes_read,
     bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  VLOG(1) << "Called OnFileStreamReadCompleted";
-  LOG_IF(ERROR, !result) << "Failed to read from url " << url_str;
   DCHECK_GT(bytes_read, 0);
+
+  if (!result) {
+    LOG(ERROR) << "Failed to stream file IO data using url: " << url_str;
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_IO);
+    return;
+  }
 
   file_stream_adapters_.erase(it);
 
-  num_bytes_read_ += bytes_read;
-  // TODO(alanding): Update progress bar UI and add UMA metric.
-  // UpdateProgressBar(num_bytes_read_/file_config_.total_size);
+  num_bytes_read_ += base::checked_cast<uint64_t>(bytes_read);
+  num_files_streamed_++;
+
+  // TODO(alanding): Update Chrome progress bar UI.
+  const uint64_t expected_total_bytes = GetTotalSizeOfFiles();
+  const size_t expected_total_files = GetNumberOfFiles();
+  VLOG(1) << "Streamed " << num_bytes_read_ << " of " << expected_total_bytes
+          << " bytes for " << num_files_streamed_ << " of "
+          << expected_total_files << " files";
+
+  if (num_files_streamed_ == expected_total_files &&
+      num_bytes_read_ >= expected_total_bytes) {
+    if (num_bytes_read_ > expected_total_bytes) {
+      LOG(ERROR) << "Invalid number of bytes read: " << num_bytes_read_ << " > "
+                 << expected_total_bytes;
+      NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_OPERATION);
+      return;
+    }
+    VLOG(1) << "OnFileStreamReadCompleted: Completed streaming all files";
+    NotifyFileSharingCompleted(base::File::FILE_OK);
+  }
+}
+
+void ShareInfoFileHandler::OnFileStreamingTimeout(
+    const std::string& timeout_message) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  LOG(ERROR) << timeout_message;
+  NotifyFileSharingCompleted(base::File::FILE_ERROR_ABORT);
+}
+
+void ShareInfoFileHandler::NotifyFileSharingCompleted(
+    base::File::Error result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Stop active timer and reset sharing params.
+  if (file_streaming_timer_.IsRunning()) {
+    file_streaming_timer_.Stop();
+  }
+  num_bytes_read_ = 0;
+  num_files_streamed_ = 0;
+
+  // Only call |completed_callback_| if not null and file sharing is in started
+  // state to prevent calling more than once.
+  if (file_sharing_started_ && !completed_callback_.is_null()) {
+    file_sharing_started_ = false;
+    std::move(completed_callback_).Run(result);
+  }
 }
 
 }  // namespace arc
