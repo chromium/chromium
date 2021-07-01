@@ -73,8 +73,8 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
 std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
     const {
   return l10n_util::GetStringUTF16(
-      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
-                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+      IsSaveBubble() ? IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE
+                     : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 }
 
 const AutofillProfile&
@@ -127,8 +127,12 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconTootip() const {
 }
 
 AutofillBubbleBase*
-SaveUpdateAddressProfileBubbleControllerImpl::GetSaveBubbleView() const {
+SaveUpdateAddressProfileBubbleControllerImpl::GetBubbleView() const {
   return bubble_view();
+}
+
+bool SaveUpdateAddressProfileBubbleControllerImpl::IsSaveBubble() const {
+  return !original_profile_;
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::WebContentsDestroyed() {
@@ -145,8 +149,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetPageActionIconType() {
 void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
   DCHECK(!bubble_view());
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (!original_profile_) {
-    // This must is a save prompt.
+  if (IsSaveBubble()) {
     set_bubble_view(browser->window()
                         ->GetAutofillBubbleHandler()
                         ->ShowSaveAddressProfileBubble(web_contents(), this,

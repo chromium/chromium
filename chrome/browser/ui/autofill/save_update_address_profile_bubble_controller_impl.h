@@ -56,7 +56,8 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   void OnPageActionIconClicked() override;
   bool IsBubbleActive() const override;
   std::u16string GetPageActionIconTootip() const override;
-  AutofillBubbleBase* GetSaveBubbleView() const override;
+  AutofillBubbleBase* GetBubbleView() const override;
+  bool IsSaveBubble() const override;
 
  protected:
   // AutofillBubbleControllerBase:
