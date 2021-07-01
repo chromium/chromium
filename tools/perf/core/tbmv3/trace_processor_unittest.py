@@ -13,9 +13,11 @@ import mock
 
 RUN_METHOD = 'core.tbmv3.trace_processor._RunTraceProcessor'
 
+
 class TraceProcessorTestCase(unittest.TestCase):
   def setUp(self):
     self.temp_dir = tempfile.mkdtemp()
+    self.trace_path = self.CreateEmptyProtoTrace()
     self.tp_path = os.path.join(self.temp_dir, 'trace_processor_shell')
     with open(self.tp_path, 'w'):
       pass
@@ -26,6 +28,14 @@ class TraceProcessorTestCase(unittest.TestCase):
 
   def tearDown(self):
     shutil.rmtree(self.temp_dir)
+
+  def CreateEmptyProtoTrace(self):
+    """Create an empty file as a proto trace."""
+    with tempfile.NamedTemporaryFile(dir=self.temp_dir,
+                                     delete=False) as trace_file:
+      # Open temp file and close it so it's written to disk.
+      pass
+    return trace_file.name
 
   def testConvertProtoTraceToJson(self):
     with mock.patch(RUN_METHOD):
@@ -159,20 +169,20 @@ class TraceProcessorTestCase(unittest.TestCase):
 
     with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
       with mock.patch(RUN_METHOD) as run_patch:
-          run_patch.return_value = metric_output
-          # Checking that this doesn't throw errors.
-          trace_processor.RunMetric(
-              self.tp_path, '/path/to/proto', 'dummy_metric')
+        run_patch.return_value = metric_output
+        # Checking that this doesn't throw errors.
+        trace_processor.RunMetric(self.tp_path, '/path/to/proto',
+                                  'dummy_metric')
 
   def testRunMetricNoAnnotations(self):
     metric_output = '{"perfetto.protos.foo": {"bar": 42}}'
 
     with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
       with mock.patch(RUN_METHOD) as run_patch:
-          run_patch.return_value = metric_output
-          # Checking that this doesn't throw errors.
-          trace_processor.RunMetric(
-              self.tp_path, '/path/to/proto', 'dummy_metric')
+        run_patch.return_value = metric_output
+        # Checking that this doesn't throw errors.
+        trace_processor.RunMetric(self.tp_path, '/path/to/proto',
+                                  'dummy_metric')
 
   def testRunMetricFetchPowerProfile(self):
     FETCH_METHOD = (
@@ -181,11 +191,135 @@ class TraceProcessorTestCase(unittest.TestCase):
 
     with mock.patch(FETCH_METHOD) as fetch_patch:
       with mock.patch(RUN_METHOD) as run_patch:
-          run_patch.return_value = metric_output
-          # Checking that this doesn't throw errors.
-          trace_processor.RunMetric(
-              self.tp_path, '/path/to/proto', 'dummy_metric',
-              fetch_power_profile=True)
+        run_patch.return_value = metric_output
+        # Checking that this doesn't throw errors.
+        trace_processor.RunMetric(self.tp_path,
+                                  '/path/to/proto',
+                                  'dummy_metric',
+                                  fetch_power_profile=True)
 
     self.assertEqual(fetch_patch.call_count, 1)
     self.assertIn('--pre-metrics', run_patch.call_args[0])
+
+  def testRunQueryEmptyInput(self):
+    sql_query = 'SELECT name, ts FROM slice ORDER BY ts LIMIT 1'
+    sql_output = ''
+
+    with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
+      with mock.patch(RUN_METHOD) as run_patch:
+        run_patch.return_value = sql_output
+        query_output = trace_processor.RunQuery(self.tp_path, '/path/to/proto',
+                                                sql_query)
+
+    expected_output = []
+    self.assertEqual(query_output, expected_output)
+
+  def testRunQueryGarbageInput(self):
+    sql_query = 'SELECT name, ts FROM slice ORDER BY ts LIMIT 1'
+    sql_output = """adsfsdfdsaf"""
+
+    with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
+      with mock.patch(RUN_METHOD) as run_patch:
+        run_patch.return_value = sql_output
+        query_output = trace_processor.RunQuery(self.tp_path, '/path/to/proto',
+                                                sql_query)
+
+    expected_output = []
+    self.assertEqual(query_output, expected_output)
+
+  def testRunQueryNoRows(self):
+    sql_query = 'SELECT name, ts FROM slice ORDER BY ts LIMIT 1'
+    sql_output = """"ts","ts+dur"\n\n\n\n\n\n\n\n\n\n\n\n"""
+
+    with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
+      with mock.patch(RUN_METHOD) as run_patch:
+        run_patch.return_value = sql_output
+        query_output = trace_processor.RunQuery(self.tp_path, '/path/to/proto',
+                                                sql_query)
+
+    expected_output = []
+    self.assertEqual(query_output, expected_output)
+
+  def testRunQueryMultipleRows(self):
+    sql_query = 'SELECT name, ts FROM slice ORDER BY ts LIMIT 3'
+    sql_output = '"name","ts"\n' +\
+                '"foo",123\n' +\
+                '"bar",468\n' +\
+                '"bas",432\n'
+
+    with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
+      with mock.patch(RUN_METHOD) as run_patch:
+        run_patch.return_value = sql_output
+        query_output = trace_processor.RunQuery(self.tp_path, '/path/to/proto',
+                                                sql_query)
+
+    expected_output = [{
+        'name': 'foo',
+        'ts': '123'
+    }, {
+        'name': 'bar',
+        'ts': '468'
+    }, {
+        'name': 'bas',
+        'ts': '432'
+    }]
+    self.assertEqual(query_output, expected_output)
+
+  def testRunQueryDatatypes(self):
+    sql_query = 'SELECT name,arg_set_id,ts/100.0,track_id=2 FROM slice LIMIT 3'
+    sql_output = '"name","arg_set_id","ts/100.0","track_id=2"\n' +\
+                '"bar",3,59.82,0\n' +\
+                '"foo",2,37.14,1\n' +\
+                '"bas",5,92.01,0\n'
+
+    with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
+      with mock.patch(RUN_METHOD) as run_patch:
+        run_patch.return_value = sql_output
+        query_output = trace_processor.RunQuery(self.tp_path, '/path/to/proto',
+                                                sql_query)
+
+    expected_output = [{
+        'track_id=2': '0',
+        'ts/100.0': '59.82',
+        'name': 'bar',
+        'arg_set_id': '3'
+    }, {
+        'track_id=2': '1',
+        'ts/100.0': '37.14',
+        'name': 'foo',
+        'arg_set_id': '2'
+    }, {
+        'track_id=2': '0',
+        'ts/100.0': '92.01',
+        'name': 'bas',
+        'arg_set_id': '5'
+    }]
+    self.assertEqual(query_output, expected_output)
+
+  def testRunQueryDatatypeNull(self):
+    sql_query = 'SELECT int_value, str_value FROM metadata LIMIT 2'
+    sql_output = '"int_value","str_value"\n' +\
+                '"[NULL]","Darwin"\n' +\
+                '"[NULL]","Linux"\n'
+
+    with mock.patch('core.tbmv3.trace_processor.METRICS_PATH', self.temp_dir):
+      with mock.patch(RUN_METHOD) as run_patch:
+        run_patch.return_value = sql_output
+        query_output = trace_processor.RunQuery(self.tp_path, '/path/to/proto',
+                                                sql_query)
+
+    expected_output = [{
+        'int_value': None,
+        'str_value': 'Darwin'
+    }, {
+        'int_value': None,
+        'str_value': 'Linux'
+    }]
+    self.assertEqual(query_output, expected_output)
+
+  def testRunQueryNoPatch(self):
+    sql_query = 'SELECT int_value, str_value FROM metadata LIMIT 1'
+    query_output = trace_processor.RunQuery(None, self.trace_path, sql_query)
+
+    expected_output = [{'int_value': '0', 'str_value': None}]
+    self.assertEqual(query_output, expected_output)
