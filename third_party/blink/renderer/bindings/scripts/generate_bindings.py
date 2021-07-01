@@ -38,6 +38,11 @@ def parse_options():
         help='output directory for "modules" component relative '
         'to root_gen_dir')
     parser.add_option(
+        "--output_extensions_chromeos_reldir",
+        type="string",
+        help='output directory for "extensions_chromeos" component relative '
+        'to root_gen_dir')
+    parser.add_option(
         '--format_generated_files',
         action="store_true",
         default=False,
@@ -83,8 +88,12 @@ def main():
             sys.exit("Unknown task: {}".format(task))
 
     component_reldirs = {
-        web_idl.Component('core'): options.output_core_reldir,
-        web_idl.Component('modules'): options.output_modules_reldir,
+        web_idl.Component('core'):
+        options.output_core_reldir,
+        web_idl.Component('modules'):
+        options.output_modules_reldir,
+        web_idl.Component('extensions_chromeos'):
+        options.output_extensions_chromeos_reldir
     }
     bind_gen.init(web_idl_database_path=options.web_idl_database,
                   root_src_dir=options.root_src_dir,

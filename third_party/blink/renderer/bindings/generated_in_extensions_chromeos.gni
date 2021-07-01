@@ -4,7 +4,7 @@
 
 # Generated sources for production
 
-generated_interface_sources_in_extensions_chromeos = [
-  "$root_gen_dir/third_party/blink/renderer/bindings/extensions/v8/v8_chromeos.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/extensions/v8/v8_chromeos.cc",
+generated_namespace_sources_in_extensions_chromeos = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_chrome_os.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_chrome_os.cc",
 ]

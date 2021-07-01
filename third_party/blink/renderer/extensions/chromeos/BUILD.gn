@@ -1,0 +1,49 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/bindings/bindings.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
+import("//third_party/blink/renderer/config.gni")
+import("//third_party/blink/renderer/extensions/extensions.gni")
+
+assert(use_blink_extensions_chromeos)
+
+visibility = [ "//third_party/blink/renderer/extensions/*" ]
+
+config("extensions_chromeos_implementation") {
+  visibility += [ "//third_party/blink/renderer/bindings/extensions/*" ]
+  defines = [ "BLINK_EXTENSIONS_CHROMEOS_IMPLEMENTATION=1" ]
+}
+
+component("chromeos") {
+  output_name = "blink_extensions_chromeos"
+
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ "//third_party/blink/*" ]
+
+  sources = [
+    "chromeos.cc",
+    "chromeos.h",
+    "extensions_chromeos_export.h",
+  ]
+
+  # This sets the default list of configs when the blink_modules_sources target
+  # is defined. The default_compiler_configs comes from BUILDCONFIG.gn and
+  # is the list normally applied to static libraries and source sets.
+  configs += [
+    ":extensions_chromeos_implementation",
+
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:non_test_config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  deps = [
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/modules",
+  ]
+
+  public_deps =
+      [ "//third_party/blink/renderer/bindings/extensions/v8:v8_chromeos" ]
+}
