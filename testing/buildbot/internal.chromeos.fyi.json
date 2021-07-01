@@ -1198,7 +1198,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R93-14020.0.0",
+        "cros_img": "atlas-release/R93-14052.0.0",
         "name": "lacros_fyi_tast_tests_ATLAS_TOT",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
@@ -1209,7 +1209,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R92-13982.7.0",
+        "cros_img": "atlas-release/R92-13982.38.0",
         "name": "lacros_fyi_tast_tests_ATLAS_TOT-1",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
@@ -1220,7 +1220,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R93-14020.0.0",
+        "cros_img": "eve-release/R93-14052.0.0",
         "name": "lacros_fyi_tast_tests_EVE_TOT",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
@@ -1231,7 +1231,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R92-13982.7.0",
+        "cros_img": "eve-release/R92-13982.38.0",
         "name": "lacros_fyi_tast_tests_EVE_TOT-1",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
@@ -1249,7 +1249,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R93-14020.0.0",
+        "cros_img": "kevin-release/R93-14052.0.0",
         "name": "lacros_fyi_tast_tests_KEVIN_TOT",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
