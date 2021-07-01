@@ -195,6 +195,7 @@ class FakeDownloadItem : public download::DownloadItem {
   absl::optional<download::DownloadSchedule> download_schedule_;
   int percent_complete_ = 0;
   download::DownloadItemRerouteInfo reroute_info_;
+  bool open_when_complete_ = false;
 
   // The members below are to be returned by methods, which return by reference.
   std::string dummy_string;

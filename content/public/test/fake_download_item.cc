@@ -248,6 +248,14 @@ void FakeDownloadItem::SetDummyFilePath(const base::FilePath& file_path) {
   dummy_file_path = file_path;
 }
 
+bool FakeDownloadItem::GetOpenWhenComplete() const {
+  return open_when_complete_;
+}
+
+void FakeDownloadItem::SetOpenWhenComplete(bool open) {
+  open_when_complete_ = open;
+}
+
 // The methods below are not supported and are not expected to be called.
 void FakeDownloadItem::ValidateDangerousDownload() {
   NOTREACHED();
@@ -508,11 +516,6 @@ bool FakeDownloadItem::ShouldOpenFileByPolicyBasedOnExtension() {
   return true;
 }
 
-bool FakeDownloadItem::GetOpenWhenComplete() const {
-  NOTREACHED();
-  return false;
-}
-
 bool FakeDownloadItem::GetAutoOpened() {
   NOTREACHED();
   return false;
@@ -526,10 +529,6 @@ bool FakeDownloadItem::GetOpened() const {
 void FakeDownloadItem::OnContentCheckCompleted(
     download::DownloadDangerType danger_type,
     download::DownloadInterruptReason reason) {
-  NOTREACHED();
-}
-
-void FakeDownloadItem::SetOpenWhenComplete(bool open) {
   NOTREACHED();
 }
 

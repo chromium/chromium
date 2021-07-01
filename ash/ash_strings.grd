@@ -1107,6 +1107,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SIZE_INFO" desc="Text displayed in a holding space download chip to indicate the number of bytes received and total bytes expected of the underlying download.">
         <ph name="RECEIVED_BYTES">$1<ex>10</ex></ph>/<ph name="TOTAL_BYTES">$2<ex>100 MB</ex></ph>
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_OPEN_WHEN_COMPLETE" desc="Text displayed in a holding space download chip to indicate that the downloaded file will be opened when complete.">
+        Open when complete
+      </message>
 
       <!-- Phone Hub tray-->
       <message name="IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME" desc="The accessible name of the Phone Hub tray bubble for screen readers.">
