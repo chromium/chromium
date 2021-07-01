@@ -2110,7 +2110,6 @@ TEST_P(CertVerifyProcInternalTest,
   if (base::Time::Now() > chain->valid_expiry()) {
     FAIL() << "This test uses a certificate chain which is now expired. Please "
               "disable and file a bug against mattm.";
-    return;
   }
 
   std::string sct_list;

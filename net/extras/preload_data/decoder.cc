@@ -309,7 +309,7 @@ bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {
       }
     }
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace extras
