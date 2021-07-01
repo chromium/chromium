@@ -760,9 +760,10 @@ void Pointer::UpdateCursor() {
 
     // Scaling bitmap to match the corresponding supported scale factor of ash.
     const display::Display& display = cursor_client->GetDisplay();
-    float scale = ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(
-                      display.device_scale_factor())) /
-                  capture_scale_;
+    float scale =
+        ui::GetScaleForResourceScaleFactor(ui::GetSupportedResourceScaleFactor(
+            display.device_scale_factor())) /
+        capture_scale_;
     if (cursor_client->GetCursorSize() == ui::CursorSize::kLarge)
       scale *= kLargeCursorScale;
 

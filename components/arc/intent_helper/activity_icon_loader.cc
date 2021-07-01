@@ -32,8 +32,9 @@ constexpr size_t kLargeIconSizeInDip = 20;
 constexpr size_t kMaxIconSizeInPx = 200;
 constexpr char kPngDataUrlPrefix[] = "data:image/png;base64,";
 
-ui::ScaleFactor GetSupportedScaleFactor() {
-  std::vector<ui::ScaleFactor> scale_factors = ui::GetSupportedScaleFactors();
+ui::ResourceScaleFactor GetSupportedResourceScaleFactor() {
+  std::vector<ui::ResourceScaleFactor> scale_factors =
+      ui::GetSupportedResourceScaleFactors();
   DCHECK(!scale_factors.empty());
   return scale_factors.back();
 }
@@ -92,8 +93,8 @@ ActivityIconLoader::ActivityName GenerateActivityName(
 // data: URL.
 scoped_refptr<base::RefCountedData<GURL>> GeneratePNGDataUrl(
     const gfx::ImageSkia& image,
-    ui::ScaleFactor scale_factor) {
-  float scale = ui::GetScaleForScaleFactor(scale_factor);
+    ui::ResourceScaleFactor scale_factor) {
+  float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(image.GetRepresentation(scale).GetBitmap(),
                                     false /* discard_transparency */, &output);
@@ -106,8 +107,9 @@ scoped_refptr<base::RefCountedData<GURL>> GeneratePNGDataUrl(
       new base::RefCountedData<GURL>(GURL(kPngDataUrlPrefix + encoded)));
 }
 
-ActivityIconLoader::Icons ResizeIconsInternal(const gfx::ImageSkia& image,
-                                              ui::ScaleFactor scale_factor) {
+ActivityIconLoader::Icons ResizeIconsInternal(
+    const gfx::ImageSkia& image,
+    ui::ResourceScaleFactor scale_factor) {
   // Resize the original icon to the sizes intent_helper needs.
   gfx::ImageSkia icon_large(gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_BEST,
@@ -125,7 +127,7 @@ ActivityIconLoader::Icons ResizeIconsInternal(const gfx::ImageSkia& image,
 
 std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeAndEncodeIcons(
     std::vector<mojom::ActivityIconPtr> icons,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   auto result = std::make_unique<ActivityIconLoader::ActivityToIconsMap>();
   for (size_t i = 0; i < icons.size(); ++i) {
     static const size_t kBytesPerPixel = 4;
@@ -155,7 +157,7 @@ std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeAndEncodeIcons(
 std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeIcons(
     std::vector<ActivityIconLoader::ActivityName> activity_names,
     const std::vector<gfx::ImageSkia>& images,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   DCHECK_EQ(activity_names.size(), images.size());
   auto result = std::make_unique<ActivityIconLoader::ActivityToIconsMap>();
   for (size_t i = 0; i < activity_names.size(); ++i) {
@@ -191,7 +193,7 @@ bool ActivityIconLoader::ActivityName::operator<(
 }
 
 ActivityIconLoader::ActivityIconLoader()
-    : scale_factor_(GetSupportedScaleFactor()) {}
+    : scale_factor_(GetSupportedResourceScaleFactor()) {}
 
 ActivityIconLoader::~ActivityIconLoader() = default;
 

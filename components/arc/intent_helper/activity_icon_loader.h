@@ -121,7 +121,7 @@ class ActivityIconLoader {
                       std::unique_ptr<ActivityToIconsMap> result);
 
   // The maximum scale factor the current platform supports.
-  const ui::ScaleFactor scale_factor_;
+  const ui::ResourceScaleFactor scale_factor_;
   // A map which holds icons in a scale-factor independent form (gfx::Image).
   ActivityToIconsMap cached_icons_;
 
