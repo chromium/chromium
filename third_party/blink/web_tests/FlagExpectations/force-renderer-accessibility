@@ -21,14 +21,24 @@ crbug.com/1126305 virtual/prerender/wpt_internal/prerender/activation-start.html
 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-isolated.https.html [ SLOW ]
 
 # Failures
+crbug.com/1093466 virtual/portals/external/wpt/portals/portals-focus.sub.html [ FAILURE ]
+
+# Intentional failures for focusless spatial navigation.
+# Focusless spatial navigation is intentionally disabled when accessibility is turned on.
+# * On bots without --force-renderer-accessibility, the tests are able to reset the accessibility context
+#   and run without any accessibility, in which case the tests pass.
+#   See https://crrev.com/c/1620345.
+# * On bots with --force-rendferer-accessibiity, the tests will fail because of the check in
+#   IsInAccessibilityMode() In spatial_navigation_controller.cc.
+#   As this is intentional it is good to test as well via --force-renderer-accessibility.
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-basic-movement.html [ FAILURE ]
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-dont-send-keyboard-events.html [ FAILURE ]
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-exit-focus.html [ FAILURE ]
 crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-from-interest.html [ FAILURE ]
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-navigate-from-focus.html [ FAILURE ]
-crbug.com/1093466 virtual/portals/external/wpt/portals/portals-focus.sub.html [ FAILURE ]
 
-# Skip -- the linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
+# Intentional skips for media tests using proprietary codecs.
+# The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
 external/wpt/webcodecs/audioDecoder-codec-specific.any.worker.html?adts_aac [ SKIP ]
 external/wpt/webcodecs/audioDecoder-codec-specific.any.worker.html?mp4_aac [ SKIP ]
 external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_annexb [ SKIP ]
