@@ -1248,8 +1248,9 @@
                         "enable_same_site": "true",
                         "file_system_api_supported": "true",
                         "foreground_cache_size": "2",
-                        "max_buffered_bytes": "100000",
-                        "max_buffered_bytes_per_process": "512000"
+                        "grace_period_to_finish_loading_in_seconds": "60",
+                        "max_buffered_bytes": "200000",
+                        "max_buffered_bytes_per_process": "1024000"
                     },
                     "enable_features": [
                         "BackForwardCache",
