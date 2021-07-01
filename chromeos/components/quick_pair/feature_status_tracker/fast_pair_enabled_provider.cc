@@ -14,11 +14,16 @@ namespace chromeos {
 namespace quick_pair {
 
 FastPairEnabledProvider::FastPairEnabledProvider(
-    std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider)
-    : bluetooth_enabled_provider_(std::move(bluetooth_enabled_provider)) {
-  // If the flag isn't enabled, Fast Pair will never be enabled so don't hook
-  // up any callbacks.
-  if (base::FeatureList::IsEnabled(features::kFastPair)) {
+    std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider,
+    std::unique_ptr<GoogleApiKeyAvailabilityProvider>
+        google_api_key_availability_provider)
+    : bluetooth_enabled_provider_(std::move(bluetooth_enabled_provider)),
+      google_api_key_availability_provider_(
+          std::move(google_api_key_availability_provider)) {
+  // If the flag isn't enabled or if the API keys aren't available, 
+  // Fast Pair will never be enabled so don't hook up any callbacks.
+  if (base::FeatureList::IsEnabled(features::kFastPair) &&
+      google_api_key_availability_provider_->is_enabled()) {
     bluetooth_enabled_provider_->SetCallback(base::BindRepeating(
         &FastPairEnabledProvider::OnSubProviderEnabledChanged,
         weak_factory_.GetWeakPtr()));
@@ -31,6 +36,7 @@ FastPairEnabledProvider::~FastPairEnabledProvider() = default;
 
 bool FastPairEnabledProvider::AreSubProvidersEnabled() {
   return base::FeatureList::IsEnabled(features::kFastPair) &&
+         google_api_key_availability_provider_->is_enabled() &&
          bluetooth_enabled_provider_->is_enabled();
 }
 

@@ -12,6 +12,8 @@ static_library("feature_status_tracker") {
     "bluetooth_enabled_provider.h",
     "fast_pair_enabled_provider.cc",
     "fast_pair_enabled_provider.h",
+    "google_api_key_availability_provider.cc",
+    "google_api_key_availability_provider.h",
     "quick_pair_feature_status_tracker.h",
     "quick_pair_feature_status_tracker_impl.cc",
     "quick_pair_feature_status_tracker_impl.h",
@@ -21,6 +23,7 @@ static_library("feature_status_tracker") {
     "//base",
     "//chromeos/components/quick_pair/common",
     "//device/bluetooth",
+    "//google_apis",
   ]
 }
 
@@ -33,6 +36,8 @@ static_library("test_support") {
     "fake_feature_status_tracker.h",
     "mock_bluetooth_enabled_provider.cc",
     "mock_bluetooth_enabled_provider.h",
+    "mock_google_api_key_availability_provider.cc",
+    "mock_google_api_key_availability_provider.h",
     "mock_quick_pair_feature_status_tracker.cc",
     "mock_quick_pair_feature_status_tracker.h",
     "quick_pair_feature_status_tracker.h",

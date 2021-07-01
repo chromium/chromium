@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/quick_pair/feature_status_tracker/base_enabled_provider.h"
 #include "chromeos/components/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
+#include "chromeos/components/quick_pair/feature_status_tracker/google_api_key_availability_provider.h"
 
 namespace chromeos {
 namespace quick_pair {
@@ -17,7 +18,9 @@ namespace quick_pair {
 class FastPairEnabledProvider : public BaseEnabledProvider {
  public:
   explicit FastPairEnabledProvider(
-      std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider);
+      std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider,
+      std::unique_ptr<GoogleApiKeyAvailabilityProvider>
+          google_api_key_availability_provider);
   ~FastPairEnabledProvider() override;
 
  private:
@@ -25,6 +28,8 @@ class FastPairEnabledProvider : public BaseEnabledProvider {
   void OnSubProviderEnabledChanged(bool);
 
   std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider_;
+  std::unique_ptr<GoogleApiKeyAvailabilityProvider>
+      google_api_key_availability_provider_;
   base::WeakPtrFactory<FastPairEnabledProvider> weak_factory_{this};
 };
 
