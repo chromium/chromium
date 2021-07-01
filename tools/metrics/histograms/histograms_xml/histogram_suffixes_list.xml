@@ -1095,6 +1095,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Arc.Auth.AccountCheck.TimeDelta"/>
   <affected-histogram name="Arc.Auth.Checkin.Attempts"/>
   <affected-histogram name="Arc.Auth.Checkin.TimeDelta"/>
+  <affected-histogram name="Arc.Auth.CodeFetcher.ProxyBypass"/>
   <affected-histogram name="Arc.Auth.MainAccountResolution.Status"/>
   <affected-histogram name="Arc.Auth.NetworkWait.TimeDelta"/>
   <affected-histogram name="Arc.Auth.SignIn.TimeDelta"/>

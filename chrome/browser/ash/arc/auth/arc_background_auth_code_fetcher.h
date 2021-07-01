@@ -84,6 +84,12 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   // Account on Chrome OS.
   const bool is_primary_account_;
 
+  // Indicates if the request to `kAuthTokenExchangeEndPoint` which fetches the
+  // auth code to be used for Google Play Store sign-in should bypass the proxy.
+  // Currently we only set the value to true if the network is configured to use
+  // a mandatory PAC script which is broken or not reachable.
+  bool bypass_proxy_ = false;
+
   base::WeakPtrFactory<ArcBackgroundAuthCodeFetcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcBackgroundAuthCodeFetcher);

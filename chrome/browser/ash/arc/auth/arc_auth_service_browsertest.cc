@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_context.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_service.h"
@@ -507,6 +508,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
 // Tests that when ARC requests account info for a non-managed account,
 // Chrome supplies the info configured in SetAccountAndProfile() method.
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, SuccessfulBackgroundFetch) {
+  base::HistogramTester histogram_tester;
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   test_url_loader_factory()->AddResponse(arc::kAuthTokenExchangeEndPoint,
                                          GetFakeAuthTokenResponse());
@@ -514,6 +516,59 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, SuccessfulBackgroundFetch) {
   base::RunLoop run_loop;
   auth_instance().RequestPrimaryAccountInfo(run_loop.QuitClosure());
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Arc.Auth.CodeFetcher.ProxyBypass.Unmanaged", /*proxy_bypass=*/false,
+      /*count=*/1);
+  ASSERT_TRUE(auth_instance().account_info());
+  EXPECT_EQ(kFakeUserName,
+            auth_instance().account_info()->account_name.value());
+  EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
+  EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
+            auth_instance().account_info()->account_type);
+  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
+  EXPECT_FALSE(auth_instance().account_info()->is_managed);
+}
+
+// Tests that the `ArcBackgroundAuthCodeFetcher` will retry the network request
+// which fetches the auth code to be used for Google Play Store sign-in if the
+// request has failed because of a unreachable mandatory PAC script.
+IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, SuccessfulBackgroundProxyBypass) {
+  base::HistogramTester histogram_tester;
+  SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
+  int requests_count = 0;
+  test_url_loader_factory()->SetInterceptor(base::BindLambdaForTesting(
+      [&requests_count, this](const network::ResourceRequest& request) {
+        network::URLLoaderCompletionStatus status(
+            net::ERR_MANDATORY_PROXY_CONFIGURATION_FAILED);
+        switch (requests_count) {
+          case 0:
+            // Reply with broken PAC script state.
+            test_url_loader_factory()->AddResponse(
+                GURL(arc::kAuthTokenExchangeEndPoint),
+                network::mojom::URLResponseHead::New(), "response", status);
+            break;
+          case 1:
+            // Reply with the auth token.
+            test_url_loader_factory()->AddResponse(
+                arc::kAuthTokenExchangeEndPoint, GetFakeAuthTokenResponse());
+            break;
+          default:
+            NOTREACHED();
+        }
+        requests_count++;
+      }));
+  base::RunLoop run_loop;
+  auth_instance().RequestPrimaryAccountInfo(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Expect two network requests to have happened: the first one which failed
+  // because the mandatory PAC script is unreachable and the second request
+  // which bypassed the proxy and succeeded.
+  EXPECT_EQ(2, requests_count);
+  histogram_tester.ExpectUniqueSample(
+      "Arc.Auth.CodeFetcher.ProxyBypass.Unmanaged", /*proxy_bypass*/ true,
+      /*count*/ 1);
 
   ASSERT_TRUE(auth_instance().account_info());
   EXPECT_EQ(kFakeUserName,

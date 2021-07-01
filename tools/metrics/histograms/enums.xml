@@ -3769,6 +3769,9 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Failed due unknown HTTP error"/>
   <int value="7" label="Cannot parse HTTP response"/>
   <int value="8" label="No Auth code in response"/>
+  <int value="9"
+      label="The network was configured with a mandatory PAC script that
+             could not be fetched, parsed or executed."/>
 </enum>
 
 <enum name="ArcPlayAutoInstallRequestState">

@@ -254,6 +254,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.Auth.CodeFetcher.ProxyBypass" enum="Boolean"
+    expires_after="M96">
+<!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
+
+  <owner>acostinas@google.com</owner>
+  <owner>chromeos-commercial-networking@google.com</owner>
+  <summary>
+    If the network is configured to use a mandatory Proxy Auto-Configuration
+    (PAC) script which is unreachable, all network requests will fail. In this
+    case, the code which fetches the auth code used for Google Play Store
+    sign-in will retry to connect directly to the Google endpoint, bypassing the
+    proxy. This histogram is only recorded if the auth code was fetched
+    successfully. A &quot;false&quot; entry means the code was successfully
+    fetched at the first try, regardless of proxy configuration. A
+    &quot;true&quot; entry means that the network is configured to use a
+    mandatory PAC script which is unreachable and code was successfully fetched
+    at the second try, when the unreachable proxy was bypassed.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Auth.MainAccountResolution.Status"
     enum="ArcAuthMainAccountResolutionStatus" expires_after="2021-12-12">
   <owner>mhasank@google.com</owner>

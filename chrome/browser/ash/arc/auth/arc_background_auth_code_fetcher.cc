@@ -22,6 +22,7 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -72,6 +73,7 @@ ArcBackgroundAuthCodeFetcher::ArcBackgroundAuthCodeFetcher(
 ArcBackgroundAuthCodeFetcher::~ArcBackgroundAuthCodeFetcher() = default;
 
 void ArcBackgroundAuthCodeFetcher::Fetch(FetchCallback callback) {
+  bypass_proxy_ = false;
   DCHECK(callback_.is_null());
   callback_ = std::move(callback);
   context_.Prepare(base::BindOnce(&ArcBackgroundAuthCodeFetcher::OnPrepared,
@@ -150,8 +152,9 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
   })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(kAuthTokenExchangeEndPoint);
-  resource_request->load_flags =
-      net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE |
+                                 net::LOAD_BYPASS_CACHE |
+                                 (bypass_proxy_ ? net::LOAD_BYPASS_PROXY : 0);
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
   resource_request->headers.SetHeader(kGetAuthCodeKey, kGetAuthCodeValue);
@@ -182,6 +185,20 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     response_code =
         simple_url_loader_->ResponseInfo()->headers->response_code();
   }
+
+  bool mandatory_proxy_failed = simple_url_loader_->NetError() ==
+                                net::ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
+
+  // If the network request has failed because of an unreachable PAC script,
+  // retry the request without the proxy.
+  if (mandatory_proxy_failed && !bypass_proxy_) {
+    bypass_proxy_ = true;
+    simple_url_loader_.reset();
+    access_token_fetcher_.reset();
+    StartFetchingAccessToken();
+    return;
+  }
+
   std::string json_string;
   if (response_body)
     json_string = std::move(*response_body);
@@ -213,6 +230,8 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
       uma_status = OptInSilentAuthCode::HTTP_CLIENT_FAILURE;
     } else if (response_code >= 500 && response_code < 600) {
       uma_status = OptInSilentAuthCode::HTTP_SERVER_FAILURE;
+    } else if (mandatory_proxy_failed) {
+      uma_status = OptInSilentAuthCode::MANDATORY_PROXY_CONFIGURATION_FAILED;
     } else {
       uma_status = OptInSilentAuthCode::HTTP_UNKNOWN_FAILURE;
     }
@@ -243,6 +262,7 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     return;
   }
 
+  UpdateAuthCodeFetcherProxyBypassUMA(bypass_proxy_, profile_);
   ReportResult(auth_code, OptInSilentAuthCode::SUCCESS);
 }
 
