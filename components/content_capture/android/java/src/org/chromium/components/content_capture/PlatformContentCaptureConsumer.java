@@ -85,7 +85,9 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     @Override
     public void onFaviconUpdated(ContentCaptureFrame mainFrame) {
         if (mPlatformSession == null) return;
-        new FaviconUpdateTask(mainFrame, mPlatformSession)
+        FrameSession session = new FrameSession(1);
+        session.add(mainFrame);
+        new FaviconUpdateTask(session, mPlatformSession)
                 .executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 

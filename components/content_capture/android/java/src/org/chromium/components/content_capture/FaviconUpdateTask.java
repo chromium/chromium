@@ -10,10 +10,8 @@ import org.chromium.components.content_capture.PlatformSession.PlatformSessionDa
  * The task to update the favicon to plateform.
  */
 public class FaviconUpdateTask extends NotificationTask {
-    private ContentCaptureFrame mMainFrame;
-    public FaviconUpdateTask(ContentCaptureFrame mainFrame, PlatformSession platformSession) {
-        super(null, platformSession);
-        mMainFrame = mainFrame;
+    public FaviconUpdateTask(FrameSession session, PlatformSession platformSession) {
+        super(session, platformSession);
     }
 
     @Override
@@ -22,9 +20,10 @@ public class FaviconUpdateTask extends NotificationTask {
     }
 
     private void updateFavicon() {
-        log("FaviconUpdateTask.updateTitle");
+        log("FaviconUpdateTask.updateFavicon");
         PlatformSessionData parentPlatformSessionData = buildCurrentSession();
+        if (parentPlatformSessionData == null) return;
         PlatformAPIWrapper.getInstance().notifyFaviconUpdated(
-                parentPlatformSessionData.contentCaptureSession, mMainFrame.getFavicon());
+                parentPlatformSessionData.contentCaptureSession, mSession.get(0).getFavicon());
     }
 }

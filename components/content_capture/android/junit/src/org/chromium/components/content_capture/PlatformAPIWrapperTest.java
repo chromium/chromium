@@ -359,10 +359,11 @@ public class PlatformAPIWrapperTest {
     }
 
     private FaviconUpdateTask createFaviconUpdateTask() {
-        ContentCaptureFrame mainFrame = ContentCaptureFrame.createContentCaptureFrame(MAIN_ID,
-                MAIN_URL, MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
-                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE, UPDATED_FAVICON);
-        return new FaviconUpdateTask(mainFrame, mRootPlatformSession);
+        FrameSession frameSession = new FrameSession(1);
+        frameSession.add(ContentCaptureFrame.createContentCaptureFrame(MAIN_ID, MAIN_URL,
+                MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
+                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE, UPDATED_FAVICON));
+        return new FaviconUpdateTask(frameSession, mRootPlatformSession);
     }
     private void runContentCapturedTask() throws Exception {
         runTaskAndVerifyCallback(createContentCapturedTask(),
@@ -500,7 +501,9 @@ public class PlatformAPIWrapperTest {
         runTaskAndVerifyCallback(createFaviconUpdateTask(),
                 toIntArray(PlatformAPIWrapperTestHelper.NOTIFY_FAVICON_UPDATE));
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
-                .notifyFaviconUpdated(mMockedRootContentCaptureSession, UPDATED_FAVICON);
+                .notifyFaviconUpdated(
+                        mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(0),
+                        UPDATED_FAVICON);
     }
 
     // The below testFooException() tests mock the specific method to throw exception, then verify
