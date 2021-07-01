@@ -197,7 +197,15 @@ message PredictionModel {
   optional Model model = 2;
 }
 
-//  Metadata for a prediction model for a specific optimization target.
+message AdditionalModelFile {
+  // This contains the basenames of the additional files that should be kept and
+  // sent to this model's consumers.
+  optional string file_path = 1;
+}
+
+// Metadata for a prediction model for a specific optimization target.
+//
+// Next ID: 8
 message ModelInfo {
   reserved 3;
 
@@ -211,6 +219,14 @@ message ModelInfo {
   //
   // Note that this should only be populated if part of the response.
   repeated string supported_host_model_features = 5;
+  // Additional files required by this model version.
+  //
+  // If populated, these files are included in the downloaded archive for this
+  // model and should be passed along to the consumer.
+  //
+  // This does not need to be sent to the server in the request for an update to
+  // this model. The server will ignore this if sent.
+  repeated AdditionalModelFile additional_files = 7;
   // Mechanism used for model owners to attach metadata to the request or
   // response.
   //
