@@ -29,6 +29,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -699,7 +700,9 @@ bool SplitViewController::IsPhysicalLeftOrTop(SnapPosition position) {
 SplitViewController::SplitViewController(aura::Window* root_window)
     : root_window_(root_window),
       to_be_snapped_windows_observer_(
-          std::make_unique<ToBeSnappedWindowsObserver>(this)) {
+          std::make_unique<ToBeSnappedWindowsObserver>(this)),
+      split_view_metrics_controller_(
+          std::make_unique<SplitViewMetricsController>(this)) {
   Shell::Get()->accessibility_controller()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
@@ -936,6 +939,7 @@ void SplitViewController::SwapWindows() {
   divider_position_ = GetClosestFixedDividerPosition();
   UpdateSnappedWindowsAndDividerBounds();
   UpdateStateAndNotifyObservers();
+  NotifyWindowSwapped();
 
   base::RecordAction(
       base::UserMetricsAction("SplitView_DoubleTapDividerSwapWindows"));
@@ -1146,6 +1150,7 @@ void SplitViewController::EndResize(const gfx::Point& location_in_screen) {
   // to exit. Otherwise it's possible for a snapped window stuck in the edge of
   // of the screen while overview mode is active.
   UpdateSnappedWindowsAndDividerBounds();
+  NotifyWindowResized();
 
   const int target_divider_position = GetClosestFixedDividerPosition();
   if (divider_position_ == target_divider_position) {
@@ -1424,6 +1429,8 @@ void SplitViewController::OnResizeLoopEnded(aura::Window* window) {
     return;
 
   presentation_time_recorder_.reset();
+
+  NotifyWindowResized();
 
   if (divider_position_ < GetDividerEndPosition() * kOneThirdPositionRatio ||
       divider_position_ > GetDividerEndPosition() * kTwoThirdPositionRatio) {
@@ -1763,6 +1770,16 @@ void SplitViewController::UpdateStateAndNotifyObservers() {
 void SplitViewController::NotifyDividerPositionChanged() {
   for (auto& observer : observers_)
     observer.OnSplitViewDividerPositionChanged();
+}
+
+void SplitViewController::NotifyWindowResized() {
+  for (auto& observer : observers_)
+    observer.OnSplitViewWindowResized();
+}
+
+void SplitViewController::NotifyWindowSwapped() {
+  for (auto& observer : observers_)
+    observer.OnSplitViewWindowSwapped();
 }
 
 void SplitViewController::UpdateBlackScrim(

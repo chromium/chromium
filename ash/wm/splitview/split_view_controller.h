@@ -34,6 +34,7 @@ class PresentationTimeRecorder;
 class OverviewSession;
 class SplitViewControllerTest;
 class SplitViewDivider;
+class SplitViewMetricsController;
 class SplitViewObserver;
 class SplitViewOverviewSessionTest;
 
@@ -287,6 +288,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SplitViewDivider* split_view_divider() { return split_view_divider_.get(); }
   bool is_resizing() const { return is_resizing_; }
   EndReason end_reason() const { return end_reason_; }
+  SplitViewMetricsController* split_view_metrics_controller() {
+    return split_view_metrics_controller_.get();
+  }
 
  private:
   friend class SplitViewControllerTest;
@@ -319,6 +323,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Notifies observers that the split view divider position has been changed.
   void NotifyDividerPositionChanged();
+
+  // Notifies observers that the windows in split view is resized.
+  void NotifyWindowResized();
+
+  // Notifies observers that the windows are swappped.
+  void NotifyWindowSwapped();
 
   // Updates the black scrim layer's bounds and opacity while dragging the
   // divider. The opacity increases as the split divider gets closer to the edge
@@ -537,6 +547,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Observes windows and performs auto snapping if needed.
   std::unique_ptr<AutoSnapController> auto_snap_controller_;
+
+  // The metrics controller for the same root window.
+  std::unique_ptr<SplitViewMetricsController> split_view_metrics_controller_;
 
   // A pointer to the to-be-snapped window that will be activated after it's
   // snapped in splitview. There can be two cases when this value can be
