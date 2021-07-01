@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -111,7 +111,7 @@ class SettingsSearchEngineDialogElement extends
   connectedCallback() {
     super.connectedCallback();
 
-    microTask.run(() => this.updateActionButtonState_());
+    window.setTimeout(this.updateActionButtonState_.bind(this), 0);
     this.browserProxy_.searchEngineEditStarted(
         this.model ? this.model.modelIndex : this.DEFAULT_MODEL_INDEX);
     this.$.dialog.showModal();
