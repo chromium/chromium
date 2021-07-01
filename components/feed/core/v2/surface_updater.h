@@ -85,6 +85,7 @@ class SurfaceUpdater : public StreamModel::Observer {
 
  private:
   DrawState GetState() const;
+  bool ShouldSendStreamUpdate() const;
   void SendStreamUpdateIfNeeded();
   void SendStreamUpdate(
       const std::vector<std::string>& updated_shared_state_ids);
@@ -116,6 +117,7 @@ class SurfaceUpdater : public StreamModel::Observer {
   MetricsReporter* metrics_reporter_;
 
   LaunchReliabilityLogger launch_reliability_logger_;
+  bool load_stream_started_ = false;
 
   // Attached surfaces.
   base::ObserverList<FeedStreamSurface> surfaces_;

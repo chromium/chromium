@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -97,12 +98,13 @@ class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
   void LogRequestFinished(NetworkRequestId id,
                           base::TimeTicks timestamp,
                           int combined_network_status_code) override;
-  void LogAtfRenderStart(base::TimeTicks timestamp) override;
-  void LogAtfRenderEnd(
+  void LogLoadingIndicatorShown(base::TimeTicks timestamp) override;
+  void LogAboveTheFoldRender(
       base::TimeTicks timestamp,
       feedwire::DiscoverAboveTheFoldRenderResult result) override;
-  void LogLaunchFinished(base::TimeTicks timestamp,
-                         feedwire::DiscoverLaunchResult result) override;
+
+  void LogLaunchFinishedAfterStreamUpdate(
+      feedwire::DiscoverLaunchResult result) override;
 
  private:
   std::vector<std::string> events_;

@@ -10,10 +10,12 @@
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 
@@ -22,6 +24,7 @@ namespace {
 
 using DrawState = SurfaceUpdater::DrawState;
 using FeedStreamSurface = FeedStreamSurface;
+using StreamUpdateType = LaunchReliabilityLogger::StreamUpdateType;
 
 // Give each kind of zero state a unique name, so that the UI knows if it
 // changes.
@@ -69,24 +72,33 @@ void AddLoadingSpinner(bool is_at_top, feedui::StreamUpdate* update) {
   slice->set_slice_id(is_at_top ? "loading-spinner" : "load-more-spinner");
 }
 
-feedui::StreamUpdate MakeStreamUpdate(
+struct StreamUpdateAndType {
+  feedui::StreamUpdate stream_update;
+  StreamUpdateType type = StreamUpdateType::kNone;
+};
+
+StreamUpdateAndType MakeStreamUpdate(
     const std::vector<std::string>& updated_shared_state_ids,
     const base::flat_set<ContentRevision>& already_sent_content,
     const StreamModel* model,
     const DrawState& state) {
   DCHECK(!state.loading_initial || !state.loading_more)
       << "logic bug: requested both top and bottom spinners.";
-  feedui::StreamUpdate stream_update;
+
+  StreamUpdateAndType update;
+
   // Add content from the model, if it's loaded.
   bool has_content = false;
   if (model) {
     for (ContentRevision content_revision : model->GetContentList()) {
       const bool is_updated = already_sent_content.count(content_revision) == 0;
-      AddSliceUpdate(*model, content_revision, is_updated, &stream_update);
+      AddSliceUpdate(*model, content_revision, is_updated,
+                     &update.stream_update);
       has_content = true;
+      update.type = StreamUpdateType::kContent;
     }
     for (const std::string& name : updated_shared_state_ids) {
-      AddSharedState(*model, name, &stream_update);
+      AddSharedState(*model, name, &update.stream_update);
     }
   }
 
@@ -99,25 +111,29 @@ feedui::StreamUpdate MakeStreamUpdate(
   }
 
   if (zero_state_type != feedui::ZeroStateSlice::UNKNOWN) {
-    feedui::Slice* slice = stream_update.add_updated_slices()->mutable_slice();
+    feedui::Slice* slice =
+        update.stream_update.add_updated_slices()->mutable_slice();
     slice->mutable_zero_state_slice()->set_type(zero_state_type);
     slice->set_slice_id(GetZeroStateSliceId(zero_state_type));
+    update.type = StreamUpdateType::kZeroState;
   } else {
     // Add the initial-load spinner if applicable.
     if (state.loading_initial) {
-      AddLoadingSpinner(/*is_at_top=*/true, &stream_update);
+      AddLoadingSpinner(/*is_at_top=*/true, &update.stream_update);
+      update.type = StreamUpdateType::kInitialLoadingSpinner;
     }
     // Add a loading-more spinner if applicable.
     if (state.loading_more) {
-      AddLoadingSpinner(/*is_at_top=*/false, &stream_update);
+      AddLoadingSpinner(/*is_at_top=*/false, &update.stream_update);
+      update.type = StreamUpdateType::kLoadingMoreSpinner;
     }
   }
 
-  return stream_update;
+  return update;
 }
 
-feedui::StreamUpdate GetUpdateForNewSurface(const DrawState& state,
-                                            const StreamModel* model) {
+StreamUpdateAndType GetUpdateForNewSurface(const DrawState& state,
+                                           const StreamModel* model) {
   std::vector<std::string> updated_shared_state_ids;
   if (model) {
     updated_shared_state_ids = model->GetSharedStateIds();
@@ -192,6 +208,8 @@ void SurfaceUpdater::SetModel(StreamModel* model) {
     model_->AddObserver(this);
     loading_initial_ = loading_initial_ && model_->GetContentList().empty();
     loading_more_ = false;
+    // TODO(iwells): Avoid sending a second loading spinner in the "valid
+    // response, zero cards" case.
     SendStreamUpdate(model_->GetSharedStateIds());
     last_draw_state_ = GetState();
   }
@@ -219,13 +237,15 @@ void SurfaceUpdater::SurfaceAdded(
   logger.SendPendingLaunchEvents(surface->GetStreamType(),
                                  surface->GetSurfaceId());
   logger.LogFeedLaunchOtherStart(base::TimeTicks::Now());
+
   if (loading_not_allowed_reason !=
       feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED) {
-    logger.LogLaunchFinished(base::TimeTicks::Now(),
-                             loading_not_allowed_reason);
+    logger.LogLaunchFinishedAfterStreamUpdate(loading_not_allowed_reason);
   }
 
-  SendUpdateToSurface(surface, GetUpdateForNewSurface(GetState(), model_));
+  StreamUpdateAndType update = GetUpdateForNewSurface(GetState(), model_);
+  launch_reliability_logger_.OnStreamUpdate(update.type, *surface);
+  SendUpdateToSurface(surface, update.stream_update);
 
   for (const auto& datastore_entry : xsurface_datastore_entries_) {
     surface->ReplaceDataStoreEntry(datastore_entry.first,
@@ -242,7 +262,7 @@ void SurfaceUpdater::SurfaceRemoved(FeedStreamSurface* surface) {
 void SurfaceUpdater::LoadStreamStarted() {
   load_stream_failed_ = false;
   loading_initial_ = true;
-
+  load_stream_started_ = true;
   SendStreamUpdateIfNeeded();
 }
 
@@ -254,10 +274,15 @@ void SurfaceUpdater::LoadStreamComplete(
   load_stream_status_ = load_stream_status;
   load_stream_failed_ = !success;
 
-  if (launch_result != feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED)
-    launch_reliability_logger_.LogLaunchFinished(launch_result);
+  if (ShouldSendStreamUpdate()) {
+    if (launch_result != feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED) {
+      launch_reliability_logger_.LogLaunchFinishedAfterStreamUpdate(
+          launch_result);
+    }
+    SendStreamUpdate({});
+  }
 
-  SendStreamUpdateIfNeeded();
+  load_stream_started_ = false;
 }
 
 int SurfaceUpdater::GetSliceIndexFromSliceId(const std::string& slice_id) {
@@ -293,23 +318,27 @@ DrawState SurfaceUpdater::GetState() const {
   return new_state;
 }
 
+bool SurfaceUpdater::ShouldSendStreamUpdate() const {
+  return !(last_draw_state_ == GetState());
+}
+
 void SurfaceUpdater::SendStreamUpdateIfNeeded() {
-  if (last_draw_state_ == GetState()) {
-    return;
-  }
-  SendStreamUpdate({});
+  if (ShouldSendStreamUpdate())
+    SendStreamUpdate({});
 }
 
 void SurfaceUpdater::SendStreamUpdate(
     const std::vector<std::string>& updated_shared_state_ids) {
   DrawState state = GetState();
 
-  feedui::StreamUpdate stream_update =
+  StreamUpdateAndType update =
       MakeStreamUpdate(updated_shared_state_ids, sent_content_, model_, state);
 
-  for (FeedStreamSurface& surface : surfaces_) {
-    SendUpdateToSurface(&surface, stream_update);
-  }
+  if (load_stream_started_ && !loading_more_)
+    launch_reliability_logger_.OnStreamUpdate(update.type);
+
+  for (FeedStreamSurface& surface : surfaces_)
+    SendUpdateToSurface(&surface, update.stream_update);
 
   sent_content_ = GetContentSet(model_);
   last_draw_state_ = state;

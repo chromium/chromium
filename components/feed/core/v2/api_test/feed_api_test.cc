@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/api_test/feed_api_test.h"
+#include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
@@ -331,24 +332,23 @@ void TestReliabilityLoggingBridge::LogRequestFinished(
                     " id=", base::NumberToString(id.GetUnsafeValue())}));
 }
 
-void TestReliabilityLoggingBridge::LogAtfRenderStart(
+void TestReliabilityLoggingBridge::LogLoadingIndicatorShown(
     base::TimeTicks timestamp) {
-  events_.push_back("LogAtfRenderStart");
+  events_.push_back("LogLoadingIndicatorShown");
 }
 
-void TestReliabilityLoggingBridge::LogAtfRenderEnd(
+void TestReliabilityLoggingBridge::LogAboveTheFoldRender(
     base::TimeTicks timestamp,
     feedwire::DiscoverAboveTheFoldRenderResult result) {
   events_.push_back(
-      base::StrCat({"LogAtfRenderEnd result=",
+      base::StrCat({"LogAboveTheFoldRender result=",
                     feedwire::DiscoverAboveTheFoldRenderResult_Name(result)}));
 }
 
-void TestReliabilityLoggingBridge::LogLaunchFinished(
-    base::TimeTicks timestamp,
+void TestReliabilityLoggingBridge::LogLaunchFinishedAfterStreamUpdate(
     feedwire::DiscoverLaunchResult result) {
   events_.push_back(
-      base::StrCat({"LogLaunchFinished result=",
+      base::StrCat({"LogLaunchFinishedAfterStreamUpdate result=",
                     feedwire::DiscoverLaunchResult_Name(result)}));
 }
 
@@ -483,8 +483,8 @@ void TestFeedNetwork::SendDiscoverApiRequest(
       }
 
         // For FeedQuery requests, emulate a successful response.
-        // The response body is currently an empty message, because most of the
-        // time we want to inject a translated response for ease of
+        // The response body is currently an empty message, because most of
+        // the time we want to inject a translated response for ease of
         // test-writing.
 
       case WebFeedListContentsDiscoverApi::kRequestType: {
@@ -551,7 +551,8 @@ void TestFeedNetwork::InjectRealFeedQueryResponseWithNoContent() {
 
   feedwire::Response response;
   CHECK(response.ParseFromString(response_data));
-  // Keep only the first two operations, the CLEAR_ALL and root, but no content.
+  // Keep only the first two operations, the CLEAR_ALL and root, but no
+  // content.
   auto* data_operations =
       response.mutable_feed_response()->mutable_data_operation();
   data_operations->erase(data_operations->begin() + 2, data_operations->end());

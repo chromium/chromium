@@ -49,12 +49,12 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLoggingBridge {
   void LogRequestFinished(NetworkRequestId id,
                           base::TimeTicks timestamp,
                           int combined_network_status_code) override;
-  void LogAtfRenderStart(base::TimeTicks timestamp) override;
-  void LogAtfRenderEnd(
+  void LogLoadingIndicatorShown(base::TimeTicks timestamp) override;
+  void LogAboveTheFoldRender(
       base::TimeTicks timestamp,
       feedwire::DiscoverAboveTheFoldRenderResult result) override;
-  void LogLaunchFinished(base::TimeTicks timestamp,
-                         feedwire::DiscoverLaunchResult result) override;
+  void LogLaunchFinishedAfterStreamUpdate(
+      feedwire::DiscoverLaunchResult result) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

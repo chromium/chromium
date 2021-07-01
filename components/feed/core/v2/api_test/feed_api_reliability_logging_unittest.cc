@@ -27,7 +27,8 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_LogFeedLaunchOtherStart) {
 
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
-      "LogFeedLaunchOtherStart\n",
+      "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -37,7 +38,9 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_EulaNotAccepted) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
-      "LogLaunchFinished result=INELIGIBLE_EULA_NOT_ACCEPTED\n",
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=INELIGIBLE_EULA_NOT_ACCEPTED\n"
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -47,7 +50,8 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_ArticlesListHidden) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
-      "LogLaunchFinished result=FEED_HIDDEN\n",
+      "LogLaunchFinishedAfterStreamUpdate result=FEED_HIDDEN\n"
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -58,8 +62,9 @@ TEST_F(FeedApiReliabilityLoggingTest,
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
-      "LogLaunchFinished "
-      "result=INELIGIBLE_DISCOVER_DISABLED_BY_ENTERPRISE_POLICY\n",
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=INELIGIBLE_DISCOVER_DISABLED_BY_ENTERPRISE_POLICY\n"
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -72,17 +77,27 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_ClearAllInProgress) {
       // First load attempt from attaching surface.
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
-      "LogLaunchFinished result=CLEAR_ALL_IN_PROGRESS\n"
+      "LogLoadingIndicatorShown\n"
+
+      "LogLaunchFinishedAfterStreamUpdate result=CLEAR_ALL_IN_PROGRESS\n"
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n"
+
       // Second load attempt triggered by clear all.
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
       "LogRequestFinished result=200 id=1\n"
-      "LogLaunchFinished result=NO_CARDS_REQUEST_ERROR_OTHER\n",
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_REQUEST_ERROR_OTHER\n"
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -95,17 +110,27 @@ TEST_F(FeedApiReliabilityLoggingTest, AttachSurface_DataInStoreForAnotherUser) {
       // First load attempt from attaching surface.
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
-      "LogLaunchFinished result=DATA_IN_STORE_IS_FOR_ANOTHER_USER\n"
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=DATA_IN_STORE_IS_FOR_ANOTHER_USER\n"
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n"
+
       // Second load attempt triggered by clear all.
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
       "LogRequestFinished result=200 id=1\n"
-      "LogLaunchFinished result=NO_CARDS_REQUEST_ERROR_OTHER\n",
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_REQUEST_ERROR_OTHER\n"
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -118,22 +143,32 @@ TEST_F(FeedApiReliabilityLoggingTest, MultipleSurfaces_SimultaneousLoad) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
-      "LogRequestFinished result=200 id=1\n",
+      "LogRequestFinished result=200 id=1\n"
+
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface2.reliability_logging_bridge.GetEventsString());
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
-      "LogRequestFinished result=200 id=1\n",
+      "LogRequestFinished result=200 id=1\n"
+
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -147,20 +182,27 @@ TEST_F(FeedApiReliabilityLoggingTest,
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(
+      // `surface` attached
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
-      "LogRequestFinished result=200 id=1\n",
+      "LogRequestFinished result=200 id=1\n"
+
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface.reliability_logging_bridge.GetEventsString());
 
   // `surface2` should only have logged from SurfaceUpdater::AttachSurface().
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
-      "LogFeedLaunchOtherStart\n",
+      "LogFeedLaunchOtherStart\n"
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface2.reliability_logging_bridge.GetEventsString());
 }
 
@@ -172,12 +214,17 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Success) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
-      "LogRequestFinished result=200 id=1\n",
+      "LogRequestFinished result=200 id=1\n"
+
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -189,13 +236,21 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_ZeroCards) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
       "LogRequestFinished result=200 id=1\n"
-      "LogLaunchFinished result=NO_CARDS_RESPONSE_ERROR_ZERO_CARDS\n",
+
+      "LogLoadingIndicatorShown\n"
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_RESPONSE_ERROR_ZERO_CARDS\n"
+
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -207,9 +262,15 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NetworkOffline) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
-      "LogLaunchFinished result=NO_CARDS_REQUEST_ERROR_NO_INTERNET\n",
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_REQUEST_ERROR_NO_INTERNET\n"
+
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -221,13 +282,20 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NoResponseReceived) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       // Should not call LogResponseReceived.
       "LogRequestFinished result=-7 id=1\n"
-      "LogLaunchFinished result=NO_CARDS_RESPONSE_ERROR_NON_200\n",
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_RESPONSE_ERROR_NON_200\n"
+
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -240,13 +308,20 @@ TEST_F(FeedApiReliabilityLoggingTest,
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
       "LogRequestFinished result=403 id=1\n"
-      "LogLaunchFinished result=NO_CARDS_RESPONSE_ERROR_NON_200\n",
+
+      "LogLaunchFinishedAfterStreamUpdate "
+      "result=NO_CARDS_RESPONSE_ERROR_NON_200\n"
+
+      "LogAboveTheFoldRender result=FULL_FEED_ERROR\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -269,12 +344,17 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Stale) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=STALE\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
-      "LogRequestFinished result=200 id=1\n",
+      "LogRequestFinished result=200 id=1\n"
+
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -298,21 +378,24 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_StaleWithNetworkError) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=STALE\n"
+
       "LogFeedRequestStart id=1\n"
       "LogRequestSent id=1\n"
       "LogResponseReceived id=1\n"
-      "LogRequestFinished result=403 id=1\n",
+      "LogRequestFinished result=403 id=1\n"
+
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
 TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Okay) {
-  store_->OverwriteStream(kForYouStream,
-                          MakeTypicalInitialModelState(
-                              /*first_cluster_id=*/0),
+  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
                           base::DoNothing());
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  WaitForIdleTaskQueue();
 
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -320,8 +403,12 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Okay) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
+
       "LogCacheReadStart\n"
-      "LogCacheReadEnd result=CACHE_READ_OK\n",
+      "LogCacheReadEnd result=CACHE_READ_OK\n"
+
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -335,6 +422,7 @@ TEST_F(FeedApiReliabilityLoggingTest, UploadActions) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogLoadingIndicatorShown\n"
 
       "LogCacheReadStart\n"
       "LogCacheReadEnd result=EMPTY_SESSION\n"
@@ -347,7 +435,9 @@ TEST_F(FeedApiReliabilityLoggingTest, UploadActions) {
       "LogFeedRequestStart id=2\n"
       "LogRequestSent id=2\n"
       "LogResponseReceived id=2\n"
-      "LogRequestFinished result=200 id=2\n",
+      "LogRequestFinished result=200 id=2\n"
+
+      "LogAboveTheFoldRender result=SUCCESS\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 

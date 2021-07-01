@@ -38,7 +38,22 @@ class LaunchReliabilityLogger {
   void LogRequestFinished(NetworkRequestId id,
                           int combined_network_status_code);
 
-  void LogLaunchFinished(feedwire::DiscoverLaunchResult result);
+  enum class StreamUpdateType {
+    kNone,
+    kInitialLoadingSpinner,
+    kLoadingMoreSpinner,
+    kZeroState,
+    kContent,
+  };
+
+  // Logs "above-the-fold render" or "loading indicator shown"
+  // depending on update type. Should be called just
+  // before sending each stream update during launch.
+  void OnStreamUpdate(StreamUpdateType type);
+  void OnStreamUpdate(StreamUpdateType type, FeedStreamSurface& surface);
+
+  void LogLaunchFinishedAfterStreamUpdate(
+      feedwire::DiscoverLaunchResult result);
 
  private:
   base::ObserverList<FeedStreamSurface>* surfaces_;

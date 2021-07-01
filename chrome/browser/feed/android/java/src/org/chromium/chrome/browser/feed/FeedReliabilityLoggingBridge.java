@@ -8,12 +8,17 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
+import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverAboveTheFoldRenderResult;
+import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 
 /** JNI bridge making reliability logging methods available to native code. */
 @JNINamespace("feed::android")
 public class FeedReliabilityLoggingBridge {
     private final long mNativePtr;
     private FeedLaunchReliabilityLogger mLogger;
+    private DiscoverAboveTheFoldRenderResult mRenderResult;
+    private boolean mRenderingStarted;
+    private DiscoverLaunchResult mLaunchResult;
 
     public static org.chromium.base.JniStaticTestMocker<FeedReliabilityLoggingBridge.Natives>
     getTestHooksForTesting() {
@@ -93,18 +98,61 @@ public class FeedReliabilityLoggingBridge {
     }
 
     @CalledByNative
-    public void logAtfRenderStart(long timestamp) {
-        mLogger.logAtfRenderStart(timestamp);
+    public void logAboveTheFoldRender(long timestamp, int aboveTheFoldRenderResult) {
+        // It's possible to be called multiple times per launch, so we only log "render start" from
+        // the first call.
+        if (!mRenderingStarted) {
+            mLogger.logAtfRenderStart(timestamp);
+            mRenderingStarted = true;
+        }
+
+        // Record mRenderResult to be logged later by onStreamUpdateFinished().
+        mRenderResult = DiscoverAboveTheFoldRenderResult.forNumber(aboveTheFoldRenderResult);
+        if (mRenderResult == null) {
+            mRenderResult = DiscoverAboveTheFoldRenderResult.INTERNAL_ERROR;
+        }
     }
 
     @CalledByNative
-    public void logAtfRenderEnd(long timestamp, int aboveTheFoldRenderResult) {
-        mLogger.logAtfRenderEnd(timestamp, aboveTheFoldRenderResult);
+    public void logLoadingIndicatorShown(long timestamp) {
+        mLogger.logLoadingIndicatorShown(timestamp);
     }
 
     @CalledByNative
-    public void logLaunchFinished(long timestamp, int discoverLaunchResult) {
-        mLogger.logLaunchFinished(timestamp, discoverLaunchResult);
+    public void logLaunchFinishedAfterStreamUpdate(int discoverLaunchResult) {
+        if (mLaunchResult != null) return;
+
+        mLaunchResult = DiscoverLaunchResult.forNumber(discoverLaunchResult);
+        if (mLaunchResult == null) {
+            mLaunchResult = DiscoverLaunchResult.ABORTED_DUE_TO_INVALID_STATE;
+        }
+    }
+
+    public void onStreamUpdateFinished() {
+        if (!mLogger.isLaunchInProgress()) return;
+
+        if (mRenderResult != null) {
+            mLogger.logAtfRenderEnd(System.nanoTime(), mRenderResult.getNumber());
+            mRenderResult = null;
+        }
+
+        if (mLaunchResult != null) {
+            mLogger.logLaunchFinished(System.nanoTime(), mLaunchResult.getNumber());
+            mLaunchResult = null;
+        }
+
+        mRenderingStarted = false;
+    }
+
+    public void onStreamUpdateError() {
+        if (!mLogger.isLaunchInProgress()) return;
+        mLogger.logAtfRenderEnd(
+                System.nanoTime(), DiscoverAboveTheFoldRenderResult.INTERNAL_ERROR.getNumber());
+        mLogger.logLaunchFinished(
+                System.nanoTime(), DiscoverLaunchResult.FAILED_TO_RENDER.getNumber());
+        mRenderingStarted = false;
+        mRenderResult = null;
+        mLaunchResult = null;
     }
 
     @NativeMethods

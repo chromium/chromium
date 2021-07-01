@@ -44,6 +44,7 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
     "//components/feature_engagement:feature_engagement_java",
+    "//components/feed/core/proto:proto_java_v2",
     "//components/feed/core/v2:feedv2_core_java",
     "//components/prefs/android:java",
     "//components/url_formatter/android:url_formatter_java",

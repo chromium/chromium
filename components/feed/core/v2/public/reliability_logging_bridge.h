@@ -53,16 +53,14 @@ class ReliabilityLoggingBridge {
                                   base::TimeTicks timestamp,
                                   int combined_network_status_code) = 0;
 
-  // TODO(iwells): use
-  virtual void LogAtfRenderStart(base::TimeTicks timestamp) = 0;
-  // TODO(iwells): use
-  virtual void LogAtfRenderEnd(
+  virtual void LogLoadingIndicatorShown(base::TimeTicks timestamp) = 0;
+
+  virtual void LogAboveTheFoldRender(
       base::TimeTicks timestamp,
       feedwire::DiscoverAboveTheFoldRenderResult result) = 0;
 
-  // TODO(iwells): log all remaining DiscoverLaunchResults
-  virtual void LogLaunchFinished(base::TimeTicks timestamp,
-                                 feedwire::DiscoverLaunchResult result) = 0;
+  virtual void LogLaunchFinishedAfterStreamUpdate(
+      feedwire::DiscoverLaunchResult result) = 0;
 
   virtual ~ReliabilityLoggingBridge() = default;
 };

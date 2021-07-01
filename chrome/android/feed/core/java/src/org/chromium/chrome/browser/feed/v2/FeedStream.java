@@ -730,6 +730,7 @@ public class FeedStream implements Stream {
             streamUpdate = FeedUiProto.StreamUpdate.parseFrom(data);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
             Log.wtf(TAG, "Unable to parse StreamUpdate proto data", e);
+            mReliabilityLoggingBridge.onStreamUpdateError();
             return;
         }
 
@@ -763,6 +764,9 @@ public class FeedStream implements Stream {
         }
 
         updateContentsInPlace(newContentList);
+
+        // TODO(iwells): Look into alternatives to View.post() that specifically wait for rendering.
+        mRecyclerView.post(mReliabilityLoggingBridge::onStreamUpdateFinished);
     }
 
     private NtpListContentManager.FeedContent createContentFromSlice(FeedUiProto.Slice slice) {

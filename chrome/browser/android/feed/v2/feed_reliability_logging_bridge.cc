@@ -180,27 +180,25 @@ void FeedReliabilityLoggingBridge::LogRequestFinished(
       ConvertTimestamp(timestamp), static_cast<int>(canonical_code));
 }
 
-void FeedReliabilityLoggingBridge::LogLaunchFinished(
-    base::TimeTicks timestamp,
-    feedwire::DiscoverLaunchResult result) {
-  Java_FeedReliabilityLoggingBridge_logLaunchFinished(
-      base::android::AttachCurrentThread(), java_ref_,
-      ConvertTimestamp(timestamp), result);
-}
-
-void FeedReliabilityLoggingBridge::LogAtfRenderStart(
+void FeedReliabilityLoggingBridge::LogLoadingIndicatorShown(
     base::TimeTicks timestamp) {
-  Java_FeedReliabilityLoggingBridge_logAtfRenderStart(
+  Java_FeedReliabilityLoggingBridge_logLoadingIndicatorShown(
       base::android::AttachCurrentThread(), java_ref_,
       ConvertTimestamp(timestamp));
 }
 
-void FeedReliabilityLoggingBridge::LogAtfRenderEnd(
+void FeedReliabilityLoggingBridge::LogAboveTheFoldRender(
     base::TimeTicks timestamp,
     feedwire::DiscoverAboveTheFoldRenderResult result) {
-  Java_FeedReliabilityLoggingBridge_logAtfRenderEnd(
+  Java_FeedReliabilityLoggingBridge_logAboveTheFoldRender(
       base::android::AttachCurrentThread(), java_ref_,
       ConvertTimestamp(timestamp), result);
+}
+
+void FeedReliabilityLoggingBridge::LogLaunchFinishedAfterStreamUpdate(
+    feedwire::DiscoverLaunchResult result) {
+  Java_FeedReliabilityLoggingBridge_logLaunchFinishedAfterStreamUpdate(
+      base::android::AttachCurrentThread(), java_ref_, result);
 }
 
 void FeedReliabilityLoggingBridge::Destroy(JNIEnv* env) {

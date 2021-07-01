@@ -27,11 +27,11 @@ void LaunchReliabilityLogger::LogFeedLaunchOtherStart() {
   }
 }
 
-void LaunchReliabilityLogger::LogLaunchFinished(
+void LaunchReliabilityLogger::LogLaunchFinishedAfterStreamUpdate(
     feedwire::DiscoverLaunchResult result) {
   for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogLaunchFinished(
-        base::TimeTicks::Now(), result);
+    surface.GetReliabilityLoggingBridge().LogLaunchFinishedAfterStreamUpdate(
+        result);
   }
 }
 
@@ -92,6 +92,36 @@ void LaunchReliabilityLogger::LogRequestFinished(
   for (FeedStreamSurface& surface : *surfaces_) {
     surface.GetReliabilityLoggingBridge().LogRequestFinished(
         id, base::TimeTicks::Now(), combined_network_status_code);
+  }
+}
+
+void LaunchReliabilityLogger::OnStreamUpdate(StreamUpdateType type) {
+  for (FeedStreamSurface& surface : *surfaces_)
+    OnStreamUpdate(type, surface);
+}
+
+void LaunchReliabilityLogger::OnStreamUpdate(StreamUpdateType type,
+                                             FeedStreamSurface& surface) {
+  ReliabilityLoggingBridge& logging_bridge =
+      surface.GetReliabilityLoggingBridge();
+  switch (type) {
+    case StreamUpdateType::kInitialLoadingSpinner:
+      logging_bridge.LogLoadingIndicatorShown(base::TimeTicks::Now());
+      break;
+    case StreamUpdateType::kLoadingMoreSpinner:
+      // TODO(iwells): log this with next-page flow
+      break;
+    case StreamUpdateType::kZeroState:
+      logging_bridge.LogAboveTheFoldRender(
+          base::TimeTicks::Now(),
+          feedwire::DiscoverAboveTheFoldRenderResult::FULL_FEED_ERROR);
+      break;
+    case StreamUpdateType::kContent:
+    case StreamUpdateType::kNone:
+      logging_bridge.LogAboveTheFoldRender(
+          base::TimeTicks::Now(),
+          feedwire::DiscoverAboveTheFoldRenderResult::SUCCESS);
+      break;
   }
 }
 
