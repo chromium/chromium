@@ -131,10 +131,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   void PauseItem(const HoldingSpaceItem* item);
   void ResumeItem(const HoldingSpaceItem* item);
 
-  // Attempts to mark the specified holding space `item` to be opened when
-  // complete, returning whether or not the attempt was successful.
-  bool OpenItemWhenComplete(const HoldingSpaceItem* item);
-
   // Returns the `profile_` associated with this service.
   Profile* profile() { return profile_; }
 

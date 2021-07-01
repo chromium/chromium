@@ -49,10 +49,6 @@ class HoldingSpaceDownloadsDelegate
   void Pause(const HoldingSpaceItem* item);
   void Resume(const HoldingSpaceItem* item);
 
-  // Attempts to mark the download underlying the given `item` to be opened when
-  // complete, returning whether or not the attempt was successful.
-  bool OpenWhenComplete(const HoldingSpaceItem* item);
-
  private:
   class InProgressDownload;
 

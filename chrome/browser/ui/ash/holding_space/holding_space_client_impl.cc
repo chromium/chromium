@@ -171,18 +171,7 @@ void HoldingSpaceClientImpl::OpenItems(
                                                        item->file_path());
       *complete_success_ptr = false;
       barrier_closure.Run();
-      continue;
-    }
-    if (!item->progress().IsComplete()) {
-      const bool success =
-          GetHoldingSpaceKeyedService(profile_)->OpenItemWhenComplete(item);
-      if (!success) {
-        holding_space_metrics::RecordItemFailureToLaunch(item->type(),
-                                                         item->file_path());
-      }
-      *complete_success_ptr &= success;
-      barrier_closure.Run();
-      continue;
+      return;
     }
     GetFileInfo(
         profile_, item->file_path(),
