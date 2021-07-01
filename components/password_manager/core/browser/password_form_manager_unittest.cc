@@ -2406,6 +2406,47 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
   }
 }
 
+// Tests that probable change password submission is detected for a form that
+// does not contain a username fields.
+TEST_P(PasswordFormManagerTest, ChangePasswordFormWithoutUsernameSubmitted) {
+  // A form with new and confirmation password fields without username.
+  FormData submitted_form = observed_form_only_password_fields_;
+  submitted_form.fields[0].value = u"newpassword";
+  submitted_form.fields[1].value = u"newpassword";
+
+  ASSERT_TRUE(
+      form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
+  EXPECT_TRUE(form_manager_->HasLikelyChangePasswordFormSubmitted());
+}
+
+// Tests that probable change password submission is detected properly for forms
+// containing username fields.
+TEST_P(PasswordFormManagerTest, ChangePasswordFormWithUsernameSubmitted) {
+  // A form with username, current and new password fields.
+  FormData submitted_form = observed_form_only_password_fields_;
+  FormFieldData username_field;
+  username_field.name = u"username";
+  username_field.form_control_type = "text";
+  username_field.value = u"oldusername";
+  username_field.unique_renderer_id = autofill::FieldRendererId(2);
+  submitted_form.fields.insert(std::begin(submitted_form.fields),
+                               username_field);
+
+  submitted_form.fields[1].value = u"oldpassword";
+  submitted_form.fields[2].value = u"newpassword";
+
+  ASSERT_TRUE(
+      form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
+  EXPECT_TRUE(form_manager_->HasLikelyChangePasswordFormSubmitted());
+
+  // A form with username and new password fields (most likely sign-up).
+  submitted_form.fields[1].value = u"newpassword";
+
+  ASSERT_TRUE(
+      form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
+  EXPECT_FALSE(form_manager_->HasLikelyChangePasswordFormSubmitted());
+}
+
 #if !defined(OS_ANDROID)
 // Tests that data from FieldInfoManager is taken into consideration for
 // offering username on username first flow.

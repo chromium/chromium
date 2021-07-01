@@ -208,13 +208,9 @@ PasswordForm& PasswordForm::operator=(const PasswordForm& form) = default;
 
 PasswordForm& PasswordForm::operator=(PasswordForm&& form) = default;
 
-bool PasswordForm::IsPossibleChangePasswordForm() const {
-  return !new_password_element_renderer_id.is_null();
-}
-
-bool PasswordForm::IsPossibleChangePasswordFormWithoutUsername() const {
-  return IsPossibleChangePasswordForm() &&
-         username_element_renderer_id.is_null();
+bool PasswordForm::IsLikelyChangePasswordForm() const {
+  return HasNewPasswordElement() && (username_element_renderer_id.is_null() ||
+                                     !password_element_renderer_id.is_null());
 }
 
 bool PasswordForm::HasUsernameElement() const {

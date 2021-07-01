@@ -177,7 +177,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void SetGenerationPopupWasShown(
       autofill::password_generation::PasswordGenerationType type);
   void SetGenerationElement(autofill::FieldRendererId generation_element);
-  bool IsPossibleChangePasswordFormWithoutUsername() const;
+  bool HasLikelyChangePasswordFormSubmitted() const;
   bool IsPasswordUpdate() const;
   base::WeakPtr<PasswordManagerDriver> GetDriver() const;
   const PasswordForm* GetSubmittedForm() const;

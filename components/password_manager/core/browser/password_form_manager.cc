@@ -496,9 +496,9 @@ void PasswordFormManager::SetGenerationElement(
   votes_uploader_.set_generation_element(generation_element);
 }
 
-bool PasswordFormManager::IsPossibleChangePasswordFormWithoutUsername() const {
+bool PasswordFormManager::HasLikelyChangePasswordFormSubmitted() const {
   return parsed_submitted_form_ &&
-         parsed_submitted_form_->IsPossibleChangePasswordFormWithoutUsername();
+         parsed_submitted_form_->IsLikelyChangePasswordForm();
 }
 
 bool PasswordFormManager::IsPasswordUpdate() const {

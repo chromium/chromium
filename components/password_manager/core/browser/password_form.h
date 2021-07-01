@@ -368,14 +368,9 @@ struct PasswordForm {
   // to its metadata (e.g. time it was discovered, whether alerts are muted).
   base::flat_map<InsecureType, InsecurityMetadata> password_issues;
 
-  // Return true if we consider this form to be a change password form.
-  // We use only client heuristics, so it could include signup forms.
-  bool IsPossibleChangePasswordForm() const;
-
-  // Return true if we consider this form to be a change password form
-  // without username field. We use only client heuristics, so it could
-  // include signup forms.
-  bool IsPossibleChangePasswordFormWithoutUsername() const;
+  // Return true if we consider this form to be a change password form and not
+  // a signup form. It's based on local heuristics and may be inaccurate.
+  bool IsLikelyChangePasswordForm() const;
 
   // Returns true if current password element is set.
   bool HasUsernameElement() const;

@@ -529,7 +529,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
   // Do not send votes if there was no observed form. Furthermore, don't send
   // votes on change password forms, since they were already sent in Update()
   // method.
-  if (observed_form && !parsed_submitted_form.IsPossibleChangePasswordForm()) {
+  if (observed_form && !parsed_submitted_form.HasNewPasswordElement()) {
     votes_uploader_->SendVoteOnCredentialsReuse(
         *observed_form, parsed_submitted_form, &pending_credentials_);
   }

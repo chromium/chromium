@@ -464,7 +464,7 @@ void PasswordManager::OnPasswordFormCleared(
   PasswordFormManager* manager =
       GetMatchedManager(driver, form_data.unique_renderer_id);
   if (!manager || !manager->is_submitted() ||
-      !manager->GetSubmittedForm()->IsPossibleChangePasswordForm()) {
+      !manager->GetSubmittedForm()->IsLikelyChangePasswordForm()) {
     return;
   }
   // If a password form was cleared, login is successful.
@@ -911,7 +911,7 @@ void PasswordManager::OnPasswordFormsRendered(
       PasswordForm::Scheme::kHtml) {
     for (const FormData& form_data : visible_forms_data_) {
       if (submitted_manager->IsEqualToSubmittedForm(form_data)) {
-        if (submitted_manager->IsPossibleChangePasswordFormWithoutUsername() &&
+        if (submitted_manager->HasLikelyChangePasswordFormSubmitted() &&
             AreChangePasswordFieldsEmpty(
                 form_data, *submitted_manager->GetSubmittedForm())) {
           continue;
