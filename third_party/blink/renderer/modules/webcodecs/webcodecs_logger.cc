@@ -85,6 +85,13 @@ void WebCodecsLogger::LogVisibleRegionDeprecation() {
                  "visibleRegion is deprecated; please use visibleRect.");
 }
 
+void WebCodecsLogger::LogPlanarConstructionDeprecation() {
+  LogDeprecation(Deprecation::kPlanarConstruction,
+                 "new VideoFrame(sequence<PlaneInit>, VideoFramePlaneInit) is "
+                 "deprecated; please use new VideoFrame(BufferSource, "
+                 "VideoFrameBufferInit).");
+}
+
 void WebCodecsLogger::LogCloseErrors(TimerBase*) {
   // If it's been a while since this class was used and there are not other
   // references to |leak_status_|, stop the timer.

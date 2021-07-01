@@ -9,6 +9,7 @@
 
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -19,7 +20,7 @@ struct ParsedCopyToOptions {
   ParsedCopyToOptions(VideoFrameCopyToOptions* options,
                       media::VideoPixelFormat format,
                       const gfx::Size& coded_size,
-                      const gfx::Rect& visible_rect,
+                      const gfx::Rect& default_rect,
                       ExceptionState&);
 
   struct Plane {
@@ -40,6 +41,9 @@ struct ParsedCopyToOptions {
 
   const wtf_size_t num_planes;
   Plane planes[media::VideoFrame::kMaxPlanes] = {{0}};
+
+  // Region of coded area to copy.
+  gfx::Rect rect;
 
   // Minimum size of a destination buffer that fits all planes.
   uint32_t min_buffer_size = 0;

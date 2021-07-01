@@ -26,11 +26,9 @@ function testTexImage2DFromVideoFrame(
     width, height, useTexSubImage2D, expectedPixel) {
   let vfInit = {format: 'RGBA', timestamp: 0, codedWidth: width,
                 codedHeight: height};
-  let u32Data = new Uint32Array(vfInit.codedWidth * vfInit.codedHeight);
-  u32Data.fill(0xFF966432);  // 'rgb(50, 100, 150)';
-  let argbPlaneData = new Uint8Array(u32Data.buffer);
-  let argbPlane = {src: argbPlaneData, stride: width * 4};
-  let frame = new VideoFrame([argbPlane], vfInit);
+  let argbData = new Uint32Array(vfInit.codedWidth * vfInit.codedHeight);
+  argbData.fill(0xFF966432);  // 'rgb(50, 100, 150)';
+  let frame = new VideoFrame(argbData, vfInit);
 
   let gl_canvas = new OffscreenCanvas(width, height);
   let gl = gl_canvas.getContext('webgl');

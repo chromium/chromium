@@ -38,9 +38,10 @@ class ExecutionContext;
 class PlaneInit;
 class ScriptPromise;
 class ScriptState;
+class VideoFrameBufferInit;
+class VideoFrameCopyToOptions;
 class VideoFrameInit;
 class VideoFramePlaneInit;
-class VideoFrameCopyToOptions;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -64,6 +65,10 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   static VideoFrame* Create(ScriptState*,
                             const HeapVector<Member<PlaneInit>>&,
                             const VideoFramePlaneInit*,
+                            ExceptionState&);
+  static VideoFrame* Create(ScriptState*,
+                            const V8BufferSource*,
+                            const VideoFrameBufferInit*,
                             ExceptionState&);
 
   String format() const;

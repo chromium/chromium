@@ -905,6 +905,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_frame_buffer_init.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_frame_buffer_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.cc",

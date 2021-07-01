@@ -67,6 +67,7 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
   void LogPlanesDeprecation();
   void LogCodedRegionDeprecation();
   void LogVisibleRegionDeprecation();
+  void LogPlanarConstructionDeprecation();
 
   void Trace(Visitor*) const override;
 
@@ -77,6 +78,7 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
     kPlanes = 4,
     kCodedRegion = 8,
     kVisibleRegion = 16,
+    kPlanarConstruction = 32,
   };
 
   void LogCloseErrors(TimerBase*);

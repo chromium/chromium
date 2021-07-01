@@ -11,9 +11,13 @@
 ] interface VideoFrame {
   [CallWith=ScriptState, RaisesException]
   constructor(CanvasImageSource source, optional VideoFrameInit init = {});
+
   [CallWith=ScriptState, RaisesException]
   constructor(sequence<PlaneInit> planes,
               VideoFramePlaneInit init);
+
+  [CallWith=ScriptState, RaisesException]
+  constructor([AllowShared] BufferSource data, VideoFrameBufferInit init);
 
   readonly attribute VideoPixelFormat? format;
 

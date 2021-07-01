@@ -18,12 +18,12 @@ namespace blink {
 ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
                                          media::VideoPixelFormat format,
                                          const gfx::Size& coded_size,
-                                         const gfx::Rect& visible_rect,
+                                         const gfx::Rect& default_rect,
                                          ExceptionState& exception_state)
     : num_planes(
           static_cast<wtf_size_t>(media::VideoFrame::NumPlanes(format))) {
-  // Parse |rect|
-  gfx::Rect rect = visible_rect;
+  // Parse rect.
+  rect = default_rect;
   if (options->hasRect()) {
     rect = ToGfxRect(options->rect(), "rect", exception_state);
     if (exception_state.HadException())
@@ -133,19 +133,21 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
     // on the last row.
     const auto plane_size =
         base::CheckedNumeric<uint32_t>(planes[i].stride) * planes[i].height;
-    if (!plane_size.IsValid()) {
-      exception_state.ThrowTypeError(
-          String::Format("Invalid layout, plane %u with stride %u is too "
-                         "large.",
-                         i, planes[i].stride));
-      return;
-    }
     const auto plane_end = plane_size + planes[i].offset;
     if (!plane_end.IsValid()) {
       exception_state.ThrowTypeError(
           String::Format("Invalid layout, plane %u with offset %u and stride "
                          "%u exceeds bounds.",
                          i, planes[i].offset, planes[i].stride));
+      return;
+    }
+    // Plane size is verified to fit in int for compatibility with
+    // libyuv::CopyPlane().
+    if (!plane_size.Cast<int>().IsValid()) {
+      exception_state.ThrowTypeError(
+          String::Format("Invalid layout, plane %u with stride %u exceeds "
+                         "implementation limit.",
+                         i, planes[i].stride));
       return;
     }
     end_offset[i] = plane_end.ValueOrDie();

@@ -1,45 +1,33 @@
 // META: global=window,dedicatedworker
 
 function makeI420_4x2() {
-  const yData = new Uint8Array([
-      1, 2, 3, 4,
+  const data = new Uint8Array([
+      1, 2, 3, 4,  // y
       5, 6, 7, 8,
+      9, 10,       // u
+      11, 12,      // v
   ]);
-  const uData = new Uint8Array([
-      9, 10,
-  ]);
-  const vData = new Uint8Array([
-      11, 12,
-  ]);
-  const planes = [
-      {data: yData, stride: 4},
-      {data: uData, stride: 2},
-      {data: vData, stride: 2},
-  ];
   const init = {
       format: 'I420',
       timestamp: 0,
       codedWidth: 4,
       codedHeight: 2,
   };
-  return new VideoFrame(planes, init);
+  return new VideoFrame(data, init);
 }
 
 function makeRGBA_2x2() {
-  const rgbaData = new Uint8Array([
-      1, 2, 3, 4,     5, 6, 7, 8,
-      9, 10, 11, 12,  13, 14, 15, 16,
+  const data = new Uint8Array([
+      1,2,3,4,    5,6,7,8,
+      9,10,11,12, 13,14,15,16,
   ]);
-  const planes = [
-      {data: rgbaData, stride: 8},
-  ];
   const init = {
       format: 'RGBA',
       timestamp: 0,
       codedWidth: 2,
       codedHeight: 2,
   };
-  return new VideoFrame(planes, init);
+  return new VideoFrame(data, init);
 }
 
 function assert_buffer_equals(actual, expected) {
@@ -86,8 +74,8 @@ promise_test(async t => {
       {offset: 0, stride: 8},
   ];
   const expectedData = new Uint8Array([
-      1, 2, 3, 4,     5, 6, 7, 8,
-      9, 10, 11, 12,  13, 14, 15, 16
+      1,2,3,4,    5,6,7,8,
+      9,10,11,12, 13,14,15,16,
   ]);
   assert_equals(frame.allocationSize(), expectedData.length, 'allocationSize()');
   const data = new Uint8Array(expectedData.length);
