@@ -364,6 +364,12 @@ interface Frame {
   // be posted back to the event loop to be invoked later. This is to ensure
   // that any postMessage() calls executed by JS during unload are dispatched,
   // since postMessage dispatch is always scheduled asynchronously.
+  //
+  // `new_remote_frame_routing_id`, `new_remote_frame_replication_state`,
+  // `new_remote_frame_token`, and `new_remote_main_frame_interfaces` are used
+  // to construct the new RenderFrameProxy. `is_loading` mirrors the loading
+  // state of the FrameTreeNode's current RenderFrameHost and determines whether
+  // the newly-constructed RenderFrameProxy is marked as loading or not.
   Unload(
       int32 new_remote_frame_routing_id,
       bool is_loading,
@@ -376,6 +382,47 @@ interface Frame {
   // browser process. Committed main frames are owned by the renderer's WebView
   // and can not be deleted directly.
   Delete(FrameDeleteIntention intention);
+
+  // Requests that a speculative RenderFrameHost which the browser has already
+  // sent a `CommitNavigation()` to should swap itself back out for a
+  // RenderFrameProxy to effectively undo the `CommitNavigation()`.
+  //
+  // This is needed when discarding a speculative RenderFrameHost that's already
+  // been asked to commit a navigation, as the state between the browser and
+  // renderer would otherwise be out of sync:
+  //
+  // - from the perspective of the browser process, the speculative
+  //   RenderFrameHost has not yet committed as it has not yet acknowledged the
+  //   `CommitNavigation()` with `DidCommitNavigation()`.
+  // - but any IPCs sent from the browser to the renderer will see that the
+  //   provisional RenderFrame has already been swapped in and the
+  //   RenderFrameProxy it replaced destroyed.
+  //
+  // Note: This, of course, does not work for RenderDocument, since the
+  // provisional RenderFrame replaces *another* RenderFrame when it commits. The
+  // state associated with the replaced RenderFrame is already gone, and it's
+  // impossible to restore it. Fixing this issue for RenderDocument will
+  // require serious reworking of how navigations are committed.
+  //
+  // While this is very similar to `Unload()`, the renderer will not send any
+  // unload ACK back to the browser on completion. As a result, there is no
+  // special handling to ensure messages queued by Window.postMessage() are
+  // forwarded.
+  //
+  // `new_remote_frame_routing_id`, `new_remote_frame_replication_state`,
+  // `new_remote_frame_token`, and `new_remote_main_frame_interfaces` are used
+  // to construct the new RenderFrameProxy. `is_loading` mirrors the loading
+  // state of the FrameTreeNode's current RenderFrameHost and determines whether
+  // the newly-constructed RenderFrameProxy is marked as loading or not.
+  //
+  // TODO(dcheng): It's unclear if `is_loading` is necessary; presently, it
+  // always seems to be true when this IPC is called.
+  UndoCommitNavigation(
+      int32 new_remote_frame_routing_id,
+      bool is_loading,
+      blink.mojom.FrameReplicationState new_remote_frame_replication_state,
+      blink.mojom.RemoteFrameToken new_remote_frame_token,
+      RemoteMainFrameInterfaces new_remote_main_frame_interfaces);
 
   // Causes all new subresource requests to be blocked (not being started) until
   // ResumeBlockedRequests is called.

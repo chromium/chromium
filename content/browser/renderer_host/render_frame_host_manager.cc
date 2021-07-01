@@ -1177,12 +1177,64 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost() {
                 WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
               });
   speculative_render_frame_host_->GetProcess()->RemovePendingView();
-  speculative_render_frame_host_->DeleteRenderFrame(
-      frame_tree_node_->parent()
-          ? mojom::FrameDeleteIntention::kNotMainFrame
-          : mojom::FrameDeleteIntention::
-                kSpeculativeMainFrameForNavigationCancelled);
+  if (speculative_render_frame_host_->lifecycle_state() ==
+      LifecycleStateImpl::kSpeculative) {
+    speculative_render_frame_host_->DeleteRenderFrame(
+        frame_tree_node_->parent()
+            ? mojom::FrameDeleteIntention::kNotMainFrame
+            : mojom::FrameDeleteIntention::
+                  kSpeculativeMainFrameForNavigationCancelled);
+  } else {
+    DCHECK_EQ(speculative_render_frame_host_->lifecycle_state(),
+              LifecycleStateImpl::kPendingCommit);
+    // The browser process already asked the renderer to commit the navigation.
+    // The renderer is guaranteed to commit the navigation and swap in the
+    // provisional `RenderFrame` to replace the current `RenderFrameProxy`
+    // unless the frame is detached: see `AssertNavigationCommits` in
+    // `RenderFrameImpl` for more details about this enforcement.
+    //
+    // Instead of simply deleting the `RenderFrame`, the browser process must
+    // unwind the renderer's state by sending it another IPC to "undo" the
+    // commit by immediately swapping it out for a proxy again.
+
+    // The renderer hasn't acknowledged the `CommitNavigation()` yet so the
+    // `RenderFrameProxyHost` should still be alive. Reuse it.
+    RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
+        speculative_render_frame_host_->GetSiteInstance());
+    DCHECK(proxy);
+    speculative_render_frame_host_->UndoCommitNavigation(
+        *proxy, frame_tree_node_->IsLoading());
+  }
   return std::move(speculative_render_frame_host_);
+}
+
+void RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown() {
+  TRACE_EVENT(
+      "navigation",
+      "RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown",
+      [&](perfetto::EventContext ctx) {
+        WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
+      });
+
+  DCHECK(speculative_render_frame_host_);
+
+  speculative_render_frame_host_->GetProcess()->RemovePendingView();
+  // No need to call `DeleteRenderFrame()`. When a RenderFrame or
+  // RenderFrameProxy is detached, it also detaches any associated provisional
+  // RenderFrame, whether this due to a child frame being removed from the
+  // frame tree or the entire RenderView being torn down.
+  speculative_render_frame_host_->SetLifecycleStateToReadyToBeDeleted();
+  // TODO(dcheng): Figure out why `RenderFrameDeleted()` doesn't seem to be
+  // called on child `RenderFrameHost`s at shutdown. This is currently limited
+  // to main frame-only because that is how it has worked for some time:
+  // `~WebContentsImpl()` calls `FrameTree::Shutdown()` which calls
+  // `RenderFrameDeleted()` for main frame RenderFrameHosts only... Since
+  // `FrameTree::Shutdown()` now delegates to this method to shutdown the
+  // speculative RenderFrameHost, match the previous behavior.
+  if (frame_tree_node_->IsMainFrame()) {
+    speculative_render_frame_host_->RenderFrameDeleted();
+  }
+  speculative_render_frame_host_.reset();
 }
 
 void RenderFrameHostManager::OnDidStartLoading() {

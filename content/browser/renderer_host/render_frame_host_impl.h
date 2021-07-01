@@ -733,6 +733,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // deleted or deferred depending on its children's unload status.
   void Unload(RenderFrameProxyHost* proxy, bool is_loading);
 
+  // Sent to a renderer when the browser needs to cancel a navigation associated
+  // with a speculative RenderFrameHost that has already been asked to commit
+  // via `CommitNavigation()`. The renderer will swap out the already-committed
+  // RenderFrame, replacing it with a RenderFrameProxy for `proxy`.
+  //
+  // TODO(https://crbug.com/1220337): This method is fundamentally incompatible
+  // with RenderDocument, as there is no RenderFrameProxy to restore for a
+  // local<->local swap.
+  void UndoCommitNavigation(RenderFrameProxyHost& proxy, bool is_loading);
+
   // Unload this frame for the proxy. Similar to `Unload()` but without
   // managing the lifecycle of this object.
   void SwapOuterDelegateFrame(RenderFrameProxyHost* proxy);
@@ -902,6 +912,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetLifecycleStateToActive();
   void SetLifecycleStateToPrerendering();
   void SetLifecycleStateToPendingCommit();
+  void SetLifecycleStateToReadyToBeDeleted();
 
   // Sets |has_pending_lifecycle_state_update_| to true for this
   // RenderFrameHost and its children. Called when this RenderFrameHost stops

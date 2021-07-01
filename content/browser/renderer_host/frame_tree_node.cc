@@ -152,10 +152,11 @@ FrameTreeNode::FrameTreeNode(
 }
 
 FrameTreeNode::~FrameTreeNode() {
-  // The current frame host may be null when destroying the old frame tree
-  // during prerender activation. However, in such cases, the FrameTree and its
-  // root FrameTreeNode objects are deleted immediately with activation. In all
-  // other cases, there should always be a current frame host.
+  // There should always be a current RenderFrameHost except during prerender
+  // activation. Prerender activation moves the current RenderFrameHost from
+  // the old FrameTree's FrameTreeNode to the new FrameTree's FrameTreeNode and
+  // then destroys the old FrameTree. See
+  // `RenderFrameHostManager::TakePrerenderedPage()`.
   if (current_frame_host()) {
     // Remove the children.
     current_frame_host()->ResetChildren();
@@ -208,37 +209,34 @@ FrameTreeNode::~FrameTreeNode() {
 
   g_frame_tree_node_id_map.Get().erase(frame_tree_node_id_);
 
+  // If a frame with a pending navigation is detached, make sure the
+  // WebContents (and its observers) update their loading state.
+  // TODO(dcheng): This should just check `IsLoading()`, but `IsLoading()`
+  // assumes that `current_frame_host_` is not null. This is incompatible with
+  // prerender activation when destroying the old frame tree (see above).
   bool did_stop_loading = false;
 
   if (navigation_request_) {
     navigation_request_.reset();
-    // If a frame with a pending navigation is detached, make sure the
-    // WebContents (and its observers) update their loading state.
     did_stop_loading = true;
   }
 
   // ~SiteProcessCountTracker DCHECKs in some tests if the speculative
   // RenderFrameHostImpl is not destroyed last. Ideally this would be closer to
   // (possible before) the ResetLoadingState() call above.
-  //
-  // There is an inherent race condition causing bugs 838348/915179/et al, where
-  // the renderer may have committed the speculative main frame and the browser
-  // has not heard about it yet. If this is a main frame, then in that case the
-  // speculative RenderFrame was unable to be deleted (it is owned by the
-  // renderer) and we should not be able to cancel the navigation at this point.
-  // CleanUpNavigation() would normally be called here but it will try to undo
-  // the navigation and expose the race condition. When it replaces the main
-  // frame with a RenderFrameProxy, that leaks the committed main frame, leaving
-  // the frame and its friend group with pointers that will become invalid
-  // shortly as we are shutting everything down and deleting the RenderView etc.
-  // We avoid this problematic situation by not calling CleanUpNavigation() or
-  // DiscardUnusedFrame() here. The speculative RenderFrameHost is simply
-  // returned and deleted immediately. This satisfies the requirement that the
-  // speculative RenderFrameHost is removed from the RenderFrameHostManager
-  // before it is destroyed.
   if (render_manager_.speculative_frame_host()) {
+    // TODO(dcheng): Shouldn't a FrameTreeNode with a speculative
+    // RenderFrameHost always be considered loading?
     did_stop_loading |= render_manager_.speculative_frame_host()->is_loading();
-    render_manager_.UnsetSpeculativeRenderFrameHost();
+    // `FrameTree::Shutdown()` has special handling for the main frame's
+    // speculative RenderFrameHost, and the speculative RenderFrameHost should
+    // already be reset for main frames.
+    DCHECK(!IsMainFrame());
+
+    // This does not use `UnsetSpeculativeRenderFrameHost()`: if the speculative
+    // RenderFrameHost has already reached kPendingCommit, it would needlessly
+    // re-create a proxy for a frame that's going away.
+    render_manager_.DiscardSpeculativeRenderFrameHostForShutdown();
   }
 
   if (did_stop_loading)
@@ -438,6 +436,8 @@ bool FrameTreeNode::IsLoading() const {
 
   RenderFrameHostImpl* speculative_frame_host =
       render_manager_.speculative_frame_host();
+  // TODO(dcheng): Shouldn't a FrameTreeNode with a speculative RenderFrameHost
+  // always be considered loading?
   if (speculative_frame_host && speculative_frame_host->is_loading())
     return true;
   return current_frame_host->is_loading();

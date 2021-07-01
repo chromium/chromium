@@ -8900,7 +8900,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerNoSiteIsolationTest,
 // its own unload handler caused a crash. https://crbug.com/1148793
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        RemoveSubframeInUnload_SameSite) {
-  // TODO(https://crbug.com/1148793): Remove this early return.
+  // TODO(https://crbug.com/1148793): Remove this early return. This doesn't
+  // work for RenderDocumentLevel::kSubframe or greater because cancelling the
+  // navigation when detaching the subtree tries to restore the replaced
+  // RenderFrameProxy (which doesn't exist in the same-site RenderDocument case
+  // because the replaced object wasn't a RenderFrameProxy, but instead a
+  // RenderFrame).
+  if (ShouldCreateNewHostForSameSiteSubframe())
+    return;
   AssertCanRemoveSubframeInUnload(/*same_site=*/true);
 }
 

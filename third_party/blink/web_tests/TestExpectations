@@ -5002,10 +5002,9 @@ crbug.com/946335 [ Mac ] fast/filesystem/file-writer-abort-depth.html [ Pass Cra
 # Sheriff 2019-04-15
 crbug.com/952708 external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Pass Failure ]
 
-# portals/csp/frame-src.sub.html crashes because of a race between cancelling a
-# speculative navigation in the browser, and committing the navigation in the
-# renderer.
-crbug.com/838348 virtual/portals/external/wpt/portals/csp/frame-src.sub.html [ Pass Crash ]
+# The postMessage() calls intended to complete the test are blocked due to being
+# cross-origin between the portal and the host..
+crbug.com/1220891 virtual/portals/external/wpt/portals/csp/frame-src.sub.html [ Timeout ]
 
 # Sheriff 2019-04-17
 crbug.com/953591 [ Win ] fast/forms/datalist/input-appearance-range-with-transform.html [ Pass Failure ]

@@ -5455,43 +5455,64 @@ IN_PROC_BROWSER_TEST_F(
   VerifyImageSubresourceLoads(main_frame);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug838348) {
+// Helper that ignores a request from the renderer to commit a navigation and
+// instead, begins another navigation to the specified `url` in
+// `frame_tree_node`.
+class BeginNavigationInCommitCallbackInterceptor
+    : public RenderFrameHostImpl::CommitCallbackInterceptor {
+ public:
+  BeginNavigationInCommitCallbackInterceptor(FrameTreeNode* frame_tree_node,
+                                             const GURL& url)
+      : frame_tree_node_(frame_tree_node), url_(url) {}
+
+  bool WillProcessDidCommitNavigation(
+      NavigationRequest* request,
+      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
+      override {
+    request->GetRenderFrameHost()->SetCommitCallbackInterceptorForTesting(
+        nullptr);
+    // At this point, the renderer has already committed the RenderFrame, but
+    // on the browser side, the RenderFrameHost is still speculative. Begin
+    // another navigation, which should cause `this` to be discarded.
+    EXPECT_TRUE(BeginNavigateToURLFromRenderer(frame_tree_node_, url_));
+
+    // Ignore the commit message.
+    return false;
+  }
+
+ private:
+  FrameTreeNode* const frame_tree_node_;
+  const GURL url_;
+};
+
+class NavigationBrowserTestWithPerformanceManager
+    : public NavigationBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationBrowserTest::SetUpCommandLine(command_line);
+
+    // The PerformanceManager maintains its own parallel frame tree. Make sure
+    // it doesn't get confused. By default, PerformanceManager uses the dummy
+    // implementation.
+    //
+    // TODO(https://crbug.com/1222647): Enable this by default in content_shell.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "PerformanceManagerInstrumentation");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
+                       BeginNewNavigationAfterCommitNavigationInMainFrame) {
   if (!AreAllSitesIsolatedForTesting())
     return;
-
-  // Helper that ignores a request from the renderer to commit a navigation and
-  // instead, begins another navigation to the specified `url` in `shell`.
-  class CommitCallbackInterceptor
-      : public RenderFrameHostImpl::CommitCallbackInterceptor {
-   public:
-    CommitCallbackInterceptor(Shell* shell, const GURL& url)
-        : shell_(shell), url_(url) {}
-
-    bool WillProcessDidCommitNavigation(
-        NavigationRequest* request,
-        mojom::DidCommitProvisionalLoadParamsPtr* params,
-        mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
-        override {
-      request->GetRenderFrameHost()->SetCommitCallbackInterceptorForTesting(
-          nullptr);
-      // At this point, the renderer has already committed the RenderFrame, but
-      // on the browser side, the RenderFrameHost is still speculative. Begin
-      // another navigation, which should cause `this` to be discarded.
-      EXPECT_TRUE(BeginNavigateToURLFromRenderer(shell_, url_));
-
-      // Ignore the commit message.
-      return false;
-    }
-
-   private:
-    Shell* const shell_;
-    const GURL url_;
-  };
 
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
-  // Open a new window from `shell()` and navigate it a document in b.com.
+  // The crash, if any, will manifest in the b.com renderer. Open a b.com window
+  // in the same browsing instance to ensure that the b.com renderer stays
+  // around even if the b.com speculative RenderFrameHost is discarded.
   ASSERT_TRUE(ExecJs(
       shell(), JsReplace("window.open($1)", embedded_test_server()->GetURL(
                                                 "b.com", "/title1.html"))));
@@ -5520,22 +5541,86 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug838348) {
   EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Intercept the next commit navigation and ignore it, triggering a
-  // navigation to a document in c.com instead.
-  CommitCallbackInterceptor interceptor(
-      shell(), embedded_test_server()->GetURL("c.com", "/title1.html"));
+  // Simulates a race where another navigation begins after the browser sends
+  // `CommitNavigation() to the b.com renderer, but a different navigation to
+  // c.com begins before `DidCommitNavigation()` has been received from the
+  // b.com renderer.
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  BeginNavigationInCommitCallbackInterceptor interceptor(
+      web_contents->GetFrameTree()->root(), final_url);
   speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
       &interceptor);
 
-  // The renderer process for b.com should crash, as the state between the
-  // browser and renderer would be out of sync otherwise. The previously opened
-  // window should ensure that fast shutdown is not used for b.com.
-  // TODO(dcheng): The render process should, in fact, not crash.
-  // https://crbug.com/838348
-  RenderProcessHostWatcher crash_observer(
-      speculative_render_frame_host->GetProcess(),
-      RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  crash_observer.Wait();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
+                       BeginNewNavigationAfterCommitNavigationInSubFrame) {
+  if (!AreAllSitesIsolatedForTesting())
+    return;
+
+  // This test's process layout is structured a bit differently from the main
+  // frame case. PerformanceManager reports when a remote frame is attached to
+  // a local parent, and it was previously getting confused by the fact that
+  // a RenderFrameProxy with matching RemoteFrameTokens was being reported as
+  // attached twice: once by the initial page loaded in the next statement, and
+  // the next when the browser needs to send a `UndoCommitNavigation()` to the
+  // a.com renderer.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* first_subframe_node =
+      web_contents->GetMainFrame()->child_at(0);
+  RenderProcessHost* const a_com_render_process_host =
+      web_contents->GetFrameTree()
+          ->root()
+          ->render_manager()
+          ->current_frame_host()
+          ->GetProcess();
+
+  // Start a navigation that will create a speculative RFH in the existing
+  // render process for a.com.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
+      first_subframe_node,
+      embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // Ensure the speculative RFH is in the expected process.
+  RenderFrameHostImpl* speculative_render_frame_host =
+      first_subframe_node->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(a_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Update the id attribute to exercise a PerformanceManager-specific code
+  // path: when the renderer swaps in a RenderFrameProxy to undo the
+  // `CommitNavigation()`, it will report the iframe attribution data again. The
+  // PerformanceManager should not complain that V8ContextTracker already has
+  // the iframe attribution data, nor should it update the iframe attribution
+  // data, to preserve existing behavior (unfortunately, the latter part is not
+  // really tested in this browser test).
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "document.querySelector('iframe').id = 'new-name';"));
+
+  // Simulates a race where another navigation begins after the browser sends
+  // `CommitNavigation() to the a.com renderer, but a different navigation to
+  // c.com begins before `DidCommitNavigation()` has been received from the
+  // a.com renderer.
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  BeginNavigationInCommitCallbackInterceptor interceptor(first_subframe_node,
+                                                         final_url);
+  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
+      &interceptor);
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(final_url, first_subframe_node->render_manager()
+                           ->current_frame_host()
+                           ->GetLastCommittedURL());
 }
 
 // The following test checks what happens if a WebContentsDelegate navigates

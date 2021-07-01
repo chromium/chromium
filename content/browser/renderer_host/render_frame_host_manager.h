@@ -353,9 +353,17 @@ class CONTENT_EXPORT RenderFrameHostManager
   // |speculative_render_frame_host_| and if not, discards it.
   void MaybeCleanUpNavigation();
 
-  // Clears the speculative members, returning the RenderFrameHost to the caller
-  // for disposal.
+  // Clears the speculative RFH when a navigation is cancelled (for example, by
+  // being replaced by a new navigation), returning ownership of the
+  // `RenderFrameHost` to the caller for disposal.
   std::unique_ptr<RenderFrameHostImpl> UnsetSpeculativeRenderFrameHost();
+
+  // Used for FrameTreeNode teardown. This releases any pending views from the
+  // speculative RFH (if any) to its respective RenderProcessHost before
+  // discarding it. Unlike `UnsetSpeculativeRenderFrameHost()`, this does not
+  // send any IPC to the renderer to delete the corresponding RenderFrame. The
+  // caller must ensure that the RenderFrame has been or will be cleaned up.
+  void DiscardSpeculativeRenderFrameHostForShutdown();
 
   // Notification methods to tell this RenderFrameHostManager that the frame it
   // is responsible for has started or stopped loading a document.

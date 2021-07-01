@@ -797,6 +797,13 @@ class CONTENT_EXPORT RenderFrameImpl
               mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
   void Delete(mojom::FrameDeleteIntention intent) override;
+  void UndoCommitNavigation(
+      int proxy_routing_id,
+      bool is_loading,
+      blink::mojom::FrameReplicationStatePtr replicated_frame_state,
+      const blink::RemoteFrameToken& frame_token,
+      mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
+      override;
   void BlockRequests() override;
   void ResumeBlockedRequests() override;
   void GetInterfaceProvider(
@@ -1048,6 +1055,19 @@ class CONTENT_EXPORT RenderFrameImpl
   void AddMessageToConsoleImpl(blink::mojom::ConsoleMessageLevel level,
                                const std::string& message,
                                bool discard_duplicates);
+
+  // Swaps out the RenderFrame, creating a new RenderFrameProxy and then
+  // swapping it into the frame tree to replace `this`. Returns false if
+  // swapping out `this` ends up detaching this frame instead when running the
+  // unload handlers, and true otherwise.
+  //
+  // Important: after this method returns, `this` has been deleted.
+  bool SwapOutAndDeleteThis(
+      int proxy_routing_id,
+      bool is_loading,
+      blink::mojom::FrameReplicationStatePtr replicated_frame_state,
+      const blink::RemoteFrameToken& frame_token,
+      mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);
 
   // Stores the WebLocalFrame we are associated with.  This is null from the
   // constructor until BindToFrame() is called, and it is null after

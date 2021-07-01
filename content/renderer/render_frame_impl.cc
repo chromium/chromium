@@ -2068,77 +2068,30 @@ void RenderFrameImpl::Unload(
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
 
   // Send an UpdateState message before we get deleted.
+  // TODO(dcheng): Improve this comment to clarify why it's important to sent
+  // state updates.
   SendUpdateState();
 
-  // There should always be a proxy to replace this RenderFrame. Create it now
-  // so its routing id is registered for receiving IPC messages.
-  CHECK_NE(proxy_routing_id, MSG_ROUTING_NONE);
-  RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyToReplaceFrame(
-      agent_scheduling_group_, this, proxy_routing_id,
-      replicated_frame_state->scope, proxy_frame_token);
-
-  RenderViewImpl* render_view = render_view_;
-  bool is_main_frame = is_main_frame_;
+  // Before `this` is destroyed, save any fields needed to schedule a call to
+  // `AgentSchedulingGroupHost::DidUnloadRenderFrame()`. The acknowlegement
+  // itself is asynchronous to ensure that any postMessage calls (which schedule
+  // IPCs as well) made from unload handlers are routed to the browser process
+  // before the corresponding `RenderFrameHostImpl` is torn down.
   auto& agent_scheduling_group = agent_scheduling_group_;
   blink::LocalFrameToken frame_token = frame_->GetLocalFrameToken();
-
-  // Before |this| is destroyed, grab the TaskRunner to be used for sending the
-  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.  This will be used to
-  // schedule mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame to be sent
-  // after any postMessage IPCs scheduled from the unload event above.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetTaskRunner(blink::TaskType::kPostedMessage);
 
-  // Now that all of the cleanup is complete and the browser side is notified,
-  // start using the RenderFrameProxy.
-  //
-  // The swap call deletes this RenderFrame via FrameDetached.  Do not access
-  // any members after this call.
-  //
-  // TODO(creis): WebFrame::swap() can return false.  Most of those cases
-  // should be due to the frame being detached during unload (in which case
-  // the necessary cleanup has happened anyway), but it might be possible for
-  // it to return false without detaching.  Catch any cases that the
-  // RenderView's main_render_frame_ isn't cleared below (whether swap returns
-  // false or not).
-  //
-  // This executes the unload handlers on this frame and its local descendants.
-  bool success = frame_->Swap(proxy->web_frame());
-
-  // WARNING: Do not access 'this' past this point!
-
-  if (is_main_frame) {
-    // Main frames should always swap successfully because there is no parent
-    // frame to cause them to become detached.
-    DCHECK(success);
-    // For main frames, the swap should have cleared the RenderView's pointer to
-    // this frame.
-    CHECK(!render_view->main_render_frame_);
-
-    // The RenderFrameProxy being swapped in here has now been attached to the
-    // Page as its main frame and properly initialized by the WebFrame::Swap()
-    // call, so we can call WebView's DidAttachRemoteMainFrame().
-    render_view->GetWebView()->DidAttachRemoteMainFrame(
-        std::move(remote_main_frame_interfaces->main_frame_host),
-        std::move(remote_main_frame_interfaces->main_frame));
-  }
-
-  if (!success) {
-    // The swap can fail when the frame is detached during swap (this can
-    // happen while running the unload handlers). When that happens, delete
-    // the proxy.
-    proxy->FrameDetached(blink::WebRemoteFrameClient::DetachType::kSwap);
+  // Important: |this| is deleted after this call!
+  if (!SwapOutAndDeleteThis(
+          proxy_routing_id, is_loading, std::move(replicated_frame_state),
+          proxy_frame_token, std::move(remote_main_frame_interfaces))) {
+    // The swap is cancelled because running the unload handlers ended up
+    // detaching this frame.
     return;
   }
 
-  if (is_loading)
-    proxy->DidStartLoading();
-
-  // Initialize the WebRemoteFrame with the replication state passed by the
-  // process that is now rendering the frame.
-  proxy->SetReplicatedState(std::move(replicated_frame_state));
-
-  // Notify the browser that this frame was unloaded. Use the cached
+  // Notify the browser that this frame was swapped out. Use the cached
   // `AgentSchedulingGroup` because |this| is deleted. Post a task to send the
   // ACK, so that any postMessage IPCs scheduled from the unload handler are
   // sent before the ACK (see https://crbug.com/857274).
@@ -2206,6 +2159,29 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   // This will result in a call to RenderFrameImpl::FrameDetached, which
   // deletes the object. Do not access |this| after detach.
   frame_->Detach();
+}
+
+void RenderFrameImpl::UndoCommitNavigation(
+    int proxy_routing_id,
+    bool is_loading,
+    blink::mojom::FrameReplicationStatePtr replicated_frame_state,
+    const blink::RemoteFrameToken& proxy_frame_token,
+    mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
+  // The browser process asked `this` to commit a navigation but has now decided
+  // to discard the speculative RenderFrameHostImpl instead, since the
+  // associated navigation was cancelled or replaced. However, the browser
+  // process hasn't heard the `DidCommitNavigation()` yet, so pretend that the
+  // commit never happened by immediately swapping `this` back to a proxy.
+  //
+  // This means that any state changes triggered by the already-swapped in
+  // RenderFrame will simply be ignored, but that can't be helped: the
+  // browser-side RFH will be gone before any outgoing IPCs from the renderer
+  // for this RenderFrame (which by definition, are still in-flight) will be
+  // processed by the browser process (as it has not yet seen the
+  // `DidCommitNavigation()`).
+  SwapOutAndDeleteThis(proxy_routing_id, is_loading,
+                       std::move(replicated_frame_state), proxy_frame_token,
+                       std::move(remote_main_frame_interfaces));
 }
 
 void RenderFrameImpl::SnapshotAccessibilityTree(
@@ -3905,6 +3881,72 @@ void RenderFrameImpl::DidSetPageLifecycleState() {
 
 void RenderFrameImpl::DidUpdateCurrentHistoryItem() {
   render_view_->StartNavStateSyncTimerIfNecessary(this);
+}
+
+bool RenderFrameImpl::SwapOutAndDeleteThis(
+    int proxy_routing_id,
+    bool is_loading,
+    blink::mojom::FrameReplicationStatePtr replicated_frame_state,
+    const blink::RemoteFrameToken& proxy_frame_token,
+    mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
+  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::SwapOutAndDeleteThis", "id",
+               routing_id_);
+  DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
+
+  // There should always be a proxy to replace this RenderFrame. Create it now
+  // so its routing id is registered for receiving IPC messages.
+  CHECK_NE(proxy_routing_id, MSG_ROUTING_NONE);
+  RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyToReplaceFrame(
+      agent_scheduling_group_, this, proxy_routing_id,
+      replicated_frame_state->scope, proxy_frame_token);
+
+  RenderViewImpl* render_view = render_view_;
+  bool is_main_frame = is_main_frame_;
+
+  // The swap call deletes this RenderFrame via FrameDetached.  Do not access
+  // any members after this call.
+  //
+  // TODO(creis): WebFrame::swap() can return false.  Most of those cases
+  // should be due to the frame being detached during unload (in which case
+  // the necessary cleanup has happened anyway), but it might be possible for
+  // it to return false without detaching.
+  //
+  // This executes the unload handlers on this frame and its local descendants.
+  bool success = frame_->Swap(proxy->web_frame());
+
+  // WARNING: Do not access 'this' past this point!
+
+  if (is_main_frame) {
+    // Main frames should always swap successfully because there is no parent
+    // frame to cause them to become detached.
+    DCHECK(success);
+    // For main frames, the swap should have cleared the RenderView's pointer to
+    // this frame.
+    CHECK(!render_view->main_render_frame_);
+
+    // The RenderFrameProxy being swapped in here has now been attached to the
+    // Page as its main frame and properly initialized by the WebFrame::Swap()
+    // call, so we can call WebView's DidAttachRemoteMainFrame().
+    render_view->GetWebView()->DidAttachRemoteMainFrame(
+        std::move(remote_main_frame_interfaces->main_frame_host),
+        std::move(remote_main_frame_interfaces->main_frame));
+  }
+
+  if (!success) {
+    // The swap can fail when the frame is detached during swap (this can
+    // happen while running the unload handlers). When that happens, delete
+    // the proxy.
+    proxy->FrameDetached(blink::WebRemoteFrameClient::DetachType::kSwap);
+    return false;
+  }
+
+  if (is_loading)
+    proxy->DidStartLoading();
+
+  // Initialize the WebRemoteFrame with the replication state passed by the
+  // process that is now rendering the frame.
+  proxy->SetReplicatedState(std::move(replicated_frame_state));
+  return true;
 }
 
 base::UnguessableToken RenderFrameImpl::GetDevToolsFrameToken() {

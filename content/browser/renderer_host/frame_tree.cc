@@ -741,10 +741,7 @@ void FrameTree::Shutdown() {
   // being destroyed.
   root_->ResetNavigationRequest(/*keep_state=*/true);
   if (root_manager->speculative_frame_host()) {
-    root_manager->speculative_frame_host()->DeleteRenderFrame(
-        mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown);
-    root_manager->speculative_frame_host()->RenderFrameDeleted();
-    root_manager->speculative_frame_host()->ResetNavigationRequests();
+    root_manager->DiscardSpeculativeRenderFrameHostForShutdown();
   }
 
   // NavigationRequests restoring the page from bfcache have a reference to the

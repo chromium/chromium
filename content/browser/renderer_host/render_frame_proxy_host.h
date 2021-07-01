@@ -239,6 +239,15 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // and bound in blink.
   mojom::RemoteMainFrameInterfacesPtr BindAndPassRemoteMainFrameInterfaces();
 
+  // Invalidate the mojo connections between this RenderFrameProxyHost and its
+  // associated instances in renderer, allowing the endpoints to be re-bound.
+  // This is needed when:
+  // - the renderer side object goes away due to the renderer process going away
+  //   (i.e. crashing)
+  // - undoing a `CommitNavigation()` that has already been sent to a
+  //   speculative RenderFrameHost by swapping it back to a RenderFrameProxy.
+  void InvalidateMojoConnection();
+
  private:
   // These interceptor need access to frame_host_receiver_for_testing().
   friend class RemoteFrameHostInterceptor;
@@ -255,10 +264,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces();
-
-  // Invalidate the mojo connections between this RenderFrameProxyHost and its
-  // associated instances in renderer.
-  void InvalidateMojoConnection();
 
   // Needed for tests to be able to swap the implementation and intercept calls.
   mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>&

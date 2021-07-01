@@ -3404,13 +3404,67 @@ void RenderFrameHostImpl::RemoveChild(FrameTreeNode* child) {
       // observers are notified of its deletion.
       std::unique_ptr<FrameTreeNode> node_to_delete(std::move(*iter));
       children_.erase(iter);
+      // TODO(dcheng): Removing a subtree is still very piecemeal and somewhat
+      // buggy. The entire subtree should be removed as a group, but it can
+      // actually happen incrementally. For example, given the frame tree:
+      //
+      //   A1(A2(B3(A4(B5))))
+      //
+      //
+      // Suppose A1 executes:
+      //
+      //   window.frames[0].frameElement.remove();
+      //
+      // What ends up happening is this:
+      //
+      // 1. Renderer A detaches the subtree beginning at A2.
+      // 2. Renderer A starts detaching A2.
+      // 3. Renderer A starts detaching B3.
+      // 4. Renderer A starts detaching A4.
+      // 5. Renderer A starts detaching B5
+      // 6. Renderer A reports B5 is complete detaching with the Mojo IPC
+      //    `RenderFrameProxyHost::Detach()`, which calls
+      //    `RenderFrameHostImpl::DetachFromProxy()`. `DetachFromProxy()`
+      //    deletes RenderFrame B5 in renderer B, which means that the unload
+      //    handler for B5 runs immediately--before the unload handler for B3.
+      //    However, per the spec, the right order to run unload handlers is
+      //    top-down (e.g. B3's unload handler should run before B5's in this
+      //    scenario).
       node_to_delete->current_frame_host()->DeleteRenderFrame(
           mojom::FrameDeleteIntention::kNotMainFrame);
-      // Speculative RenderFrameHosts are deleted by the FrameTreeNode's
-      // RenderFrameHostManager's destructor. RenderFrameProxyHosts disconnect
-      // the mojo channel automatically in the destructor.
-      // TODO(dcheng): This is horribly confusing. Refactor this logic so it's
-      // more understandable.
+      RenderFrameHostImpl* speculative_frame_host =
+          node_to_delete->render_manager()->speculative_frame_host();
+      if (speculative_frame_host) {
+        if (speculative_frame_host->lifecycle_state() ==
+            LifecycleStateImpl::kPendingCommit) {
+          // A speculative RenderFrameHost that has reached `kPendingCommit` has
+          // already sent a `CommitNavigation()` to the renderer. Any subsequent
+          // IPCs will only be processed after the renderer has already swapped
+          // in the provisional RenderFrame and swapped out the provisional
+          // frame's reference frame (which is either a RenderFrame or a
+          // RenderFrameProxy).
+          //
+          // Since the swapped out RenderFrame/RenderFrameProxy is already gone,
+          // a `DeleteRenderFrame()` (routed to the RenderFrame) or a
+          // `DetachAndDispose()` (routed to the RenderFrameProxy) won't do
+          // anything. The browser must also instruct the already-committed but
+          // not-yet-acknowledged speculative RFH to detach itself as well.
+          speculative_frame_host->DeleteRenderFrame(
+              mojom::FrameDeleteIntention::kNotMainFrame);
+        } else {
+          // Otherwise, the provisional RenderFrame has not yet been instructed
+          // to swap in but is already associated with the RenderFrame or
+          // RenderFrameProxy it is expected to replace. The associated
+          // RenderFrame/RenderFrameProxy (which is still in the frame tree)
+          // will be responsible for tearing down any associated provisional
+          // RenderFrame, so the browser does not need to take any explicit
+          // cleanup actions.
+        }
+      }
+      // No explicit cleanup is needed here for `RenderFrameProxyHost`s.
+      // Destroying `FrameTreeNode` destroys the map of `RenderFrameProxyHost`s,
+      // and `~RenderFrameProxyHost()` sends a Mojo `DetachAndDispose()` IPC for
+      // child frame proxies.
       node_to_delete.reset();
       PendingDeletionCheckCompleted();
       return;
@@ -3758,6 +3812,30 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   // dead branches now. This is a performance optimization.
   PendingDeletionCheckCompletedOnSubtree();
   // |this| is potentially deleted. Do not add code after this.
+}
+
+void RenderFrameHostImpl::UndoCommitNavigation(RenderFrameProxyHost& proxy,
+                                               bool is_loading) {
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::UndoCommitNavigation",
+              "render_frame_host", this);
+
+  DCHECK_EQ(lifecycle_state_, LifecycleStateImpl::kPendingCommit);
+
+  if (IsRenderFrameLive()) {
+    // By definition, the browser process has not received the
+    // `DidCommitNavgation()`, so the RenderFrameProxyHost endpoints are still
+    // bound. Resetting now means any queued IPCs that are still in-flight will
+    // be dropped. This is a bit problematic, but it is still less problematic
+    // than just crashing the renderer for being in an inconsistent state.
+    proxy.InvalidateMojoConnection();
+
+    GetMojomFrameInRenderer()->UndoCommitNavigation(
+        proxy.GetRoutingID(), is_loading,
+        proxy.frame_tree_node()->current_replication_state().Clone(),
+        proxy.GetFrameToken(), proxy.BindAndPassRemoteMainFrameInterfaces());
+  }
+
+  SetLifecycleStateToReadyToBeDeleted();
 }
 
 void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
@@ -11008,6 +11086,10 @@ void RenderFrameHostImpl::SetLifecycleStateToPendingCommit() {
   // not considered speculative anymore.
   DCHECK(children_.empty());
   SetLifecycleState(LifecycleStateImpl::kPendingCommit);
+}
+
+void RenderFrameHostImpl::SetLifecycleStateToReadyToBeDeleted() {
+  SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
 }
 
 void RenderFrameHostImpl::SetLifecycleStateToActive() {
