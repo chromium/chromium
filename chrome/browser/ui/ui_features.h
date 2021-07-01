@@ -91,6 +91,8 @@ extern const base::Feature kTabOutlinesInLowContrastThemes;
 
 extern const base::Feature kTabRestoreSubMenus;
 
+extern const base::Feature kTabSearchChevronIcon;
+
 extern const base::Feature kTabSearchFuzzySearch;
 
 extern const base::Feature kTabSearchFeedback;

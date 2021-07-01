@@ -146,6 +146,9 @@ const base::Feature kTabOutlinesInLowContrastThemes{
 const base::Feature kTabRestoreSubMenus{"TabRestoreSubMenus",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kTabSearchChevronIcon{"TabSearchChevronIcon",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether or not feature parameters should be used for Tab Search's
 // fuzzy search or if default values should be used.
 const base::Feature kTabSearchFuzzySearch{"kTabSearchFuzzySearch",

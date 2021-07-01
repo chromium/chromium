@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -34,7 +36,11 @@ void TabSearchButton::FrameColorsChanged() {
   // window switches between active and inactive states. In each state the
   // foreground color of the tab controls is expected to change.
   SetImage(Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(kTabSearchIcon, GetForegroundColor()));
+           gfx::CreateVectorIcon(
+               base::FeatureList::IsEnabled(features::kTabSearchChevronIcon)
+                   ? vector_icons::kCaretDownIcon
+                   : kTabSearchIcon,
+               GetForegroundColor()));
 }
 
 void TabSearchButton::PaintIcon(gfx::Canvas* canvas) {
