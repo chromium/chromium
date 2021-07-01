@@ -97,20 +97,3 @@ struct Cluster {
   // memories.
   array<mojo_base.mojom.String16> keywords;
 };
-
-// Parameters used to query the service for Clusters in reverse chronological
-// order.
-struct QueryParams {
-  // The query string the Clusters are matched against. The default value of
-  // empty string means to return every Cluster that matches the other criteria.
-  string query;
-
-  // The optional time threshold (exclusive) for how recent the Clusters can be.
-  // If specified, Clusters before `recency_threshold` and if missing, Clusters
-  // until the present time that match the other criteria are returned.
-  mojo_base.mojom.Time? recency_threshold;
-
-  // The maximum number of Clusters to return. The default value of 0 means to
-  // return every Cluster that matches the other criteria.
-  uint32 max_count;
-};

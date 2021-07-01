@@ -265,12 +265,11 @@ TEST_F(HistoryClustersServiceTest, VerifyRemoteEndpointRequest) {
   AddHardcodedTestDataToHistoryService();
 
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            // Ignore the response. We are just testing the request.
-            run_loop_quit_.Run();
-          }),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        // Ignore the response. We are just testing the request.
+        run_loop_quit_.Run();
+      }),
       &task_tracker_);
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -285,14 +284,12 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   EnableMemoriesWithEndpoint(kFakeEndpoint);
   AddHardcodedTestDataToHistoryService();
 
-  auto query_params = mojom::QueryParams::New();
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            const auto& clusters = response.clusters;
+          [&](std::vector<mojom::ClusterPtr> clusters) {
             ASSERT_EQ(clusters.size(), 2u);
 
             ASSERT_EQ(clusters[0]->visits.size(), 1u);
@@ -376,23 +373,19 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     test_url_loader_factory_.ClearResponses();
     ASSERT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
-    auto query_params = mojom::QueryParams::New();
-    query_params->query = test_data[i].query;
     history_clusters_service_->QueryClusters(
-        std::move(query_params),
+        test_data[i].query, /*max_time=*/base::Time::Now(),
+        /* max_count=*/0,
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.
         base::BindLambdaForTesting(
-            [&](HistoryClustersService::QueryClustersResponse response) {
-              // Verify that the continuation query params is nullptr.
-              ASSERT_FALSE(!!response.query_params);
-
+            [&](std::vector<mojom::ClusterPtr> clusters) {
               size_t expected_size = int(test_data[i].expect_first_cluster) +
                                      int(test_data[i].expect_second_cluster);
-              ASSERT_EQ(response.clusters.size(), expected_size);
+              ASSERT_EQ(clusters.size(), expected_size);
 
               if (test_data[i].expect_first_cluster) {
-                const auto& cluster = response.clusters[0];
+                const auto& cluster = clusters[0];
                 ASSERT_EQ(cluster->visits.size(), 2u);
                 EXPECT_EQ(cluster->visits[0]->normalized_url,
                           "https://github.com/");
@@ -429,8 +422,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
 
               if (test_data[i].expect_second_cluster) {
                 const auto& cluster = test_data[i].expect_first_cluster
-                                          ? response.clusters[1]
-                                          : response.clusters[0];
+                                          ? clusters[1]
+                                          : clusters[0];
                 ASSERT_EQ(cluster->visits.size(), 1u);
                 EXPECT_EQ(cluster->visits[0]->normalized_url,
                           "https://github.com/");
@@ -459,15 +452,11 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyVisits) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            EXPECT_TRUE(response.clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       &task_tracker_);
 
   // Verify no request is made.
@@ -491,15 +480,12 @@ TEST_F(HistoryClustersServiceTest, MAYBE_QueryClustersWithEmptyEndpoint) {
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the empty response.
-            EXPECT_TRUE(response.clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        // Verify the empty response.
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       &task_tracker_);
 
   // Verify no request is made.
@@ -515,15 +501,11 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            EXPECT_TRUE(response.clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       &task_tracker_);
 
   // Verify a request is made.
@@ -545,15 +527,11 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithInvalidJsonResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            EXPECT_TRUE(response.clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       &task_tracker_);
 
   // Verify a request is made.
@@ -575,15 +553,11 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyJsonResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            EXPECT_TRUE(response.clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       &task_tracker_);
 
   // Verify a request is made.
@@ -605,14 +579,10 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithPendingRequest) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            EXPECT_EQ(response.clusters.size(), 2u);
-          }),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        EXPECT_EQ(clusters.size(), 2u);
+      }),
       &task_tracker_);
 
   // Verify there's a single request to the endpoint.
@@ -621,15 +591,11 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithPendingRequest) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   history_clusters_service_->QueryClusters(
-      mojom::QueryParams::New(),
-      base::BindLambdaForTesting(
-          [&](HistoryClustersService::QueryClustersResponse response) {
-            // Verify that the continuation query params is nullptr.
-            ASSERT_FALSE(!!response.query_params);
-            // Verify the parsed response.
-            EXPECT_EQ(response.clusters.size(), 2u);
-            run_loop_quit_.Run();
-          }),
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        EXPECT_EQ(clusters.size(), 2u);
+        run_loop_quit_.Run();
+      }),
       &task_tracker_);
 
   // Verify there are two requests to the endpoint.

@@ -5,15 +5,31 @@
 module history_clusters.mojom;
 
 import "components/history_clusters/core/history_clusters.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
+
+// Parameters used to query the browser for Clusters in reverse chronological
+// order.
+struct QueryParams {
+  // The query string the Clusters are matched against. The default value of
+  // empty string means to return every Cluster that matches the other criteria.
+  string query;
+
+  // The maximum number of Clusters to return. The default value of 0 means to
+  // return every Cluster that matches the other criteria.
+  uint32 max_count;
+
+  // The optional time threshold (exclusive) for how recent the Clusters can be.
+  // If specified, Clusters before `max_time` and if missing, Clusters until the
+  // present time that match the other criteria are returned.
+  mojo_base.mojom.Time? max_time;
+};
 
 // Represents a set of Clusters returned by the browser in response to a request
 // for Clusters related to a given query or within a given timespan.
-// Optionally accompanied by a title and a thumbnail representing the Clusters
-// in the set.
 struct QueryResult {
-  // Optional human readable title representing the Clusters in the result set.
-  string? title;
+  // The query string the Clusters were matched against.
+  string query;
 
   // The Clusters in the result set in reverse chronological order.
   array<history_clusters.mojom.Cluster> clusters;
@@ -23,9 +39,10 @@ struct QueryResult {
   // not replace them.
   bool is_continuation;
 
-  // Optional continuation query params created by the browser to be used in the
-  // follow-up request to load older Clusters.
-  QueryParams? continuation_query_params;
+  // The optional time threshold (exclusive) to be supplied in the follow-up UI
+  // request to load older Clusters. Typically set to `last_visit_time` of the
+  // last cluster in `clusters` if the backend supports paging.
+  mojo_base.mojom.Time? continuation_max_time;
 };
 
 // Browser-side handler for requests from WebUI page.

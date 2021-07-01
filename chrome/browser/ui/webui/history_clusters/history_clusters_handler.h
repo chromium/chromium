@@ -58,14 +58,13 @@ class HistoryClustersHandler
   void OnMemoriesDebugMessage(const std::string& message) override;
 
  private:
-  // Called with `cluster_mojoms` and `continuation_query_params` when the
-  // results of querying the HistoryClustersService are available. The latter is
-  // created in anticipation of a continuation query. Subsequently, the bound
-  // partially constructed `result_mojom` parameter is supplied with
-  // `cluster_mojoms` and `continuation_query_params` and sent to the JS.
+  // Called with the original `query_params`, `continuation_max_time` which is
+  // created in anticipation of the next query, and `cluster_mojoms` when the
+  // results of querying the HistoryClustersService are available. Subsequently
+  // creates a QueryResult instance using the parameters and sends it to the JS.
   void OnClustersQueryResult(
-      history_clusters::mojom::QueryResultPtr result_mojom,
-      history_clusters::mojom::QueryParamsPtr continuation_query_params,
+      history_clusters::mojom::QueryParamsPtr original_query_params,
+      const absl::optional<base::Time>& continuation_max_time,
       std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
@@ -74,14 +73,18 @@ class HistoryClustersHandler
 
 #if !defined(CHROME_BRANDED)
   using QueryResultsCallback = base::OnceCallback<void(
-      history_clusters::mojom::QueryParamsPtr,
+      const absl::optional<base::Time>&,
       std::vector<history_clusters::mojom::ClusterPtr>)>;
   void QueryHistoryService(
-      history_clusters::mojom::QueryParamsPtr query_params,
+      const std::string& query,
+      base::Time max_time,
+      size_t max_count,
       std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms,
       QueryResultsCallback callback);
   void OnHistoryQueryResults(
-      history_clusters::mojom::QueryParamsPtr query_params,
+      const std::string& query,
+      base::Time max_time,
+      size_t max_count,
       std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms,
       QueryResultsCallback callback,
       history::QueryResults results);

@@ -30,8 +30,8 @@ namespace history_clusters {
 namespace {
 
 // Filter `clusters` matching `query`. There are additional filters (e.g.
-// `recency_threshold`) used when requesting `QueryClusters()`, but this
-// function is only responsible for matching `query`.
+// `max_time`) used when requesting `QueryClusters()`, but this function is only
+// responsible for matching `query`.
 std::vector<history::Cluster> FilterClustersMatchingQuery(
     std::string query,
     const std::vector<history::Cluster>& clusters) {
@@ -95,28 +95,6 @@ mojom::URLVisitPtr VisitToMojom(
 
 // Translate a vector of `Cluster`s to a vector of `mojom::ClusterPtr`s.
 std::vector<mojom::ClusterPtr> ClustersToMojom(
-    const std::vector<history::Cluster>& clusters) {
-  std::vector<mojom::ClusterPtr> clusters_mojom;
-  for (const auto& cluster : clusters) {
-    auto cluster_mojom = mojom::Cluster::New();
-    cluster_mojom->id = cluster.cluster_id;
-    for (const auto& keyword : cluster.keywords)
-      cluster_mojom->keywords.push_back(keyword);
-    for (const auto& visit : cluster.scored_annotated_visits)
-      cluster_mojom->visits.push_back(VisitToMojom(visit));
-    clusters_mojom.emplace_back(std::move(cluster_mojom));
-  }
-  return clusters_mojom;
-}
-
-// Form a `QueryClustersResponse` containing `clusters` and continuation query
-// params meant to be used in a follow-up request. `query_params` are the params
-// used to get `clusters` from `QueryClusters()`.
-// TODO(tommycli): At the moment, the recency threshold of `query_params` is
-//  ignored and continuation query params is set to nullptr. The service does
-//  not support paging.
-HistoryClustersService::QueryClustersResponse FormQueryClustersResponse(
-    mojom::QueryParamsPtr query_params,
     std::vector<history::Cluster> clusters) {
   // Within each cluster, sort visits from best to worst using score.
   // TODO(tommycli): Once cluster persistence is done, maybe we can eliminate
@@ -154,21 +132,20 @@ HistoryClustersService::QueryClustersResponse FormQueryClustersResponse(
     return c1_time > c2_time;
   });
 
-  return {nullptr, ClustersToMojom(clusters)};
+  std::vector<mojom::ClusterPtr> clusters_mojom;
+  for (const auto& cluster : clusters) {
+    auto cluster_mojom = mojom::Cluster::New();
+    cluster_mojom->id = cluster.cluster_id;
+    for (const auto& keyword : cluster.keywords)
+      cluster_mojom->keywords.push_back(keyword);
+    for (const auto& visit : cluster.scored_annotated_visits)
+      cluster_mojom->visits.push_back(VisitToMojom(visit));
+    clusters_mojom.emplace_back(std::move(cluster_mojom));
+  }
+  return clusters_mojom;
 }
 
 }  // namespace
-
-HistoryClustersService::QueryClustersResponse::QueryClustersResponse(
-    mojom::QueryParamsPtr query_params,
-    std::vector<mojom::ClusterPtr> clusters)
-    : query_params(std::move(query_params)), clusters(std::move(clusters)) {}
-
-HistoryClustersService::QueryClustersResponse::QueryClustersResponse(
-    QueryClustersResponse&& other) = default;
-
-HistoryClustersService::QueryClustersResponse::~QueryClustersResponse() =
-    default;
 
 HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
@@ -260,8 +237,10 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
 }
 
 void HistoryClustersService::QueryClusters(
-    mojom::QueryParamsPtr query_params,
-    base::OnceCallback<void(QueryClustersResponse)> callback,
+    const std::string& query,
+    const base::Time max_time,
+    const size_t max_count,
+    QueryClustersCallback callback,
     base::CancelableTaskTracker* task_tracker) {
   NotifyDebugMessage("HistoryClustersService::QueryClusters()");
 
@@ -269,24 +248,16 @@ void HistoryClustersService::QueryClusters(
     NotifyDebugMessage(
         "HistoryClustersService::QueryClusters Error: ClusteringBackend is "
         "nullptr. Returning empty cluster vector.");
-    std::move(callback).Run({{}, {}});
+    std::move(callback).Run({});
     return;
   }
 
-  // `QueryClusters` has 4 steps:
-  // 1. Get visits either asynchronously from the history db or synchronously
-  //    from `visits_`.
-  // 2. Ask `backend_` to convert the visits to memories.
-  // 3. Filter memories matching `query_params` and create.
-  // 4. Run `callback` with the continuation query params and matched memories.
-
-  // Copy `query_params->query` because `query_params` is about to be moved.
-  auto query_string = query_params->query;
+  // TODO(crbug.com/1220765): The service does not support paging at the moment.
+  // Thus `max_time` and `max_count` are ignored.
   auto on_visits_callback = base::BindOnce(
       &ClusteringBackend::GetClusters, backend_weak_factory_->GetWeakPtr(),
-      base::BindOnce(&FilterClustersMatchingQuery, query_string)
-          .Then(base::BindOnce(&FormQueryClustersResponse,
-                               std::move(query_params)))
+      base::BindOnce(&FilterClustersMatchingQuery, query)
+          .Then(base::BindOnce(&ClustersToMojom))
           .Then(std::move(callback)));
 
   history_service_->GetAnnotatedVisits(
@@ -344,7 +315,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     // TODO(tommycli): Make sure we are hitting the local database, and not the
     //  remote model service once cluster persistence is ready.
     QueryClusters(
-        mojom::QueryParams::New(),
+        /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr()),
         &cache_query_task_tracker_);
@@ -366,9 +337,9 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
-    QueryClustersResponse response) {
+    std::vector<mojom::ClusterPtr> clusters) {
   all_keywords_cache_.clear();
-  for (auto& cluster : response.clusters) {
+  for (auto& cluster : clusters) {
     for (auto& keyword : cluster->keywords) {
       // Each `keyword` may itself have multiple terms that we need to extract.
       query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),

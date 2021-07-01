@@ -19,7 +19,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {PageCallbackRouter, PageHandlerRemote, QueryResult} from './chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult} from './chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
 import {URLVisit} from './components/history_clusters/core/history_clusters.mojom-webui.js';
 
 /**
@@ -202,10 +202,12 @@ class HistoryClustersAppElement extends PolymerElement {
     /** @type {IronScrollThresholdElement} */ (this.$['scroll-threshold'])
         .clearTriggers();
 
-    if (this.result_ && this.result_.continuationQueryParams) {
-      this.pageHandler_.queryClusters(this.result_.continuationQueryParams);
-      // Invalidate the existing continuation query params.
-      this.result_.continuationQueryParams = null;
+    if (this.result_ && this.result_.continuationMaxTime) {
+      this.queryClusters_({
+        query: this.result_.query,
+        maxTime: this.result_.continuationMaxTime,
+        maxCount: RESULTS_PER_PAGE,
+      });
     }
   }
 
@@ -216,7 +218,7 @@ class HistoryClustersAppElement extends PolymerElement {
   /** @private */
   computeTitle_() {
     return this.result_ ?
-        loadTimeData.getStringF('headerTitle', this.result_.title || '') :
+        loadTimeData.getStringF('headerTitle', this.result_.query || '') :
         '';
   }
 
@@ -249,9 +251,8 @@ class HistoryClustersAppElement extends PolymerElement {
       // Do not replace the existing result. `result` contains a partial set of
       // clusters that should be appended to the existing ones.
       this.push('result_.clusters', ...result.clusters);
-      this.result_.continuationQueryParams = result.continuationQueryParams;
+      this.result_.continuationMaxTime = result.continuationMaxTime;
     } else {
-      this.$.container.scrollTop = 0;
       this.result_ = result;
     }
   }
@@ -266,15 +267,12 @@ class HistoryClustersAppElement extends PolymerElement {
 
     this.onBrowserIdle_().then(() => {
       // Request up to `RESULTS_PER_PAGE` of the freshest Clusters until now.
-      const queryParams = {
+      this.queryClusters_({
         query: this.query_.trim(),
         maxCount: RESULTS_PER_PAGE,
-      };
-      this.pageHandler_.queryClusters(queryParams);
-      // Invalidate the existing continuation query params, if any.
-      if (this.result_) {
-        this.result_.continuationQueryParams = null;
-      }
+      });
+      // Scroll to the top when the results change due to query change.
+      this.$.container.scrollTop = 0;
     });
   }
 
@@ -284,6 +282,20 @@ class HistoryClustersAppElement extends PolymerElement {
    */
   onVisitsRemoved_() {
     this.visitsToBeRemoved_ = [];
+  }
+
+  /**
+   * @param {!QueryParams} queryParams
+   * @private
+   */
+  queryClusters_(queryParams) {
+    // Invalidate the existing `continuationMaxTime`, if any, in order to
+    // prevent sending additional requests while a request is in-flight. A new
+    // `continuationMaxTime` will be supplied with the new set of results.
+    if (this.result_) {
+      this.result_.continuationMaxTime = null;
+    }
+    this.pageHandler_.queryClusters(queryParams);
   }
 }
 

@@ -7,5 +7,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "history_clusters.mojom" ]
   webui_module_path = "/chrome/browser/ui/webui/history_clusters"
-  public_deps = [ "//components/history_clusters/core:mojo_bindings" ]
+  public_deps = [
+    "//components/history_clusters/core:mojo_bindings",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }
