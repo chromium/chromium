@@ -844,7 +844,7 @@ void PaintFillLayerBackground(const Document* document,
   // TODO(trchen): In the !bgLayer.hasRepeatXY() case, we could improve the
   // culling test by verifying whether the background image covers the entire
   // painting area.
-  if (info.is_bottom_layer && info.color.Alpha() && info.should_paint_color) {
+  if (info.should_paint_color) {
     IntRect background_rect(PixelSnappedIntRect(scrolled_paint_rect));
     // Try to paint the background with a paint worklet first in case it will be
     // animated. Otherwise, paint it directly into the context.
