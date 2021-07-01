@@ -817,6 +817,13 @@ void BrowserTabStripController::AddTab(WebContents* contents,
     browser_view_->feature_promo_controller()->MaybeShowPromo(
         feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
   }
+
+  // Try to show tab search IPH if needed.
+  constexpr int kTabSearchIPHTriggerThreshold = 8;
+  if (tabstrip_->GetTabCount() >= kTabSearchIPHTriggerThreshold) {
+    browser_view_->feature_promo_controller()->MaybeShowPromo(
+        feature_engagement::kIPHTabSearchFeature);
+  }
 }
 
 void BrowserTabStripController::UpdateStackedLayout() {

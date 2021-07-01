@@ -38,6 +38,8 @@ class TabSearchBubbleHost : public views::WidgetObserver {
   bool ShowTabSearchBubble(bool triggered_by_keyboard_shortcut = false);
   void CloseTabSearchBubble();
 
+  views::View* button() { return button_; }
+
   WebUIBubbleManager* webui_bubble_manager_for_testing() {
     return &webui_bubble_manager_;
   }

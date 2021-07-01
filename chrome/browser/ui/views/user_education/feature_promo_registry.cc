@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/read_later/read_later_button.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -91,6 +92,12 @@ views::View* GetAvatarToolbarButton(BrowserView* browser_view) {
   return browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// kIPHTabSearchFeature:
+views::View* GetTabSearchButton(BrowserView* browser_view) {
+  auto* tab_search_host = browser_view->GetTabSearchBubbleHost();
+  return tab_search_host ? tab_search_host->button() : nullptr;
+}
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 // kIPHWebUITabStripFeature:
@@ -268,6 +275,16 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
 
     RegisterFeature(feature_engagement::kIPHReopenTabFeature, params,
                     base::BindRepeating(GetAppMenuButton));
+  }
+
+  {
+    // kIPHTabSearchFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier = IDS_TAB_SEARCH_PROMO;
+    params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
+
+    RegisterFeature(feature_engagement::kIPHTabSearchFeature, params,
+                    base::BindRepeating(GetTabSearchButton));
   }
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

@@ -7097,6 +7097,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!-- Tab Search -->
+      <message name="IDS_TAB_SEARCH_PROMO" desc="Promo UI shown next to the tab search button to encourage it's use.">
+        To search your tabs, click here
+      </message>
       <message name="IDS_TAB_SEARCH_SEARCH_TABS" desc="The label on the tab search search filed when user input is empty.">
         Search Tabs
       </message>
