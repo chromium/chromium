@@ -75,7 +75,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
-import org.chromium.chrome.browser.history.HistoryManager;
+import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -422,7 +422,7 @@ public class PasswordSettingsSearchTest {
         StubbedHistoryProvider mHistoryProvider = new StubbedHistoryProvider();
         mHistoryProvider.addItem(StubbedHistoryProvider.createHistoryItem(0, new Date().getTime()));
         mHistoryProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, new Date().getTime()));
-        HistoryManager.setProviderForTests(mHistoryProvider);
+        HistoryContentManager.setProviderForTests(mHistoryProvider);
         mHistoryActivityTestRule.launchActivity(null);
 
         // Find the search view to ensure that the set color filter is different from the saved one.

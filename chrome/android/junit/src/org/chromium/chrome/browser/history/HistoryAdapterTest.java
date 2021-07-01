@@ -34,13 +34,13 @@ public class HistoryAdapterTest {
     @Mock
     private MoreProgressButton mMockButton;
     @Mock
-    private HistoryManager mHistoryManager;
+    private HistoryContentManager mContentManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mHistoryProvider = new StubbedHistoryProvider();
-        mAdapter = new HistoryAdapter(mHistoryManager, mHistoryProvider);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
     }

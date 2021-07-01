@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Tests for the {@link HistoryAdapter}. This test will more focusing on cases when accessibility
- * turned on (HistoryManager::isScrollToLoadDisabled() == true).
+ * turned on (HistoryContentManager::isScrollToLoadDisabled() == true).
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -37,7 +37,7 @@ public class HistoryAdapterAccessibilityTest {
     @Mock
     private MoreProgressButton mMockButton;
     @Mock
-    private HistoryManager mHistoryManager;
+    private HistoryContentManager mContentManager;
 
     @Before
     public void setUp() {
@@ -45,7 +45,7 @@ public class HistoryAdapterAccessibilityTest {
         mHistoryProvider = new StubbedHistoryProvider();
         mHistoryProvider.setPaging(PAGING);
 
-        mAdapter = new HistoryAdapter(mHistoryManager, mHistoryProvider);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         mAdapter.setScrollToLoadDisabledForTest(true);

@@ -471,6 +471,9 @@
     <style name="DarkModeCompatibleVerticalScrolling">
         <item name="android:scrollbarThumbVertical">@color/default_scroll_thumb</item>
     </style>
+    <style name="VerticalRecyclerView" parent="android:Widget">
+        <item name="android:scrollbars">vertical</item>
+    </style>
 
     <!-- Overflow menu -->
     <style name="AppMenuItemText">

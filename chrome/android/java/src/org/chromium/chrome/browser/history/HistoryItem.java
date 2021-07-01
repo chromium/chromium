@@ -24,7 +24,7 @@ public class HistoryItem extends TimedItem {
     private final long[] mNativeTimestampList;
     private Long mStableId;
 
-    private HistoryManager mManager;
+    private HistoryContentManager mManager;
 
     /**
      * @param url The url for this item.
@@ -90,9 +90,9 @@ public class HistoryItem extends TimedItem {
     }
 
     /**
-     * @param manager The HistoryManager associated with this item.
+     * @param manager The HistoryContentManager associated with this item.
      */
-    public void setHistoryManager(HistoryManager manager) {
+    public void setHistoryManager(HistoryContentManager manager) {
         mManager = manager;
     }
 

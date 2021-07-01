@@ -139,8 +139,8 @@ public class HistoryActivityScrollingTest {
             mHistoryProvider.addItem(item);
         }
 
-        HistoryManager.setProviderForTests(mHistoryProvider);
-        HistoryManager.setScrollToLoadDisabledForTesting(mIsScrollToLoadDisabled);
+        HistoryContentManager.setProviderForTests(mHistoryProvider);
+        HistoryContentManager.setScrollToLoadDisabledForTesting(mIsScrollToLoadDisabled);
 
         launchHistoryActivity();
         HistoryTestUtils.setupHistoryTestHeaders(mAdapter, mTestObserver);
@@ -152,11 +152,11 @@ public class HistoryActivityScrollingTest {
     private void launchHistoryActivity() {
         HistoryActivity activity = mActivityTestRule.launchActivity(null);
         mHistoryManager = activity.getHistoryManagerForTests();
-        mAdapter = mHistoryManager.getAdapterForTests();
+        mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
+        mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
         mTestObserver = new TestObserver();
         mHistoryManager.getSelectionDelegateForTests().addObserver(mTestObserver);
         mAdapter.registerAdapterDataObserver(mTestObserver);
-        mRecyclerView = activity.findViewById(R.id.selectable_list_recycler_view);
     }
 
     @Test
