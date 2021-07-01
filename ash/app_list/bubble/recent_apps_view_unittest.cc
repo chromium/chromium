@@ -7,14 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/bubble/app_list_bubble_apps_page.h"
-#include "ash/app_list/bubble/app_list_bubble_view.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
+#include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/constants/ash_features.h"
@@ -60,15 +58,6 @@ void ShowAppList() {
   Shell::Get()->app_list_controller()->ShowAppList();
 }
 
-RecentAppsView* GetRecentAppsView() {
-  return Shell::Get()
-      ->app_list_controller()
-      ->bubble_presenter_for_test()
-      ->bubble_view_for_test()
-      ->apps_page_for_test()
-      ->recent_apps_for_test();
-}
-
 class RecentAppsViewTest : public AshTestBase {
  public:
   RecentAppsViewTest() {
@@ -85,6 +74,10 @@ class RecentAppsViewTest : public AshTestBase {
   void RightClickOn(views::View* view) {
     GetEventGenerator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
     GetEventGenerator()->ClickRightButton();
+  }
+
+  RecentAppsView* GetRecentAppsView() {
+    return GetAppListTestHelper()->GetBubbleRecentAppsView();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

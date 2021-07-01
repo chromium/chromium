@@ -90,20 +90,27 @@ AppListView* AppListTestHelper::GetAppListView() {
 SearchBoxView* AppListTestHelper::GetBubbleSearchBoxView() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
-      ->search_box_view_for_test();
+      ->search_box_view_;
+}
+
+AppListBubbleAppsPage* AppListTestHelper::GetBubbleAppsPage() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->apps_page_;
+}
+
+RecentAppsView* AppListTestHelper::GetBubbleRecentAppsView() {
+  return GetBubbleAppsPage()->recent_apps_;
 }
 
 ScrollableAppsGridView* AppListTestHelper::GetScrollableAppsGridView() {
-  return app_list_controller_->bubble_presenter_for_test()
-      ->bubble_view_for_test()
-      ->apps_page_for_test()
-      ->scrollable_apps_grid_view_;
+  return GetBubbleAppsPage()->scrollable_apps_grid_view_;
 }
 
 AppListBubbleSearchPage* AppListTestHelper::GetBubbleSearchPage() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
-      ->search_page_for_test();
+      ->search_page_;
 }
 
 }  // namespace ash

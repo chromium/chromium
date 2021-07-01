@@ -78,20 +78,6 @@ AppListBubblePresenter* GetBubblePresenter() {
   return Shell::Get()->app_list_controller()->bubble_presenter_for_test();
 }
 
-SearchBoxView* GetSearchBoxView() {
-  return GetBubblePresenter()
-      ->bubble_view_for_test()
-      ->search_box_view_for_test();
-}
-
-AppListBubbleAppsPage* GetAppsPage() {
-  return GetBubblePresenter()->bubble_view_for_test()->apps_page_for_test();
-}
-
-AppListBubbleSearchPage* GetSearchPage() {
-  return GetBubblePresenter()->bubble_view_for_test()->search_page_for_test();
-}
-
 gfx::Rect GetShelfBounds() {
   return AshTestBase::GetPrimaryShelf()
       ->shelf_widget()
@@ -117,6 +103,18 @@ class AppListBubbleViewTest : public AshTestBase {
   void ClickButton(views::Button* button) {
     GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
     GetEventGenerator()->ClickLeftButton();
+  }
+
+  SearchBoxView* GetSearchBoxView() {
+    return GetAppListTestHelper()->GetBubbleSearchBoxView();
+  }
+
+  AppListBubbleAppsPage* GetAppsPage() {
+    return GetAppListTestHelper()->GetBubbleAppsPage();
+  }
+
+  AppListBubbleSearchPage* GetSearchPage() {
+    return GetAppListTestHelper()->GetBubbleSearchPage();
   }
 
   base::test::ScopedFeatureList scoped_features_;

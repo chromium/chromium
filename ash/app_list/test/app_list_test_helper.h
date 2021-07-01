@@ -12,9 +12,11 @@
 
 namespace ash {
 
+class AppListBubbleAppsPage;
 class AppListBubbleSearchPage;
 class AppListControllerImpl;
 class AppListView;
+class RecentAppsView;
 class ScrollableAppsGridView;
 class SearchBoxView;
 enum class AppListViewState;
@@ -68,8 +70,10 @@ class AppListTestHelper {
   // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
 
-  // Bubble launcher helpers.
+  // Bubble launcher helpers. The bubble must be open before calling these.
   SearchBoxView* GetBubbleSearchBoxView();
+  AppListBubbleAppsPage* GetBubbleAppsPage();
+  RecentAppsView* GetBubbleRecentAppsView();
   ScrollableAppsGridView* GetScrollableAppsGridView();
   AppListBubbleSearchPage* GetBubbleSearchPage();
 
