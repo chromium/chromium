@@ -1118,8 +1118,9 @@ void TokenPreloadScanner::UpdatePredictedBaseURL(const Token& token) {
           token.GetAttributeItem(html_names::kHrefAttr)) {
     KURL url(document_url_, StripLeadingAndTrailingHTMLSpaces(
                                 href_attribute->Value8BitIfNecessary()));
-    predicted_base_element_url_ =
-        url.IsValid() && !url.ProtocolIsData() ? url.Copy() : KURL();
+    bool is_valid_base_url =
+        url.IsValid() && !url.ProtocolIsData() && !url.ProtocolIsJavaScript();
+    predicted_base_element_url_ = is_valid_base_url ? url.Copy() : KURL();
   }
 }
 

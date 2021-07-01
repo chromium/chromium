@@ -1511,4 +1511,17 @@ TEST_F(HTMLPreloadScannerTest, TemplateInteractions) {
     Test(test);
 }
 
+// Regression test for https://crbug.com/1181291
+TEST_F(HTMLPreloadScannerTest, JavascriptBaseUrl) {
+  PreloadScannerTestCase test_cases[] = {
+      {"",
+       "<base href='javascript:'><base href='javascript:notallowed'><base "
+       "href='http://example.test/'><link rel=preload href=bla as=SCRIPT>",
+       "bla", "http://example.test/", ResourceType::kScript, 0},
+  };
+
+  for (const auto& test_case : test_cases)
+    Test(test_case);
+}
+
 }  // namespace blink
