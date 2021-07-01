@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "ui/gfx/buffer_format_util.h"
 
 namespace gpu {
 
@@ -45,6 +46,8 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
       // U and V planes are subsampled by a factor of 2.
+      if (gfx::MultiPlanarBufferFormatsAllowOddSizes())
+        return true;
       return size.width() % 2 == 0 && size.height() % 2 == 0;
   }
 
