@@ -4589,6 +4589,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Image Editor
       </message>
 
+      <!-- Survey DFM module strings -->
+      <message name="IDS_SURVEY_MODULE_TITLE" desc="Text shown when the surveys module is referenced in install start, success, failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing Surveys for Chrome…').">
+        Surveys
+      </message>
+
       <!-- Paint Preview Demo -->
       <message name="IDS_PAINT_PREVIEW_DEMO_CAPTURE_SUCCESS" desc="Toast message displayed when paint preview capture finishes successfully. Used in paint preview demo mode." translateable="false">
         Paint Preview captured successfully.

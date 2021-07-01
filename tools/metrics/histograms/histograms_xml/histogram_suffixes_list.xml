@@ -797,6 +797,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="feedv2" label="Feed V2 Module"/>
   <suffix name="image_editor" label="Image Editor Module"/>
   <suffix name="stack_unwinder" label="Stack Unwinder Module"/>
+  <suffix name="survey" label="Survey Module"/>
   <suffix name="tab_ui" label="Tab Management Module"/>
   <suffix name="test_dummy" label="Test Dummy Module"/>
   <suffix name="vr" label="Virtual Reality Module"/>
