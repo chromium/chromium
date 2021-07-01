@@ -99,8 +99,9 @@ class BFCachePolicyBrowserTest : public InProcessBrowserTest {
 
 }  // namespace
 
+// Disabled due to crash/pass flakiness. https://crbug.com/1225791
 IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
-                       CacheFlushedWhenTabBackgrounded) {
+                       DISABLED_CacheFlushedWhenTabBackgrounded) {
   InitWithOnePageInBFCache();
 
   MockObserver obs(web_contents());
@@ -114,8 +115,9 @@ IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
   run_loop.Run();
 }
 
+// Disabled due to crash/pass flakiness. https://crbug.com/1225791
 IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
-                       CacheFlushedOnModerateMemoryPressure) {
+                       DISABLED_CacheFlushedOnModerateMemoryPressure) {
   util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
 
   InitWithOnePageInBFCache();
@@ -134,8 +136,9 @@ IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
   run_loop.Run();
 }
 
+// Disabled due to crash/pass flakiness. https://crbug.com/1225791
 IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
-                       CacheFlushedOnCriticalMemoryPressure) {
+                       DISABLED_CacheFlushedOnCriticalMemoryPressure) {
   util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
 
   InitWithOnePageInBFCache();
@@ -155,8 +158,9 @@ IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
   run_loop.Run();
 }
 
+// Disabled due to crash/pass flakiness. https://crbug.com/1225791
 IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
-                       TabHiddenDuringBackNavigation) {
+                       DISABLED_TabHiddenDuringBackNavigation) {
   util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
 
   InitWithOnePageInBFCache();
