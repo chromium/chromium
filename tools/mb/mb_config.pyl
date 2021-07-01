@@ -735,7 +735,7 @@
       'chromeos-betty-arc-r-chrome': 'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients',
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks',
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official',
-      'lacros-amd64-generic-chrome-fyi': 'chromeos_amd64-generic_lacros_official',
+      'lacros-amd64-generic-chrome-fyi': 'chromeos_amd64-generic_lacros_official_skylab',
       'lacros-arm-generic-chrome-fyi': 'chromeos_arm-generic_lacros_official',
     },
 
@@ -1728,6 +1728,12 @@
 
     'chromeos_amd64-generic_lacros_official': [
       'chromeos_amd64-generic', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+    ],
+
+    # This is the same as 'chromeos_amd64-generic_lacros_official', except for
+    # the 'is_skylab' arg. Please keep them in sync.
+    'chromeos_amd64-generic_lacros_official_skylab': [
+      'chromeos_amd64-generic', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
     'chromeos_amd64-generic_lacros_rel': [
@@ -3269,6 +3275,10 @@
     'ios_disable_xcode_project_generation': {
       # defaults to true under build/config/ios/rules.gni
       'gn_args': 'ios_set_attributes_for_xcode_project_generation=false',
+    },
+
+    'is_skylab': {
+      'gn_args': 'is_skylab=true',
     },
 
     'mbi_mode_per_render_process_host': {

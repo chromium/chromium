@@ -6423,7 +6423,6 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_fyi_tast_tests_eve',
           'skylab_tests': 'lacros_skylab_x86_64',
         },
         'swarming': {
