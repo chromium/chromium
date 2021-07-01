@@ -48,12 +48,12 @@ class DownloadControllerClientLacros : public ProfileManagerObserver,
   void OnDownloadUpdated(download::DownloadItem* item);
   void OnDownloadDestroyed(download::DownloadItem* item);
 
-  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
-      profile_observer_{this};
-
   std::set<std::unique_ptr<ObservableDownloadManager>,
            base::UniquePtrComparator>
       observable_download_managers_;
+
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_DOWNLOAD_CONTROLLER_CLIENT_LACROS_H_

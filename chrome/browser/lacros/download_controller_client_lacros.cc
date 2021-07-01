@@ -103,9 +103,14 @@ class DownloadControllerClientLacros::ObservableDownloadManager
   }
 
   void OnDownloadDestroyed(download::DownloadItem* item) override {
-    download_item_observer_.RemoveObservation(item);
+    if (download_item_observer_.IsObservingSource(item))
+      download_item_observer_.RemoveObservation(item);
     controller_client_->OnDownloadDestroyed(item);
   }
+
+  DownloadControllerClientLacros* const controller_client_;
+
+  content::DownloadManager* const manager_;
 
   base::ScopedMultiSourceObservation<download::DownloadItem,
                                      download::DownloadItem::Observer>
@@ -114,10 +119,6 @@ class DownloadControllerClientLacros::ObservableDownloadManager
   base::ScopedObservation<content::DownloadManager,
                           content::DownloadManager::Observer>
       download_manager_observer_{this};
-
-  DownloadControllerClientLacros* const controller_client_;
-
-  content::DownloadManager* const manager_;
 };
 
 DownloadControllerClientLacros::DownloadControllerClientLacros() {
