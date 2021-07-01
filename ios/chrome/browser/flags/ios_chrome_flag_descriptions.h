@@ -154,6 +154,12 @@ extern const char kEnableAutofillAccountWalletStorageDescription[];
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
+// Title and description for the flag to enable account indication in the save
+// card dialog.
+extern const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterName[];
+extern const char
+    kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[];
+
 // Title and description for the flag to enable the confirmational action sheet
 // for the tab grid "Close All" action.
 extern const char kEnableCloseAllTabsConfirmationName[];

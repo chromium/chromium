@@ -174,6 +174,12 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
+const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterName[] =
+    "Display save card infobar with account indication information";
+const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[] =
+    "When enabled, UI indicating user's e-mail address will appear at the"
+    "bottom of save card infobar.";
+
 const char kEnableCloseAllTabsConfirmationName[] =
     "Enable Close All Tabs confirmation";
 const char kEnableCloseAllTabsConfirmationDescription[] =
