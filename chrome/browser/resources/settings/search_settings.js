@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {findAncestor} from 'chrome://resources/js/util.m.js';
-import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
   /**
@@ -271,7 +271,7 @@ import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
       return new Promise((resolve, reject) => {
         const parent = this.node.parentNode;
-        window.setTimeout(() => {
+        microTask.run(() => {
           const renderedNode =
               parent.querySelector('[route-path="' + routePath + '"]');
           // Register a SearchAndHighlightTask for the part of the DOM that was
@@ -279,7 +279,7 @@ import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
           this.request.queue_.addSearchAndHighlightTask(
               new SearchAndHighlightTask(this.request, assert(renderedNode)));
           resolve();
-        }, 0);
+        });
       });
     }
   }

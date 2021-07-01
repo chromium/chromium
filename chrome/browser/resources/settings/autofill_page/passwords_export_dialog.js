@@ -15,7 +15,7 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '../settings_shared_css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
@@ -224,10 +224,9 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
     this.showErrorDialog_ = false;
     // Need to allow for the dialogs to be removed from the DOM before firing
     // the close event. Otherwise the handler will not be able to set focus.
-    window.setTimeout(
+    microTask.run(
         () => this.dispatchEvent(new CustomEvent(
-            'passwords-export-dialog-close', {bubbles: true, composed: true})),
-        0);
+            'passwords-export-dialog-close', {bubbles: true, composed: true})));
   }
 
   /** @private */
