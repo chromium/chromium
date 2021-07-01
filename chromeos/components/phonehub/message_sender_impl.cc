@@ -106,8 +106,14 @@ void MessageSenderImpl::SendRingDeviceRequest(bool device_ringing_enabled) {
   SendMessage(proto::MessageType::RING_DEVICE_REQUEST, &request);
 }
 
-void MessageSenderImpl::SendMessage(proto::MessageType message_type,
-                                    google::protobuf::MessageLite* request) {
+void MessageSenderImpl::SendFetchCameraRollItemsRequest(
+    const proto::FetchCameraRollItemsRequest& request) {
+  SendMessage(proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_REQUEST, &request);
+}
+
+void MessageSenderImpl::SendMessage(
+    proto::MessageType message_type,
+    const google::protobuf::MessageLite* request) {
   connection_manager_->SendMessage(SerializeMessage(message_type, request));
   UMA_HISTOGRAM_ENUMERATION("PhoneHub.Usage.SentMessageTypeCount", message_type,
                             proto::MessageType_MAX);

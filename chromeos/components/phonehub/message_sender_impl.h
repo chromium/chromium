@@ -36,10 +36,12 @@ class MessageSenderImpl : public MessageSender {
       const std::u16string& reply_text) override;
   void SendShowNotificationAccessSetupRequest() override;
   void SendRingDeviceRequest(bool device_ringing_enabled) override;
+  void SendFetchCameraRollItemsRequest(
+      const proto::FetchCameraRollItemsRequest& request) override;
 
  private:
   void SendMessage(proto::MessageType message_type,
-                   google::protobuf::MessageLite* request);
+                   const google::protobuf::MessageLite* request);
 
   secure_channel::ConnectionManager* connection_manager_;
 };

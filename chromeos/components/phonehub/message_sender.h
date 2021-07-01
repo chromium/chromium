@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -46,6 +47,11 @@ class MessageSender {
 
   // Requests that the phone enables or disables ringing.
   virtual void SendRingDeviceRequest(bool device_ringing_enabled) = 0;
+
+  // Sends a request to fetch the latest set of camera roll items from the
+  // connected Android phone.
+  virtual void SendFetchCameraRollItemsRequest(
+      const proto::FetchCameraRollItemsRequest& request) = 0;
 
  protected:
   MessageSender() = default;

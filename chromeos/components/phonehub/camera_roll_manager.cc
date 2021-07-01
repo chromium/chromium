@@ -7,18 +7,35 @@
 #include "base/observer_list.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
 #include "chromeos/components/phonehub/message_receiver.h"
+#include "chromeos/components/phonehub/message_sender.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {
 namespace phonehub {
 
-CameraRollManager::CameraRollManager(MessageReceiver* message_receiver)
-    : message_receiver_(message_receiver) {
+CameraRollManager::CameraRollManager(MessageReceiver* message_receiver,
+                                     MessageSender* message_sender)
+    : message_receiver_(message_receiver), message_sender_(message_sender) {
   message_receiver->AddObserver(this);
 }
 
 CameraRollManager::~CameraRollManager() {
   message_receiver_->RemoveObserver(this);
+}
+
+void CameraRollManager::OnPhoneStatusUpdateReceived(
+    proto::PhoneStatusUpdate phone_status_update) {
+  if (phone_status_update.has_camera_roll_updates()) {
+    SendFetchCameraRollItemsRequest();
+  }
+}
+
+void CameraRollManager::SendFetchCameraRollItemsRequest() {
+  proto::FetchCameraRollItemsRequest request;
+  for (const std::unique_ptr<CameraRollItem>& current_item : current_items_) {
+    *request.add_current_item_metadata() = current_item->metadata();
+  }
+  message_sender_->SendFetchCameraRollItemsRequest(request);
 }
 
 void CameraRollManager::OnFetchCameraRollItemsResponseReceived(

@@ -135,7 +135,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               phone_model_.get())),
       camera_roll_manager_(
           features::IsPhoneHubCameraRollEnabled()
-              ? std::make_unique<CameraRollManager>(message_receiver_.get())
+              ? std::make_unique<CameraRollManager>(message_receiver_.get(),
+                                                    message_sender_.get())
               : nullptr) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;

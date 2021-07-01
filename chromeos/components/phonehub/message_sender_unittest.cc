@@ -132,5 +132,18 @@ TEST_F(MessageSenderImplTest, SendRingDeviceRequest) {
                 fake_connection_manager_->sent_messages().back());
 }
 
+TEST_F(MessageSenderImplTest, SendFetchCameraRollItemsRequest) {
+  proto::FetchCameraRollItemsRequest request;
+  request.add_current_item_metadata();
+  request.mutable_current_item_metadata(0)->set_key("key0");
+  request.add_current_item_metadata();
+  request.mutable_current_item_metadata(1)->set_key("key1");
+
+  message_sender_->SendFetchCameraRollItemsRequest(request);
+
+  VerifyMessage(proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_REQUEST, &request,
+                fake_connection_manager_->sent_messages().back());
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

@@ -44,6 +44,11 @@ void FakeMessageSender::SendRingDeviceRequest(bool device_ringing_enabled) {
   ring_device_requests_.push_back(device_ringing_enabled);
 }
 
+void FakeMessageSender::SendFetchCameraRollItemsRequest(
+    const proto::FetchCameraRollItemsRequest& request) {
+  fetch_camera_roll_items_requests_.push_back(request);
+}
+
 size_t FakeMessageSender::GetCrosStateCallCount() const {
   return cros_states_.size();
 }
@@ -66,6 +71,10 @@ size_t FakeMessageSender::GetNotificationInlineReplyRequestCallCount() const {
 
 size_t FakeMessageSender::GetRingDeviceRequestCallCount() const {
   return ring_device_requests_.size();
+}
+
+size_t FakeMessageSender::GetFetchCameraRollItemsRequestCallCount() const {
+  return fetch_camera_roll_items_requests_.size();
 }
 
 bool FakeMessageSender::GetRecentCrosState() const {
@@ -91,6 +100,11 @@ FakeMessageSender::GetRecentNotificationInlineReplyRequest() const {
 
 bool FakeMessageSender::GetRecentRingDeviceRequest() const {
   return ring_device_requests_.back();
+}
+
+const proto::FetchCameraRollItemsRequest&
+FakeMessageSender::GetRecentFetchCameraRollItemsRequest() const {
+  return fetch_camera_roll_items_requests_.back();
 }
 
 }  // namespace phonehub

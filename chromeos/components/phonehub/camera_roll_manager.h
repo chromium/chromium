@@ -14,6 +14,7 @@ namespace chromeos {
 namespace phonehub {
 
 class CameraRollItem;
+class MessageSender;
 
 // Manages camera roll items sent from the connected Android device.
 class CameraRollManager : public MessageReceiver::Observer {
@@ -27,7 +28,8 @@ class CameraRollManager : public MessageReceiver::Observer {
     virtual void OnCameraRollItemsChanged() = 0;
   };
 
-  CameraRollManager(MessageReceiver* message_receiver);
+  CameraRollManager(MessageReceiver* message_receiver,
+                    MessageSender* message_sender);
   CameraRollManager(const CameraRollManager&) = delete;
   CameraRollManager& operator=(const CameraRollManager&) = delete;
   ~CameraRollManager() override;
@@ -41,10 +43,15 @@ class CameraRollManager : public MessageReceiver::Observer {
 
  private:
   // MessageReceiver::Observer
+  void OnPhoneStatusUpdateReceived(
+      proto::PhoneStatusUpdate phone_status_update) override;
   void OnFetchCameraRollItemsResponseReceived(
       const proto::FetchCameraRollItemsResponse& response) override;
 
+  void SendFetchCameraRollItemsRequest();
+
   MessageReceiver* message_receiver_;
+  MessageSender* message_sender_;
   std::vector<std::unique_ptr<CameraRollItem>> current_items_;
   base::ObserverList<Observer> observer_list_;
 };
