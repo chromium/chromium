@@ -170,7 +170,10 @@
     },
     button_ripple_color_primary: { light: "$white", dark: "$black" },
     /* button-primary:hover */
-    button_background_color_primary_hover_overlay: "rgba($black_rgb, 0.08)",
+    button_background_color_primary_hover_overlay: {
+      light:"rgba($black_rgb, 0.08)",
+      dark: "rgba($white_rgb,0.08)"
+    },
     /* button-primary:active */
     button_active_shadow_color_ambient_primary: {
       light: "rgba($google_blue_500_rgb, 0.15)",
@@ -258,6 +261,16 @@
     textfield_input_color_disabled: {
       light: "rgba($google_grey_900_rgb, 0.38)",
       dark: "rgba($white_rgb, 0.33)",
+    },
+
+    /* tooltip */
+    tooltip_background_color: {
+      light:"rgba($google_grey_900_rgb, 0.8)",
+      dark:"rgba($white_rgb, 0.8)",
+    },
+    tooltip_label_color: {
+      light:"$google_grey_100",
+      dark:"$google_grey_900",
     },
 
     /*
