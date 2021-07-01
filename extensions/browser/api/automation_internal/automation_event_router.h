@@ -37,6 +37,7 @@ struct AutomationListener;
 class AutomationEventRouterObserver {
  public:
   virtual void AllAutomationExtensionsGone() = 0;
+  virtual void ExtensionListenerAdded() = 0;
 };
 
 class AutomationEventRouter : public content::RenderProcessHostObserver,

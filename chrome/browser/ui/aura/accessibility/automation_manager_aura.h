@@ -76,6 +76,7 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   // AutomationEventRouterObserver:
   void AllAutomationExtensionsGone() override;
+  void ExtensionListenerAdded() override;
 
   void set_automation_event_router_interface(
       extensions::AutomationEventRouterInterface* router) {

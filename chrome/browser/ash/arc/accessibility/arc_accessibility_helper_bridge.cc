@@ -240,6 +240,9 @@ ArcAccessibilityHelperBridge::ArcAccessibilityHelperBridge(
 
   arc_bridge_service_->accessibility_helper()->SetHost(this);
   arc_bridge_service_->accessibility_helper()->AddObserver(this);
+
+  automation_event_router_observer_.Observe(
+      extensions::AutomationEventRouter::GetInstance());
 }
 
 ArcAccessibilityHelperBridge::~ArcAccessibilityHelperBridge() = default;
@@ -314,11 +317,6 @@ void ArcAccessibilityHelperBridge::OnAction(
   if (!tree_source)
     return;
 
-  if (data.action == ax::mojom::Action::kInternalInvalidateTree) {
-    tree_source->InvalidateTree();
-    return;
-  }
-
   absl::optional<int32_t> window_id = tree_source->window_id();
   if (!window_id)
     return;
@@ -366,6 +364,14 @@ bool ArcAccessibilityHelperBridge::UseFullFocusMode() const {
 void ArcAccessibilityHelperBridge::OnNotificationSurfaceAdded(
     ash::ArcNotificationSurface* surface) {
   tree_tracker_.OnNotificationSurfaceAdded(surface);
+}
+
+void ArcAccessibilityHelperBridge::AllAutomationExtensionsGone() {
+  // Extension features are directly monitored, so no work needed here.
+}
+
+void ArcAccessibilityHelperBridge::ExtensionListenerAdded() {
+  tree_tracker_.InvalidateTrees();
 }
 
 aura::Window* ArcAccessibilityHelperBridge::GetFocusedArcWindow() const {

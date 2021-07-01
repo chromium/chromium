@@ -546,6 +546,11 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::CreateFromKey(TreeKey key) {
   return tree_ptr;
 }
 
+void ArcAccessibilityTreeTracker::InvalidateTrees() {
+  for (auto it = trees_.begin(); it != trees_.end(); ++it)
+    it->second->InvalidateTree();
+}
+
 void ArcAccessibilityTreeTracker::UpdateWindowIdMapping(aura::Window* window) {
   const auto window_id = exo::GetShellClientAccessibilityId(window);
   if (!window_id.has_value())

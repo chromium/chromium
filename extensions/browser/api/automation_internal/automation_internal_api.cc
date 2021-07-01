@@ -256,6 +256,12 @@ class AutomationWebContentsObserver
     web_contents()->SetAccessibilityMode(std::move(new_mode));
   }
 
+  void ExtensionListenerAdded() override {
+    // This call resets accessibility.
+    if (web_contents())
+      web_contents()->EnableWebContentsOnlyAccessibilityMode();
+  }
+
  private:
   friend class content::WebContentsUserData<AutomationWebContentsObserver>;
 
@@ -349,21 +355,6 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
 absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
     const ui::AXTreeID& ax_tree_id,
     const ExtensionId& extension_id) {
-  ui::AXActionHandlerRegistry* registry =
-      ui::AXActionHandlerRegistry::GetInstance();
-  ui::AXActionHandlerBase* action_handler =
-      registry->GetActionHandler(ax_tree_id);
-  if (action_handler) {
-    // Explicitly invalidate the pre-existing source tree first. This ensures
-    // the source tree sends a complete tree when the next event occurs. This
-    // is required whenever the client extension is reloaded.
-    ui::AXActionData action;
-    action.target_tree_id = ax_tree_id;
-    action.source_extension_id = extension_id;
-    action.action = ax::mojom::Action::kInternalInvalidateTree;
-    action_handler->PerformAction(action);
-  }
-
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
   if (automation_api_delegate->EnableTree(ax_tree_id))

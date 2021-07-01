@@ -152,6 +152,10 @@ void AutomationManagerAura::AllAutomationExtensionsGone() {
   Disable();
 }
 
+void AutomationManagerAura::ExtensionListenerAdded() {
+  Reset(true /* reset serializer */);
+}
+
 void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {
   views::AXAuraObjWrapper* obj = tree_->GetRoot();
   if (!obj)

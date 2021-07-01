@@ -51,7 +51,8 @@ class ArcAccessibilityHelperBridge
       public mojom::AccessibilityHelperHost,
       public ConnectionObserver<mojom::AccessibilityHelperInstance>,
       public AXTreeSourceArc::Delegate,
-      public ash::ArcNotificationSurfaceManager::Observer {
+      public ash::ArcNotificationSurfaceManager::Observer,
+      public extensions::AutomationEventRouterObserver {
  public:
   // Builds the ArcAccessibilityHelperBridgeFactory.
   static void CreateFactory();
@@ -98,6 +99,10 @@ class ArcAccessibilityHelperBridge
   void OnNotificationSurfaceRemoved(
       ash::ArcNotificationSurface* surface) override {}
 
+  // AutomationEventRouterObserver overrides.
+  void AllAutomationExtensionsGone() override;
+  void ExtensionListenerAdded() override;
+
   const ArcAccessibilityTreeTracker::TreeMap& trees_for_test() const {
     return tree_tracker_.trees_for_test();
   }
@@ -141,6 +146,10 @@ class ArcAccessibilityHelperBridge
 
   arc::mojom::AccessibilityFilterType filter_type_ =
       arc::mojom::AccessibilityFilterType::OFF;
+
+  base::ScopedObservation<extensions::AutomationEventRouter,
+                          extensions::AutomationEventRouterObserver>
+      automation_event_router_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcAccessibilityHelperBridge);
 };

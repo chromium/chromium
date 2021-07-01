@@ -221,6 +221,8 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
     rph_observers_.AddObservation(
         content::RenderProcessHost::FromID(listener_process_id));
     UpdateActiveProfile();
+    for (AutomationEventRouterObserver& observer : observers_)
+      observer.ExtensionListenerAdded();
     return;
   }
 

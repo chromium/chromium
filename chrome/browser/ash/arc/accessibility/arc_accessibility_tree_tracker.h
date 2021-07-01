@@ -92,6 +92,9 @@ class ArcAccessibilityTreeTracker {
   // Returns a tree source for the specified AXTreeID.
   AXTreeSourceArc* GetFromTreeId(ui::AXTreeID tree_id) const;
 
+  // Invalidates all trees (resets serializers).
+  void InvalidateTrees();
+
   const TreeMap& trees_for_test() const { return trees_; }
 
  private:
