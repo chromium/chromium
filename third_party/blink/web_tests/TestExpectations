@@ -7019,7 +7019,6 @@ crbug.com/1222097 external/wpt/html/semantics/embedded-content/media-elements/tr
 crbug.com/1222097 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Failure Pass ]
 
 crbug.com/1222097 svg/css/alignment-baseline.html [ Failure Pass ]
-crbug.com/1222097 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass ]
 
 # Sheriff
 crbug.com/1223276 external/wpt/layout-instability/input-timestamp.html [ Skip ]
@@ -7061,3 +7060,4 @@ crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [
 # Sheriff 2021-07-01
 # Now also flakily timing-out.
 crbug.com/1223773 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
+crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass Timeout ]
