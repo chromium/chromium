@@ -326,4 +326,14 @@ suite('<emoji-picker>', () => {
       assertLT(variantsRect2.right, pickerRect.right);
     });
   });
+
+  suite('<emoji-search>', () => {
+    test('works when there are no results', async () => {
+      // This test just ensures that no errors are thrown.
+      const enterEvent = new KeyboardEvent(
+          'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
+      const search = findInEmojiPicker('emoji-search');
+      search.onKeyDown(enterEvent);
+    });
+  });
 });
