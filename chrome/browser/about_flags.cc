@@ -1890,6 +1890,18 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      base::size(kStartSurfaceAndroid_SingleSurfaceSingleTab), nullptr},
 };
 
+const FeatureEntry::FeatureParam kWebFeed_accelerator[] = {
+    {"recommendation_style", "accelerator"}};
+
+const FeatureEntry::FeatureParam kWebFeed_IPH[] = {
+    {"recommendation_style", "IPH"}};
+
+const FeatureEntry::FeatureVariation kWebFeedVariations[] = {
+    {"accelerator recommendations", kWebFeed_accelerator,
+     base::size(kWebFeed_accelerator), nullptr},
+    {"IPH recommendations", kWebFeed_IPH, base::size(kWebFeed_IPH), nullptr},
+};
+
 const FeatureEntry::FeatureParam kConditionalTabStripAndroid_Immediate[] = {
     {"conditional_tab_strip_session_time_ms", "0"}};
 const FeatureEntry::FeatureParam kConditionalTabStripAndroid_60Minutes[] = {
@@ -3839,7 +3851,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(feed::kInterestFeedV2Autoplay)},
     {"web-feed", flag_descriptions::kWebFeedName,
      flag_descriptions::kWebFeedDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kWebFeed)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kWebFeed,
+                                    kWebFeedVariations,
+                                    "WebFeed")},
     {"xsurface-metrics-reporting",
      flag_descriptions::kXsurfaceMetricsReportingName,
      flag_descriptions::kXsurfaceMetricsReportingDescription, kOsAndroid,

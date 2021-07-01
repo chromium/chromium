@@ -187,6 +187,12 @@ public class WebFeedFollowIntroController {
         showFollowAccelerator();
     }
 
+    private boolean shouldUseIPH() {
+        return ChromeFeatureList
+                .getFieldTrialParamByFeature(ChromeFeatureList.WEB_FEED, "recommendation_style")
+                .equals("IPH");
+    }
+
     private void showFollowAccelerator() {
         mIntroShown = true;
         if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
@@ -213,7 +219,12 @@ public class WebFeedFollowIntroController {
             gestureDetector.onTouchEvent(motionEvent);
             return true;
         };
-        mWebFeedFollowIntroView.showAccelerator(onTouchListener, mFeatureEngagementTracker);
+
+        if (shouldUseIPH()) {
+            // TODO(petewil)
+        } else {
+            mWebFeedFollowIntroView.showAccelerator(onTouchListener, mFeatureEngagementTracker);
+        }
     }
 
     private void performFollowWithAccelerator() {
