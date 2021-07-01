@@ -19,7 +19,7 @@ public class LensPolicyUtils {
     public static boolean getLensCameraAssistedSearchEnabledForEnterprise() {
         // Read from policy cache before the native library is ready.
         if (PolicyCache.get().isReadable()) {
-            return Boolean.FALSE.equals(PolicyCache.get().getBooleanValue(
+            return Boolean.TRUE.equals(PolicyCache.get().getBooleanValue(
                     LENS_CAMERA_ASSISTED_SEARCH_ENABLED_POLICY_NAME));
         }
 
