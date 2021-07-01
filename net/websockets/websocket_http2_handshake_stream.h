@@ -159,6 +159,13 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // This can be passed on to WebSocketBasicStream when created.
   std::unique_ptr<WebSocketSpdyStreamAdapter> stream_adapter_;
 
+  // Temporary variables to track where stream_adapter_ was reset.
+  // TODO(ricea): Remove these once the cause of https://crbug.com/1215989
+  // is established.
+  bool stream_adapter_reset_by_onclose_ = false;
+  bool stream_adapter_reset_by_close_ = false;
+  bool stream_adapter_moved_by_upgrade_ = false;
+
   // True if |stream_| has been created then closed.
   bool stream_closed_;
 

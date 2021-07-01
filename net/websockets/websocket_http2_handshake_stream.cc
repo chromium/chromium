@@ -168,7 +168,17 @@ void WebSocketHttp2HandshakeStream::Close(bool not_reusable) {
     stream_closed_ = true;
     stream_error_ = ERR_CONNECTION_CLOSED;
   }
+
+  // The method needs to be idempotent as it may be called multiple times.
+  if (!stream_adapter_)
+    return;
+
   stream_adapter_.reset();
+
+  // TODO(ricea): Remove these two lines once https://crbug.com/1215989 is
+  // resolved.
+  CHECK(!stream_adapter_reset_by_close_);
+  stream_adapter_reset_by_close_ = true;
 }
 
 bool WebSocketHttp2HandshakeStream::IsResponseBodyComplete() const {
@@ -251,10 +261,25 @@ base::StringPiece WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
 std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {
   DCHECK(extension_params_.get());
 
+  // These checks are here to find the cause of https://crbug.com/1215989.
+  // TODO(ricea): Remove them once the cause has been determined.
+  CHECK(!stream_adapter_reset_by_onclose_);
+
+  // The above blank line exists because stack traces often have annoying
+  // off-by-one errors in the line numbers.
+  CHECK(!stream_adapter_reset_by_close_);
+
+  // Above blank line is also intentional.
+  CHECK(!stream_adapter_moved_by_upgrade_);
+
+  // This should definitely be true if we get this far.
+  CHECK(stream_adapter_);
+
   stream_adapter_->DetachDelegate();
   std::unique_ptr<WebSocketStream> basic_stream =
       std::make_unique<WebSocketBasicStream>(
           std::move(stream_adapter_), nullptr, sub_protocol_, extensions_);
+  stream_adapter_moved_by_upgrade_ = true;
 
   if (!extension_params_->deflate_enabled)
     return basic_stream;
@@ -302,7 +327,9 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
 }
 
 void WebSocketHttp2HandshakeStream::OnClose(int status) {
-  DCHECK(stream_adapter_);
+  // TODO(ricea): Change this CHECK back to a DCHECK when
+  // https://crbug.com/1215989 is fixed.
+  CHECK(stream_adapter_);
   DCHECK_GT(ERR_IO_PENDING, status);
 
   stream_closed_ = true;
@@ -310,6 +337,11 @@ void WebSocketHttp2HandshakeStream::OnClose(int status) {
   stream_ = nullptr;
 
   stream_adapter_.reset();
+
+  // TODO(ricea): Remove these two lines once https://crbug.com/1215989 is
+  // resolved.
+  CHECK(!stream_adapter_reset_by_close_);
+  stream_adapter_reset_by_close_ = true;
 
   // If response headers have already been received,
   // then ValidateResponse() sets |result_|.
