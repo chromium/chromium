@@ -70,31 +70,8 @@
     align-items: center;
     border-radius: 8px;
     box-sizing: border-box;
-    height: 146px;
+    height: 116px;
     width: 329px;
-  }
-
-  #consentIconContainer {
-    align-items: center;
-    background: var(--discount-chip-background);
-    border-radius: 4px;
-    display: flex;
-    height: 26px;
-    justify-content: center;
-    margin-inline-end: auto;
-    margin-inline-start: auto;
-    margin-top: 16px;
-    opacity: 80%;
-    width: 26px;
-  }
-
-  #consentIcon {
-    -webkit-mask-image: url(modules/cart/icons/consent_label.svg);
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 100%;
-    background-color: var(--discount-chip-text-color);
-    height: 15px;
-    width: 15px;
   }
 
   #consentContent {
@@ -103,7 +80,7 @@
     font-weight: 400;
     height: 40px;
     line-height: 20px;
-    margin-top: 8px;
+    margin-top: 16px;
     text-align: center;
     white-space: normal;
     width: 223px;
@@ -112,7 +89,7 @@
   #consentButtonContainer {
     display: flex;
     justify-content: center;
-    margin-top: 8px;
+    margin-top: 12px;
   }
 
   .discount-chip {
@@ -300,9 +277,6 @@
         <template id="consentCardElement" is="dom-if"
             if="[[showDiscountConsent]]">
           <div id="consentCard">
-            <div id="consentIconContainer">
-              <div id="consentIcon"></div>
-            </div>
             <span id="consentContent">
               [[i18n('modulesCartDiscountConsentContent')]]
             </span>
