@@ -10,6 +10,8 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 
+class DeskTemplateAppLaunchHandler;
+
 namespace ash {
 class DesksHelper;
 class DeskTemplate;
@@ -45,9 +47,15 @@ class DesksClient {
   void OnCreateAndActivateNewDesk(ash::DeskTemplate* desk_template,
                                   bool on_create_activate_success);
 
+  // Attempts to create `app_launch_handler_` if it doesn't already exist.
+  void MaybeCreateAppLaunchHandler();
+
   // Convenience pointer to the desks helper which is `ash::DesksController`.
   // Guaranteed to be not null for the duration of `this`.
   ash::DesksHelper* const desks_helper_;
+
+  // The object that handles launching apps.
+  std::unique_ptr<DeskTemplateAppLaunchHandler> app_launch_handler_;
 
   // A test only template for testing `LaunchDeskTemplate`.
   std::unique_ptr<ash::DeskTemplate> launch_template_for_test_;

@@ -9,13 +9,23 @@
 #include "base/notreached.h"
 #include "components/full_restore/restore_data.h"
 
-DeskTemplateAppLaunchHandler::DeskTemplateAppLaunchHandler(
-    Profile* profile,
-    std::unique_ptr<::full_restore::RestoreData> restore_data)
-    : AppLaunchHandler(profile) {
-  DCHECK(restore_data);
+DeskTemplateAppLaunchHandler::DeskTemplateAppLaunchHandler(Profile* profile)
+    : chromeos::AppLaunchHandler(profile) {}
 
+DeskTemplateAppLaunchHandler::~DeskTemplateAppLaunchHandler() = default;
+
+void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
+    std::unique_ptr<full_restore::RestoreData> restore_data) {
+  // TODO(sammiequon) : Investigate if we can early return if a launch is
+  // currently underway.
   restore_data_ = std::move(restore_data);
+  if (HasRestoreData())
+    LaunchApps();
+}
+
+base::WeakPtr<chromeos::AppLaunchHandler>
+DeskTemplateAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void DeskTemplateAppLaunchHandler::LaunchBrowser() {

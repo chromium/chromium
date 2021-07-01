@@ -10,6 +10,8 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_helper.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,7 +48,7 @@ constexpr char kExampleUrl2[] = "https://examples.com";
 aura::Window* FindAppWindow(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
-    if (window->GetProperty(::full_restore::kRestoreWindowIdKey) == window_id)
+    if (window->GetProperty(full_restore::kRestoreWindowIdKey) == window_id)
       return window;
   }
   return nullptr;
@@ -186,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   const gfx::Rect settings_app_bounds = gfx::Rect(100, 100, 800, 300);
   aura::Window* settings_window = FindAppWindow(kSettingsWindowId);
   const int32_t settings_window_id =
-      settings_window->GetProperty(::full_restore::kWindowIdKey);
+      settings_window->GetProperty(full_restore::kWindowIdKey);
   ASSERT_TRUE(settings_window);
   settings_window->SetBounds(settings_app_bounds);
 
@@ -265,4 +267,69 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
 
   EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
   EXPECT_EQ(kDeskName, desks_helper->GetDeskName(1));
+}
+
+// Tests that launching a template that contains a system web app works as
+// expected.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
+  ASSERT_TRUE(DesksClient::Get());
+  Profile* profile = browser()->profile();
+
+  // Create the settings app, which is a system web app.
+  web_app::WebAppProvider::Get(profile)
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(
+      profile, web_app::SystemAppType::SETTINGS);
+  apps::AppLaunchParams params(
+      settings_app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW,
+      apps::mojom::AppLaunchSource::kSourceTest);
+  params.restore_id = kSettingsWindowId;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->BrowserAppLauncher()
+      ->LaunchAppWithParams(std::move(params));
+  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+
+  aura::Window* settings_window = FindAppWindow(kSettingsWindowId);
+  ASSERT_TRUE(settings_window);
+  const std::u16string settings_title = settings_window->GetTitle();
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      DesksClient::Get()->CaptureActiveDeskAsTemplate();
+  ASSERT_TRUE(desk_template);
+
+  // Close the settings window. We'll need to verify if it reopens later.
+  views::Widget* settings_widget =
+      views::Widget::GetWidgetForNativeWindow(settings_window);
+  settings_widget->CloseNow();
+  ASSERT_FALSE(FindAppWindow(kSettingsWindowId));
+  settings_window = nullptr;
+
+  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
+  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+
+  // Set the template we created as the template we want to launch.
+  ash::DeskTemplate* desk_template_ptr = desk_template.get();
+  SetLaunchTemplate(std::move(desk_template));
+  ash::DeskSwitchAnimationWaiter waiter;
+  DesksClient::Get()->LaunchDeskTemplate(desk_template_ptr->uuid());
+  waiter.Wait();
+
+  // Verify that the settings window has been launched on the new desk (desk B).
+  // TODO(sammiequon): Right now the app just launches, so verify the title
+  // matches. We should verify the restore id and use
+  // `FindAppWindow(kSettingsWindowId)` once things are wired up properly.
+  EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
+  for (auto* browser : *BrowserList::GetInstance()) {
+    aura::Window* window = browser->window()->GetNativeWindow();
+    if (window->GetTitle() == settings_title) {
+      settings_window = window;
+      break;
+    }
+  }
+  ASSERT_TRUE(settings_window);
+  EXPECT_EQ(ash::Shell::GetContainer(settings_window->GetRootWindow(),
+                                     ash::kShellWindowId_DeskContainerB),
+            settings_window->parent());
 }

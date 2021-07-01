@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/desk_template_app_launch_handler.h"
 
 namespace {
 
@@ -36,6 +38,10 @@ std::unique_ptr<ash::DeskTemplate> DesksClient::CaptureActiveDeskAsTemplate() {
 }
 
 void DesksClient::LaunchDeskTemplate(double template_uuid) {
+  MaybeCreateAppLaunchHandler();
+  if (!app_launch_handler_)
+    return;
+
   // TODO: Find the saved template associated with `template_uuid` from storage.
   if (!launch_template_for_test_ ||
       launch_template_for_test_->uuid() != template_uuid) {
@@ -55,5 +61,24 @@ void DesksClient::OnCreateAndActivateNewDesk(ash::DeskTemplate* desk_template,
   if (!on_create_activate_success)
     return;
 
-  // TODO: Launch windows.
+  DCHECK(desk_template);
+  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  if (!restore_data)
+    return;
+
+  DCHECK(app_launch_handler_);
+  app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
+}
+
+void DesksClient::MaybeCreateAppLaunchHandler() {
+  if (app_launch_handler_)
+    return;
+
+  // TODO(sammiequon): Handle multiple profile case.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
+  if (profile) {
+    app_launch_handler_ =
+        std::make_unique<DeskTemplateAppLaunchHandler>(profile);
+  }
 }
