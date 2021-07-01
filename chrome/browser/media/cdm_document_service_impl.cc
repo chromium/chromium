@@ -30,6 +30,11 @@
 #include "chromeos/settings/cros_settings_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/content_protection.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/media/platform_verification_chromeos.h"
 #endif
@@ -103,6 +108,21 @@ void CdmDocumentServiceImpl::ChallengePlatform(
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service &&
+      lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() &&
+      lacros_service->GetInterfaceVersion(
+          crosapi::mojom::ContentProtection::Uuid_) >= 2) {
+    lacros_service->GetRemote<crosapi::mojom::ContentProtection>()
+        ->ChallengePlatform(
+            service_id, challenge,
+            base::BindOnce(&CdmDocumentServiceImpl::OnPlatformChallenged,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!platform_verification_flow_)
     platform_verification_flow_ =
@@ -145,6 +165,21 @@ void CdmDocumentServiceImpl::OnPlatformChallenged(
                           platform_key_certificate);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void CdmDocumentServiceImpl::OnPlatformChallenged(
+    ChallengePlatformCallback callback,
+    crosapi::mojom::ChallengePlatformResultPtr result) {
+  if (!result) {
+    LOG(ERROR) << "Platform verification failed.";
+    std::move(callback).Run(false, "", "", "");
+    return;
+  }
+  std::move(callback).Run(true, std::move(result->signed_data),
+                          std::move(result->signed_data_signature),
+                          std::move(result->platform_key_certificate));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void CdmDocumentServiceImpl::GetStorageId(uint32_t version,
                                           GetStorageIdCallback callback) {

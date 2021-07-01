@@ -16,6 +16,20 @@ struct ContentProtectionWindowStatus {
   uint32 protection_mask@1;
 };
 
+// Returned by a successful call to ChallengePlatform. The structure mirrors the
+// CdmDocumentService interface to avoid unnecessary conversions.
+[Stable]
+struct ChallengePlatformResult {
+  // The data signed by the platform.
+  string signed_data;
+
+  // The signature of the signed data block.
+  string signed_data_signature;
+
+  // The device specific certificate for the requested service.
+  string platform_key_certificate;
+};
+
 // This interface is implemented by Ash-Chrome.
 // This allows Lacros to support content protection.
 //
@@ -56,4 +70,18 @@ interface ContentProtection {
   // unnecessary conversions on both sides of the crosapi interface.
   [MinVersion=1]
   GetSystemSalt@2() => (string salt);
+
+  // Allows authorized services to verify that the underlying platform is
+  // trusted. An example of a trusted platform is a Chrome OS device in
+  // verified boot mode. This can be used for protected content playback.
+  //
+  // Input parameters:
+  // - |service_id|: the service ID for the |challenge|.
+  // - |challenge|: the challenge data.
+  // The input parameters mirror the CdmDocumentService interface to avoid
+  // unnecessary conversions.
+  // Returns null on failure.
+  [MinVersion=2]
+  ChallengePlatform@3(string service_id, string challenge) =>
+      (ChallengePlatformResult? result);
 };

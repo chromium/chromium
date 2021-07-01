@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #include "chromeos/crosapi/mojom/content_protection.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -43,6 +44,9 @@ class ContentProtectionAsh : public aura::WindowObserver,
   void QueryWindowStatus(const std::string& window_id,
                          QueryWindowStatusCallback callback) override;
   void GetSystemSalt(GetSystemSaltCallback callback) override;
+  void ChallengePlatform(const std::string& service_id,
+                         const std::string& challenge,
+                         ChallengePlatformCallback callback) override;
 
  private:
   // If an OutputProtectionDelegate already exists, returns it. Otherwise
@@ -60,6 +64,13 @@ class ContentProtectionAsh : public aura::WindowObserver,
                                    uint32_t link_mask,
                                    uint32_t protection_mask);
 
+  void OnChallengePlatform(
+      ChallengePlatformCallback callback,
+      ash::attestation::PlatformVerificationFlow::Result result,
+      const std::string& signed_data,
+      const std::string& signature,
+      const std::string& platform_key_certificate);
+
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.
   mojo::ReceiverSet<mojom::ContentProtection> receivers_;
@@ -71,6 +82,11 @@ class ContentProtectionAsh : public aura::WindowObserver,
   // EnableWindowProtection and QueryWindowStatus.
   std::map<aura::Window*, std::unique_ptr<ash::OutputProtectionDelegate>>
       output_protection_delegates_;
+
+  // Platform verification is a stateful operation. This instance holds all
+  // state associated with (possibly multiple) ongoing operations.
+  scoped_refptr<ash::attestation::PlatformVerificationFlow>
+      platform_verification_flow_;
 
   base::WeakPtrFactory<ContentProtectionAsh> weak_factory_{this};
 };

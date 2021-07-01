@@ -7,6 +7,7 @@
 #include "ash/display/output_protection_delegate.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
+#include "components/user_manager/user_manager.h"
 
 namespace crosapi {
 
@@ -73,6 +74,30 @@ void ContentProtectionAsh::GetSystemSalt(GetSystemSaltCallback callback) {
   chromeos::SystemSaltGetter::Get()->GetSystemSalt(std::move(callback));
 }
 
+void ContentProtectionAsh::ChallengePlatform(
+    const std::string& service_id,
+    const std::string& challenge,
+    ChallengePlatformCallback callback) {
+  // Remote attestation requires a cryptohome user. Since Lacros knows nothing
+  // about cryptohome, we always choose to use the primary logged in user.
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  const user_manager::User* user = user_manager->GetPrimaryUser();
+  if (!user) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  if (!platform_verification_flow_) {
+    platform_verification_flow_ =
+        base::MakeRefCounted<ash::attestation::PlatformVerificationFlow>();
+  }
+
+  platform_verification_flow_->ChallengePlatformKey(
+      user, service_id, challenge,
+      base::BindOnce(&ContentProtectionAsh::OnChallengePlatform,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void ContentProtectionAsh::OnWindowDestroyed(aura::Window* window) {
   output_protection_delegates_.erase(window);
   // No need to call window->RemoveObserver() since Window* handles that before
@@ -93,6 +118,25 @@ void ContentProtectionAsh::ExecuteWindowStatusCallback(
   } else {
     std::move(callback).Run(nullptr);
   }
+}
+
+void ContentProtectionAsh::OnChallengePlatform(
+    ChallengePlatformCallback callback,
+    ash::attestation::PlatformVerificationFlow::Result result,
+    const std::string& signed_data,
+    const std::string& signature,
+    const std::string& platform_key_certificate) {
+  if (result != ash::attestation::PlatformVerificationFlow::SUCCESS) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  mojom::ChallengePlatformResultPtr output =
+      mojom::ChallengePlatformResult::New();
+  output->signed_data = signed_data;
+  output->signed_data_signature = signature;
+  output->platform_key_certificate = platform_key_certificate;
+  std::move(callback).Run(std::move(output));
 }
 
 }  // namespace crosapi

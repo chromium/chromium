@@ -141,7 +141,7 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
 
   bool hw_secure_codecs_required =
       hw_secure_requirement && *hw_secure_requirement;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Hardware security requires HWDRM or remote attestation, both of these
   // require an identifier.
   if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required)
@@ -176,7 +176,7 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
     return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
 
   ALLOW_UNUSED_LOCAL(hw_secure_codecs_required);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   return EmeConfigRule::SUPPORTED;
 }
