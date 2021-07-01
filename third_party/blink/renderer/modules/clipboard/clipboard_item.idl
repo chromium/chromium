@@ -11,9 +11,6 @@
               optional ClipboardItemOptions options = {});
   readonly attribute FrozenArray<DOMString> types;
 
-  [RuntimeEnabled=RawClipboard]
-  readonly attribute boolean raw;
-
   [
     CallWith=ScriptState
   ] Promise<Blob> getType(DOMString type);

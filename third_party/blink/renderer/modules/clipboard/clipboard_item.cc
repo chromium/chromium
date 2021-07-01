@@ -31,13 +31,11 @@ ClipboardItem* ClipboardItem::Create(
 ClipboardItem::ClipboardItem(
     const HeapVector<std::pair<String, Member<Blob>>>& items,
     const ClipboardItemOptions* options)
-    : items_(items),
-      is_raw_(base::FeatureList::IsEnabled(features::kRawClipboard) &&
-              options->raw()) {
+    : items_(items) {
   DCHECK(items_.size());
-  if (options->hasDirect()) {
-    for (const auto& direct_items : options->direct()) {
-      custom_format_items_.push_back(direct_items);
+  if (options->hasUnsanitized()) {
+    for (const auto& unsanitized_item : options->unsanitized()) {
+      custom_format_items_.push_back(unsanitized_item);
     }
   }
 }
@@ -49,10 +47,6 @@ Vector<String> ClipboardItem::types() const {
     types.push_back(item.first);
   }
   return types;
-}
-
-bool ClipboardItem::raw() const {
-  return is_raw_;
 }
 
 ScriptPromise ClipboardItem::getType(ScriptState* script_state,

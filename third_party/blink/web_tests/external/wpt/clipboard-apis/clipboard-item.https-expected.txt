@@ -6,7 +6,6 @@ PASS ClipboardItem(Blob) fails
 PASS ClipboardItem() fails with null input
 PASS ClipboardItem() fails with no input
 PASS types() returns correct values
-FAIL raw() returns correct values, defaulting to false assert_equals: expected (boolean) false but got (undefined) undefined
 PASS getType(DOMString valid type) succeeds with correct output
 PASS getType(DOMString invalid type) succeeds with correct output
 PASS getType(DOMString type) rejects correctly when querying for missing type

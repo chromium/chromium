@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_item_options.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
-#include "third_party/blink/renderer/core/clipboard/raw_system_clipboard.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -133,10 +132,7 @@ void ClipboardPromise::WriteNextRepresentation() {
   // This is in the start flow so that a |clipboard_item_data_| with 0 items
   // will still commit gracefully.
   if (clipboard_representation_index_ == clipboard_item_data_.size()) {
-    if (is_raw_)
-      local_frame->GetRawSystemClipboard()->CommitWrite();
-    else
-      local_frame->GetSystemClipboard()->CommitWrite();
+    local_frame->GetSystemClipboard()->CommitWrite();
     script_promise_resolver_->Resolve();
     return;
   }
@@ -148,14 +144,8 @@ void ClipboardPromise::WriteNextRepresentation() {
       clipboard_item_data_[clipboard_representation_index_].second;
 
   DCHECK(!clipboard_writer_);
-  if (is_raw_) {
-    clipboard_writer_ = ClipboardWriter::Create(
-        local_frame->GetRawSystemClipboard(), type, this);
-  } else {
-    clipboard_writer_ =
-        ClipboardWriter::Create(local_frame->GetSystemClipboard(), type, this);
-  }
-
+  clipboard_writer_ =
+      ClipboardWriter::Create(local_frame->GetSystemClipboard(), type, this);
   clipboard_writer_->WriteToSystem(blob);
 }
 
@@ -171,10 +161,13 @@ void ClipboardPromise::RejectFromReadOrDecodeFailure() {
 
 void ClipboardPromise::HandleRead(ClipboardItemOptions* options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(features::kRawClipboard) && options &&
-      options->hasRaw())
-    is_raw_ = options->raw();
-  RequestPermission(mojom::blink::PermissionName::CLIPBOARD_READ, is_raw_,
+  if (options->hasUnsanitized()) {
+    for (const auto& unsanitized_item : options->unsanitized()) {
+      custom_format_items_.push_back(unsanitized_item);
+    }
+  }
+  RequestPermission(mojom::blink::PermissionName::CLIPBOARD_READ,
+                    !custom_format_items_.IsEmpty(),
                     WTF::Bind(&ClipboardPromise::HandleReadWithPermission,
                               WrapPersistent(this)));
 }
@@ -208,11 +201,12 @@ void ClipboardPromise::HandleWrite(
   // For now, we only process the first ClipboardItem.
   ClipboardItem* clipboard_item = (*clipboard_items)[0];
   clipboard_item_data_ = clipboard_item->GetItems();
-  is_raw_ = clipboard_item->raw();
+  custom_format_items_ = clipboard_item->CustomFormats();
+  DCHECK(base::FeatureList::IsEnabled(features::kClipboardCustomFormats) ||
+         custom_format_items_.IsEmpty());
 
-  DCHECK(base::FeatureList::IsEnabled(features::kRawClipboard) || !is_raw_);
-
-  RequestPermission(mojom::blink::PermissionName::CLIPBOARD_WRITE, is_raw_,
+  RequestPermission(mojom::blink::PermissionName::CLIPBOARD_WRITE,
+                    !custom_format_items_.IsEmpty(),
                     WTF::Bind(&ClipboardPromise::HandleWriteWithPermission,
                               WrapPersistent(this)));
 }
@@ -235,13 +229,6 @@ void ClipboardPromise::HandleReadWithPermission(PermissionStatus status) {
     return;
   }
 
-  if (is_raw_) {
-    RawSystemClipboard* raw_system_clipboard =
-        GetLocalFrame()->GetRawSystemClipboard();
-    raw_system_clipboard->ReadAvailableFormatNames(WTF::Bind(
-        &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
-    return;
-  }
   SystemClipboard* system_clipboard = GetLocalFrame()->GetSystemClipboard();
   Vector<String> available_types = system_clipboard->ReadAvailableTypes();
   OnReadAvailableFormatNames(available_types);
@@ -258,7 +245,7 @@ void ClipboardPromise::ResolveRead() {
   }
 
   ClipboardItemOptions* options = ClipboardItemOptions::Create();
-  options->setRaw(is_raw_);
+  options->setUnsanitized(custom_format_items_);
 
   HeapVector<Member<ClipboardItem>> clipboard_items = {
       MakeGarbageCollected<ClipboardItem>(clipboard_item_data_, options)};
@@ -273,7 +260,8 @@ void ClipboardPromise::OnReadAvailableFormatNames(
 
   clipboard_item_data_.ReserveInitialCapacity(format_names.size());
   for (const String& format_name : format_names) {
-    if (ClipboardWriter::IsValidType(format_name, is_raw_)) {
+    if (ClipboardWriter::IsValidType(format_name,
+                                     /*is_custom_format_type=*/false)) {
       clipboard_item_data_.emplace_back(format_name,
                                         /* Placeholder value. */ nullptr);
     }
@@ -292,12 +280,6 @@ void ClipboardPromise::ReadNextRepresentation() {
 
   String format_name =
       clipboard_item_data_[clipboard_representation_index_].first;
-  if (is_raw_) {
-    GetLocalFrame()->GetRawSystemClipboard()->Read(
-        format_name,
-        WTF::Bind(&ClipboardPromise::OnRawRead, WrapPersistent(this)));
-    return;
-  }
 
   ClipboardReader* clipboard_reader = ClipboardReader::Create(
       GetLocalFrame()->GetSystemClipboard(), format_name, this);
@@ -306,26 +288,6 @@ void ClipboardPromise::ReadNextRepresentation() {
     return;
   }
   clipboard_reader->Read();
-}
-
-void ClipboardPromise::OnRawRead(mojo_base::BigBuffer data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!GetExecutionContext())
-    return;
-  String format_name =
-      clipboard_item_data_[clipboard_representation_index_].first;
-  Blob* blob = Blob::Create(reinterpret_cast<const uint8_t*>(data.data()),
-                            data.size(), format_name);
-  if (!blob) {
-    script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kDataError,
-        "Failed to read or decode clipboard data for type " +
-            clipboard_item_data_[clipboard_representation_index_].first + "."));
-    return;
-  }
-  clipboard_item_data_[clipboard_representation_index_].second = blob;
-  ++clipboard_representation_index_;
-  ReadNextRepresentation();
 }
 
 void ClipboardPromise::OnRead(Blob* blob) {
@@ -364,16 +326,16 @@ void ClipboardPromise::HandleWriteWithPermission(PermissionStatus status) {
   for (const auto& type_and_blob : clipboard_item_data_) {
     String type = type_and_blob.first;
     String type_with_args = type_and_blob.second->type();
-    if (!ClipboardWriter::IsValidType(type, is_raw_)) {
+    bool is_valid_custom_format = base::Contains(custom_format_items_, type);
+    if (!ClipboardWriter::IsValidType(type, is_valid_custom_format)) {
       script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "Type " + type + " not supported on write."));
       return;
     }
-    // For normal (not-raw) write, blobs may have a full MIME type with args
+    // For normal (not-custom) write, blobs may have a full MIME type with args
     // (ex. 'text/plain;charset=utf-8'), whereas the type must not have args
     // (ex. 'text/plain' only), so ensure that Blob->type is contained in type.
-    // For raw clipboard, Blobs convert their type to lowercase.
     if (!type_with_args.Contains(type.LowerASCII())) {
       script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
@@ -455,10 +417,11 @@ void ClipboardPromise::RequestPermission(
     return;
   }
 
-  if (is_raw_ && !LocalFrame::HasTransientUserActivation(GetLocalFrame())) {
+  if (!custom_format_items_.IsEmpty() &&
+      !LocalFrame::HasTransientUserActivation(GetLocalFrame())) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
-        "Must be handling a user gesture to use raw clipboard"));
+        "Must be handling a user gesture to use custom clipboard"));
     return;
   }
 

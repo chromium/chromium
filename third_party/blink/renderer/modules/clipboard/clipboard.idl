@@ -14,7 +14,7 @@
 
     [MeasureAs=AsyncClipboardAPIRead,
      CallWith=ScriptState,
-     RuntimeEnabled=RawClipboard
+     RuntimeEnabled=ClipboardCustomFormats
     ] Promise<sequence<ClipboardItem>> read(ClipboardItemOptions options);
 
     [MeasureAs=AsyncClipboardAPIReadText,

@@ -17,7 +17,6 @@ namespace blink {
 
 class FileReaderLoader;
 class SystemClipboard;
-class RawSystemClipboard;
 
 // Interface for writing an individual Clipboard API format as a Blob to the
 // System Clipboard, safely and asynchronously.
@@ -59,11 +58,7 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   static ClipboardWriter* Create(SystemClipboard* system_clipboard,
                                  const String& mime_type,
                                  ClipboardPromise* promise);
-  // For writing unsanitized types.
-  // IsValidType() must return true on types passed into `mime_type`.
-  static ClipboardWriter* Create(RawSystemClipboard* raw_system_clipboard,
-                                 const String& mime_type,
-                                 ClipboardPromise* promise);
+
   ~ClipboardWriter() override;
 
   // Returns whether ClipboardWriter has implemented support for this type.
@@ -74,7 +69,7 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   // IsValidType() is used for both ClipboardWriter and ClipboardReader, as read
   // and write currently support the same types. If this changes in the future,
   // please create separate IsValidType functions.
-  static bool IsValidType(const String& mime_type, bool is_raw);
+  static bool IsValidType(const String& mime_type, bool is_custom_format_type);
   // Begins the sequence of writing the Blob to the system clipbaord.
   void WriteToSystem(Blob* blob);
 
@@ -88,8 +83,6 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
 
  protected:
   ClipboardWriter(SystemClipboard* system_clipboard, ClipboardPromise* promise);
-  ClipboardWriter(RawSystemClipboard* raw_system_clipboard,
-                  ClipboardPromise* promise);
 
   // Decodes and writes `raw_data`. Decoding is done off the main thread
   // whenever possible, by calling DecodeOnBackgroundThread.
@@ -97,16 +90,11 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
       DOMArrayBuffer* raw_data,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
 
-  // SystemClipboard and RawSystemClipboard are bound to LocalFrame, so the
-  // bound LocalFrame must still be valid by the time they're used.
+  // SystemClipboard is bound to LocalFrame, so the bound LocalFrame must still
+  // be valid by the time it's used.
   SystemClipboard* system_clipboard() {
     DCHECK(promise_->GetLocalFrame());
     return system_clipboard_;
-  }
-
-  RawSystemClipboard* raw_system_clipboard() {
-    DCHECK(promise_->GetLocalFrame());
-    return raw_system_clipboard_;
   }
 
   // This ClipboardPromise owns this ClipboardWriter. Subclasses use `promise_`
@@ -118,9 +106,6 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  ClipboardWriter(SystemClipboard* system_clipboard,
-                  RawSystemClipboard* raw_system_clipboard,
-                  ClipboardPromise* promise);
   // TaskRunner for interacting with the system clipboard.
   const scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner_;
   // TaskRunner for reading files.
@@ -129,8 +114,6 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   std::unique_ptr<FileReaderLoader> file_reader_;
   // Access to the global sanitized system clipboard.
   Member<SystemClipboard> system_clipboard_;
-  // Access to the global unsanitized system clipboard.
-  Member<RawSystemClipboard> raw_system_clipboard_;
 
   // Oilpan: ClipboardWriter must remain alive until Member<T>::Clear() is
   // called, to keep the FileReaderLoader alive and avoid unexpected UaPs.

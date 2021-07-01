@@ -18,10 +18,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
-namespace mojo_base {
-class BigBuffer;
-}
-
 namespace blink {
 
 class ClipboardWriter;
@@ -78,7 +74,6 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
 
   void OnReadAvailableFormatNames(const Vector<String>& format_names);
   void ReadNextRepresentation();
-  void OnRawRead(mojo_base::BigBuffer data);
   void ResolveRead();
 
   // Checks for permissions (interacting with PermissionService).
@@ -104,9 +99,10 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // Only for use in writeText().
   String plain_text_;
   HeapVector<std::pair<String, Member<Blob>>> clipboard_item_data_;
-  bool is_raw_;  // Corresponds to allowWithoutSanitization in ClipboardItem.
   // Index of clipboard representation currently being processed.
   wtf_size_t clipboard_representation_index_;
+  // Stores all the custom formats defined in `ClipboardItemOptions`.
+  Vector<String> custom_format_items_;
 
   // Because v8 is thread-hostile, ensures that all interactions with
   // ScriptState and ScriptPromiseResolver occur on the main thread.

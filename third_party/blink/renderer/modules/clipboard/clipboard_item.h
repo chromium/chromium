@@ -28,7 +28,6 @@ class ClipboardItem final : public ScriptWrappable {
       const HeapVector<std::pair<String, Member<Blob>>>& items,
       const ClipboardItemOptions* options);
   Vector<String> types() const;
-  bool raw() const;
   ScriptPromise getType(ScriptState* script_state, const String& type) const;
 
   const HeapVector<std::pair<String, Member<Blob>>>& GetItems() const {
@@ -42,7 +41,6 @@ class ClipboardItem final : public ScriptWrappable {
 
  private:
   HeapVector<std::pair<String, Member<Blob>>> items_;
-  const bool is_raw_;
   Vector<String> custom_format_items_;
 };
 
