@@ -23,6 +23,7 @@
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
@@ -70,6 +71,30 @@ constexpr base::TimeDelta kZeroStateAnimationFadeInDuration =
     base::TimeDelta::FromMilliseconds(167);
 constexpr base::TimeDelta kZeroStateAnimationTranslateUpDuration =
     base::TimeDelta::FromMilliseconds(250);
+
+// Helpers ---------------------------------------------------------------------
+
+// These classes exist to solely to provide a class name to UI devtools. They
+// don't follow the style guide so they can be shorter.
+class ContentContainer : public views::View {
+ public:
+  const char* GetClassName() const override { return "ContentContainer"; }
+};
+
+class MainContentContainer : public views::View {
+ public:
+  const char* GetClassName() const override { return "MainContentContainer"; }
+};
+
+class DividerContainer : public views::View {
+ public:
+  const char* GetClassName() const override { return "DividerContainer"; }
+};
+
+class FooterContainer : public views::View {
+ public:
+  const char* GetClassName() const override { return "FooterContainer"; }
+};
 
 // HorizontalSeparator ---------------------------------------------------------
 
@@ -135,10 +160,6 @@ AppListAssistantMainStage::~AppListAssistantMainStage() {
     AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
 }
 
-const char* AppListAssistantMainStage::GetClassName() const {
-  return "AppListAssistantMainStage";
-}
-
 void AppListAssistantMainStage::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
@@ -176,7 +197,7 @@ AppListAssistantMainStage::CreateContentLayoutContainer() {
   // The |zero_state_view_| is laid out above of the main content container. As
   // such, it floats above and does not cause repositioning to any of content
   // layout's underlying views.
-  auto content_layout_container = std::make_unique<views::View>();
+  auto content_layout_container = std::make_unique<ContentContainer>();
 
   auto* stack_layout = content_layout_container->SetLayoutManager(
       std::make_unique<StackLayout>());
@@ -200,7 +221,7 @@ AppListAssistantMainStage::CreateContentLayoutContainer() {
 
 std::unique_ptr<views::View>
 AppListAssistantMainStage::CreateMainContentLayoutContainer() {
-  auto content_layout_container = std::make_unique<views::View>();
+  auto content_layout_container = std::make_unique<MainContentContainer>();
   views::BoxLayout* content_layout = content_layout_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
@@ -232,7 +253,7 @@ std::unique_ptr<views::View>
 AppListAssistantMainStage::CreateDividerLayoutContainer() {
   // Dividers: the progress indicator and the horizontal separator will be the
   // separator when querying and showing the results, respectively.
-  auto divider_container = std::make_unique<views::View>();
+  auto divider_container = std::make_unique<DividerContainer>();
   divider_container->SetLayoutManager(std::make_unique<StackLayout>());
 
   // Progress indicator, which will be animated on its own layer.
@@ -259,7 +280,7 @@ AppListAssistantMainStage::CreateFooterLayoutContainer() {
   // its visibility changes, its parent container will still reserve the same
   // layout space. This prevents jank that would otherwise occur due to
   // |ui_element_container_| claiming that empty space.
-  auto footer_container = std::make_unique<views::View>();
+  auto footer_container = std::make_unique<FooterContainer>();
   footer_container->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   footer_ = footer_container->AddChildView(
@@ -436,5 +457,8 @@ void AppListAssistantMainStage::MaybeHideZeroState() {
   assistant::util::FadeOutAndHide(zero_state_view_,
                                   kZeroStateAnimationFadeOutDuration);
 }
+
+BEGIN_METADATA(AppListAssistantMainStage, views::View)
+END_METADATA
 
 }  // namespace ash

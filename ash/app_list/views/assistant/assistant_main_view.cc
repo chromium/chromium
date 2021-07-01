@@ -18,6 +18,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -45,10 +46,6 @@ AssistantMainView::AssistantMainView(AssistantViewDelegate* delegate)
 AssistantMainView::~AssistantMainView() {
   if (AssistantUiController::Get())
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
-}
-
-const char* AssistantMainView::GetClassName() const {
-  return "AssistantMainView";
 }
 
 void AssistantMainView::ChildPreferredSizeChanged(views::View* child) {
@@ -134,5 +131,8 @@ void AssistantMainView::InitLayout() {
 
   layout->SetFlexForView(main_stage_, 1);
 }
+
+BEGIN_METADATA(AssistantMainView, views::View)
+END_METADATA
 
 }  // namespace ash

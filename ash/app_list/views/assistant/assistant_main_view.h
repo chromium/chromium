@@ -9,8 +9,8 @@
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,15 +18,20 @@ class AssistantDialogPlate;
 class AppListAssistantMainStage;
 class AssistantViewDelegate;
 
+// Manages the dialog plate (input area) and main stage (output area),
+// including animation when a new assistant session starts.
 class ASH_EXPORT AssistantMainView : public views::View,
                                      public AssistantControllerObserver,
                                      public AssistantUiModelObserver {
  public:
+  METADATA_HEADER(AssistantMainView);
+
   explicit AssistantMainView(AssistantViewDelegate* delegate);
+  AssistantMainView(const AssistantMainView&) = delete;
+  AssistantMainView& operator=(const AssistantMainView&) = delete;
   ~AssistantMainView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
   void RequestFocus() override;
@@ -54,8 +59,6 @@ class ASH_EXPORT AssistantMainView : public views::View,
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantMainView);
 };
 
 }  // namespace ash

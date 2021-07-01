@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -149,10 +150,6 @@ AssistantPageView::AssistantPageView(
 AssistantPageView::~AssistantPageView() {
   if (AssistantUiController::Get())
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
-}
-
-const char* AssistantPageView::GetClassName() const {
-  return "AssistantPageView";
 }
 
 gfx::Size AssistantPageView::GetMinimumSize() const {
@@ -462,5 +459,8 @@ void AssistantPageView::MaybeUpdateAppListState(int child_height) {
   if (child_height > GetPreferredHeightForAppListState(app_list_view))
     app_list_view->SetState(AppListViewState::kHalf);
 }
+
+BEGIN_METADATA(AssistantPageView, views::View)
+END_METADATA
 
 }  // namespace ash

@@ -13,9 +13,9 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -28,11 +28,14 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
                                      public AssistantControllerObserver,
                                      public AssistantUiModelObserver {
  public:
+  METADATA_HEADER(AssistantPageView);
+
   explicit AssistantPageView(AssistantViewDelegate* assistant_view_delegate);
+  AssistantPageView(const AssistantPageView&) = delete;
+  AssistantPageView& operator=(const AssistantPageView&) = delete;
   ~AssistantPageView() override;
 
   // AppListPage:
-  const char* GetClassName() const override;
   gfx::Size GetMinimumSize() const override;
   void OnBoundsChanged(const gfx::Rect& prev_bounds) override;
   void RequestFocus() override;
@@ -88,8 +91,6 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantPageView);
 };
 
 }  // namespace ash

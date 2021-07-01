@@ -15,9 +15,8 @@
 #include "ash/assistant/ui/base/assistant_button_listener.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/component_export.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -50,11 +49,14 @@ class ASH_EXPORT AssistantDialogPlate
       public AssistantUiModelObserver,
       public AssistantButtonListener {
  public:
+  METADATA_HEADER(AssistantDialogPlate);
+
   explicit AssistantDialogPlate(AssistantViewDelegate* delegate);
+  AssistantDialogPlate(const AssistantDialogPlate&) = delete;
+  AssistantDialogPlate& operator=(const AssistantDialogPlate&) = delete;
   ~AssistantDialogPlate() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
 
@@ -112,8 +114,6 @@ class ASH_EXPORT AssistantDialogPlate
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantDialogPlate);
 };
 
 }  // namespace ash
