@@ -334,7 +334,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.Menu.ClickedActionableItem"
-    enum="ProfileMenuActionableItem" expires_after="2021-06-30">
+    enum="ProfileMenuActionableItem" expires_after="2022-06-30">
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -358,6 +358,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.Menu.OpenedAfterAvatarHighlight" units="ms"
     expires_after="2021-07-01">
+  <obsolete>
+    Removed on 2021-07.
+  </obsolete>
   <owner>droger@chromium.org</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
