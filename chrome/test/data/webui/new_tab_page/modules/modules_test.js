@@ -56,7 +56,6 @@ suite('NewTabPageModulesModulesTest', () => {
     const modulesElement = new ModulesElement();
     document.body.appendChild(modulesElement);
     await modulesPromise;
-    $$(modulesElement, '#modules').render();
     return modulesElement;
   }
 

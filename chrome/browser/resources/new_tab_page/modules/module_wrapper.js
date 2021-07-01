@@ -12,7 +12,7 @@ import {Module} from './module_descriptor.js';
 
 /** @fileoverview Element that implements the common module UI. */
 
-class ModuleWrapperElement extends PolymerElement {
+export class ModuleWrapperElement extends PolymerElement {
   static get is() {
     return 'ntp-module-wrapper';
   }

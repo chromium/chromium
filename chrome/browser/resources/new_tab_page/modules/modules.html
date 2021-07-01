@@ -15,18 +15,7 @@
     flex-grow: 1;
   }
 </style>
-<template is="dom-repeat" items="[[modules_]]" id="modules"
-    on-dom-change="onModulesLoaded_">
-  <ntp-module-wrapper module="[[item]]"
-      draggable="[[dragEnabled_]]"
-      on-dragstart="onDragStart_"
-      on-dismiss-module="onDismissModule_"
-      on-disable-module="onDisableModule_"
-      hidden="[[moduleDisabled_(item.descriptor.id,
-                                dismissedModules_.*,
-                                disabledModules_)]]">
-  </ntp-module-wrapper>
-</template>
+<div id="modules"></div>
 <cr-toast id="removeModuleToast" duration="10000">
   <div id="removeModuleToastMessage">[[removedModuleData_.message]]</div>
   <cr-button id="undoRemoveModuleButton"

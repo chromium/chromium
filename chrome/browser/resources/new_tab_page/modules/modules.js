@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './module_wrapper.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
@@ -17,6 +16,7 @@ import {$$} from '../utils.js';
 
 import {Module} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
+import {ModuleWrapperElement} from './module_wrapper.js';
 
 /**
  * Container for the NTP modules.
@@ -35,9 +35,6 @@ export class ModulesElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @private {!Array<!Module>} */
-      modules_: Object,
-
       /** @private {!Array<string>} */
       dismissedModules_: {
         type: Array,
@@ -83,6 +80,10 @@ export class ModulesElement extends mixinBehaviors
     };
   }
 
+  static get observers() {
+    return ['onRemovedModulesChange_(dismissedModules_.*, disabledModules_)'];
+  }
+
   constructor() {
     super();
     /** @private {?number} */
@@ -123,10 +124,37 @@ export class ModulesElement extends mixinBehaviors
    * @private
    */
   async renderModules_() {
-    this.modules_ = await ModuleRegistry.getInstance().initializeModules(
+    const modules = await ModuleRegistry.getInstance().initializeModules(
         loadTimeData.getInteger('modulesLoadTimeout'));
-    if (this.modules_) {
+    if (modules) {
       NewTabPageProxy.getInstance().handler.onModulesLoadedWithData();
+      modules.forEach(module => {
+        const moduleWrapper = new ModuleWrapperElement();
+        moduleWrapper.module = module;
+        moduleWrapper.setAttribute('draggable', this.dragEnabled_);
+        moduleWrapper.addEventListener('dragstart', event => {
+          this.onDragStart_(/** @type {!DragEvent} */ (event));
+        });
+        moduleWrapper.addEventListener('dismiss-module', event => {
+          this.onDismissModule_(
+              /**
+                 @type {!CustomEvent<{message: string, restoreCallback:
+                     function()}>}
+               */
+              (event));
+        });
+        moduleWrapper.addEventListener('disable-module', event => {
+          this.onDisableModule_(
+              /**
+                 @type {!CustomEvent<{message: string, restoreCallback:
+                     ?function()}>}
+               */
+              (event));
+        });
+        moduleWrapper.hidden = this.moduleDisabled_(module.descriptor.id);
+        this.$.modules.appendChild(moduleWrapper);
+      });
+      this.onModulesLoaded_();
     }
   }
 
@@ -160,12 +188,13 @@ export class ModulesElement extends mixinBehaviors
   /** @private */
   onModulesLoadedAndVisibilityDeterminedChange_() {
     if (this.modulesLoadedAndVisibilityDetermined_) {
-      this.modules_.forEach(({descriptor: {id}}) => {
-        chrome.metricsPrivate.recordBoolean(
-            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
-            !this.disabledModules_.all &&
-                !this.disabledModules_.ids.includes(id));
-      });
+      this.shadowRoot.querySelectorAll('ntp-module-wrapper')
+          .forEach(({module}) => {
+            chrome.metricsPrivate.recordBoolean(
+                `NewTabPage.Modules.EnabledOnNTPLoad.${module.descriptor.id}`,
+                !this.disabledModules_.all &&
+                    !this.disabledModules_.ids.includes(module.descriptor.id));
+          });
       chrome.metricsPrivate.recordBoolean(
           'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
       this.dispatchEvent(new Event('modules-loaded'));
@@ -179,7 +208,8 @@ export class ModulesElement extends mixinBehaviors
    * @private
    */
   onDismissModule_(e) {
-    const id = $$(this, '#modules').itemForElement(e.target).descriptor.id;
+    const id =
+        /** @type {ModuleWrapperElement} */ (e.target).module.descriptor.id;
     const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
       message: e.detail.message,
@@ -206,7 +236,8 @@ export class ModulesElement extends mixinBehaviors
    * @private
    */
   onDisableModule_(e) {
-    const id = $$(this, '#modules').itemForElement(e.target).descriptor.id;
+    const id =
+        /** @type {ModuleWrapperElement} */ (e.target).module.descriptor.id;
     const restoreCallback = e.detail.restoreCallback;
     this.removedModuleData_ = {
       message: e.detail.message,
@@ -253,6 +284,18 @@ export class ModulesElement extends mixinBehaviors
     $$(this, '#removeModuleToast').hide();
 
     this.removedModuleData_ = null;
+  }
+
+  /**
+   * Hides and reveals modules depending on removed status.
+   * @private
+   */
+  onRemovedModulesChange_() {
+    this.shadowRoot.querySelectorAll('ntp-module-wrapper')
+        .forEach(moduleWrapper => {
+          moduleWrapper.hidden =
+              this.moduleDisabled_(moduleWrapper.module.descriptor.id);
+        });
   }
 
   /**
