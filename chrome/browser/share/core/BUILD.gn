@@ -4,7 +4,7 @@
 
 import("//chrome/browser/buildflags.gni")
 
-source_set("core") {
+source_set("share_targets") {
   sources = [
     "share_targets.cc",
     "share_targets.h",
@@ -18,5 +18,18 @@ source_set("core") {
     "//chrome/browser/share/proto:proto",
     "//components/resources:components_resources",
     "//ui/base:base",
+  ]
+}
+
+source_set("share_targets_unittest") {
+  testonly = true
+  sources = [ "share_targets_unittest.cc" ]
+
+  deps = [
+    ":share_targets",
+    "//base:base",
+    "//build:chromeos_buildflags",
+    "//testing/gmock:gmock",
+    "//testing/gtest:gtest",
   ]
 }

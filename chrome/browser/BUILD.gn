@@ -4228,7 +4228,7 @@ static_library("browser") {
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/resources:component_extension_resources",
-      "//chrome/browser/share/core:core",
+      "//chrome/browser/share/core:share_targets",
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/web_applications/components",

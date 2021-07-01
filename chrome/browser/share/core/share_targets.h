@@ -36,7 +36,6 @@ class ShareTargets {
   // Creator must call one of Populate* before calling other methods.
   ShareTargets();
 
- private:
   // Used in metrics, do not reorder.
   enum class UpdateResult {
     SUCCESS = 1,
@@ -46,6 +45,7 @@ class ShareTargets {
     SKIPPED_VERSION_CHECK_EQUAL = 5,
   };
 
+ private:
   // Read data from an serialized protobuf and update the internal list
   // only if it passes integrity checks.
   UpdateResult PopulateFromBinaryPb(const std::string& binary_pb);
@@ -56,7 +56,8 @@ class ShareTargets {
   void PopulateFromResourceBundle();
 
   // Record the result of an update attempt.
-  void RecordUpdateMetrics(UpdateResult result, const std::string& src_name);
+  virtual void RecordUpdateMetrics(UpdateResult result,
+                                   const std::string& src_name);
 
   // Swap in a different targets. This will rebuild file_type_by_ext_ index.
   void SwapTargetsLocked(std::unique_ptr<mojom::MapLocaleTargets>& new_targets);
@@ -74,6 +75,10 @@ class ShareTargets {
   void NotifyShareTargetUpdated();
 
   base::ObserverList<ShareTargetsObserver>::Unchecked observers_;
+
+  FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, UnpackResourceBundle);
+  FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, BadProto);
+  FRIEND_TEST_ALL_PREFIXES(ShareTargetsTest, BadUpdateFromExisting);
 
   friend struct ShareTargetsSingletonTrait;
 };

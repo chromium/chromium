@@ -5985,6 +5985,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/share/core:share_targets_unittest",
       "//components/soda:constants",
       "//services/network:test_support",
     ]
