@@ -317,7 +317,6 @@ const Extension* ExtensionBrowserTest::LoadExtension(
     DCHECK(!options.allow_in_incognito);
     DCHECK(!options.allow_file_access);
     DCHECK(!options.ignore_manifest_warnings);
-    DCHECK(options.require_modern_manifest_version);
     DCHECK(options.wait_for_renderers);
     DCHECK(options.install_param == nullptr);
     DCHECK(!options.wait_for_registration_stored);
@@ -327,8 +326,6 @@ const Extension* ExtensionBrowserTest::LoadExtension(
   loader.set_allow_incognito_access(options.allow_in_incognito);
   loader.set_allow_file_access(options.allow_file_access);
   loader.set_ignore_manifest_warnings(options.ignore_manifest_warnings);
-  loader.set_require_modern_manifest_version(
-      options.require_modern_manifest_version);
   loader.set_wait_for_renderers(options.wait_for_renderers);
 
   if (options.install_param != nullptr) {

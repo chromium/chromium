@@ -69,10 +69,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     // when testing deprecated features).
     bool ignore_manifest_warnings = false;
 
-    // Requires a modern manifest version. Extensions with older manifest
-    // versions won't load if this is true.
-    bool require_modern_manifest_version = true;
-
     // Loads the provided extension as Service Worker based extension.
     bool load_as_service_worker = false;
 
