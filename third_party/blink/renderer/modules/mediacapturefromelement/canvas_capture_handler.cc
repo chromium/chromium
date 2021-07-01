@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/limits.h"
 #include "media/base/video_util.h"
@@ -23,6 +25,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
@@ -37,6 +40,9 @@
 namespace blink {
 
 namespace {
+
+const base::Feature kOneCopyCanvasCapture{"OneCopyCanvasCapture",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Return the gfx::ColorSpace that the pixels resulting from calling
 // ConvertToYUVFrame on |image| will be in.
@@ -213,6 +219,38 @@ void CanvasCaptureHandler::SendNewFrame(
   if (!context_provider) {
     DLOG(ERROR) << "Context lost, skipping frame";
     return;
+  }
+
+  // TODO(https://crbug.com/1191932): This unconditionally drops the alpha
+  // channel. Before shipping this must be fixed.
+  if (base::FeatureList::IsEnabled(kOneCopyCanvasCapture)) {
+    if (!accelerated_frame_pool_) {
+      accelerated_frame_pool_ =
+          std::make_unique<WebGraphicsContext3DVideoFramePool>(
+              context_provider);
+    }
+    auto blit_done_lambda = [](base::WeakPtr<CanvasCaptureHandler> handler,
+                               base::TimeTicks timestamp,
+                               scoped_refptr<media::VideoFrame> video_frame) {
+      if (handler)
+        handler->OnYUVPixelsReadAsync(video_frame, timestamp, true);
+    };
+    auto blit_done_callback =
+        WTF::Bind(blit_done_lambda, weak_ptr_factory_.GetWeakPtr(),
+                  base::TimeTicks::Now());
+    // TODO(https://crbug.com/1224279): This assumes that all StaticBitmapImages
+    // are 8-bit sRGB. Expose the color space and pixel format that is backing
+    // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
+    // SkImage.
+    if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
+            viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
+            gfx::Size(image->width(), image->height()),
+            gfx::ColorSpace::CreateSRGB(),
+            image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
+                                     : kBottomLeft_GrSurfaceOrigin,
+            image->GetMailboxHolder(), std::move(blit_done_callback))) {
+      return;
+    }
   }
 
   // Try async reading if image is texture backed.

@@ -36,6 +36,7 @@ class MediaStreamComponent;
 class StaticBitmapImage;
 class WebGraphicsContext3DProvider;
 class WebGraphicsContext3DProviderWrapper;
+class WebGraphicsContext3DVideoFramePool;
 
 // CanvasCaptureHandler acts as the link between Blink side HTMLCanvasElement
 // and Chrome side VideoCapturerSource. It is responsible for handling
@@ -134,6 +135,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
   bool can_discard_alpha_ = false;
   bool ask_for_new_frame_;
   media::VideoFramePool frame_pool_;
+  std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_;
   absl::optional<base::TimeTicks> first_frame_ticks_;
   scoped_refptr<media::VideoFrame> last_frame_;
 

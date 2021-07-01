@@ -1077,6 +1077,7 @@ _CONFIG = [
             'gpu::MailboxHolder',
             'media::.+',
             'libyuv::.+',
+            'viz::SkColorTypeToResourceFormat',
         ]
     },
     {
