@@ -1353,8 +1353,9 @@ class ContentSettingsWithPrerenderingBrowserTest : public ContentSettingsTest {
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
+// Disabled due to https://crbug.com/1225428
 IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
-                       PrerenderingPageSetsCookie) {
+                       DISABLED_PrerenderingPageSetsCookie) {
   const GURL main_url = embedded_test_server()->GetURL("/empty.html");
   const GURL prerender_url =
       embedded_test_server()->GetURL("/set_cookie_header.html");
