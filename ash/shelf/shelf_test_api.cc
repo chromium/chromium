@@ -85,6 +85,8 @@ ScrollableShelfInfo ShelfTestApi::GetScrollableShelfInfoForState(
         shelf_view->view_model()->view_at(i)->GetBoundsInScreen());
   }
 
+  info.icons_under_animation = shelf_view->IsAnimating();
+
   // Calculates the target offset only when |scroll_distance| is specified.
   if (state.scroll_distance != 0.f) {
     const float target_offset =

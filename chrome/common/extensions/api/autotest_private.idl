@@ -473,6 +473,7 @@ namespace autotestPrivate {
     Bounds leftArrowBounds;
     Bounds rightArrowBounds;
     boolean isAnimating;
+    boolean iconsUnderAnimation;
     boolean isOverflow;
     Bounds[] iconsBoundsInScreen;
     boolean isShelfWidgetAnimating;

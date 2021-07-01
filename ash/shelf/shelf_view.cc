@@ -1868,6 +1868,10 @@ void ShelfView::AnnounceShelfAlignment() {
                                                /*send_native_event=*/true);
 }
 
+bool ShelfView::IsAnimating() const {
+  return bounds_animator_->IsAnimating();
+}
+
 void ShelfView::AnnounceShelfAutohideBehavior() {
   std::u16string announcement;
   switch (shelf_->auto_hide_behavior()) {

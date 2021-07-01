@@ -35,8 +35,11 @@ struct ASH_PUBLIC_EXPORT ScrollableShelfInfo {
   // Bounds of the right arrow in screen.
   gfx::Rect right_arrow_bounds;
 
-  // Indicates whether scrollable shelf is animating.
+  // Indicates whether scrollable shelf is under scroll animation.
   bool is_animating = false;
+
+  // Indicates whether there is any shelf icon under bounds animation.
+  bool icons_under_animation = false;
 
   // Indicates whether scrollable shelf is in overflow mode.
   bool is_overflow = false;

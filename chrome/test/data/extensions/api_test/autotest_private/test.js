@@ -1310,6 +1310,7 @@ var scrollableShelfTests = [
         {}, chrome.test.callbackPass(info => {
           chrome.test.assertEq(0, info.mainAxisOffset);
           chrome.test.assertEq(0, info.rightArrowBounds.width);
+          chrome.test.assertFalse(info.iconsUnderAnimation);
           chrome.test.assertFalse(info.hasOwnProperty('targetMainAxisOffset'));
         }));
   },
@@ -1319,6 +1320,7 @@ var scrollableShelfTests = [
         {'scrollDistance': 10}, chrome.test.callbackPass(info => {
           chrome.test.assertEq(0, info.mainAxisOffset);
           chrome.test.assertEq(0, info.rightArrowBounds.width);
+          chrome.test.assertFalse(info.iconsUnderAnimation);
           chrome.test.assertTrue(info.hasOwnProperty('targetMainAxisOffset'));
         }));
   },

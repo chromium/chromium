@@ -281,6 +281,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // new updates, based on the item having a notification badge.
   void AnnounceShelfItemNotificationBadge(views::View* button);
 
+  // Returns whether `bounds_animator_` is animating any view.
+  bool IsAnimating() const;
+
   // Return the view model for test purposes.
   const views::ViewModel* view_model_for_test() const {
     return view_model_.get();
