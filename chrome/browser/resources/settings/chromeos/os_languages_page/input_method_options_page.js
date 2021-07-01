@@ -110,11 +110,14 @@ Polymer({
       const value = name in currentSettings ?
           currentSettings[name] :
           settings.input_method_util.OPTION_DEFAULT[name];
+      const label = settings.input_method_util.isOptionLabelTranslated(name) ?
+          this.i18n(settings.input_method_util.getOptionLabelName(name)) :
+          settings.input_method_util.getUntranslatedOptionLabelName(name);
       return {
         name: name,
         uiType: uiType,
         value: value,
-        label: this.i18n(settings.input_method_util.getOptionLabelName(name)),
+        label: label,
         menuItems: this.getMenuItems(name, value),
         url: settings.input_method_util.getOptionUrl(name),
         dependentOptions: option.dependentOptions ?

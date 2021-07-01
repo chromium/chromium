@@ -77,6 +77,18 @@ cr.define('settings.input_method_util', function() {
     PINYIN_ENABLE_UPPER_PAGING: 'pinyinEnableUpperPaging',
     PINYIN_FULL_WIDTH_CHARACTER: 'pinyinFullWidthCharacter',
     PINYIN_FUZZY_CONFIG: 'pinyinFuzzyConfig',
+    PINYIN_EN_ENG: 'en:eng',
+    PINYIN_AN_ANG: 'an:ang',
+    PINYIN_IAN_IANG: 'ian:iang',
+    PINYIN_K_G: 'k:g',
+    PINYIN_R_L: 'r:l',
+    PINYIN_UAN_UANG: 'uan:uang',
+    PINYIN_C_CH: 'c:ch',
+    PINYIN_F_H: 'f:h',
+    PINYIN_IN_ING: 'in:ing',
+    PINYIN_L_N: 'l:n',
+    PINYIN_S_SH: 's:sh',
+    PINYIN_Z_ZH: 'z:zh',
     // Options for zhuyin input method.
     ZHUYIN_KEYBOARD_LAYOUT: 'zhuyinKeyboardLayout',
     ZHUYIN_PAGE_SIZE: 'zhuyinPageSize',
@@ -191,7 +203,23 @@ cr.define('settings.input_method_util', function() {
       physicalKeyboard: [],
     },
     [SettingsType.PINYIN_FUZZY_SETTINGS]: {
-      advanced: [{name: OptionType.PINYIN_ENABLE_FUZZY}],
+      advanced: [{
+        name: OptionType.PINYIN_ENABLE_FUZZY,
+        dependentOptions: [
+          OptionType.PINYIN_AN_ANG,
+          OptionType.PINYIN_EN_ENG,
+          OptionType.PINYIN_IAN_IANG,
+          OptionType.PINYIN_K_G,
+          OptionType.PINYIN_R_L,
+          OptionType.PINYIN_UAN_UANG,
+          OptionType.PINYIN_C_CH,
+          OptionType.PINYIN_F_H,
+          OptionType.PINYIN_IN_ING,
+          OptionType.PINYIN_L_N,
+          OptionType.PINYIN_S_SH,
+          OptionType.PINYIN_Z_ZH,
+        ]
+      }],
       virtualKeyboard: [],
       basic: [],
       physicalKeyboard: [],
@@ -287,6 +315,7 @@ cr.define('settings.input_method_util', function() {
    */
   /* #export */ function getOptionUiType(option) {
     switch (option) {
+      // TODO(b/191608723): Clean up switch statements.
       case OptionType.ENABLE_COMPLETION:
       case OptionType.ENABLE_DOUBLE_SPACE_PERIOD:
       case OptionType.ENABLE_GESTURE_TYPING:
@@ -302,6 +331,18 @@ cr.define('settings.input_method_util', function() {
       case OptionType.PINYIN_ENABLE_LOWER_PAGING:
       case OptionType.PINYIN_ENABLE_UPPER_PAGING:
       case OptionType.PINYIN_FULL_WIDTH_CHARACTER:
+      case OptionType.PINYIN_AN_ANG:
+      case OptionType.PINYIN_EN_ENG:
+      case OptionType.PINYIN_IAN_IANG:
+      case OptionType.PINYIN_K_G:
+      case OptionType.PINYIN_R_L:
+      case OptionType.PINYIN_UAN_UANG:
+      case OptionType.PINYIN_C_CH:
+      case OptionType.PINYIN_F_H:
+      case OptionType.PINYIN_IN_ING:
+      case OptionType.PINYIN_L_N:
+      case OptionType.PINYIN_S_SH:
+      case OptionType.PINYIN_Z_ZH:
         return UiType.TOGGLE_BUTTON;
       case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
       case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
@@ -315,6 +356,26 @@ cr.define('settings.input_method_util', function() {
         return UiType.LINK;
       default:
         assertNotReached();
+    }
+  }
+  /* #export */ function isOptionLabelTranslated(option) {
+    switch (option) {
+      // TODO(b/191608723): Clean up switch statements.
+      case OptionType.PINYIN_AN_ANG:
+      case OptionType.PINYIN_EN_ENG:
+      case OptionType.PINYIN_IAN_IANG:
+      case OptionType.PINYIN_K_G:
+      case OptionType.PINYIN_R_L:
+      case OptionType.PINYIN_UAN_UANG:
+      case OptionType.PINYIN_C_CH:
+      case OptionType.PINYIN_F_H:
+      case OptionType.PINYIN_IN_ING:
+      case OptionType.PINYIN_L_N:
+      case OptionType.PINYIN_S_SH:
+      case OptionType.PINYIN_Z_ZH:
+        return false;
+      default:
+        return true;
     }
   }
 
@@ -370,6 +431,36 @@ cr.define('settings.input_method_util', function() {
         assertNotReached();
     }
   }
+  /* #export */ function getUntranslatedOptionLabelName(option) {
+    switch (option) {
+      case OptionType.PINYIN_AN_ANG:
+        return 'an_ang';
+      case OptionType.PINYIN_EN_ENG:
+        return 'en_eng';
+      case OptionType.PINYIN_IAN_IANG:
+        return 'ian_iang';
+      case OptionType.PINYIN_K_G:
+        return 'k_g';
+      case OptionType.PINYIN_R_L:
+        return 'r_l';
+      case OptionType.PINYIN_UAN_UANG:
+        return 'uan_uang';
+      case OptionType.PINYIN_C_CH:
+        return 'c_ch';
+      case OptionType.PINYIN_F_H:
+        return 'f_h';
+      case OptionType.PINYIN_IN_ING:
+        return 'in_ing';
+      case OptionType.PINYIN_L_N:
+        return 'l_n';
+      case OptionType.PINYIN_S_SH:
+        return 's_sh';
+      case OptionType.PINYIN_Z_ZH:
+        return 'z_zh';
+      default:
+        assertNotReached();
+    }
+  }
 
   /**
    * @param {!settings.input_method_util.OptionType} option The option type.
@@ -411,7 +502,7 @@ cr.define('settings.input_method_util', function() {
         // Zhuyin page size is just a number, so is not translated.
         return [
           {value: '10'},
-          {value: '9;'},
+          {value: '9'},
           {value: '8'},
         ];
       case OptionType.KOREAN_KEYBOARD_LAYOUT:
@@ -476,5 +567,7 @@ cr.define('settings.input_method_util', function() {
     getOptionMenuItems,
     getOptionUrl,
     isNumberValue,
+    isOptionLabelTranslated,
+    getUntranslatedOptionLabelName,
   };
 });
