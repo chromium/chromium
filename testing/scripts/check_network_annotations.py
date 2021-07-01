@@ -26,10 +26,9 @@ def main_run(args):
   ]
   rc = common.run_command(command_line)
 
-  json.dump({
-      'valid': True,
-      'failures': ['Please refer to stdout for errors.'] if rc else [],
-  }, args.output)
+  failures = ['Please refer to stdout for errors.'] if rc else []
+  common.record_local_script_results(
+      'check_network_annotations', args.output, failures, True)
 
   return rc
 
