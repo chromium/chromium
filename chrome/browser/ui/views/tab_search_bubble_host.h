@@ -54,6 +54,8 @@ class TabSearchBubbleHost : public views::WidgetObserver {
   // The anchor button for the tab search bubble.
   views::Button* const button_;
 
+  Profile* const profile_;
+
   WebUIBubbleManagerT<TabSearchUI> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;

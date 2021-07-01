@@ -7992,6 +7992,31 @@
             ]
         }
     ],
+    "TabSearchIPH": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "TabSearchIPH",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:tab_search_iph_tgr;comparator:==0;window:90;storage:360",
+                        "event_used": "name:tab_search_opened;comparator:==0;window:90;storage:360",
+                        "session_rate": "<3"
+                    },
+                    "enable_features": [
+                        "IPH_TabSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabToGTSAnimation": [
         {
             "platforms": [

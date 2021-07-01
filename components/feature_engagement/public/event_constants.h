@@ -58,6 +58,9 @@ extern const char kFocusModeOpened[];
 // All conditions for show Focus Mode IPH were met.
 extern const char kFocusModeConditionsMet[];
 
+// Tab Search tab strip was opened by the user.
+extern const char kTabSearchOpened[];
+
 // The WebUI tab strip was closed by the user.
 extern const char kWebUITabStripClosed[];
 // The WebUI tab strip was opened by the user.

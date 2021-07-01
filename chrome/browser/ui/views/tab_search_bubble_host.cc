@@ -7,9 +7,12 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -41,6 +44,7 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
                                          Profile* profile)
     : button_(button),
+      profile_(profile),
       webui_bubble_manager_(button,
                             profile,
                             GURL(chrome::kChromeUITabSearchURL),
@@ -97,6 +101,11 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
 
   bubble_created_time_ = base::TimeTicks::Now();
   webui_bubble_manager_.ShowBubble();
+
+  auto* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+  if (tracker)
+    tracker->NotifyEvent(feature_engagement::events::kTabSearchOpened);
 
   if (triggered_by_keyboard_shortcut) {
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",

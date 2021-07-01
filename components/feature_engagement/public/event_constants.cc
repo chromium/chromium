@@ -35,6 +35,8 @@ const char kGlobalMediaControlsOpened[] = "global_media_controls_opened";
 const char kFocusModeOpened[] = "focus_mode_opened";
 const char kFocusModeConditionsMet[] = "focus_mode_conditions_met";
 
+const char kTabSearchOpened[] = "tab_search_opened";
+
 const char kWebUITabStripClosed[] = "webui_tab_strip_closed";
 const char kWebUITabStripOpened[] = "webui_tab_strip_opened";
 
