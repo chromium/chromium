@@ -20,6 +20,12 @@ void ManagedConfigurationServiceImpl::Create(
     return;
   }
 
+  // Do not create ManagedConfigurationService for incognito profiles.
+  if (Profile::FromBrowserContext(host->GetBrowserContext())
+          ->IsIncognitoProfile()) {
+    return;
+  }
+
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See FrameServiceBase for details.
   new ManagedConfigurationServiceImpl(host, std::move(receiver));

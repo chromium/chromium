@@ -4708,6 +4708,7 @@ test("unit_tests") {
 
       # Device API isn't supported on Android.
       "../browser/device_api/device_service_unittest.cc",
+      "../browser/device_api/managed_configuration_service_unittest.cc",
 
       # Bookmark export/import are handled via the BookmarkColumns
       # ContentProvider.
