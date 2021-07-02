@@ -69,7 +69,7 @@ no_check_targets = [
   "//ppapi/proxy:ipc_sources",  # 13 errors
   "//ppapi/proxy:proxy",  # 5 errors
   "//ppapi/thunk:*",  # 1071 errors
-  "//remoting/host/security_key:*",  # 68 errors
+  "//remoting/host/security_key:*",  # 10 errors
   "//remoting/host/win:*",  # 43 errors
   "//remoting/ios/app/settings:*",  # 6 errors
   "//remoting/protocol:*",  # 3 errors
