@@ -114,9 +114,8 @@ bool DictionaryLocalStateValueWaiter::ExpectedValueFound() {
     ADD_FAILURE() << "Pref " << pref_ << " not found";
     return true;
   }
-  std::string actual_value;
-  return (pref->GetStringWithoutPathExpansion(key_, &actual_value) &&
-          actual_value == expected_value_.GetString());
+  const std::string* actual_value = pref->FindStringKey(key_);
+  return actual_value && *actual_value == expected_value_.GetString();
 }
 
 DevicePolicyCrosTestHelper::DevicePolicyCrosTestHelper() {}

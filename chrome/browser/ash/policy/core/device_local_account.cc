@@ -35,6 +35,15 @@ const char kWebKioskAppAccountDomainPrefix[] = "web-kiosk-apps";
 
 const char kDeviceLocalAccountDomainSuffix[] = ".device-local.localhost";
 
+bool GetString(const base::Value& dict, const char* key, std::string* result) {
+  DCHECK(dict.is_dict());
+  const std::string* value = dict.FindStringKey(key);
+  if (!value)
+    return false;
+  *result = *value;
+  return true;
+}
+
 }  // namespace
 
 ArcKioskAppBasicInfo::ArcKioskAppBasicInfo(const std::string& package_name,
@@ -253,8 +262,8 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     }
 
     std::string account_id;
-    if (!entry->GetStringWithoutPathExpansion(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyId, &account_id) ||
+    if (!GetString(*entry, chromeos::kAccountsPrefDeviceLocalAccountsKeyId,
+                   &account_id) ||
         account_id.empty()) {
       LOG(ERROR) << "Missing account ID in device-local account list at index "
                  << i << ".";
@@ -288,14 +297,15 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       case DeviceLocalAccount::TYPE_KIOSK_APP: {
         std::string kiosk_app_id;
         std::string kiosk_app_update_url;
-        if (!entry->GetStringWithoutPathExpansion(
-                chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                &kiosk_app_id)) {
+        if (!GetString(*entry,
+                       chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
+                       &kiosk_app_id)) {
           LOG(ERROR) << "Missing app ID in device-local account entry at index "
                      << i << ".";
           continue;
         }
-        entry->GetStringWithoutPathExpansion(
+        GetString(
+            *entry,
             chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
             &kiosk_app_update_url);
 
@@ -309,7 +319,8 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         std::string class_name;
         std::string action;
         std::string display_name;
-        if (!entry->GetStringWithoutPathExpansion(
+        if (!GetString(
+                *entry,
                 chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
                 &package_name)) {
           LOG(ERROR) << "Missing package name in ARC kiosk type device-local "
@@ -317,13 +328,14 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
                      << i << ".";
           continue;
         }
-        entry->GetStringWithoutPathExpansion(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-            &class_name);
-        entry->GetStringWithoutPathExpansion(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-            &action);
-        entry->GetStringWithoutPathExpansion(
+        GetString(*entry,
+                  chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                  &class_name);
+        GetString(*entry,
+                  chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                  &action);
+        GetString(
+            *entry,
             chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
             &display_name);
         const ArcKioskAppBasicInfo arc_kiosk_app(package_name, class_name,
@@ -336,21 +348,21 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         std::string url;
         std::string title;
         std::string icon_url;
-        if (!entry->GetStringWithoutPathExpansion(
-                chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
-                &url)) {
+        if (!GetString(*entry,
+                       chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
+                       &url)) {
           LOG(ERROR) << "Missing install url in Web kiosk type device-local "
                         "account at index "
                      << i << ".";
           continue;
         }
 
-        entry->GetStringWithoutPathExpansion(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle, &title);
-        entry->GetStringWithoutPathExpansion(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
-            &icon_url);
-
+        GetString(*entry,
+                  chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+                  &title);
+        GetString(*entry,
+                  chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
+                  &icon_url);
         accounts.push_back(DeviceLocalAccount(
             WebKioskAppBasicInfo(url, title, icon_url), account_id));
         break;
