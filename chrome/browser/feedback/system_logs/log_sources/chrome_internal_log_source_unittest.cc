@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -14,6 +15,10 @@
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
+#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+#include "chrome/test/base/scoped_channel_override.h"
 #endif
 
 namespace system_logs {
@@ -41,6 +46,20 @@ TEST_F(ChromeInternalLogSourceTest, VersionTagContainsActualVersion) {
       chrome::GetVersionString(chrome::WithExtendedStable(true)),
       response->at("CHROME VERSION"));
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+TEST_F(ChromeInternalLogSourceTest, VersionTagContainsExtendedLabel) {
+  chrome::ScopedChannelOverride channel_override(
+      chrome::ScopedChannelOverride::Channel::kExtendedStable);
+
+  ASSERT_TRUE(chrome::IsExtendedStableChannel());
+  auto response = GetChromeInternalLogs();
+  EXPECT_PRED_FORMAT2(
+      testing::IsSubstring,
+      chrome::GetVersionString(chrome::WithExtendedStable(true)),
+      response->at("CHROME VERSION"));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
 
 #if defined(OS_MAC)
 TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
