@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
@@ -58,7 +59,7 @@ void ComputeCaptionFragments(
     const ComputedStyle& table_style,
     const NGTableGroupedChildren& grouped_children,
     const LayoutUnit table_inline_size,
-    Vector<NGTableLayoutAlgorithm::CaptionResult>& captions,
+    Vector<NGTableLayoutAlgorithm::CaptionResult>* captions,
     LayoutUnit& captions_block_size) {
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (NGBlockNode caption : grouped_children.captions) {
@@ -73,6 +74,12 @@ void ComputeCaptionFragments(
     builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
     NGConstraintSpace caption_constraint_space = builder.ToConstraintSpace();
 
+    // If we are discarding the results (compute-only) and we are after layout
+    // (|!NeedsLayout|,) make sure not to update the cached layout results.
+    absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+    if (!captions && !caption.GetLayoutBox()->NeedsLayout())
+      disable_side_effects.emplace();
+
     scoped_refptr<const NGLayoutResult> caption_result =
         caption.Layout(caption_constraint_space);
     NGFragment fragment(table_constraint_space.GetWritingDirection(),
@@ -82,9 +89,11 @@ void ComputeCaptionFragments(
     ResolveInlineMargins(caption_style, table_style, table_inline_size,
                          fragment.InlineSize(), &margins);
 
-    captions.push_back(NGTableLayoutAlgorithm::CaptionResult{
-        caption, std::move(caption_result), margins});
     captions_block_size += fragment.BlockSize() + margins.BlockSum();
+    if (captions) {
+      captions->push_back(NGTableLayoutAlgorithm::CaptionResult{
+          caption, std::move(caption_result), margins});
+    }
   }
 }
 
@@ -437,12 +446,12 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeCaptionBlockSize(
     const NGTableNode& node,
     const NGConstraintSpace& space,
     const LayoutUnit table_inline_size) {
-  Vector<NGTableLayoutAlgorithm::CaptionResult> captions;
   NGTableGroupedChildren grouped_children(node);
   LayoutUnit captions_block_size;
 
   ComputeCaptionFragments(space, node.Style(), grouped_children,
-                          table_inline_size, captions, captions_block_size);
+                          table_inline_size, /* captions */ nullptr,
+                          captions_block_size);
   return captions_block_size;
 }
 
@@ -510,7 +519,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
   Vector<CaptionResult> captions;
   LayoutUnit captions_block_size;
   ComputeCaptionFragments(ConstraintSpace(), Style(), grouped_children,
-                          container_builder_.InlineSize(), captions,
+                          container_builder_.InlineSize(), &captions,
                           captions_block_size);
 
   NGTableTypes::Rows rows;
