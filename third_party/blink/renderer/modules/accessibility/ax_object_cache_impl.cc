@@ -2882,6 +2882,8 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
     HandleUseMapAttributeChangedWithCleanLayout(element);
   } else if (attr_name == html_names::kNameAttr) {
     HandleNameAttributeChangedWithCleanLayout(element);
+  } else if (attr_name == html_names::kControlsAttr) {
+    ChildrenChangedWithCleanLayout(element);
   }
 
   if (!attr_name.LocalName().StartsWith("aria-"))
