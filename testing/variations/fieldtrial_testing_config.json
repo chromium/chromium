@@ -2610,6 +2610,7 @@
                     },
                     "enable_features": [
                         "NtpChromeCartModule",
+                        "NtpDriveModule",
                         "NtpModules",
                         "NtpRecipeTasksModule"
                     ]
