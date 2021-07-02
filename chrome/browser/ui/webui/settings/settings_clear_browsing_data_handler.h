@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
+#include "components/search/search_provider_observer.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/sync/driver/sync_service.h"
 
@@ -30,7 +32,8 @@ namespace settings {
 
 // Chrome browser startup settings handler.
 class ClearBrowsingDataHandler : public SettingsPageUIHandler,
-                                 public syncer::SyncServiceObserver {
+                                 public syncer::SyncServiceObserver,
+                                 public TemplateURLServiceObserver {
  public:
   ClearBrowsingDataHandler(content::WebUI* webui, Profile* profile);
   ~ClearBrowsingDataHandler() override;
@@ -49,6 +52,15 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void GetRecentlyLaunchedInstalledApps(const base::ListValue* args);
 
  private:
+  friend class TestingClearBrowsingDataHandler;
+  friend class ClearBrowsingDataHandlerUnitTest;
+  FRIEND_TEST_ALL_PREFIXES(ClearBrowsingDataHandlerUnitTest,
+                           UpdateSyncState_GoogleDse);
+  FRIEND_TEST_ALL_PREFIXES(ClearBrowsingDataHandlerUnitTest,
+                           UpdateSyncState_NonGoogleDsePrepopulated);
+  FRIEND_TEST_ALL_PREFIXES(ClearBrowsingDataHandlerUnitTest,
+                           UpdateSyncState_NonGoogleDseNotPrepopulated);
+
   // Respond to the WebUI callback with the list of installed apps.
   void OnGotInstalledApps(
       const std::string& webui_callback_id,
@@ -82,7 +94,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void OnStateChanged(syncer::SyncService* sync) override;
 
   // Updates the footer of the dialog when the sync state changes.
-  void UpdateSyncState();
+  virtual void UpdateSyncState();
 
   // Finds out whether we should show notice about other forms of history stored
   // in user's account.
@@ -104,6 +116,9 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // Record changes to the time period preferences.
   void HandleTimePeriodChanged(const std::string& pref_name);
 
+  // Implementation of TemplateURLServiceObserver.
+  void OnTemplateURLServiceChanged() override;
+
   // Cached profile corresponding to the WebUI of this handler.
   Profile* profile_;
 
@@ -114,6 +129,9 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   syncer::SyncService* sync_service_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      dse_service_observation_{this};
 
   // Whether we should show a dialog informing the user about other forms of
   // history stored in their account after the history deletion is finished.

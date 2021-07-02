@@ -19,23 +19,31 @@
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/history/web_history_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
 using BrowsingDataType = browsing_data::BrowsingDataType;
@@ -103,6 +111,8 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
   if (sync_service_)
     sync_service_observation_.Observe(sync_service_);
 
+  dse_service_observation_.Observe(
+      TemplateURLServiceFactory::GetForProfile(profile_));
   DCHECK(counters_.empty());
   for (const std::string& pref : kCounterPrefsBasic) {
     AddCounter(BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref),
@@ -126,6 +136,7 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
 }
 
 void ClearBrowsingDataHandler::OnJavascriptDisallowed() {
+  dse_service_observation_.Reset();
   sync_service_observation_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
   counters_.clear();
@@ -451,8 +462,24 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
       browsing_data_counter_utils::ShouldShowCookieException(profile_));
 
   event.SetBoolKey("isNonGoogleDse", false);
-  // TODO(crbug/1192623): Set |isNonGoogleDse| and
-  // |nonGoogleSearchHistoryString| in |event| accordingly.
+  if (base::FeatureList::IsEnabled(features::kSearchHistoryLink)) {
+    const TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile_);
+    const TemplateURL* dse = template_url_service->GetDefaultSearchProvider();
+    if (dse && dse->GetEngineType(template_url_service->search_terms_data()) !=
+                   SearchEngineType::SEARCH_ENGINE_GOOGLE) {
+      // Non-Google DSE. Prepopulated DSEs have an ID > 0.
+      event.SetBoolKey("isNonGoogleDse", true);
+      event.SetStringKey(
+          "nonGoogleSearchHistoryString",
+          (dse->prepopulate_id() > 0)
+              ? l10n_util::GetStringFUTF16(
+                    IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_PREPOPULATED_DSE,
+                    dse->short_name())
+              : l10n_util::GetStringUTF16(
+                    IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_NON_PREPOPULATED_DSE));
+    }
+  }
   FireWebUIListener("update-sync-state", event);
 }
 
@@ -504,6 +531,10 @@ void ClearBrowsingDataHandler::HandleTimePeriodChanged(
   browsing_data::TimePeriod time_period =
       static_cast<browsing_data::TimePeriod>(period);
   browsing_data::RecordTimePeriodChange(time_period);
+}
+
+void ClearBrowsingDataHandler::OnTemplateURLServiceChanged() {
+  UpdateSyncState();
 }
 
 }  // namespace settings
