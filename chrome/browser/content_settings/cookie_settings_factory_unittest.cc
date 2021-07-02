@@ -90,33 +90,14 @@ TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
 
 // Android does not have guest profiles.
 #if !defined(OS_ANDROID)
-class GuestCookieSettingsFactoryTest
-    : public CookieSettingsFactoryTest,
-      public testing::WithParamInterface<bool> {
- public:
-  GuestCookieSettingsFactoryTest() : is_ephemeral_(GetParam()) {
-    // Change the value if Ephemeral is not supported.
-    is_ephemeral_ &=
-        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_);
-  }
-
-  bool is_ephemeral() const { return is_ephemeral_; }
-
- private:
-  bool is_ephemeral_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 // Tests that cookie blocking is not enabled by default for guest profiles.
-TEST_P(GuestCookieSettingsFactoryTest, GuestProfile) {
+TEST_F(CookieSettingsFactoryTest, GuestProfile) {
   TestingProfile::Builder guest_profile_builder;
   guest_profile_builder.SetGuestSession();
   std::unique_ptr<Profile> guest_profile = guest_profile_builder.Build();
   Profile* profile_to_use =
-      is_ephemeral()
-          ? guest_profile.get()
-          : guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   scoped_refptr<content_settings::CookieSettings> guest_settings =
       CookieSettingsFactory::GetForProfile(profile_to_use);
   EXPECT_FALSE(guest_settings->ShouldBlockThirdPartyCookies());
@@ -126,10 +107,6 @@ TEST_P(GuestCookieSettingsFactoryTest, GuestProfile) {
                   profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true))
                   ->ShouldBlockThirdPartyCookies());
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestCookieSettingsFactoryTest,
-                         /*is_ephemeral=*/testing::Bool());
 
 #endif
 

@@ -1350,25 +1350,7 @@ TEST_F(HostContentSettingsMapTest, AddContentSettingsObserver) {
 
 // Guest profiles do not exist on Android, so don't run these tests there.
 #if !defined(OS_ANDROID)
-class GuestHostContentSettingsMapTest
-    : public HostContentSettingsMapTest,
-      public testing::WithParamInterface<bool> {
- public:
-  GuestHostContentSettingsMapTest() : is_ephemeral_(GetParam()) {
-    // Change the value if Ephemeral is not supported.
-    is_ephemeral_ &=
-        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_);
-  }
-
-  bool is_ephemeral() const { return is_ephemeral_; }
-
- private:
-  bool is_ephemeral_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(GuestHostContentSettingsMapTest, GuestProfile) {
+TEST_F(HostContentSettingsMapTest, GuestProfile) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetGuestSession();
   std::unique_ptr<Profile> profile = profile_builder.Build();
@@ -1393,12 +1375,12 @@ TEST_P(GuestHostContentSettingsMapTest, GuestProfile) {
 
   const base::Value* all_settings_dictionary =
       profile->GetPrefs()->Get(GetPrefName(ContentSettingsType::COOKIES));
-  EXPECT_NE(is_ephemeral(), all_settings_dictionary->DictEmpty());
+  EXPECT_TRUE(all_settings_dictionary->DictEmpty());
 }
 
-// Default settings should not be modifiable for OTR-Guest profile (there is no
-// UI to do this).
-TEST_P(GuestHostContentSettingsMapTest, GuestProfileDefaultSetting) {
+// Default settings should not be modifiable for Guest profile (there is no UI
+// to do this).
+TEST_F(HostContentSettingsMapTest, GuestProfileDefaultSetting) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetGuestSession();
   std::unique_ptr<Profile> profile = profile_builder.Build();
@@ -1415,20 +1397,11 @@ TEST_P(GuestHostContentSettingsMapTest, GuestProfileDefaultSetting) {
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
 
-  if (is_ephemeral()) {
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              host_content_settings_map->GetContentSetting(
-                  host, host, ContentSettingsType::COOKIES));
-  } else {
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               host_content_settings_map->GetContentSetting(
                   host, host, ContentSettingsType::COOKIES));
-  }
 }
 
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestHostContentSettingsMapTest,
-                         /*is_ephemeral=*/testing::Bool());
 #endif  // !defined(OS_ANDROID)
 
 TEST_F(HostContentSettingsMapTest, InvalidPattern) {
