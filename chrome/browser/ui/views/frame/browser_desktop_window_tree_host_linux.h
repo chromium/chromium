@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"  // nogncheck
 
@@ -13,10 +14,9 @@
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"  // nogncheck
 #endif
 
-using DesktopWindowTreeHostLinuxImpl = views::DesktopWindowTreeHostLinux;
-
 class BrowserFrame;
 class BrowserView;
+class DesktopBrowserFrameAuraLinux;
 enum class TabDragKind;
 
 namespace views {
@@ -25,7 +25,7 @@ class DesktopNativeWidgetAura;
 
 class BrowserDesktopWindowTreeHostLinux
     : public BrowserDesktopWindowTreeHost,
-      public DesktopWindowTreeHostLinuxImpl {
+      public views::DesktopWindowTreeHostLinux {
  public:
   BrowserDesktopWindowTreeHostLinux(
       views::internal::NativeWidgetDelegate* native_widget_delegate,
@@ -37,6 +37,15 @@ class BrowserDesktopWindowTreeHostLinux
   // Called when the tab drag status changes for this window.
   void TabDraggingKindChanged(TabDragKind tab_drag_kind);
 
+  // Returns true if the system supports client-drawn shadows.  We may still
+  // choose not to draw a shadow eg. when the "system titlebar and borders"
+  // setting is enabled, or when the window is maximized/fullscreen.
+  bool SupportsClientFrameShadow() const;
+
+  // Sets hints for the WM/compositor that reflect the extents of the
+  // client-drawn shadow.
+  void UpdateFrameHints();
+
  private:
   // BrowserDesktopWindowTreeHost:
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
@@ -45,17 +54,25 @@ class BrowserDesktopWindowTreeHostLinux
 
   // views::DesktopWindowTreeHostLinuxImpl:
   void Init(const views::Widget::InitParams& params) override;
+  void OnWidgetInitDone() override;
   void CloseNow() override;
 
   // ui::X11ExtensionDelegate:
   bool IsOverrideRedirect(bool is_tiling_wm) const override;
 
   // ui::PlatformWindowDelegate
+  void OnBoundsChanged(const BoundsChange& change) override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
 
   BrowserView* browser_view_ = nullptr;
   BrowserFrame* browser_frame_ = nullptr;
+
+// TODO(crbug.com/1221374): Separate Lacros specific code into
+// browser_desktop_window_tree_host_lacros.cc.
+#if defined(OS_LINUX)
+  DesktopBrowserFrameAuraLinux* native_frame_ = nullptr;
+#endif
 
 #if defined(USE_DBUS_MENU)
   // Each browser frame maintains its own menu bar object because the lower

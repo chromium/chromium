@@ -21,12 +21,14 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
   DesktopBrowserFrameAuraLinux& operator=(const DesktopBrowserFrameAuraLinux&) =
       delete;
 
+  bool ShouldDrawRestoredFrameShadow() const;
+
   void set_host(BrowserDesktopWindowTreeHostLinux* host) { host_ = host; }
 
  protected:
   ~DesktopBrowserFrameAuraLinux() override;
 
-  // Overridden from NativeBrowserFrame:
+  // NativeBrowserFrame:
   views::Widget::InitParams GetWidgetParams() override;
   bool UseCustomFrame() const override;
   void TabDraggingKindChanged(TabDragKind tab_drag_kind) override;

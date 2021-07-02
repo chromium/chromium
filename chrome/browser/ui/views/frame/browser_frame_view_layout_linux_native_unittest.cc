@@ -71,6 +71,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
   void UpdateWindowControlsOverlay(
       const gfx::Rect& bounding_rect) const override {}
+  bool IsTranslucentWindowOpacitySupported() const override { return true; }
+  bool ShouldDrawRestoredFrameShadow() const override { return true; }
 };
 
 class TestNavButtonProvider : public views::NavButtonProvider {

@@ -11,7 +11,6 @@
 
 // A specialization of OpaqueBrowserFrameView that is also able to
 // render client side decorations (shadow, border, and rounded corners).
-// TODO(https://crbug.com/650494): Implement this stub class.
 class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
                               public views::WindowButtonOrderObserver {
  public:
@@ -24,13 +23,38 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
 
   ~BrowserFrameViewLinux() override;
 
+  BrowserFrameViewLayoutLinux* layout() { return layout_; }
+
+  // Gets the rounded-rect that will be used to clip the window frame when
+  // drawing.  The region will be as if the window was restored, and will be in
+  // view coordinates.
+  SkRRect GetRestoredClipRegion() const;
+
+  // Gets the shadow metrics (radius, offset, and number of shadows).  This will
+  // always return shadow values, even if shadows are not actually drawn.
+  gfx::ShadowValues GetShadowValues() const;
+
  protected:
   // views::WindowButtonOrderObserver:
   void OnWindowButtonOrderingChange(
       const std::vector<views::FrameButton>& leading_buttons,
       const std::vector<views::FrameButton>& trailing_buttons) override;
 
+  // views::View:
+  void PaintRestoredFrameBorder(gfx::Canvas* canvas) const override;
+
+  // views::NonClientFrameView:
+  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
+
+  // OpaqueBrowserFrameViewLayoutDelegate:
+  bool ShouldDrawRestoredFrameShadow() const override;
+
  private:
+  // Gets the radius of the top corners when the window is restored.  The
+  // returned value is in DIPs.  The result will be 0 if rounded corners are
+  // disabled (eg. if the compositor doesn't support translucency.)
+  float GetRestoredCornerRadius() const;
+
   BrowserFrameViewLayoutLinux* const layout_;
 };
 

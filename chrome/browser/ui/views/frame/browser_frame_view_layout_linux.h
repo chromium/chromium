@@ -7,9 +7,10 @@
 
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 
+class BrowserFrameViewLinux;
+
 // A specialization of OpaqueBrowserFrameViewLayout that takes into account
 // extra padding added by client side shadows.
-// TODO(https://crbug.com/650494): Implement this stub class.
 class BrowserFrameViewLayoutLinux : public OpaqueBrowserFrameViewLayout {
  public:
   BrowserFrameViewLayoutLinux();
@@ -19,6 +20,29 @@ class BrowserFrameViewLayoutLinux : public OpaqueBrowserFrameViewLayout {
       delete;
 
   ~BrowserFrameViewLayoutLinux() override;
+
+  // Returns the insets from the edge of the native window to the client view in
+  // DIPs. The value is left-to-right even on RTL locales.  That is,
+  // insets.left() will be on the left in screen coordinates.
+  gfx::Insets MirroredFrameBorderInsets() const;
+
+  // Returns the insets from the client view to the input region.  The returned
+  // insets will be negative, such that view_rect.Inset(GetInputInsets()) will
+  // be the input region.
+  gfx::Insets GetInputInsets() const;
+
+  void set_view(BrowserFrameViewLinux* view) { view_ = view; }
+
+ protected:
+  // OpaqueBrowserFrameViewLayout:
+  int CaptionButtonY(views::FrameButton button_id,
+                     bool restored) const override;
+  gfx::Insets RestoredFrameBorderInsets() const override;
+  gfx::Insets RestoredFrameEdgeInsets() const override;
+  int NonClientExtraTopThickness() const override;
+
+ private:
+  BrowserFrameViewLinux* view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_H_

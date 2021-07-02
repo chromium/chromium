@@ -19,7 +19,7 @@ struct NativeWebKeyboardEvent;
 
 class NativeBrowserFrame {
  public:
-  virtual ~NativeBrowserFrame() {}
+  virtual ~NativeBrowserFrame() = default;
 
   // Returns the platform specific InitParams for initializing our widget.
   virtual views::Widget::InitParams GetWidgetParams() = 0;

@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura.h"
 
-class BrowserDesktopWindowTreeHostLinux;
 class BrowserFrame;
 class BrowserView;
 
@@ -21,16 +20,11 @@ class DesktopBrowserFrameLacros : public DesktopBrowserFrameAura {
   DesktopBrowserFrameLacros& operator=(const DesktopBrowserFrameLacros&) =
       delete;
 
-  void set_host(BrowserDesktopWindowTreeHostLinux* host) { host_ = host; }
-
  protected:
   ~DesktopBrowserFrameLacros() override;
 
   // Overridden from NativeBrowserFrame:
   views::Widget::InitParams GetWidgetParams() override;
-
- private:
-  BrowserDesktopWindowTreeHostLinux* host_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_LACROS_H_

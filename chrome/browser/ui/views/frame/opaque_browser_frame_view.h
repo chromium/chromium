@@ -108,6 +108,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   FrameButtonStyle GetFrameButtonStyle() const override;
   void UpdateWindowControlsOverlay(
       const gfx::Rect& bounding_rect) const override;
+  bool IsTranslucentWindowOpacitySupported() const override;
+  bool ShouldDrawRestoredFrameShadow() const override;
 
  protected:
   views::Button* minimize_button() const { return minimize_button_; }
@@ -115,10 +117,21 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   views::Button* restore_button() const { return restore_button_; }
   views::Button* close_button() const { return close_button_; }
 
+  OpaqueBrowserFrameViewLayout* layout() { return layout_; }
+
+  views::FrameBackground* frame_background() const {
+    return frame_background_.get();
+  }
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
-  OpaqueBrowserFrameViewLayout* layout() { return layout_; }
+  // Paint various sub-components of this view.  The *FrameBorder() functions
+  // also paint the background of the titlebar area, since the top frame border
+  // and titlebar background are a contiguous component.
+  virtual void PaintRestoredFrameBorder(gfx::Canvas* canvas) const;
+  void PaintMaximizedFrameBorder(gfx::Canvas* canvas) const;
+  void PaintClientEdge(gfx::Canvas* canvas) const;
 
  private:
   friend class WebAppOpaqueBrowserFrameViewTest;
@@ -182,13 +195,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   // Returns true if the view should draw its own custom title bar.
   bool GetShowWindowTitleBar() const;
-
-  // Paint various sub-components of this view.  The *FrameBorder() functions
-  // also paint the background of the titlebar area, since the top frame border
-  // and titlebar background are a contiguous component.
-  void PaintRestoredFrameBorder(gfx::Canvas* canvas) const;
-  void PaintMaximizedFrameBorder(gfx::Canvas* canvas) const;
-  void PaintClientEdge(gfx::Canvas* canvas) const;
 
   void UpdateCaptionButtonPlaceholderContainerBackground();
 

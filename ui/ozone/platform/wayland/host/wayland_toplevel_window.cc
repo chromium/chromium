@@ -248,23 +248,23 @@ bool WaylandToplevelWindow::ShouldUpdateWindowShape() const {
 bool WaylandToplevelWindow::CanSetDecorationInsets() const {
   // TODO(https://crbug.com/811515): Return true if
   // xdg_surface::set_window_geometry is available.
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WaylandToplevelWindow::SetDecorationInsets(gfx::Insets insets_px) {
   // TODO(https://crbug.com/811515): Use xdg_surface::set_window_geometry.
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WaylandToplevelWindow::SetOpaqueRegion(std::vector<gfx::Rect> region_px) {
   // TODO(https://crbug.com/811515): Use wl_surface::set_opaque_region.
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WaylandToplevelWindow::SetInputRegion(gfx::Rect region_px) {
   // TODO(https://crbug.com/811515): Use wl_surface::set_input_region.
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
