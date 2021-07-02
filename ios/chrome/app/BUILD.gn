@@ -450,11 +450,14 @@ source_set("multitasking_test_app_delegate") {
   sources = [
     "multitasking_test_application_delegate.h",
     "multitasking_test_application_delegate.mm",
+    "multitasking_test_scene_delegate.h",
+    "multitasking_test_scene_delegate.mm",
   ]
   deps = [
     ":app_internal",
     "//base",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/browser/ui/main:scene",
     "//ios/third_party/material_components_ios",
   ]
 }

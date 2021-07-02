@@ -765,7 +765,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(@"show.next.items.menu.button");
 }
 
-+ (id<GREYMatcher>)copyActivityButton API_AVAILABLE(ios(13)) {
++ (id<GREYMatcher>)copyActivityButton {
   id<GREYMatcher> copyStaticText = [ChromeMatchersAppInterface
       staticTextWithAccessibilityLabel:l10n_util::GetNSString(
                                            IDS_IOS_SHARE_MENU_COPY)];

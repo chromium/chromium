@@ -74,10 +74,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // startup.
 @property(nonatomic) BOOL shouldShowPolicySignoutPrompt;
 
-// When multiwindow is unavailable, this is the only scene state. It is created
-// by the app delegate.
-@property(nonatomic, strong) SceneState* mainSceneState;
-
 // Indicates that this app launch is one after a crash.
 @property(nonatomic, assign) BOOL postCrashLaunch;
 
@@ -121,17 +117,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Called when the application discards set of scene sessions, these sessions
 // can no longer be accessed and all their associated data should be destroyed.
 - (void)application:(UIApplication*)application
-    didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
-    API_AVAILABLE(ios(13));
-
-// Resumes the session: reinitializing metrics and opening new tab if necessary.
-// User sessions are defined in terms of BecomeActive/ResignActive so that
-// session boundaries include things like turning the screen off or getting a
-// phone call, not just switching apps.
-- (void)resumeSessionWithTabOpener:(id<TabOpening>)tabOpener
-                       tabSwitcher:(id<TabSwitching>)tabSwitcher
-             connectionInformation:
-                 (id<ConnectionInformation>)connectionInformation;
+    didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions;
 
 // Called when going into the background. iOS already broadcasts, so
 // stakeholders can register for it directly.

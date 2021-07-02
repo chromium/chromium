@@ -170,7 +170,7 @@
 // Tests that BVC properly handles open URL. When NTP is visible, the URL
 // should be opened in the same tab (not create a new tab).
 - (void)testOpenURLFromNTP {
-  [ChromeEarlGrey applicationOpenURL:GURL("https://anything")];
+  [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           "https://anything")]
       assertWithMatcher:grey_notNil()];
@@ -186,7 +186,7 @@
 // tab, the URL should be opened in a new tab, adding to the tab count.
 - (void)testOpenURLFromTab {
   [ChromeEarlGrey loadURL:GURL("https://invalid")];
-  [ChromeEarlGrey applicationOpenURL:GURL("https://anything")];
+  [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           "https://anything")]
       assertWithMatcher:grey_notNil()];
@@ -198,7 +198,7 @@
 - (void)testOpenURLFromTabSwitcher {
   [ChromeEarlGrey closeCurrentTab];
   [ChromeEarlGrey waitForMainTabCount:0];
-  [ChromeEarlGrey applicationOpenURL:GURL("https://anything")];
+  [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           "https://anything")]
       assertWithMatcher:grey_notNil()];

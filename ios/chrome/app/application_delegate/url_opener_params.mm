@@ -20,16 +20,9 @@
   return self;
 }
 
-- (instancetype)initWithUIOpenURLContext:(UIOpenURLContext*)context
-    API_AVAILABLE(ios(13)) {
+- (instancetype)initWithUIOpenURLContext:(UIOpenURLContext*)context {
   return [self initWithURL:context.URL
          sourceApplication:context.options.sourceApplication];
-}
-
-- (instancetype)initWithOpenURL:(NSURL*)URL options:(NSDictionary*)options {
-  return [self initWithURL:URL
-         sourceApplication:
-             options[UIApplicationOpenURLOptionsSourceApplicationKey]];
 }
 
 - (instancetype)initWithLaunchOptions:(NSDictionary*)options {

@@ -377,7 +377,7 @@ id<GREYMatcher> SystemSelectionCalloutOverflowButton();
 // Matcher for a Copy button, such as the one in the Activity View. This matcher
 // is very broad and will look for any button with a matching string.
 // Only the iOS 13 Activity View is reachable by EarlGrey.
-id<GREYMatcher> CopyActivityButton() API_AVAILABLE(ios(13));
+id<GREYMatcher> CopyActivityButton();
 
 // Matcher for the Copy Link option in the updated context menus when long
 // pressing on a link. |use_new_string| determines which string to use.

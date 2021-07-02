@@ -30,6 +30,15 @@ source_set("hardware_keyboarr_support") {
   deps = [ "//base/test:test_support" ]
 }
 
+source_set("open_url_context") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "open_url_context.h",
+    "open_url_context.mm",
+  ]
+}
+
 source_set("block_swizzler") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

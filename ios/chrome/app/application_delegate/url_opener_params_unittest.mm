@@ -44,18 +44,6 @@ TEST_F(URLOpenerParamsTest, MAYBE_initWithUIOpenURLContext) {
   }
 }
 
-// Simple test for initWithOpenURL:options:.
-TEST_F(URLOpenerParamsTest, initWithOpenURLOptions) {
-  NSURL* url = [NSURL URLWithString:@"https://url.test"];
-  NSString* source = @"source";
-  NSDictionary* options =
-      @{UIApplicationOpenURLOptionsSourceApplicationKey : source};
-  URLOpenerParams* params = [[URLOpenerParams alloc] initWithOpenURL:url
-                                                             options:options];
-  EXPECT_NSEQ(url, params.URL);
-  EXPECT_NSEQ(source, params.sourceApplication);
-}
-
 // Simple test for initWithLaunchOptions:.
 TEST_F(URLOpenerParamsTest, initWithLaunchOptions) {
   NSURL* url = [NSURL URLWithString:@"https://url.test"];

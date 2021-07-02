@@ -41,16 +41,12 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
     CustomizeUIWindowAppearance(_window);
 
     // Assign an a11y identifier for using in EGTest.
-    if (@available(iOS 13, *)) {
-      // See comment for [ChromeMatchersAppInterface windowWithNumber:] matcher
-      // for context.
-      _window.accessibilityIdentifier =
-          [NSString stringWithFormat:@"%ld", UIApplication.sharedApplication
-                                                     .connectedScenes.count -
-                                                 1];
-    } else {
-      _window.accessibilityIdentifier = @"0";
-    }
+    // See comment for [ChromeMatchersAppInterface windowWithNumber:] matcher
+    // for context.
+    _window.accessibilityIdentifier = [NSString
+        stringWithFormat:@"%ld",
+                         UIApplication.sharedApplication.connectedScenes.count -
+                             1];
   }
   return _window;
 }
@@ -59,8 +55,7 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 
 - (void)scene:(UIScene*)scene
     willConnectToSession:(UISceneSession*)session
-                 options:(UISceneConnectionOptions*)connectionOptions
-    API_AVAILABLE(ios(13)) {
+                 options:(UISceneConnectionOptions*)connectionOptions {
   self.sceneState.scene = base::mac::ObjCCastStrict<UIWindowScene>(scene);
   self.sceneState.currentOrigin = [self originFromSession:session
                                                   options:connectionOptions];
@@ -72,8 +67,7 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 }
 
 - (WindowActivityOrigin)originFromSession:(UISceneSession*)session
-                                  options:(UISceneConnectionOptions*)options
-    API_AVAILABLE(ios(13)) {
+                                  options:(UISceneConnectionOptions*)options {
   WindowActivityOrigin origin = WindowActivityUnknownOrigin;
 
   // When restoring the session, the origin is set to restore to avoid
@@ -101,35 +95,34 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
   return origin;
 }
 
-- (void)sceneDidDisconnect:(UIScene*)scene API_AVAILABLE(ios(13)) {
+- (void)sceneDidDisconnect:(UIScene*)scene {
   self.sceneState.activationLevel = SceneActivationLevelUnattached;
 }
 
 #pragma mark Transitioning to the Foreground
 
-- (void)sceneWillEnterForeground:(UIScene*)scene API_AVAILABLE(ios(13)) {
+- (void)sceneWillEnterForeground:(UIScene*)scene {
   self.sceneState.currentOrigin = WindowActivityRestoredOrigin;
   self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
 }
 
-- (void)sceneDidBecomeActive:(UIScene*)scene API_AVAILABLE(ios(13)) {
+- (void)sceneDidBecomeActive:(UIScene*)scene {
   self.sceneState.currentOrigin = WindowActivityRestoredOrigin;
   self.sceneState.activationLevel = SceneActivationLevelForegroundActive;
 }
 
 #pragma mark Transitioning to the Background
 
-- (void)sceneWillResignActive:(UIScene*)scene API_AVAILABLE(ios(13)) {
+- (void)sceneWillResignActive:(UIScene*)scene {
   self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
 }
 
-- (void)sceneDidEnterBackground:(UIScene*)scene API_AVAILABLE(ios(13)) {
+- (void)sceneDidEnterBackground:(UIScene*)scene {
   self.sceneState.activationLevel = SceneActivationLevelBackground;
 }
 
 - (void)scene:(UIScene*)scene
-    openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts
-    API_AVAILABLE(ios(13)) {
+    openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
   DCHECK(!self.sceneState.URLContextsToOpen);
   self.sceneState.startupHadExternalIntent = YES;
   self.sceneState.URLContextsToOpen = URLContexts;
@@ -137,14 +130,13 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 
 - (void)windowScene:(UIWindowScene*)windowScene
     performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
-               completionHandler:(void (^)(BOOL succeeded))completionHandler
-    API_AVAILABLE(ios(13)) {
+               completionHandler:(void (^)(BOOL succeeded))completionHandler {
   [_sceneController performActionForShortcutItem:shortcutItem
                                completionHandler:completionHandler];
 }
 
 - (void)scene:(UIScene*)scene
-    continueUserActivity:(NSUserActivity*)userActivity API_AVAILABLE(ios(13)) {
+    continueUserActivity:(NSUserActivity*)userActivity {
   self.sceneState.pendingUserActivity = userActivity;
 }
 
