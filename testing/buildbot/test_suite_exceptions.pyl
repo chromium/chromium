@@ -1216,11 +1216,17 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.lollipop_tablet_tester.content_browsertests.filter',
         ],
+        'swarming': {
+          'shards': 15,
+        },
       },
       'Marshmallow Tablet Tester': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.marshmallow_tablet_tester.content_browsertests.filter',
         ],
+        'swarming': {
+          'shards': 15,
+        },
       },
       'WebRTC Chromium FYI Android Tests (dbg) (L Nexus5)': {
         'args': [
