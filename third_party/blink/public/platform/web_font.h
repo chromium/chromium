@@ -10,7 +10,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-// To avoid conflicts with the CreateWindow macro from the Windows SDK...
+// To avoid conflicts with the DrawText macro from the Windows SDK...
 #undef DrawText
 
 namespace cc {

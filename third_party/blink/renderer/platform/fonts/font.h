@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
-// To avoid conflicts with the CreateWindow macro from the Windows SDK...
+// To avoid conflicts with the DrawText macro from the Windows SDK...
 #undef DrawText
 
 namespace cc {
