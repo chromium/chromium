@@ -17,11 +17,6 @@
     padding: 8px 16px;
   }
 
-  #learnMoreText {
-    cursor: pointer;
-    color: var(--google-blue-600);
-  }
-
   #messageIcon {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
@@ -72,7 +67,7 @@
       <span id="testStatusText"
           hidden$="[[isStatusHidden_(executionStatus_)]]">
         [[statusText_]]
-        <span id="learnMoreText"
+        <span id="learnMoreText" class="link-text"
             hidden$="[[isLearnMoreHidden_(executionStatus_)]]"
             on-click="onLearnMoreClicked_">
           [[i18n('learnMoreShort')]]

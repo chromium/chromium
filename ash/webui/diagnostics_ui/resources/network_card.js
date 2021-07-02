@@ -7,9 +7,10 @@ import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './network_info.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver} from './diagnostics_types.js';
+import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType} from './diagnostics_types.js';
 import {getNetworkType} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
@@ -21,6 +22,8 @@ Polymer({
   is: 'network-card',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [I18nBehavior],
 
   /**
    * @private {?NetworkHealthProviderInterface}
@@ -49,6 +52,12 @@ Polymer({
     /** @type {!Network} */
     network: {
       type: Object,
+    },
+
+    /** @protected {boolean} */
+    showTroubleConnectingState_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -87,6 +96,13 @@ Polymer({
    */
   onNetworkStateChanged(network) {
     this.networkType_ = getNetworkType(network.type);
+    this.showTroubleConnectingState_ = network.type === NetworkType.kEthernet;
     this.set('network', network);
+  },
+
+  /** @protected */
+  onTroubleConnectingClicked_() {
+    // TODO(michaelcheco): Add correct URL.
+    window.open('https://support.google.com/chromebook?p=diagnostics_');
   },
 });

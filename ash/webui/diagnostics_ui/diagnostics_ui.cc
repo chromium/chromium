@@ -97,6 +97,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT},
       {"memoryRoutineText", IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
+      {"noEthernet", IDS_DIAGNOSTICS_NO_ETHERNET},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},
       {"remainingCharge", IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL},
       {"routineEntryText", IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT},
@@ -129,6 +130,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"testStoppedBadgeText", IDS_DIAGNOSTICS_TEST_STOPPED_BADGE_TEXT},
       {"testSuccess", IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT},
       {"testSucceededBadgeText", IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT},
+      {"troubleConnecting", IDS_DIAGNOSTICS_TROUBLE_CONNECTING},
       {"versionInfo", IDS_DIAGNOSTICS_VERSION_INFO_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
