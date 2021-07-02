@@ -5414,12 +5414,12 @@
                     },
                     "enable_features": [
                         "OmniboxBookmarkPaths",
+                        "OmniboxClobberTriggersContextualWebZeroSuggest",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxKeywordSearchButton",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
-                        "OmniboxOnFocusSuggestionsContextualWebOnContent",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
                         "OmniboxShortBookmarkSuggestionsByTotalInputLength",
