@@ -43,6 +43,8 @@ const char kCellular1NetworkName[] = "cellular1";
 const char16_t kCellular1NetworkName16[] = u"cellular1";
 const char kTestEsimProfileName[] = "test_profile_name";
 const char16_t kTestEsimProfileName16[] = u"test_profile_name";
+const char kCellularEsimServicePath[] = "/service/cellular_esim1";
+const char kCellularDevicePath[] = "/device/cellular1";
 
 class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
  public:
@@ -140,6 +142,20 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
             kAddProfileWithService);
     base::RunLoop().RunUntilIdle();
   }
+
+  void SetCellularDeviceLocked(bool is_locked) {
+    ShillDeviceClient::TestInterface* device_test =
+        network_handler_test_helper_->device_test();
+
+    std::string lock_pin = is_locked ? shill::kSIMLockPin : "";
+    base::Value sim_lock_status(base::Value::Type::DICTIONARY);
+    sim_lock_status.SetKey(shill::kSIMLockTypeProperty, base::Value(lock_pin));
+    device_test->SetDeviceProperty(
+        kCellularDevicePath, shill::kSIMLockStatusProperty,
+        std::move(sim_lock_status), /*notify_changed=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetupDefaultShillState() {
     ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_->device_test();
@@ -164,7 +180,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
         kWiFi1ServicePath, shill::kPassphraseProperty, base::Value("failure"));
 
     // Set up Cellular device, and add a single locked network.
-    const char kCellularDevicePath[] = "/device/cellular1";
     const char kCellular1ServicePath[] = "/service/cellular1";
     const char kCellular1Iccid[] = "iccid";
     device_test->AddDevice(kCellularDevicePath, shill::kTypeCellular,
@@ -264,6 +279,22 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
       l10n_util::GetStringFUTF16(
           IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kTestEsimProfileName16,
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED)));
+
+  ShillServiceClient::TestInterface* service_test =
+      ShillServiceClient::Get()->GetTestInterface();
+  service_test->SetServiceProperty(
+      kCellularEsimServicePath, shill::kConnectableProperty, base::Value(true));
+
+  // Set device locked status to false, this will allow for network connection
+  // to succeed.
+  SetCellularDeviceLocked(/*is_locked=*/false);
+  NetworkConnect::Get()->ConnectToNetworkId("esim_guidiccid");
+  base::RunLoop().RunUntilIdle();
+
+  // Notification is removed.
+  notification = tester.GetNotification(
+      NetworkStateNotifier::kNetworkConnectNotificationId);
+  EXPECT_FALSE(notification);
 }
 
 }  // namespace chromeos

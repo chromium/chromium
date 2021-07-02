@@ -197,6 +197,29 @@ void NetworkStateNotifier::ConnectToNetworkRequested(
   RemoveConnectNotification();
 }
 
+void NetworkStateNotifier::NetworkConnectionStateChanged(
+    const chromeos::NetworkState* network) {
+  if (!network->IsConnectedState() ||
+      connect_error_notification_network_guid_.empty() ||
+      connect_error_notification_network_guid_ != network->guid()) {
+    return;
+  }
+  RemoveConnectNotification();
+}
+
+void NetworkStateNotifier::NetworkIdentifierTransitioned(
+    const std::string& old_service_path,
+    const std::string& new_service_path,
+    const std::string& old_guid,
+    const std::string& new_guid) {
+  if (old_guid == new_guid ||
+      old_guid != connect_error_notification_network_guid_) {
+    return;
+  }
+
+  connect_error_notification_network_guid_ = new_guid;
+}
+
 void NetworkStateNotifier::ConnectSucceeded(const std::string& service_path) {
   RemoveConnectNotification();
 }
@@ -426,6 +449,7 @@ void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
 
 void NetworkStateNotifier::RemoveConnectNotification() {
   SystemNotificationHelper::GetInstance()->Close(kNetworkConnectNotificationId);
+  connect_error_notification_network_guid_.clear();
 }
 
 void NetworkStateNotifier::OnConnectErrorGetProperties(
@@ -560,6 +584,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
                                    weak_ptr_factory_.GetWeakPtr(), guid);
   }
 
+  connect_error_notification_network_guid_ = guid;
   ShowErrorNotification(
       NetworkPathId(service_path), kNetworkConnectNotificationId, network_type,
       l10n_util::GetStringUTF16(IDS_NETWORK_CONNECTION_ERROR_TITLE), error_msg,
