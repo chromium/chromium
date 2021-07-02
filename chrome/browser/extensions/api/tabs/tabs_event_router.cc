@@ -472,8 +472,7 @@ void TabsEventRouter::DispatchTabSelectionChanged(
   Profile* profile = tab_strip_model->profile();
   DispatchEvent(profile, events::TABS_ON_HIGHLIGHT_CHANGED,
                 api::tabs::OnHighlightChanged::kEventName,
-                std::unique_ptr<base::ListValue>(args->DeepCopy()),
-                EventRouter::USER_GESTURE_UNKNOWN);
+                args->CreateDeepCopy(), EventRouter::USER_GESTURE_UNKNOWN);
   DispatchEvent(profile, events::TABS_ON_HIGHLIGHTED,
                 api::tabs::OnHighlighted::kEventName, std::move(args),
                 EventRouter::USER_GESTURE_UNKNOWN);
