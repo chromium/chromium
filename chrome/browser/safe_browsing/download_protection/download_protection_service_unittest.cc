@@ -153,7 +153,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
                bool(const std::vector<GURL>& url_chain,
                     SafeBrowsingDatabaseManager::Client* client));
 
- private:
+ protected:
   ~MockSafeBrowsingDatabaseManager() override = default;
 };
 
@@ -171,7 +171,7 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     services_delegate_ = ServicesDelegate::CreateForTest(this, this);
     BinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating(&CreateTestBinaryUploadService));
-    mock_database_manager_ = new MockSafeBrowsingDatabaseManager();
+    mock_database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
   }
   FakeSafeBrowsingService(const FakeSafeBrowsingService&) = delete;
   FakeSafeBrowsingService& operator=(const FakeSafeBrowsingService&) = delete;
