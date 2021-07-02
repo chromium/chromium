@@ -165,7 +165,6 @@ class TestSystemWebAppInstallation {
 
  private:
   TestSystemWebAppInstallation(
-      SystemAppType type,
       std::unique_ptr<UnittestingSystemAppDelegate> system_app_delegate);
   TestSystemWebAppInstallation();
 

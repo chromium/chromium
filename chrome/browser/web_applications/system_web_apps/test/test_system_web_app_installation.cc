@@ -223,9 +223,8 @@ void UnittestingSystemAppDelegate::SetDefaultBounds(
 }
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation(
-    SystemAppType type,
     std::unique_ptr<UnittestingSystemAppDelegate> delegate)
-    : type_(type) {
+    : type_(delegate->GetType()) {
   if (GetWebUIType(delegate->GetInstallUrl()) == WebUIType::kChrome) {
     auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
         GetDataSourceNameFromSystemAppInstallUrl(delegate->GetInstallUrl()));
@@ -233,7 +232,7 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(
   }
 
   UnittestingSystemAppDelegate* delegate_ptr = delegate.get();
-  system_app_delegates_.emplace(type, std::move(delegate));
+  system_app_delegates_.emplace(type_.value(), std::move(delegate));
 
   test_web_app_provider_creator_ = std::make_unique<TestWebAppProviderCreator>(
       base::BindRepeating(&TestSystemWebAppInstallation::CreateWebAppProvider,
@@ -299,15 +298,14 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
   delegate->SetShouldBeSingleWindow(false);
   delegate->SetShouldHaveTabStrip(true);
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::TERMINAL, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp() {
   return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemAppType::SETTINGS, "OSSettings",
           GURL("chrome://test-system-app/pwa.html"),
@@ -328,8 +326,7 @@ TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
     delegate->SetShouldIncludeLaunchDirectory(true);
   }
 
-  auto* installation = new TestSystemWebAppInstallation(SystemAppType::MEDIA,
-                                                        std::move(delegate));
+  auto* installation = new TestSystemWebAppInstallation(std::move(delegate));
   installation->RegisterAutoGrantedPermissions(
       ContentSettingsType::FILE_SYSTEM_READ_GUARD);
   installation->RegisterAutoGrantedPermissions(
@@ -349,8 +346,8 @@ TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
 
   delegate->SetEnabledOriginTrials(origin_to_trials);
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::MEDIA, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -364,8 +361,8 @@ TestSystemWebAppInstallation::SetUpAppNotShownInLauncher() {
 
   delegate->SetShouldShowInLauncher(false);
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -378,8 +375,8 @@ TestSystemWebAppInstallation::SetUpAppNotShownInSearch() {
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   delegate->SetShouldShowInSearch(false);
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -392,8 +389,8 @@ TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms() {
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   delegate->SetAdditionalSearchTerms({IDS_SETTINGS_SECURITY});
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -406,8 +403,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   delegate->SetShouldCaptureNavigations(true);
 
-  auto* installation = new TestSystemWebAppInstallation(SystemAppType::HELP,
-                                                        std::move(delegate));
+  auto* installation = new TestSystemWebAppInstallation(std::move(delegate));
 
   // Add a helper system app to test capturing links from it.
   const GURL kInitiatingAppUrl = GURL("chrome://initiating-app/pwa.html");
@@ -441,7 +437,6 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpChromeUntrustedApp() {
   return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemAppType::SETTINGS, "Test",
           GURL("chrome-untrusted://test-system-app/pwa.html"),
@@ -460,8 +455,8 @@ TestSystemWebAppInstallation::SetUpNonResizeableAndNonMaximizableApp() {
   delegate->SetShouldAllowResize(false);
   delegate->SetShouldAllowMaximize(false);
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SAMPLE, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -478,8 +473,8 @@ TestSystemWebAppInstallation::SetUpAppWithBackgroundTask() {
       true);
   delegate->SetTimerInfo(background_task);
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -495,8 +490,8 @@ TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
   if (value) {
     delegate->SetShouldAllowScriptsToCloseWindows(value);
   }
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SAMPLE, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -509,8 +504,8 @@ TestSystemWebAppInstallation::SetUpAppWithTabStrip(bool has_tab_strip) {
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   delegate->SetShouldHaveTabStrip(has_tab_strip);
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -525,8 +520,8 @@ TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(
   delegate->SetDefaultBounds(
       base::BindLambdaForTesting([&](Browser*) { return default_bounds; }));
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -534,14 +529,14 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          SystemAppType::FILE_MANAGER, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   delegate->SetShouldShowNewWindowMenuOption(true);
   delegate->SetShouldBeSingleWindow(false);
 
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::FILE_MANAGER, std::move(delegate)));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 std::unique_ptr<KeyedService>
