@@ -61,6 +61,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -331,6 +332,7 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       switches::kEnableCastStreamingReceiver,
       switches::kEnableFeatures,
       switches::kEnableLowEndDeviceMode,
+      switches::kForceDeviceScaleFactor,
       switches::kForceGpuMemAvailableMb,
       switches::kForceGpuMemDiscardableLimitMb,
       switches::kForceMaxTextureSize,
