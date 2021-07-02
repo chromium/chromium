@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.BitmapDrawableProto;
@@ -287,7 +286,6 @@ public class AutofillAssistantOverlayIntegrationTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1182103")
     public void testShowCastOnIFrameElementInScrollIFrame() throws Exception {
         SelectorProto element = toIFrameCssSelector("#iframe", "#touch_area_3");
 
