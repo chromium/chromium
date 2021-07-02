@@ -45,6 +45,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/http_raw_request_response_info.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -59,7 +60,6 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
-#include "third_party/blink/public/common/net/ip_address_space_util.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -827,7 +827,7 @@ void WebURLLoader::PopulateURLResponse(
   // answer.
   //
   // Implements: https://wicg.github.io/cors-rfc1918/#integration-html
-  response->SetAddressSpace(CalculateResourceAddressSpace(
+  response->SetAddressSpace(network::CalculateResourceAddressSpace(
       KURL(response->ResponseUrl()), head.remote_endpoint));
 
   WebVector<WebString> cors_exposed_header_names(

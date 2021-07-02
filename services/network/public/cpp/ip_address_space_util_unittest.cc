@@ -8,12 +8,17 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace network {
 namespace {
 
+using mojom::ContentSecurityPolicy;
 using mojom::IPAddressSpace;
+using mojom::ParsedHeaders;
+using mojom::URLResponseHead;
 using net::IPAddress;
 using net::IPAddressBytes;
 using net::IPEndPoint;
@@ -406,6 +411,139 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanUnknown) {
                                         IPAddressSpace::kPublic));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kUnknown,
                                         IPAddressSpace::kUnknown));
+}
+
+TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceFileURL) {
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            CalculateClientAddressSpace(GURL("file:///foo"), nullptr));
+}
+
+TEST(IPAddressSpaceUtilTest,
+     CalculateClientAddressSpaceFetchedViaServiceWorkerFromFile) {
+  URLResponseHead response_head;
+  response_head.url_list_via_service_worker.emplace_back("http://bar.test");
+  response_head.url_list_via_service_worker.emplace_back("file:///foo");
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(
+      IPAddressSpace::kLocal,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceUtilTest,
+     CalculateClientAddressSpaceFetchedViaServiceWorkerFromHttp) {
+  URLResponseHead response_head;
+  response_head.url_list_via_service_worker.emplace_back("file:///foo");
+  response_head.url_list_via_service_worker.emplace_back("http://bar.test");
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(
+      IPAddressSpace::kUnknown,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceUtilTest,
+     CalculateClientAddressSpaceFetchedViaServiceWorkerFromHttpInsteadOfFile) {
+  URLResponseHead response_head;
+  response_head.url_list_via_service_worker.emplace_back("http://bar.test");
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(IPAddressSpace::kUnknown,
+            CalculateClientAddressSpace(GURL("file:///foo"), &response_head));
+}
+
+TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceNullResponseHead) {
+  EXPECT_EQ(IPAddressSpace::kUnknown,
+            CalculateClientAddressSpace(GURL("http://foo.test"), nullptr));
+}
+
+TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceEmptyResponseHead) {
+  URLResponseHead response_head;
+  response_head.parsed_headers = ParsedHeaders::New();
+  EXPECT_EQ(
+      IPAddressSpace::kUnknown,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceIPAddress) {
+  URLResponseHead response_head;
+  response_head.remote_endpoint = IPEndPoint(PrivateIPv4Address(), 1234);
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(
+      IPAddressSpace::kPrivate,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceTreatAsPublicAddress) {
+  URLResponseHead response_head;
+  response_head.remote_endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 1234);
+
+  auto csp = ContentSecurityPolicy::New();
+  csp->treat_as_public_address = true;
+  response_head.parsed_headers = ParsedHeaders::New();
+  response_head.parsed_headers->content_security_policy.push_back(
+      std::move(csp));
+
+  EXPECT_EQ(
+      IPAddressSpace::kPublic,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceTest, CalculateClientAddressSpaceOverride) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                 "10.2.3.4:80=public,8.8.8.8:8888=private");
+
+  URLResponseHead response_head;
+  response_head.remote_endpoint = IPEndPoint(IPAddress(10, 2, 3, 4), 80);
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(
+      IPAddressSpace::kPublic,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+
+  response_head.remote_endpoint = IPEndPoint(IPAddress(8, 8, 8, 8), 8888);
+
+  EXPECT_EQ(
+      IPAddressSpace::kPrivate,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceFileURL) {
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            CalculateResourceAddressSpace(GURL("file:///foo"), IPEndPoint()));
+}
+
+TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceIPAddress) {
+  EXPECT_EQ(
+      IPAddressSpace::kLocal,
+      CalculateResourceAddressSpace(
+          GURL("http://foo.test"), IPEndPoint(IPAddress::IPv4Localhost(), 80)));
+  EXPECT_EQ(IPAddressSpace::kPrivate,
+            CalculateResourceAddressSpace(
+                GURL("http://foo.test"), IPEndPoint(PrivateIPv4Address(), 80)));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            CalculateResourceAddressSpace(GURL("http://foo.test"),
+                                          IPEndPoint(PublicIPv4Address(), 80)));
+  EXPECT_EQ(
+      IPAddressSpace::kUnknown,
+      CalculateResourceAddressSpace(GURL("http://foo.test"), IPEndPoint()));
+}
+
+TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceOverride) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                 "10.2.3.4:80=public,8.8.8.8:8888=private");
+
+  EXPECT_EQ(
+      IPAddressSpace::kPublic,
+      CalculateResourceAddressSpace(GURL("http://foo.test"),
+                                    IPEndPoint(IPAddress(10, 2, 3, 4), 80)));
+  EXPECT_EQ(
+      IPAddressSpace::kPrivate,
+      CalculateResourceAddressSpace(GURL("http://foo.test"),
+                                    IPEndPoint(IPAddress(8, 8, 8, 8), 8888)));
 }
 
 }  // namespace

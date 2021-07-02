@@ -167,7 +167,6 @@ source_set("headers") {
     "navigation/navigation_params_mojom_traits.h",
     "navigation/navigation_policy.h",
     "navigation/resource_intercept_policy.h",
-    "net/ip_address_space_util.h",
     "notifications/notification_constants.h",
     "notifications/notification_mojom_traits.h",
     "notifications/notification_resources.h",
