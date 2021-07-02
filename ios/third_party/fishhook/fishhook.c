@@ -26,6 +26,7 @@
 #include <dlfcn.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -126,7 +127,17 @@ static void perform_rebinding_with_section(struct rebindings_entry *rebindings,
     trunc_size =(vm_size_t)indirect_symbol_bindings -trunc_address;
     pthread_mutex_lock(&mutex);
     oldProtection = get_protection((void *)trunc_address);
-    mprotect((void *)trunc_address, section->size+trunc_size, PROT_READ | PROT_WRITE);
+
+    // Use vm_protect to also set VM_PROT_COPY.
+    kern_return_t err = vm_protect(mach_task_self(),
+                                  (uintptr_t)trunc_address,
+                                   section->size+trunc_size,
+                                  0,
+                                  VM_PROT_READ | VM_PROT_WRITE | VM_PROT_COPY);
+    if (err != KERN_SUCCESS) {
+      fprintf(stderr, "perform_rebinding_with_section vm_protect failed.\n");
+      return;
+    }
   }
   for (uint i = 0; i < section->size / sizeof(void *); i++) {
     uint32_t symtab_index = indirect_symbol_indices[i];
