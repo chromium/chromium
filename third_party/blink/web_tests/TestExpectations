@@ -7080,3 +7080,6 @@ crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [
 # Now also flakily timing-out.
 crbug.com/1223773 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
 crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass Timeout ]
+
+# Sheriff 2021-07-02
+crbug.com/1226112 http/tests/text-autosizing/narrow-iframe.html [ Failure Pass ]
