@@ -352,3 +352,76 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
   service()->OpenedNewTabPage();
 }
+
+TEST_F(TrustSafetySentimentServiceTest, ActiveIncognitoPreventsSurvey) {
+  // Check that when an incognito profile exists that a survey is not shown.
+  FeatureParams params;
+  params.privacy_settings_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  auto* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  service()->RanSafetyCheck();
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  profile()->DestroyOffTheRecordProfile(otr_profile);
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, testing::_));
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest, ClosingIncognitoDelaysSurvey) {
+  // Check that closing an incognito session delays when a survey is shown
+  // by the minimum time to prompt, and the maximum of the range of NTP visits.
+  FeatureParams params;
+  params.privacy_settings_probability = "1.0";
+  params.min_time_to_prompt = "1m";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "2";
+  SetupFeatureParameters(params);
+
+  auto* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  service()->RanSafetyCheck();
+
+  // Record 2 visits to the NTP so regardless of the random NTP count chosen,
+  // the Privacy Settings trigger will be eligible, but currently blocked by
+  // the presence of an incognito profile.
+  for (int i = 0; i < 2; i++)
+    service()->OpenedNewTabPage();
+
+  profile()->DestroyOffTheRecordProfile(otr_profile);
+
+  // The first NTP opened after closing the incognito session should never
+  // result in a survey, as the maximum of the range is 2.
+  service()->OpenedNewTabPage();
+
+  // The second visit to the NTP should not trigger a survey if it takes place
+  // less than the minimum time to prompt after closing an incognito session.
+  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(30));
+  service()->OpenedNewTabPage();
+
+  // Up to this point no attempt to show any survey should have been made.
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, testing::_));
+
+  // The next tab open which occurs after the required number of opens, and the
+  // minimum time has passed, should trigger a survey.
+  task_environment()->AdvanceClock(base::TimeDelta::FromMinutes(1));
+  service()->OpenedNewTabPage();
+}

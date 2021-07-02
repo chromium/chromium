@@ -6,14 +6,17 @@
 #define CHROME_BROWSER_UI_HATS_TRUST_SAFETY_SENTIMENT_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
 // Service which receives events from Trust & Safety features and determines
 // whether or not to launch a HaTS survey on the NTP for the user.
-class TrustSafetySentimentService : public KeyedService {
+class TrustSafetySentimentService : public KeyedService,
+                                    public ProfileObserver {
  public:
   explicit TrustSafetySentimentService(Profile* profile);
   ~TrustSafetySentimentService() override;
@@ -37,11 +40,19 @@ class TrustSafetySentimentService : public KeyedService {
   // tests.
   virtual void RanSafetyCheck();
 
+  // Profile Observer:
+  void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // The feature areas that the service delivers HaTS surveys for. Each feature
   // area is associated with a different Listnr survey, and has a different set
-  // of Product Specific Data (PSD).
+  // of Product Specific Data (PSD). kIneligible is an exception, and
+  // is not associated with any survey, but rather represents the collection of
+  // features for which interaction with should also be considered when
+  // determining elibigility for a survey.
   enum class FeatureArea {
-    kPrivacySettings = 0,
+    kIneligible = 0,
+    kPrivacySettings,
     kTrustedSurface,
     kTransactions
   };
@@ -67,6 +78,7 @@ class TrustSafetySentimentService : public KeyedService {
     PendingTrigger(const PendingTrigger& other);
     PendingTrigger(const std::map<std::string, bool>& product_specific_data,
                    int remaining_ntps_to_open);
+    explicit PendingTrigger(int remaining_ntps_to_open);
     ~PendingTrigger();
 
     std::map<std::string, bool> product_specific_data;
@@ -104,9 +116,19 @@ class TrustSafetySentimentService : public KeyedService {
       FeatureArea feature_area,
       const std::map<std::string, bool>& product_specific_data);
 
+  // Record that the user performed an action which should make them temporarily
+  // ineligible to receive a survey. This records a trigger for the kIneligible
+  // feature area, which just like any other trigger will prevent a survey from
+  // being shown, but will not result in a survey.
+  void PerformedIneligibleAction();
+
+  static bool ShouldBlockSurvey(const PendingTrigger& trigger);
+
   Profile* const profile_;
   std::map<FeatureArea, PendingTrigger> pending_triggers_;
   std::unique_ptr<SettingsWatcher> settings_watcher_;
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
   base::WeakPtrFactory<TrustSafetySentimentService> weak_ptr_factory_{this};
 };
 

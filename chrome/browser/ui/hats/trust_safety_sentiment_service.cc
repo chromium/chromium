@@ -38,6 +38,10 @@ int GetRequiredNtpCount() {
       features::kTrustSafetySentimentSurveyNtpVisitsMaxRange.Get());
 }
 
+int GetMaxRequiredNtpCount() {
+  return features::kTrustSafetySentimentSurveyNtpVisitsMaxRange.Get();
+}
+
 std::string GetHatsTriggerForFeatureArea(
     TrustSafetySentimentService::FeatureArea feature_area) {
   switch (feature_area) {
@@ -47,9 +51,10 @@ std::string GetHatsTriggerForFeatureArea(
       return kHatsSurveyTriggerTrustSafetyTrustedSurface;
     case (TrustSafetySentimentService::FeatureArea::kTransactions):
       return kHatsSurveyTriggerTrustSafetyTransactions;
+    default:
+      NOTREACHED();
+      return "";
   }
-  NOTREACHED();
-  return "";
 }
 
 bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
@@ -65,9 +70,10 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
     case (TrustSafetySentimentService::FeatureArea::kTransactions):
       return base::RandDouble() <
              features::kTrustSafetySentimentSurveyTransactionsProbability.Get();
+    default:
+      NOTREACHED();
+      return false;
   }
-  NOTREACHED();
-  return false;
 }
 
 bool HasNonDefaultPrivacySetting(Profile* profile) {
@@ -134,6 +140,14 @@ std::map<std::string, bool> GetPrivacySettingsProductSpecificData(
 TrustSafetySentimentService::TrustSafetySentimentService(Profile* profile)
     : profile_(profile) {
   DCHECK(profile);
+  observed_profiles_.AddObservation(profile);
+
+  // As this service is created lazily, there may already be a primary OTR
+  // profile created for the main profile.
+  if (auto* primary_otr =
+          profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)) {
+    observed_profiles_.AddObservation(primary_otr);
+  }
 }
 
 TrustSafetySentimentService::~TrustSafetySentimentService() = default;
@@ -144,17 +158,6 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
   if (pending_triggers_.size() == 0)
     return;
 
-  // Remove any triggers which occurred more than the maximum time ago.
-  base::EraseIf(pending_triggers_,
-                [](const std::pair<FeatureArea, PendingTrigger>& area_trigger) {
-                  return base::Time::Now() - area_trigger.second.occurred_time >
-                         GetMaxTimeToPrompt();
-                });
-
-  // This may have emptied the set of pending triggers.
-  if (pending_triggers_.size() == 0)
-    return;
-
   // Reduce the NTPs to open count for all the active triggers.
   for (auto& area_trigger : pending_triggers_) {
     auto& trigger = area_trigger.second;
@@ -162,21 +165,42 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
       trigger.remaining_ntps_to_open--;
   }
 
-  // Any trigger being too recent, or not having the required number of NTP
-  // opens, will prevent a survey from being shown.
-  auto now = base::Time::Now();
+  // Cleanup any triggers which are no longer relevant. This will be every
+  // trigger which occurred more than the maximum prompt time ago, or the
+  // trigger for the kIneligible area if it is no longer blocking
+  // eligibility.
+  base::EraseIf(pending_triggers_,
+                [](const std::pair<FeatureArea, PendingTrigger>& area_trigger) {
+                  return base::Time::Now() - area_trigger.second.occurred_time >
+                             GetMaxTimeToPrompt() ||
+                         (area_trigger.first == FeatureArea::kIneligible &&
+                          !ShouldBlockSurvey(area_trigger.second));
+                });
+
+  // This may have emptied the set of pending triggers.
+  if (pending_triggers_.size() == 0)
+    return;
+
+  // A primary OTR profile (incognito) existing will prevent any surveys from
+  // being shown.
+  if (profile_->HasPrimaryOTRProfile())
+    return;
+
+  // Check if any of the triggers make the user not yet eligible to receive a
+  // survey.
   for (const auto& area_trigger : pending_triggers_) {
-    const auto& trigger = area_trigger.second;
-    if (now - trigger.occurred_time < GetMinTimeToPrompt() ||
-        trigger.remaining_ntps_to_open > 0) {
+    if (ShouldBlockSurvey(area_trigger.second))
       return;
-    }
   }
 
   // Choose a trigger at random to avoid any order biasing.
   auto winning_area_iterator = pending_triggers_.begin();
   std::advance(winning_area_iterator,
                base::RandInt(0, pending_triggers_.size() - 1));
+
+  // The winning feature area should never be kIneligible, as this will
+  // have either been removed above, or blocked showing any survey.
+  DCHECK(winning_area_iterator->first != FeatureArea::kIneligible);
 
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
@@ -213,11 +237,35 @@ void TrustSafetySentimentService::RanSafetyCheck() {
                       profile_, /*ran_safety_check=*/true));
 }
 
+void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
+    Profile* off_the_record) {
+  // Only interested in the primary OTR profile i.e. the one used for incognito
+  // browsing. Non-primary OTR profiles are often used as implementation details
+  // of other features, and are not inherintly relevant to Trust & Safety.
+  if (off_the_record->GetOTRProfileID() == Profile::OTRProfileID::PrimaryID())
+    observed_profiles_.AddObservation(off_the_record);
+}
+
+void TrustSafetySentimentService::OnProfileWillBeDestroyed(Profile* profile) {
+  observed_profiles_.RemoveObservation(profile);
+
+  if (profile->IsOffTheRecord()) {
+    // Closing the incognito profile, which is the only OTR profie observed by
+    // this class, is an ileligible action.
+    PerformedIneligibleAction();
+  }
+}
+
 TrustSafetySentimentService::PendingTrigger::PendingTrigger(
     const std::map<std::string, bool>& product_specific_data,
     int remaining_ntps_to_open)
     : product_specific_data(product_specific_data),
       remaining_ntps_to_open(remaining_ntps_to_open),
+      occurred_time(base::Time::Now()) {}
+
+TrustSafetySentimentService::PendingTrigger::PendingTrigger(
+    int remaining_ntps_to_open)
+    : remaining_ntps_to_open(remaining_ntps_to_open),
       occurred_time(base::Time::Now()) {}
 
 TrustSafetySentimentService::PendingTrigger::PendingTrigger() = default;
@@ -275,4 +323,15 @@ void TrustSafetySentimentService::TriggerOccurred(
   // only interested in the most recent trigger, so this is acceptable.
   pending_triggers_[feature_area] =
       PendingTrigger(product_specific_data, GetRequiredNtpCount());
+}
+
+void TrustSafetySentimentService::PerformedIneligibleAction() {
+  pending_triggers_[FeatureArea::kIneligible] =
+      PendingTrigger(GetMaxRequiredNtpCount());
+}
+
+/*static*/ bool TrustSafetySentimentService::ShouldBlockSurvey(
+    const PendingTrigger& trigger) {
+  return base::Time::Now() - trigger.occurred_time < GetMinTimeToPrompt() ||
+         trigger.remaining_ntps_to_open > 0;
 }
