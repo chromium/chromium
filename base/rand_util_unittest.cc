@@ -8,12 +8,16 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace base {
 
 namespace {
 
@@ -115,8 +119,8 @@ TEST(RandUtilTest, RandGeneratorIsUniform) {
     ++count;
   }
 
-  ASSERT_LT(count, kMaxAttempts) << "Expected average was " <<
-      kExpectedAverage << ", average ended at " << cumulative_average;
+  ASSERT_LT(count, kMaxAttempts) << "Expected average was " << kExpectedAverage
+                                 << ", average ended at " << cumulative_average;
 }
 
 TEST(RandUtilTest, RandUint64ProducesBothValuesOfAllBits) {
@@ -165,6 +169,119 @@ TEST(RandUtilTest, DISABLED_RandBytesPerf) {
     base::RandBytes(buffer.get(), kTestBufferSize);
   const base::TimeTicks end = base::TimeTicks::Now();
 
-  LOG(INFO) << "RandBytes(" << kTestBufferSize << ") took: "
-            << (end - now).InMicroseconds() << "µs";
+  LOG(INFO) << "RandBytes(" << kTestBufferSize
+            << ") took: " << (end - now).InMicroseconds() << "µs";
 }
+
+TEST(RandUtilTest, InsecureRandomGeneratorProducesBothValuesOfAllBits) {
+  // This tests to see that our underlying random generator is good
+  // enough, for some value of good enough.
+  uint64_t kAllZeros = 0ULL;
+  uint64_t kAllOnes = ~kAllZeros;
+  uint64_t found_ones = kAllZeros;
+  uint64_t found_zeros = kAllOnes;
+
+  InsecureRandomGenerator generator;
+  generator.Seed();
+
+  for (size_t i = 0; i < 1000; ++i) {
+    uint64_t value = generator.RandUint64();
+    found_ones |= value;
+    found_zeros &= value;
+
+    if (found_zeros == kAllZeros && found_ones == kAllOnes)
+      return;
+  }
+
+  FAIL() << "Didn't achieve all bit values in maximum number of tries.";
+}
+
+namespace {
+
+constexpr double kXp1Percent = -2.33;
+constexpr double kXp99Percent = 2.33;
+
+double ChiSquaredCriticalValue(double nu, double x_p) {
+  // From "The Art Of Computer Programming" (TAOCP), Volume 2, Section 3.3.1,
+  // Table 1. This is the asymptotic value for nu > 30, up to O(1 / sqrt(nu)).
+  return nu + sqrt(2. * nu) * x_p + 2. / 3. * (x_p * x_p) - 2. / 3.;
+}
+
+int ExtractBits(uint64_t value, int from_bit, int num_bits) {
+  return (value >> from_bit) & ((1 << num_bits) - 1);
+}
+
+// Performs a Chi-Squared test on a subset of |num_bits| extracted starting from
+// |from_bit| in the generated value.
+//
+// See TAOCP, Volume 2, Section 3.3.1, and
+// https://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test for details.
+//
+// This is only one of the many, many random number generator test we could do,
+// but they are cumbersome, as they are typically very slow, and expected to
+// fail from time to time, due to their probabilistic nature.
+//
+// The generator we use has however been vetted with the BigCrush test suite
+// from Marsaglia, so this should suffice as a smoke test that our
+// implementation is wrong.
+bool ChiSquaredTest(InsecureRandomGenerator& gen,
+                    size_t n,
+                    int from_bit,
+                    int num_bits) {
+  const int range = 1 << num_bits;
+  CHECK_EQ(static_cast<int>(n % range), 0) << "Makes computations simpler";
+  std::vector<size_t> samples(range, 0);
+
+  // Count how many samples pf each value are found. All buckets should be
+  // almost equal if the generator is suitably uniformly random.
+  for (size_t i = 0; i < n; i++) {
+    int sample = ExtractBits(gen.RandUint64(), from_bit, num_bits);
+    samples[sample] += 1;
+  }
+
+  // Compute the Chi-Squared statistic, which is:
+  // \Sum_{k=0}^{range-1} \frac{(count - expected)^2}{expected}
+  double chi_squared = 0.;
+  double expected_count = n / range;
+  for (size_t sample_count : samples) {
+    double deviation = sample_count - expected_count;
+    chi_squared += (deviation * deviation) / expected_count;
+  }
+
+  // The generator should produce numbers that are not too far of (chi_squared
+  // lower than a given quantile), but not too close to the ideal distribution
+  // either (chi_squared is too low).
+  //
+  // See The Art Of Computer Programming, Volume 2, Section 3.3.1 for details.
+  return chi_squared > ChiSquaredCriticalValue(range - 1, kXp1Percent) &&
+         chi_squared < ChiSquaredCriticalValue(range - 1, kXp99Percent);
+}
+
+}  // namespace
+
+TEST(RandUtilTest, InsecureRandomGeneratorChiSquared) {
+  constexpr int kIterations = 50;
+
+  // Specifically test the low bits, which are usually weaker in random number
+  // generators. We don't use them for the 32 bit number generation, but let's
+  // make sure they are still suitable.
+  for (int start_bit : {1, 2, 3, 8, 12, 20, 32, 48, 54}) {
+    int pass_count = 0;
+    for (int i = 0; i < kIterations; i++) {
+      size_t samples = 1 << 16;
+      InsecureRandomGenerator gen;
+      // Fix the seed to make the test non-flaky.
+      gen.SeedForTesting(kIterations + 1);
+      bool pass = ChiSquaredTest(gen, samples, start_bit, 8);
+      pass_count += pass;
+    }
+
+    // We exclude 1% on each side, so we expect 98% of tests to pass, meaning 98
+    // * kIterations / 100. However this is asymptotic, so add a bit of leeway.
+    int expected_pass_count = (kIterations * 98) / 100;
+    EXPECT_GE(pass_count, expected_pass_count - ((kIterations * 2) / 100))
+        << "For start_bit = " << start_bit;
+  }
+}
+
+}  // namespace base
