@@ -32,7 +32,7 @@ void RecordPrinterList(size_t& call_count,
                        std::unique_ptr<base::ListValue>& printers_out,
                        const base::ListValue& printers) {
   ++call_count;
-  printers_out.reset(printers.DeepCopy());
+  printers_out = printers.CreateDeepCopy();
 }
 
 // Used as a callback to `StartGetPrinters` in tests.
