@@ -14,10 +14,9 @@
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/reload_type.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
@@ -31,8 +30,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-
-class GURL;
 
 namespace blink {
 namespace mojom {
@@ -55,14 +52,13 @@ class RenderWidgetHost;
 class WebContents;
 struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
-struct CookieAccessDetails;
 struct EntryChangedDetails;
 struct FocusedNodeDetails;
-struct GlobalRequestID;
 struct LoadCommittedDetails;
 struct MediaPlayerId;
 struct PrunedDetails;
 struct Referrer;
+struct CookieAccessDetails;
 
 // An observer API implemented by classes which are interested in various page
 // events from WebContents.  They also get a chance to filter IPC messages.

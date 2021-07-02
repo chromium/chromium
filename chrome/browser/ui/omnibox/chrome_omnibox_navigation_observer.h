@@ -28,10 +28,6 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }
 
-namespace net {
-struct RedirectInfo;
-}
-
 // Monitors omnibox navigations in order to trigger behaviors that depend on
 // successful navigations.
 //
