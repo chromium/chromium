@@ -15,6 +15,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -23,8 +24,6 @@
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
-class ListValue;
 }
 
 class Status;
@@ -177,7 +176,7 @@ struct Capabilities {
 
   PerfLoggingPrefs perf_logging_prefs;
 
-  std::unique_ptr<base::ListValue> devtools_events_logging_prefs;
+  base::Value devtools_events_logging_prefs;
 
   std::unique_ptr<base::DictionaryValue> prefs;
 

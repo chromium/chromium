@@ -519,13 +519,11 @@ Status ParsePerfLoggingPrefs(const base::Value& option,
 
 Status ParseDevToolsEventsLoggingPrefs(const base::Value& option,
                                        Capabilities* capabilities) {
-  const base::ListValue* devtools_events_logging_prefs = nullptr;
-  if (!option.GetAsList(&devtools_events_logging_prefs))
+  if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  if (devtools_events_logging_prefs->empty())
+  if (option.GetList().empty())
     return Status(kInvalidArgument, "list must contain values");
-  capabilities->devtools_events_logging_prefs.reset(
-      devtools_events_logging_prefs->DeepCopy());
+  capabilities->devtools_events_logging_prefs = option.Clone();
   return Status(kOk);
 }
 

@@ -810,7 +810,7 @@ Status WebViewImpl::GetCookies(std::unique_ptr<base::ListValue>* cookies,
   base::ListValue* cookies_tmp;
   if (!result->GetList("cookies", &cookies_tmp))
     return Status(kUnknownError, "DevTools didn't return cookies");
-  cookies->reset(cookies_tmp->DeepCopy());
+  *cookies = cookies_tmp->CreateDeepCopy();
   return Status(kOk);
 }
 

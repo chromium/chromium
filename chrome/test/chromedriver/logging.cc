@@ -388,10 +388,8 @@ Status CreateLogs(
       }
     } else if (type == WebDriverLog::kDevToolsType) {
       logs.push_back(std::make_unique<WebDriverLog>(type, Log::kAll));
-      devtools_listeners.push_back(
-          std::make_unique<DevToolsEventsLogger>(
-            logs.back().get(),
-            capabilities.devtools_events_logging_prefs.get()));
+      devtools_listeners.push_back(std::make_unique<DevToolsEventsLogger>(
+          logs.back().get(), capabilities.devtools_events_logging_prefs));
     } else if (type == WebDriverLog::kBrowserType) {
       browser_log_level = level;
     } else if (type != WebDriverLog::kDriverType) {
