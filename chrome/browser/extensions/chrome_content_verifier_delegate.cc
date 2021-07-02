@@ -51,10 +51,9 @@ namespace {
 
 absl::optional<ChromeContentVerifierDelegate::VerifyInfo::Mode>&
 GetModeForTesting() {
-  static base::NoDestructor<
-      absl::optional<ChromeContentVerifierDelegate::VerifyInfo::Mode>>
+  static absl::optional<ChromeContentVerifierDelegate::VerifyInfo::Mode>
       testing_mode;
-  return *testing_mode;
+  return testing_mode;
 }
 
 const char kContentVerificationExperimentName[] =

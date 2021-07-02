@@ -9,17 +9,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/account_manager/account_migration_runner.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 namespace ash {
 

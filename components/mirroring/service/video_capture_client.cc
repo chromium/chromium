@@ -5,7 +5,6 @@
 #include "components/mirroring/service/video_capture_client.h"
 
 #include "base/bind.h"
-#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
@@ -21,16 +20,16 @@ namespace {
 
 // Required by mojom::VideoCaptureHost interface. Can be any nonzero value.
 const base::UnguessableToken& DeviceId() {
-  static const base::NoDestructor<base::UnguessableToken> device_id(
+  static const base::UnguessableToken device_id(
       base::UnguessableToken::Deserialize(1, 1));
-  return *device_id;
+  return device_id;
 }
 
 // Required by mojom::VideoCaptureHost interface. Can be any nonzero value.
 const base::UnguessableToken& SessionId() {
-  static const base::NoDestructor<base::UnguessableToken> session_id(
+  static const base::UnguessableToken session_id(
       base::UnguessableToken::Deserialize(1, 1));
-  return *session_id;
+  return session_id;
 }
 
 }  // namespace

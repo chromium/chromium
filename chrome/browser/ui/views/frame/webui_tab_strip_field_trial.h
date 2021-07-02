@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WEBUI_TAB_STRIP_FIELD_TRIAL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WEBUI_TAB_STRIP_FIELD_TRIAL_H_
 
-namespace base {
-template <typename T>
-class NoDestructor;
-}
+#include "base/no_destructor.h"
 
 // Manages a synthetic field trial for the WebUI tab strip. The feature
 // flag itself is controlled by an external field trial. This synthetic

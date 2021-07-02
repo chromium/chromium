@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
@@ -34,8 +33,8 @@ namespace {
 constexpr char kServiceName[] = "NearbySharingService";
 
 absl::optional<bool>& IsSupportedTesting() {
-  static base::NoDestructor<absl::optional<bool>> is_supported;
-  return *is_supported;
+  static absl::optional<bool> is_supported;
+  return is_supported;
 }
 
 }  // namespace

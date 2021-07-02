@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
-#include "base/no_destructor.h"
 #include "mojo/core/entrypoints.h"
 #include "mojo/core/node_controller.h"
 #include "mojo/core/user_message_impl.h"
@@ -17,7 +16,7 @@ struct Environment {
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
-  static base::NoDestructor<Environment> environment;
+  static Environment environment;
 
   // Try using our fuzz input as the payload of an otherwise well-formed user
   // message event.

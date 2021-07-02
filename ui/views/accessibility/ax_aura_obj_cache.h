@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -20,11 +21,6 @@
 namespace aura {
 class Window;
 }  // namespace aura
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 namespace views {
 class AXAuraObjWrapper;

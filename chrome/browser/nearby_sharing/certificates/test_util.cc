@@ -181,15 +181,15 @@ GetNearbyShareTestEncryptedMetadataKey() {
 }
 
 base::Time GetNearbyShareTestNotBefore() {
-  static const base::NoDestructor<base::Time> not_before(
-      base::Time::FromJavaTime(kTestNotBeforeMillis));
-  return *not_before;
+  static const base::Time not_before =
+      base::Time::FromJavaTime(kTestNotBeforeMillis);
+  return not_before;
 }
 
 base::TimeDelta GetNearbyShareTestValidityOffset() {
-  static const base::NoDestructor<base::TimeDelta> offset(
-      base::TimeDelta::FromMilliseconds(kTestValidityOffsetMillis));
-  return *offset;
+  static const base::TimeDelta offset =
+      base::TimeDelta::FromMilliseconds(kTestValidityOffsetMillis);
+  return offset;
 }
 
 const nearbyshare::proto::EncryptedMetadata& GetNearbyShareTestMetadata() {

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
@@ -95,10 +94,10 @@ ListPublicCertificatesRequestToQueryParameters(
 // TODO(crbug.com/1103471): Update "chrome_policy" when a Nearby Share
 // enterprise policy is created.
 const net::PartialNetworkTrafficAnnotationTag& GetUpdateDeviceAnnotation() {
-  static const base::NoDestructor<net::PartialNetworkTrafficAnnotationTag>
-      annotation(net::DefinePartialNetworkTrafficAnnotation(
-          "nearby_share_update_device", "oauth2_api_call_flow",
-          R"(
+  static const net::PartialNetworkTrafficAnnotationTag annotation =
+      net::DefinePartialNetworkTrafficAnnotation("nearby_share_update_device",
+                                                 "oauth2_api_call_flow",
+                                                 R"(
       semantics {
         sender: "Nearby Share"
         description:
@@ -137,17 +136,17 @@ const net::PartialNetworkTrafficAnnotationTag& GetUpdateDeviceAnnotation() {
             SigninAllowed: false
           }
         }
-      })"));
-  return *annotation;
+      })");
+  return annotation;
 }
 
 // TODO(crbug.com/1103471): Update "chrome_policy" when a Nearby Share
 // enterprise policy is created.
 const net::PartialNetworkTrafficAnnotationTag& GetContactsAnnotation() {
-  static const base::NoDestructor<net::PartialNetworkTrafficAnnotationTag>
-      annotation(net::DefinePartialNetworkTrafficAnnotation(
-          "nearby_share_contacts", "oauth2_api_call_flow",
-          R"(
+  static const net::PartialNetworkTrafficAnnotationTag annotation =
+      net::DefinePartialNetworkTrafficAnnotation("nearby_share_contacts",
+                                                 "oauth2_api_call_flow",
+                                                 R"(
       semantics {
         sender: "Nearby Share"
         description:
@@ -173,16 +172,16 @@ const net::PartialNetworkTrafficAnnotationTag& GetContactsAnnotation() {
             SigninAllowed: false
           }
         }
-          })"));
-  return *annotation;
+          })");
+  return annotation;
 }
 
 // TODO(crbug.com/1103471): Update "chrome_policy" when a Nearby Share
 // enterprise policy is created.
 const net::PartialNetworkTrafficAnnotationTag&
 GetListPublicCertificatesAnnotation() {
-  static const base::NoDestructor<net::PartialNetworkTrafficAnnotationTag>
-      annotation(net::DefinePartialNetworkTrafficAnnotation(
+  static const net::PartialNetworkTrafficAnnotationTag annotation =
+      net::DefinePartialNetworkTrafficAnnotation(
           "nearby_share_list_public_certificates", "oauth2_api_call_flow",
           R"(
       semantics {
@@ -213,8 +212,8 @@ GetListPublicCertificatesAnnotation() {
             SigninAllowed: false
           }
         }
-          })"));
-  return *annotation;
+          })");
+  return annotation;
 }
 
 }  // namespace

@@ -99,9 +99,9 @@ class MainDelegateImpl : public MainDelegate {
 }  // namespace
 
 MainParams CreateMainParams() {
-  static const base::NoDestructor<MainDelegateImpl> weblayer_delegate;
+  static MainDelegateImpl weblayer_delegate;
   MainParams params;
-  params.delegate = const_cast<MainDelegateImpl*>(&(*weblayer_delegate));
+  params.delegate = &weblayer_delegate;
 
   base::PathService::Get(base::DIR_EXE, &params.log_filename);
   params.log_filename = params.log_filename.AppendASCII("weblayer_shell.log");

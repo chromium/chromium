@@ -14,7 +14,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
@@ -229,10 +228,10 @@ bool HexStringToIntImpl(T input, VALUE& output) {
 
 static const double_conversion::DoubleToStringConverter*
 GetDoubleToStringConverter() {
-  static NoDestructor<double_conversion::DoubleToStringConverter> converter(
+  static double_conversion::DoubleToStringConverter converter(
       double_conversion::DoubleToStringConverter::EMIT_POSITIVE_EXPONENT_SIGN,
       nullptr, nullptr, 'e', -6, 12, 0, 0);
-  return converter.get();
+  return &converter;
 }
 
 // Converts a given (data, size) pair to a desired string type. For
@@ -258,14 +257,14 @@ StringT DoubleToStringT(double value) {
 
 template <typename STRING, typename CHAR>
 bool StringToDoubleImpl(STRING input, const CHAR* data, double& output) {
-  static NoDestructor<double_conversion::StringToDoubleConverter> converter(
+  static double_conversion::StringToDoubleConverter converter(
       double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES |
           double_conversion::StringToDoubleConverter::ALLOW_TRAILING_JUNK,
       0.0, 0, nullptr, nullptr);
 
   int processed_characters_count;
-  output = converter->StringToDouble(data, input.size(),
-                                     &processed_characters_count);
+  output =
+      converter.StringToDouble(data, input.size(), &processed_characters_count);
 
   // Cases to return false:
   //  - If the input string is empty, there was nothing to parse.

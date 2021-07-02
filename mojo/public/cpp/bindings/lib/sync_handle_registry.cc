@@ -35,8 +35,7 @@ SyncHandleRegistry::Subscription::~Subscription() = default;
 
 // static
 scoped_refptr<SyncHandleRegistry> SyncHandleRegistry::current() {
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<scoped_refptr<SyncHandleRegistry>>>
+  static base::SequenceLocalStorageSlot<scoped_refptr<SyncHandleRegistry>>
       g_current_sync_handle_watcher;
 
   // SyncMessageFilter can be used on threads without sequence-local storage
@@ -46,12 +45,12 @@ scoped_refptr<SyncHandleRegistry> SyncHandleRegistry::current() {
         base::PassKey<SyncHandleRegistry>());
   }
 
-  if (!*g_current_sync_handle_watcher) {
-    g_current_sync_handle_watcher->emplace(
+  if (!g_current_sync_handle_watcher) {
+    g_current_sync_handle_watcher.emplace(
         base::MakeRefCounted<SyncHandleRegistry>(
             base::PassKey<SyncHandleRegistry>()));
   }
-  return *g_current_sync_handle_watcher->GetValuePointer();
+  return *g_current_sync_handle_watcher.GetValuePointer();
 }
 
 SyncHandleRegistry::SyncHandleRegistry(base::PassKey<SyncHandleRegistry>) {}

@@ -10,12 +10,10 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 
 namespace base {
-template <typename T>
-class NoDestructor;
-
 class SequencedTaskRunner;
 }  // namespace base
 

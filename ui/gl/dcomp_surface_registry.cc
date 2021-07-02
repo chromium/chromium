@@ -4,8 +4,6 @@
 
 #include "ui/gl/dcomp_surface_registry.h"
 
-#include "base/no_destructor.h"
-
 namespace gl {
 
 DCOMPSurfaceRegistry* DCOMPSurfaceRegistry::GetInstance() {

@@ -45,10 +45,10 @@ mojo::Remote<video_capture::mojom::VideoCaptureService>& GetUIThreadRemote() {
   // NOTE: This use of sequence-local storage is only to ensure that the Remote
   // only lives as long as the UI-thread sequence, since the UI-thread sequence
   // may be torn down and reinitialized e.g. between unit tests.
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      mojo::Remote<video_capture::mojom::VideoCaptureService>>>
+  static base::SequenceLocalStorageSlot<
+      mojo::Remote<video_capture::mojom::VideoCaptureService>>
       remote_slot;
-  return remote_slot->GetOrCreateValue();
+  return remote_slot.GetOrCreateValue();
 }
 
 // This is a custom traits type we use in conjunction with mojo::ReceiverSetBase
@@ -79,10 +79,10 @@ void BindProxyRemoteOnUIThread(
 
 video_capture::mojom::VideoCaptureService& GetVideoCaptureService() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    static base::NoDestructor<base::SequenceLocalStorageSlot<
-        mojo::Remote<video_capture::mojom::VideoCaptureService>>>
+    static base::SequenceLocalStorageSlot<
+        mojo::Remote<video_capture::mojom::VideoCaptureService>>
         storage;
-    auto& remote = storage->GetOrCreateValue();
+    auto& remote = storage.GetOrCreateValue();
     if (!remote.is_bound()) {
       GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&BindProxyRemoteOnUIThread,

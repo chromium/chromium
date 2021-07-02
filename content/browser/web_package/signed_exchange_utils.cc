@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -254,9 +253,9 @@ int MakeRequestID() {
   // uninitialized variables.) This way, we no longer have the unlikely (but
   // observed in the real world!) event where we have two requests with the same
   // request_id_.
-  static base::NoDestructor<std::atomic_int> request_id(-1);
+  static std::atomic_int request_id(-1);
 
-  return --*request_id;
+  return --request_id;
 }
 
 base::Time GetVerificationTime() {

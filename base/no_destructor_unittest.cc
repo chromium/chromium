@@ -39,6 +39,7 @@ struct UncopyableUnmovable {
   UncopyableUnmovable& operator=(const UncopyableUnmovable&) = delete;
 
   int value = 1;
+  std::string something_with_a_nontrivial_destructor;
 };
 
 struct CopyOnly {
@@ -63,6 +64,8 @@ struct MoveOnly {
 
 struct ForwardingTestStruct {
   ForwardingTestStruct(const CopyOnly&, MoveOnly&&) {}
+
+  std::string something_with_a_nontrivial_destructor;
 };
 
 TEST(NoDestructorTest, UncopyableUnmovable) {
@@ -87,6 +90,11 @@ TEST(NoDestructorTest, Accessors) {
   EXPECT_EQ("awesome", *awesome);
   EXPECT_EQ(0, awesome->compare("awesome"));
   EXPECT_EQ(0, awesome.get()->compare("awesome"));
+}
+
+TEST(NoDestructorTest, AllowForTriviallyDestructibleType) {
+  static NoDestructor<bool, AllowForTriviallyDestructibleType>
+      trivially_destructible_type;
 }
 
 // Passing initializer list to a NoDestructor like in this test

@@ -32,7 +32,7 @@ namespace {
 std::string GenerateFakeHashedString(size_t sym_count) {
   static constexpr char kSyms[] =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,/=+?#";
-  static base::NoDestructor<std::mt19937> engine;
+  static std::mt19937 engine;
   std::uniform_int_distribution<size_t> index_distribution(
       0, base::size(kSyms) - 2 /* trailing \0 */);
 
@@ -40,7 +40,7 @@ std::string GenerateFakeHashedString(size_t sym_count) {
   res.reserve(sym_count);
 
   std::generate_n(std::back_inserter(res), sym_count, [&index_distribution] {
-    return kSyms[index_distribution(*engine)];
+    return kSyms[index_distribution(engine)];
   });
 
   return res;

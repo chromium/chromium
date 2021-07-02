@@ -142,7 +142,9 @@ class CoreLibraryInitializer {
 extern "C" {
 
 MojoResult MojoInitialize(const struct MojoInitializeOptions* options) {
-  static base::NoDestructor<mojo::CoreLibraryInitializer> initializer;
+  static base::NoDestructor<mojo::CoreLibraryInitializer,
+                            base::AllowForTriviallyDestructibleType>
+      initializer;
 
   base::StringPiece library_path_utf8;
   if (options) {

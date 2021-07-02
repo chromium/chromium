@@ -72,9 +72,8 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
 
   const absl::optional<HostCache::EntryStaleness>& GetStaleInfo()
       const override {
-    static const base::NoDestructor<absl::optional<HostCache::EntryStaleness>>
-        nullopt_result;
-    return *nullopt_result;
+    static const absl::optional<HostCache::EntryStaleness> nullopt_result;
+    return nullopt_result;
   }
 
  private:

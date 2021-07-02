@@ -105,8 +105,7 @@ uint64_t RandGenerator(uint64_t range, G& generator) {
 }
 
 bool DecideSample(int sample_rate) {
-  static base::NoDestructor<base::SequenceLocalStorageSlot<std::mt19937_64>>
-      prng;
+  static base::SequenceLocalStorageSlot<std::mt19937_64> prng;
 
   if (sample_rate == 0)
     return false;
@@ -114,10 +113,10 @@ bool DecideSample(int sample_rate) {
   if (sample_rate == 1)
     return true;
 
-  if (!prng->GetValuePointer())
-    prng->emplace(base::RandUint64());
+  if (!prng.GetValuePointer())
+    prng.emplace(base::RandUint64());
 
-  return RandGenerator(sample_rate, **prng) == 0;
+  return RandGenerator(sample_rate, *prng) == 0;
 }
 
 }  // namespace

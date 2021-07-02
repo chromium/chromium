@@ -6,14 +6,10 @@
 #define UI_GL_DCOMP_SURFACE_REGISTRY_H_
 
 #include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gl/gl_export.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 namespace gl {
 

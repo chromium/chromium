@@ -109,9 +109,9 @@ KeycodeMap CreateKeycodeMapFromMapEntries(const KeycodeMapEntry (&entries)[N]) {
 }
 
 const KeycodeMap& GetKeycodeMapQwerty() {
-  static const base::NoDestructor<KeycodeMap> map(
+  static const KeycodeMap map(
       CreateKeycodeMapFromMapEntries(kKeycodeMapEntriesQwerty));
-  return *map;
+  return map;
 }
 
 }  // namespace

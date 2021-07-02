@@ -6,12 +6,8 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_MANAGER_H_
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 // A singleton that acts as a rendezvous for dialog observers to register and
 // the dialog managers/delegates to post their activities.

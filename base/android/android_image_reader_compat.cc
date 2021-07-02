@@ -26,8 +26,8 @@ namespace android {
 AndroidImageReader& AndroidImageReader::GetInstance() {
   // C++11 static local variable initialization is
   // thread-safe.
-  static base::NoDestructor<AndroidImageReader> instance;
-  return *instance;
+  static AndroidImageReader instance;
+  return instance;
 }
 
 bool AndroidImageReader::IsSupported() {

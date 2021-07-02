@@ -54,10 +54,10 @@ media::mojom::MediaService& GetMediaService() {
   // that of the UI-thread sequence. This ensures that the Remote is destroyed
   // when the task environment is torn down and reinitialized, e.g. between unit
   // tests.
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<mojo::Remote<media::mojom::MediaService>>>
+  static base::SequenceLocalStorageSlot<
+      mojo::Remote<media::mojom::MediaService>>
       remote_slot;
-  auto& remote = remote_slot->GetOrCreateValue();
+  auto& remote = remote_slot.GetOrCreateValue();
   if (!remote) {
     auto receiver = remote.BindNewPipeAndPassReceiver();
     remote.reset_on_disconnect();

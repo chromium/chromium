@@ -95,7 +95,7 @@ ChannelState& GetChannelState() {
 
 bool SideBySideCapable() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  static const base::NoDestructor<bool> capable([] {
+  static const bool capable = [] {
     // Use the main Chrome application bundle and not the framework bundle.
     // Keystone keys don't live in the framework.
     NSBundle* bundle = base::mac::OuterBundle();
@@ -117,8 +117,8 @@ bool SideBySideCapable() {
     // beta/dev/canary Chrome is separate, and it can run side-by-side to the
     // stable Chrome.
     return [bundle objectForInfoDictionaryKey:@"CrProductDirName"] != nil;
-  }());
-  return *capable;
+  }();
+  return capable;
 #else
   return true;
 #endif

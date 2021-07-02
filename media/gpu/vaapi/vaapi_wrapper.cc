@@ -1479,18 +1479,17 @@ VaapiWrapper::InternalFormats VaapiWrapper::GetDecodeSupportedInternalFormats(
 bool VaapiWrapper::IsDecodingSupportedForInternalFormat(
     VAProfile va_profile,
     unsigned int rt_format) {
-  static const base::NoDestructor<VaapiWrapper::InternalFormats>
-      supported_internal_formats(
-          VaapiWrapper::GetDecodeSupportedInternalFormats(va_profile));
+  static const VaapiWrapper::InternalFormats supported_internal_formats(
+      VaapiWrapper::GetDecodeSupportedInternalFormats(va_profile));
   switch (rt_format) {
     case VA_RT_FORMAT_YUV420:
-      return supported_internal_formats->yuv420;
+      return supported_internal_formats.yuv420;
     case VA_RT_FORMAT_YUV420_10:
-      return supported_internal_formats->yuv420_10;
+      return supported_internal_formats.yuv420_10;
     case VA_RT_FORMAT_YUV422:
-      return supported_internal_formats->yuv422;
+      return supported_internal_formats.yuv422;
     case VA_RT_FORMAT_YUV444:
-      return supported_internal_formats->yuv444;
+      return supported_internal_formats.yuv444;
   }
   return false;
 }

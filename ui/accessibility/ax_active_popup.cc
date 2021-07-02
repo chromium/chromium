@@ -5,7 +5,6 @@
 #include "ui/accessibility/ax_active_popup.h"
 
 #include "base/macros.h"
-#include "base/no_destructor.h"
 
 namespace ui {
 
@@ -17,8 +16,8 @@ absl::optional<AXNodeID>& GetActivePopupAXUniqueIdInstance() {
   // currently active autofill popup. This singleton is used for communicating
   // the live status of the autofill popup between web contents and Views. The
   // assumption here is that only one autofill popup can exist at a time.
-  static base::NoDestructor<absl::optional<AXNodeID>> active_popup_ax_unique_id;
-  return *active_popup_ax_unique_id;
+  static absl::optional<AXNodeID> active_popup_ax_unique_id;
+  return active_popup_ax_unique_id;
 }
 
 }  // namespace
