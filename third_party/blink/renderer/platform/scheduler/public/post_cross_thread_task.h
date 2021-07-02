@@ -17,8 +17,8 @@ namespace blink {
 inline bool PostCrossThreadTask(base::SequencedTaskRunner& task_runner,
                                 const base::Location& location,
                                 WTF::CrossThreadOnceClosure task) {
-  return task_runner.PostDelayedTask(
-      location, ConvertToBaseOnceCallback(std::move(task)), base::TimeDelta());
+  return task_runner.PostTask(location,
+                              ConvertToBaseOnceCallback(std::move(task)));
 }
 
 inline bool PostDelayedCrossThreadTask(base::SequencedTaskRunner& task_runner,
