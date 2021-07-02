@@ -364,6 +364,7 @@ class StartSurfaceMediator
         if (state == StartSurfaceState.SHOWING_HOMEPAGE) {
             mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
             mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
+            StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
 
             String newHomeSurface =
                     StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON.getValue();
