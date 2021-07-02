@@ -867,13 +867,13 @@
     "args": [ "--disable-blink-features=SubresourceWebBundles" ]
   },
   {
-    "prefix": "transform-interop-disabled",
+    "prefix": "transform-interop",
     "bases": [ "external/wpt/css/css-transforms",
                "transforms/",
                "compositing/geometry/",
                "compositing/overflow/",
                "paint/invalidation/" ],
-    "args": [ "--disable-features=TransformInterop" ]
+    "args": [ "--enable-features=TransformInterop" ]
   },
   {
     "prefix": "backface-visibility-interop",

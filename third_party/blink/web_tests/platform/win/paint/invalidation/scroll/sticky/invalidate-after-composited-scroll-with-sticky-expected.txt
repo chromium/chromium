@@ -51,7 +51,8 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -35, 0, 1]
-      ]
+      ],
+      "flattenInheritedTransform": false
     },
     {
       "id": 4,
@@ -61,7 +62,8 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, 35, 0, 1]
-      ]
+      ],
+      "flattenInheritedTransform": false
     }
   ]
 }

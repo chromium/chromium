@@ -2113,7 +2113,6 @@
     // See crbug.com/1008483.
     {
       name: "TransformInterop",
-      status: "experimental",
     },
     // This is conditionally set if the platform supports translation.
     {
