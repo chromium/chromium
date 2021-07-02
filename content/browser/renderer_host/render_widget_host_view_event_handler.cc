@@ -38,12 +38,6 @@
 #include "ui/gfx/delegated_ink_point.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
-#if defined(OS_WIN)
-#include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "ui/aura/window_tree_host.h"
-#include "ui/display/screen.h"
-#endif  // defined(OS_WIN)
-
 namespace {
 
 // In mouse lock mode, we need to prevent the (invisible) cursor from hitting
@@ -54,16 +48,6 @@ namespace {
 // if it approaches the border. |kMouseLockBorderPercentage| specifies the width
 // of the border area, in percentage of the corresponding dimension.
 const int kMouseLockBorderPercentage = 15;
-
-// While the mouse is locked we want the invisible mouse to stay within the
-// confines of the screen so we keep it in a capture region the size of the
-// screen.  However, on windows when the mouse hits the edge of the screen some
-// events trigger and cause strange issues to occur. To stop those events from
-// occuring we add a small border around the edge of the capture region.
-// This constant controls how many pixels wide that border is.
-#if defined(OS_WIN)
-const int KMouseCaptureRegionBorder = 5;
-#endif
 
 #if defined(OS_WIN)
 // A callback function for EnumThreadWindows to enumerate and dismiss
@@ -149,20 +133,6 @@ void RenderWidgetHostViewEventHandler::SetPopupChild(
   popup_child_event_handler_ = popup_child_event_handler;
 }
 
-#if defined(OS_WIN)
-void RenderWidgetHostViewEventHandler::UpdateMouseLockRegion() {
-  RECT window_rect =
-      display::Screen::GetScreen()
-          ->DIPToScreenRectInWindow(window_, window_->GetBoundsInScreen())
-          .ToRECT();
-  window_rect.left += KMouseCaptureRegionBorder;
-  window_rect.right -= KMouseCaptureRegionBorder;
-  window_rect.top += KMouseCaptureRegionBorder;
-  window_rect.bottom -= KMouseCaptureRegionBorder;
-  ::ClipCursor(&window_rect);
-}
-#endif
-
 blink::mojom::PointerLockResult RenderWidgetHostViewEventHandler::LockMouse(
     bool request_unadjusted_movement) {
   aura::Window* root_window = window_->GetRootWindow();
@@ -180,17 +150,7 @@ blink::mojom::PointerLockResult RenderWidgetHostViewEventHandler::LockMouse(
   }
   mouse_locked_ = true;
 
-#if !defined(OS_WIN)
-  window_->SetCapture();
-#else
-  UpdateMouseLockRegion();
-#endif
-  aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
-  if (cursor_client) {
-    cursor_client->HideCursor();
-    cursor_client->LockCursor();
-  }
+  window_->GetHost()->LockMouse(window_);
 
   if (ShouldMoveToCenter(unlocked_global_mouse_position_))
     MoveCursorToCenter(nullptr);
@@ -241,12 +201,7 @@ void RenderWidgetHostViewEventHandler::UnlockMouse() {
   mouse_locked_ = false;
   mouse_locked_unadjusted_movement_.reset();
 
-  if (window_->HasCapture())
-    window_->ReleaseCapture();
-
-#if defined(OS_WIN)
-  ::ClipCursor(NULL);
-#endif
+  window_->GetHost()->UnlockMouse(window_);
 
   // Ensure that the global mouse position is updated here to its original
   // value. If we don't do this then the synthesized mouse move which is posted
@@ -258,12 +213,6 @@ void RenderWidgetHostViewEventHandler::UnlockMouse() {
   synthetic_move_position_ =
       gfx::ToFlooredPoint(unlocked_global_mouse_position_);
 
-  aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
-  if (cursor_client) {
-    cursor_client->UnlockCursor();
-    cursor_client->ShowCursor();
-  }
   host_->LostMouseLock();
 }
 

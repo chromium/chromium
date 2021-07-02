@@ -48,6 +48,7 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void MoveCursorToScreenLocationInPixels(
       const gfx::Point& location_in_pixels) override;
   void OnCursorVisibilityChangedNative(bool show) override;
+  void LockMouse(Window* window) override;
 
   ui::PlatformWindow* platform_window() { return platform_window_.get(); }
   const ui::PlatformWindow* platform_window() const {

@@ -344,6 +344,31 @@ WindowTreeHost::RequestUnadjustedMovement() {
   return nullptr;
 }
 
+void WindowTreeHost::LockMouse(Window* window) {
+  Window* root_window = window->GetRootWindow();
+  DCHECK(root_window);
+
+  auto* cursor_client = client::GetCursorClient(root_window);
+  if (cursor_client) {
+    cursor_client->HideCursor();
+    cursor_client->LockCursor();
+  }
+}
+
+void WindowTreeHost::UnlockMouse(Window* window) {
+  Window* root_window = window->GetRootWindow();
+  DCHECK(root_window);
+
+  if (window->HasCapture())
+    window->ReleaseCapture();
+
+  auto* cursor_client = client::GetCursorClient(root_window);
+  if (cursor_client) {
+    cursor_client->UnlockCursor();
+    cursor_client->ShowCursor();
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WindowTreeHost, protected:
 

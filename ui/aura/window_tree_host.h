@@ -253,6 +253,9 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual std::unique_ptr<ScopedEnableUnadjustedMouseEvents>
   RequestUnadjustedMovement();
 
+  virtual void LockMouse(Window* window);
+  virtual void UnlockMouse(Window* window);
+
   bool holding_pointer_moves() const { return holding_pointer_moves_; }
 
  protected:

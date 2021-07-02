@@ -124,9 +124,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // Sets the ContextMenuParams when a context menu is triggered. Required for
   // subsequent event processing.
   void SetContextMenuParams(const ContextMenuParams& params);
-
-  // Updates the cursor clip region. Used for mouse locking.
-  void UpdateMouseLockRegion();
 #endif  // defined(OS_WIN)
 
   bool accept_return_character() { return accept_return_character_; }

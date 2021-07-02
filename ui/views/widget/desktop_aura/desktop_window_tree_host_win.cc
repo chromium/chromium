@@ -66,6 +66,14 @@ namespace views {
 
 namespace {
 
+// While the mouse is locked we want the invisible mouse to stay within the
+// confines of the screen so we keep it in a capture region the size of the
+// screen.  However, on windows when the mouse hits the edge of the screen some
+// events trigger and cause strange issues to occur. To stop those events from
+// occurring we add a small border around the edge of the capture region.
+// This constant controls how many pixels wide that border is.
+const int kMouseCaptureRegionBorder = 5;
+
 gfx::Size GetExpandedWindowSize(bool is_translucent, gfx::Size size) {
   if (!is_translucent || !ui::win::IsAeroGlassEnabled())
     return size;
@@ -78,6 +86,24 @@ gfx::Size GetExpandedWindowSize(bool is_translucent, gfx::Size size) {
 
 void InsetBottomRight(gfx::Rect* rect, const gfx::Vector2d& vector) {
   rect->Inset(0, 0, vector.x(), vector.y());
+}
+
+// Updates the cursor clip region. Used for mouse locking.
+void UpdateMouseLockRegion(aura::Window* window, bool locked) {
+  if (!locked) {
+    ::ClipCursor(nullptr);
+    return;
+  }
+
+  RECT window_rect =
+      display::Screen::GetScreen()
+          ->DIPToScreenRectInWindow(window, window->GetBoundsInScreen())
+          .ToRECT();
+  window_rect.left += kMouseCaptureRegionBorder;
+  window_rect.right -= kMouseCaptureRegionBorder;
+  window_rect.top += kMouseCaptureRegionBorder;
+  window_rect.bottom -= kMouseCaptureRegionBorder;
+  ::ClipCursor(&window_rect);
 }
 
 }  // namespace
@@ -661,6 +687,16 @@ void DesktopWindowTreeHostWin::MoveCursorToScreenLocationInPixels(
 std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
 DesktopWindowTreeHostWin::RequestUnadjustedMovement() {
   return message_handler_->RegisterUnadjustedMouseEvent();
+}
+
+void DesktopWindowTreeHostWin::LockMouse(aura::Window* window) {
+  UpdateMouseLockRegion(window, true /*locked*/);
+  WindowTreeHost::LockMouse(window);
+}
+
+void DesktopWindowTreeHostWin::UnlockMouse(aura::Window* window) {
+  UpdateMouseLockRegion(window, false /*locked*/);
+  WindowTreeHost::UnlockMouse(window);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

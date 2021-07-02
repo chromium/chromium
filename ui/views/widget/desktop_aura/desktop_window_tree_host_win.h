@@ -152,6 +152,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
       const gfx::Point& location_in_pixels) override;
   std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
   RequestUnadjustedMovement() override;
+  void LockMouse(aura::Window* window) override;
+  void UnlockMouse(aura::Window* window) override;
 
   // Overridden from aura::client::AnimationHost
   void SetHostTransitionOffsets(
