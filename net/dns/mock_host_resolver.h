@@ -27,6 +27,9 @@
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class TickClock;
@@ -121,6 +124,11 @@ class MockHostResolverBase
 
   // HostResolver methods:
   void OnShutdown() override;
+  std::unique_ptr<ResolveHostRequest> CreateRequest(
+      url::SchemeHostPort host,
+      NetworkIsolationKey network_isolation_key,
+      NetLogWithSource net_log,
+      absl::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
       const NetworkIsolationKey& network_isolation_key,
@@ -506,6 +514,11 @@ class HangingHostResolver : public HostResolver {
   HangingHostResolver();
   ~HangingHostResolver() override;
   void OnShutdown() override;
+  std::unique_ptr<ResolveHostRequest> CreateRequest(
+      url::SchemeHostPort host,
+      NetworkIsolationKey network_isolation_key,
+      NetLogWithSource net_log,
+      absl::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
       const NetworkIsolationKey& network_isolation_key,

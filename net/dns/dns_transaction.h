@@ -112,7 +112,7 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   // and it would be beneficial to move on to those options sooner on signals
   // that the transaction is potentially slow or problematic.
   virtual std::unique_ptr<DnsTransaction> CreateTransaction(
-      const std::string& hostname,
+      std::string hostname,
       uint16_t qtype,
       CallbackType callback,
       const NetLogWithSource& net_log,

@@ -46,7 +46,7 @@ namespace net {
 class NET_EXPORT HostCache {
  public:
   struct NET_EXPORT Key {
-    Key(const std::string& hostname,
+    Key(std::string hostname,
         DnsQueryType dns_query_type,
         HostResolverFlags host_resolver_flags,
         HostResolverSource host_resolver_source,

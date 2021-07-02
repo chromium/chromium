@@ -92,8 +92,17 @@ TEST(HostMappingRulesTest, RewritesUrl) {
   rules.AddRuleFromString("MAP initial.test replacement.test:1000");
 
   GURL url("http://initial.test:111");
-  EXPECT_TRUE(rules.RewriteUrl(url));
+  EXPECT_EQ(rules.RewriteUrl(url), HostMappingRules::RewriteResult::kRewritten);
   EXPECT_EQ(url, GURL("http://replacement.test:1000"));
+}
+
+TEST(HostMappingRulesTest, RewritesUrlToIpv6Literal) {
+  HostMappingRules rules;
+  rules.AddRuleFromString("MAP initial.test [2345:6789::0abc]:1112");
+
+  GURL url("http://initial.test:111");
+  EXPECT_EQ(rules.RewriteUrl(url), HostMappingRules::RewriteResult::kRewritten);
+  EXPECT_EQ(url, GURL("http://[2345:6789::0abc]:1112"));
 }
 
 TEST(HostMappingRulesTest, RewritesUrlPreservingScheme) {
@@ -101,7 +110,7 @@ TEST(HostMappingRulesTest, RewritesUrlPreservingScheme) {
   rules.AddRuleFromString("MAP initial.test replacement.test:1000");
 
   GURL url("wss://initial.test:222");
-  EXPECT_TRUE(rules.RewriteUrl(url));
+  EXPECT_EQ(rules.RewriteUrl(url), HostMappingRules::RewriteResult::kRewritten);
   EXPECT_EQ(url, GURL("wss://replacement.test:1000"));
 }
 
@@ -112,7 +121,7 @@ TEST(HostMappingRulesTest, RewritesFileUrl) {
   // Expect replacement port to be ignored because file URLs do not use port.
   GURL url("file://initial.test/file.txt");
   ASSERT_EQ(url.EffectiveIntPort(), url::PORT_UNSPECIFIED);
-  EXPECT_TRUE(rules.RewriteUrl(url));
+  EXPECT_EQ(rules.RewriteUrl(url), HostMappingRules::RewriteResult::kRewritten);
   EXPECT_EQ(url, GURL("file://replacement.test/file.txt"));
   EXPECT_EQ(url.EffectiveIntPort(), url::PORT_UNSPECIFIED);
 }
@@ -127,7 +136,7 @@ TEST(HostMappingRulesTest, RewritesAnyStandardUrlWithPort) {
   rules.AddRuleFromString("MAP initial.test replacement.test:1000");
 
   GURL url("foo://initial.test:100");
-  EXPECT_TRUE(rules.RewriteUrl(url));
+  EXPECT_EQ(rules.RewriteUrl(url), HostMappingRules::RewriteResult::kRewritten);
   EXPECT_EQ(url, GURL("foo://replacement.test:1000"));
 }
 
@@ -143,7 +152,7 @@ TEST(HostMappingRulesTest, RewritesAnyStandardUrlWithoutPort) {
   // Expect replacement port to be ignored.
   GURL url("foo://initial.test");
   ASSERT_EQ(url.EffectiveIntPort(), url::PORT_UNSPECIFIED);
-  EXPECT_TRUE(rules.RewriteUrl(url));
+  EXPECT_EQ(rules.RewriteUrl(url), HostMappingRules::RewriteResult::kRewritten);
   EXPECT_EQ(url, GURL("foo://replacement.test"));
   EXPECT_EQ(url.EffectiveIntPort(), url::PORT_UNSPECIFIED);
 }
@@ -153,7 +162,8 @@ TEST(HostMappingRulesTest, IgnoresUnmappedUrls) {
   rules.AddRuleFromString("MAP initial.test replacement.test:1000");
 
   GURL url("http://different.test:111");
-  EXPECT_FALSE(rules.RewriteUrl(url));
+  EXPECT_EQ(rules.RewriteUrl(url),
+            HostMappingRules::RewriteResult::kNoMatchingRule);
   EXPECT_EQ(url, GURL("http://different.test:111"));
 }
 
@@ -162,7 +172,20 @@ TEST(HostMappingRulesTest, IgnoresInvalidReplacementUrls) {
   rules.AddRuleFromString("MAP initial.test invalid/url");
 
   GURL url("http://initial.test");
-  EXPECT_FALSE(rules.RewriteUrl(url));
+  EXPECT_EQ(rules.RewriteUrl(url),
+            HostMappingRules::RewriteResult::kInvalidRewrite);
+  EXPECT_EQ(url, GURL("http://initial.test"));
+}
+
+// Remapping to "~NOTFOUND" is documented as a special case for
+// MappedHostResolver usage. Ensure that it is handled as invalid as expected.
+TEST(HostMappingRulesTest, NotFoundIgnoredAsInvalidUrl) {
+  HostMappingRules rules;
+  rules.AddRuleFromString("MAP initial.test ~NOTFOUND");
+
+  GURL url("http://initial.test");
+  EXPECT_EQ(rules.RewriteUrl(url),
+            HostMappingRules::RewriteResult::kInvalidRewrite);
   EXPECT_EQ(url, GURL("http://initial.test"));
 }
 

@@ -11,7 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
+#include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class TickClock;
@@ -78,6 +82,11 @@ class StaleHostResolver : public net::HostResolver {
   //
   // If stale data is returned, the StaleHostResolver allows the underlying
   // request to continue in order to repopulate the cache.
+  std::unique_ptr<ResolveHostRequest> CreateRequest(
+      url::SchemeHostPort host,
+      net::NetworkIsolationKey network_isolation_key,
+      net::NetLogWithSource net_log,
+      absl::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       const net::HostPortPair& host,
       const net::NetworkIsolationKey& network_isolation_key,

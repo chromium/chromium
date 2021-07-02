@@ -127,9 +127,9 @@ class HostResolverMdnsTask::Transaction {
 
 HostResolverMdnsTask::HostResolverMdnsTask(
     MDnsClient* mdns_client,
-    const std::string& hostname,
+    std::string hostname,
     const std::vector<DnsQueryType>& query_types)
-    : mdns_client_(mdns_client), hostname_(hostname) {
+    : mdns_client_(mdns_client), hostname_(std::move(hostname)) {
   DCHECK(!query_types.empty());
   for (DnsQueryType query_type : query_types) {
     transactions_.emplace_back(query_type, this);

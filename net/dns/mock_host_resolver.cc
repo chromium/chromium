@@ -29,12 +29,16 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/log/net_log_with_source.h"
 #include "net/url_request/url_request_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 #if defined(OS_WIN)
 #include "net/base/winsock_init.h"
@@ -368,6 +372,17 @@ void MockHostResolverBase::OnShutdown() {
   cache_ = nullptr;
 
   doh_probe_request_ = nullptr;
+}
+
+std::unique_ptr<HostResolver::ResolveHostRequest>
+MockHostResolverBase::CreateRequest(
+    url::SchemeHostPort host,
+    NetworkIsolationKey network_isolation_key,
+    NetLogWithSource net_log,
+    absl::optional<ResolveHostParameters> optional_parameters) {
+  // TODO(crbug.com/1206799): Propagate scheme and make affect behavior.
+  return CreateRequest(HostPortPair::FromSchemeHostPort(host),
+                       network_isolation_key, net_log, optional_parameters);
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -1104,6 +1119,17 @@ HangingHostResolver::~HangingHostResolver() = default;
 
 void HangingHostResolver::OnShutdown() {
   shutting_down_ = true;
+}
+
+std::unique_ptr<HostResolver::ResolveHostRequest>
+HangingHostResolver::CreateRequest(
+    url::SchemeHostPort host,
+    NetworkIsolationKey network_isolation_key,
+    NetLogWithSource net_log,
+    absl::optional<ResolveHostParameters> optional_parameters) {
+  // TODO(crbug.com/1206799): Propagate scheme and make affect behavior.
+  return CreateRequest(HostPortPair::FromSchemeHostPort(host),
+                       network_isolation_key, net_log, optional_parameters);
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>

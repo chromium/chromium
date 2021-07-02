@@ -339,7 +339,7 @@ class MockDnsTransactionFactory::MockTransaction
       public base::SupportsWeakPtr<MockTransaction> {
  public:
   MockTransaction(const MockDnsClientRuleList& rules,
-                  const std::string& hostname,
+                  std::string hostname,
                   uint16_t qtype,
                   bool secure,
                   bool force_doh_server_available,
@@ -348,7 +348,7 @@ class MockDnsTransactionFactory::MockTransaction
                   bool fast_timeout,
                   DnsTransactionFactory::CallbackType callback)
       : result_(MockDnsClientRule::FAIL),
-        hostname_(hostname),
+        hostname_(std::move(hostname)),
         qtype_(qtype),
         callback_(std::move(callback)),
         started_(false),
@@ -359,13 +359,13 @@ class MockDnsTransactionFactory::MockTransaction
         resolve_context->NumAvailableDohServers(
             resolve_context->current_session_for_testing()) > 0) {
       // Find the relevant rule which matches |qtype|, |secure|, prefix of
-      // |hostname|, and |url_request_context| (iff the rule context is not
+      // |hostname_|, and |url_request_context| (iff the rule context is not
       // null).
       for (size_t i = 0; i < rules.size(); ++i) {
         const std::string& prefix = rules[i].prefix;
         if ((rules[i].qtype == qtype) && (rules[i].secure == secure) &&
-            (hostname.size() >= prefix.size()) &&
-            (hostname.compare(0, prefix.size(), prefix) == 0) &&
+            (hostname_.size() >= prefix.size()) &&
+            (hostname_.compare(0, prefix.size(), prefix) == 0) &&
             (!rules[i].context ||
              rules[i].context == resolve_context->url_request_context())) {
           const MockDnsClientRule::Result* result = &rules[i].result;
@@ -537,7 +537,7 @@ MockDnsTransactionFactory::MockDnsTransactionFactory(
 MockDnsTransactionFactory::~MockDnsTransactionFactory() = default;
 
 std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
-    const std::string& hostname,
+    std::string hostname,
     uint16_t qtype,
     DnsTransactionFactory::CallbackType callback,
     const NetLogWithSource&,
@@ -546,9 +546,10 @@ std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
     ResolveContext* resolve_context,
     bool fast_timeout) {
   std::unique_ptr<MockTransaction> transaction =
-      std::make_unique<MockTransaction>(
-          rules_, hostname, qtype, secure, force_doh_server_available_,
-          secure_dns_mode, resolve_context, fast_timeout, std::move(callback));
+      std::make_unique<MockTransaction>(rules_, std::move(hostname), qtype,
+                                        secure, force_doh_server_available_,
+                                        secure_dns_mode, resolve_context,
+                                        fast_timeout, std::move(callback));
   if (transaction->delayed())
     delayed_transactions_.push_back(transaction->AsWeakPtr());
   return transaction;

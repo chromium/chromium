@@ -16,11 +16,15 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/resolve_context.h"
+#include "net/log/net_log_with_source.h"
 #include "net/url_request/url_request_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -288,6 +292,29 @@ void ContextHostResolver::OnShutdown() {
 
   DCHECK(!shutting_down_);
   shutting_down_ = true;
+}
+
+std::unique_ptr<HostResolver::ResolveHostRequest>
+ContextHostResolver::CreateRequest(
+    url::SchemeHostPort host,
+    NetworkIsolationKey network_isolation_key,
+    NetLogWithSource source_net_log,
+    absl::optional<ResolveHostParameters> optional_parameters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::unique_ptr<HostResolverManager::CancellableResolveHostRequest>
+      inner_request;
+  if (!shutting_down_) {
+    inner_request = manager_->CreateRequest(
+        std::move(host), std::move(network_isolation_key),
+        std::move(source_net_log), std::move(optional_parameters),
+        resolve_context_.get(), resolve_context_->host_cache());
+  }
+
+  auto request = std::make_unique<WrappedResolveHostRequest>(
+      std::move(inner_request), this, shutting_down_);
+  handed_out_requests_.insert(request.get());
+  return request;
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>

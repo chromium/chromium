@@ -20,10 +20,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/prioritized_dispatcher.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/host_cache.h"
@@ -35,7 +38,11 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/resolve_context.h"
 #include "net/dns/system_dns_config_change_notifier.h"
+#include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class TickClock;
@@ -46,13 +53,10 @@ namespace net {
 class AddressList;
 class DnsClient;
 class DnsProbeRunner;
-class HostPortPair;
 class IPAddress;
 class MDnsClient;
 class MDnsSocketFactory;
 class NetLog;
-class NetLogWithSource;
-class NetworkIsolationKey;
 
 // Scheduler and controller of host resolution requests. Because of the global
 // nature of host resolutions, this class is generally expected to be singleton
@@ -149,10 +153,10 @@ class NET_EXPORT HostResolverManager
   // TODO(crbug.com/1022059): Use the HostCache out of the ResolveContext
   // instead of passing it separately.
   std::unique_ptr<CancellableResolveHostRequest> CreateRequest(
-      const HostPortPair& host,
-      const NetworkIsolationKey& network_isolation_key,
-      const NetLogWithSource& net_log,
-      const absl::optional<ResolveHostParameters>& optional_parameters,
+      absl::variant<url::SchemeHostPort, HostPortPair> host,
+      NetworkIsolationKey network_isolation_key,
+      NetLogWithSource net_log,
+      absl::optional<ResolveHostParameters> optional_parameters,
       ResolveContext* resolve_context,
       HostCache* host_cache);
   // |resolve_context| is the context to use for the probes, and it is expected
@@ -359,7 +363,7 @@ class NET_EXPORT HostResolverManager
   // Determines "effective" request parameters using manager properties and IPv6
   // reachability.
   void GetEffectiveParametersForRequest(
-      const std::string& hostname,
+      base::StringPiece hostname,
       DnsQueryType dns_query_type,
       HostResolverFlags flags,
       SecureDnsPolicy secure_dns_policy,

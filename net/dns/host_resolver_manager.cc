@@ -99,6 +99,9 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/scheme_host_port.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon_ip.h"
 
@@ -171,7 +174,7 @@ bool ContainsIcannNameCollisionIp(const AddressList& addr_list) {
 }
 
 // True if |hostname| ends with either ".local" or ".local.".
-bool ResemblesMulticastDNSName(const std::string& hostname) {
+bool ResemblesMulticastDNSName(base::StringPiece hostname) {
   const char kSuffix[] = ".local.";
   const size_t kSuffixLen = sizeof(kSuffix) - 1;
   const size_t kSuffixLenTrimmed = kSuffixLen - 1;
@@ -324,7 +327,7 @@ base::Value NetLogDnsTaskFailedParams(const HostCache::Entry& results,
 
 // Creates NetLog parameters for the creation of a HostResolverManager::Job.
 base::Value NetLogJobCreationParams(const NetLogSource& source,
-                                    const std::string& host) {
+                                    base::StringPiece host) {
   base::Value dict(base::Value::Type::DICTIONARY);
   source.AddToEventParameters(&dict);
   dict.SetStringKey("host", host);
@@ -464,6 +467,57 @@ void NetLogHostCacheEntry(const NetLogWithSource& net_log,
   net_log.AddEntry(type, phase, [&] { return results.NetLogParams(); });
 }
 
+base::Value ToLogStringValue(
+    const absl::variant<url::SchemeHostPort, HostPortPair>& host) {
+  if (absl::holds_alternative<url::SchemeHostPort>(host))
+    return base::Value(absl::get<url::SchemeHostPort>(host).Serialize());
+
+  return base::Value(absl::get<HostPortPair>(host).ToString());
+}
+
+base::StringPiece GetHostname(
+    const absl::variant<url::SchemeHostPort, HostPortPair>& host) {
+  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
+    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host).host();
+    if (hostname.size() >= 2 && hostname.front() == '[' &&
+        hostname.back() == ']') {
+      hostname = hostname.substr(1, hostname.size() - 2);
+    }
+    return hostname;
+  }
+
+  return absl::get<HostPortPair>(host).host();
+}
+
+base::StringPiece GetHostname(
+    const absl::variant<url::SchemeHostPort, std::string>& host) {
+  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
+    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host).host();
+    if (hostname.size() >= 2 && hostname.front() == '[' &&
+        hostname.back() == ']') {
+      hostname = hostname.substr(1, hostname.size() - 2);
+    }
+    return hostname;
+  }
+
+  return absl::get<std::string>(host);
+}
+
+uint16_t GetPort(const absl::variant<url::SchemeHostPort, HostPortPair>& host) {
+  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
+    return absl::get<url::SchemeHostPort>(host).port();
+  }
+
+  return absl::get<HostPortPair>(host).port();
+}
+
+// TODO(crbug.com/1206799): Make dependent on status of `kUseDnsHttpsSvcb`
+// Feature.
+absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
+    const absl::variant<url::SchemeHostPort, HostPortPair>& input) {
+  return std::string(GetHostname(input));
+}
+
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -494,22 +548,22 @@ class HostResolverManager::RequestImpl
     : public CancellableResolveHostRequest,
       public base::LinkNode<HostResolverManager::RequestImpl> {
  public:
-  RequestImpl(const NetLogWithSource& source_net_log,
-              const HostPortPair& request_host,
-              const NetworkIsolationKey& network_isolation_key,
-              const absl::optional<ResolveHostParameters>& optional_parameters,
+  RequestImpl(NetLogWithSource source_net_log,
+              absl::variant<url::SchemeHostPort, HostPortPair> request_host,
+              NetworkIsolationKey network_isolation_key,
+              absl::optional<ResolveHostParameters> optional_parameters,
               ResolveContext* resolve_context,
               HostCache* host_cache,
               base::WeakPtr<HostResolverManager> resolver,
               const base::TickClock* tick_clock)
-      : source_net_log_(source_net_log),
-        request_host_(request_host),
+      : source_net_log_(std::move(source_net_log)),
+        request_host_(std::move(request_host)),
         network_isolation_key_(
             base::FeatureList::IsEnabled(
                 net::features::kSplitHostCacheByNetworkIsolationKey)
-                ? network_isolation_key
+                ? std::move(network_isolation_key)
                 : NetworkIsolationKey()),
-        parameters_(optional_parameters ? optional_parameters.value()
+        parameters_(optional_parameters ? std::move(optional_parameters).value()
                                         : ResolveHostParameters()),
         resolve_context_(resolve_context),
         host_cache_(host_cache),
@@ -671,7 +725,9 @@ class HostResolverManager::RequestImpl
   // NetLog for the source, passed in HostResolver::Resolve.
   const NetLogWithSource& source_net_log() { return source_net_log_; }
 
-  const HostPortPair& request_host() const { return request_host_; }
+  const absl::variant<url::SchemeHostPort, HostPortPair>& request_host() const {
+    return request_host_;
+  }
 
   const NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;
@@ -712,7 +768,7 @@ class HostResolverManager::RequestImpl
     source_net_log_.BeginEvent(
         NetLogEventType::HOST_RESOLVER_IMPL_REQUEST, [this] {
           base::Value dict(base::Value::Type::DICTIONARY);
-          dict.SetStringKey("host", request_host_.ToString());
+          dict.SetKey("host", ToLogStringValue(request_host_));
           dict.SetIntKey("dns_query_type",
                          static_cast<int>(parameters_.dns_query_type));
           dict.SetBoolKey("allow_cached_response",
@@ -731,9 +787,9 @@ class HostResolverManager::RequestImpl
     source_net_log_.EndEventWithNetErrorCode(
         NetLogEventType::HOST_RESOLVER_IMPL_REQUEST, net_error);
 
+    base::StringPiece hostname = GetHostname(request_host_);
     url::HostSafetyStatus host_safety_status = url::CheckHostnameSafety(
-        request_host_.host().c_str(),
-        url::Component(0, request_host_.host().size()));
+        hostname.data(), url::Component(0, hostname.size()));
     if (net_error == net::OK) {
       UMA_HISTOGRAM_ENUMERATION("Net.DNS.Request.Success.HostSafetyStatus",
                                 host_safety_status);
@@ -760,7 +816,7 @@ class HostResolverManager::RequestImpl
 
   const NetLogWithSource source_net_log_;
 
-  const HostPortPair request_host_;
+  const absl::variant<url::SchemeHostPort, HostPortPair> request_host_;
   const NetworkIsolationKey network_isolation_key_;
   ResolveHostParameters parameters_;
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
@@ -1117,7 +1173,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   };
 
   DnsTask(DnsClient* client,
-          base::StringPiece hostname,
+          absl::variant<url::SchemeHostPort, std::string> host,
           DnsQueryType query_type,
           ResolveContext* resolve_context,
           bool secure,
@@ -1127,7 +1183,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           const base::TickClock* tick_clock,
           bool fallback_available)
       : client_(client),
-        hostname_(hostname),
+        host_(std::move(host)),
         resolve_context_(resolve_context),
         secure_(secure),
         secure_dns_mode_(secure_dns_mode),
@@ -1151,9 +1207,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
       // Queue up an INTEGRITY/HTTPS query if we are allowed to.
       const bool is_httpssvc_experiment_domain =
-          httpssvc_domain_cache_.IsExperimental(hostname);
+          httpssvc_domain_cache_.IsExperimental(GetHostname(host_));
       const bool is_httpssvc_control_domain =
-          httpssvc_domain_cache_.IsControl(hostname);
+          httpssvc_domain_cache_.IsControl(GetHostname(host_));
       const bool can_query_via_insecure =
           !secure_ && features::kDnsHttpssvcEnableQueryOverInsecure.Get() &&
           client_->CanQueryAdditionalTypesViaInsecureDns();
@@ -1215,7 +1271,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     std::unique_ptr<DnsTransaction> trans =
         client_->GetTransactionFactory()->CreateTransaction(
-            hostname_, DnsQueryTypeToQtype(dns_query_type),
+            std::string(GetHostname(host_)),
+            DnsQueryTypeToQtype(dns_query_type),
             base::BindOnce(&DnsTask::OnTransactionComplete,
                            base::Unretained(this), tick_clock_->NowTicks(),
                            dns_query_type),
@@ -1529,7 +1586,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   }
 
   DnsClient* client_;
-  std::string hostname_;
+
+  absl::variant<url::SchemeHostPort, std::string> host_;
+
   // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
   ResolveContext* const resolve_context_;
 
@@ -1574,14 +1633,13 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 struct HostResolverManager::JobKey {
   bool operator<(const JobKey& other) const {
     return std::forward_as_tuple(query_type, flags, source, secure_dns_mode,
-                                 resolve_context, hostname,
-                                 network_isolation_key) <
+                                 resolve_context, host, network_isolation_key) <
            std::forward_as_tuple(other.query_type, other.flags, other.source,
                                  other.secure_dns_mode, other.resolve_context,
-                                 other.hostname, other.network_isolation_key);
+                                 other.host, other.network_isolation_key);
   }
 
-  std::string hostname;
+  absl::variant<url::SchemeHostPort, std::string> host;
   NetworkIsolationKey network_isolation_key;
   DnsQueryType query_type;
   HostResolverFlags flags;
@@ -1591,8 +1649,9 @@ struct HostResolverManager::JobKey {
   ResolveContext* resolve_context;
 
   HostCache::Key ToCacheKey(bool secure) const {
-    HostCache::Key key(hostname, query_type, flags, source,
-                       network_isolation_key);
+    // TODO(crbug.com/1206799): Propagate scheme and port to cache key.
+    HostCache::Key key(std::string(GetHostname(host)), query_type, flags,
+                       source, network_isolation_key);
     key.secure = secure;
     return key;
   }
@@ -1634,7 +1693,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     source_net_log.AddEvent(NetLogEventType::HOST_RESOLVER_IMPL_CREATE_JOB);
 
     net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_IMPL_JOB, [&] {
-      return NetLogJobCreationParams(source_net_log.source(), key_.hostname);
+      return NetLogJobCreationParams(source_net_log.source(),
+                                     GetHostname(key_.host));
     });
   }
 
@@ -1688,7 +1748,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // HostCache. Since the ResolveContext is part of the JobKey, any request
     // added to any existing Job should share the same HostCache.
     DCHECK_EQ(host_cache_, request->host_cache());
-    DCHECK_EQ(key_.hostname, request->request_host().host());
+    // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
+    // separated by scheme/port.
+    DCHECK_EQ(GetHostname(key_.host), GetHostname(request->request_host()));
 
     request->AssignJob(this);
 
@@ -1712,7 +1774,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   }
 
   void ChangeRequestPriority(RequestImpl* req, RequestPriority priority) {
-    DCHECK_EQ(key_.hostname, req->request_host().host());
+    // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
+    // separated by scheme/port.
+    DCHECK_EQ(GetHostname(key_.host), GetHostname(req->request_host()));
 
     priority_tracker_.Remove(req->priority());
     req->set_priority(priority);
@@ -1723,7 +1787,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // Detach cancelled request. If it was the last active Request, also finishes
   // this Job.
   void CancelRequest(RequestImpl* request) {
-    DCHECK_EQ(key_.hostname, request->request_host().host());
+    // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
+    // separated by scheme/port.
+    DCHECK_EQ(GetHostname(key_.host), GetHostname(request->request_host()));
     DCHECK(!requests_.empty());
 
     priority_tracker_.Remove(request->priority());
@@ -1814,7 +1880,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   bool ServeFromHosts() {
     DCHECK_GT(num_active_requests(), 0u);
     absl::optional<HostCache::Entry> results = resolver_->ServeFromHosts(
-        key_.hostname, key_.query_type,
+        GetHostname(key_.host), key_.query_type,
         key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
     if (results) {
       // This will destroy the Job.
@@ -1986,7 +2052,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK(IsAddressType(key_.query_type));
 
     proc_task_ = std::make_unique<ProcTask>(
-        key_.hostname,
+        std::string(GetHostname(key_.host)),
         HostResolver::DnsQueryTypeToAddressFamily(key_.query_type), key_.flags,
         resolver_->proc_params_,
         base::BindOnce(&Job::OnProcTaskComplete, base::Unretained(this),
@@ -2055,7 +2121,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // Need to create the task even if we're going to post a failure instead of
     // running it, as a "started" job needs a task to be properly cleaned up.
     dns_task_ = std::make_unique<DnsTask>(
-        resolver_->dns_client_.get(), key_.hostname, key_.query_type,
+        resolver_->dns_client_.get(), key_.host, key_.query_type,
         key_.resolve_context, secure, key_.secure_dns_mode, this, net_log_,
         tick_clock_, !tasks_.empty() /* fallback_available */);
     dns_task_->StartNextTransaction();
@@ -2195,8 +2261,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     MDnsClient* client = nullptr;
     int rv = resolver_->GetOrCreateMdnsClient(&client);
-    mdns_task_ = std::make_unique<HostResolverMdnsTask>(client, key_.hostname,
-                                                        query_types);
+    mdns_task_ = std::make_unique<HostResolverMdnsTask>(
+        client, std::string(GetHostname(key_.host)), query_types);
 
     if (rv == OK) {
       mdns_task_->Start(
@@ -2360,7 +2426,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
       if (results.error() == OK && !req->parameters().is_speculative) {
         req->set_results(
-            results.CopyWithDefaultPort(req->request_host().port()));
+            results.CopyWithDefaultPort(GetPort(req->request_host())));
 
         // TODO(cammie): Move the sanitization deeper, possibly in
         // HttpCache::Entry::SetResult(AddressList addresses), so that it
@@ -2553,10 +2619,10 @@ HostResolverManager::~HostResolverManager() {
 
 std::unique_ptr<HostResolverManager::CancellableResolveHostRequest>
 HostResolverManager::CreateRequest(
-    const HostPortPair& host,
-    const NetworkIsolationKey& network_isolation_key,
-    const NetLogWithSource& net_log,
-    const absl::optional<ResolveHostParameters>& optional_parameters,
+    absl::variant<url::SchemeHostPort, HostPortPair> host,
+    NetworkIsolationKey network_isolation_key,
+    NetLogWithSource net_log,
+    absl::optional<ResolveHostParameters> optional_parameters,
     ResolveContext* resolve_context,
     HostCache* host_cache) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -2567,8 +2633,9 @@ HostResolverManager::CreateRequest(
   DCHECK(registered_contexts_.HasObserver(resolve_context));
 
   return std::make_unique<RequestImpl>(
-      net_log, host, network_isolation_key, optional_parameters,
-      resolve_context, host_cache, weak_ptr_factory_.GetWeakPtr(), tick_clock_);
+      std::move(net_log), std::move(host), std::move(network_isolation_key),
+      std::move(optional_parameters), resolve_context, host_cache,
+      weak_ptr_factory_.GetWeakPtr(), tick_clock_);
 }
 
 std::unique_ptr<HostResolverManager::CancellableProbeRequest>
@@ -2746,16 +2813,16 @@ int HostResolverManager::Resolve(RequestImpl* request) {
 
   const auto& parameters = request->parameters();
   JobKey job_key;
-  job_key.hostname = request->request_host().host();
+  job_key.host = CreateHostForJobKey(request->request_host());
   job_key.network_isolation_key = request->network_isolation_key();
   job_key.source = parameters.source;
   job_key.resolve_context = request->resolve_context();
 
   IPAddress ip_address;
-  bool is_ip = ip_address.AssignFromIPLiteral(job_key.hostname);
+  bool is_ip = ip_address.AssignFromIPLiteral(GetHostname(job_key.host));
 
   GetEffectiveParametersForRequest(
-      job_key.hostname, parameters.dns_query_type,
+      GetHostname(job_key.host), parameters.dns_query_type,
       request->host_resolver_flags(), parameters.secure_dns_policy,
       parameters.cache_usage, is_ip, request->source_net_log(),
       &job_key.query_type, &job_key.flags, &job_key.secure_dns_mode);
@@ -2770,7 +2837,7 @@ int HostResolverManager::Resolve(RequestImpl* request) {
       tasks.empty()) {
     if (results.error() == OK && !request->parameters().is_speculative) {
       request->set_results(
-          results.CopyWithDefaultPort(request->request_host().port()));
+          results.CopyWithDefaultPort(GetPort(request->request_host())));
 
       // TODO(cammie): Sanitize before adding to the cache instead.
       request->SanitizeDnsAliasResults();
@@ -2806,8 +2873,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     // than implicitly based on |source|.
     const bool is_valid_hostname =
         job_key.source == HostResolverSource::MULTICAST_DNS
-            ? IsValidUnrestrictedDNSDomain(job_key.hostname)
-            : IsValidDNSDomain(job_key.hostname);
+            ? IsValidUnrestrictedDNSDomain(GetHostname(job_key.host))
+            : IsValidDNSDomain(GetHostname(job_key.host));
     if (!is_valid_hostname) {
       return HostCache::Entry(ERR_NAME_NOT_RESOLVED,
                               HostCache::Entry::SOURCE_UNKNOWN);
@@ -2821,7 +2888,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   // The result of |getaddrinfo| for empty hosts is inconsistent across systems.
   // On Windows it gives the default interface's address, whereas on Linux it
   // gives an error. We will make it fail on all platforms for consistency.
-  if (job_key.hostname.empty() || job_key.hostname.size() > kMaxHostLength) {
+  if (GetHostname(job_key.host).empty() ||
+      GetHostname(job_key.host).size() > kMaxHostLength) {
     return HostCache::Entry(ERR_NAME_NOT_RESOLVED,
                             HostCache::Entry::SOURCE_UNKNOWN);
   }
@@ -2833,7 +2901,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
 
   // Special-case localhost names, as per the recommendations in
   // https://tools.ietf.org/html/draft-west-let-localhost-be-localhost.
-  resolved = ServeLocalhost(job_key.hostname, job_key.query_type,
+  resolved = ServeLocalhost(GetHostname(job_key.host), job_key.query_type,
                             default_family_due_to_no_ipv6);
   if (resolved)
     return resolved.value();
@@ -2868,7 +2936,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
 
   // TODO(szym): Do not do this if nsswitch.conf instructs not to.
   // http://crbug.com/117655
-  resolved = ServeFromHosts(job_key.hostname, job_key.query_type,
+  resolved = ServeFromHosts(GetHostname(job_key.host), job_key.query_type,
                             default_family_due_to_no_ipv6, *out_tasks);
   if (resolved) {
     NetLogHostCacheEntry(source_net_log,
@@ -3209,7 +3277,7 @@ void HostResolverManager::CreateTaskSequence(
       if ((job_key.flags & HOST_RESOLVER_CANONNAME) &&
           IsAddressType(job_key.query_type)) {
         out_tasks->push_back(TaskType::PROC);
-      } else if (!ResemblesMulticastDNSName(job_key.hostname)) {
+      } else if (!ResemblesMulticastDNSName(GetHostname(job_key.host))) {
         bool proc_task_allowed =
             IsAddressType(job_key.query_type) &&
             job_key.secure_dns_mode != SecureDnsMode::kSecure;
@@ -3258,7 +3326,7 @@ void HostResolverManager::CreateTaskSequence(
 }
 
 void HostResolverManager::GetEffectiveParametersForRequest(
-    const std::string& hostname,
+    base::StringPiece hostname,
     DnsQueryType dns_query_type,
     HostResolverFlags flags,
     SecureDnsPolicy secure_dns_policy,

@@ -12,7 +12,11 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
+#include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class TickClock;
@@ -44,6 +48,11 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
 
   // HostResolver methods:
   void OnShutdown() override;
+  std::unique_ptr<ResolveHostRequest> CreateRequest(
+      url::SchemeHostPort host,
+      NetworkIsolationKey network_isolation_key,
+      NetLogWithSource net_log,
+      absl::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
       const NetworkIsolationKey& network_isolation_key,

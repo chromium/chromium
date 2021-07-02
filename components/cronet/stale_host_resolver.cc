@@ -4,6 +4,7 @@
 
 #include "components/cronet/stale_host_resolver.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,9 +20,12 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace cronet {
 
@@ -324,6 +328,17 @@ StaleHostResolver::~StaleHostResolver() {}
 
 void StaleHostResolver::OnShutdown() {
   inner_resolver_->OnShutdown();
+}
+
+std::unique_ptr<net::HostResolver::ResolveHostRequest>
+StaleHostResolver::CreateRequest(
+    url::SchemeHostPort host,
+    net::NetworkIsolationKey network_isolation_key,
+    net::NetLogWithSource net_log,
+    absl::optional<ResolveHostParameters> optional_parameters) {
+  // TODO(crbug.com/1206799): Propagate scheme.
+  return CreateRequest(net::HostPortPair::FromSchemeHostPort(host),
+                       network_isolation_key, net_log, optional_parameters);
 }
 
 std::unique_ptr<net::HostResolver::ResolveHostRequest>

@@ -19,6 +19,12 @@ class HostPortPair;
 
 class NET_EXPORT_PRIVATE HostMappingRules {
  public:
+  enum class RewriteResult {
+    kRewritten,
+    kNoMatchingRule,
+    kInvalidRewrite,
+  };
+
   HostMappingRules();
   HostMappingRules(const HostMappingRules& host_mapping_rules);
   ~HostMappingRules();
@@ -29,11 +35,15 @@ class NET_EXPORT_PRIVATE HostMappingRules {
   // `*host_port` was modified, false otherwise.
   bool RewriteHost(HostPortPair* host_port) const;
 
-  // Modifies the host and port of `url` based on current rules. Returns true if
-  // `url` was modified, false otherwise. May only be called for URLs with a
-  // host and a scheme that is standard, and if the scheme does not allow ports,
-  // only the host will be rewritten.
-  bool RewriteUrl(GURL& url) const;
+  // Modifies the host and port of `url` based on current rules. May only be
+  // called for URLs with a host and a scheme that is standard, and if the
+  // scheme does not allow ports, only the host will be rewritten.
+  //
+  // If `url` is rewritten, returns `kRewritten`. If no matching rule is found,
+  // returns `kNoMatchingRule` and `url` is not modified. If a matching rule is
+  // found but it results in an invalid URL, e.g. if the rule maps to
+  // "~NOTFOUND", returns `kInvalidRewrite` and `url` is not modified.
+  RewriteResult RewriteUrl(GURL& url) const;
 
   // Adds a rule to this mapper. The format of the rule can be one of:
   //

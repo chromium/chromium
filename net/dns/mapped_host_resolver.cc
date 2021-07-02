@@ -11,6 +11,14 @@
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
+#include "net/base/url_util.h"
+#include "net/dns/host_resolver.h"
+#include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
+#include "url/url_canon.h"
 
 namespace net {
 
@@ -21,6 +29,33 @@ MappedHostResolver::~MappedHostResolver() = default;
 
 void MappedHostResolver::OnShutdown() {
   impl_->OnShutdown();
+}
+
+std::unique_ptr<HostResolver::ResolveHostRequest>
+MappedHostResolver::CreateRequest(
+    url::SchemeHostPort host,
+    NetworkIsolationKey network_isolation_key,
+    NetLogWithSource source_net_log,
+    absl::optional<ResolveHostParameters> optional_parameters) {
+  GURL rewritten_url = host.GetURL();
+  HostMappingRules::RewriteResult result = rules_.RewriteUrl(rewritten_url);
+
+  switch (result) {
+    case HostMappingRules::RewriteResult::kRewritten:
+      DCHECK(rewritten_url.is_valid());
+      DCHECK_NE(rewritten_url.host_piece(), "~NOTFOUND");
+      return impl_->CreateRequest(
+          url::SchemeHostPort(rewritten_url), std::move(network_isolation_key),
+          std::move(source_net_log), std::move(optional_parameters));
+    case HostMappingRules::RewriteResult::kInvalidRewrite:
+      // Treat any invalid mapping as if it was "~NOTFOUND" (which should itself
+      // result in `kInvalidRewrite`).
+      return CreateFailingRequest(ERR_NAME_NOT_RESOLVED);
+    case HostMappingRules::RewriteResult::kNoMatchingRule:
+      return impl_->CreateRequest(
+          std::move(host), std::move(network_isolation_key),
+          std::move(source_net_log), std::move(optional_parameters));
+  }
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>

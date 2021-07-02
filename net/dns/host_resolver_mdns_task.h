@@ -30,7 +30,7 @@ class HostResolverMdnsTask {
  public:
   // |mdns_client| must outlive |this|.
   HostResolverMdnsTask(MDnsClient* mdns_client,
-                       const std::string& hostname,
+                       std::string hostname,
                        const std::vector<DnsQueryType>& query_types);
   ~HostResolverMdnsTask();
 

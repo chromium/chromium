@@ -73,7 +73,7 @@ bool HostMappingRules::RewriteHost(HostPortPair* host_port) const {
   return false;
 }
 
-bool HostMappingRules::RewriteUrl(GURL& url) const {
+HostMappingRules::RewriteResult HostMappingRules::RewriteUrl(GURL& url) const {
   // Must be a valid and standard URL. Otherwise, Chrome might not know how to
   // find/replace the contained host or port.
   DCHECK(url.is_valid());
@@ -82,17 +82,17 @@ bool HostMappingRules::RewriteUrl(GURL& url) const {
 
   HostPortPair host_port_pair = HostPortPair::FromURL(url);
   if (!RewriteHost(&host_port_pair))
-    return false;
+    return RewriteResult::kNoMatchingRule;
 
   url::Replacements<char> replacements;
   std::string port_str = base::NumberToString(host_port_pair.port());
   replacements.SetPort(port_str.c_str(), url::Component(0, port_str.size()));
-  replacements.SetHost(host_port_pair.host().c_str(),
-                       url::Component(0, host_port_pair.host().size()));
+  std::string host_str = host_port_pair.HostForURL();
+  replacements.SetHost(host_str.c_str(), url::Component(0, host_str.size()));
   GURL new_url = url.ReplaceComponents(replacements);
 
   if (!new_url.is_valid())
-    return false;
+    return RewriteResult::kInvalidRewrite;
 
   DCHECK(new_url.IsStandard());
   DCHECK(new_url.has_host());
@@ -100,7 +100,7 @@ bool HostMappingRules::RewriteUrl(GURL& url) const {
             new_url.EffectiveIntPort() == url::PORT_UNSPECIFIED);
 
   url = std::move(new_url);
-  return true;
+  return RewriteResult::kRewritten;
 }
 
 bool HostMappingRules::AddRuleFromString(base::StringPiece rule_string) {

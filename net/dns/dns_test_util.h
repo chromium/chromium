@@ -330,7 +330,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
   ~MockDnsTransactionFactory() override;
 
   std::unique_ptr<DnsTransaction> CreateTransaction(
-      const std::string& hostname,
+      std::string hostname,
       uint16_t qtype,
       DnsTransactionFactory::CallbackType callback,
       const NetLogWithSource&,
