@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstdio>
 #include <map>
 #include <unordered_set>
 #include <utility>
@@ -331,7 +332,7 @@ DeviceInfoSyncBridge::DeviceInfoSyncBridge(
                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
-DeviceInfoSyncBridge::~DeviceInfoSyncBridge() {}
+DeviceInfoSyncBridge::~DeviceInfoSyncBridge() = default;
 
 LocalDeviceInfoProvider* DeviceInfoSyncBridge::GetLocalDeviceInfoProvider() {
   return local_device_info_provider_.get();
@@ -366,6 +367,8 @@ void DeviceInfoSyncBridge::OnSyncStarting(
   device_info_prefs_->AddLocalCacheGuid(local_cache_guid_);
   // SyncMode determines the client name in GetLocalClientName().
   sync_mode_ = request.sync_mode;
+  // Reset reupload state after each sync starting.
+  reuploaded_on_tombstone_ = false;
 
   if (!change_processor()->IsTrackingMetadata()) {
     return;
@@ -422,12 +425,22 @@ absl::optional<ModelError> DeviceInfoSyncBridge::MergeSyncData(
 absl::optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
+  DCHECK(!local_cache_guid_.empty());
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
   bool has_changes = false;
+  bool has_tombstone_for_local_device = false;
   for (const std::unique_ptr<EntityChange>& change : entity_changes) {
     const std::string guid = change->storage_key();
-    // Each device is the authoritative source for itself, ignore any remote
-    // changes that have a cache guid that is or was this local device.
+
+    // Reupload local device if it was deleted from the server.
+    if (local_cache_guid_ == guid &&
+        change->type() == EntityChange::ACTION_DELETE) {
+      has_tombstone_for_local_device = true;
+      continue;
+    }
+
+    // Ignore any remote changes that have a cache guid that is or was this
+    // local device.
     if (device_info_prefs_->IsRecentLocalCacheGuid(guid)) {
       continue;
     }
@@ -447,12 +460,16 @@ absl::optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   CommitAndNotify(std::move(batch), has_changes);
 
-  DCHECK(!local_cache_guid_.empty());
   if (!change_processor()->IsEntityUnsynced(local_cache_guid_)) {
     for (base::OnceClosure& callback : device_info_synced_callback_list_) {
       std::move(callback).Run();
     }
     device_info_synced_callback_list_.clear();
+  }
+
+  if (has_tombstone_for_local_device && !reuploaded_on_tombstone_) {
+    SendLocalData();
+    reuploaded_on_tombstone_ = true;
   }
 
   return absl::nullopt;
@@ -782,7 +799,7 @@ void DeviceInfoSyncBridge::SendLocalDataWithBatch(
   change_processor()->Put(specifics->cache_guid(), CopyToEntityData(*specifics),
                           batch->GetMetadataChangeList());
   StoreSpecifics(std::move(specifics), batch.get());
-  CommitAndNotify(std::move(batch), /*notify_if_restricted=*/true);
+  CommitAndNotify(std::move(batch), /*should_notify=*/true);
 
   pulse_timer_.Start(FROM_HERE, DeviceInfoUtil::GetPulseInterval(),
                      base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
@@ -875,7 +892,7 @@ void DeviceInfoSyncBridge::ExpireOldEntries() {
     batch->GetMetadataChangeList()->ClearMetadata(cache_guid);
     change_processor()->UntrackEntityForStorageKey(cache_guid);
   }
-  CommitAndNotify(std::move(batch), /*notify_if_restricted=*/true);
+  CommitAndNotify(std::move(batch), /*should_notify=*/true);
 }
 
 }  // namespace syncer

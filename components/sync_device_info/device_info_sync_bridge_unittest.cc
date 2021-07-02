@@ -896,22 +896,14 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplySyncChangesWithLocalGuid) {
       bridge()->GetDeviceInfo(local_device()->GetLocalDeviceInfo()->guid()));
   ASSERT_EQ(1, change_count());
 
-  // The bridge should ignore these changes using this specifics because its
-  // guid will match the local device.
+  // The bridge should ignore updates using this specifics because its guid will
+  // match the local device.
   EXPECT_CALL(*processor(), Put).Times(0);
 
   const DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
   auto error_on_add = bridge()->ApplySyncChanges(
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
   EXPECT_FALSE(error_on_add);
-  EXPECT_EQ(1, change_count());
-
-  syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(
-      EntityChange::CreateDelete(specifics.cache_guid()));
-  auto error_on_delete = bridge()->ApplySyncChanges(
-      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
-  EXPECT_FALSE(error_on_delete);
   EXPECT_EQ(1, change_count());
 }
 
@@ -1644,15 +1636,31 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldRemoveDeviceInfoOnTombstone) {
             specifics.cache_guid());
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ShouldIgnoreLocalDeviceInfoTombstone) {
+TEST_F(DeviceInfoSyncBridgeTest,
+       ShouldReuploadOnceAfterLocalDeviceInfoTombstone) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   ASSERT_EQ(1u, bridge()->GetAllDeviceInfo().size());
 
   EntityChangeList changes;
   changes.push_back(
       EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix)));
+
+  // An incoming deletion for the local device info should result in a reupload.
+  // The reupload should only be triggered once, to prevent any possible
+  // ping-pong between devices.
+  EXPECT_CALL(*processor(), Put(CacheGuidForSuffix(kLocalSuffix), _, _));
   absl::optional<ModelError> error = bridge()->ApplySyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(changes));
+  ASSERT_FALSE(error);
+
+  // The local device info should still exist.
+  EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
+
+  changes.clear();
+  changes.push_back(
+      EntityChange::CreateDelete(CacheGuidForSuffix(kLocalSuffix)));
+  error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                                     std::move(changes));
   ASSERT_FALSE(error);
 
   EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());

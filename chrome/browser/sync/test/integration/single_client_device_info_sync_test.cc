@@ -17,6 +17,7 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -315,6 +316,25 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   GetFakeServer()->GetLastCommitMessage(&message);
 
   EXPECT_FALSE(message.commit().config_params().single_client());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       ShouldReuploadLocalDeviceIfRemovedFromServer) {
+  ASSERT_TRUE(SetupSync());
+
+  const std::vector<sync_pb::SyncEntity> server_device_infos =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+  ASSERT_THAT(server_device_infos, Contains(HasCacheGuid(GetLocalCacheGuid())));
+
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentTombstoneEntity::CreateFromEntity(
+          server_device_infos.front()));
+
+  // On receiving the tombstone, the client should reupload its own device info.
+  EXPECT_TRUE(
+      ServerDeviceInfoMatchChecker(
+          GetFakeServer(), ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+          .Wait());
 }
 
 // PRE_* tests aren't supported on Android browser tests.

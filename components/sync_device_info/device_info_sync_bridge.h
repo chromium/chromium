@@ -159,6 +159,11 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   absl::optional<SyncMode> sync_mode_;
 
+  // Used to restrict reuploads of local device info on incoming tombstones.
+  // This is necessary to prevent uncontrolled commits based on incoming
+  // updates.
+  bool reuploaded_on_tombstone_ = false;
+
   // Registered observers, not owned.
   base::ObserverList<Observer, true>::Unchecked observers_;
 
