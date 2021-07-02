@@ -169,8 +169,10 @@ bool ShouldCreateNewHostForSameSiteSubframe() {
 }
 
 bool ShouldSkipEarlyCommitPendingForCrashedFrame() {
-  return base::FeatureList::IsEnabled(
-      features::kSkipEarlyCommitPendingForCrashedFrame);
+  static bool skip_early_commit_pending_for_crashed_frame =
+      base::FeatureList::IsEnabled(
+          features::kSkipEarlyCommitPendingForCrashedFrame);
+  return skip_early_commit_pending_for_crashed_frame;
 }
 
 }  // namespace content
