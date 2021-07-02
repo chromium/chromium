@@ -840,8 +840,7 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   // - TODO(https://crbug.com/1041376): mismatched nonces (even if precursor
   //   origins would have matched)
   const url::Origin& renderer_side_origin = params.origin;
-  url::Origin browser_side_origin =
-      navigation_request->GetOriginForURLLoaderFactory();
+  url::Origin browser_side_origin = navigation_request->GetOriginToCommit();
   if (renderer_side_origin.opaque() && browser_side_origin.opaque())
     return;
 
@@ -1022,7 +1021,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   static SubresourceLoaderFactoriesConfig ForPendingNavigation(
       NavigationRequest& navigation_request) {
     SubresourceLoaderFactoriesConfig result;
-    result.origin_ = navigation_request.GetOriginForURLLoaderFactory();
+    result.origin_ = navigation_request.GetOriginToCommit();
     result.client_security_state_ =
         navigation_request.BuildClientSecurityState();
     result.ukm_source_id_ = ukm::SourceIdObj::FromInt64(
@@ -7277,7 +7276,7 @@ void RenderFrameHostImpl::CommitNavigation(
     navigation_request->appcache_handle()
         ->host()
         ->set_origin_for_url_loader_factory(
-            navigation_request->GetOriginForURLLoaderFactory());
+            navigation_request->GetOriginToCommit());
   }
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
@@ -9854,7 +9853,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       // time to the prerendering page so that it is not used to send
       // identifiers between origins.
       CHECK_EQ(GetLastCommittedOrigin(),
-               navigation_request->GetOriginForURLLoaderFactory());
+               navigation_request->GetOriginToCommit());
       DCHECK(
           !document_associated_data_->activation_start_time_for_prerendering);
       document_associated_data_->activation_start_time_for_prerendering =

@@ -3877,7 +3877,7 @@ void NavigationRequest::CommitNavigation() {
   url::Origin origin = (common_params_->url.SchemeIs(url::kUrnScheme) &&
                         GetWebBundleURL().is_valid())
                            ? url::Origin::Create(GetWebBundleURL())
-                           : GetOriginForURLLoaderFactory();
+                           : GetOriginToCommit();
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
@@ -5230,7 +5230,7 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   BrowserContext* context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
 
-  url::Origin origin = GetOriginForURLLoaderFactory();
+  url::Origin origin = GetOriginToCommit();
   if (client->ShouldAllowInsecurePrivateNetworkRequests(context, origin)) {
     // The content browser client decided to make an exception for this URL.
     private_network_request_policy_ =
@@ -5339,7 +5339,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   // TODO(https://crbug.com/888079) Take sandbox into account.
   same_origin_ = (previous_render_frame_host->GetLastCommittedOrigin() ==
-                  GetOriginForURLLoaderFactory());
+                  GetOriginToCommit());
 
   SetExpectedProcess(render_frame_host_->GetProcess());
 
@@ -5410,13 +5410,12 @@ bool NavigationRequest::
           !data_url_as_string.value().empty());
 }
 
-url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
-  // The origin to commit is not known until we get the final network response.
-  DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+url::Origin NavigationRequest::GetOriginToCommit() {
+  return GetOriginForURLLoaderFactoryWithFinalFrameHost();
+}
 
-  if (IsSameDocument() || IsPageActivation())
-    return GetRenderFrameHost()->GetLastCommittedOrigin();
-
+url::Origin
+NavigationRequest::GetOriginForURLLoaderFactoryWithoutFinalFrameHost() {
   // Calculate an approximation of the origin. The sandbox/csp are ignored.
   url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
 
@@ -5444,6 +5443,19 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   // MHTML documents should commit as an opaque origin. They should not be able
   // to make network request on behalf of the real origin.
   DCHECK(!IsMhtmlOrSubframe() || origin.opaque());
+
+  return origin;
+}
+
+url::Origin
+NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
+  // The origin to commit is not known until we get the final network response.
+  DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+
+  if (IsSameDocument() || IsPageActivation())
+    return GetRenderFrameHost()->GetLastCommittedOrigin();
+
+  url::Origin origin = GetOriginForURLLoaderFactoryWithoutFinalFrameHost();
 
   // https://crbug.com/1041376) of the origin that will be committed because of
   // |this| NavigationRequest.

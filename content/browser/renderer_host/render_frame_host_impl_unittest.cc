@@ -37,7 +37,7 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
         static_cast<RenderFrameHostImpl*>(rfh)
             ->FindLatestNavigationRequestThatIsStillCommitting();
 
-    return in_flight_request ? in_flight_request->GetOriginForURLLoaderFactory()
+    return in_flight_request ? in_flight_request->GetOriginToCommit()
                              : rfh->GetLastCommittedOrigin();
   };
 

@@ -1435,8 +1435,7 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
     if (same_document) {
       params->origin = current_rfh->GetLastCommittedOrigin();
     } else {
-      params->origin =
-          origin_.value_or(request_->GetOriginForURLLoaderFactory());
+      params->origin = origin_.value_or(request_->GetOriginToCommit());
     }
   }
 

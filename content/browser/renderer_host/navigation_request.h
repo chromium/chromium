@@ -786,11 +786,7 @@ class CONTENT_EXPORT NavigationRequest
   // This method depends on GetRenderFrameHost() and therefore can only be
   // called after a response has been delivered for processing, or after the
   // navigation fails with an error page.
-  //
-  // TODO(lukasza, arthursonzogni): https://crbug.com/888079: The browser and
-  // blink are both computing the origin to commit. This method should be
-  // renamed GetOriginToCommit() and the value pushed to blink.
-  url::Origin GetOriginForURLLoaderFactory();
+  url::Origin GetOriginToCommit();
 
   // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
   // cancelled by the user and do not commit an error page.
@@ -1391,6 +1387,18 @@ class CONTENT_EXPORT NavigationRequest
       const net::HttpResponseHeaders& response_head) const;
 
   bool ShouldReplaceCurrentEntryForSameUrlNavigation() const;
+
+  // Calculates the origin that this NavigationRequest may commit. See also the
+  // comment of GetOriginToCommit(). Performs calculation without information
+  // from RenderFrameHostImpl (e.g. CSPs are ignored). Should be used only in
+  // situations where the final frame host hasn't been determined but the origin
+  // is needed to create URLLoaderFactory.
+  url::Origin GetOriginForURLLoaderFactoryWithoutFinalFrameHost();
+
+  // Superset of GetOriginForURLLoaderFactoryWithoutFinalFrameHost(). Calculates
+  // the origin with information from the final frame host. Can be called only
+  // after the final response is received or ready.
+  url::Origin GetOriginForURLLoaderFactoryWithFinalFrameHost();
 
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
