@@ -188,7 +188,7 @@ TEST_F(FidoMakeCredentialTaskTest, TestU2fOnly) {
       PublicKeyCredentialParams(
           std::vector<PublicKeyCredentialParams::CredentialInfo>(1)));
   MakeCredentialOptions request_options;
-  request_options.is_u2f_only = true;
+  request_options.make_u2f_api_credential = true;
   const auto task = std::make_unique<MakeCredentialTask>(
       device.get(), std::move(request), std::move(request_options),
       callback_receiver_.callback());

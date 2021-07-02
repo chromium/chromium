@@ -161,7 +161,7 @@ bool MakeCredentialTask::WillUseCTAP2(const FidoDevice* device,
                                       const CtapMakeCredentialRequest& request,
                                       const MakeCredentialOptions& options) {
   return device->supported_protocol() == ProtocolVersion::kCtap2 &&
-         !options.is_u2f_only &&
+         !options.make_u2f_api_credential &&
          !CtapDeviceShouldUseU2fBecauseClientPinIsSet(device, request);
 }
 

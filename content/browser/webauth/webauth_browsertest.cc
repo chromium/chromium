@@ -536,7 +536,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         blink::mojom::ProtectionPolicy::UNSPECIFIED,
         /*enforce_protection_policy=*/false, /*appid_exclude=*/absl::nullopt,
         /*cred_props=*/false, device::LargeBlobSupport::kNotRequested,
-        /*is_payment_credential_creation=*/false, /*cred_blob=*/absl::nullopt);
+        /*is_payment_credential_creation=*/false, /*cred_blob=*/absl::nullopt,
+        /*google_legacy_app_id_support=*/false);
 
     return mojo_options;
   }

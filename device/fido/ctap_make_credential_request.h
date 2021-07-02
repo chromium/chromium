@@ -169,8 +169,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOptions {
   // on the authenticator.
   LargeBlobSupport large_blob_support = LargeBlobSupport::kNotRequested;
 
-  // Instructs the request handler only to dispatch this request via U2F.
-  bool is_u2f_only = false;
+  // make_u2f_api_credential indicates that the credential should be made on a
+  // U2F security key. It will be scoped to an appId, which is passed in the
+  // rp.id field of |CtapMakeCredentialRequest|.
+  bool make_u2f_api_credential = false;
 
   // Indicates whether the request was created in an off-the-record
   // BrowserContext (e.g. Chrome Incognito mode).

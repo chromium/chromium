@@ -581,6 +581,10 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
       mojo_options->cred_blob =
           ConvertTo<Vector<uint8_t>>(extensions->credBlob());
     }
+    if (extensions->hasGoogleLegacyAppIdSupport()) {
+      mojo_options->google_legacy_app_id_support =
+          extensions->googleLegacyAppIdSupport();
+    }
   }
 
   return mojo_options;

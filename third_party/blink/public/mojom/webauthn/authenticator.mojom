@@ -497,6 +497,11 @@ struct PublicKeyCredentialCreationOptions {
   // If present, attempt the store the given value as a credblob.
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   array<uint8>? cred_blob;
+
+  // Whether a U2F-API-compatible should be made to support a U2F API
+  // migration.
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A
+  bool google_legacy_app_id_support = false;
 };
 
 enum PublicKeyCredentialType {

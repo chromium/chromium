@@ -427,7 +427,7 @@ url::Origin GetTestOrigin() {
   return url::Origin::Create(test_relying_party_url);
 }
 
-std::string GetTestClientDataJSON(std::string type) {
+std::string GetTestClientDataJSON(ClientDataRequestType type) {
   return SerializeWebAuthnCollectedClientDataToJson(
       std::move(type), GetTestOrigin().Serialize(), GetTestChallengeBytes(),
       /*is_cross_origin=*/false);
@@ -685,36 +685,50 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   // the returned value.
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
   EXPECT_EQ(
-      SerializeWebAuthnCollectedClientDataToJson("t\x05ype", "ori\"gin",
-                                                 challenge_bytes, false)
-          .find("{\"type\":\"t\\u0005ype\",\"challenge\":\"AQID\",\"origin\":"
-                "\"ori\\\"gin\",\"crossOrigin\":false"),
+      SerializeWebAuthnCollectedClientDataToJson(
+          ClientDataRequestType::kWebAuthnCreate, "ori\"gin", challenge_bytes,
+          false)
+          .find(
+              "{\"type\":\"webauthn.create\",\"challenge\":\"AQID\",\"origin\":"
+              "\"ori\\\"gin\",\"crossOrigin\":false"),
       0u);
 
   // Second, check that a generic JSON parser correctly parses the result.
   static const struct {
-    const char* type;
+    const ClientDataRequestType type;
     const char* origin;
     std::vector<uint8_t> challenge;
     bool is_cross_origin;
   } kTestCases[] = {
       {
-          "type",
+          ClientDataRequestType::kWebAuthnGet,
           "origin",
           {1, 2, 3},
           false,
       },
       {
-          "t\x01y\x02pe",
+          ClientDataRequestType::kU2fRegister,
           "ori\"gin",
           {1, 2, 3, 4},
           true,
       },
       {
-          "\\\\\"\\",
+          ClientDataRequestType::kU2fSign,
           "\x01\x02\x03\x04{}\x05c",
           {1, 2, 3, 4, 5},
           true,
+      },
+      {
+          ClientDataRequestType::kPaymentCreate,
+          "origin",
+          {1, 2, 3},
+          false,
+      },
+      {
+          ClientDataRequestType::kPaymentGet,
+          "origin",
+          {1, 2, 3},
+          false,
       },
   };
 
@@ -727,7 +741,36 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
 
     const auto parsed = base::JSONReader::Read(json);
     ASSERT_TRUE(parsed.has_value());
-    EXPECT_EQ(*parsed->FindStringKey("type"), test.type);
+    std::string type_key;
+    std::string expected_type;
+    switch (test.type) {
+      case ClientDataRequestType::kU2fRegister:
+        type_key = "typ";
+        expected_type = "navigator.id.finishEnrollment";
+        break;
+      case ClientDataRequestType::kU2fSign:
+        type_key = "typ";
+        expected_type = "navigator.id.getAssertion";
+        break;
+      case ClientDataRequestType::kWebAuthnCreate:
+        type_key = "type";
+        expected_type = "webauthn.create";
+        break;
+      case ClientDataRequestType::kWebAuthnGet:
+        type_key = "type";
+        expected_type = "webauthn.get";
+        break;
+      case ClientDataRequestType::kPaymentCreate:
+        type_key = "type";
+        expected_type = "payment.create";
+        break;
+      case ClientDataRequestType::kPaymentGet:
+        type_key = "type";
+        expected_type = "payment.get";
+        break;
+    }
+
+    EXPECT_EQ(*parsed->FindStringKey(type_key), expected_type);
     EXPECT_EQ(*parsed->FindStringKey("origin"), test.origin);
     std::string expected_challenge;
     base::Base64UrlEncode(
@@ -879,13 +922,15 @@ void CheckJSONIsSubsetOfJSON(base::StringPiece subset_str,
 
 // Test that client data serializes to JSON properly.
 TEST(ClientDataSerializationTest, Register) {
-  CheckJSONIsSubsetOfJSON(kTestRegisterClientDataJsonString,
-                          GetTestClientDataJSON(client_data::kCreateType));
+  CheckJSONIsSubsetOfJSON(
+      kTestRegisterClientDataJsonString,
+      GetTestClientDataJSON(ClientDataRequestType::kWebAuthnCreate));
 }
 
 TEST(ClientDataSerializationTest, Sign) {
-  CheckJSONIsSubsetOfJSON(kTestSignClientDataJsonString,
-                          GetTestClientDataJSON(client_data::kGetType));
+  CheckJSONIsSubsetOfJSON(
+      kTestSignClientDataJsonString,
+      GetTestClientDataJSON(ClientDataRequestType::kWebAuthnGet));
 }
 
 TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {
@@ -3844,6 +3889,126 @@ TEST_F(AuthenticatorImplTest, CredBlob) {
     ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
     EXPECT_TRUE(result.response->echo_get_cred_blob);
     EXPECT_EQ(result.response->get_cred_blob, cred_blob);
+  }
+}
+
+TEST_F(AuthenticatorImplTest, GoogleLegacyAppIdSupport) {
+  struct TestCase {
+    std::string url;
+    bool google_legacy_app_id_support;
+    std::string rp_id;
+    AuthenticatorStatus expected;
+    enum { kU2f, kWebAuthn } credential_type;
+    std::string application_parameter_url;
+  };
+  static const TestCase kTestCases[] = {
+      // accounts.google.com can create regular WebAuthn credentials.
+      {
+          "https://accounts.google.com",
+          false,
+          "google.com",
+          AuthenticatorStatus::SUCCESS,
+          TestCase::kWebAuthn,
+          "google.com",
+      },
+      // accounts.google.com can exercise googleLegacyAppIdSupport to get a U2F
+      // credential with a hard-coded appId.
+      {
+          "https://accounts.google.com",
+          true,
+          "google.com",
+          AuthenticatorStatus::SUCCESS,
+          TestCase::kU2f,
+          "https://www.gstatic.com/securitykey/origins.json",
+      },
+      // login.corp.google.com also can make WebAuthn credentials.
+      {
+          "https://login.corp.google.com",
+          false,
+          "google.com",
+          AuthenticatorStatus::SUCCESS,
+          TestCase::kWebAuthn,
+          "google.com",
+      },
+      // login.corp.google.com also can exercise googleLegacyAppIdSupport,
+      // yielding a different appId.
+      {
+          "https://login.corp.google.com",
+          true,
+          "google.com",
+          AuthenticatorStatus::SUCCESS,
+          TestCase::kU2f,
+          "https://www.gstatic.com/securitykey/a/google.com/origins.json",
+      },
+      // On other origins, googleLegacyAppIdSupport has no effect.
+      {
+          "https://example.com",
+          true,
+          "example.com",
+          AuthenticatorStatus::SUCCESS,
+          TestCase::kWebAuthn,
+          "example.com",
+      },
+      // RP ID checks are still enforced with the extension set.
+      {
+          "https://accounts.google.com",
+          true,
+          "example.com",
+          AuthenticatorStatus::BAD_RELYING_PARTY_ID,
+      },
+      {
+          "https://example.com",
+          true,
+          "google.com",
+          AuthenticatorStatus::BAD_RELYING_PARTY_ID,
+      },
+  };
+  int i = 0;
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << i++ << ": " << test_case.url << " "
+                                    << test_case.google_legacy_app_id_support
+                                    << " " << test_case.rp_id);
+    ResetVirtualDevice();
+    NavigateAndCommit(GURL(test_case.url));
+
+    device::VirtualCtap2Device::Config config;
+    config.u2f_support = true;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->relying_party.id = test_case.rp_id;
+    options->google_legacy_app_id_support =
+        test_case.google_legacy_app_id_support;
+
+    auto result = AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(result.status, test_case.expected);
+
+    if (test_case.expected != AuthenticatorStatus::SUCCESS) {
+      continue;
+    }
+
+    ASSERT_EQ(virtual_device_factory_->mutable_state()->registrations.size(),
+              1u);
+
+    const std::string client_data_json(
+        result.response->info->client_data_json.data(),
+        result.response->info->client_data_json.data() +
+            result.response->info->client_data_json.size());
+    EXPECT_EQ(virtual_device_factory_->mutable_state()
+                  ->registrations.begin()
+                  ->second.is_u2f,
+              test_case.credential_type == TestCase::kU2f);
+    // Requests use the type key for WebAuthn rather than U2F API registration,
+    // even if googleLegacyAppIdSupport is set.
+    EXPECT_TRUE(
+        base::StartsWith(client_data_json, R"({"type":"webauthn.create")"))
+        << client_data_json;
+    EXPECT_EQ(virtual_device_factory_->mutable_state()
+                  ->registrations.begin()
+                  ->second.application_parameter,
+              device::fido_parsing_utils::CreateSHA256Hash(
+                  test_case.application_parameter_url));
   }
 }
 

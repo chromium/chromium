@@ -58,29 +58,28 @@ class BrowserContext;
 class RenderFrameHost;
 class WebAuthRequestSecurityChecker;
 
-namespace client_data {
-// These enumerate the possible values for the `type` member of
-// CollectedClientData. See
-// https://w3c.github.io/webauthn/#dom-collectedclientdata-type
-CONTENT_EXPORT extern const char kCreateType[];
-CONTENT_EXPORT extern const char kGetType[];
-}  // namespace client_data
-
 enum class RequestExtension;
 
+// ClientDataRequestType enumerates different request types that
+// CollectedClientData can be built for. See
+// |SerializeWebAuthnCollectedClientDataToJson|.
+enum class ClientDataRequestType {
+  kU2fRegister,
+  kU2fSign,
+  kWebAuthnCreate,
+  kWebAuthnGet,
+  kPaymentCreate,
+  kPaymentGet,
+};
+
 // Builds the CollectedClientData[1] dictionary with the given values,
-// serializes it to JSON, and returns the resulting string. For legacy U2F
-// requests coming from the CryptoToken U2F extension, modifies the object key
-// 'type' as required[2].
-// [1] https://w3c.github.io/webauthn/#dictdef-collectedclientdata
-// [2]
-// https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-raw-message-formats-v1.2-ps-20170411.html#client-data
+// serializes it to JSON, and returns the resulting string.
+// https://w3c.github.io/webauthn/#dictdef-collectedclientdata
 CONTENT_EXPORT std::string SerializeWebAuthnCollectedClientDataToJson(
-    const std::string& type,
+    ClientDataRequestType type,
     const std::string& origin,
     base::span<const uint8_t> challenge,
     bool is_cross_origin,
-    bool use_legacy_u2f_type_key = false,
     blink::mojom::PaymentOptionsPtr payment_options = nullptr,
     const std::string& payment_rp = "",
     const std::string& payment_top_origin = "");
@@ -221,7 +220,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // a unit testing fake. InitDiscoveryFactory() must be called before this
   // accessor. It gets reset at the end of each request by Cleanup().
   device::FidoDiscoveryFactory* discovery_factory();
-  void InitDiscoveryFactory();
+  void InitDiscoveryFactory(bool is_u2f_api_request);
 
   const GlobalRenderFrameHostId render_frame_host_id_;
   std::unique_ptr<device::FidoRequestHandlerBase> request_;

@@ -32,4 +32,7 @@ dictionary AuthenticationExtensionsClientInputs {
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   BufferSource credBlob;
   boolean getCredBlob;
+
+  // Legacy compatibility extension for U2F migration https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A.
+  boolean googleLegacyAppIdSupport;
 };

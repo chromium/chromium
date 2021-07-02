@@ -84,16 +84,12 @@ enum class RequestExtension {
   kGetCredBlob,
 };
 
-namespace client_data {
-const char kCreateType[] = "webauthn.create";
-const char kGetType[] = "webauthn.get";
-const char kPaymentCreateType[] = "payment.create";
-const char kPaymentGetType[] = "payment.get";
-const char kU2fRegisterType[] = "navigator.id.finishEnrollment";
-const char kU2fSignType[] = "navigator.id.getAssertion";
-}  // namespace client_data
-
 namespace {
+
+constexpr char kGstaticAppId[] =
+    "https://www.gstatic.com/securitykey/origins.json";
+constexpr char kGstaticCorpAppId[] =
+    "https://www.gstatic.com/securitykey/a/google.com/origins.json";
 
 WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
@@ -114,11 +110,13 @@ std::string Base64UrlEncode(const base::span<const uint8_t> input) {
 //
 // Returns the App ID to use for the request, or absl::nullopt if the origin
 // is not authorized to use the provided value.
-absl::optional<std::string> ProcessAppIdExtension(std::string appid,
-                                                  const url::Origin& origin) {
+absl::optional<std::string> ProcessAppIdExtension(
+    std::string appid,
+    const url::Origin& caller_origin) {
   // The CryptoToken U2F extension checks the appid before calling the WebAuthn
   // API so there is no need to validate it here.
-  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(origin)) {
+  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
+          caller_origin)) {
     if (!GURL(appid).is_valid()) {
       DCHECK(false) << "cryptotoken request did not set a valid App ID";
       return absl::nullopt;
@@ -131,10 +129,10 @@ absl::optional<std::string> ProcessAppIdExtension(std::string appid,
   // proceed."
 
   // Webauthn is only supported on secure origins and |ValidateEffectiveDomain|
-  // has already checked this property of |origin| before this call. Thus this
-  // step is moot.
+  // has already checked this property of |caller_origin| before this call. Thus
+  // this step is moot.
   // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
-  DCHECK(network::IsUrlPotentiallyTrustworthy(origin.GetURL()));
+  DCHECK(network::IsUrlPotentiallyTrustworthy(caller_origin.GetURL()));
 
   // Step 2: "If the AppID is null or empty, the client must set the AppID to be
   // the FacetID of the caller, and the operation may proceed without additional
@@ -146,7 +144,7 @@ absl::optional<std::string> ProcessAppIdExtension(std::string appid,
     // implementations rather than the spec.
     //
     // [1]https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-appid-and-facets-v2.0-id-20180227.html#determining-the-facetid-of-a-calling-application
-    appid = origin.Serialize();
+    appid = caller_origin.Serialize();
   }
 
   // Step 3: "If the caller's FacetID is an https:// Origin sharing the same
@@ -156,13 +154,13 @@ absl::optional<std::string> ProcessAppIdExtension(std::string appid,
   // and the operation may proceed."
   GURL appid_url = GURL(appid);
   if (!appid_url.is_valid() || appid_url.scheme() != url::kHttpsScheme ||
-      appid_url.scheme_piece() != origin.scheme()) {
+      appid_url.scheme_piece() != caller_origin.scheme()) {
     return absl::nullopt;
   }
 
   // This check is repeated inside |SameDomainOrHost|, just after this. However
   // it's cheap and mirrors the structure of the spec.
-  if (appid_url.host_piece() == origin.host()) {
+  if (appid_url.host_piece() == caller_origin.host()) {
     return appid;
   }
 
@@ -171,7 +169,7 @@ absl::optional<std::string> ProcessAppIdExtension(std::string appid,
   // necessary in practice. See also
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1244959#c8
   if (net::registry_controlled_domains::SameDomainOrHost(
-          appid_url, origin,
+          appid_url, caller_origin,
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
     return appid;
   }
@@ -179,18 +177,38 @@ absl::optional<std::string> ProcessAppIdExtension(std::string appid,
   // As a compatibility hack, sites within google.com are allowed to assert two
   // special-case AppIDs. Firefox also does this:
   // https://groups.google.com/forum/#!msg/mozilla.dev.platform/Uiu3fwnA2xw/201ynAiPAQAJ
-  const GURL kGstatic1 =
-      GURL("https://www.gstatic.com/securitykey/origins.json");
-  const GURL kGstatic2 =
-      GURL("https://www.gstatic.com/securitykey/a/google.com/origins.json");
-  DCHECK(kGstatic1.is_valid() && kGstatic2.is_valid());
-
-  if (origin.DomainIs("google.com") && !appid_url.has_ref() &&
-      (appid_url.EqualsIgnoringRef(kGstatic1) ||
-       appid_url.EqualsIgnoringRef(kGstatic2))) {
+  const GURL gstatic_appid(kGstaticAppId);
+  const GURL gstatic_corp_appid(kGstaticCorpAppId);
+  DCHECK(gstatic_appid.is_valid() && gstatic_corp_appid.is_valid());
+  if (caller_origin.DomainIs("google.com") && !appid_url.has_ref() &&
+      (appid_url.EqualsIgnoringRef(gstatic_appid) ||
+       appid_url.EqualsIgnoringRef(gstatic_corp_appid))) {
     return appid;
   }
 
+  return absl::nullopt;
+}
+
+// Returns an App ID string if a U2F credential must be made for the request
+// with |options|. This is the case for requests that either originate from
+// cryptotoken or have the googleLegacyAppIdSupport extension set.
+absl::optional<std::string> MakeCredentialU2fAppIdOverride(
+    const url::Origin& caller_origin,
+    const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options) {
+  // Cryptotoken passes the U2F request's App ID in the RP ID field of the
+  // WebAuthn request.
+  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
+          caller_origin)) {
+    DCHECK(!options->google_legacy_app_id_support);
+    return options->relying_party.id;
+  }
+  if (options->google_legacy_app_id_support &&
+      options->relying_party.id == "google.com") {
+    if (caller_origin.DomainIs("login.corp.google.com")) {
+      return kGstaticCorpAppId;
+    }
+    return kGstaticAppId;
+  }
   return absl::nullopt;
 }
 
@@ -530,23 +548,15 @@ bool UsesDiscoverableCreds(const device::CtapGetAssertionRequest& request) {
   return request.allow_list.empty();
 }
 
-// GetAvailableTransports returns the set of transports that should be passed to
-// a FidoRequestHandler for the current request. This determines for which
+// GetWebAuthnTransports returns the set of transports that should be passed to
+// a FidoRequestHandler for a WebAuthn request. This determines for which
 // transports the request handler will attempt to obtain FidoDiscovery
-// instances.
-base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
+// instances. This applies only to WebAuthn API requests. For U2F, see
+// |GetU2FTransports|.
+base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
     RenderFrameHost* render_frame_host,
     device::FidoDiscoveryFactory* discovery_factory,
-    const url::Origin& caller_origin,
     bool uses_discoverable_creds) {
-  // U2F requests proxied from the cryptotoken extension are limited to USB
-  // devices.
-  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin)) {
-    return base::flat_set<device::FidoTransportProtocol>(
-        {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
-  }
-
   base::flat_set<device::FidoTransportProtocol> transports;
   transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
 
@@ -600,6 +610,13 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
 #endif
 
   return transports;
+}
+
+// GetU2FTransports is like GetWebAuthnTransports but for requests that
+// originate from Cryptotoken or use googleLegacyAppIdSupport extension.
+base::flat_set<device::FidoTransportProtocol> GetU2FTransports() {
+  return base::flat_set<device::FidoTransportProtocol>(
+      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
 }
 
 // Returns a new FidoDiscoveryFactory for the current request. This may be
@@ -693,23 +710,37 @@ std::string ToJSONString(base::StringPiece in) {
 }  // namespace
 
 std::string SerializeWebAuthnCollectedClientDataToJson(
-    const std::string& type,
+    ClientDataRequestType type,
     const std::string& origin,
     base::span<const uint8_t> challenge,
     bool is_cross_origin,
-    bool use_legacy_u2f_type_key /* = false */,
     blink::mojom::PaymentOptionsPtr payment_options /* = nullptr */,
     const std::string& payment_rp /* = "" */,
     const std::string& payment_top_origin /* = "" */) {
   std::string ret;
   ret.reserve(128);
 
-  if (use_legacy_u2f_type_key) {
-    ret.append(R"({"typ":)");
-  } else {
-    ret.append(R"({"type":)");
+  // U2F uses "typ", while WebAuthn uses "type" for the type key.
+  switch (type) {
+    case ClientDataRequestType::kU2fRegister:
+      ret.append(R"({"typ":"navigator.id.finishEnrollment")");
+      break;
+    case ClientDataRequestType::kU2fSign:
+      ret.append(R"({"typ":"navigator.id.getAssertion")");
+      break;
+    case ClientDataRequestType::kWebAuthnCreate:
+      ret.append(R"({"type":"webauthn.create")");
+      break;
+    case ClientDataRequestType::kWebAuthnGet:
+      ret.append(R"({"type":"webauthn.get")");
+      break;
+    case ClientDataRequestType::kPaymentCreate:
+      ret.append(R"({"type":"payment.create")");
+      break;
+    case ClientDataRequestType::kPaymentGet:
+      ret.append(R"({"type":"payment.get")");
+      break;
   }
-  ret.append(ToJSONString(type));
 
   ret.append(R"(,"challenge":)");
   ret.append(ToJSONString(Base64UrlEncode(challenge)));
@@ -806,7 +837,8 @@ AuthenticatorCommon::MaybeCreateRequestDelegate() {
 
 void AuthenticatorCommon::StartMakeCredentialRequest(
     bool allow_skipping_pin_touch) {
-  InitDiscoveryFactory();
+  InitDiscoveryFactory(
+      /*is_u2f_api_request=*/make_credential_options_->make_u2f_api_credential);
 
   request_delegate_->ConfigureCable(
       caller_origin_, device::FidoRequestType::kMakeCredential,
@@ -814,12 +846,16 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
 
   make_credential_options_->allow_skipping_pin_touch = allow_skipping_pin_touch;
 
+  base::flat_set<device::FidoTransportProtocol> transports =
+      make_credential_options_->make_u2f_api_credential
+          ? GetU2FTransports()
+          : GetWebAuthnTransports(
+                GetRenderFrameHost(), discovery_factory(),
+                UsesDiscoverableCreds(*make_credential_options_));
+
   request_ = std::make_unique<device::MakeCredentialRequestHandler>(
-      discovery_factory(),
-      GetAvailableTransports(GetRenderFrameHost(), discovery_factory(),
-                             caller_origin_,
-                             UsesDiscoverableCreds(*make_credential_options_)),
-      *ctap_make_credential_request_, *make_credential_options_,
+      discovery_factory(), transports, *ctap_make_credential_request_,
+      *make_credential_options_,
       base::BindOnce(&AuthenticatorCommon::OnRegisterResponse,
                      weak_factory_.GetWeakPtr()));
 
@@ -841,7 +877,9 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
 
 void AuthenticatorCommon::StartGetAssertionRequest(
     bool allow_skipping_pin_touch) {
-  InitDiscoveryFactory();
+  InitDiscoveryFactory(
+      /*is_u2f_api_request=*/WebAuthRequestSecurityChecker::
+          OriginIsCryptoTokenExtension(caller_origin_));
 
   base::span<const device::CableDiscoveryData> cable_pairings;
   if (ctap_get_assertion_request_->cable_extension && IsFocused()) {
@@ -855,13 +893,17 @@ void AuthenticatorCommon::StartGetAssertionRequest(
       *ctap_get_assertion_request_);
 #endif
 
+  base::flat_set<device::FidoTransportProtocol> transports =
+      WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
+          caller_origin_)
+          ? GetU2FTransports()
+          : GetWebAuthnTransports(
+                GetRenderFrameHost(), discovery_factory(),
+                UsesDiscoverableCreds(*ctap_get_assertion_request_));
+
   request_ = std::make_unique<device::GetAssertionRequestHandler>(
-      discovery_factory(),
-      GetAvailableTransports(
-          GetRenderFrameHost(), discovery_factory(), caller_origin_,
-          UsesDiscoverableCreds(*ctap_get_assertion_request_)),
-      *ctap_get_assertion_request_, *ctap_get_assertion_options_,
-      allow_skipping_pin_touch,
+      discovery_factory(), transports, *ctap_get_assertion_request_,
+      *ctap_get_assertion_options_, allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommon::OnSignResponse,
                      weak_factory_.GetWeakPtr()));
 
@@ -1098,40 +1140,51 @@ void AuthenticatorCommon::MakeCredential(
       FROM_HERE, AdjustTimeout(options->timeout, GetRenderFrameHost()),
       base::BindOnce(&AuthenticatorCommon::OnTimeout, base::Unretained(this)));
 
-  const bool origin_is_crypto_token_extension =
-      WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin_);
-
-  if (origin_is_crypto_token_extension) {
-    // Cryptotoken provides the sender origin for register requests in the
-    // |relying_party| |name| attribute. (The |id| attribute contains the
-    // AppID.)
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
-        client_data::kU2fRegisterType, *options->relying_party.name,
-        options->challenge, /*is_cross_origin=*/false,
-        /*use_legacy_u2f_type_key=*/true);
-  } else if (options->is_payment_credential_creation &&
-             base::FeatureList::IsEnabled(
-                 features::kSecurePaymentConfirmationAPIV2)) {
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
-        client_data::kPaymentCreateType, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin);
-  } else {
-    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
-        client_data::kCreateType, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin);
-  }
-
   // Cryptotoken requests, making payment credentials, and Touch-to-Autofill
   // should be proxied without UI.
-  if (origin_is_crypto_token_extension ||
+  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
+          caller_origin) ||
       options->is_payment_credential_creation || disable_ui_) {
     request_delegate_->DisableUI();
+  }
+
+  if (options->is_payment_credential_creation &&
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        ClientDataRequestType::kPaymentCreate, caller_origin_.Serialize(),
+        options->challenge, is_cross_origin);
+  } else if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
+                 caller_origin)) {
+    // Cryptotoken passes the real caller origin in |relying_party.name|.
+    const url::Origin client_data_origin =
+        url::Origin::Create(GURL(*options->relying_party.name));
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        ClientDataRequestType::kU2fRegister, client_data_origin.Serialize(),
+        options->challenge, is_cross_origin);
+  } else {
+    // Regular WebAuthn request
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
+            caller_origin)
+            ? ClientDataRequestType::kU2fRegister
+            : ClientDataRequestType::kWebAuthnCreate,
+        caller_origin_.Serialize(), options->challenge, is_cross_origin);
   }
 
   ctap_make_credential_request_ = device::CtapMakeCredentialRequest(
       client_data_json_, options->relying_party, options->user,
       device::PublicKeyCredentialParams(options->public_key_parameters));
+
+  // If the request originates from CryptoToken or carries a valid
+  // googleLegacyAppIdSupport extension, a U2F/CTAP1 credential bound to an
+  // AppID will be created.
+  absl::optional<std::string> u2f_credential_app_id_override =
+      MakeCredentialU2fAppIdOverride(caller_origin, options);
+  if (u2f_credential_app_id_override) {
+    ctap_make_credential_request_->rp.id = *u2f_credential_app_id_override;
+    make_credential_options_->make_u2f_api_credential = true;
+  }
+
   ctap_make_credential_request_->exclude_list = options->exclude_credentials;
   if (options->prf_enable) {
     requested_extensions_.insert(RequestExtension::kPRF);
@@ -1155,8 +1208,6 @@ void AuthenticatorCommon::MakeCredential(
   ctap_make_credential_request_->app_id_exclude = std::move(appid_exclude);
   make_credential_options_->is_off_the_record_context =
       GetBrowserContext()->IsOffTheRecord();
-  // On dual protocol CTAP2/U2F devices, force credential creation over U2F.
-  make_credential_options_->is_u2f_only = origin_is_crypto_token_extension;
 
   // Compute the effective attestation conveyance preference.
   device::AttestationConveyancePreference attestation = options->attestation;
@@ -1247,9 +1298,8 @@ void AuthenticatorCommon::GetAssertion(
     // Cryptotoken provides the sender origin for U2F sign requests in the
     // |relying_party_id| attribute.
     client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
-        client_data::kU2fSignType, options->relying_party_id,
-        options->challenge, /*is_cross_origin=*/false,
-        /*use_legacy_u2f_type_key=*/true);
+        ClientDataRequestType::kU2fSign, options->relying_party_id,
+        options->challenge, /*is_cross_origin=*/false);
   } else if (options->payment &&
              base::FeatureList::IsEnabled(
                  features::kSecurePaymentConfirmationAPIV2)) {
@@ -1262,13 +1312,13 @@ void AuthenticatorCommon::GetAssertion(
     url::Origin top_origin =
         url::Origin::Create(web_contents->GetLastCommittedURL());
     client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
-        client_data::kPaymentGetType, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin, /*use_legacy_u2f_type_key=*/false,
-        std::move(options->payment), relying_party_id_, top_origin.Serialize());
+        ClientDataRequestType::kPaymentGet, caller_origin_.Serialize(),
+        options->challenge, is_cross_origin, std::move(options->payment),
+        relying_party_id_, top_origin.Serialize());
   } else {
     client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
-        client_data::kGetType, caller_origin_.Serialize(), options->challenge,
-        is_cross_origin);
+        ClientDataRequestType::kWebAuthnGet, caller_origin_.Serialize(),
+        options->challenge, is_cross_origin);
   }
 
   device::fido_filter::MaybeInitialize();
@@ -1931,10 +1981,7 @@ device::FidoDiscoveryFactory* AuthenticatorCommon::discovery_factory() {
              : discovery_factory_.get();
 }
 
-void AuthenticatorCommon::InitDiscoveryFactory() {
-  const bool is_u2f_api_request =
-      WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin_);
+void AuthenticatorCommon::InitDiscoveryFactory(bool is_u2f_api_request) {
   discovery_factory_ =
       MakeDiscoveryFactory(GetRenderFrameHost(), is_u2f_api_request);
   // TODO(martinkr): |discovery_factory_testing_override_| is a long-lived
