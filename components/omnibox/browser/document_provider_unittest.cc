@@ -39,8 +39,9 @@ using testing::Return;
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   FakeAutocompleteProviderClient()
-      : template_url_service_(new TemplateURLService(nullptr, 0)) {
-    pref_service_.registry()->RegisterBooleanPref(
+      : template_url_service_(new TemplateURLService(nullptr, 0)),
+        pref_service_(new TestingPrefServiceSimple()) {
+    pref_service_->registry()->RegisterBooleanPref(
         omnibox::kDocumentSuggestEnabled, true);
   }
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
@@ -58,11 +59,11 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     return template_url_service_.get();
   }
 
-  PrefService* GetPrefs() override { return &pref_service_; }
+  PrefService* GetPrefs() const override { return pref_service_.get(); }
 
  private:
   std::unique_ptr<TemplateURLService> template_url_service_;
-  TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
 
 }  // namespace

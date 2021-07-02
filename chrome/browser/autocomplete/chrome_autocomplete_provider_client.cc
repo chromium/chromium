@@ -211,7 +211,7 @@ ChromeAutocompleteProviderClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-PrefService* ChromeAutocompleteProviderClient::GetPrefs() {
+PrefService* ChromeAutocompleteProviderClient::GetPrefs() const {
   return profile_->GetPrefs();
 }
 

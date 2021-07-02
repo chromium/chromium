@@ -35,7 +35,7 @@ class MockAutocompleteProviderClient
       const MockAutocompleteProviderClient&) = delete;
 
   // AutocompleteProviderClient:
-  MOCK_METHOD0(GetPrefs, PrefService*());
+  MOCK_CONST_METHOD0(GetPrefs, PrefService*());
   MOCK_METHOD0(GetLocalState, PrefService*());
   MOCK_CONST_METHOD0(GetSchemeClassifier,
                      const AutocompleteSchemeClassifier&());

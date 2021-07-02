@@ -64,7 +64,7 @@ FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
   run_loop.Run();
 }
 
-PrefService* FakeAutocompleteProviderClient::GetPrefs() {
+PrefService* FakeAutocompleteProviderClient::GetPrefs() const {
   return pref_service_.get();
 }
 

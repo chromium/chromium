@@ -56,7 +56,7 @@ AutocompleteProviderClientImpl::GetURLLoaderFactory() {
   return browser_state_->GetSharedURLLoaderFactory();
 }
 
-PrefService* AutocompleteProviderClientImpl::GetPrefs() {
+PrefService* AutocompleteProviderClientImpl::GetPrefs() const {
   return browser_state_->GetPrefs();
 }
 

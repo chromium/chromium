@@ -42,7 +42,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   FakeAutocompleteProviderClient& operator=(
       const FakeAutocompleteProviderClient&) = delete;
 
-  PrefService* GetPrefs() override;
+  PrefService* GetPrefs() const override;
   // Note: this will not be shared with other test fakes that may create their
   // own local_state testing PrefService.
   // In this case, AutocompleteProviderClient could be modified to accept the

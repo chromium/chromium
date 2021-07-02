@@ -39,8 +39,9 @@ namespace {
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   FakeAutocompleteProviderClient()
-      : template_url_service_(new TemplateURLService(nullptr, 0)) {
-    pref_service_.registry()->RegisterStringPref(
+      : template_url_service_(new TemplateURLService(nullptr, 0)),
+        pref_service_(new TestingPrefServiceSimple()) {
+    pref_service_->registry()->RegisterStringPref(
         omnibox::kZeroSuggestCachedResults, std::string());
   }
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
@@ -58,7 +59,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     return template_url_service_.get();
   }
 
-  PrefService* GetPrefs() override { return &pref_service_; }
+  PrefService* GetPrefs() const override { return pref_service_.get(); }
 
   bool IsPersonalizedUrlDataCollectionActive() const override { return true; }
 
@@ -80,7 +81,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
  private:
   std::unique_ptr<TemplateURLService> template_url_service_;
-  TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   TestSchemeClassifier scheme_classifier_;
 };
 }  // namespace

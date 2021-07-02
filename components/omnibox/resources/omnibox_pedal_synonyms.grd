@@ -371,6 +371,20 @@
         browsers, windows, browser, window, tabs
       </message>
 
+      <!-- Pedal #27: PLAY_CHROME_DINO_GAME -->
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_PLAY" is_accessibility_with_no_ui="true" desc="Synonyms for the PLAY_CHROME_DINO_GAME Pedal's 'play' group. To trigger, exactly ONE of this group is OPTIONAL.">
+        play, run
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_GOOGLE_CHROME" is_accessibility_with_no_ui="true" desc="Synonyms for the PLAY_CHROME_DINO_GAME Pedal's 'google chrome' group. To trigger, exactly ONE of this group is REQUIRED.">
+        google chrome, chrome
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_DINOSAUR" is_accessibility_with_no_ui="true" desc="Synonyms for the PLAY_CHROME_DINO_GAME Pedal's 'dinosaur' group. To trigger, exactly ONE of this group is REQUIRED.">
+        dinosaur, dino
+      </message>
+      <message name="IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_GAME" is_accessibility_with_no_ui="true" desc="Synonyms for the PLAY_CHROME_DINO_GAME Pedal's 'game' group. To trigger, exactly ONE of this group is OPTIONAL.">
+        game
+      </message>
+
     </messages>
   </release>
 </grit>

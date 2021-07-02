@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/resources/grit/omnibox_pedal_synonyms.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 
 // This carefully simplifies preprocessor condition usage below.
@@ -933,6 +934,50 @@ class OmniboxPedalCloseIncognito : public OmniboxPedal {
 
 // =============================================================================
 
+class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
+ public:
+  OmniboxPedalPlayChromeDinoGame()
+      : OmniboxPedal(OmniboxPedalId::PLAY_CHROME_DINO_GAME,
+                     LabelStrings(),
+                     GURL("chrome://dino")) {}
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
+    return {
+        {
+            false,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_PLAY,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_GOOGLE_CHROME,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_DINOSAUR,
+        },
+        {
+            false,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_OPTIONAL_GAME,
+        },
+    };
+  }
+
+  bool IsReadyToTrigger(
+      const AutocompleteInput& input,
+      const AutocompleteProviderClient& client) const override {
+    return client.GetPrefs()->GetBoolean("AllowDinosaurEasterEgg");
+  }
+
+ protected:
+  ~OmniboxPedalPlayChromeDinoGame() override = default;
+};
+
+// =============================================================================
+
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool with_branding, bool incognito) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
@@ -971,6 +1016,7 @@ GetPedalImplementations(bool with_branding, bool incognito) {
     if (incognito) {
       add(new OmniboxPedalCloseIncognito());
     }
+    add(new OmniboxPedalPlayChromeDinoGame());
   }
   return pedals;
 }

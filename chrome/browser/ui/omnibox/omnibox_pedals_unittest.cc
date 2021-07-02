@@ -24,7 +24,8 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
   MockAutocompleteProviderClient client;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish},
+      {omnibox::kOmniboxPedalsBatch2, omnibox::kOmniboxPedalsBatch2NonEnglish,
+       omnibox::kOmniboxPedalsBatch3},
       {});
 
   struct TestCase {
@@ -148,6 +149,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
           "new chrome features",
           "google account control",
           "google account password change",
+          "google chrome dinosaur",
         }
       },
       { "en-GB",
