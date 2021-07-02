@@ -123,20 +123,26 @@ void GetClientCertFromShillProperties(
   const base::DictionaryValue* provider_properties = NULL;
   if (shill_properties.GetDictionaryWithoutPathExpansion(
           shill::kProviderProperty, &provider_properties)) {
+    const std::string* pkcs11_id_str = nullptr;
     // Look for OpenVPN specific properties.
-    if (provider_properties->GetStringWithoutPathExpansion(
-            shill::kOpenVPNClientCertIdProperty, pkcs11_id)) {
+    pkcs11_id_str =
+        provider_properties->FindStringKey(shill::kOpenVPNClientCertIdProperty);
+    if (pkcs11_id_str) {
+      *pkcs11_id = *pkcs11_id_str;
       *cert_config_type = CONFIG_TYPE_OPENVPN;
       return;
     }
     // Look for L2TP-IPsec specific properties.
-    if (provider_properties->GetStringWithoutPathExpansion(
-                   shill::kL2tpIpsecClientCertIdProperty, pkcs11_id)) {
-      std::string cert_slot;
-      provider_properties->GetStringWithoutPathExpansion(
-          shill::kL2tpIpsecClientCertSlotProperty, &cert_slot);
-      if (!cert_slot.empty() && !base::StringToInt(cert_slot, tpm_slot)) {
-        LOG(ERROR) << "Cert slot is not an integer: " << cert_slot << ".";
+    pkcs11_id_str = provider_properties->FindStringKey(
+        shill::kL2tpIpsecClientCertIdProperty);
+    if (pkcs11_id_str) {
+      *pkcs11_id = *pkcs11_id_str;
+
+      const std::string* cert_slot = provider_properties->FindStringKey(
+          shill::kL2tpIpsecClientCertSlotProperty);
+      if (cert_slot && !cert_slot->empty() &&
+          !base::StringToInt(*cert_slot, tpm_slot)) {
+        LOG(ERROR) << "Cert slot is not an integer: " << *cert_slot << ".";
         return;
       }
 
@@ -147,21 +153,23 @@ void GetClientCertFromShillProperties(
 
   // Look for EAP specific client certificate properties, which can either be
   // part of a WiFi or EthernetEAP configuration.
-  std::string cert_id;
-  if (shill_properties.GetStringWithoutPathExpansion(shill::kEapCertIdProperty,
-                                                     &cert_id)) {
+  const std::string* cert_id =
+      shill_properties.FindStringKey(shill::kEapCertIdProperty);
+  if (cert_id) {
     // Shill requires both CertID and KeyID for TLS connections, despite the
     // fact that by convention they are the same ID, because one identifies
     // the certificate and the other the private key.
     std::string key_id;
-    shill_properties.GetStringWithoutPathExpansion(shill::kEapKeyIdProperty,
-                                                   &key_id);
+    const std::string* key_id_str =
+        shill_properties.FindStringKey(shill::kEapKeyIdProperty);
+    if (key_id_str)
+      key_id = *key_id_str;
     // Assume the configuration to be invalid, if the two IDs are not identical.
-    if (cert_id != key_id) {
+    if (*cert_id != key_id) {
       LOG(ERROR) << "EAP CertID differs from KeyID";
       return;
     }
-    *pkcs11_id = GetPkcs11AndSlotIdFromEapCertId(cert_id, tpm_slot);
+    *pkcs11_id = GetPkcs11AndSlotIdFromEapCertId(*cert_id, tpm_slot);
     *cert_config_type = CONFIG_TYPE_EAP;
   }
 }

@@ -148,10 +148,9 @@ TEST_F(NetworkStateTest, SsidHex) {
   // Check HexSSID via network state dictionary.
   base::DictionaryValue dictionary;
   network_state_.GetStateProperties(&dictionary);
-  std::string value;
-  EXPECT_TRUE(
-      dictionary.GetStringWithoutPathExpansion(shill::kWifiHexSsid, &value));
-  EXPECT_EQ(wifi_hex, value);
+  std::string* value = dictionary.FindStringKey(shill::kWifiHexSsid);
+  EXPECT_NE(nullptr, value);
+  EXPECT_EQ(wifi_hex, *value);
 }
 
 // Non-UTF-8 SSID should be preserved in |raw_ssid_| field.
@@ -361,10 +360,9 @@ TEST_F(NetworkStateTest, TetherProperties) {
   EXPECT_TRUE(tether_has_connected_to_host.has_value());
   EXPECT_TRUE(tether_has_connected_to_host.value());
 
-  std::string carrier;
-  EXPECT_TRUE(
-      dictionary.GetStringWithoutPathExpansion(kTetherCarrier, &carrier));
-  EXPECT_EQ("Project Fi", carrier);
+  std::string* carrier = dictionary.FindStringKey(kTetherCarrier);
+  EXPECT_NE(nullptr, carrier);
+  EXPECT_EQ("Project Fi", *carrier);
 }
 
 TEST_F(NetworkStateTest, CelularPaymentPortalPost) {

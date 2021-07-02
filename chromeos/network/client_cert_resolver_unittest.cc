@@ -88,6 +88,12 @@ std::unique_ptr<onc::OncParsedCertificates> OncParsedCertificatesForPkcs12File(
   return std::make_unique<onc::OncParsedCertificates>(onc_certificates);
 }
 
+std::string GetString(const base::Value& dict, const char* key) {
+  DCHECK(dict.is_dict());
+  const std::string* value = dict.FindStringKey(key);
+  return value ? *value : std::string();
+}
+
 }  // namespace
 
 class ClientCertResolverTest : public testing::Test,
@@ -718,9 +724,8 @@ TEST_F(ClientCertResolverTest, UserPolicyUsesSystemTokenSync) {
   base::DictionaryValue shill_properties;
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
-  std::string pkcs11_id;
-  shill_properties.GetStringWithoutPathExpansion(shill::kEapCertIdProperty,
-                                                 &pkcs11_id);
+  std::string pkcs11_id =
+      GetString(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(test_cert_id_, pkcs11_id);
 }
 
@@ -758,9 +763,8 @@ TEST_F(ClientCertResolverTest, DevicePolicyUsesSystemTokenSync) {
   base::DictionaryValue shill_properties;
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
-  std::string pkcs11_id;
-  shill_properties.GetStringWithoutPathExpansion(shill::kEapCertIdProperty,
-                                                 &pkcs11_id);
+  std::string pkcs11_id =
+      GetString(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(test_cert_id_, pkcs11_id);
 }
 
@@ -800,9 +804,8 @@ TEST_F(ClientCertResolverTest, DevicePolicyDoesNotUseUserTokenSync) {
   base::DictionaryValue shill_properties;
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::CONFIG_TYPE_EAP, client_cert_config, &shill_properties);
-  std::string pkcs11_id;
-  shill_properties.GetStringWithoutPathExpansion(shill::kEapCertIdProperty,
-                                                 &pkcs11_id);
+  std::string pkcs11_id =
+      GetString(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(std::string(), pkcs11_id);
 }
 

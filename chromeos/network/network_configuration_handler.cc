@@ -92,6 +92,12 @@ std::string GetErrorName(const std::string& dbus_error_name,
   return default_error_name;
 }
 
+std::string GetString(const base::Value& dict, const char* key) {
+  DCHECK(dict.is_dict());
+  const std::string* value = dict.FindStringKey(key);
+  return value ? *value : std::string();
+}
+
 }  // namespace
 
 // Helper class to request from Shill the profile entries associated with a
@@ -291,8 +297,7 @@ void NetworkConfigurationHandler::SetShillProperties(
       shill_properties.DeepCopy());
 
   // Make sure that the GUID is saved to Shill when setting properties.
-  std::string guid;
-  properties_to_set->GetStringWithoutPathExpansion(shill::kGuidProperty, &guid);
+  std::string guid = GetString(*properties_to_set, shill::kGuidProperty);
   if (guid.empty()) {
     const NetworkState* network_state =
         network_state_handler_->GetNetworkState(service_path);
@@ -349,8 +354,7 @@ void NetworkConfigurationHandler::CreateShillConfiguration(
     network_handler::ServiceResultCallback callback,
     network_handler::ErrorCallback error_callback) {
   ShillManagerClient* manager = ShillManagerClient::Get();
-  std::string type;
-  shill_properties.GetStringWithoutPathExpansion(shill::kTypeProperty, &type);
+  std::string type = GetString(shill_properties, shill::kTypeProperty);
   DCHECK(!type.empty());
 
   std::unique_ptr<base::DictionaryValue> properties_to_set(
@@ -360,14 +364,12 @@ void NetworkConfigurationHandler::CreateShillConfiguration(
                 << shill_property_util::GetNetworkIdFromProperties(
                        shill_properties);
 
-  std::string profile_path;
-  properties_to_set->GetStringWithoutPathExpansion(shill::kProfileProperty,
-                                                   &profile_path);
+  std::string profile_path =
+      GetString(*properties_to_set, shill::kProfileProperty);
   DCHECK(!profile_path.empty());
 
   // Make sure that the GUID is saved to Shill when configuring networks.
-  std::string guid;
-  properties_to_set->GetStringWithoutPathExpansion(shill::kGuidProperty, &guid);
+  std::string guid = GetString(*properties_to_set, shill::kGuidProperty);
   if (guid.empty()) {
     guid = base::GenerateGUID();
     properties_to_set->SetKey(shill::kGuidProperty, base::Value(guid));

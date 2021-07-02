@@ -520,9 +520,10 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     entry.GetAsDictionary(&network);
     DCHECK(network);
 
-    std::string guid;
-    network->GetStringWithoutPathExpansion(::onc::network_config::kGUID, &guid);
-    DCHECK(!guid.empty());
+    const std::string* guid_str =
+        network->FindStringKey(::onc::network_config::kGUID);
+    DCHECK(guid_str && !guid_str->empty());
+    std::string guid = *guid_str;
 
     if (policies->per_network_config.count(guid) > 0) {
       NET_LOG(ERROR) << "ONC from: " << ToDebugString(onc_source, userhash)
@@ -638,16 +639,15 @@ void ManagedNetworkConfigurationHandlerImpl::
         base::OnceClosure callback) {
   base::DictionaryValue shill_properties;
 
-  std::string profile;
-  existing_properties.GetStringWithoutPathExpansion(shill::kProfileProperty,
-                                                    &profile);
-  if (profile.empty()) {
+  const std::string* profile =
+      existing_properties.FindStringKey(shill::kProfileProperty);
+  if (!profile || profile->empty()) {
     NET_LOG(ERROR) << "Missing profile property: "
                    << shill_property_util::GetNetworkIdFromProperties(
                           existing_properties);
     return;
   }
-  shill_properties.SetKey(shill::kProfileProperty, base::Value(profile));
+  shill_properties.SetKey(shill::kProfileProperty, base::Value(*profile));
 
   if (!shill_property_util::CopyIdentifyingProperties(
           existing_properties, true /* properties were read from Shill */,

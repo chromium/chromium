@@ -128,10 +128,9 @@ class NetworkDeviceHandlerTest : public testing::Test {
                             const std::string& property_name,
                             const std::string& expected_value) {
     GetDeviceProperties(device_path, kResultSuccess);
-    std::string value;
-    ASSERT_TRUE(
-        properties_->GetStringWithoutPathExpansion(property_name, &value));
-    ASSERT_EQ(value, expected_value);
+    std::string* value = properties_->FindStringKey(property_name);
+    ASSERT_NE(value, nullptr);
+    ASSERT_EQ(*value, expected_value);
   }
 
  protected:

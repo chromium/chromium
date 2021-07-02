@@ -411,12 +411,12 @@ bool Validator::FieldExistsAndHasNoValidValue(
     const base::DictionaryValue& object,
     const std::string& field_name,
     const std::vector<const char*>& valid_values) {
-  std::string actual_value;
-  if (!object.GetStringWithoutPathExpansion(field_name, &actual_value))
+  const std::string* actual_value = object.FindStringKey(field_name);
+  if (!actual_value)
     return false;
 
   path_.push_back(field_name);
-  const bool valid = IsValidValue(actual_value, valid_values);
+  const bool valid = IsValidValue(*actual_value, valid_values);
   path_.pop_back();
   return !valid;
 }
@@ -521,10 +521,9 @@ bool Validator::ValidateSSIDAndHexSSID(base::DictionaryValue* object) {
   const std::string kInvalidLength = "Invalid length";
 
   // Check SSID validity.
-  std::string ssid_string;
-  if (object->GetStringWithoutPathExpansion(::onc::wifi::kSSID, &ssid_string) &&
-      (ssid_string.size() <= 0 ||
-       ssid_string.size() > kMaximumSSIDLengthInBytes)) {
+  std::string* ssid_string = object->FindStringKey(::onc::wifi::kSSID);
+  if (ssid_string && (ssid_string->size() <= 0 ||
+                      ssid_string->size() > kMaximumSSIDLengthInBytes)) {
     path_.push_back(::onc::wifi::kSSID);
     std::ostringstream msg;
     msg << kInvalidLength;
@@ -541,41 +540,41 @@ bool Validator::ValidateSSIDAndHexSSID(base::DictionaryValue* object) {
   }
 
   // Check HexSSID validity.
-  std::string hex_ssid_string;
-  if (object->GetStringWithoutPathExpansion(::onc::wifi::kHexSSID,
-                                            &hex_ssid_string)) {
-    std::string decoded_ssid;
-    if (!base::HexStringToString(hex_ssid_string, &decoded_ssid)) {
-      path_.push_back(::onc::wifi::kHexSSID);
-      std::ostringstream msg;
-      msg << "Not a valid hex representation: '" << hex_ssid_string << "'";
-      AddValidationIssue(true /* is_error */, msg.str());
-      path_.pop_back();
-      return false;
-    }
-    if (decoded_ssid.size() <= 0 ||
-        decoded_ssid.size() > kMaximumSSIDLengthInBytes) {
-      path_.push_back(::onc::wifi::kHexSSID);
-      std::ostringstream msg;
-      msg << kInvalidLength;
-      AddValidationIssue(true /* is_error */, msg.str());
-      path_.pop_back();
-      return false;
-    }
+  std::string* hex_ssid_string = object->FindStringKey(::onc::wifi::kHexSSID);
+  if (!hex_ssid_string)
+    return true;
 
-    // If both SSID and HexSSID are set, check whether they are consistent, i.e.
-    // HexSSID contains the UTF-8 encoding of SSID. If not, remove the SSID
-    // field.
-    if (ssid_string.length() > 0) {
-      if (ssid_string != decoded_ssid) {
-        path_.push_back(::onc::wifi::kSSID);
-        std::ostringstream msg;
-        msg << "Fields '" << ::onc::wifi::kSSID << "' and '"
-            << ::onc::wifi::kHexSSID << "' contain inconsistent values.";
-        AddValidationIssue(false /* is_error */, msg.str());
-        path_.pop_back();
-        object->RemoveKey(::onc::wifi::kSSID);
-      }
+  std::string decoded_ssid;
+  if (!base::HexStringToString(*hex_ssid_string, &decoded_ssid)) {
+    path_.push_back(::onc::wifi::kHexSSID);
+    std::ostringstream msg;
+    msg << "Not a valid hex representation: '" << *hex_ssid_string << "'";
+    AddValidationIssue(true /* is_error */, msg.str());
+    path_.pop_back();
+    return false;
+  }
+  if (decoded_ssid.size() <= 0 ||
+      decoded_ssid.size() > kMaximumSSIDLengthInBytes) {
+    path_.push_back(::onc::wifi::kHexSSID);
+    std::ostringstream msg;
+    msg << kInvalidLength;
+    AddValidationIssue(true /* is_error */, msg.str());
+    path_.pop_back();
+    return false;
+  }
+
+  // If both SSID and HexSSID are set, check whether they are consistent, i.e.
+  // HexSSID contains the UTF-8 encoding of SSID. If not, remove the SSID
+  // field.
+  if (ssid_string && ssid_string->length() > 0) {
+    if (*ssid_string != decoded_ssid) {
+      path_.push_back(::onc::wifi::kSSID);
+      std::ostringstream msg;
+      msg << "Fields '" << ::onc::wifi::kSSID << "' and '"
+          << ::onc::wifi::kHexSSID << "' contain inconsistent values.";
+      AddValidationIssue(false /* is_error */, msg.str());
+      path_.pop_back();
+      object->RemoveKey(::onc::wifi::kSSID);
     }
   }
   return true;
@@ -595,18 +594,19 @@ bool Validator::RequireField(const base::DictionaryValue& dict,
 bool Validator::CheckGuidIsUniqueAndAddToSet(const base::DictionaryValue& dict,
                                              const std::string& key_guid,
                                              std::set<std::string>* guids) {
-  std::string guid;
-  if (dict.GetStringWithoutPathExpansion(key_guid, &guid)) {
-    if (guids->count(guid) != 0) {
-      path_.push_back(key_guid);
-      std::ostringstream msg;
-      msg << "Found a duplicate GUID '" << guid << "'.";
-      AddValidationIssue(true /* is_error */, msg.str());
-      path_.pop_back();
-      return false;
-    }
-    guids->insert(guid);
+  const std::string* guid = dict.FindStringKey(key_guid);
+  if (!guid)
+    return true;
+
+  if (guids->count(*guid) != 0) {
+    path_.push_back(key_guid);
+    std::ostringstream msg;
+    msg << "Found a duplicate GUID '" << *guid << "'.";
+    AddValidationIssue(true /* is_error */, msg.str());
+    path_.pop_back();
+    return false;
   }
+  guids->insert(*guid);
   return true;
 }
 

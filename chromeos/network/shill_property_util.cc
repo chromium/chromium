@@ -52,12 +52,11 @@ std::string ValidateUTF8(const std::string& str) {
 bool CopyStringFromDictionary(const base::DictionaryValue& source,
                               const std::string& key,
                               base::DictionaryValue* dest) {
-  std::string string_value;
-  if (!source.GetStringWithoutPathExpansion(key, &string_value) ||
-      string_value.empty()) {
+  const std::string* string_value = source.FindStringKey(key);
+  if (!string_value || string_value->empty()) {
     return false;
   }
-  dest->SetKey(key, base::Value(string_value));
+  dest->SetKey(key, base::Value(*string_value));
   return true;
 }
 
@@ -250,7 +249,10 @@ bool CopyIdentifyingProperties(const base::DictionaryValue& service_properties,
   CopyStringFromDictionary(service_properties, shill::kGuidProperty, dest);
 
   std::string type;
-  service_properties.GetStringWithoutPathExpansion(shill::kTypeProperty, &type);
+  const std::string* type_str =
+      service_properties.FindStringKey(shill::kTypeProperty);
+  if (type_str)
+    type = *type_str;
   success &= !type.empty();
   dest->SetKey(shill::kTypeProperty, base::Value(type));
   if (type == shill::kTypeWifi) {
@@ -280,15 +282,23 @@ bool CopyIdentifyingProperties(const base::DictionaryValue& service_properties,
         NET_LOG(ERROR) << "Missing VPN provider dict: "
                        << GetNetworkIdFromProperties(service_properties);
       }
-      provider_properties->GetStringWithoutPathExpansion(shill::kTypeProperty,
-                                                         &vpn_provider_type);
-      provider_properties->GetStringWithoutPathExpansion(shill::kHostProperty,
-                                                         &vpn_provider_host);
+      const std::string* vpn_provider_type_str =
+          provider_properties->FindStringKey(shill::kTypeProperty);
+      if (vpn_provider_type_str)
+        vpn_provider_type = *vpn_provider_type_str;
+      const std::string* vpn_provider_host_str =
+          provider_properties->FindStringKey(shill::kHostProperty);
+      if (vpn_provider_host_str)
+        vpn_provider_host = *vpn_provider_host_str;
     } else {
-      service_properties.GetStringWithoutPathExpansion(
-          shill::kProviderTypeProperty, &vpn_provider_type);
-      service_properties.GetStringWithoutPathExpansion(
-          shill::kProviderHostProperty, &vpn_provider_host);
+      const std::string* vpn_provider_type_str =
+          service_properties.FindStringKey(shill::kProviderTypeProperty);
+      if (vpn_provider_type_str)
+        vpn_provider_type = *vpn_provider_type_str;
+      const std::string* vpn_provider_host_str =
+          service_properties.FindStringKey(shill::kProviderHostProperty);
+      if (vpn_provider_host_str)
+        vpn_provider_host = *vpn_provider_host_str;
     }
     success &= !vpn_provider_type.empty();
     dest->SetKey(shill::kProviderTypeProperty, base::Value(vpn_provider_type));
