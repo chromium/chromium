@@ -9,26 +9,6 @@
 # * trailing commas are allowed.
 
 {
-  # Default variant allows us to run matrix test suites where only some of the
-  # test suites need variant executions. The test suites which need to be
-  # executed differently, can mention DEFAULT as a variant.
-  'DEFAULT' : {
-    'args': [
-    ],
-    'identifier': 'default'
-  },
-  'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS' : {
-    'args': [
-      '--annotation=Batch=UnitTests'
-    ],
-    'identifier': 'only_unit_tests'
-  },
-  'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS' : {
-    'args': [
-      '--exclude-annotation=Batch=UnitTests'
-    ],
-    'identifier': 'all_except_unit_tests'
-  },
   'OZONE_HEADLESS': {
     'args': [
       '--no-xvfb',

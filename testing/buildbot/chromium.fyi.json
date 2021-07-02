@@ -10869,11 +10869,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "absl_hardening_tests_default"
+            "absl_hardening_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "absl_hardening_tests_default",
         "resultdb": {
           "enable": true
         },
@@ -10920,11 +10919,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "android_browsertests_default"
+            "android_browsertests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "android_browsertests_default",
         "resultdb": {
           "enable": true
         },
@@ -10972,11 +10970,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "android_sync_integration_tests_default"
+            "android_sync_integration_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "android_sync_integration_tests_default",
         "resultdb": {
           "enable": true
         },
@@ -11023,11 +11020,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "android_webview_unittests_default"
+            "android_webview_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "android_webview_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11073,7 +11069,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "angle_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11111,11 +11106,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "base_unittests_default"
+            "base_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "base_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11162,11 +11156,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "base_util_unittests_default"
+            "base_util_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "base_util_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11213,11 +11206,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "blink_common_unittests_default"
+            "blink_common_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "blink_common_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11264,11 +11256,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "blink_heap_unittests_default"
+            "blink_heap_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "blink_heap_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11315,11 +11306,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "blink_platform_unittests_default"
+            "blink_platform_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "blink_platform_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11366,11 +11356,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webkit_unit_tests_default"
+            "webkit_unit_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webkit_unit_tests_default",
+        "name": "webkit_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -11418,11 +11408,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "boringssl_crypto_tests_default"
+            "boringssl_crypto_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "boringssl_crypto_tests_default",
         "resultdb": {
           "enable": true
         },
@@ -11469,11 +11458,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "boringssl_ssl_tests_default"
+            "boringssl_ssl_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "boringssl_ssl_tests_default",
         "resultdb": {
           "enable": true
         },
@@ -11520,11 +11508,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "breakpad_unittests_default"
+            "breakpad_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "breakpad_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11572,11 +11559,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "capture_unittests_default"
+            "capture_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "capture_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11623,11 +11609,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "cast_unittests_default"
+            "cast_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "cast_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11674,11 +11659,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "cc_unittests_default"
+            "cc_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "cc_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -11716,7 +11700,6 @@
       },
       {
         "args": [
-          "--exclude-annotation=Batch=UnitTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -11726,11 +11709,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "chrome_modern_public_bundle_fake_modules_smoke_test_all_except_unit_tests"
+            "chrome_modern_public_bundle_fake_modules_smoke_test"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "chrome_modern_public_bundle_fake_modules_smoke_test_all_except_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -11768,7 +11750,6 @@
       },
       {
         "args": [
-          "--annotation=Batch=UnitTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -11778,63 +11759,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "chrome_modern_public_bundle_fake_modules_smoke_test_only_unit_tests"
+            "chrome_modern_public_bundle_smoke_test"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "chrome_modern_public_bundle_fake_modules_smoke_test_only_unit_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_modern_public_bundle_fake_modules_smoke_test",
-        "test_id_prefix": "ninja://chrome/android:chrome_modern_public_bundle_fake_modules_smoke_test/"
-      },
-      {
-        "args": [
-          "--exclude-annotation=Batch=UnitTests",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_modern_public_bundle_smoke_test_all_except_unit_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_modern_public_bundle_smoke_test_all_except_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -11872,7 +11800,6 @@
       },
       {
         "args": [
-          "--annotation=Batch=UnitTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -11882,115 +11809,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "chrome_modern_public_bundle_smoke_test_only_unit_tests"
+            "chrome_public_smoke_test"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "chrome_modern_public_bundle_smoke_test_only_unit_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_modern_public_bundle_smoke_test",
-        "test_id_prefix": "ninja://chrome/android:chrome_modern_public_bundle_smoke_test/"
-      },
-      {
-        "args": [
-          "--exclude-annotation=Batch=UnitTests",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_public_smoke_test_all_except_unit_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_public_smoke_test_all_except_unit_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_public_smoke_test",
-        "test_id_prefix": "ninja://chrome/android:chrome_public_smoke_test/"
-      },
-      {
-        "args": [
-          "--annotation=Batch=UnitTests",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_public_smoke_test_only_unit_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_public_smoke_test_only_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -12038,11 +11860,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "chrome_public_test_apk_default"
+            "chrome_public_test_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "chrome_public_test_apk_default",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -12097,11 +11918,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "chrome_public_test_vr_apk_default"
+            "chrome_public_test_vr_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "chrome_public_test_vr_apk_default",
         "resultdb": {
           "enable": true
         },
@@ -12149,11 +11969,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "components_browsertests_default"
+            "components_browsertests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "components_browsertests_default",
         "resultdb": {
           "enable": true
         },
@@ -12200,11 +12019,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "components_unittests_default"
+            "components_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "components_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12252,11 +12070,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "content_browsertests_default"
+            "content_browsertests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "content_browsertests_default",
         "resultdb": {
           "enable": true
         },
@@ -12304,11 +12121,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "content_shell_test_apk_default"
+            "content_shell_test_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "content_shell_test_apk_default",
         "resultdb": {
           "enable": true
         },
@@ -12356,11 +12172,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "content_unittests_default"
+            "content_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "content_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12408,11 +12223,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "crashpad_tests_default"
+            "crashpad_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "crashpad_tests_default",
         "resultdb": {
           "enable": true
         },
@@ -12459,11 +12273,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "crypto_unittests_default"
+            "crypto_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "crypto_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12510,11 +12323,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "device_unittests_default"
+            "device_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "device_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12561,11 +12373,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "display_unittests_default"
+            "display_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "display_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12612,11 +12423,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "events_unittests_default"
+            "events_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "events_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12663,11 +12473,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "gcm_unit_tests_default"
+            "gcm_unit_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "gcm_unit_tests_default",
         "resultdb": {
           "enable": true
         },
@@ -12714,11 +12523,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "gfx_unittests_default"
+            "gfx_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "gfx_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12765,11 +12573,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "gin_unittests_default"
+            "gin_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "gin_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12817,11 +12624,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "gl_tests_validating_default"
+            "gl_tests_validating"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "gl_tests_validating_default",
+        "name": "gl_tests_validating",
         "resultdb": {
           "enable": true
         },
@@ -12868,11 +12675,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "gl_unittests_default"
+            "gl_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "gl_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12919,11 +12725,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "google_apis_unittests_default"
+            "google_apis_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "google_apis_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -12970,11 +12775,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "gpu_unittests_default"
+            "gpu_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "gpu_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13021,11 +12825,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "gwp_asan_unittests_default"
+            "gwp_asan_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "gwp_asan_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13072,11 +12875,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "ipc_tests_default"
+            "ipc_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "ipc_tests_default",
         "resultdb": {
           "enable": true
         },
@@ -13123,11 +12925,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "jingle_unittests_default"
+            "jingle_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "jingle_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13174,11 +12975,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "latency_unittests_default"
+            "latency_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "latency_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13225,11 +13025,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "libjingle_xmpp_unittests_default"
+            "libjingle_xmpp_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "libjingle_xmpp_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13276,11 +13075,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "liburlpattern_unittests_default"
+            "liburlpattern_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "liburlpattern_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13327,11 +13125,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "media_unittests_default"
+            "media_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "media_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13378,11 +13175,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "midi_unittests_default"
+            "midi_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "midi_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13429,11 +13225,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "mojo_test_apk_default"
+            "mojo_test_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "mojo_test_apk_default",
         "resultdb": {
           "enable": true
         },
@@ -13480,11 +13275,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "mojo_unittests_default"
+            "mojo_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "mojo_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13531,11 +13325,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "net_unittests_default"
+            "net_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "net_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13583,62 +13376,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "perfetto_unittests_default"
+            "sandbox_linux_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "perfetto_unittests_default",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "perfetto_unittests",
-        "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
-      },
-      {
-        "args": [
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "sandbox_linux_unittests_default"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "sandbox_linux_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13685,11 +13426,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "services_unittests_default"
+            "services_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "services_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13736,11 +13476,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "shell_dialogs_unittests_default"
+            "shell_dialogs_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "shell_dialogs_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13787,11 +13526,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "skia_unittests_default"
+            "skia_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "skia_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13838,11 +13576,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "sql_unittests_default"
+            "sql_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "sql_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13889,11 +13626,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "storage_unittests_default"
+            "storage_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "storage_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13940,11 +13676,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "ui_android_unittests_default"
+            "ui_android_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "ui_android_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -13991,11 +13726,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "ui_base_unittests_default"
+            "ui_base_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "ui_base_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -14042,11 +13776,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "ui_touch_selection_unittests_default"
+            "ui_touch_selection_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "ui_touch_selection_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -14093,11 +13826,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "unit_tests_default"
+            "unit_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "unit_tests_default",
         "resultdb": {
           "enable": true
         },
@@ -14145,11 +13877,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "url_unittests_default"
+            "url_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "url_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -14196,11 +13927,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "viz_unittests_default"
+            "viz_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "viz_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -14247,11 +13977,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "vr_android_unittests_default"
+            "vr_android_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "vr_android_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -14298,11 +14027,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "vr_common_unittests_default"
+            "vr_common_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "vr_common_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -14349,11 +14077,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "vr_pixeltests_default"
+            "vr_pixeltests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "vr_pixeltests_default",
         "resultdb": {
           "enable": true
         },
@@ -14400,11 +14127,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_browsertests_default"
+            "weblayer_browsertests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_browsertests_default",
         "resultdb": {
           "enable": true
         },
@@ -14442,7 +14168,6 @@
       },
       {
         "args": [
-          "--exclude-annotation=Batch=UnitTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14452,11 +14177,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_bundle_test_all_except_unit_tests"
+            "weblayer_bundle_test"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_bundle_test_all_except_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -14494,7 +14218,6 @@
       },
       {
         "args": [
-          "--annotation=Batch=UnitTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14504,63 +14227,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_bundle_test_only_unit_tests"
+            "weblayer_instrumentation_test_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_bundle_test_only_unit_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "weblayer_bundle_test",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_bundle_test/"
-      },
-      {
-        "args": [
-          "--exclude-annotation=Batch=UnitTests",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "weblayer_instrumentation_test_apk_all_except_unit_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "weblayer_instrumentation_test_apk_all_except_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -14598,7 +14268,6 @@
       },
       {
         "args": [
-          "--annotation=Batch=UnitTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14608,115 +14277,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_apk_only_unit_tests"
+            "weblayer_private_instrumentation_test_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_apk_only_unit_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "weblayer_instrumentation_test_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_apk/"
-      },
-      {
-        "args": [
-          "--exclude-annotation=Batch=UnitTests",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "weblayer_private_instrumentation_test_apk_all_except_unit_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "weblayer_private_instrumentation_test_apk_all_except_unit_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "weblayer_private_instrumentation_test_apk",
-        "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_private_instrumentation_test_apk/"
-      },
-      {
-        "args": [
-          "--annotation=Batch=UnitTests",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "weblayer_private_instrumentation_test_apk_only_unit_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "weblayer_private_instrumentation_test_apk_only_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -14763,11 +14327,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_unittests_default"
+            "weblayer_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -14805,7 +14368,6 @@
       },
       {
         "args": [
-          "--exclude-annotation=Batch=UnitTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14815,69 +14377,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_cts_tests_all_except_unit_tests"
+            "webview_cts_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_cts_tests_all_except_unit_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "chromium/android_webview/tools/cts_archive",
-              "location": "android_webview/tools/cts_archive",
-              "revision": "ai8Ig4HlO0vG6aP_JP2uhyruE2yPzze8PFP1g8Z4_hgC"
-            },
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "webview_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_cts_tests/"
-      },
-      {
-        "args": [
-          "--annotation=Batch=UnitTests",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "webview_cts_tests_only_unit_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "webview_cts_tests_only_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -14930,11 +14433,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk_default"
+            "webview_instrumentation_test_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk_default",
         "resultdb": {
           "enable": true
         },
@@ -14973,7 +14475,6 @@
       },
       {
         "args": [
-          "--exclude-annotation=Batch=UnitTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14983,63 +14484,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_ui_test_app_test_apk_all_except_unit_tests"
+            "webview_ui_test_app_test_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_ui_test_app_test_apk_all_except_unit_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "MMB29Q",
-              "device_os_type": "userdebug",
-              "device_type": "bullhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "webview_ui_test_app_test_apk",
-        "test_id_prefix": "ninja://android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/"
-      },
-      {
-        "args": [
-          "--annotation=Batch=UnitTests",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "webview_ui_test_app_test_apk_only_unit_tests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "webview_ui_test_app_test_apk_only_unit_tests",
         "resultdb": {
           "enable": true
         },
@@ -15086,11 +14534,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "wtf_unittests_default"
+            "wtf_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "wtf_unittests_default",
         "resultdb": {
           "enable": true
         },
@@ -15137,11 +14584,10 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "zlib_unittests_default"
+            "zlib_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "zlib_unittests_default",
         "resultdb": {
           "enable": true
         },
