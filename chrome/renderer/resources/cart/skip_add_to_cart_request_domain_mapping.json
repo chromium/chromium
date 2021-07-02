@@ -1,7 +1,20 @@
 {
-"electronicexpress.com": ".*",
+"adorama.com": ".*",
+"anker.com": "clarity\\.ms",
+"bjs.com": ".*",
+"brooksrunning.com": "optimizely\\.com",
+"burpee.com": ".*",
+"cardkingdom.com": ".*",
+"casper.com": "optimizely\\.com",
 "costco.com": "clicktale\\.net",
+"cyclegear.com": "blueconic.net",
+"electronicexpress.com": ".*",
+"evo.com": "google-analytics\\.com",
 "hsn.com": "granify\\.com",
+"joann.com": ".*",
 "lululemon.com": "launchdarkly\\.com",
-"qvc.com": ".*"
+"nordstrom.com": "nordstrom\\.com/api/cupcake",
+"qvc.com": ".*",
+"samsung.com": ".*",
+"timex.com": "sessioncam\\.com"
 }

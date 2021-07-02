@@ -847,7 +847,7 @@ bool CommerceHintAgent::ShouldSkipAddToCartRequest(const GURL& navigation_url,
          std::make_unique<re2::RE2>(skip_string_map.at(navigation_domain),
                                     options)});
   }
-  return RE2::FullMatch(re2::StringPiece(eTLDPlusOne(request_url)),
-                        *skip_regex_map->at(navigation_domain));
+  return PartialMatch(request_url.spec().substr(0, kLengthLimit),
+                      *skip_regex_map->at(navigation_domain));
 }
 }  // namespace cart
