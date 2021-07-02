@@ -119,7 +119,7 @@
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/dbus/dbus_helper.h"
+#include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/startup_settings_cache.h"
 #include "chromeos/dbus/constants/dbus_paths.h"

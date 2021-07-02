@@ -15,7 +15,7 @@
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/dbus/dbus_helper.h"
+#include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/fuzzer/policy_fuzzer.pb.h"
