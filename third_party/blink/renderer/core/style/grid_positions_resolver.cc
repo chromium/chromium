@@ -351,26 +351,29 @@ static GridSpan ResolveGridPositionAgainstOppositePosition(
   return DefiniteGridSpanWithSpanAgainstOpposite(opposite_line, position, side);
 }
 
+static size_t SpanSizeFromPositions(const GridPosition& initial_position,
+                                    const GridPosition& final_position) {
+  // This method will only be used when both positions need to be resolved
+  // against the opposite one.
+  DCHECK(initial_position.ShouldBeResolvedAgainstOppositePosition() &&
+         final_position.ShouldBeResolvedAgainstOppositePosition());
+
+  if (initial_position.IsAuto() && final_position.IsAuto())
+    return 1;
+
+  const GridPosition& span_position =
+      initial_position.IsSpan() ? initial_position : final_position;
+  DCHECK(span_position.IsSpan() && span_position.SpanPosition());
+  return span_position.SpanPosition();
+}
+
 size_t GridPositionsResolver::SpanSizeForAutoPlacedItem(
     const ComputedStyle& grid_item_style,
     GridTrackSizingDirection direction) {
   GridPosition initial_position, final_position;
   InitialAndFinalPositionsFromStyle(grid_item_style, direction,
                                     initial_position, final_position);
-
-  // This method will only be used when both positions need to be resolved
-  // against the opposite one.
-  DCHECK(initial_position.ShouldBeResolvedAgainstOppositePosition());
-  DCHECK(final_position.ShouldBeResolvedAgainstOppositePosition());
-
-  if (initial_position.IsAuto() && final_position.IsAuto())
-    return 1;
-
-  GridPosition position =
-      initial_position.IsSpan() ? initial_position : final_position;
-  DCHECK(position.IsSpan());
-  DCHECK(position.SpanPosition());
-  return position.SpanPosition();
+  return SpanSizeFromPositions(initial_position, final_position);
 }
 
 static int ResolveNamedGridLinePositionFromStyle(
@@ -473,7 +476,8 @@ GridSpan GridPositionsResolver::ResolveGridPositionsFromStyle(
       final_position.ShouldBeResolvedAgainstOppositePosition()) {
     // We can't get our grid positions without running the auto placement
     // algorithm.
-    return GridSpan::IndefiniteGridSpan();
+    return GridSpan::IndefiniteGridSpan(
+        SpanSizeFromPositions(initial_position, final_position));
   }
 
   if (initial_position.ShouldBeResolvedAgainstOppositePosition()) {

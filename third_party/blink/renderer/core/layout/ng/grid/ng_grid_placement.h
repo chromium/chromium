@@ -39,9 +39,10 @@ class CORE_EXPORT NGGridPlacement {
       wtf_size_t* end_line) const;
 
   wtf_size_t AutoRepeatTrackCount(
-      GridTrackSizingDirection track_direction) const;
-  wtf_size_t AutoRepetitions(GridTrackSizingDirection track_direction) const;
-  wtf_size_t StartOffset(GridTrackSizingDirection track_direction) const;
+      const GridTrackSizingDirection track_direction) const;
+  wtf_size_t AutoRepetitions(
+      const GridTrackSizingDirection track_direction) const;
+  wtf_size_t StartOffset(const GridTrackSizingDirection track_direction) const;
 
  private:
   struct AutoPlacementCursor {
@@ -49,39 +50,34 @@ class CORE_EXPORT NGGridPlacement {
     wtf_size_t minor_position{0};
   };
 
-  // Compute the track start offset from the grid items positioned at negative
-  // indices.
-  wtf_size_t DetermineTrackStartOffset(
-      const GridItems& grid_items,
-      GridTrackSizingDirection track_direction) const;
+  using GridItemVector = Vector<GridItemData*, 16>;
 
   // Place non auto-positioned elements from |grid_items|; returns true if any
   // item needs to resolve an automatic position. Otherwise, false.
-  bool PlaceNonAutoGridItems(GridItems* grid_items);
+  bool PlaceNonAutoGridItems(GridItems* grid_items,
+                             GridItemVector* items_locked_to_major_axis,
+                             GridItemVector* items_not_locked_to_major_axis);
   // Place elements from |grid_items| that have a definite position on the major
   // axis but need auto-placement on the minor axis.
-  void PlaceGridItemsLockedToMajorAxis(GridItems* grid_items);
+  void PlaceGridItemsLockedToMajorAxis(
+      const GridItemVector& items_locked_to_major_axis,
+      const GridItems& placed_grid_items);
   // Place an item that has a definite position on the minor axis but need
   // auto-placement on the major axis.
   void PlaceAutoMajorAxisGridItem(GridItemData* grid_item,
                                   AutoPlacementCursor* placement_cursor,
-                                  const GridItems& grid_items);
+                                  const GridItems& placed_grid_items);
   // Place an item that needs auto-placement on both the major and minor axis.
   void PlaceAutoBothAxisGridItem(GridItemData* grid_item,
                                  AutoPlacementCursor* placement_cursor,
-                                 const GridItems& grid_items);
-
-  // Places a grid item; returns true if it has a definite position in the given
-  // direction, false if the item needs auto-placement.
-  bool PlaceGridItem(GridItemData* grid_item,
-                     GridTrackSizingDirection track_direction) const;
+                                 const GridItems& placed_grid_items);
 
   // Returns true if the given placement would overlap with a placed item.
   bool DoesItemOverlap(wtf_size_t major_start,
                        wtf_size_t major_end,
                        wtf_size_t minor_start,
                        wtf_size_t minor_end,
-                       const GridItems& grid_items) const;
+                       const GridItems& placed_grid_items) const;
 
   bool HasSparsePacking() const;
 

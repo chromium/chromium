@@ -464,19 +464,21 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
 
 NGGridLayoutAlgorithm::AutoPlacementType
 NGGridLayoutAlgorithm::GridItemData::AutoPlacement(
-    GridTrackSizingDirection flow_direction) const {
-  bool is_major_indefinite = Span(flow_direction).IsIndefinite();
-  bool is_minor_indefinite =
-      Span((flow_direction == kForColumns) ? kForRows : kForColumns)
-          .IsIndefinite();
+    const GridTrackSizingDirection major_direction) const {
+  const GridTrackSizingDirection minor_direction =
+      (major_direction == kForColumns) ? kForRows : kForColumns;
+  DCHECK(!Span(major_direction).IsUntranslatedDefinite() &&
+         !Span(minor_direction).IsUntranslatedDefinite());
+
+  const bool is_major_indefinite = Span(major_direction).IsIndefinite();
+  const bool is_minor_indefinite = Span(minor_direction).IsIndefinite();
 
   if (is_minor_indefinite && is_major_indefinite)
     return AutoPlacementType::kBoth;
-  else if (is_minor_indefinite)
+  if (is_minor_indefinite)
     return AutoPlacementType::kMinor;
-  else if (is_major_indefinite)
+  if (is_major_indefinite)
     return AutoPlacementType::kMajor;
-
   return AutoPlacementType::kNotNeeded;
 }
 

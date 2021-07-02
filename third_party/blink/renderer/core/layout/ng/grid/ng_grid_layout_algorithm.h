@@ -61,7 +61,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     explicit GridItemData(const NGBlockNode node) : node(node) {}
 
     AutoPlacementType AutoPlacement(
-        GridTrackSizingDirection flow_direction) const;
+        const GridTrackSizingDirection major_direction) const;
     const GridSpan& Span(GridTrackSizingDirection track_direction) const;
     void SetSpan(const GridSpan& span,
                  GridTrackSizingDirection track_direction);
