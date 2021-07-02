@@ -17,7 +17,7 @@ file_header = """//
 // FROM chrome_device_policy_pb2.py
 //
 
-#include "chrome/browser/chromeos/policy/core/device_policy_remover.h"
+#include "chrome/browser/ash/policy/core/device_policy_remover.h"
 
 namespace policy {
 

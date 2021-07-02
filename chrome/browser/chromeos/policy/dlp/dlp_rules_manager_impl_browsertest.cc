@@ -4,7 +4,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/policy/core/user_policy_test_helper.h"
+#include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"

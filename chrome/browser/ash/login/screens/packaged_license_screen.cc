@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 
+#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
-#include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 

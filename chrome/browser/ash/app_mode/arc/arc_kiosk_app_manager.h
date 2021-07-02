@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/policy/core/device_local_account.h"
 #include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;

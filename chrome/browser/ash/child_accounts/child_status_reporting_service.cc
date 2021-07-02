@@ -9,7 +9,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/child_accounts/event_based_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
-#include "chrome/browser/chromeos/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/status_collector/child_status_collector.h"
 #include "chrome/browser/chromeos/policy/uploading/status_uploader.h"
 #include "chrome/browser/profiles/profile.h"
