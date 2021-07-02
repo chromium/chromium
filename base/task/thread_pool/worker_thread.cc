@@ -364,9 +364,22 @@ void WorkerThread::RunWorker() {
       continue;
     }
 
+    // Alias pointer for investigation of memory corruption. crbug.com/1218384
+    TaskSource* task_source_before_run = task_source.get();
+    base::debug::Alias(&task_source_before_run);
+
     task_source = task_tracker_->RunAndPopNextTask(std::move(task_source));
 
+    // Alias pointer for investigation of memory corruption. crbug.com/1218384
+    TaskSource* task_source_before_move = task_source.get();
+    base::debug::Alias(&task_source_before_move);
+
     delegate_->DidProcessTask(std::move(task_source));
+
+    // Check that task_source is always cleared, to help investigation of memory
+    // corruption where task_source is non-null after being moved.
+    // crbug.com/1218384
+    CHECK(!task_source);
 
     // Calling WakeUp() guarantees that this WorkerThread will run Tasks from
     // TaskSources returned by the GetWork() method of |delegate_| until it
