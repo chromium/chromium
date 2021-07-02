@@ -4,6 +4,7 @@
 
 #include "ash/utility/occlusion_tracker_pauser.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
@@ -16,6 +17,20 @@ OcclusionTrackerPauser::~OcclusionTrackerPauser() = default;
 
 void OcclusionTrackerPauser::PauseUntilAnimationsEnd(
     const base::TimeDelta& extra_pause_duration) {
+  auto* a11y_controller = Shell::Get()->accessibility_controller();
+  /*
+   * Ddo not pause the occlusion tracker when accessibility feature is enabled
+   * because it may add a permnent CompositorAnimationObserver.
+   * TODO(crbug.com/1222698): Remove this if when the accessibility layer
+   * migrates to use LayerAnimationElement.
+   */
+  for (int type = AccessibilityControllerImpl::kAutoclick;
+       type < AccessibilityControllerImpl::kFeatureCount; type++) {
+    auto casted_type =
+        static_cast<AccessibilityControllerImpl::FeatureType>(type);
+    if (a11y_controller->GetFeature(casted_type).enabled())
+      return;
+  }
   for (auto* root : Shell::GetAllRootWindows())
     Pause(root->GetHost()->compositor(), extra_pause_duration);
 }
