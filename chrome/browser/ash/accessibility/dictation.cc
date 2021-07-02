@@ -279,6 +279,7 @@ bool Dictation::OnToggleDictation() {
                               true);
     no_speech_timeout_ = kDeviceNoSpeechTimeout;
     no_new_speech_timeout_ = kDeviceNoNewSpeechTimeout;
+    used_on_device_speech_ = true;
   } else {
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
         weak_ptr_factory_.GetWeakPtr(),
@@ -293,7 +294,9 @@ bool Dictation::OnToggleDictation() {
             ? kDeviceNoSpeechTimeout
             : kNetworkNoSpeechTimeout;
     no_new_speech_timeout_ = kNetworkNoNewSpeechTimeout;
+    used_on_device_speech_ = false;
   }
+  listening_duration_timer_ = base::ElapsedTimer();
   return true;
 }
 
@@ -402,6 +405,17 @@ void Dictation::DictationOff() {
       AccessibilityNotificationType::kToggleDictation, false /* enabled */);
   AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
   speech_recognizer_.reset();
+
+  // Duration matches the lifetime of the speech recognizer.
+  if (used_on_device_speech_) {
+    base::UmaHistogramLongTimes(
+        "Accessibility.CrosDictation.ListeningDuration.OnDeviceRecognition",
+        listening_duration_timer_.Elapsed());
+  } else {
+    base::UmaHistogramLongTimes(
+        "Accessibility.CrosDictation.ListeningDuration.NetworkRecognition",
+        listening_duration_timer_.Elapsed());
+  }
 }
 
 void Dictation::CommitCurrentText() {

@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "content/public/browser/speech_recognition_session_preamble.h"
@@ -89,6 +90,10 @@ class Dictation : public SpeechRecognizerDelegate,
   base::OneShotTimer speech_timeout_;
   base::TimeDelta no_speech_timeout_;
   base::TimeDelta no_new_speech_timeout_;
+
+  // Used for metrics.
+  bool used_on_device_speech_ = false;
+  base::ElapsedTimer listening_duration_timer_;
 
   base::WeakPtrFactory<Dictation> weak_ptr_factory_{this};
 
