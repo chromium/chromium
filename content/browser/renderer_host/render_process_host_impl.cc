@@ -5243,8 +5243,11 @@ void RenderProcessHostImpl::CancelProcessShutdownDelay(
     const SiteInfo& site_info) {
   if (IsKeepAliveRefCountDisabled())
     return;
+
+  // Unset |is_shutdown_delayed| and remove from the delayed-shutdown tracker.
+  // This may have already been done in CancelAllProcessShutdownDelays() if the
+  // process was reused before this task executed.
   if (is_shutdown_delayed_) {
-    // Remove from the delayed-shutdown tracker.
     if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
         ShouldTrackProcessForSite(GetBrowserContext(), this, site_info)) {
       SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(

@@ -562,6 +562,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
                             const base::TimeDelta& unload_handler_timeout,
                             const SiteInfo& site_info);
   bool IsProcessShutdownDelayedForTesting() { return is_shutdown_delayed_; }
+  // Remove the host from the delayed-shutdown tracker, if present. This does
+  // not decrement |keep_alive_ref_count_|; if it was incremented by a shutdown
+  // delay, it will be decremented when the delay expires. This ensures that
+  // the host is not destroyed between cancelling its shutdown delay and the new
+  // navigation adding listeners to keep it alive.
   void CancelAllProcessShutdownDelays() override;
 
   // Binds |receiver| to the FileSystemManager instance owned by the render
