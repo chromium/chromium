@@ -136,7 +136,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
           {
               {"write_to_history_service", "true"},
           }}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kLoadModelFileForEachExecution});
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
 
@@ -358,7 +358,7 @@ class PageContentAnnotationsServiceNoHistoryTest
           {
               {"write_to_history_service", "false"},
           }}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kLoadModelFileForEachExecution});
   }
   ~PageContentAnnotationsServiceNoHistoryTest() override = default;
 

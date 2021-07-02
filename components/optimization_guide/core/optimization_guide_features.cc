@@ -81,7 +81,7 @@ const base::Feature kPageTextExtraction{
 // Enables the model file to be loaded for each execution, then unloaded on
 // completion.
 const base::Feature kLoadModelFileForEachExecution{
-    "LoadModelFileForEachExecution", base::FEATURE_DISABLED_BY_DEFAULT};
+    "LoadModelFileForEachExecution", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
