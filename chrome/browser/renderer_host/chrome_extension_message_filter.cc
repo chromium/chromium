@@ -188,7 +188,7 @@ void ChromeExtensionMessageFilter::OnAddAPIActionToExtensionActivityLog(
   scoped_refptr<extensions::Action> action = new extensions::Action(
       extension_id, base::Time::Now(), extensions::Action::ACTION_API_CALL,
       params.api_call);
-  action->set_args(base::WrapUnique(params.arguments.DeepCopy()));
+  action->set_args(params.arguments.CreateDeepCopy());
   if (!params.extra.empty()) {
     action->mutable_other()->SetString(
         activity_log_constants::kActionExtra, params.extra);
@@ -205,7 +205,7 @@ void ChromeExtensionMessageFilter::OnAddDOMActionToExtensionActivityLog(
   scoped_refptr<extensions::Action> action = new extensions::Action(
       extension_id, base::Time::Now(), extensions::Action::ACTION_DOM_ACCESS,
       params.api_call);
-  action->set_args(base::WrapUnique(params.arguments.DeepCopy()));
+  action->set_args(params.arguments.CreateDeepCopy());
   action->set_page_url(params.url);
   action->set_page_title(base::UTF16ToUTF8(params.url_title));
   action->mutable_other()->SetInteger(activity_log_constants::kActionDomVerb,
@@ -222,7 +222,7 @@ void ChromeExtensionMessageFilter::OnAddEventToExtensionActivityLog(
   scoped_refptr<extensions::Action> action = new extensions::Action(
       extension_id, base::Time::Now(), extensions::Action::ACTION_API_EVENT,
       params.api_call);
-  action->set_args(base::WrapUnique(params.arguments.DeepCopy()));
+  action->set_args(params.arguments.CreateDeepCopy());
   if (!params.extra.empty()) {
     action->mutable_other()->SetString(activity_log_constants::kActionExtra,
                                        params.extra);
