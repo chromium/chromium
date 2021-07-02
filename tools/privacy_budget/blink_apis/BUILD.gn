@@ -15,7 +15,7 @@ proto_library("protos") {
 
 action("blink_apis") {
   testonly = true
-  script = "generate_blink_api_db_entrypoint.py"
+  script = "generate_blink_api_db.py"
 
   inputs = [
     web_idl_database_filepath,
