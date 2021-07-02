@@ -146,3 +146,12 @@ enum PrinterType {
   kLocal,
   kCloud
 };
+
+[EnableIf=is_win]
+enum PrinterLanguageType {
+  kNone = 0,
+  kTextOnly,
+  kXps,
+  kPostscriptLevel2,
+  kPostscriptLevel3,
+};

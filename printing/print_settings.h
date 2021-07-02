@@ -59,16 +59,6 @@ COMPONENT_EXPORT(PRINTING) const std::string& GetAgent();
 
 class COMPONENT_EXPORT(PRINTING) PrintSettings {
  public:
-#if defined(OS_WIN)
-  enum PrinterType {
-    TYPE_NONE = 0,
-    TYPE_TEXTONLY,
-    TYPE_XPS,
-    TYPE_POSTSCRIPT_LEVEL2,
-    TYPE_POSTSCRIPT_LEVEL3
-  };
-#endif
-
   // Media properties requested by the user. Default instance represents
   // default media selection.
   struct RequestedMedia {
@@ -202,16 +192,22 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   void set_print_text_with_gdi(bool use_gdi) { print_text_with_gdi_ = use_gdi; }
   bool print_text_with_gdi() const { return print_text_with_gdi_; }
 
-  void set_printer_type(PrinterType type) { printer_type_ = type; }
-  bool printer_is_textonly() const {
-    return printer_type_ == PrinterType::TYPE_TEXTONLY;
+  void set_printer_language_type(mojom::PrinterLanguageType type) {
+    printer_language_type_ = type;
   }
-  bool printer_is_xps() const { return printer_type_ == PrinterType::TYPE_XPS; }
-  bool printer_is_ps2() const {
-    return printer_type_ == PrinterType::TYPE_POSTSCRIPT_LEVEL2;
+  bool printer_language_is_textonly() const {
+    return printer_language_type_ == mojom::PrinterLanguageType::kTextOnly;
   }
-  bool printer_is_ps3() const {
-    return printer_type_ == PrinterType::TYPE_POSTSCRIPT_LEVEL3;
+  bool printer_language_is_xps() const {
+    return printer_language_type_ == mojom::PrinterLanguageType::kXps;
+  }
+  bool printer_language_is_ps2() const {
+    return printer_language_type_ ==
+           mojom::PrinterLanguageType::kPostscriptLevel2;
+  }
+  bool printer_language_is_ps3() const {
+    return printer_language_type_ ==
+           mojom::PrinterLanguageType::kPostscriptLevel3;
   }
 #endif
 
@@ -243,13 +239,13 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   const std::string& pin_value() const { return pin_value_; }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Cookie generator. It is used to initialize PrintedDocument with its
-  // associated PrintSettings, to be sure that each generated PrintedPage is
-  // correctly associated with its corresponding PrintedDocument.
+  // Cookie generator. It is used to initialize `PrintedDocument` with its
+  // associated `PrintSettings`, to be sure that each generated `PrintedPage`
+  // is correctly associated with its corresponding `PrintedDocument`.
   static int NewCookie();
 
  private:
-  // Multi-page printing. Each PageRange describes a from-to page combination.
+  // Multi-page printing. Each `PageRange` describes a from-to page combination.
   // This permits printing selected pages only.
   PageRanges ranges_;
 
@@ -311,7 +307,7 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   // True to print text with GDI.
   bool print_text_with_gdi_;
 
-  PrinterType printer_type_;
+  mojom::PrinterLanguageType printer_language_type_;
 #endif
 
   bool is_modifiable_;

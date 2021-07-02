@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "printing/backend/win_helper.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 
 namespace printing {
@@ -151,25 +152,26 @@ void PrintSettingsInitializerWin::InitPrintSettings(
   int level;
   if (IsPrinterPostScript(hdc, &level)) {
     if (level == 2) {
-      print_settings->set_printer_type(
-          PrintSettings::PrinterType::TYPE_POSTSCRIPT_LEVEL2);
+      print_settings->set_printer_language_type(
+          mojom::PrinterLanguageType::kPostscriptLevel2);
       return;
     }
     DCHECK_EQ(3, level);
-    print_settings->set_printer_type(
-        PrintSettings::PrinterType::TYPE_POSTSCRIPT_LEVEL3);
+    print_settings->set_printer_language_type(
+        mojom::PrinterLanguageType::kPostscriptLevel3);
     return;
   }
   // Detects the generic / text only driver.
   if (IsPrinterTextOnly(hdc)) {
-    print_settings->set_printer_type(PrintSettings::PrinterType::TYPE_TEXTONLY);
+    print_settings->set_printer_language_type(
+        mojom::PrinterLanguageType::kTextOnly);
     return;
   }
   if (IsPrinterXPS(hdc)) {
-    print_settings->set_printer_type(PrintSettings::PrinterType::TYPE_XPS);
+    print_settings->set_printer_language_type(mojom::PrinterLanguageType::kXps);
     return;
   }
-  print_settings->set_printer_type(PrintSettings::PrinterType::TYPE_NONE);
+  print_settings->set_printer_language_type(mojom::PrinterLanguageType::kNone);
 }
 
 }  // namespace printing

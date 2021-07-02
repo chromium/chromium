@@ -13,41 +13,45 @@
 #include "chrome/browser/printing/print_job.h"
 #include "printing/print_settings.h"
 
+#if defined(OS_WIN)
+#include "printing/mojom/print.mojom.h"
+#endif
+
 namespace printing {
 
 class PrinterQuery;
 
 class TestPrintJob : public PrintJob {
  public:
-  // Create a empty PrintJob. When initializing with this constructor,
-  // post-constructor initialization must be done with Initialize().
+  // Create an empty `PrintJob`. When initializing with this constructor,
+  // post-constructor initialization must be done with `Initialize()`.
   TestPrintJob() = default;
 
-  // Getters for values stored by TestPrintJob in Start...Converter functions.
+  // Getters for values stored by `TestPrintJob` in Start...Converter functions.
   const gfx::Size& page_size() const { return page_size_; }
   const gfx::Rect& content_area() const { return content_area_; }
   const gfx::Point& physical_offsets() const { return physical_offsets_; }
 #if defined(OS_WIN)
-  PrintSettings::PrinterType type() const { return type_; }
+  mojom::PrinterLanguageType type() const { return type_; }
 #endif
 
-  // content::NotificationObserver implementation. Deliberately empty.
+  // `content::NotificationObserver` implementation. Deliberately empty.
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override {}
 
-  // All remaining functions are PrintJob implementation.
+  // All remaining functions are `PrintJob` implementation.
   void Initialize(std::unique_ptr<PrinterQuery> query,
                   const std::u16string& name,
                   uint32_t page_count) override;
 
-  // Sets |job_pending_| to true.
+  // Sets `job_pending_` to true.
   void StartPrinting() override;
 
-  // Sets |job_pending_| to false and deletes the worker.
+  // Sets `job_pending_` to false and deletes the worker.
   void Stop() override;
 
-  // Sets |job_pending_| to false and deletes the worker.
+  // Sets `job_pending_` to false and deletes the worker.
   void Cancel() override;
 
   // Intentional no-op, returns true.
@@ -77,7 +81,7 @@ class TestPrintJob : public PrintJob {
   gfx::Rect content_area_;
   gfx::Point physical_offsets_;
 #if defined(OS_WIN)
-  PrintSettings::PrinterType type_;
+  mojom::PrinterLanguageType type_;
 #endif
 };
 

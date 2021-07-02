@@ -15,6 +15,10 @@
 #include "printing/print_settings_conversion.h"
 #include "printing/units.h"
 
+#if defined(OS_WIN)
+#include "printing/mojom/print.mojom.h"
+#endif
+
 namespace printing {
 
 std::unique_ptr<PrinterQuery> TestPrintQueriesQueue::CreatePrinterQuery(
@@ -23,7 +27,7 @@ std::unique_ptr<PrinterQuery> TestPrintQueriesQueue::CreatePrinterQuery(
   auto test_query =
       std::make_unique<TestPrinterQuery>(render_process_id, render_frame_id);
 #if defined(OS_WIN)
-  test_query->SetPrinterType(printer_type_);
+  test_query->SetPrinterLanguageType(printer_language_type_);
 #endif
   test_query->SetPrintableAreaOffsets(printable_offset_x_, printable_offset_y_);
 
@@ -36,8 +40,9 @@ void TestPrintQueriesQueue::SetupPrinterOffsets(int offset_x, int offset_y) {
 }
 
 #if defined(OS_WIN)
-void TestPrintQueriesQueue::SetupPrinterType(PrintSettings::PrinterType type) {
-  printer_type_ = type;
+void TestPrintQueriesQueue::SetupPrinterLanguageType(
+    mojom::PrinterLanguageType type) {
+  printer_language_type_ = type;
 }
 #endif
 
@@ -50,7 +55,7 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
                                    base::OnceClosure callback) {
   DCHECK(offsets_);
 #if defined(OS_WIN)
-  DCHECK(printer_type_);
+  DCHECK(printer_language_type_);
 #endif
   std::unique_ptr<PrintSettings> settings =
       PrintSettingsFromJobSettings(new_settings);
@@ -71,15 +76,15 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
   paper_rect.Inset(offsets_->x(), offsets_->y());
   settings->SetPrinterPrintableArea(paper_size, paper_rect, true);
 #if defined(OS_WIN)
-  settings->set_printer_type(*printer_type_);
+  settings->set_printer_language_type(*printer_language_type_);
 #endif
 
   GetSettingsDone(std::move(callback), std::move(settings), result);
 }
 
 #if defined(OS_WIN)
-void TestPrinterQuery::SetPrinterType(PrintSettings::PrinterType type) {
-  printer_type_ = type;
+void TestPrinterQuery::SetPrinterLanguageType(mojom::PrinterLanguageType type) {
+  printer_language_type_ = type;
 }
 #endif
 

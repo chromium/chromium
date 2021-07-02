@@ -14,6 +14,10 @@
 #include <cups/cups.h>
 #endif
 
+#if defined(OS_WIN)
+#include "printing/mojom/print.mojom.h"
+#endif
+
 namespace printing {
 
 namespace {
@@ -274,7 +278,7 @@ void PrintSettings::Clear() {
   supports_alpha_blend_ = true;
 #if defined(OS_WIN)
   print_text_with_gdi_ = false;
-  printer_type_ = PrintSettings::PrinterType::TYPE_NONE;
+  printer_language_type_ = mojom::PrinterLanguageType::kNone;
 #endif
   is_modifiable_ = true;
   pages_per_sheet_ = 1;

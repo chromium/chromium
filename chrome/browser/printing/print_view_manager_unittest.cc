@@ -26,6 +26,10 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
+#if defined(OS_WIN)
+#include "printing/mojom/print.mojom.h"
+#endif
+
 namespace printing {
 
 using PrintViewManagerTest = BrowserWithTestWindowTest;
@@ -34,16 +38,18 @@ class TestPrintViewManager : public PrintViewManagerBase {
  public:
   explicit TestPrintViewManager(content::WebContents* web_contents)
       : PrintViewManagerBase(web_contents) {}
+  TestPrintViewManager(const TestPrintViewManager&) = delete;
+  TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
 
   ~TestPrintViewManager() override {
-    // Set this null here. Otherwise, the PrintViewManagerBase destructor will
-    // try to de-register for notifications that were not registered for in
-    // CreateNewPrintJob().
+    // Set this null here. Otherwise, the `PrintViewManagerBase` destructor
+    // will try to de-register for notifications that were not registered for
+    // in `CreateNewPrintJob()`.
     print_job_ = nullptr;
   }
 
-  // Mostly copied from PrintViewManager::PrintPreviewNow(). We can't override
-  // PrintViewManager since it is a user data class.
+  // Mostly copied from `PrintViewManager::PrintPreviewNow()`. We can't
+  // override `PrintViewManager` since it is a user data class.
   bool PrintPreviewNow(content::RenderFrameHost* rfh, bool has_selection) {
     // Don't print / print preview crashed tabs.
     if (IsCrashed())
@@ -66,7 +72,7 @@ class TestPrintViewManager : public PrintViewManagerBase {
   }
 
 #if defined(OS_WIN)
-  PrintSettings::PrinterType type() { return test_job()->type(); }
+  mojom::PrinterLanguageType type() { return test_job()->type(); }
 #endif
 
   // Ends the run loop.
@@ -84,7 +90,7 @@ class TestPrintViewManager : public PrintViewManagerBase {
   }
 
  protected:
-  // Override to create a TestPrintJob instead of a real one.
+  // Override to create a `TestPrintJob` instead of a real one.
   bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
     print_job_ = base::MakeRefCounted<TestPrintJob>();
     print_job_->Initialize(std::move(query), RenderSourceName(),
@@ -115,8 +121,6 @@ class TestPrintViewManager : public PrintViewManagerBase {
   }
 
   base::RunLoop* run_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrintViewManager);
 };
 
 TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
@@ -142,14 +146,15 @@ TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
 }
 
 #if defined(OS_WIN)
-// Verifies that StartPdfToPostScriptConversion is called with the correct
+// Verifies that `StartPdfToPostScriptConversion` is called with the correct
 // printable area offsets. See crbug.com/821485.
 TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   scoped_refptr<TestPrintQueriesQueue> queue =
       base::MakeRefCounted<TestPrintQueriesQueue>();
 
   // Setup PostScript printer with printable area offsets of 0.1in.
-  queue->SetupPrinterType(PrintSettings::PrinterType::TYPE_POSTSCRIPT_LEVEL2);
+  queue->SetupPrinterLanguageType(
+      mojom::PrinterLanguageType::kPostscriptLevel2);
   int offset_in_pixels = static_cast<int>(kTestPrinterDpi * 0.1f);
   queue->SetupPrinterOffsets(offset_in_pixels, offset_in_pixels);
   g_browser_process->print_job_manager()->SetQueueForTest(queue);
@@ -181,7 +186,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
 
   EXPECT_EQ(gfx::Point(60, 60), print_view_manager->physical_offsets());
   EXPECT_EQ(gfx::Rect(0, 0, 5100, 6600), print_view_manager->content_area());
-  EXPECT_EQ(PrintSettings::PrinterType::TYPE_POSTSCRIPT_LEVEL2,
+  EXPECT_EQ(mojom::PrinterLanguageType::kPostscriptLevel2,
             print_view_manager->type());
 }
 #endif

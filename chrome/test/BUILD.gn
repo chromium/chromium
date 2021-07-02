@@ -5217,6 +5217,8 @@ test("unit_tests") {
     "//v8",
   ]
 
+  public_deps = []
+
   if (enable_paint_preview) {
     deps += [ "//chrome/browser/paint_preview:services" ]
   }
@@ -6954,6 +6956,9 @@ test("unit_tests") {
 
       if (is_win) {
         sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_win_unittest.cc" ]
+
+        # Needed by test_print_job.h, test_printer_query.h.
+        public_deps += [ "//printing/mojom" ]
       }
 
       if (is_mac) {

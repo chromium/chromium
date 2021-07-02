@@ -14,6 +14,10 @@
 #include "printing/printed_document.h"
 #include "ui/gfx/geometry/size.h"
 
+#if defined(OS_WIN)
+#include "printing/mojom/print.mojom.h"
+#endif
+
 namespace printing {
 
 void TestPrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
@@ -54,7 +58,7 @@ void TestPrintJob::StartPdfToEmfConversion(
     const gfx::Rect& content_area) {
   page_size_ = page_size;
   content_area_ = content_area;
-  type_ = PrintSettings::PrinterType::TYPE_NONE;
+  type_ = mojom::PrinterLanguageType::kNone;
 }
 
 void TestPrintJob::StartPdfToPostScriptConversion(
@@ -64,15 +68,15 @@ void TestPrintJob::StartPdfToPostScriptConversion(
     bool ps_level2) {
   content_area_ = content_area;
   physical_offsets_ = physical_offsets;
-  type_ = ps_level2 ? PrintSettings::PrinterType::TYPE_POSTSCRIPT_LEVEL2
-                    : PrintSettings::PrinterType::TYPE_POSTSCRIPT_LEVEL3;
+  type_ = ps_level2 ? mojom::PrinterLanguageType::kPostscriptLevel2
+                    : mojom::PrinterLanguageType::kPostscriptLevel3;
 }
 
 void TestPrintJob::StartPdfToTextConversion(
     scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Size& page_size) {
   page_size_ = page_size;
-  type_ = PrintSettings::PrinterType::TYPE_TEXTONLY;
+  type_ = mojom::PrinterLanguageType::kTextOnly;
 }
 #endif  // defined(OS_WIN)
 
