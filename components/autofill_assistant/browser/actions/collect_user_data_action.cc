@@ -388,17 +388,6 @@ void SetInitialUserDataForAdditionalSection(
   }
 }
 
-void AddNonEmptyFieldNames(
-    const autofill::AutofillProfile* profile,
-    google::protobuf::RepeatedPtrField<std::string>* dest) {
-  DCHECK(profile != nullptr);
-  const auto& map = autofill_assistant::field_formatter::CreateAutofillMappings(
-      *profile, /* locale= */ "en-US");
-  for (const auto& it : map) {
-    *dest->Add() = it.first;
-  }
-}
-
 }  // namespace
 
 namespace autofill_assistant {
@@ -1156,11 +1145,6 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
         contact_details_proto.contact_details_name());
 
     if (selected_profile != nullptr) {
-      AddNonEmptyFieldNames(
-          selected_profile,
-          processed_action_proto_->mutable_collect_user_data_result()
-              ->mutable_non_empty_contact_field());
-
       if (contact_details_proto.request_payer_name()) {
         Metrics::RecordPaymentRequestFirstNameOnly(
             selected_profile->GetRawInfo(autofill::NAME_LAST).empty());
@@ -1179,11 +1163,6 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
     auto* selected_shipping_address = user_data->selected_address(
         proto().collect_user_data().shipping_address_name());
     if (selected_shipping_address != nullptr) {
-      AddNonEmptyFieldNames(
-          selected_shipping_address,
-          processed_action_proto_->mutable_collect_user_data_result()
-              ->mutable_non_empty_shipping_address_field());
-
       profiles_used.emplace(selected_shipping_address);
     }
   }
@@ -1191,11 +1170,6 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
     auto* selected_billing_address = user_data->selected_address(
         proto().collect_user_data().billing_address_name());
     if (selected_billing_address != nullptr) {
-      AddNonEmptyFieldNames(
-          selected_billing_address,
-          processed_action_proto_->mutable_collect_user_data_result()
-              ->mutable_non_empty_billing_address_field());
-
       profiles_used.emplace(selected_billing_address);
     }
   }

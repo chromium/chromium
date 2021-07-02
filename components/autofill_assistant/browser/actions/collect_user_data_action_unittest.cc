@@ -59,7 +59,6 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
-using ::testing::IsSupersetOf;
 using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::Return;
@@ -658,32 +657,14 @@ TEST_F(CollectUserDataActionTest, SelectContactDetails) {
                 .Run(&user_data_, &user_model_);
           }));
 
-  std::vector<std::string> expected_non_empty_fields = {
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_FULL)),
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_FIRST)),
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE)),
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_LAST)),
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::EMAIL_ADDRESS)),
-      base::NumberToString(static_cast<int>(
-          autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER))};
-
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf(_)).Times(1);
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(
           Property(&ProcessedActionProto::status, ACTION_APPLIED),
-          Property(
-              &ProcessedActionProto::collect_user_data_result,
-              AllOf(
-                  Property(&CollectUserDataResultProto::payer_email,
-                           "marion@me.xyz"),
-                  Property(&CollectUserDataResultProto::non_empty_contact_field,
-                           IsSupersetOf(expected_non_empty_fields))))))));
+          Property(&ProcessedActionProto::collect_user_data_result,
+                   AllOf(Property(&CollectUserDataResultProto::payer_email,
+                                  "marion@me.xyz")))))));
 
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
@@ -791,26 +772,14 @@ TEST_F(CollectUserDataActionTest, SelectPaymentMethod) {
                 .Run(&user_data_, &user_model_);
           }));
 
-  std::vector<std::string> expected_non_empty_fields = {
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_FIRST)),
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE)),
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_LAST))};
-
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf(_)).Times(2);
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(AllOf(
-          Property(&ProcessedActionProto::status, ACTION_APPLIED),
-          Property(
-              &ProcessedActionProto::collect_user_data_result,
-              AllOf(Property(&CollectUserDataResultProto::card_issuer_network,
-                             "visa"),
-                    Property(&CollectUserDataResultProto::
-                                 non_empty_billing_address_field,
-                             IsSupersetOf(expected_non_empty_fields))))))));
+  EXPECT_CALL(callback_,
+              Run(Pointee(AllOf(
+                  Property(&ProcessedActionProto::status, ACTION_APPLIED),
+                  Property(&ProcessedActionProto::collect_user_data_result,
+                           AllOf(Property(
+                               &CollectUserDataResultProto::card_issuer_network,
+                               "visa")))))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 
@@ -840,24 +809,10 @@ TEST_F(CollectUserDataActionTest, SelectShippingAddress) {
                 .Run(&user_data_, &user_model_);
           }));
 
-  std::vector<std::string> expected_non_empty_fields = {
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_FIRST)),
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE)),
-      base::NumberToString(
-          static_cast<int>(autofill::ServerFieldType::NAME_LAST))};
-
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf(_)).Times(1);
   EXPECT_CALL(
       callback_,
-      Run(Pointee(AllOf(
-          Property(&ProcessedActionProto::status, ACTION_APPLIED),
-          Property(
-              &ProcessedActionProto::collect_user_data_result,
-              Property(
-                  &CollectUserDataResultProto::non_empty_shipping_address_field,
-                  IsSupersetOf(expected_non_empty_fields)))))));
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 
