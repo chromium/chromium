@@ -233,6 +233,38 @@ void SkiaOutputDevice::FinishSwapBuffers(
   }
 
   pending_swaps_.pop();
+
+  // If there are skipped swaps at the front of the queue, they are now ready
+  // to be acknowledged without breaking ordering.
+  if (!pending_swaps_.empty()) {
+    auto iter = skipped_swap_info_.find(pending_swaps_.front().SwapId());
+    if (iter != skipped_swap_info_.end()) {
+      OutputSurfaceFrame frame = std::move(iter->second);
+      gfx::Size frame_size = frame.size;
+      skipped_swap_info_.erase(iter);
+      // Recursively call into FinishSwapBuffers until the head of the queue is
+      // no longer a skipped swap.
+      FinishSwapBuffers(
+          gfx::SwapCompletionResult(gfx::SwapResult::SWAP_SKIPPED), frame_size,
+          std::move(frame));
+    }
+  }
+}
+
+void SkiaOutputDevice::SwapBuffersSkipped(BufferPresentedCallback feedback,
+                                          OutputSurfaceFrame frame) {
+  StartSwapBuffers(std::move(feedback));
+  // If there are no other pending swaps, we can immediately close out the
+  // "skipped" swap that was just enqueued. If there are outstanding pending
+  // swaps, however, we need to wait for them to complete to avoid reordering
+  // complete/presentation callbacks.
+  if (pending_swaps_.size() == 1) {
+    gfx::Size frame_size = frame.size;
+    FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_SKIPPED),
+                      frame_size, std::move(frame));
+  } else {
+    skipped_swap_info_[swap_id_] = std::move(frame);
+  }
 }
 
 SkiaOutputDevice::SwapInfo::SwapInfo(
@@ -252,6 +284,10 @@ SkiaOutputDevice::SwapInfo::SwapInfo(
 SkiaOutputDevice::SwapInfo::SwapInfo(SwapInfo&& other) = default;
 
 SkiaOutputDevice::SwapInfo::~SwapInfo() = default;
+
+uint64_t SkiaOutputDevice::SwapInfo::SwapId() {
+  return params_.swap_response.swap_id;
+}
 
 const gpu::SwapBuffersCompleteParams& SkiaOutputDevice::SwapInfo::Complete(
     gfx::SwapCompletionResult result,

@@ -18,6 +18,15 @@ struct CALayerParams;
 enum class SwapResult {
   SWAP_ACK,
   SWAP_FAILED,
+  // Typically, the Viz thread should decide whether to skip a swap based off
+  // the damage. In rare cases, however, the GPU main thread might skip the
+  // swap after the Viz thread requests it (e.g. the Viz thread might not know
+  // that the buffers are not fully initialized yet). For the purposes of
+  // metrics bookkeeping, we label this scenario as SWAP_SKIPPED and treat it
+  // much like we do a SWAP_FAILED (e.g. failed PresentationFeedback).
+  // TODO(https://crbug.com/1226090): Consider more explicit handling of
+  // SWAP_SKIPPED.
+  SWAP_SKIPPED,
   SWAP_NAK_RECREATE_BUFFERS,
   SWAP_RESULT_LAST = SWAP_NAK_RECREATE_BUFFERS,
 };

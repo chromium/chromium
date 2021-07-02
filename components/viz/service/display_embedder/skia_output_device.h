@@ -166,6 +166,13 @@ class SkiaOutputDevice {
   virtual void EnsureBackbuffer();
   virtual void DiscardBackbuffer();
 
+  // Acknowledges a SwapBuffers request without actually attempting to swap.
+  // This should be called when the GPU thread decides to skip a swap that was
+  // invoked by the viz thread to ensure that we still run the relevant metrics
+  // bookkeeping.
+  virtual void SwapBuffersSkipped(BufferPresentedCallback feedback,
+                                  OutputSurfaceFrame frame);
+
   bool is_emulated_rgbx() const { return is_emulated_rgbx_; }
 
   void SetDrawTimings(base::TimeTicks submitted, base::TimeTicks started);
@@ -183,6 +190,7 @@ class SkiaOutputDevice {
              base::TimeTicks task_ready);
     SwapInfo(SwapInfo&& other);
     ~SwapInfo();
+    uint64_t SwapId();
     const gpu::SwapBuffersCompleteParams& Complete(
         gfx::SwapCompletionResult result,
         const absl::optional<gfx::Rect>& damage_area,
@@ -252,6 +260,8 @@ class SkiaOutputDevice {
   std::unique_ptr<ui::LatencyTracker> latency_tracker_;
   // task runner for latency tracker.
   scoped_refptr<base::SequencedTaskRunner> latency_tracker_runner_;
+  // A mapping from skipped swap ID to its corresponding OutputSurfaceFrame.
+  base::flat_map<uint64_t, OutputSurfaceFrame> skipped_swap_info_;
 
   DISALLOW_COPY_AND_ASSIGN(SkiaOutputDevice);
 };

@@ -13,9 +13,11 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/service/display_embedder/output_presenter_gl.h"
+#include "components/viz/service/display_embedder/skia_output_device.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"
@@ -195,13 +197,15 @@ class MockGLSurfaceAsync : public gl::GLSurfaceStub {
 
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
                         PresentationCallback presentation_callback) override {
-    callbacks_.push_back(std::move(completion_callback));
+    swap_completion_callbacks_.push_back(std::move(completion_callback));
+    presentation_callbacks_.push_back(std::move(presentation_callback));
   }
 
   void CommitOverlayPlanesAsync(
       SwapCompletionCallback completion_callback,
       PresentationCallback presentation_callback) override {
-    callbacks_.push_back(std::move(completion_callback));
+    swap_completion_callbacks_.push_back(std::move(completion_callback));
+    presentation_callbacks_.push_back(std::move(presentation_callback));
   }
 
   bool ScheduleOverlayPlane(int z_order,
@@ -219,15 +223,20 @@ class MockGLSurfaceAsync : public gl::GLSurfaceStub {
   }
 
   void SwapComplete() {
-    DCHECK(!callbacks_.empty());
-    std::move(callbacks_.front())
+    DCHECK(!swap_completion_callbacks_.empty());
+    std::move(swap_completion_callbacks_.front())
         .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK));
-    callbacks_.pop_front();
+    swap_completion_callbacks_.pop_front();
+
+    DCHECK(!presentation_callbacks_.empty());
+    std::move(presentation_callbacks_.front()).Run({});
+    presentation_callbacks_.pop_front();
   }
 
  protected:
   ~MockGLSurfaceAsync() override = default;
-  base::circular_deque<SwapCompletionCallback> callbacks_;
+  base::circular_deque<SwapCompletionCallback> swap_completion_callbacks_;
+  base::circular_deque<PresentationCallback> presentation_callbacks_;
 };
 
 class MemoryTrackerStub : public gpu::MemoryTracker {
@@ -260,6 +269,13 @@ class MemoryTrackerStub : public gpu::MemoryTracker {
 
 }  // namespace
 
+using DidSwapBufferCompleteCallback =
+    base::RepeatingCallback<void(gpu::SwapBuffersCompleteParams,
+                                 const gfx::Size& pixel_size,
+                                 gfx::GpuFenceHandle release_fence)>;
+using BufferPresentedCallback =
+    base::OnceCallback<void(const gfx::PresentationFeedback& feedback)>;
+
 class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
  public:
   SkiaOutputDeviceBufferQueueTest() = default;
@@ -268,6 +284,11 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
     gpu::SurfaceHandle surface_handle_ = gpu::kNullSurfaceHandle;
     dependency_ = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
         gpu_service_holder_->gpu_service(), surface_handle_);
+  }
+
+  virtual DidSwapBufferCompleteCallback GetDidSwapBuffersCompleteCallback() {
+    return base::DoNothing::Repeatedly<gpu::SwapBuffersCompleteParams,
+                                       const gfx::Size&, gfx::GpuFenceHandle>();
   }
 
   void SetUpOnGpu() override {
@@ -286,9 +307,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
         std::make_unique<gpu::SharedImageRepresentationFactory>(
             dependency_->GetSharedImageManager(), memory_tracker_.get());
 
-    auto present_callback =
-        base::DoNothing::Repeatedly<gpu::SwapBuffersCompleteParams,
-                                    const gfx::Size&, gfx::GpuFenceHandle>();
+    auto present_callback = GetDidSwapBuffersCompleteCallback();
 
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
@@ -380,7 +399,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
     output_device_->SchedulePrimaryPlane(no_plane);
   }
 
-  void SwapBuffers() {
+  virtual void SwapBuffers() {
     auto present_callback =
         base::DoNothing::Once<const gfx::PresentationFeedback&>();
 
@@ -730,6 +749,78 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, BufferIsInOrder) {
   EXPECT_EQ(displayed_image(), displayed_index < 0
                                    ? nullptr
                                    : images()[displayed_index % 3].get());
+}
+
+}  // namespace
+
+class SkiaOutputDeviceSwapSkippedTest : public SkiaOutputDeviceBufferQueueTest {
+ public:
+  SkiaOutputDeviceSwapSkippedTest() = default;
+
+  DidSwapBufferCompleteCallback GetDidSwapBuffersCompleteCallback() override {
+    return swap_buffers_complete_cb.Get();
+  }
+
+  void SwapBuffers() override {
+    output_device_->SwapBuffers(buffer_presented_cb.Get(),
+                                OutputSurfaceFrame());
+  }
+
+  void SwapBuffersSkipped() {
+    output_device_->SwapBuffersSkipped(buffer_presented_cb.Get(),
+                                       OutputSurfaceFrame());
+  }
+
+  base::MockCallback<DidSwapBufferCompleteCallback> swap_buffers_complete_cb;
+  base::MockCallback<BufferPresentedCallback> buffer_presented_cb;
+};
+
+namespace {
+
+MATCHER_P2(CheckSwapResponse, expected_swap_id, expected_result, "") {
+  return arg.swap_response.swap_id == expected_swap_id &&
+         arg.swap_response.result == expected_result;
+}
+
+MATCHER_P(CheckPresentationFeedback, expected_fail, "") {
+  return expected_fail == arg.failed();
+}
+
+TEST_F_GPU(SkiaOutputDeviceSwapSkippedTest, SkipWithoutPending) {
+  // Check that skipping a SwapBuffers without any pending swaps immediately
+  // invokes the complete/presented callbacks.
+  output_device_->Reshape(screen_size, 1.0f, gfx::ColorSpace(), kDefaultFormat,
+                          gfx::OVERLAY_TRANSFORM_NONE);
+  EXPECT_CALL(swap_buffers_complete_cb,
+              Run(CheckSwapResponse(1U, gfx::SwapResult::SWAP_SKIPPED), _, _));
+  EXPECT_CALL(buffer_presented_cb,
+              Run(CheckPresentationFeedback(true /* failed */)));
+
+  SwapBuffersSkipped();
+}
+
+TEST_F_GPU(SkiaOutputDeviceSwapSkippedTest, SkipWithPending) {
+  // Check that skipping a SwapBuffers with existing pending swaps waits for
+  // the pending swaps to complete before invoking the complete/presented
+  // callbacks.
+  output_device_->Reshape(screen_size, 1.0f, gfx::ColorSpace(), kDefaultFormat,
+                          gfx::OVERLAY_TRANSFORM_NONE);
+  EXPECT_NE(PaintAndSchedulePrimaryPlane(), nullptr);
+  EXPECT_NE(current_image(), nullptr);
+
+  SwapBuffers();
+  SwapBuffersSkipped();
+
+  EXPECT_CALL(swap_buffers_complete_cb,
+              Run(CheckSwapResponse(1U, gfx::SwapResult::SWAP_ACK), _, _));
+  EXPECT_CALL(buffer_presented_cb,
+              Run(CheckPresentationFeedback(false /* failed */)));
+  EXPECT_CALL(swap_buffers_complete_cb,
+              Run(CheckSwapResponse(2U, gfx::SwapResult::SWAP_SKIPPED), _, _));
+  EXPECT_CALL(buffer_presented_cb,
+              Run(CheckPresentationFeedback(true /* failed */)));
+
+  PageFlipComplete();
 }
 
 }  // namespace

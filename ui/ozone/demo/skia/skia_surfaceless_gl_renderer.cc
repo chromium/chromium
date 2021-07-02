@@ -282,6 +282,7 @@ void SurfacelessSkiaGlRenderer::PostRenderFrameTask(
     case gfx::SwapResult::SWAP_ACK:
       SkiaGlRenderer::PostRenderFrameTask(std::move(result));
       break;
+    case gfx::SwapResult::SWAP_SKIPPED:
     case gfx::SwapResult::SWAP_FAILED:
       LOG(FATAL) << "Failed to swap buffers";
       break;

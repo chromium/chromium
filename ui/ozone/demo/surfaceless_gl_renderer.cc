@@ -304,6 +304,7 @@ void SurfacelessGlRenderer::PostRenderFrameTask(
           FROM_HERE, base::BindOnce(&SurfacelessGlRenderer::RenderFrame,
                                     weak_ptr_factory_.GetWeakPtr()));
       break;
+    case gfx::SwapResult::SWAP_SKIPPED:
     case gfx::SwapResult::SWAP_FAILED:
       LOG(FATAL) << "Failed to swap buffers";
       break;

@@ -1600,6 +1600,8 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
       if (frame->sub_buffer_rect &&
           capabilities().supports_post_sub_buffer &&
           frame->sub_buffer_rect->size() != size_) {
+        output_device_->SwapBuffersSkipped(buffer_presented_callback_,
+                                           std::move(*frame));
         output_surface_plane_.reset();
         destroy_after_swap_.clear();
         return;
