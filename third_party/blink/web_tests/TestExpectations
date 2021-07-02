@@ -2922,7 +2922,6 @@ crbug.com/626703 [ Mac10.14 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/prot
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/ice-state.https.html [ Timeout ]
 # Conflict with looser exception for crbug.com/v8/11365
 # crbug.com/626703 [ Mac10.14 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Timeout ]
-# crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/rtp-clockrate.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/rtp-clockrate.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simplecall.https.html [ Timeout ]
@@ -2941,8 +2940,6 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simulcast/vp8.https.html [ Time
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/protocol/handover-datachannel.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simulcast/setParameters-active.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-errors.https.html [ Timeout ]
-# Conflict with looser exception for crbug.com/v8/11365
-# crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-connectionState.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-helper-test.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/protocol/candidate-exchange.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/protocol/bundle.https.html [ Timeout ]
@@ -6959,7 +6956,8 @@ crbug.com/v8/11365 virtual/synchronous_html_parser/external/wpt/html/semantics/r
 crbug.com/v8/11365 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/the-object-element/usemap-casing.html [ Failure Pass ]
 crbug.com/v8/11365 virtual/synchronous_html_parser/external/wpt/signed-exchange/appcache/sxg-inner-resp-over-appcache.tentative.https.html [ Failure Pass ]
 crbug.com/v8/11365 virtual/threaded/external/wpt/animation-worklet/idlharness.any.worker.html [ Failure Pass ]
-crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Failure Pass ]
+# See also crbug.com/1226181 for the timeout
+crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Failure Pass Timeout ]
 crbug.com/v8/11365 [ Win ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-send.html [ Failure Pass ]
 crbug.com/v8/11365 [ Linux ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-send.html [ Failure Pass ]
 crbug.com/v8/11365 [ Mac10.15 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-send.html [ Failure Pass ]
@@ -6968,8 +6966,9 @@ crbug.com/v8/11365 [ Mac10.13 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RT
 crbug.com/v8/11365 [ Mac10.12 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-send.html [ Failure Pass ]
 crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDtlsTransport-getRemoteCertificates.html [ Failure Pass ]
 crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDtlsTransport-state.html [ Failure Pass ]
-crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-connectionState.https.html [ Failure Pass ]
-crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Failure Pass ]
+# See also crbug.com/1226181 for the timeout
+crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-connectionState.https.html [ Failure Pass Timeout ]
+crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Failure Pass Timeout ]
 crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-iceGatheringState.html [ Failure Pass ]
 crbug.com/v8/11365 [ Win ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-onsignalingstatechanged.https.html [ Failure Pass ]
 crbug.com/v8/11365 [ Linux ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-onsignalingstatechanged.https.html [ Failure Pass ]
