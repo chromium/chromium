@@ -454,6 +454,26 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
+  if (potential_activation.request_context_type !=
+      begin_params_->request_context_type) {
+    return false;
+  }
+
+  if (potential_activation.request_destination !=
+      begin_params_->request_destination) {
+    return false;
+  }
+
+  // Since impression should not be set, no need to compare contents.
+  DCHECK(!begin_params_->impression);
+  if (potential_activation.impression.has_value()) {
+    return false;
+  }
+
+  // No need to test for devtools_initiator because this field is used for
+  // tracking what triggered a network request, and prerender activation will
+  // not use network requests.
+
   return true;
 }
 
@@ -510,6 +530,17 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   DCHECK(!common_params_->is_history_navigation_in_new_child_frame);
   if (potential_activation.is_history_navigation_in_new_child_frame !=
       common_params_->is_history_navigation_in_new_child_frame) {
+    return false;
+  }
+
+  // The CommonNavigationParams::url field is expected to be the same for both
+  // initial and activation prerender navigations, as the PrerenderHost
+  // selection would have already checked for matching values. Adding a DCHECK
+  // here to be safe.
+  DCHECK_EQ(potential_activation.url, common_params_->url);
+
+  if (potential_activation.started_from_context_menu !=
+      common_params_->started_from_context_menu) {
     return false;
   }
 

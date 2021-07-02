@@ -366,6 +366,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   std::string searchable_form_encoding_;
   absl::optional<GURL> history_url_for_data_url_;
   std::string href_translate_;
+  blink::mojom::RequestContextType request_context_type_ =
+      blink::mojom::RequestContextType::LOCATION;
 
   // Any DNS aliases, as read from CNAME records, for the request URL that
   // would be in the network::mojom::URLResponseHead. The alias chain order

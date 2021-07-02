@@ -1212,8 +1212,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           initiator_frame_host_
               ? absl::make_optional(initiator_frame_host_->GetFrameToken())
               : absl::nullopt,
-          headers_, load_flags_, skip_service_worker_,
-          blink::mojom::RequestContextType::HYPERLINK,
+          headers_, load_flags_, skip_service_worker_, request_context_type_,
           network::mojom::RequestDestination::kDocument,
           mixed_content_context_type_, is_form_submission_,
           false /* was_initiated_by_link_click */, searchable_form_url_,

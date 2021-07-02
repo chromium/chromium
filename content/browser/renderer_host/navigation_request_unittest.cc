@@ -243,7 +243,7 @@ TEST_F(NavigationRequestTest, SimpleDataChecksRedirectAndProcess) {
   auto navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kUrl1, main_rfh());
   navigation->Start();
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
@@ -252,7 +252,7 @@ TEST_F(NavigationRequestTest, SimpleDataChecksRedirectAndProcess) {
   navigation->set_http_connection_info(
       net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1);
   navigation->Redirect(kUrl2);
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
@@ -261,7 +261,7 @@ TEST_F(NavigationRequestTest, SimpleDataChecksRedirectAndProcess) {
   navigation->set_http_connection_info(
       net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
   navigation->ReadyToCommit();
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
@@ -288,14 +288,14 @@ TEST_F(NavigationRequestTest, SimpleDataChecksFailure) {
   auto navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
   navigation->Start();
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   navigation->Fail(net::ERR_CERT_DATE_INVALID);
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::ERR_CERT_DATE_INVALID,
