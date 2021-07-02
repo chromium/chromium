@@ -17,7 +17,7 @@
       --args="use_clang_coverage=true is_component_build=false\\
               is_debug=false dcheck_always_on=true"
   gclient runhooks
-  python tools/code_coverage/coverage.py crypto_unittests url_unittests \\
+  vpython tools/code_coverage/coverage.py crypto_unittests url_unittests \\
       -b out/coverage -o out/report -c 'out/coverage/crypto_unittests' \\
       -c 'out/coverage/url_unittests --gtest_filter=URLParser.PathURL' \\
       -f url/ -f crypto/
@@ -32,7 +32,7 @@
 
   * Sample flow for running a test target with xvfb (e.g. unit_tests):
 
-  python tools/code_coverage/coverage.py unit_tests -b out/coverage \\
+  vpython tools/code_coverage/coverage.py unit_tests -b out/coverage \\
       -o out/report -c 'python testing/xvfb.py out/coverage/unit_tests'
 
   If you are building a fuzz target, you need to add "use_libfuzzer=true" GN
@@ -40,7 +40,7 @@
 
   * Sample workflow for a fuzz target (e.g. pdfium_fuzzer):
 
-  python tools/code_coverage/coverage.py pdfium_fuzzer \\
+  vpython tools/code_coverage/coverage.py pdfium_fuzzer \\
       -b out/coverage -o out/report \\
       -c 'out/coverage/pdfium_fuzzer -runs=0 <corpus_dir>' \\
       -f third_party/pdfium
@@ -53,7 +53,7 @@
 
   * Sample workflow for running Blink web tests:
 
-  python tools/code_coverage/coverage.py blink_tests \\
+  vpython tools/code_coverage/coverage.py blink_tests \\
       -wt -b out/coverage -o out/report -f third_party/blink
 
   If you need to pass arguments to run_web_tests.py, use
