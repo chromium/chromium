@@ -2515,6 +2515,10 @@ const char kTabGroupsNewBadgePromoDescription[] =
     "Causes a 'New' badge to appear on the entry point for creating a tab "
     "group in the tab context menu.";
 
+const char kTabGroupsSaveName[] = "Tab Groups Save";
+const char kTabGroupsSaveDescription[] =
+    "Enables users to explicitly save and recall tab groups.";
+
 const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
 const char kTabHoverCardImagesDescription[] =
     "Shows a preview image in tab hover cards, if tab hover cards are enabled.";

@@ -128,6 +128,11 @@ const base::Feature kTabGroupsFeedback{"TabGroupsFeedback",
 const base::Feature kTabGroupsNewBadgePromo{"TabGroupsNewBadgePromo",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables users to explicitly save and recall tab groups.
+// https://crbug.com/1223929
+const base::Feature kTabGroupsSave{"TabGroupsSave",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
 const base::Feature kTabHoverCardImages{"TabHoverCardImages",

@@ -4589,6 +4589,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsNewBadgePromoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsNewBadgePromo)},
 
+    {"tab-groups-save", flag_descriptions::kTabGroupsSaveName,
+     flag_descriptions::kTabGroupsSaveDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabGroupsSave)},
+
     {"new-tabstrip-animation", flag_descriptions::kNewTabstripAnimationName,
      flag_descriptions::kNewTabstripAnimationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kNewTabstripAnimation)},

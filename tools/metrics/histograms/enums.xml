@@ -46350,6 +46350,7 @@ from previous Chrome versions.
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
+  <int value="-1823073826" label="TabGroupsSave:disabled"/>
   <int value="-1822825246" label="DragFromShelfToHomeOrOverview:enabled"/>
   <int value="-1821058653" label="enable-delay-agnostic-aec"/>
   <int value="-1818947212" label="OutOfBlinkCors:disabled"/>
@@ -46972,6 +46973,7 @@ from previous Chrome versions.
   <int value="-1319688939" label="ignore-gpu-blacklist"/>
   <int value="-1318914924" label="OverflowIconsForMediaControls:enabled"/>
   <int value="-1316769004" label="CrossOriginOpenerPolicyReporting:disabled"/>
+  <int value="-1314757884" label="TabGroupsSave:enabled"/>
   <int value="-1314603238" label="ChromeHomePullToRefreshIphAtTop:enabled"/>
   <int value="-1313810940" label="StrictOriginIsolation:disabled"/>
   <int value="-1311575452"

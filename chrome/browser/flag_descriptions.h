@@ -1444,6 +1444,9 @@ extern const char kTabGroupsFeedbackDescription[];
 extern const char kTabGroupsNewBadgePromoName[];
 extern const char kTabGroupsNewBadgePromoDescription[];
 
+extern const char kTabGroupsSaveName[];
+extern const char kTabGroupsSaveDescription[];
+
 extern const char kTabHoverCardImagesName[];
 extern const char kTabHoverCardImagesDescription[];
 
