@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver;
@@ -100,6 +101,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1225949")
     public void testDinoButtonClick() {
         for (View view : mWidgetViews) {
             // clang-format off
