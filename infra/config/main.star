@@ -115,6 +115,28 @@ luci.realm(
     ],
 )
 
+luci.realm(
+    name = "ci",
+    bindings = [
+        # Allow CI builders to create invocations in their own builds.
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = "project-chromium-ci-task-accounts",
+        ),
+    ],
+)
+
+luci.realm(
+    name = "try",
+    bindings = [
+        # Allow try builders to create invocations in their own builds.
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = "project-chromium-try-task-accounts",
+        ),
+    ],
+)
+
 # Launch Swarming tasks in "realms-aware mode", crbug.com/1136313.
 luci.builder.defaults.experiments.set({"luci.use_realms": 100})
 
