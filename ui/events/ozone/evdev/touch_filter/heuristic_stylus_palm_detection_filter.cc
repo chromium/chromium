@@ -20,9 +20,10 @@ void HeuristicStylusPalmDetectionFilter::Filter(
   uint32_t active_touches = 0;
   const size_t events_size =
       std::min(touches.size(), static_cast<size_t>(kNumTouchEvdevSlots));
-  DCHECK_EQ(touches.size(), static_cast<size_t>(kNumTouchEvdevSlots))
+  DCHECK_LE(touches.size(), static_cast<size_t>(kNumTouchEvdevSlots))
       << "heuristic filtering only expected to work on devices with "
-         "kNumTouchEvdevSlots slots. Proceeding safely anyway, but unexpected.";
+         "kNumTouchEvdevSlots or fewer slots. Proceeding safely anyway, but "
+         "unexpected.";
   for (size_t i = 0; i < events_size; ++i) {
     const auto& touch = touches[i];
     if (touch.tool_code == BTN_TOOL_PEN) {
