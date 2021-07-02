@@ -323,6 +323,7 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/PasswordChangeFixtureParameters.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/PasswordChangeFixtureTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/PasswordChangeFixtureTestUtils.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/ProtoTestUtil.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/TestingAutofillAssistantModuleEntryProvider.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/TriggerContextTest.java",
   ]

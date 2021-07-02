@@ -19,6 +19,9 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -94,12 +97,8 @@ public class AutofillAssistantKeyboardIntegrationTest {
     @Test
     @MediumTest
     public void keyboardDoesNotShowOnElementClick() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#profile_name"))
-                        .build();
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        SelectorProto element = toCssSelector("#profile_name");
+        ClientIdProto clientId = toClientId("e");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -160,11 +159,7 @@ public class AutofillAssistantKeyboardIntegrationTest {
     @Test
     @MediumTest
     public void keyboardDoesNotShowOnKeyStrokes() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#profile_name"))
-                        .build();
+        SelectorProto element = toCssSelector("#profile_name");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -244,16 +239,8 @@ public class AutofillAssistantKeyboardIntegrationTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1216453")
     public void keyboardDoesNotShowOnElementClickInIFrame() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector("#iframe"))
-                        .addFilters(SelectorProto.Filter.newBuilder().setNthMatch(
-                                SelectorProto.NthMatchFilter.newBuilder().setIndex(0)))
-                        .addFilters(SelectorProto.Filter.newBuilder().setEnterFrame(
-                                SelectorProto.EmptyFilter.getDefaultInstance()))
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector("#name"))
-                        .build();
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        SelectorProto element = toIFrameCssSelector("#iframe", "#name");
+        ClientIdProto clientId = toClientId("e");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -315,11 +302,7 @@ public class AutofillAssistantKeyboardIntegrationTest {
     @Test
     @MediumTest
     public void doNotHideChipsWhileKeyboardShowingForWebsiteTextInput() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#profile_name"))
-                        .build();
+        SelectorProto element = toCssSelector("#profile_name");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()

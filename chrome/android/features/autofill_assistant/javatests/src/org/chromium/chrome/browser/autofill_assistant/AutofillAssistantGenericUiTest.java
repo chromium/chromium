@@ -46,6 +46,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.withMinimumSize;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.withTextGravity;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.graphics.Typeface;
 import android.support.test.InstrumentationRegistry;
@@ -2726,11 +2727,7 @@ public class AutofillAssistantGenericUiTest {
                         .setModel(ModelProto.newBuilder())
                         .build();
 
-        SelectorProto touch_area_one =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
+        SelectorProto touch_area_one = toCssSelector("#touch_area_one");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()

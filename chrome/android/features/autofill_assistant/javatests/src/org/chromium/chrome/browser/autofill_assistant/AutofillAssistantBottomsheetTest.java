@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 import static org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheetProto.PeekMode.HANDLE;
 import static org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheetProto.PeekMode.HANDLE_HEADER;
 import static org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheetProto.PeekMode.HANDLE_HEADER_CAROUSELS;
@@ -71,7 +72,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheet
 import org.chromium.chrome.browser.autofill_assistant.proto.DetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
-import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ShowCastProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ShowDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
@@ -144,9 +144,7 @@ public class AutofillAssistantBottomsheetTest {
         // Focus on the bottom element.
         list.add(ActionProto.newBuilder()
                          .setShowCast(ShowCastProto.newBuilder().setElementToPresent(
-                                 SelectorProto.newBuilder().addFilters(
-                                         SelectorProto.Filter.newBuilder().setCssSelector(
-                                                 "p.bottom"))))
+                                 toCssSelector("p.bottom")))
                          .build());
         if (withDetails) {
             // ShowDetails.
@@ -432,9 +430,7 @@ public class AutofillAssistantBottomsheetTest {
         // Focus on the bottom element.
         list.add(ActionProto.newBuilder()
                          .setShowCast(ShowCastProto.newBuilder().setElementToPresent(
-                                 SelectorProto.newBuilder().addFilters(
-                                         SelectorProto.Filter.newBuilder().setCssSelector(
-                                                 "p.bottom"))))
+                                 toCssSelector("p.bottom")))
                          .build());
         // Set handle and header peek mode and auto collapse to that state.
         list.add(ActionProto.newBuilder()

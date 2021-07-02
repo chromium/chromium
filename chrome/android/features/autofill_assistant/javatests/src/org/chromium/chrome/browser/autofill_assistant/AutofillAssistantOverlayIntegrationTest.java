@@ -21,6 +21,8 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
 
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
@@ -92,11 +94,7 @@ public class AutofillAssistantOverlayIntegrationTest {
     @Test
     @MediumTest
     public void testShowCastOnDocumentElement() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
+        SelectorProto element = toCssSelector("#touch_area_one");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -140,11 +138,7 @@ public class AutofillAssistantOverlayIntegrationTest {
     @Test
     @MediumTest
     public void testRepeatedShowCastOnSameElement() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
+        SelectorProto element = toCssSelector("#touch_area_one");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -205,11 +199,7 @@ public class AutofillAssistantOverlayIntegrationTest {
     @Test
     @MediumTest
     public void testShowCastOnDocumentElementInScrolledBrowserWindow() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#touch_area_five"))
-                        .build();
+        SelectorProto element = toCssSelector("#touch_area_five");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -253,17 +243,7 @@ public class AutofillAssistantOverlayIntegrationTest {
     @Test
     @MediumTest
     public void testShowCastOnIFrameElement() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector("#iframe"))
-                        .addFilters(SelectorProto.Filter.newBuilder().setNthMatch(
-                                SelectorProto.NthMatchFilter.newBuilder().setIndex(0)))
-                        .addFilters(SelectorProto.Filter.newBuilder().setEnterFrame(
-                                SelectorProto.EmptyFilter.getDefaultInstance()))
-
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_1"))
-                        .build();
+        SelectorProto element = toIFrameCssSelector("#iframe", "#touch_area_1");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -309,17 +289,7 @@ public class AutofillAssistantOverlayIntegrationTest {
     @MediumTest
     @FlakyTest(message = "https://crbug.com/1182103")
     public void testShowCastOnIFrameElementInScrollIFrame() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector("#iframe"))
-                        .addFilters(SelectorProto.Filter.newBuilder().setNthMatch(
-                                SelectorProto.NthMatchFilter.newBuilder().setIndex(0)))
-                        .addFilters(SelectorProto.Filter.newBuilder().setEnterFrame(
-                                SelectorProto.EmptyFilter.getDefaultInstance()))
-
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_3"))
-                        .build();
+        SelectorProto element = toIFrameCssSelector("#iframe", "#touch_area_3");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -365,12 +335,6 @@ public class AutofillAssistantOverlayIntegrationTest {
     @Test
     @MediumTest
     public void testOverlayBehaviorSetting() throws Exception {
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
-
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
                          .setPrompt(

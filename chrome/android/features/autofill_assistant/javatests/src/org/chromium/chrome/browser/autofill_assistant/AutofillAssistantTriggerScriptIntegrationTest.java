@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
@@ -227,8 +228,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     // Disable translate to prevent the popup from covering part of the website.
     @Features.DisableFeatures("Translate")
     public void elementCondition() throws Exception {
-        SelectorProto.Builder touch_area_four = SelectorProto.newBuilder().addFilters(
-                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"));
+        SelectorProto touch_area_four = toCssSelector("#touch_area_one");
         TriggerScriptProto.Builder buttonVisibleTriggerScript =
                 TriggerScriptProto.newBuilder()
                         .setTriggerCondition(TriggerScriptConditionProto.newBuilder().setSelector(

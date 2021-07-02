@@ -18,6 +18,8 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -49,7 +51,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SelectFieldValueProt
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionElementProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto.Filter;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendChangeEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendKeyEventProto;
@@ -107,10 +108,7 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void fillFormFieldWithValue() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
+        SelectorProto element_set_value = toCssSelector("#input1");
         list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
@@ -139,10 +137,7 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void fillFormFieldWithKeystrokes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
+        SelectorProto element_set_value = toCssSelector("#input1");
         list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
@@ -172,10 +167,7 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void fillFormFieldWithKeystrokesAndFocus() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
+        SelectorProto element_set_value = toCssSelector("#input1");
         list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
@@ -205,10 +197,7 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void fillFormFieldWithKeystrokesAndSelect() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
+        SelectorProto element_set_value = toCssSelector("#input1");
         list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
@@ -239,10 +228,7 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void clearFormFieldWithValue() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
+        SelectorProto element_set_value = toCssSelector("#input1");
         list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
@@ -258,10 +244,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Continue"))))
                          .build());
-        SelectorProto element_keystrokes =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input2"))
-                        .build();
+        SelectorProto element_keystrokes = toCssSelector("#input2");
         list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
@@ -297,10 +280,7 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void clearFormFieldWithKeystrokes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
+        SelectorProto element_set_value = toCssSelector("#input1");
         list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
@@ -318,10 +298,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Continue"))))
                          .build());
-        SelectorProto element_keystrokes =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input2"))
-                        .build();
+        SelectorProto element_keystrokes = toCssSelector("#input2");
         list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
@@ -358,9 +335,7 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void selectOptionFromDropdown() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element = SelectorProto.newBuilder()
-                                        .addFilters(Filter.newBuilder().setCssSelector("#select"))
-                                        .build();
+        SelectorProto element = toCssSelector("#select");
         list.add(ActionProto.newBuilder()
                          .setSelectOption(
                                  SelectOptionProto.newBuilder()
@@ -431,12 +406,9 @@ public class AutofillAssistantInputActionIntegrationTest {
     @MediumTest
     public void clickingOnElementToHide() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        ClientIdProto clientId = toClientId("e");
 
-        SelectorProto element_click =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
+        SelectorProto element_click = toCssSelector("#touch_area_one");
         list.add(ActionProto.newBuilder()
                          .setWaitForDom(
                                  WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
@@ -457,10 +429,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                  .setType(ChipType.HIGHLIGHTED_ACTION)
                                                  .setText("Continue"))))
                          .build());
-        SelectorProto element_tap =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#touch_area_five"))
-                        .build();
+        SelectorProto element_tap = toCssSelector("#touch_area_five");
         list.add(ActionProto.newBuilder()
                          .setWaitForDom(
                                  WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
@@ -481,10 +450,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                  .setType(ChipType.HIGHLIGHTED_ACTION)
                                                  .setText("Continue"))))
                          .build());
-        SelectorProto element_js =
-                SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#touch_area_six"))
-                        .build();
+        SelectorProto element_js = toCssSelector("#touch_area_six");
         list.add(ActionProto.newBuilder()
                          .setWaitForDom(
                                  WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
@@ -536,9 +502,8 @@ public class AutofillAssistantInputActionIntegrationTest {
         // This script attempts to click 2 times on #button:
         // 1. the first click chain clicks without checking for overlays
         // 2. the second click chain finds an overlay and fails
-        SelectorProto.Builder button = SelectorProto.newBuilder().addFilters(
-                Filter.newBuilder().setCssSelector("#button"));
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        SelectorProto button = toCssSelector("#button");
+        ClientIdProto clientId = toClientId("e");
         ArrayList<ActionProto> actions = new ArrayList<>();
         actions.add(
                 ActionProto.newBuilder()
@@ -581,10 +546,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void setTextWithMiniActions() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element = SelectorProto.newBuilder()
-                                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                                        .build();
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        SelectorProto element = toCssSelector("#input1");
+        ClientIdProto clientId = toClientId("e");
         list.add(ActionProto.newBuilder()
                          .setWaitForDom(
                                  WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
@@ -657,10 +620,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void clearTextWithMiniActions() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element = SelectorProto.newBuilder()
-                                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                                        .build();
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        SelectorProto element = toCssSelector("#input1");
+        ClientIdProto clientId = toClientId("e");
         list.add(ActionProto.newBuilder()
                          .setWaitForDom(
                                  WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
@@ -704,15 +665,10 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void selectOptionWithMiniActions() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto select = SelectorProto.newBuilder()
-                                       .addFilters(Filter.newBuilder().setCssSelector("#select"))
-                                       .build();
-        ClientIdProto selectId = ClientIdProto.newBuilder().setIdentifier("s").build();
-        SelectorProto option = SelectorProto.newBuilder()
-                                       .addFilters(Filter.newBuilder().setCssSelector(
-                                               "#select option:nth-child(3)"))
-                                       .build();
-        ClientIdProto optionId = ClientIdProto.newBuilder().setIdentifier("o").build();
+        SelectorProto select = toCssSelector("#select");
+        ClientIdProto selectId = toClientId("s");
+        SelectorProto option = toCssSelector("#select option:nth-child(3)");
+        ClientIdProto optionId = toClientId("o");
         list.add(ActionProto.newBuilder()
                          .setWaitForDom(
                                  WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(

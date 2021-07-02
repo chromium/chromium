@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -123,18 +124,12 @@ public class AutofillAssistantAccessibilityIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         // Show an element on top that should not be covered by the bottom sheet.
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
+        SelectorProto element = toCssSelector("#touch_area_one");
         ElementAreaProto elementArea =
                 ElementAreaProto.newBuilder()
                         .addTouchable(Rectangle.newBuilder().addElements(element))
                         .addTouchable(Rectangle.newBuilder().addElements(
-                                SelectorProto.newBuilder().addFilters(
-                                        SelectorProto.Filter.newBuilder().setCssSelector(
-                                                "#touch_area_four"))))
+                                toCssSelector("#touch_area_four")))
                         .build();
         list.add(ActionProto.newBuilder()
                          .setShowCast(ShowCastProto.newBuilder()
@@ -200,18 +195,12 @@ public class AutofillAssistantAccessibilityIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         // Show an element on top that may or may not be covered by the bottom sheet.
-        SelectorProto element =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
+        SelectorProto element = toCssSelector("#touch_area_one");
         ElementAreaProto elementArea =
                 ElementAreaProto.newBuilder()
                         .addTouchable(Rectangle.newBuilder().addElements(element))
                         .addTouchable(Rectangle.newBuilder().addElements(
-                                SelectorProto.newBuilder().addFilters(
-                                        SelectorProto.Filter.newBuilder().setCssSelector(
-                                                "#touch_area_four"))))
+                                toCssSelector("#touch_area_four")))
                         .build();
         list.add(ActionProto.newBuilder()
                          .setShowCast(ShowCastProto.newBuilder()

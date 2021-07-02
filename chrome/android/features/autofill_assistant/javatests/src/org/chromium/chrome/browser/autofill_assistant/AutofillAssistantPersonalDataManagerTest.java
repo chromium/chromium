@@ -45,6 +45,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewInRootMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.withTextId;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
@@ -74,7 +75,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.RequiredDataPiece;
 import org.chromium.chrome.browser.autofill_assistant.proto.RequiredFieldProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto;
@@ -162,9 +162,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                         .setUseAddress(
                                 UseAddressProto.newBuilder()
                                         .setName("contact")
-                                        .setFormFieldElement(SelectorProto.newBuilder().addFilters(
-                                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                                        "#profile_name")))
+                                        .setFormFieldElement(toCssSelector("#profile_name"))
                                         .addRequiredFields(
                                                 RequiredFieldProto.newBuilder()
                                                         .setValueExpression(
@@ -172,10 +170,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                                         .addChunk(
                                                                                 Chunk.newBuilder()
                                                                                         .setKey(7)))
-                                                        .setElement(SelectorProto.newBuilder().addFilters(
-                                                                SelectorProto.Filter.newBuilder()
-                                                                        .setCssSelector(
-                                                                                "#profile_name")))
+                                                        .setElement(toCssSelector("#profile_name"))
                                                         .setForced(true))
                                         .addRequiredFields(
                                                 RequiredFieldProto.newBuilder()
@@ -184,12 +179,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                                         .addChunk(
                                                                                 Chunk.newBuilder()
                                                                                         .setKey(9)))
-                                                        .setElement(
-                                                                SelectorProto.newBuilder().addFilters(
-                                                                        SelectorProto.Filter
-                                                                                .newBuilder()
-                                                                                .setCssSelector(
-                                                                                        "#email")))
+                                                        .setElement(toCssSelector("#email"))
                                                         .setForced(true)))
                         .build());
         list.add(ActionProto.newBuilder()
@@ -357,9 +347,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 ActionProto.newBuilder()
                         .setUseAddress(
                                 UseAddressProto.newBuilder().setName("contact").setFormFieldElement(
-                                        SelectorProto.newBuilder().addFilters(
-                                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                                        "#profile_name"))))
+                                        toCssSelector("#profile_name")))
                         .build());
         list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
@@ -412,9 +400,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 ActionProto.newBuilder()
                         .setUseAddress(
                                 UseAddressProto.newBuilder().setName("contact").setFormFieldElement(
-                                        SelectorProto.newBuilder().addFilters(
-                                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                                        "#profile_name"))))
+                                        toCssSelector("#profile_name")))
                         .build());
         list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
@@ -522,9 +508,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 ActionProto.newBuilder()
                         .setUseAddress(
                                 UseAddressProto.newBuilder().setName("contact").setFormFieldElement(
-                                        SelectorProto.newBuilder().addFilters(
-                                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                                        "#profile_name"))))
+                                        toCssSelector("#profile_name")))
                         .build());
         list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
@@ -599,12 +583,9 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                      .setRequestTermsAndConditions(false))
                          .build());
         list.add(ActionProto.newBuilder()
-                         .setUseCard(
-                                 org.chromium.chrome.browser.autofill_assistant.proto
-                                         .UseCreditCardProto.newBuilder()
-                                         .setFormFieldElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#card_number"))))
+                         .setUseCard(org.chromium.chrome.browser.autofill_assistant.proto
+                                             .UseCreditCardProto.newBuilder()
+                                             .setFormFieldElement(toCssSelector("#card_number")))
                          .build());
         list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
@@ -999,14 +980,12 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                  buildRequiredDataPiece("Requires valid state", 34))
                                          .setRequestTermsAndConditions(false))
                          .build());
-        list.add(ActionProto.newBuilder()
-                         .setUseAddress(
-                                 UseAddressProto.newBuilder()
-                                         .setName("shipping")
-                                         .setFormFieldElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#address_name"))))
-                         .build());
+        list.add(
+                ActionProto.newBuilder()
+                        .setUseAddress(UseAddressProto.newBuilder()
+                                               .setName("shipping")
+                                               .setFormFieldElement(toCssSelector("#address_name")))
+                        .build());
         list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))

@@ -22,6 +22,8 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -118,16 +120,8 @@ public class AutofillAssistantInterruptIntegrationTest {
     @MediumTest
     public void testInterruptClicksElementDuringPrompt() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
-        SelectorProto touch_area_one =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
-        SelectorProto touch_area_four =
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#touch_area_four"))
-                        .build();
+        SelectorProto touch_area_one = toCssSelector("#touch_area_one");
+        SelectorProto touch_area_four = toCssSelector("#touch_area_four");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -151,7 +145,7 @@ public class AutofillAssistantInterruptIntegrationTest {
         scripts.add(script);
 
         ArrayList<ActionProto> interruptActionList = new ArrayList<>();
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        ClientIdProto clientId = toClientId("e");
         interruptActionList.add(
                 ActionProto.newBuilder()
                         .setWaitForDom(
@@ -228,16 +222,8 @@ public class AutofillAssistantInterruptIntegrationTest {
     @MediumTest
     public void testInterruptCicksElementDuringShowGenericUi() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
-        SelectorProto touch_area_one =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
-        SelectorProto touch_area_four =
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#touch_area_four"))
-                        .build();
+        SelectorProto touch_area_one = toCssSelector("#touch_area_one");
+        SelectorProto touch_area_four = toCssSelector("#touch_area_four");
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
@@ -304,7 +290,7 @@ public class AutofillAssistantInterruptIntegrationTest {
         scripts.add(script);
 
         ArrayList<ActionProto> interruptActionList = new ArrayList<>();
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        ClientIdProto clientId = toClientId("e");
         interruptActionList.add(
                 ActionProto.newBuilder()
                         .setWaitForDom(
@@ -382,16 +368,8 @@ public class AutofillAssistantInterruptIntegrationTest {
     @MediumTest
     public void testInterruptClearsUi() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
-        SelectorProto touch_area_one =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
-        SelectorProto touch_area_four =
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#touch_area_four"))
-                        .build();
+        SelectorProto touch_area_one = toCssSelector("#touch_area_one");
+        SelectorProto touch_area_four = toCssSelector("#touch_area_four");
 
         // Main script
         ArrayList<ActionProto> list = new ArrayList<>();
@@ -534,16 +512,8 @@ public class AutofillAssistantInterruptIntegrationTest {
     @MediumTest
     public void testPersonalDataUpdateDuringInterruptIsRegisteredByGenericUi() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
-        SelectorProto touch_area_one =
-                SelectorProto.newBuilder()
-                        .addFilters(
-                                SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
-        SelectorProto touch_area_four =
-                SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#touch_area_four"))
-                        .build();
+        SelectorProto touch_area_one = toCssSelector("#touch_area_one");
+        SelectorProto touch_area_four = toCssSelector("#touch_area_four");
 
         // Main script
         ArrayList<ActionProto> list = new ArrayList<>();
