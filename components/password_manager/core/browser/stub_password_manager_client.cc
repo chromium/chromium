@@ -73,6 +73,11 @@ PasswordStore* StubPasswordManagerClient::GetAccountPasswordStore() const {
   return nullptr;
 }
 
+PasswordReuseManager* StubPasswordManagerClient::GetPasswordReuseManager()
+    const {
+  return nullptr;
+}
+
 const GURL& StubPasswordManagerClient::GetLastCommittedURL() const {
   return GURL::EmptyGURL();
 }

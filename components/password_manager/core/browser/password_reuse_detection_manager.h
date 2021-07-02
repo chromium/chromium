@@ -65,11 +65,6 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   base::Clock* clock_;
   bool reuse_on_this_page_was_found_ = false;
 
-  // Caches the results returned from each store until all stores
-  // respond. All credentials are then forwarded to the `client_`.
-  base::flat_set<MatchingReusedCredential> all_matching_reused_credentials_;
-  int wait_counter_ = 0;
-
   DISALLOW_COPY_AND_ASSIGN(PasswordReuseDetectionManager);
 };
 

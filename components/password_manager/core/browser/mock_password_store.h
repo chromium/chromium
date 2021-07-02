@@ -96,21 +96,6 @@ class MockPasswordStore : public PasswordStore {
 
   MOCK_CONST_METHOD0(IsAbleToSavePasswords, bool());
 
-  MOCK_METHOD3(CheckReuse,
-               void(const std::u16string&,
-                    const std::string&,
-                    PasswordReuseDetectorConsumer*));
-  MOCK_METHOD4(SaveGaiaPasswordHash,
-               void(const std::string&,
-                    const std::u16string&,
-                    bool,
-                    metrics_util::GaiaPasswordHashChange));
-  MOCK_METHOD2(SaveEnterprisePasswordHash,
-               void(const std::string&, const std::u16string&));
-  MOCK_METHOD1(ClearGaiaPasswordHash, void(const std::string&));
-  MOCK_METHOD0(ClearAllGaiaPasswordHash, void());
-  MOCK_METHOD0(ClearAllEnterprisePasswordHash, void());
-
   MOCK_METHOD0(BeginTransaction, bool());
   MOCK_METHOD0(RollbackTransaction, void());
   MOCK_METHOD0(CommitTransaction, bool());

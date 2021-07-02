@@ -53,10 +53,6 @@ namespace password_manager {
 
 namespace {
 
-bool IsPasswordReuseDetectionEnabled() {
-  return base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled);
-}
-
 void CloseTraceAndCallBack(
     const char* trace_name,
     PasswordStoreConsumer* consumer,
@@ -94,10 +90,6 @@ bool PasswordStore::Init(PrefService* prefs,
   DCHECK(background_task_runner_);
   sync_enabled_or_disabled_cb_ = std::move(sync_enabled_or_disabled_cb);
   prefs_ = prefs;
-
-  if (IsPasswordReuseDetectionEnabled()) {
-    reuse_manager_ = std::make_unique<PasswordReuseManagerImpl>();
-  }
 
   if (background_task_runner_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
@@ -402,10 +394,6 @@ void PasswordStore::ShutdownOnUIThread() {
       base::BindOnce(&PasswordStore::DestroyOnBackgroundSequence, this));
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
-  if (reuse_manager_) {
-    reuse_manager_->Shutdown();
-  }
-  reuse_manager_.reset();
   shutdown_called_ = true;
 }
 
@@ -433,90 +421,6 @@ void PasswordStore::SetUnsyncedCredentialsDeletionNotifier(
 
 void PasswordStore::SetSyncTaskTimeoutForTest(base::TimeDelta timeout) {
   sync_task_timeout_ = timeout;
-}
-
-void PasswordStore::CheckReuse(const std::u16string& input,
-                               const std::string& domain,
-                               PasswordReuseDetectorConsumer* consumer) {
-  if (reuse_manager_)
-    reuse_manager_->CheckReuse(input, domain, consumer);
-}
-
-void PasswordStore::PreparePasswordHashData(const std::string& sync_username,
-                                            const bool is_signed_in) {
-  if (reuse_manager_)
-    reuse_manager_->PreparePasswordHashData(sync_username, is_signed_in);
-}
-
-void PasswordStore::SaveGaiaPasswordHash(const std::string& username,
-                                         const std::u16string& password,
-                                         bool is_primary_account,
-                                         GaiaPasswordHashChange event) {
-  if (reuse_manager_)
-    reuse_manager_->SaveGaiaPasswordHash(username, password, is_primary_account,
-                                         event);
-}
-
-void PasswordStore::SaveEnterprisePasswordHash(const std::string& username,
-                                               const std::u16string& password) {
-  if (reuse_manager_)
-    reuse_manager_->SaveEnterprisePasswordHash(username, password);
-}
-
-void PasswordStore::SaveSyncPasswordHash(
-    const PasswordHashData& sync_password_data,
-    GaiaPasswordHashChange event) {
-  if (reuse_manager_)
-    reuse_manager_->SaveSyncPasswordHash(sync_password_data, event);
-}
-
-void PasswordStore::ClearGaiaPasswordHash(const std::string& username) {
-  if (reuse_manager_)
-    reuse_manager_->ClearGaiaPasswordHash(username);
-}
-
-void PasswordStore::ClearAllGaiaPasswordHash() {
-  if (reuse_manager_)
-    reuse_manager_->ClearAllGaiaPasswordHash();
-}
-
-void PasswordStore::ClearAllEnterprisePasswordHash() {
-  if (reuse_manager_)
-    reuse_manager_->ClearAllEnterprisePasswordHash();
-}
-
-void PasswordStore::ClearAllNonGmailPasswordHash() {
-  if (reuse_manager_)
-    reuse_manager_->ClearAllNonGmailPasswordHash();
-}
-
-base::CallbackListSubscription
-PasswordStore::RegisterStateCallbackOnHashPasswordManager(
-    const base::RepeatingCallback<void(const std::string& username)>&
-        callback) {
-  DCHECK(reuse_manager_);
-  return reuse_manager_->RegisterStateCallbackOnHashPasswordManager(
-      std::move(callback));
-}
-
-void PasswordStore::SetPasswordStoreSigninNotifier(
-    std::unique_ptr<PasswordStoreSigninNotifier> notifier) {
-  if (reuse_manager_)
-    reuse_manager_->SetPasswordStoreSigninNotifier(std::move(notifier));
-}
-
-void PasswordStore::SchedulePasswordHashUpdate(bool should_log_metrics,
-                                               bool does_primary_account_exists,
-                                               bool is_signed_in) {
-  if (reuse_manager_) {
-    reuse_manager_->SchedulePasswordHashUpdate(
-        should_log_metrics, does_primary_account_exists, is_signed_in);
-  }
-}
-
-void PasswordStore::ScheduleEnterprisePasswordURLUpdate() {
-  if (reuse_manager_)
-    reuse_manager_->ScheduleEnterprisePasswordURLUpdate();
 }
 
 PasswordStore::~PasswordStore() {

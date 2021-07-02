@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -23,16 +22,13 @@
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
-#include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -44,28 +40,6 @@
 #endif
 
 using password_manager::PasswordStore;
-
-namespace {
-
-std::string GetSyncUsername(Profile* profile) {
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
-  return identity_manager
-             ? identity_manager
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                   .email
-             : std::string();
-}
-
-bool IsSignedIn(Profile* profile) {
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
-  return identity_manager
-             ? !identity_manager->GetAccountsWithRefreshTokens().empty()
-             : false;
-}
-
-}  // namespace
 
 // static
 scoped_refptr<PasswordStore> PasswordStoreFactory::GetForProfile(
@@ -108,9 +82,6 @@ PasswordStoreFactory::PasswordStoreFactory()
           "PasswordStore",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(WebDataServiceFactory::GetInstance());
-  // TODO(crbug.com/715987). Remove when PasswordReuseDetector is decoupled
-  // from PasswordStore.
-  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 PasswordStoreFactory::~PasswordStoreFactory() = default;
@@ -149,13 +120,6 @@ PasswordStoreFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  // TODO(crbug.com/715987): Delete this after ReuseManager is no longer a part
-  // of the PasswordStore.
-  ps->GetPasswordReuseManager()->Init(profile->GetPrefs(), ps.get());
-
-  // Prepare password hash data for reuse detection.
-  ps->PreparePasswordHashData(GetSyncUsername(profile), IsSignedIn(profile));
-
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {
         if (!g_browser_process->profile_manager()->IsValidProfile(profile))
@@ -167,16 +131,6 @@ PasswordStoreFactory::BuildServiceInstanceFor(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       profile->GetPrefs(), base::TimeDelta::FromSeconds(60),
       network_context_getter);
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  std::unique_ptr<password_manager::PasswordStoreSigninNotifier> notifier =
-      std::make_unique<password_manager::PasswordStoreSigninNotifierImpl>(
-          IdentityManagerFactory::GetForProfile(profile));
-  ps->SetPasswordStoreSigninNotifier(std::move(notifier));
-#endif
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossAffiliatedWebsites)) {

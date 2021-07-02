@@ -164,6 +164,8 @@ class ChromePasswordManagerClient
   PrefService* GetPrefs() const override;
   password_manager::PasswordStore* GetProfilePasswordStore() const override;
   password_manager::PasswordStore* GetAccountPasswordStore() const override;
+  password_manager::PasswordReuseManager* GetPasswordReuseManager()
+      const override;
   password_manager::SyncState GetPasswordSyncState() const override;
   bool WasLastNavigationHTTPError() const override;
 

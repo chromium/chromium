@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
+#include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -162,6 +163,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (override));
   MOCK_METHOD(PasswordStore*, GetProfilePasswordStore, (), (const, override));
   MOCK_METHOD(PasswordStore*, GetAccountPasswordStore, (), (const, override));
+  MOCK_METHOD(PasswordReuseManager*,
+              GetPasswordReuseManager,
+              (),
+              (const, override));
   // The code inside EXPECT_CALL for PromptUserToSaveOrUpdatePasswordPtr and
   // ShowManualFallbackForSavingPtr owns the PasswordFormManager* argument.
   MOCK_METHOD(void,
@@ -387,6 +392,9 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
           .WillByDefault(
               WithArg<1>(InvokeEmptyConsumerWithForms(account_store_.get())));
     }
+
+    ON_CALL(client_, GetPasswordReuseManager())
+        .WillByDefault(Return(&reuse_manager_));
 
     manager_ = std::make_unique<PasswordManager>(&client_);
     password_autofill_manager_ =
@@ -616,6 +624,7 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<MockPasswordStore> store_;
   scoped_refptr<MockPasswordStore> account_store_;
+  MockPasswordReuseManager reuse_manager_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   MockPasswordManagerDriver driver_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
@@ -1334,7 +1343,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotSaved) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(*store_,
+  EXPECT_CALL(reuse_manager_,
               SaveGaiaPasswordHash(
                   "googleuser", form_data.fields[1].value,
                   /*is_primary_account=*/true,
@@ -1380,7 +1389,7 @@ TEST_P(PasswordManagerTest, HashSavedOnGaiaFormWithSkipSavePassword) {
     EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
 
     EXPECT_CALL(
-        *store_,
+        reuse_manager_,
         SaveGaiaPasswordHash(
             "googleuser", form_data.fields[1].value,
             /*is_primary_account=*/true,
@@ -1414,7 +1423,7 @@ TEST_P(PasswordManagerTest,
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
 
-  EXPECT_CALL(*store_,
+  EXPECT_CALL(reuse_manager_,
               SaveGaiaPasswordHash(
                   "googleuser", form_data.fields[1].value,
                   /*is_primary_account=*/true,
@@ -1491,7 +1500,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotDroppedIfUpToDate) {
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
   EXPECT_CALL(
-      *store_,
+      reuse_manager_,
       SaveGaiaPasswordHash(
           "googleuser", form.password_value, /*is_primary_account=*/true,
           metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
@@ -2404,7 +2413,7 @@ TEST_P(PasswordManagerTest, NotSavingSyncPasswordHash_NoUsername) {
   client_.FilterAllResultsForSaving();
 
   // Check that no Gaia credential password hash is saved.
-  EXPECT_CALL(*store_, SaveGaiaPasswordHash).Times(0);
+  EXPECT_CALL(reuse_manager_, SaveGaiaPasswordHash).Times(0);
   OnPasswordFormSubmitted(form_data);
   observed.clear();
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
@@ -2425,7 +2434,7 @@ TEST_P(PasswordManagerTest, NotSavingSyncPasswordHash_NotSyncCredentials) {
 
   // Check that no Gaia credential password hash is saved since these
   // credentials are eligible for saving.
-  EXPECT_CALL(*store_, SaveGaiaPasswordHash).Times(0);
+  EXPECT_CALL(reuse_manager_, SaveGaiaPasswordHash).Times(0);
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
@@ -2582,7 +2591,7 @@ TEST_P(PasswordManagerTest, SaveSyncPasswordHashOnChangePasswordPage) {
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
   EXPECT_CALL(
-      *store_,
+      reuse_manager_,
       SaveGaiaPasswordHash(
           "googleuser", form_data.fields[1].value,
           /*is_primary_account=*/true,
@@ -2614,7 +2623,7 @@ TEST_P(PasswordManagerTest, SaveOtherGaiaPasswordHash) {
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
   EXPECT_CALL(
-      *store_,
+      reuse_manager_,
       SaveGaiaPasswordHash(
           "googleuser", form_data.fields[1].value, /*is_primary_account=*/false,
           metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA));
@@ -2644,7 +2653,7 @@ TEST_P(PasswordManagerTest, SaveOtherGaiaPasswordHashOnChangePasswordPage) {
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
   EXPECT_CALL(
-      *store_,
+      reuse_manager_,
       SaveGaiaPasswordHash(
           "googleuser", form_data.fields[1].value, /*is_primary_account=*/false,
           metrics_util::GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE));
@@ -2677,8 +2686,8 @@ TEST_P(PasswordManagerTest, SaveEnterprisePasswordHash) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(false));
-  EXPECT_CALL(*store_, SaveEnterprisePasswordHash("googleuser",
-                                                  form_data.fields[1].value));
+  EXPECT_CALL(reuse_manager_, SaveEnterprisePasswordHash(
+                                  "googleuser", form_data.fields[1].value));
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
 

@@ -197,7 +197,7 @@ StoreMetricsReporter::StoreMetricsReporter(
               password_manager::SyncState::kSyncingWithCustomPassphrase,
           client->IsUnderAdvancedProtection());
 
-      PasswordReuseManager* reuse_manager = store->GetPasswordReuseManager();
+      PasswordReuseManager* reuse_manager = client->GetPasswordReuseManager();
       if (reuse_manager) {
         reuse_manager->ReportMetrics(sync_username,
                                      client->IsUnderAdvancedProtection());

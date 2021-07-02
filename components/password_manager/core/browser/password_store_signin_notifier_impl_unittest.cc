@@ -8,8 +8,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_reuse_detector.h"
-#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -88,6 +86,7 @@ TEST_F(PasswordStoreSigninNotifierImplTest, SignOutContentArea) {
       CoreAccountId("secondary_account_id"),
       signin_metrics::SourceForRefreshTokenOperation::kUserMenu_RemoveAccount);
   testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
+
   EXPECT_CALL(reuse_manager_, ClearGaiaPasswordHash("username"));
   EXPECT_CALL(reuse_manager_, ClearAllGaiaPasswordHash());
   identity_test_env()->ClearPrimaryAccount();

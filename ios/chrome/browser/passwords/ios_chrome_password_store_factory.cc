@@ -18,7 +18,6 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -100,14 +99,6 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
     // UI.
     LOG(WARNING) << "Could not initialize password store.";
     return nullptr;
-  }
-
-  // TODO(crbug.com/715987): Delete this after ReuseManager is no longer a part
-  // of the PasswordStore.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordReuseDetectionEnabled)) {
-    store->GetPasswordReuseManager()->Init(
-        ChromeBrowserState::FromBrowserState(context)->GetPrefs(), store.get());
   }
 
   password_manager_util::RemoveUselessCredentials(

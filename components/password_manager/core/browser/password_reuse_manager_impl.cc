@@ -100,6 +100,7 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   DCHECK(background_task_runner_);
+  DCHECK(profile_store);
 
   reuse_detector_ = new PasswordReuseDetector();
   ScheduleTask(base::BindOnce(

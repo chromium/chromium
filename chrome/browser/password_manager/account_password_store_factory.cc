@@ -203,10 +203,6 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  // TODO(crbug.com/715987): Delete this after ReuseManager is no longer a part
-  // of the PasswordStore.
-  ps->GetPasswordReuseManager()->Init(profile->GetPrefs(), ps.get());
-
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {
         if (!g_browser_process->profile_manager()->IsValidProfile(profile))

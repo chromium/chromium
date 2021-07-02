@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/login/auth/user_context.h"
@@ -29,7 +29,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -147,11 +147,11 @@ scoped_refptr<network::SharedURLLoaderFactory> GetSigninURLLoaderFactory() {
 void SaveSyncPasswordDataToProfile(const UserContext& user_context,
                                    Profile* profile) {
   DCHECK(user_context.GetSyncPasswordData().has_value());
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      PasswordStoreFactory::GetForProfile(profile,
-                                          ServiceAccessType::EXPLICIT_ACCESS);
-  if (password_store) {
-    password_store->SaveSyncPasswordHash(
+  password_manager::PasswordReuseManager* reuse_manager =
+      PasswordReuseManagerFactory::GetForProfile(profile);
+
+  if (reuse_manager) {
+    reuse_manager->SaveSyncPasswordHash(
         user_context.GetSyncPasswordData().value(),
         password_manager::metrics_util::GaiaPasswordHashChange::
             SAVED_ON_CHROME_SIGNIN);

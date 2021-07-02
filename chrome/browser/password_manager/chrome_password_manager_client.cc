@@ -30,6 +30,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_biometric_authenticator.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
+#include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -640,6 +641,11 @@ ChromePasswordManagerClient::GetAccountPasswordStore() const {
   return AccountPasswordStoreFactory::GetForProfile(
              profile_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
+}
+
+password_manager::PasswordReuseManager*
+ChromePasswordManagerClient::GetPasswordReuseManager() const {
+  return PasswordReuseManagerFactory::GetForProfile(profile_);
 }
 
 password_manager::SyncState ChromePasswordManagerClient::GetPasswordSyncState()

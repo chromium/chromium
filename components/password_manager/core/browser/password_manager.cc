@@ -41,6 +41,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -1050,9 +1051,10 @@ void PasswordManager::MaybeSavePasswordHash(
   if (username.empty())
     return;
 
-  password_manager::PasswordStore* store = client_->GetProfilePasswordStore();
+  password_manager::PasswordReuseManager* reuse_manager =
+      client_->GetPasswordReuseManager();
   // May be null in tests.
-  if (!store)
+  if (!reuse_manager)
     return;
 
   bool should_save_enterprise_pw =
@@ -1084,7 +1086,7 @@ void PasswordManager::MaybeSavePasswordHash(
                                       : submitted_form->password_value;
 
   if (should_save_enterprise_pw) {
-    store->SaveEnterprisePasswordHash(username, password);
+    reuse_manager->SaveEnterprisePasswordHash(username, password);
     return;
   }
 
@@ -1099,7 +1101,8 @@ void PasswordManager::MaybeSavePasswordHash(
           : (is_password_change
                  ? GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE
                  : GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA);
-  store->SaveGaiaPasswordHash(username, password, is_sync_account_email, event);
+  reuse_manager->SaveGaiaPasswordHash(username, password, is_sync_account_email,
+                                      event);
 }
 
 void PasswordManager::ProcessAutofillPredictions(

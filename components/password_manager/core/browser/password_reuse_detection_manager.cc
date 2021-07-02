@@ -7,9 +7,9 @@
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/safe_browsing/buildflags.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -104,30 +104,22 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
     absl::optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
     int saved_passwords) {
-  // Cache the results.
-  all_matching_reused_credentials_.insert(matching_reused_credentials.begin(),
-                                          matching_reused_credentials.end());
   reuse_on_this_page_was_found_ |= is_reuse_found;
-
-  // If we're still waiting for more results, nothing to be done yet.
-  if (--wait_counter_ > 0)
-    return;
 
   // If no reuse was found, we're done.
   if (!reuse_on_this_page_was_found_) {
-    all_matching_reused_credentials_.clear();
     return;
   }
 
   metrics_util::PasswordType reused_password_type = GetReusedPasswordType(
-      reused_protected_password_hash, all_matching_reused_credentials_.size());
+      reused_protected_password_hash, matching_reused_credentials.size());
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
     std::vector<std::string> domains_to_log;
-    domains_to_log.reserve(all_matching_reused_credentials_.size());
+    domains_to_log.reserve(matching_reused_credentials.size());
     for (const MatchingReusedCredential& credential :
-         all_matching_reused_credentials_) {
+         matching_reused_credentials) {
       domains_to_log.push_back(credential.signon_realm);
     }
     switch (reused_password_type) {
@@ -160,7 +152,7 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
           : false;
 
   metrics_util::LogPasswordReuse(password_length, saved_passwords,
-                                 all_matching_reused_credentials_.size(),
+                                 matching_reused_credentials.size(),
                                  password_field_detected, reused_password_type);
   if (reused_password_type ==
       metrics_util::PasswordType::PRIMARY_ACCOUNT_PASSWORD)
@@ -170,12 +162,9 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
                              ? reused_protected_password_hash->username
                              : "";
 
-  client_->CheckProtectedPasswordEntry(
-      reused_password_type, username,
-      std::move(all_matching_reused_credentials_).extract(),
-      password_field_detected);
-
-  all_matching_reused_credentials_.clear();
+  client_->CheckProtectedPasswordEntry(reused_password_type, username,
+                                       matching_reused_credentials,
+                                       password_field_detected);
 }
 
 void PasswordReuseDetectionManager::SetClockForTesting(base::Clock* clock) {
@@ -202,16 +191,9 @@ metrics_util::PasswordType PasswordReuseDetectionManager::GetReusedPasswordType(
 
 void PasswordReuseDetectionManager::CheckStoresForReuse(
     const std::u16string& input) {
-  PasswordStore* profile_store = client_->GetProfilePasswordStore();
-  if (profile_store) {
-    ++wait_counter_;
-    profile_store->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
-  }
-
-  PasswordStore* account_store = client_->GetAccountPasswordStore();
-  if (account_store) {
-    ++wait_counter_;
-    account_store->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
+  PasswordReuseManager* reuse_manager = client_->GetPasswordReuseManager();
+  if (reuse_manager) {
+    reuse_manager->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
   }
 }
 

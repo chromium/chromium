@@ -88,13 +88,12 @@ class SaveUpdateWithAccountStoreBubbleControllerTest : public ::testing::Test {
         .WillByDefault(Return(&password_feature_manager_));
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
-    // TODO(crbug.bom/715987): Revert to testing::StrictMock after
-    // PasswordReuseManager is no longer part of the PasswordStore.
     PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
-                content::BrowserContext, password_manager::MockPasswordStore>));
+                content::BrowserContext,
+                testing::StrictMock<password_manager::MockPasswordStore>>));
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildTestSyncService));
     pending_password_.url = GURL(kSiteOrigin);

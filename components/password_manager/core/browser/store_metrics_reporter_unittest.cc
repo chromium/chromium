@@ -10,9 +10,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/os_crypt/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -42,10 +42,14 @@ PasswordForm CreateForm(const std::string& signon_realm,
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  MOCK_CONST_METHOD0(GetProfilePasswordStore, PasswordStore*());
-  MOCK_CONST_METHOD0(GetAccountPasswordStore, PasswordStore*());
-  MOCK_CONST_METHOD0(GetPasswordSyncState, SyncState());
-  MOCK_CONST_METHOD0(IsUnderAdvancedProtection, bool());
+  MOCK_METHOD(PasswordStore*, GetProfilePasswordStore, (), (const, override));
+  MOCK_METHOD(PasswordStore*, GetAccountPasswordStore, (), (const, override));
+  MOCK_METHOD(PasswordReuseManager*,
+              GetPasswordReuseManager,
+              (),
+              (const, override));
+  MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const, override));
+  MOCK_METHOD(bool, IsUnderAdvancedProtection, (), (const, override));
 };
 
 class StoreMetricsReporterTest : public SyncUsernameTestBase {
@@ -136,10 +140,9 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   auto account_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+
   profile_store->Init(&prefs_);
   account_store->Init(&prefs_);
-  profile_store->GetPasswordReuseManager()->Init(&prefs_, profile_store.get());
-  account_store->GetPasswordReuseManager()->Init(&prefs_, account_store.get());
 
   EXPECT_CALL(client_, GetPasswordSyncState())
       .WillRepeatedly(Return(password_manager::SyncState::
@@ -150,6 +153,8 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
       .WillRepeatedly(Return(profile_store.get()));
   EXPECT_CALL(client_, GetAccountPasswordStore())
       .WillRepeatedly(Return(account_store.get()));
+  EXPECT_CALL(client_, GetPasswordReuseManager())
+      .WillRepeatedly(Return(nullptr));
 
   const std::string kRealm1 = "https://example.com";
   const std::string kRealm2 = "https://example2.com";
@@ -256,16 +261,11 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
   ASSERT_FALSE(prefs_.HasPrefPath(prefs::kSyncPasswordHash));
 
   auto store = base::MakeRefCounted<MockPasswordStore>();
-  store->Init(&prefs_);
-  store->GetPasswordReuseManager()->Init(&prefs_, store.get());
+  store->Init(nullptr);
+
+  MockPasswordReuseManager reuse_manager;
 
   const std::string username = "test@google.com";
-
-  store->GetPasswordReuseManager()->SaveGaiaPasswordHash(
-      username, u"password",
-      /*is_primary_account=*/true,
-      GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
-
   SetSyncingPasswords(true);
   FakeSigninAs(username);
 
@@ -278,11 +278,12 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
       .WillRepeatedly(Return(store.get()));
   EXPECT_CALL(client_, GetAccountPasswordStore())
       .WillRepeatedly(Return(nullptr));
-
-  EXPECT_CALL(*store, ReportMetrics(username, false, true));
+  EXPECT_CALL(client_, GetPasswordReuseManager())
+      .WillRepeatedly(Return(&reuse_manager));
 
   base::HistogramTester histogram_tester;
 
+  EXPECT_CALL(reuse_manager, ReportMetrics(username, true));
   StoreMetricsReporter reporter(&client_, sync_service(), identity_manager(),
                                 &prefs_);
 
@@ -291,12 +292,6 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
   FastForwardBy(base::TimeDelta::FromSeconds(30));
   RunUntilIdle();
 
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.IsSyncPasswordHashSaved",
-      metrics_util::IsSyncPasswordHashSaved::SAVED_VIA_LIST_PREF, 1);
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser",
-      metrics_util::IsSyncPasswordHashSaved::SAVED_VIA_LIST_PREF, 1);
   store->ShutdownOnUIThread();
 }
 

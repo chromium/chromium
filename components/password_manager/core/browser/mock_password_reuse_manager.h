@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_REUSE_MANAGER_H_
 
 #include "components/password_manager/core/browser/password_reuse_manager.h"
+#include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {

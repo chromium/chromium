@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -26,6 +27,7 @@
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -89,11 +91,9 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
   }
 
   void SimulateGaiaPasswordChange(const std::string& new_password) {
-    scoped_refptr<password_manager::PasswordStore> password_store =
-        PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                            ServiceAccessType::EXPLICIT_ACCESS)
-            .get();
-    password_store->SaveGaiaPasswordHash(
+    password_manager::PasswordReuseManager* reuse_manager =
+        PasswordReuseManagerFactory::GetForProfile(browser()->profile());
+    reuse_manager->SaveGaiaPasswordHash(
         user_manager::kStubUserEmail, base::UTF8ToUTF16(new_password),
         /*is_primary_account=*/true,
         password_manager::metrics_util::GaiaPasswordHashChange::
@@ -549,11 +549,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   Profile* profile = browser()->profile();
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   // Configures initial password to "password_1";
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                          ServiceAccessType::EXPLICIT_ACCESS)
-          .get();
-  password_store->SaveGaiaPasswordHash(
+  password_manager::PasswordReuseManager* reuse_manager =
+      PasswordReuseManagerFactory::GetForProfile(browser()->profile());
+  reuse_manager->SaveGaiaPasswordHash(
       user_manager::kStubUserEmail, u"password_1",
       /*is_primary_account=*/true,
       password_manager::metrics_util::GaiaPasswordHashChange::
@@ -795,13 +793,11 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                     ->GetList()
                     .size());
   // Configures initial password to "password_1";
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      PasswordStoreFactory::GetForProfile(profile,
-                                          ServiceAccessType::EXPLICIT_ACCESS)
-          .get();
-  password_store->SaveEnterprisePasswordHash("username@domain.com",
-                                             u"password_1");
-  password_store->SaveGaiaPasswordHash(
+  password_manager::PasswordReuseManager* reuse_manager =
+      PasswordReuseManagerFactory::GetForProfile(browser()->profile());
+  reuse_manager->SaveEnterprisePasswordHash("username@domain.com",
+                                            u"password_1");
+  reuse_manager->SaveGaiaPasswordHash(
       user_manager::kStubUserEmail, u"password_2",
       /*is_primary_account=*/false,
       password_manager::metrics_util::GaiaPasswordHashChange::

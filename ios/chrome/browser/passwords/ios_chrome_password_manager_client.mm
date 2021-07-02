@@ -30,6 +30,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/passwords/ios_chrome_password_reuse_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/passwords/ios_password_requirements_service_factory.h"
 #include "ios/chrome/browser/passwords/password_manager_log_router_factory.h"
@@ -188,6 +189,12 @@ PasswordStore* IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
 PasswordStore* IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
   // AccountPasswordStore is currenly not supported on iOS.
   return nullptr;
+}
+
+password_manager::PasswordReuseManager*
+IOSChromePasswordManagerClient::GetPasswordReuseManager() const {
+  return IOSChromePasswordReuseManagerFactory::GetForBrowserState(
+      bridge_.browserState);
 }
 
 void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
