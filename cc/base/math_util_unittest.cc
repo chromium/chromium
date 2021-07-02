@@ -811,7 +811,7 @@ TEST(MathUtilTest, MapClippedQuadInfiniteInSomeDimensionsNonZero) {
 
   EXPECT_EQ(clipped_quad[2].x(), 100.0f);
   EXPECT_LT_LT(17000.0f, clipped_quad[2].y(), 18000.0f);
-  EXPECT_LT_LE(998000.0f, clipped_quad[2].z(), 1000000.0f);
+  EXPECT_LT_LE(996000.0f, clipped_quad[2].z(), 1000000.0f);
 
   EXPECT_EQ(clipped_quad[3].x(), 100.0f);
   EXPECT_EQ(clipped_quad[3].y(), 0.0f);

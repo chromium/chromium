@@ -177,11 +177,19 @@ static gfx::Point3F ComputeClippedCartesianPoint3dForEdge(
                                   std::abs((1.0f - t) * h1.y() + t * h2.y()),
                                   std::abs((1.0f - t) * h1.z() + t * h2.z())});
 
-  t -= max_numerator / w_diff / HomogeneousCoordinate::kInfiniteCoordinate;
+  // Shift t away from the point where w is zero, far enough so that the
+  // largest of the resulting x, y, and z will be about
+  // kInfiniteCoordinate.  Add an extra epsilon() / 2.0 so that there's
+  // always enough movement (in case t_shift is very small, which it
+  // often is).
+  const float t_shift =
+      max_numerator / w_diff / HomogeneousCoordinate::kInfiniteCoordinate;
+  constexpr float half_epsilon = std::numeric_limits<float>::epsilon() / 2.0f;
+  DCHECK_EQ(w_diff > 0, t_shift > 0);
   if (w_diff > 0) {
-    t = std::max(0.0f, t);
+    t = std::max(0.0f, t - (t_shift + half_epsilon));
   } else {
-    t = std::min(1.0f, t);
+    t = std::min(1.0f, t - (t_shift - half_epsilon));
   }
 
   float x;
