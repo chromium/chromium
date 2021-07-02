@@ -17,7 +17,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
+#include "components/autofill/content/browser/content_autofill_router_test_api.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -267,6 +269,10 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
         ContentAutofillDriverFactory::FromWebContents(web_contents());
     ContentAutofillDriver* driver =
         factory->DriverForFrame(web_contents()->GetMainFrame());
+    // Fake that |driver| has queried a form.
+    ContentAutofillRouterTestApi(
+        &ContentAutofillDriverTestApi(driver).autofill_router())
+        .set_last_queried_source(driver);
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
         driver->browser_autofill_manager(), driver);
   }
@@ -311,6 +317,9 @@ class AutofillPopupControllerAccessibilityUnitTest
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>(
         web_contents()->GetMainFrame(), autofill_client_.get(),
         autofill_router_.get());
+    // Fake that |driver| has queried a form.
+    ContentAutofillRouterTestApi(autofill_router_.get())
+        .set_last_queried_source(autofill_driver_.get());
     autofill_manager_ = std::make_unique<MockBrowserAutofillManager>(
         autofill_driver_.get(), autofill_client_.get());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(

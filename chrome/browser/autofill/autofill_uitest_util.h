@@ -11,6 +11,7 @@ class Profile;
 
 namespace autofill {
 
+class AutofillExternalDelegate;
 class AutofillProfile;
 class CreditCard;
 
@@ -25,6 +26,16 @@ void AddTestAutofillData(Profile* base_profile,
                          const CreditCard& card);
 void WaitForPersonalDataChange(Profile* base_profile);
 void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile);
+
+// Displays an Autofill popup with a dummy suggestion.
+// Unlike autofill::test::GenerateTestAutofillPopup(), this function triggers
+// the popup through the `autofill_external_delegate->GetAutofillDriver()`'s
+// QueryFormFieldAutofill(), instead of the |autofill_external_delegate|'s
+// OnQuery() event. This initializes the form's meta data and prepares
+// ContentAutofillDriver's and ContentAutofillRouter's state to process events
+// such as AutofillDriver::PopupHidden() triggered by the popup.
+void GenerateTestAutofillPopup(
+    AutofillExternalDelegate* autofill_external_delegate);
 
 }  // namespace autofill
 

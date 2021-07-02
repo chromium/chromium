@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
+
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -119,6 +121,24 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
       autofill::PersonalDataManagerFactory::GetForProfile(base_profile);
   while (!pdm->IsDataLoaded())
     WaitForPersonalDataChange(base_profile);
+}
+
+void GenerateTestAutofillPopup(
+    AutofillExternalDelegate* autofill_external_delegate) {
+  int query_id = 1;
+  FormData form;
+  FormFieldData field;
+  field.is_focusable = true;
+  field.should_autocomplete = true;
+  gfx::RectF bounds(100.f, 100.f);
+
+  ContentAutofillDriver* driver = static_cast<ContentAutofillDriver*>(
+      autofill_external_delegate->GetAutofillDriver());
+  driver->QueryFormFieldAutofill(query_id, form, field, bounds, false);
+
+  std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
+  autofill_external_delegate->OnSuggestionsReturned(
+      query_id, suggestions, /*autoselect_first_suggestion=*/false);
 }
 
 }  // namespace autofill

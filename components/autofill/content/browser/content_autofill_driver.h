@@ -117,6 +117,12 @@ class ContentAutofillDriver : public AutofillDriver,
                               public mojom::AutofillDriver,
                               public KeyPressHandlerManager::Delegate {
  public:
+  using SkipRouting = base::StrongAlias<class SkipRoutingTag, bool>;
+
+  // Gets the driver for |render_frame_host|.
+  static ContentAutofillDriver* GetForRenderFrameHost(
+      content::RenderFrameHost* render_frame_host);
+
   ContentAutofillDriver(
       content::RenderFrameHost* render_frame_host,
       AutofillClient* client,
@@ -128,10 +134,6 @@ class ContentAutofillDriver : public AutofillDriver,
   ContentAutofillDriver(const ContentAutofillDriver&) = delete;
   ContentAutofillDriver& operator=(const ContentAutofillDriver&) = delete;
   ~ContentAutofillDriver() override;
-
-  // Gets the driver for |render_frame_host|.
-  static ContentAutofillDriver* GetForRenderFrameHost(
-      content::RenderFrameHost* render_frame_host);
 
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver);
@@ -321,11 +323,19 @@ class ContentAutofillDriver : public AutofillDriver,
 
   const mojo::AssociatedRemote<mojom::AutofillAgent>& GetAutofillAgent();
 
-  // Methods forwarded to |key_press_handler_manager_|. ContentAutofillRouter
-  // forwards them to ContentAutofillRouter::last_queried_source().
+  // Key-press handlers capture the user input into fields while an Autofill
+  // popup is shown.
+  // In a frame-transcending form, the <input> the user queried Autofill from
+  // may be in a different frame than |render_frame_host_|. Therefore,
+  // RegisterKeyPressHandler() and RemoveKeyPressHandler() are forwarded to the
+  // last-queried source remembered by ContentAutofillRouter.
+  // For non-Autofill forms (i.e., password forms), which are not handled by
+  // ContentAutofillDriver and ContentAutofillRouter and hence are not
+  // frame-transcending, this routing must be skipped by setting |skip_routing|.
   void RegisterKeyPressHandler(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler);
-  void RemoveKeyPressHandler();
+      const content::RenderWidgetHost::KeyPressEventCallback& handler,
+      SkipRouting skip_routing = SkipRouting(false));
+  void RemoveKeyPressHandler(SkipRouting skip_routing = SkipRouting(false));
   void RegisterKeyPressHandlerImpl(
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void RemoveKeyPressHandlerImpl();

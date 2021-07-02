@@ -135,13 +135,22 @@ void AutofillPopupControllerImpl::Show(
       return;
   }
 
+  // Password forms are not processed by |driver|, so the ContentAutofillDriver
+  // and ContentAutofillRouter are not aware of the originating frame.
+  // Therefore, skip routing for password forms.
+  ContentAutofillDriver::SkipRouting skip_routing(GetPopupType() ==
+                                                  PopupType::kPasswords);
   static_cast<ContentAutofillDriver*>(delegate_->GetAutofillDriver())
-      ->RegisterKeyPressHandler(base::BindRepeating(
-          [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
-             const content::NativeWebKeyboardEvent& event) {
-            return weak_this && weak_this->HandleKeyPressEvent(event);
-          },
-          weak_this));
+      ->RegisterKeyPressHandler(
+          base::BindRepeating(
+              // Cannot bind HandleKeyPressEvent() directly because of its
+              // return value.
+              [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
+                 const content::NativeWebKeyboardEvent& event) {
+                return weak_this && weak_this->HandleKeyPressEvent(event);
+              },
+              weak_this),
+          skip_routing);
 
   delegate_->OnPopupShown();
 }
@@ -216,8 +225,13 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   if (delegate_) {
     delegate_->ClearPreviewedForm();
     delegate_->OnPopupHidden();
+    // Password forms are not processed by |driver|, so the
+    // ContentAutofillDriver and ContentAutofillRouter are not aware of the
+    // originating frame. Therefore, skip routing for password forms.
+    ContentAutofillDriver::SkipRouting skip_routing(GetPopupType() ==
+                                                    PopupType::kPasswords);
     static_cast<ContentAutofillDriver*>(delegate_->GetAutofillDriver())
-        ->RemoveKeyPressHandler();
+        ->RemoveKeyPressHandler(skip_routing);
   }
 
   HideViewAndDie();

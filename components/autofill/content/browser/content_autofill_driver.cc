@@ -617,11 +617,20 @@ ContentAutofillDriver::GetAutofillAgent() {
 }
 
 void ContentAutofillDriver::RegisterKeyPressHandler(
-    const content::RenderWidgetHost::KeyPressEventCallback& handler) {
+    const content::RenderWidgetHost::KeyPressEventCallback& handler,
+    SkipRouting skip_routing) {
+  if (skip_routing) {
+    RegisterKeyPressHandlerImpl(handler);
+    return;
+  }
   autofill_router_->RegisterKeyPressHandler(this, handler);
 }
 
-void ContentAutofillDriver::RemoveKeyPressHandler() {
+void ContentAutofillDriver::RemoveKeyPressHandler(SkipRouting skip_routing) {
+  if (skip_routing) {
+    RemoveKeyPressHandlerImpl();
+    return;
+  }
   autofill_router_->RemoveKeyPressHandler(this);
 }
 

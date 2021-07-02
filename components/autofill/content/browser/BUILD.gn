@@ -68,6 +68,18 @@ proto_library("risk_proto") {
   proto_out_dir = "components/autofill/content/browser/risk/proto"
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "content_autofill_driver_test_api.h",
+    "content_autofill_router_test_api.h",
+  ]
+
+  public_deps = [ ":browser" ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -78,6 +90,7 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":test_support",
     "//base",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser",

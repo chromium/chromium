@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -40,13 +41,17 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
     ASSERT_TRUE(web_contents != NULL);
     Observe(web_contents);
 
-    ContentAutofillDriver* driver =
+    autofill_driver_ =
         ContentAutofillDriverFactory::FromWebContents(web_contents)
             ->DriverForFrame(web_contents->GetMainFrame());
-    autofill_external_delegate_ =
+    autofill_manager_ = autofill_driver_->browser_autofill_manager();
+    auto autofill_external_delegate =
         std::make_unique<TestAutofillExternalDelegate>(
-            driver->browser_autofill_manager(), driver,
+            autofill_manager_, autofill_driver_,
             /*call_parent_methods=*/true);
+    autofill_external_delegate_ = autofill_external_delegate.get();
+    autofill_manager_->SetExternalDelegateForTest(
+        std::move(autofill_external_delegate));
 
     disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -55,12 +60,13 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
   // Normally the WebContents will automatically delete the delegate, but here
   // the delegate is owned by this test, so we have to manually destroy.
   void RenderFrameDeleted(content::RenderFrameHost* rfh) override {
-    if (!rfh->GetParent())
-      autofill_external_delegate_.reset();
+    autofill_external_delegate_ = nullptr;
   }
 
  protected:
-  std::unique_ptr<TestAutofillExternalDelegate> autofill_external_delegate_;
+  ContentAutofillDriver* autofill_driver_ = nullptr;
+  BrowserAutofillManager* autofill_manager_ = nullptr;
+  TestAutofillExternalDelegate* autofill_external_delegate_ = nullptr;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 
@@ -72,7 +78,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        MAYBE_HidePopupOnWindowMove) {
-  test::GenerateTestAutofillPopup(autofill_external_delegate_.get());
+  GenerateTestAutofillPopup(autofill_external_delegate_);
 
   EXPECT_FALSE(autofill_external_delegate_->popup_hidden());
 
@@ -86,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowResize) {
-  test::GenerateTestAutofillPopup(autofill_external_delegate_.get());
+  GenerateTestAutofillPopup(autofill_external_delegate_);
 
   EXPECT_FALSE(autofill_external_delegate_->popup_hidden());
 
@@ -110,17 +116,18 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        MAYBE_DeleteDelegateBeforePopupHidden) {
-  test::GenerateTestAutofillPopup(autofill_external_delegate_.get());
+  GenerateTestAutofillPopup(autofill_external_delegate_);
 
   // Delete the external delegate here so that is gets deleted before popup is
   // hidden. This can happen if the web_contents are destroyed before the popup
   // is hidden. See http://crbug.com/232475
-  autofill_external_delegate_.reset();
+  autofill_manager_->SetExternalDelegateForTest(nullptr);
+  autofill_driver_->SetBrowserAutofillManager(nullptr);
 }
 
 // crbug.com/965025
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
-  test::GenerateTestAutofillPopup(autofill_external_delegate_.get());
+  GenerateTestAutofillPopup(autofill_external_delegate_);
 
   auto* client =
       autofill::ChromeAutofillClient::FromWebContents(web_contents());

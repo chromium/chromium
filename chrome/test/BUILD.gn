@@ -4989,6 +4989,7 @@ test("unit_tests") {
     "//chrome/test/data:chrome_test_resources_grit",
     "//components/account_id",
     "//components/assist_ranker/proto",
+    "//components/autofill/content/browser:test_support",
     "//components/autofill/content/renderer:test_support",
     "//components/background_sync",
     "//components/blocked_content",
