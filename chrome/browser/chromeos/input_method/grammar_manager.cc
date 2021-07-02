@@ -225,24 +225,32 @@ void GrammarManager::AcceptSuggestion() {
     LOG(ERROR) << "Failed to commit grammar suggestion.";
   }
 
-  // NOTE: GetSurroundingTextInfo() could return a stale cache that no
-  // longer reflects reality, due to async-ness between IMF and
-  // TextInputClient.
-  // TODO(crbug/1194424): Work around the issue or fix
-  // GetSurroundingTextInfo().
-  const ui::SurroundingTextInfo surrounding_text =
-      input_context->GetSurroundingTextInfo();
+  if (input_context->HasCompositionText()) {
+    input_context->SetComposingRange(current_fragment_.range.start(),
+                                     current_fragment_.range.end(), {});
+    input_context->CommitText(
+        base::UTF8ToUTF16(current_fragment_.suggestion),
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  } else {
+    // NOTE: GetSurroundingTextInfo() could return a stale cache that no
+    // longer reflects reality, due to async-ness between IMF and
+    // TextInputClient.
+    // TODO(crbug/1194424): Work around the issue or fix
+    // GetSurroundingTextInfo().
+    const ui::SurroundingTextInfo surrounding_text =
+        input_context->GetSurroundingTextInfo();
 
-  // Delete the incorrect grammar fragment.
-  input_context->DeleteSurroundingText(
-      -static_cast<int>(surrounding_text.selection_range.start() -
-                        current_fragment_.range.start()),
-      current_fragment_.range.length() -
-          surrounding_text.selection_range.length());
-  // Insert the suggestion and put cursor after it.
-  input_context->CommitText(
-      base::UTF8ToUTF16(current_fragment_.suggestion),
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    // Delete the incorrect grammar fragment.
+    input_context->DeleteSurroundingText(
+        -static_cast<int>(surrounding_text.selection_range.start() -
+                          current_fragment_.range.start()),
+        current_fragment_.range.length() -
+            surrounding_text.selection_range.length());
+    // Insert the suggestion and put cursor after it.
+    input_context->CommitText(
+        base::UTF8ToUTF16(current_fragment_.suggestion),
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  }
 
   RecordGrammarAction(GrammarActions::kAccepted);
 }
