@@ -26,7 +26,7 @@ namespace {
 constexpr size_t kMaxNodesPerUpdate = 16;
 
 constexpr size_t kMaxNodesPerDelete =
-    fuchsia::accessibility::semantics::MAX_NODES_PER_UPDATE - 1;
+    fuchsia::accessibility::semantics::MAX_NODES_PER_UPDATE;
 
 // Error allowed for each edge when converting from gfx::RectF to gfx::Rect.
 constexpr float kRectConversionError = 0.5;
@@ -45,29 +45,6 @@ int32_t GetOffsetContainerId(const ui::AXTree* tree,
   if (offset_container_id == -1)
     return tree->root()->id();
   return offset_container_id;
-}
-
-// Applies |op| to elements of |items| in batches. Maximum batch size is set
-// by |batch_size|.
-template <typename T>
-inline void BatchApply(std::vector<T> items,
-                       size_t batch_size,
-                       base::RepeatingCallback<void(std::vector<T>)> op) {
-  const size_t total_items = items.size();
-  if (total_items == 0) {
-    return;
-  }
-
-  std::vector<T> batch;
-  batch.reserve(batch_size);
-  for (size_t current = 0; current < total_items; current += batch_size) {
-    const size_t next_batch_size = std::min(total_items - current, batch_size);
-    std::move(items.begin() + current,
-              items.begin() + current + next_batch_size,
-              std::back_inserter(batch));
-    op.Run(std::move(batch));
-    batch.clear();
-  }
 }
 
 }  // namespace
@@ -159,28 +136,25 @@ void AccessibilityBridge::RemoveNodeFromOffsetMapping(
 
 void AccessibilityBridge::TryCommit() {
   if (commit_inflight_ || (to_delete_.empty() && to_update_.empty()) ||
-      ShouldHoldCommit())
+      ShouldHoldCommit()) {
     return;
+  }
 
   // Deletions come before updates because first the nodes are deleted, and
   // then we update the parents to no longer point at them.
-  BatchApply(
-      std::move(to_delete_), kMaxNodesPerDelete,
-      base::BindRepeating(
-          &fuchsia::accessibility::semantics::SemanticTree::DeleteSemanticNodes,
-          base::Unretained(semantic_tree_.get())));
+  for (auto& batch : to_delete_) {
+    semantic_tree_->DeleteSemanticNodes(std::move(batch));
+  }
+  to_delete_.clear();
 
-  BatchApply(
-      std::move(to_update_), kMaxNodesPerUpdate,
-      base::BindRepeating(
-          &fuchsia::accessibility::semantics::SemanticTree::UpdateSemanticNodes,
-          base::Unretained(semantic_tree_.get())));
+  for (auto& batch : to_update_) {
+    semantic_tree_->UpdateSemanticNodes(std::move(batch));
+  }
+  to_update_.clear();
 
   semantic_tree_->CommitUpdates(
       fit::bind_member(this, &AccessibilityBridge::OnCommitComplete));
   commit_inflight_ = true;
-  to_delete_.clear();
-  to_update_.clear();
 }
 
 void AccessibilityBridge::OnCommitComplete() {
@@ -380,7 +354,7 @@ void AccessibilityBridge::OnNodeWillBeDeleted(ui::AXTree* tree,
 void AccessibilityBridge::OnNodeDeleted(ui::AXTree* tree, int32_t node_id) {
   DCHECK(tree);
 
-  to_delete_.push_back(
+  AppendToDeleteList(
       id_mapper_->ToFuchsiaNodeID(tree->GetAXTreeID(), node_id, false));
 }
 
@@ -429,8 +403,8 @@ void AccessibilityBridge::OnNodeDataChanged(
     // that OnAtomicUpdateFinished() is called, offset_container_children_ will
     // be correct, so we can simply overwrite the existing update.
     auto* fuchsia_node =
-        GetUpdatedNode(tree->GetAXTreeID(), child_node->data().id,
-                       /*replace_existing=*/true);
+        EnsureAndGetUpdatedNode(tree->GetAXTreeID(), child_node->data().id,
+                                /*replace_existing=*/true);
     DCHECK(fuchsia_node);
   }
 }
@@ -461,8 +435,8 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
     // there's an existing update for this node from OnNodeDataChanged(). This
     // update may not have the correct offset container and/or transform, so we
     // should replace it.
-    auto* fuchsia_node = GetUpdatedNode(tree->GetAXTreeID(), node.id,
-                                        /*replace_existing=*/true);
+    auto* fuchsia_node = EnsureAndGetUpdatedNode(tree->GetAXTreeID(), node.id,
+                                                 /*replace_existing=*/true);
     DCHECK(fuchsia_node);
 
     if (node.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
@@ -547,8 +521,9 @@ void AccessibilityBridge::UpdateTreeConnections() {
     if (kv.second.is_connected)
       continue;  // No work to do, trees connected and present.
 
-    auto* fuchsia_node = GetUpdatedNode(parent_ax_tree_id, ax_node->id(),
-                                        /*replace_existing=*/false);
+    auto* fuchsia_node =
+        EnsureAndGetUpdatedNode(parent_ax_tree_id, ax_node->id(),
+                                /*replace_existing=*/false);
     DCHECK(fuchsia_node);
     // Now, the connection really happens:
     // This node, from the parent tree, will have a child that points to the
@@ -577,21 +552,22 @@ void AccessibilityBridge::UpdateFocus() {
     // data changed. This makes sure that it contains the focus information. If
     // it is not part of the current update, no need to send this information,
     // as it is redundant.
-    auto* node =
-        focus_changed
-            ? GetUpdatedNode(new_focused_node->first, new_focused_node->second,
-                             /*replace_existing=*/false)
-            : GetNodeIfChangingInUpdate(new_focused_node->first,
-                                        new_focused_node->second);
+    auto* node = focus_changed
+                     ? EnsureAndGetUpdatedNode(new_focused_node->first,
+                                               new_focused_node->second,
+                                               /*replace_existing=*/false)
+                     : GetNodeIfChangingInUpdate(new_focused_node->first,
+                                                 new_focused_node->second);
     if (node)
       node->mutable_states()->set_has_input_focus(true);
   }
 
   if (last_focused_node_id_) {
-    auto* node = focus_changed ? GetUpdatedNode(last_focused_node_id_->first,
-                                                last_focused_node_id_->second,
-                                                /*replace_existing=*/false)
-                               : nullptr /*already updated above*/;
+    auto* node = focus_changed
+                     ? EnsureAndGetUpdatedNode(last_focused_node_id_->first,
+                                               last_focused_node_id_->second,
+                                               /*replace_existing=*/false)
+                     : nullptr /*already updated above*/;
     if (node)
       node->mutable_states()->set_has_input_focus(false);
   }
@@ -738,25 +714,44 @@ AccessibilityBridge::GetFocusFromThisOrDescendantFrame(
   return std::make_pair(tree->GetAXTreeID(), node->id());
 }
 
+void AccessibilityBridge::AppendToDeleteList(uint32_t node_id) {
+  if (to_delete_.empty() || to_delete_.back().size() == kMaxNodesPerDelete) {
+    to_delete_.emplace_back();
+  }
+  to_delete_.back().push_back(std::move(node_id));
+}
+
+void AccessibilityBridge::AppendToUpdateList(
+    fuchsia::accessibility::semantics::Node node) {
+  if (to_update_.empty() || to_update_.back().size() == kMaxNodesPerUpdate) {
+    to_update_.emplace_back();
+  }
+  to_update_.back().push_back(std::move(node));
+}
+
 fuchsia::accessibility::semantics::Node*
 AccessibilityBridge::GetNodeIfChangingInUpdate(const ui::AXTreeID& tree_id,
                                                ui::AXNodeID node_id) {
   auto fuchsia_node_id = id_mapper_->ToFuchsiaNodeID(tree_id, node_id, false);
-  auto result = std::find_if(
-      to_update_.rbegin(), to_update_.rend(),
-      [&fuchsia_node_id](const fuchsia::accessibility::semantics::Node& node) {
-        return node.node_id() == fuchsia_node_id;
-      });
-  if (result == to_update_.rend())
-    return nullptr;
 
-  return &(*result);
+  for (auto& update_batch : to_update_) {
+    auto result =
+        std::find_if(update_batch.rbegin(), update_batch.rend(),
+                     [&fuchsia_node_id](
+                         const fuchsia::accessibility::semantics::Node& node) {
+                       return node.node_id() == fuchsia_node_id;
+                     });
+    if (result != update_batch.rend())
+      return &(*result);
+  }
+
+  return nullptr;
 }
 
-fuchsia::accessibility::semantics::Node* AccessibilityBridge::GetUpdatedNode(
-    const ui::AXTreeID& tree_id,
-    ui::AXNodeID node_id,
-    bool replace_existing) {
+fuchsia::accessibility::semantics::Node*
+AccessibilityBridge::EnsureAndGetUpdatedNode(const ui::AXTreeID& tree_id,
+                                             ui::AXNodeID node_id,
+                                             bool replace_existing) {
   auto* fuchsia_node = GetNodeIfChangingInUpdate(tree_id, node_id);
   if (fuchsia_node && !replace_existing)
     return fuchsia_node;
@@ -785,6 +780,6 @@ fuchsia::accessibility::semantics::Node* AccessibilityBridge::GetUpdatedNode(
     return fuchsia_node;
   }
 
-  to_update_.push_back(std::move(new_fuchsia_node));
-  return &to_update_.back();
+  AppendToUpdateList(std::move(new_fuchsia_node));
+  return &to_update_.back().back();
 }

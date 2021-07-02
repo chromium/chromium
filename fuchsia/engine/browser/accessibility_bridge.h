@@ -161,7 +161,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // existing update for the node (if one exists).
   //
   // Returns nullptr if the node does not exist.
-  fuchsia::accessibility::semantics::Node* GetUpdatedNode(
+  fuchsia::accessibility::semantics::Node* EnsureAndGetUpdatedNode(
       const ui::AXTreeID& tree_id,
       ui::AXNodeID node_id,
       bool replace_existing);
@@ -170,6 +170,12 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // node in focus points to a child frame.
   absl::optional<AXNodeID> GetFocusFromThisOrDescendantFrame(
       const ui::AXSerializableTree* tree) const;
+
+  // Enqueues |node_id| for deletion in the subsequent tree update.
+  void AppendToDeleteList(uint32_t node_id);
+
+  // Enqueues changes to |node| in the subsequent tree update.
+  void AppendToUpdateList(fuchsia::accessibility::semantics::Node node);
 
   // content::WebContentsObserver implementation.
   void AccessibilityEventReceived(
@@ -225,9 +231,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // Whether semantic updates are enabled.
   bool enable_semantic_updates_ = false;
 
-  // Cache for pending data to be sent to the Semantic Tree between commits.
-  std::vector<uint32_t> to_delete_;
-  std::vector<fuchsia::accessibility::semantics::Node> to_update_;
+  // Buffer for pending data to be sent to the Semantic Tree between commits.
+  std::vector<std::vector<uint32_t>> to_delete_;
+  std::vector<std::vector<fuchsia::accessibility::semantics::Node>> to_update_;
   bool commit_inflight_ = false;
 
   // Maintain a map from AXNode IDs to a list of the AXNode IDs of descendant
