@@ -14,10 +14,6 @@ static_library("aot") {
     "shim_entry.c",
     "shim_ppapi.c",
   ]
-  deps = [
-    "//ppapi/c",
-    "//ppapi/proxy:proxy",
-  ]
 
   # Indicate that this variant of the shim library should not depend on
   # the unstable/private IRT hook interface.
@@ -44,9 +40,5 @@ source_set("irt") {
   sources = [
     "irt_shim_ppapi.c",
     "pnacl_shim.c",
-  ]
-  deps = [
-    "//ppapi/c",
-    "//ppapi/proxy:proxy",
   ]
 }
