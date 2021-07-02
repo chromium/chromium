@@ -5,73 +5,75 @@
 Runs the bindings code generator for the given tasks.
 """
 
-import optparse
+import argparse
 import sys
 
 import web_idl
 import bind_gen
 
 
-def parse_options():
-    parser = optparse.OptionParser(usage="%prog [options] TASK...")
-    parser.add_option(
-        "--web_idl_database",
-        type="string",
-        help="filepath of the input database")
-    parser.add_option(
-        "--root_src_dir",
-        type="string",
-        help='root directory of chromium project, i.e. "//"')
-    parser.add_option(
-        "--root_gen_dir",
-        type="string",
-        help='root directory of generated code files, i.e. '
-        '"//out/Default/gen"')
-    parser.add_option(
-        "--output_core_reldir",
-        type="string",
-        help='output directory for "core" component relative to '
-        'root_gen_dir')
-    parser.add_option(
-        "--output_modules_reldir",
-        type="string",
-        help='output directory for "modules" component relative '
-        'to root_gen_dir')
-    parser.add_option(
-        "--output_extensions_chromeos_reldir",
-        type="string",
-        help='output directory for "extensions_chromeos" component relative '
-        'to root_gen_dir')
-    parser.add_option(
+def parse_output_reldirs(reldirs):
+    required = ['core', 'modules']
+    valid = required + ['extensions_chromeos']
+    result = {}
+    for key_value_pair in reldirs:
+        key, value = key_value_pair.split("=", 1)
+        key = key.strip()
+        result[key] = value
+
+    for c in required:
+        assert c in result, 'missing required --output_reldir "{0}"'.format(c)
+
+    for c in result.keys():
+        assert c in valid, 'invalid --output_reldir "{0}"'.format(c)
+
+    return result
+
+
+def parse_options(valid_tasks):
+    parser = argparse.ArgumentParser(
+        description='Generator for blink bindings.')
+    parser.add_argument("--web_idl_database",
+                        required=True,
+                        type=str,
+                        help="filepath of the input database")
+    parser.add_argument("--root_src_dir",
+                        required=True,
+                        type=str,
+                        help='root directory of chromium project, i.e. "//"')
+    parser.add_argument("--root_gen_dir",
+                        required=True,
+                        type=str,
+                        help='root directory of generated code files, i.e. '
+                        '"//out/Default/gen"')
+    parser.add_argument(
+        "--output_reldir",
+        metavar="KEY=VALUE",
+        action="append",
+        help="output directory of KEY component relative to root_gen_dir.")
+    parser.add_argument(
         '--format_generated_files',
         action="store_true",
         default=False,
         help=("format the resulting generated files by applying clang-format, "
               "etc."))
-    parser.add_option(
+    parser.add_argument(
         '--single_process',
         action="store_true",
         default=False,
         help=('run everything in a single process, which makes debugging '
               'easier'))
-    options, args = parser.parse_args()
+    parser.add_argument('tasks',
+                        nargs='+',
+                        choices=valid_tasks,
+                        help='types to generate')
 
-    required_option_names = ("web_idl_database", "root_src_dir",
-                             "root_gen_dir", "output_core_reldir",
-                             "output_modules_reldir")
-    for opt_name in required_option_names:
-        if getattr(options, opt_name) is None:
-            parser.error("--{} is a required option.".format(opt_name))
+    options = parser.parse_args()
 
-    if not args:
-        parser.error("No argument specified.")
-
-    return options, args
+    return options
 
 
 def main():
-    options, tasks = parse_options()
-
     dispatch_table = {
         'callback_function': bind_gen.generate_callback_functions,
         'callback_interface': bind_gen.generate_callback_interfaces,
@@ -83,18 +85,14 @@ def main():
         'union': bind_gen.generate_unions,
     }
 
-    for task in tasks:
-        if task not in dispatch_table:
-            sys.exit("Unknown task: {}".format(task))
+    options = parse_options(dispatch_table.keys())
 
-    component_reldirs = {
-        web_idl.Component('core'):
-        options.output_core_reldir,
-        web_idl.Component('modules'):
-        options.output_modules_reldir,
-        web_idl.Component('extensions_chromeos'):
-        options.output_extensions_chromeos_reldir
-    }
+    output_reldirs = parse_output_reldirs(options.output_reldir)
+
+    component_reldirs = {}
+    for component, reldir in output_reldirs.items():
+        component_reldirs[web_idl.Component(component)] = reldir
+
     bind_gen.init(web_idl_database_path=options.web_idl_database,
                   root_src_dir=options.root_src_dir,
                   root_gen_dir=options.root_gen_dir,
@@ -103,7 +101,7 @@ def main():
 
     task_queue = bind_gen.TaskQueue(single_process=options.single_process)
 
-    for task in tasks:
+    for task in options.tasks:
         dispatch_table[task](task_queue)
 
     def print_to_console(message):
