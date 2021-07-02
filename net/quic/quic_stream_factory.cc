@@ -1907,8 +1907,10 @@ void QuicStreamFactory::ConfigureInitialRttEstimate(
     quic::QuicConfig* config) {
   const base::TimeDelta* srtt =
       GetServerNetworkStatsSmoothedRtt(server_id, network_isolation_key);
-  if (srtt != nullptr) {
-    CHECK_GE(*srtt, base::TimeDelta());
+  // Sometimes *srtt is negative. See https://crbug.com/1225616.
+  // TODO(ricea): When the root cause of the negative value is fixed, change the
+  // non-negative assertion to a DCHECK.
+  if (srtt != nullptr && *srtt > base::TimeDelta()) {
     SetInitialRttEstimate(*srtt, INITIAL_RTT_CACHED, config);
     return;
   }
