@@ -2501,7 +2501,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 #endif
 
   DCHECK_EQ(target_state, DocumentLifecycle::kPaintClean);
-  RunPaintLifecyclePhase();
+  RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
   DCHECK(ShouldThrottleRendering() || AnyFrameIsPrintingOrPaintingPreview() ||
          Lifecycle().GetState() == DocumentLifecycle::kPaintClean);
 
@@ -3971,6 +3971,12 @@ LocalFrameView::DisallowThrottlingScope::DisallowThrottlingScope(
     : value_(&frame_view.GetFrame().LocalFrameRoot().View()->allow_throttling_,
              false) {}
 
+PaintController& LocalFrameView::EnsurePaintController() {
+  if (!paint_controller_)
+    paint_controller_ = std::make_unique<PaintController>();
+  return *paint_controller_;
+}
+
 bool LocalFrameView::CapturePaintPreview(GraphicsContext& context,
                                          const IntSize& paint_offset) const {
   absl::optional<base::UnguessableToken> maybe_embedding_token =
@@ -4416,7 +4422,7 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     // so painting the tree should just clear the previous painted output.
     DCHECK(!IsUpdatingLifecycle());
     AllowThrottlingScope allow_throtting(*this);
-    RunPaintLifecyclePhase();
+    RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
   }
 
 #if DCHECK_IS_ON()
