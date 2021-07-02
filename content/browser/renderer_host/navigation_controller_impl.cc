@@ -1417,7 +1417,10 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       return NAVIGATION_TYPE_NAV_IGNORE;
     }
 
-    // This is history.replaceState() or history.reload().
+    // This main frame navigation is not a history navigation (since
+    // nav_entry_id is 0), but didn't create a new entry. So this must be a
+    // reload or a replacement navigation, which will modify the existing entry.
+    //
     // TODO(nasko): With error page isolation, reloading an existing session
     // history entry can result in change of SiteInstance. Check for such a case
     // here and classify it as NEW_ENTRY, as such navigations should be treated

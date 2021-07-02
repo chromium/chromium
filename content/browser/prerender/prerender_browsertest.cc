@@ -36,6 +36,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_type.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_document_host_user_data.h"
@@ -294,22 +295,23 @@ class PrerenderBrowserTest : public ContentBrowserTest {
               EvalJs(web_contents(), "history.length"));
   }
 
-  void AssertPrerenderHistoryLength(RenderFrameHost* prerender_frame_host) {
+  void AssertPrerenderHistoryLength(int host_id,
+                                    RenderFrameHost* prerender_frame_host) {
+    EXPECT_EQ(1, FrameTreeNode::GloballyFindByID(host_id)
+                     ->frame_tree()
+                     ->controller()
+                     .GetEntryCount());
     ASSERT_EQ(1, EvalJs(prerender_frame_host, "history.length"));
   }
 
   void GoBack() {
-    WindowedNotificationObserver load_stop_observer(
-        NOTIFICATION_LOAD_STOP, NotificationService::AllSources());
     web_contents()->GetController().GoBack();
-    load_stop_observer.Wait();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
   }
 
   void GoForward() {
-    WindowedNotificationObserver load_stop_observer(
-        NOTIFICATION_LOAD_STOP, NotificationService::AllSources());
     web_contents()->GetController().GoForward();
-    load_stop_observer.Wait();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
   }
 
  private:
@@ -707,24 +709,23 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_iFrame) {
 //
 // TODO(crbug.com/1197384): Tests a navigation which is not a renderer-initiated
 // one.
-// TODO(crbug.com/1220992): Tests a prerendering page's nav entries directly.
-// Currently, there is no easy way for a test to access NavigationController of
-// a prerender.
 IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
     SessionHistoryShouldHaveSingleNavigationEntryInPrerender) {
-  // Navigate to an initial page.
+  // Navigate the primary main frame to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html?initial");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  TestNavigationHistory(kInitialUrl, 0, 1);
+  TestNavigationHistory(kInitialUrl, /*expected_history_index=*/0,
+                        /*expected_history_length=*/1);
 
-  // Navigate to another page so that the initiator page's `history.length`
-  // becomes 2. That helps us to distinguish the initial page's session history
-  // and the prerendering page's session history. This is not a robust way, but
-  // probably good enough in this test.
+  // Navigate the primary main frame to another page so that the initiator
+  // page's `history.length` becomes 2. That helps us to distinguish the initial
+  // page's session history and the prerendering page's session history. This is
+  // not a robust way, but probably good enough in this test.
   const GURL k2ndUrl = GetUrl("/empty.html?2nd");
   ASSERT_TRUE(NavigateToURL(shell(), k2ndUrl));
-  TestNavigationHistory(k2ndUrl, 1, 2);
+  TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                        /*expected_history_length=*/2);
 
   // Start a prerender.
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
@@ -733,73 +734,143 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
-  TestNavigationHistory(k2ndUrl, 1, 2);
-  AssertPrerenderHistoryLength(prerender_frame_host);
+  TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                        /*expected_history_length=*/2);
+  AssertPrerenderHistoryLength(host_id, prerender_frame_host);
 
   // From here, we perform several operations which usually append a new entry
   // to the session history, however, all navigations within the prerendering
   // browsing context should be done with replacement in the isolated session
   // history.
 
-  // history pushState()
-  ASSERT_EQ(nullptr, EvalJs(prerender_frame_host,
-                            "history.pushState('teststate', null, null)"));
+  // Perform history.replaceState() in the prerendered page. Note
+  // history.replaceState() doesn't append a new entry anyway. The purpose of
+  // testing history.replaceState() here is just for the comparison; pushState()
+  // vs replaceState(). Both should have the same behavior in a prerendering
+  // browsing context.
+  {
+    FrameNavigateParamsCapturer capturer(
+        FrameTreeNode::From(prerender_frame_host));
 
-  TestNavigationHistory(k2ndUrl, 1, 2);
-  AssertPrerenderHistoryLength(prerender_frame_host);
-  EXPECT_EQ("teststate", EvalJs(prerender_frame_host, "history.state"));
+    ASSERT_EQ(nullptr, EvalJs(prerender_frame_host,
+                              "history.replaceState('state1', null, null)"));
 
-  // Do a fragment navigation
-  const GURL kPrerenderingAnchorUrl = GetUrl("/empty.html?prerender#anchor");
-  NavigatePrerenderedPage(host_id, kPrerenderingAnchorUrl);
-  WaitForPrerenderLoadCompleted(host_id);
-  ASSERT_EQ(GetRequestCount(kPrerenderingAnchorUrl), 1);
+    TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                          /*expected_history_length=*/2);
+    AssertPrerenderHistoryLength(host_id, prerender_frame_host);
+    EXPECT_EQ("state1", EvalJs(prerender_frame_host, "history.state"));
 
-  TestNavigationHistory(k2ndUrl, 1, 2);
-  AssertPrerenderHistoryLength(prerender_frame_host);
-  // history.state should be replaced with a fragment navigation.
-  EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.is_same_document());
+    EXPECT_TRUE(capturer.did_replace_entry());
+  }
 
-  // Add a same-origin iframe and let it navigate to the different same-origin
-  // URL.
-  const GURL kSameOriginSubframeUrl1 =
-      GetUrl("/empty.html?same_origin_iframe1");
-  EXPECT_TRUE(AddTestUtilJS(prerender_frame_host));
-  ASSERT_EQ("LOADED",
-            EvalJs(prerender_frame_host,
-                   JsReplace("add_iframe($1)", kSameOriginSubframeUrl1)));
-  ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl1), 1);
+  // Perform history.pushState() in the prerendered page.
+  {
+    FrameNavigateParamsCapturer capturer(
+        FrameTreeNode::From(prerender_frame_host));
 
-  const GURL kSameOriginSubframeUrl2 =
-      GetUrl("/empty.html?same_origin_iframe2");
-  ASSERT_EQ(nullptr, EvalJs(prerender_frame_host,
-                            JsReplace("navigate_iframe_async($1, $2)",
-                                      kSameOriginSubframeUrl1,
-                                      kSameOriginSubframeUrl2)));
-  ASSERT_EQ("IFRAME NAVIGATED",
-            EvalJs(prerender_frame_host, JsReplace("wait_iframe_async($1)",
-                                                   kSameOriginSubframeUrl2)));
-  ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl1), 1);
-  ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl2), 1);
+    ASSERT_EQ(nullptr, EvalJs(prerender_frame_host,
+                              "history.pushState('state2', null, null)"));
 
-  TestNavigationHistory(k2ndUrl, 1, 2);
-  AssertPrerenderHistoryLength(prerender_frame_host);
-  EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+    TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                          /*expected_history_length=*/2);
+    AssertPrerenderHistoryLength(host_id, prerender_frame_host);
+    EXPECT_EQ("state2", EvalJs(prerender_frame_host, "history.state"));
 
-  // Call history.back() in a prerender browsing context, which should be no-op.
-  ASSERT_EQ(nullptr, EvalJs(prerender_frame_host, "history.back()"));
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.is_same_document());
+    EXPECT_TRUE(capturer.did_replace_entry());
+  }
 
-  TestNavigationHistory(k2ndUrl, 1, 2);
-  AssertPrerenderHistoryLength(prerender_frame_host);
-  EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+  // Do a fragment navigation in the prerendered main frame.
+  {
+    FrameNavigateParamsCapturer capturer(
+        FrameTreeNode::From(prerender_frame_host));
 
-  // Call history.forward() in a prerender browsing context, which should be
-  // no-op.
-  ASSERT_EQ(nullptr, EvalJs(prerender_frame_host, "history.forward()"));
+    const GURL kPrerenderingAnchorUrl = GetUrl("/empty.html?prerender#anchor");
+    NavigatePrerenderedPage(host_id, kPrerenderingAnchorUrl);
+    WaitForPrerenderLoadCompleted(host_id);
+    ASSERT_EQ(GetRequestCount(kPrerenderingAnchorUrl), 1);
 
-  TestNavigationHistory(k2ndUrl, 1, 2);
-  AssertPrerenderHistoryLength(prerender_frame_host);
-  EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+    TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                          /*expected_history_length=*/2);
+    AssertPrerenderHistoryLength(host_id, prerender_frame_host);
+    // history.state should be replaced with a fragment navigation.
+    EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.is_same_document());
+    EXPECT_TRUE(capturer.did_replace_entry());
+  }
+
+  // Add a same-origin iframe to the prerendered page and let it navigate to the
+  // different same-origin URL.
+  {
+    // Add an iframe.
+    const GURL kSameOriginSubframeUrl1 =
+        GetUrl("/empty.html?same_origin_iframe1");
+    EXPECT_TRUE(AddTestUtilJS(prerender_frame_host));
+    ASSERT_EQ("LOADED",
+              EvalJs(prerender_frame_host,
+                     JsReplace("add_iframe($1)", kSameOriginSubframeUrl1)));
+    ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl1), 1);
+
+    auto* child_frame = ChildFrameAt(prerender_frame_host, 0);
+    ASSERT_NE(nullptr, child_frame);
+    EXPECT_EQ(kSameOriginSubframeUrl1, child_frame->GetLastCommittedURL());
+
+    // Let the added iframe navigate to the different URL.
+    FrameNavigateParamsCapturer capturer(FrameTreeNode::From(child_frame));
+    const GURL kSameOriginSubframeUrl2 =
+        GetUrl("/empty.html?same_origin_iframe2");
+    ASSERT_EQ(kSameOriginSubframeUrl2,
+              EvalJs(child_frame,
+                     JsReplace("location = $1", kSameOriginSubframeUrl2)));
+    capturer.Wait();
+
+    EXPECT_EQ(kSameOriginSubframeUrl2, child_frame->GetLastCommittedURL());
+    ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl2), 1);
+
+    TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                          /*expected_history_length=*/2);
+    AssertPrerenderHistoryLength(host_id, prerender_frame_host);
+    EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_FALSE(capturer.is_same_document());
+    EXPECT_TRUE(capturer.did_replace_entry());
+  }
+
+  // Perform history.back() in the prerendered page, which should be no-op.
+  {
+    int current_request_count = GetRequestCount(k2ndUrl);
+    ASSERT_EQ(nullptr, EvalJs(prerender_frame_host, "history.back()"));
+    // Make sure that loading is not happening.
+    EXPECT_FALSE(
+        FrameTreeNode::GloballyFindByID(host_id)->frame_tree()->IsLoading());
+
+    TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                          /*expected_history_length=*/2);
+    AssertPrerenderHistoryLength(host_id, prerender_frame_host);
+    EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+    EXPECT_EQ(current_request_count, GetRequestCount(k2ndUrl));
+  }
+
+  // Perform history.forward() in the prerendered page, which should be no-op.
+  {
+    int current_request_count = GetRequestCount(k2ndUrl);
+    ASSERT_EQ(nullptr, EvalJs(prerender_frame_host, "history.forward()"));
+    // Make sure that loading is not happening.
+    EXPECT_FALSE(
+        FrameTreeNode::GloballyFindByID(host_id)->frame_tree()->IsLoading());
+
+    TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                          /*expected_history_length=*/2);
+    AssertPrerenderHistoryLength(host_id, prerender_frame_host);
+    EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+    EXPECT_EQ(current_request_count, GetRequestCount(k2ndUrl));
+  }
 }
 
 // Make sure that activation appends the prerendering page's single navigation
@@ -829,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SessionHistoryAfterActivation) {
   ASSERT_EQ(nullptr, EvalJs(prerender_frame_host,
                             "history.pushState('teststate', null, null)"));
   TestNavigationHistory(k2ndUrl, 1, 2);
-  AssertPrerenderHistoryLength(prerender_frame_host);
+  AssertPrerenderHistoryLength(host_id, prerender_frame_host);
   EXPECT_EQ("teststate", EvalJs(prerender_frame_host, "history.state"));
 
   // Activate.
@@ -838,17 +909,31 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SessionHistoryAfterActivation) {
   TestNavigationHistory(kPrerenderingUrl, 2, 3);
   EXPECT_EQ("teststate", EvalJs(web_contents(), "history.state"));
 
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
   // Go Back.
-  GoBack();
-  // The joint session history becomes [initial, <2nd>, prerender].
-  TestNavigationHistory(k2ndUrl, 1, 3);
-  EXPECT_EQ(nullptr, EvalJs(web_contents(), "history.state"));
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    GoBack();
+    // The joint session history becomes [initial, <2nd>, prerender].
+    TestNavigationHistory(k2ndUrl, 1, 3);
+    EXPECT_EQ(nullptr, EvalJs(web_contents(), "history.state"));
+
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_FALSE(capturer.is_same_document());
+  }
 
   // Go Forward.
-  GoForward();
-  // The joint session history becomes [initial, 2nd, <prerender>].
-  TestNavigationHistory(kPrerenderingUrl, 2, 3);
-  EXPECT_EQ("teststate", EvalJs(web_contents(), "history.state"));
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    GoForward();
+    // The joint session history becomes [initial, 2nd, <prerender>].
+    TestNavigationHistory(kPrerenderingUrl, 2, 3);
+    EXPECT_EQ("teststate", EvalJs(web_contents(), "history.state"));
+
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_FALSE(capturer.is_same_document());
+  }
 }
 
 // Makes sure that cross-origin subframe navigations are deferred during
@@ -1059,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameFragmentNavigation) {
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   WaitForPrerenderLoadCompleted(host_id);
 
-  // Do a fragment navigation
+  // Do a fragment navigation.
   NavigatePrerenderedPage(host_id, kAnchorUrl);
   WaitForPrerenderLoadCompleted(host_id);
 
