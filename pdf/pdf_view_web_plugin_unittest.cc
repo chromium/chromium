@@ -92,6 +92,10 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   // PdfViewWebPlugin::ContainerWrapper:
   void Invalidate() override {}
 
+  MOCK_METHOD(void, ReportFindInPageMatchCount, (int, int, bool), (override));
+
+  MOCK_METHOD(void, ReportFindInPageSelection, (int, int), (override));
+
   float DeviceScaleFactor() const override { return device_scale_; }
 
   MOCK_METHOD(void,

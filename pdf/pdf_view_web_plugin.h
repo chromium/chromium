@@ -61,6 +61,15 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // page in it.
     virtual void Invalidate() = 0;
 
+    // Notify the web plugin container about the total matches of a find
+    // request.
+    virtual void ReportFindInPageMatchCount(int identifier,
+                                            int total,
+                                            bool final_update) = 0;
+
+    // Notify the web plugin container about the selected find result in plugin.
+    virtual void ReportFindInPageSelection(int identifier, int index) = 0;
+
     // Returns the device scale factor.
     virtual float DeviceScaleFactor() const = 0;
 
@@ -155,8 +164,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   blink::WebURL LinkAtPosition(const gfx::Point& /*position*/) const override;
   bool StartFind(const blink::WebString& search_text,
                  bool case_sensitive,
-                 int /*identifier*/) override;
-  void SelectFindResult(bool forward, int /*identifier*/) override;
+                 int identifier) override;
+  void SelectFindResult(bool forward, int identifier) override;
   void StopFind() override;
   blink::WebTextInputType GetPluginTextInputType() override;
 
@@ -263,6 +272,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   pdf::mojom::PdfService* GetPdfService();
 
   blink::WebString selected_text_;
+
+  // The id of the current find operation, or -1 if no current operation is
+  // present.
+  int find_identifier_ = -1;
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;

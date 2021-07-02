@@ -136,6 +136,16 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
   void Invalidate() override { container_->Invalidate(); }
 
+  void ReportFindInPageMatchCount(int identifier,
+                                  int total,
+                                  bool final_update) override {
+    container_->ReportFindInPageMatchCount(identifier, total, final_update);
+  }
+
+  void ReportFindInPageSelection(int identifier, int index) override {
+    container_->ReportFindInPageSelection(identifier, index);
+  }
+
   float DeviceScaleFactor() const override {
     return container_->DeviceScaleFactor();
   }
@@ -232,6 +242,10 @@ bool PdfViewWebPlugin::InitializeCommon(
   set_is_print_preview(IsPrintPreviewUrl(document_url_piece));
   // TODO(crbug.com/1123621): Consider calling ValidateDocumentUrl() or
   // something like it once the process model has been finalized.
+
+  // Allow the plugin to handle find requests.
+  if (container)
+    container->UsePluginAsFindHandler();
 
   absl::optional<ParsedParams> params = ParseWebPluginParams(initial_params_);
 
@@ -463,16 +477,19 @@ blink::WebURL PdfViewWebPlugin::LinkAtPosition(
 
 bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
                                  bool case_sensitive,
-                                 int /*identifier*/) {
+                                 int identifier) {
+  find_identifier_ = identifier;
   engine()->StartFind(search_text.Utf8(), case_sensitive);
   return true;
 }
 
-void PdfViewWebPlugin::SelectFindResult(bool forward, int /*identifier*/) {
+void PdfViewWebPlugin::SelectFindResult(bool forward, int identifier) {
+  find_identifier_ = identifier;
   engine()->SelectFindResult(forward);
 }
 
 void PdfViewWebPlugin::StopFind() {
+  find_identifier_ = -1;
   engine()->StopFind();
   // TODO(crbug.com/1199999): Clear tickmarks on scroller when find is
   // dismissed.
@@ -490,9 +507,25 @@ void PdfViewWebPlugin::UpdateTickMarks(
     const std::vector<gfx::Rect>& tickmarks) {}
 
 void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
-                                                        bool final_result) {}
+                                                        bool final_result) {
+  // After stopping search and setting `find_identifier_` to -1 there still may
+  // be a NotifyNumberOfFindResultsChanged notification pending from engine.
+  // Just ignore them.
+  if (find_identifier_ == -1 || !container_wrapper_)
+    return;
+
+  container_wrapper_->ReportFindInPageMatchCount(find_identifier_, total,
+                                                 final_result);
+  // TODO(crbug.com/1199999): Set tickmarks on scroller.
+}
 
 void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
+  if (find_identifier_ == -1 || !container_wrapper_)
+    return;
+
+  DCHECK_GE(current_find_index, -1);
+  container_wrapper_->ReportFindInPageSelection(find_identifier_,
+                                                current_find_index + 1);
 }
 
 void PdfViewWebPlugin::Alert(const std::string& message) {
