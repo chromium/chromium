@@ -180,7 +180,7 @@ const char kMixedContentDownloadBlockingLearnMoreUrl[] =
     "https://support.google.com/chrome/?p=mixed_content_downloads";
 
 const char kMyActivityUrlInClearBrowsingData[] =
-    "https://myactivity.google.com/myactivity/?utm_source=chrome_cbd";
+    "https://myactivity.google.com/myactivity?utm_source=chrome_cbd";
 
 const char kOmniboxLearnMoreURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
