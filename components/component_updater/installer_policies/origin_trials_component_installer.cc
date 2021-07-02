@@ -72,7 +72,7 @@ bool OriginTrialsComponentInstallerPolicy::VerifyInstallation(
 
 bool OriginTrialsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool OriginTrialsComponentInstallerPolicy::RequiresNetworkEncryption() const {
