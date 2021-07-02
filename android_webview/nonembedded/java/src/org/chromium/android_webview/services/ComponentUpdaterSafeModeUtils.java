@@ -8,6 +8,7 @@ import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.File;
 import java.util.Set;
@@ -17,6 +18,8 @@ import java.util.Set;
  */
 public class ComponentUpdaterSafeModeUtils {
     private static final String TAG = "AwCUSafeMode";
+    private static final String HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED =
+            "Android.WebView.ComponentUpdater.SafeModeActionExecuted";
 
     // Keep in sync with the ID in ComponentUpdaterResetSafeModeAction.
     private static final String RESET_COMPONENT_UPDATER_SAFEMODE_ACTION_ID =
@@ -34,13 +37,17 @@ public class ComponentUpdaterSafeModeUtils {
         SafeModeController controller = SafeModeController.getInstance();
         Set<String> actions =
                 controller.queryActions(ContextUtils.getApplicationContext().getPackageName());
+
         if (actions.isEmpty() || !actions.contains(RESET_COMPONENT_UPDATER_SAFEMODE_ACTION_ID)) {
+            RecordHistogram.recordBooleanHistogram(
+                    HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED, false);
             return false;
         }
 
         if (!FileUtils.recursivelyDeleteFile(configDir, null)) {
             Log.w(TAG, "Failed to delete " + configDir.getAbsolutePath());
         }
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED, true);
         return true;
     }
 }
