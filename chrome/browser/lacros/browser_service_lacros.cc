@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
@@ -46,7 +47,14 @@ std::string GetCompressedHistograms() {
 
 }  // namespace
 
-BrowserServiceLacros::BrowserServiceLacros() = default;
+BrowserServiceLacros::BrowserServiceLacros() {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::BrowserServiceHost>())
+    return;
+
+  lacros_service->GetRemote<crosapi::mojom::BrowserServiceHost>()
+      ->AddBrowserService(receiver_.BindNewPipeAndPassRemoteWithVersion());
+}
 
 BrowserServiceLacros::~BrowserServiceLacros() = default;
 
@@ -125,8 +133,7 @@ void BrowserServiceLacros::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
 
 void BrowserServiceLacros::UpdateDeviceAccountPolicy(
     const std::vector<uint8_t>& policy) {
-  // TODO(hidehiko): Implement this.
-  NOTIMPLEMENTED();
+  chromeos::LacrosService::Get()->NotifyPolicyUpdated(policy);
 }
 
 void BrowserServiceLacros::OnSystemInformationReady(

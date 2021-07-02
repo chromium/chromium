@@ -93,7 +93,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
   return bundle;
 }
 
-void PolicyLoaderLacros::NotifyPolicyUpdate(
+void PolicyLoaderLacros::OnPolicyUpdated(
     const std::vector<uint8_t>& policy_fetch_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   policy_fetch_response_ = policy_fetch_response;

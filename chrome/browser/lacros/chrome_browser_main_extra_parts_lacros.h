@@ -10,6 +10,7 @@
 #include <memory>
 
 class AutomationManagerLacros;
+class BrowserServiceLacros;
 class DownloadControllerClientLacros;
 
 namespace crosapi {
@@ -32,6 +33,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   void PostBrowserStart() override;
 
   std::unique_ptr<AutomationManagerLacros> automation_manager_;
+
+  // Handles browser action requests from ash-chrome.
+  std::unique_ptr<BrowserServiceLacros> browser_service_;
 
   // Handles task manager crosapi from ash for sending lacros tasks to ash.
   std::unique_ptr<crosapi::TaskManagerLacros> task_manager_provider_;

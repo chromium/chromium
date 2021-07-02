@@ -162,7 +162,7 @@ TEST_F(PolicyLoaderLacrosTest, UpdateTest) {
 
   std::vector<uint8_t> data = GetValidPolicyFetchResponseWithSystemWidePolicy();
   system_wide_policies_set_ = true;
-  loader->NotifyPolicyUpdate(data);
+  loader->OnPolicyUpdated(data);
   base::RunLoop().RunUntilIdle();
   EXPECT_GT(GetChromePolicyMap(loader->Load().get())->size(),
             static_cast<unsigned int>(0));

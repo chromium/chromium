@@ -4,100 +4,15 @@
 
 #include "chromeos/lacros/lacros_chrome_service_impl_never_blocking_state.h"
 
-#include "base/bind_post_task.h"
-#include "base/notreached.h"
-
 namespace chromeos {
 
 LacrosChromeServiceImplNeverBlockingState::
-    LacrosChromeServiceImplNeverBlockingState(
-        scoped_refptr<base::SequencedTaskRunner> owner_sequence,
-        base::WeakPtr<LacrosChromeServiceImpl> owner)
-    : owner_sequence_(owner_sequence), owner_(owner) {
+    LacrosChromeServiceImplNeverBlockingState() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 LacrosChromeServiceImplNeverBlockingState::
     ~LacrosChromeServiceImplNeverBlockingState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-// crosapi::mojom::BrowserService:
-void LacrosChromeServiceImplNeverBlockingState::REMOVED_0(
-    REMOVED_0Callback callback) {
-  NOTIMPLEMENTED();
-}
-
-void LacrosChromeServiceImplNeverBlockingState::REMOVED_2(
-    crosapi::mojom::BrowserInitParamsPtr) {
-  NOTIMPLEMENTED();
-}
-
-void LacrosChromeServiceImplNeverBlockingState::NewWindow(
-    bool incognito,
-    NewWindowCallback callback) {
-  owner_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::NewWindowAffineSequence, owner_,
-                     incognito,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(callback))));
-}
-
-void LacrosChromeServiceImplNeverBlockingState::NewTab(
-    NewTabCallback callback) {
-  owner_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::NewTabAffineSequence, owner_,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(callback))));
-}
-
-void LacrosChromeServiceImplNeverBlockingState::RestoreTab(
-    RestoreTabCallback callback) {
-  owner_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::RestoreTabAffineSequence, owner_,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(callback))));
-}
-
-void LacrosChromeServiceImplNeverBlockingState::GetFeedbackData(
-    GetFeedbackDataCallback callback) {
-  owner_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::GetFeedbackDataAffineSequence,
-                     owner_,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(callback))));
-}
-
-void LacrosChromeServiceImplNeverBlockingState::GetHistograms(
-    GetHistogramsCallback callback) {
-  owner_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::GetHistogramsAffineSequence,
-                     owner_,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(callback))));
-}
-
-void LacrosChromeServiceImplNeverBlockingState::GetActiveTabUrl(
-    GetActiveTabUrlCallback callback) {
-  owner_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence,
-                     owner_,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(callback))));
-}
-
-void LacrosChromeServiceImplNeverBlockingState::UpdateDeviceAccountPolicy(
-    const std::vector<uint8_t>& policy) {
-  owner_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceImpl::UpdateDeviceAccountPolicyAffineSequence,
-          owner_, policy));
 }
 
 // Crosapi is the interface that lacros-chrome uses to message
@@ -114,10 +29,6 @@ void LacrosChromeServiceImplNeverBlockingState::FusePipeCrosapi(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo::FusePipes(std::move(pending_crosapi_receiver_),
                   std::move(pending_remote));
-  crosapi_->BindBrowserServiceHost(
-      browser_service_host_.BindNewPipeAndPassReceiver());
-  browser_service_host_->AddBrowserService(
-      receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
 void LacrosChromeServiceImplNeverBlockingState::OnBrowserStartup(

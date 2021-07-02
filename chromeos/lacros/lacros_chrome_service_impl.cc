@@ -124,17 +124,17 @@ LacrosChromeServiceImpl* LacrosChromeServiceImpl::Get() {
 }
 
 LacrosChromeServiceImpl::LacrosChromeServiceImpl()
-    : LacrosChromeServiceImpl(/*browser_service=*/nullptr) {}
-
-LacrosChromeServiceImpl::LacrosChromeServiceImpl(
-    std::unique_ptr<crosapi::mojom::BrowserService> browser_service)
-    : browser_service_(std::move(browser_service)),
-      // If crosapi is disabled, use the empty params.
-      // Otherwise, read the startup data from the inherited FD.
+    :  // If crosapi is disabled, use the empty params.
+       // Otherwise, read the startup data from the inherited FD.
       init_params_(disable_crosapi_for_testing_
                        ? crosapi::mojom::BrowserInitParams::New()
                        : ReadStartupBrowserInitParams()),
-      sequenced_state_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
+      never_blocking_sequence_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
+      sequenced_state_(new LacrosChromeServiceImplNeverBlockingState(),
+                       base::OnTaskRunnerDeleter(never_blocking_sequence_)),
+      weak_sequenced_state_(sequenced_state_->GetWeakPtr()),
       observer_list_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
   DCHECK(init_params_);
@@ -181,21 +181,6 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     command_line->RemoveSwitch(mojo::PlatformChannel::kHandleSwitch);
   }
 
-  // The sequence on which this object was constructed, and thus affine to.
-  scoped_refptr<base::SequencedTaskRunner> affine_sequence =
-      base::SequencedTaskRunnerHandle::Get();
-
-  never_blocking_sequence_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
-
-  sequenced_state_ = std::unique_ptr<LacrosChromeServiceImplNeverBlockingState,
-                                     base::OnTaskRunnerDeleter>(
-      new LacrosChromeServiceImplNeverBlockingState(affine_sequence,
-                                                    weak_factory_.GetWeakPtr()),
-      base::OnTaskRunnerDeleter(never_blocking_sequence_));
-  weak_sequenced_state_ = sequenced_state_->GetWeakPtr();
-
   never_blocking_sequence_->PostTask(
       FROM_HERE,
       base::BindOnce(&LacrosChromeServiceImplNeverBlockingState::BindCrosapi,
@@ -207,6 +192,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<
       crosapi::mojom::AutomationFactory, &Crosapi::BindAutomationFactory,
       Crosapi::MethodMinVersions::kBindAutomationFactoryMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::BrowserServiceHost, &Crosapi::BindBrowserServiceHost,
+      Crosapi::MethodMinVersions::kBindBrowserServiceHostMinVersion>();
   ConstructRemote<crosapi::mojom::CertDatabase, &Crosapi::BindCertDatabase,
                   Crosapi::MethodMinVersions::kBindCertDatabaseMinVersion>();
   ConstructRemote<crosapi::mojom::Clipboard, &Crosapi::BindClipboard,
@@ -514,43 +502,6 @@ void LacrosChromeServiceImpl::SetInitParamsForTests(
   init_params_ = std::move(init_params);
 }
 
-void LacrosChromeServiceImpl::NewWindowAffineSequence(
-    bool incognito,
-    crosapi::mojom::BrowserService::NewWindowCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  browser_service_->NewWindow(incognito, std::move(callback));
-}
-
-void LacrosChromeServiceImpl::NewTabAffineSequence(
-    crosapi::mojom::BrowserService::NewTabCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  browser_service_->NewTab(std::move(callback));
-}
-
-void LacrosChromeServiceImpl::RestoreTabAffineSequence(
-    crosapi::mojom::BrowserService::RestoreTabCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  browser_service_->RestoreTab(std::move(callback));
-}
-
-void LacrosChromeServiceImpl::GetFeedbackDataAffineSequence(
-    crosapi::mojom::BrowserService::GetFeedbackDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  browser_service_->GetFeedbackData(std::move(callback));
-}
-
-void LacrosChromeServiceImpl::GetHistogramsAffineSequence(
-    crosapi::mojom::BrowserService::GetHistogramsCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  browser_service_->GetHistograms(std::move(callback));
-}
-
-void LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence(
-    crosapi::mojom::BrowserService::GetActiveTabUrlCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  browser_service_->GetActiveTabUrl(std::move(callback));
-}
-
 absl::optional<uint32_t> LacrosChromeServiceImpl::CrosapiVersion() const {
   if (disable_crosapi_for_testing_)
     return absl::nullopt;
@@ -606,10 +557,10 @@ void LacrosChromeServiceImpl::RemoveObserver(Observer* obs) {
   observer_list_->RemoveObserver(obs);
 }
 
-void LacrosChromeServiceImpl::UpdateDeviceAccountPolicyAffineSequence(
+void LacrosChromeServiceImpl::NotifyPolicyUpdated(
     const std::vector<uint8_t>& policy_fetch_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  observer_list_->Notify(FROM_HERE, &Observer::NotifyPolicyUpdate,
+  observer_list_->Notify(FROM_HERE, &Observer::OnPolicyUpdated,
                          policy_fetch_response);
 }
 

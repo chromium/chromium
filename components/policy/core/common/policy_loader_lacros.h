@@ -46,7 +46,7 @@ class POLICY_EXPORT PolicyLoaderLacros
 
   // LacrosChromeServiceDelegateImpl::Observer implementation.
   // Update and reload the policy with new data.
-  void NotifyPolicyUpdate(
+  void OnPolicyUpdated(
       const std::vector<uint8_t>& policy_fetch_response) override;
 
  private:

@@ -8,8 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 // BrowserSerivce's Lacros implementation.
+// This handles the requests from ash-chrome.
 class BrowserServiceLacros : public crosapi::mojom::BrowserService {
  public:
   BrowserServiceLacros();
@@ -36,6 +38,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService {
   void OnGetCompressedHistograms(GetHistogramsCallback callback,
                                  const std::string& compressed_histogram);
 
+  mojo::Receiver<crosapi::mojom::BrowserService> receiver_{this};
   base::WeakPtrFactory<BrowserServiceLacros> weak_ptr_factory_{this};
 };
 

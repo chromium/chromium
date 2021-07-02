@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
 
 #include "chrome/browser/lacros/automation_manager_lacros.h"
+#include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
@@ -17,6 +18,7 @@ ChromeBrowserMainExtraPartsLacros::~ChromeBrowserMainExtraPartsLacros() =
 
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
+  browser_service_ = std::make_unique<BrowserServiceLacros>();
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();

@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   class Observer {
    public:
     // Called when the new policy data is received from Ash.
-    virtual void NotifyPolicyUpdate(
+    virtual void OnPolicyUpdated(
         const std::vector<uint8_t>& policy_fetch_response) {}
 
    protected:
@@ -82,16 +82,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // this pointer during shutdown can result in UaF.
   static LacrosChromeServiceImpl* Get();
 
-  // Alias for testing currently.
-  // TODO(hidehiko): the argument |browser_service| will be removed soon.
-  // So this is the forward compatibility to avoid updating callers (tests)
-  // twice.
-  LacrosChromeServiceImpl();
-
   // This class is expected to be constructed and destroyed on the same
   // sequence.
-  explicit LacrosChromeServiceImpl(
-      std::unique_ptr<crosapi::mojom::BrowserService> browser_service);
+  LacrosChromeServiceImpl();
+  LacrosChromeServiceImpl(const LacrosChromeServiceImpl&) = delete;
+  LacrosChromeServiceImpl& operator=(const LacrosChromeServiceImpl&) = delete;
   ~LacrosChromeServiceImpl();
 
   // This can be called on any thread. This call allows LacrosChromeServiceImpl
@@ -118,6 +113,12 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Methods to add/remove observer. Safe to call from any thread.
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
+
+  // Notifies that the device account policy is updated with the input data
+  // to observers. The data comes as serialized blob of PolicyFetchResponse
+  // object.
+  // This must be called on the affined sequence.
+  void NotifyPolicyUpdated(const std::vector<uint8_t>& policy);
 
   // Returns whether this interface uses the automatic registration system to be
   // available for immediate use at startup. Any crosapi interface can be
@@ -282,27 +283,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
             uint32_t MethodMinVersion>
   class InterfaceEntry;
 
-  // Following methods are proxy to BrowserServiceLacros.
-  // TODO(hidehiko): Remove them.
-  void NewWindowAffineSequence(
-      bool incognito,
-      crosapi::mojom::BrowserService::NewWindowCallback callback);
-  void NewTabAffineSequence(
-      crosapi::mojom::BrowserService::NewTabCallback callback);
-  void RestoreTabAffineSequence(
-      crosapi::mojom::BrowserService::RestoreTabCallback callback);
-  void GetFeedbackDataAffineSequence(
-      crosapi::mojom::BrowserService::GetFeedbackDataCallback callback);
-  void GetHistogramsAffineSequence(
-      crosapi::mojom::BrowserService::GetHistogramsCallback callback);
-  void GetActiveTabUrlAffineSequence(
-      crosapi::mojom::BrowserService::GetActiveTabUrlCallback callback);
-
-  // Update device account policy with the input data. The data comes as
-  // serialized blob of PolicyFetchResponse object.
-  void UpdateDeviceAccountPolicyAffineSequence(
-      const std::vector<uint8_t>& policy);
-
   // Returns ash's version of the Crosapi mojo interface version. This
   // determines which interface methods are available. This is safe to call from
   // any sequence. This can only be called after BindReceiver().
@@ -356,6 +336,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Receiver and cache of native theme info updates.
   std::unique_ptr<NativeThemeCache> native_theme_cache_;
 
+  // A sequence that is guaranteed to never block.
+  scoped_refptr<base::SequencedTaskRunner> never_blocking_sequence_;
+
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including
   // destruction, happen on the |never_blocking_sequence_|.
@@ -367,9 +350,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // dereferenced on the |never_blocking_sequence_|.
   base::WeakPtr<LacrosChromeServiceImplNeverBlockingState>
       weak_sequenced_state_;
-
-  // A sequence that is guaranteed to never block.
-  scoped_refptr<base::SequencedTaskRunner> never_blocking_sequence_;
 
   // Set to true after BindReceiver() is called.
   bool did_bind_receiver_ = false;

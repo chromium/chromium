@@ -178,7 +178,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
@@ -544,8 +543,8 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // This also needs ThreadPool sequences to post some tasks internally.
   // However, the tasks can be suspended until actual start of the ThreadPool
   // sequences later.
-  lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
-      std::make_unique<BrowserServiceLacros>());
+  lacros_chrome_service_ =
+      std::make_unique<chromeos::LacrosChromeServiceImpl>();
   {
     const crosapi::mojom::BrowserInitParams* init_params =
         lacros_chrome_service_->init_params();
