@@ -65,7 +65,6 @@ if (is_win) {
 }
 
 if (is_android) {
-  import("//build/config/android/rules.gni")
   android_generated_java_resources =
       [ "java/res/values/generated_resources.xml" ] +
       process_file_template(

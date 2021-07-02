@@ -54,6 +54,7 @@ assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//chrome/android/features/dev_ui/dev_ui_module.gni")
+  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
   import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 }
 
@@ -627,7 +628,6 @@ if (is_android) {
     }
   }
 
-  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
   foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
     telemetry_gpu_integration_test_android_template(
         "telemetry_gpu_integration_test${_target_suffix}") {
@@ -3985,7 +3985,6 @@ if (is_android) {
     }
   }
 
-  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
   foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
     telemetry_perf_unittests_android_template(
         "telemetry_perf_unittests${_target_suffix}") {
@@ -4022,7 +4021,6 @@ if (is_android) {
     }
   }
 
-  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
   foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
     telemetry_perf_tests_android_template(
         "telemetry_perf_tests${_target_suffix}") {
@@ -4129,7 +4127,6 @@ performance_test_suite_template("performance_test_suite") {
 }
 
 if (is_android) {
-  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
   foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
     performance_test_suite_template_android(
         "performance_test_suite${_target_suffix}") {
@@ -8984,7 +8981,6 @@ if (is_mac || is_win || is_android) {
       }
     }
 
-    import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
     foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
       rendering_representative_perf_tests_android_template(
           "rendering_representative_perf_tests${_target_suffix}") {
