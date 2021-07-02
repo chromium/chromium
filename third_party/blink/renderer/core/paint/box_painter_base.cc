@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -565,65 +564,44 @@ void DrawTiledBackground(GraphicsContext& context,
                          respect_orientation);
 }
 
-// Returning false meaning that we cannot paint background color with
-// BackgroundColorPaintWorklet.
-bool GetBGColorPaintWorkletParams(const BoxPainterBase::FillLayerInfo& info,
-                                  const Document* document,
-                                  Node* node,
-                                  Vector<Color>* animated_colors,
-                                  Vector<double>* offsets,
-                                  absl::optional<double>* progress) {
-  if (!info.should_paint_color_with_paint_worklet_image ||
-      !document->GetFrame())
-    return false;
+scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document* document,
+                                                 Node* node,
+                                                 const FloatSize& image_size) {
+  LocalFrame* frame = document->GetFrame();
+  if (!frame)
+    return nullptr;
   BackgroundColorPaintImageGenerator* generator =
-      document->GetFrame()->GetBackgroundColorPaintImageGenerator();
+      frame->GetBackgroundColorPaintImageGenerator();
   // The generator can be null in testing environment.
   if (!generator)
-    return false;
-  return generator->GetBGColorPaintWorkletParams(node, animated_colors, offsets,
-                                                 progress);
+    return nullptr;
+  Vector<Color> animated_colors;
+  Vector<double> offsets;
+  absl::optional<double> progress;
+  if (!generator->GetBGColorPaintWorkletParams(node, &animated_colors, &offsets,
+                                               &progress)) {
+    return nullptr;
+  }
+  return generator->Paint(image_size, node, animated_colors, offsets, progress);
 }
 
-void FillRectWithPaintWorklet(const Document* document,
-                              const BoxPainterBase::FillLayerInfo& info,
-                              Node* node,
-                              const FloatRoundedRect& dest_rect,
-                              GraphicsContext& context,
-                              const Vector<Color>& animated_colors,
-                              const Vector<double>& offsets,
-                              const absl::optional<double>& progress) {
-  FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
-  // This function is called after GetBGColorPaintWorkletParams(), which means
-  // the generator won't be nullptr.
-  BackgroundColorPaintImageGenerator* generator =
-      document->GetFrame()->GetBackgroundColorPaintImageGenerator();
-  scoped_refptr<Image> paint_worklet_image = generator->Paint(
-      src_rect.Size(), node, animated_colors, offsets, progress);
-  context.DrawImageRRect(paint_worklet_image.get(), Image::kSyncDecode,
-                         dest_rect, src_rect,
-                         node && node->ComputedStyleRef().DisableForceDark(),
-                         SkBlendMode::kSrcOver, info.respect_image_orientation);
-}
-
-// Returns true if we can paint the background color with paint worklet.
+// Returns true if the background color was painted by the paint worklet.
 bool PaintBGColorWithPaintWorklet(const Document* document,
                                   const BoxPainterBase::FillLayerInfo& info,
                                   Node* node,
                                   const FloatRoundedRect& dest_rect,
                                   GraphicsContext& context) {
-  // TODO(xidachen): Consider merge this into GetBGColorPaintWorkletParams, so
-  // that function doesn't need to return these parameters.
-  Vector<Color> animated_colors;
-  Vector<double> offsets;
-  absl::optional<double> progress;
-  if (GetBGColorPaintWorkletParams(info, document, node, &animated_colors,
-                                   &offsets, &progress)) {
-    FillRectWithPaintWorklet(document, info, node, dest_rect, context,
-                             animated_colors, offsets, progress);
-    return true;
-  }
-  return false;
+  if (!info.should_paint_color_with_paint_worklet_image)
+    return false;
+  scoped_refptr<Image> paint_worklet_image =
+      GetBGColorPaintWorkletImage(document, node, dest_rect.Rect().Size());
+  if (!paint_worklet_image)
+    return false;
+  FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
+  context.DrawImageRRect(paint_worklet_image.get(), Image::kSyncDecode,
+                         dest_rect, src_rect,
+                         node && node->ComputedStyleRef().DisableForceDark());
+  return true;
 }
 
 inline bool PaintFastBottomLayer(const Document* document,
