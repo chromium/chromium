@@ -268,7 +268,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kVoiceButtonInTopToolbar,
     &kVrBrowsingFeedback,
     &kWebOtpCrossDeviceSimpleString,
-    &kPrefetchNotificationSchedulingIntegration,
     &content_creation::kWebNotesStylizeEnabled,
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
@@ -737,10 +736,6 @@ const base::Feature kUpdateHistoryEntryPointsInIncognito{
 
 const base::Feature kUpdateNotificationSchedulingIntegration{
     "UpdateNotificationSchedulingIntegration",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPrefetchNotificationSchedulingIntegration{
-    "PrefetchNotificationSchedulingIntegration",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kUpdateNotificationScheduleServiceImmediateShowOption{
