@@ -62,6 +62,7 @@
 #include "content/browser/native_io/native_io_context_impl.h"
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_sandbox_type.h"
@@ -636,6 +637,15 @@ class SSLClientAuthDelegate : public SSLClientAuthHandler::Delegate {
   std::unique_ptr<SSLClientAuthHandler> ssl_client_auth_handler_;
 };
 
+void CallCancelRequest(
+    mojo::PendingRemote<network::mojom::ClientCertificateResponder>
+        client_cert_responder_remote) {
+  DCHECK(client_cert_responder_remote);
+  mojo::Remote<network::mojom::ClientCertificateResponder>
+      client_cert_responder(std::move(client_cert_responder_remote));
+  client_cert_responder->CancelRequest();
+}
+
 void OnCertificateRequestedContinuation(
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
@@ -646,10 +656,7 @@ void OnCertificateRequestedContinuation(
     web_contents = web_contents_getter.Run();
 
   if (!web_contents) {
-    DCHECK(client_cert_responder_remote);
-    mojo::Remote<network::mojom::ClientCertificateResponder>
-        client_cert_responder(std::move(client_cert_responder_remote));
-    client_cert_responder->CancelRequest();
+    CallCancelRequest(std::move(client_cert_responder_remote));
     return;
   }
 
@@ -1734,24 +1741,71 @@ void StoragePartitionImpl::OnCertificateRequested(
   base::RepeatingCallback<WebContents*(void)> web_contents_getter;
   int process_id = url_loader_network_observers_.current_context().process_id;
   int routing_id = url_loader_network_observers_.current_context().routing_id;
-  // Use |window_id| if it's provided.
-  if (window_id) {
-    DCHECK_EQ(process_id, network::mojom::kBrowserProcessId);
-    DCHECK_EQ(routing_id, RenderFrameHost::kNoFrameTreeNodeId);
-    if (service_worker_context_->context()) {
-      auto* container_host =
-          service_worker_context_->context()->GetContainerHostByWindowId(
-              *window_id);
-      if (container_host) {
-        int frame_tree_node_id = container_host->frame_tree_node_id();
-        web_contents_getter = base::BindRepeating(
-            &WebContents::FromFrameTreeNodeId, frame_tree_node_id);
+
+  // Checks for prerendering state and cancels the certificate request and
+  // prerendering for prerendered frame tree. Prerendering should be cancelled
+  // because chrome may show a dialog for choosing a cert, and it's unsuitable
+  // for a hidden page.
+  // Then, determines the destination WebContents that the certificate request
+  // should be sent to.
+  if (process_id == network::mojom::kBrowserProcessId) {
+    // Route via `frame_tree_node_id`.
+    int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
+    if (window_id) {
+      // Use `window_id` if it is provided. This observer is created for service
+      // workers.
+      DCHECK_EQ(routing_id, RenderFrameHost::kNoFrameTreeNodeId);
+      if (service_worker_context_->context()) {
+        auto* container_host =
+            service_worker_context_->context()->GetContainerHostByWindowId(
+                *window_id);
+        if (container_host) {
+          // TODO(https://crbug.com/1223838): Use RenderFrameHost instead of
+          // FrameTreeNode when possible.
+          frame_tree_node_id = container_host->frame_tree_node_id();
+        }
       }
+    } else {
+      // This observer is created for NavigationRequest. See
+      // `CreateURLLoaderNetworkObserverForNavigationRequest()`.
+      frame_tree_node_id = routing_id;
     }
+    auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+    if (frame_tree_node && frame_tree_node->frame_tree()->is_prerendering()) {
+      // If this request is for prerendering, cancel the prerendering and the
+      // request.
+      CallCancelRequest(std::move(cert_responder));
+      auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
+      web_contents->GetPrerenderHostRegistry()->CancelHost(
+          frame_tree_node_id, PrerenderHost::FinalStatus::kClientCertRequested);
+      return;
+    }
+    web_contents_getter = base::BindRepeating(&WebContents::FromFrameTreeNodeId,
+                                              frame_tree_node_id);
   } else {
+    // Route via `process_id` and `routing_id`, which can identify
+    // RenderFrameHostImpl instances.
+    DCHECK(!window_id);
+
+    // This observer is for Frame, see
+    // `CreateURLLoaderNetworkObserverForFrame()`.
+    auto* render_frame_host_impl =
+        RenderFrameHostImpl::FromID(process_id, routing_id);
+    if (render_frame_host_impl &&
+        render_frame_host_impl->lifecycle_state() ==
+            RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
+      // If this request is for prerendering, cancel the prerendering and the
+      // request.
+      CallCancelRequest(std::move(cert_responder));
+      render_frame_host_impl->CancelPrerendering(
+          PrerenderHost::FinalStatus::kClientCertRequested);
+      return;
+    }
+
     web_contents_getter =
         base::BindRepeating(GetWebContents, process_id, routing_id);
   }
+
   OnCertificateRequestedContinuation(cert_info, std::move(cert_responder),
                                      std::move(web_contents_getter));
 }
