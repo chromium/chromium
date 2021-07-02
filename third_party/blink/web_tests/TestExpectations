@@ -3926,9 +3926,6 @@ crbug.com/1160916 external/wpt/css/css-backgrounds/box-shadow-radius-001.html [ 
 
 # [css-grid]
 crbug.com/1045599 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
-crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-4.html [ Failure ]
-crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-6.html [ Failure ]
-crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-7.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-004.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html [ Failure ]
 crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-columns-001.html [ Failure ]
@@ -3959,6 +3956,10 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-alignment-implie
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-035.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-036.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-baseline-004.html [ Failure ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-1.html [ Failure ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-2.html [ Failure ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-3.html [ Failure ]
+virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-4.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-001.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-002.html [ Failure ]
 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-003.html [ Failure ]
@@ -4007,18 +4008,6 @@ virtual/layout-ng-grid/external/wpt/css/css-sizing/contain-intrinsic-size/contai
 virtual/layout-ng-grid/fast/css-grid-layout/grid-item-spanning-and-orthogonal-flows.html [ Failure ]
 virtual/layout-ng-grid/fast/css-grid-layout/grid-track-sizing-with-orthogonal-flows.html [ Failure ]
 virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Failure ]
-
-# Bad stretching of svgs without aspect-ratio.
-crbug.com/1114013 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-5.html [ Failure ]
-crbug.com/1114013 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-8.html [ Failure ]
-crbug.com/1114013 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-9.html [ Failure ]
-crbug.com/1114013 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-10.html [ Failure ]
-
-# Open discussion of SVG aspect ratios at https://github.com/w3c/csswg-drafts/issues/6286
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-4.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-5.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-6.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-7.html [ Failure ]
 
 # The 'last baseline' keyword is not implemented yet
 crbug.com/885175 external/wpt/css/css-grid/alignment/grid-item-self-baseline-001.html [ Skip ]
