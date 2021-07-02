@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -384,5 +385,50 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   NavigateToFile("/password/signup_form.html");
 
   // Check that popup is dismissed.
+  EXPECT_FALSE(GenerationPopupShowing());
+}
+
+class PasswordGenerationPopupViewPrerenderingTest
+    : public PasswordGenerationInteractiveTest {
+ public:
+  PasswordGenerationPopupViewPrerenderingTest()
+      : prerender_helper_(base::BindRepeating(
+            &PasswordGenerationPopupViewPrerenderingTest::WebContents,
+            base::Unretained(this))) {}
+  ~PasswordGenerationPopupViewPrerenderingTest() override = default;
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    PasswordGenerationInteractiveTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
+                       PasswordGenerationPopupControllerInPrerendering) {
+  // Open popup.
+  FocusPasswordField();
+  EXPECT_TRUE(GenerationPopupShowing());
+
+  auto prerender_url = embedded_test_server()->GetURL("/empty.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
+  // It should keep the current popup controller since the prerenedering should
+  // not affect the current page.
+  EXPECT_TRUE(GenerationPopupShowing());
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+  // It should clear the current popup controller since the page loading deletes
+  // the popup controller from the previous page.
   EXPECT_FALSE(GenerationPopupShowing());
 }
