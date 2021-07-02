@@ -1,8 +1,4 @@
 include_rules = [
-  # This is a temporary rule to simplify migrating QUICHE to using Abseil
-  # directly.
-  # TODO(b/166325009): remove this rule.
-  "+third_party/abseil-cpp/absl/base",
-  "+third_party/abseil-cpp/absl/container",
+  # Allow string_view.h since absl::string_view is widely used in QUICHE API.
   "+third_party/abseil-cpp/absl/strings",
 ]
