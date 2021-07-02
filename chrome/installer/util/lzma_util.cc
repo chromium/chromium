@@ -16,6 +16,8 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/memory/free_deleter.h"
+#include "base/process/memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -55,8 +57,8 @@ SRes LzmaReadFile(HANDLE file, void* data, size_t* size) {
   return SZ_OK;
 }
 
-SRes SzFileSeekImp(void* object, Int64* pos, ESzSeek origin) {
-  CFileInStream* s = (CFileInStream*)object;
+SRes SzFileSeekImp(const ISeekInStream* object, Int64* pos, ESzSeek origin) {
+  CFileInStream* s = CONTAINER_FROM_VTBL(object, CFileInStream, vt);
   LARGE_INTEGER value;
   value.LowPart = (DWORD)*pos;
   value.HighPart = (LONG)((UInt64)*pos >> 32);
@@ -82,8 +84,8 @@ SRes SzFileSeekImp(void* object, Int64* pos, ESzSeek origin) {
              : SZ_OK;
 }
 
-SRes SzFileReadImp(void* object, void* buffer, size_t* size) {
-  CFileInStream* s = (CFileInStream*)object;
+SRes SzFileReadImp(const ISeekInStream* object, void* buffer, size_t* size) {
+  CFileInStream* s = CONTAINER_FROM_VTBL(object, CFileInStream, vt);
   return LzmaReadFile(s->file.handle, buffer, size);
 }
 
@@ -167,13 +169,20 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
 
   CFileInStream archiveStream;
   archiveStream.file.handle = archive_file_.GetPlatformFile();
-  archiveStream.s.Read = SzFileReadImp;
-  archiveStream.s.Seek = SzFileSeekImp;
+  archiveStream.vt.Read = SzFileReadImp;
+  archiveStream.vt.Seek = SzFileSeekImp;
 
-  CLookToRead lookStream;
-  LookToRead_CreateVTable(&lookStream, false);
-  LookToRead_Init(&lookStream);
-  lookStream.realStream = &archiveStream.s;
+  CLookToRead2 lookStream;
+  LookToRead2_CreateVTable(&lookStream, /*lookahead=*/False);
+  const size_t kStreamBufferSize = 1 << 14;
+  if (!base::UncheckedMalloc(kStreamBufferSize,
+                             reinterpret_cast<void**>(&lookStream.buf))) {
+    return UNPACK_ALLOCATE_ERROR;
+  }
+  std::unique_ptr<uint8_t, base::FreeDeleter> stream_buffer(lookStream.buf);
+  lookStream.bufSize = kStreamBufferSize;
+  LookToRead2_Init(&lookStream);
+  lookStream.realStream = &archiveStream.vt;
 
   CrcGenerateTable();
 
@@ -182,7 +191,7 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
 
   ISzAlloc allocImp = {SzAlloc, SzFree};
   ISzAlloc allocTempImp = {SzAllocTemp, SzFreeTemp};
-  SRes sz_res = SzArEx_Open(&db, &lookStream.s, &allocImp, &allocTempImp);
+  SRes sz_res = SzArEx_Open(&db, &lookStream.vt, &allocImp, &allocTempImp);
   if (sz_res != SZ_OK) {
     LOG(ERROR) << "Error returned by SzArchiveOpen: " << sz_res;
     auto error_code = ::GetLastError();
@@ -305,7 +314,7 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
         int32_t ntstatus = 0;  // STATUS_SUCCESS
         ::SetLastError(ERROR_SUCCESS);
         __try {
-          SRes sz_res = SzAr_DecodeFolder(&db.db, folder_index, &lookStream.s,
+          SRes sz_res = SzAr_DecodeFolder(&db.db, folder_index, &lookStream.vt,
                                           db.dataPos, mapped_file->data(),
                                           folder_unpack_size, &allocTempImp);
           if (sz_res != SZ_OK) {

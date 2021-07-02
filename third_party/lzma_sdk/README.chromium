@@ -1,16 +1,17 @@
 Name: LZMA SDK
 Short Name: lzma
 URL: http://www.7-zip.org/sdk.html
-Version: 15.14
-Date: 2015-12-31
+Version: 19.00
+Date: 2019-02-21
 License: Public Domain
 Security Critical: yes
+CPEPrefix: unknown
 
 Description:
-This contains a part of LZMA SDK 15.14.
+This contains a part of LZMA SDK 19.00.
 
 Local Modifications:
-The original code can be found at http://7-zip.org/a/lzma1514.7z.  Only parts
+The original code can be found at http://7-zip.org/a/lzma1900.7z.  Only parts
 of this archive are copied here.  More specifically:
 
 1/ C code required to open 7z archive files and uncompress LZMA
@@ -18,15 +19,9 @@ of this archive are copied here.  More specifically:
 3/ source code for SfxSetup, a utility for creating self extracting archives
 4/ C code required for xz decompression (split into its own static library)
 
-The patch in chromium.patch was applied to CpuArch.c to fix register corruption
-that can occur on 64-bit platforms built with -fPIC and register clobbering that
-occurred on Mac builds (but in principle can occur anywhere).
-
 The patch in Util/SfxSetup/chromium.patch was applied so that:
 
-1/ The code compiles without warnings which are treated as errors. Warning is:
-   C6246: Local declaration hides declaration of same name in outer scope.
-2/ Fix for includes file names, since the original code causes an include
+1/ Fix for includes file names, since the original code causes an include
    file violation during git cl presubmit.
-3/ Extended search range for 7z archive signature to accomodate
+2/ Extended search range for 7z archive signature to accomodate
    increased sfx binary size in debug builds.

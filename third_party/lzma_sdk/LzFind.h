@@ -1,5 +1,5 @@
 /* LzFind.h -- Match finder for LZ algorithms
-2015-10-15 : Igor Pavlov : Public domain */
+2017-06-10 : Igor Pavlov : Public domain */
 
 #ifndef __LZ_FIND_H
 #define __LZ_FIND_H
@@ -47,6 +47,8 @@ typedef struct _CMatchFinder
   SRes result;
   UInt32 crc[256];
   size_t numRefs;
+
+  UInt64 expectedDataSize;
 } CMatchFinder;
 
 #define Inline_MatchFinder_GetPointerToCurrentPos(p) ((p)->buffer)
@@ -71,8 +73,8 @@ void MatchFinder_Construct(CMatchFinder *p);
 */
 int MatchFinder_Create(CMatchFinder *p, UInt32 historySize,
     UInt32 keepAddBufferBefore, UInt32 matchMaxLen, UInt32 keepAddBufferAfter,
-    ISzAlloc *alloc);
-void MatchFinder_Free(CMatchFinder *p, ISzAlloc *alloc);
+    ISzAllocPtr alloc);
+void MatchFinder_Free(CMatchFinder *p, ISzAllocPtr alloc);
 void MatchFinder_Normalize3(UInt32 subValue, CLzRef *items, size_t numItems);
 void MatchFinder_ReduceOffsets(CMatchFinder *p, UInt32 subValue);
 
@@ -103,7 +105,9 @@ typedef struct _IMatchFinder
 
 void MatchFinder_CreateVTable(CMatchFinder *p, IMatchFinder *vTable);
 
-void MatchFinder_Init_2(CMatchFinder *p, int readData);
+void MatchFinder_Init_LowHash(CMatchFinder *p);
+void MatchFinder_Init_HighHash(CMatchFinder *p);
+void MatchFinder_Init_3(CMatchFinder *p, int readData);
 void MatchFinder_Init(CMatchFinder *p);
 
 UInt32 Bt3Zip_MatchFinder_GetMatches(CMatchFinder *p, UInt32 *distances);

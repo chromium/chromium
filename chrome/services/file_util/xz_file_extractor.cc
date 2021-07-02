@@ -32,8 +32,8 @@ class XzState {
       : consumer_(std::move(consumer)),
         producer_(std::move(producer)),
         success_callback_(std::move(success_callback)) {
-    alloc_.Alloc = [](void*, size_t size) { return malloc(size); };
-    alloc_.Free = [](void*, void* ptr) { return free(ptr); };
+    alloc_.Alloc = [](ISzAllocPtr, size_t size) { return malloc(size); };
+    alloc_.Free = [](ISzAllocPtr, void* ptr) { return free(ptr); };
     XzUnpacker_Construct(&state_, &alloc_);
 
     consumer_watcher_.Watch(
@@ -95,9 +95,9 @@ class XzState {
     ECoderStatus status;
     size_t in_remaining = buffer_size_;
     size_t out_remaining = size;
-    int xz_result =
-        XzUnpacker_Code(&state_, data, &out_remaining, buffer_.data(),
-                        &in_remaining, CODER_FINISH_ANY, &status);
+    int xz_result = XzUnpacker_Code(
+        &state_, data, &out_remaining, buffer_.data(), &in_remaining,
+        /*srcFinished=*/buffer_size_ == 0, CODER_FINISH_ANY, &status);
     if (xz_result != SZ_OK) {
       producer_->EndWriteData(0);
       RunCallbackAndDeleteThis(false);

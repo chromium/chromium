@@ -51,6 +51,8 @@ static_library("lzma_sdk") {
     "CpuArch.h",
     "Delta.c",
     "Delta.h",
+    "DllSecur.c",
+    "DllSecur.h",
     "LzFind.c",
     "LzFind.h",
     "LzHash.h",

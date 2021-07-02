@@ -1,5 +1,5 @@
 /* 7zBuf.c -- Byte Buffer
-2013-01-21 : Igor Pavlov : Public domain */
+2017-04-03 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -11,7 +11,7 @@ void Buf_Init(CBuf *p)
   p->size = 0;
 }
 
-int Buf_Create(CBuf *p, size_t size, ISzAlloc *alloc)
+int Buf_Create(CBuf *p, size_t size, ISzAllocPtr alloc)
 {
   p->size = 0;
   if (size == 0)
@@ -19,8 +19,8 @@ int Buf_Create(CBuf *p, size_t size, ISzAlloc *alloc)
     p->data = 0;
     return 1;
   }
-  p->data = (Byte *)alloc->Alloc(alloc, size);
-  if (p->data != 0)
+  p->data = (Byte *)ISzAlloc_Alloc(alloc, size);
+  if (p->data)
   {
     p->size = size;
     return 1;
@@ -28,9 +28,9 @@ int Buf_Create(CBuf *p, size_t size, ISzAlloc *alloc)
   return 0;
 }
 
-void Buf_Free(CBuf *p, ISzAlloc *alloc)
+void Buf_Free(CBuf *p, ISzAllocPtr alloc)
 {
-  alloc->Free(alloc, p->data);
+  ISzAlloc_Free(alloc, p->data);
   p->data = 0;
   p->size = 0;
 }

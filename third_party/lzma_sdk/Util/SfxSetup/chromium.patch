@@ -1,56 +1,53 @@
-diff \Users\rogerta\Documents\Visual Studio 2017\Projects\7z.1514.orig\C\Util\SfxSetup\Precomp.h .\Precomp.h
-7,8c7,8
-< #include "../../Compiler.h"
-< #include "../../7zTypes.h"
----
-> #include "Compiler.h"
-> #include "7zTypes.h"
-diff \Users\rogerta\Documents\Visual Studio 2017\Projects\7z.1514.orig\C\Util\SfxSetup\SfxSetup.c .\SfxSetup.c
-13a14,16
-> #include <windows.h>
-> #include <shellapi.h>
->
-18,22c21,25
-< #include "../../7z.h"
-< #include "../../7zAlloc.h"
-< #include "../../7zCrc.h"
-< #include "../../7zFile.h"
-< #include "../../CpuArch.h"
----
-> #include "7z.h"
-> #include "7zAlloc.h"
-> #include "7zCrc.h"
-> #include "7zFile.h"
-> #include "CpuArch.h"
-445c448
-<           unsigned len = (unsigned)wcslen(name);
----
->           unsigned len2 = (unsigned)wcslen(name);
-447c450
-<           unsigned extPrice = FindItem(kExts, sizeof(kExts) / sizeof(kExts[0]), name + len - extLen, extLen);
----
->           unsigned extPrice = FindItem(kExts, sizeof(kExts) / sizeof(kExts[0]), name + len2 - extLen, extLen);
-diff --git a/third_party/lzma_sdk/README.chromium b/third_party/lzma_sdk/README.chromium
-index 96fc788132b2..956b8d6c2fae 100644
---- a/third_party/lzma_sdk/README.chromium
-+++ b/third_party/lzma_sdk/README.chromium
-@@ -28,4 +28,5 @@ The patch in Util/SfxSetup/chromium.patch was applied so that:
-    C6246: Local declaration hides declaration of same name in outer scope.
- 2/ Fix for includes file names, since the original code causes an include
-    file violation during git cl presubmit.
--
-+3/ Extended search range for 7z archive signature to accomodate
-+   increased sfx binary size in debug builds.
+diff --git a/third_party/lzma_sdk/Util/SfxSetup/Precomp.h b/third_party/lzma_sdk/Util/SfxSetup/Precomp.h
+index 588a66f7eb8c..177a205f6979 100644
+--- a/third_party/lzma_sdk/Util/SfxSetup/Precomp.h
++++ b/third_party/lzma_sdk/Util/SfxSetup/Precomp.h
+@@ -4,7 +4,7 @@
+ #ifndef __7Z_PRECOMP_H
+ #define __7Z_PRECOMP_H
+ 
+-#include "../../Compiler.h"
+-#include "../../7zTypes.h"
++#include "Compiler.h"
++#include "7zTypes.h"
+ 
+ #endif
 diff --git a/third_party/lzma_sdk/Util/SfxSetup/SfxSetup.c b/third_party/lzma_sdk/Util/SfxSetup/SfxSetup.c
-index 967c5c247702..95766a6a2dd4 100644
+index ef19aeac5450..45efac060bd6 100644
 --- a/third_party/lzma_sdk/Util/SfxSetup/SfxSetup.c
 +++ b/third_party/lzma_sdk/Util/SfxSetup/SfxSetup.c
-@@ -125,7 +125,7 @@ static WRes MyCreateDir(const WCHAR *name)
+@@ -11,16 +11,19 @@
+ #define _UNICODE
+ #endif
+ 
++#include <windows.h>
++#include <shellapi.h>
++
+ #ifdef _CONSOLE
+ #include <stdio.h>
+ #endif
+ 
+-#include "../../7z.h"
+-#include "../../7zAlloc.h"
+-#include "../../7zCrc.h"
+-#include "../../7zFile.h"
+-#include "../../CpuArch.h"
+-#include "../../DllSecur.h"
++#include "7z.h"
++#include "7zAlloc.h"
++#include "7zCrc.h"
++#include "7zFile.h"
++#include "CpuArch.h"
++#include "DllSecur.h"
+ 
+ #define k_EXE_ExtIndex 2
+ 
+@@ -125,7 +128,7 @@ static WRes MyCreateDir(const WCHAR *name)
  #define kBufferSize (1 << 15)
  #endif
  
 -#define kSignatureSearchLimit (1 << 22)
 +#define kSignatureSearchLimit (1 << 26)
  
- static Bool FindSignature(CSzFile *stream, UInt64 *resPos)
+ static BoolInt FindSignature(CSzFile *stream, UInt64 *resPos)
  {
