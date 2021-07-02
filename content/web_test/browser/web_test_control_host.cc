@@ -1148,7 +1148,7 @@ void WebTestControlHost::DiscardMainWindow() {
   // We don't want to leak any open windows when we finish a test, and the next
   // test will create its own |main_window_|. So at this point we close all
   // Shell windows, to avoid using the potentially-bad pointer.
-  CloseAllWindows();
+  Shell::CloseAllWindows();
 
   // Then we immediately end the current test instead of timing out. This is
   // like ReportResults() except we report only messages added to the
@@ -1291,13 +1291,6 @@ void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
 }
 
 void WebTestControlHost::OnPixelDumpCaptured(const SkBitmap& snapshot) {
-  // In the test: test_runner/notify_done_and_defered_close_dump_surface.html,
-  // the |main_window_| is closed while waiting for the pixel dump. When this
-  // happens, every window is closed and while pumping the message queue,
-  // OnPixelDumpCaptured is called with an empty snapshot.
-  if (!main_window_)
-    return;
-
   DCHECK(!snapshot.drawsNothing());
   pixel_dump_ = snapshot;
   waiting_for_pixel_results_ = false;
@@ -1822,14 +1815,6 @@ void WebTestControlHost::DidFinishNavigation(NavigationHandle* navigation) {
   if (navigation->GetURL() != GURL(kAboutBlankResetWebTest))
     return;
 
-  // During fuzzing, the |main_window_| might close itself using window.close().
-  // This might happens after the end of the test, during the cleanup phase. In
-  // this case, the pending about:blank navigation might be canceled, within the
-  // |main_window_| destructor. It is no longer safe to access |main_window_|
-  // here. See https://crbug.com/1221183
-  if (!navigation->HasCommitted())
-    return;
-
   // Request additional web test specific cleanup in the renderer process:
   content::WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(main_window_->web_contents());
@@ -1883,15 +1868,6 @@ void WebTestControlHost::CloseTestOpenedWindows() {
     if (shell != main_window_)
       shell->Close();
   }
-  secondary_window_ = nullptr;
-  base::RunLoop().RunUntilIdle();
-}
-
-void WebTestControlHost::CloseAllWindows() {
-  DevToolsAgentHost::DetachAllClients();
-  while (!Shell::windows().empty())
-    Shell::windows().back()->Close();
-  main_window_ = nullptr;
   secondary_window_ = nullptr;
   base::RunLoop().RunUntilIdle();
 }

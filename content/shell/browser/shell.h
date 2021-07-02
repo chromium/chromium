@@ -33,7 +33,8 @@ class WebContents;
 
 // This represents one window of the Content Shell, i.e. all the UI including
 // buttons and url bar, as well as the web content area.
-class Shell : public WebContentsDelegate, public WebContentsObserver {
+class Shell : public WebContentsDelegate,
+              public WebContentsObserver {
  public:
   ~Shell() override;
 
@@ -62,14 +63,8 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   // Resizes the web content view to the given dimensions.
   void ResizeWebContentForTests(const gfx::Size& content_size);
 
-  // Do one-time initialization at application startup. This must be matched
-  // with a Shell::Shutdown() at application termination, where |platform|
-  // will be released.
+  // Do one-time initialization at application startup.
   static void Initialize(std::unique_ptr<ShellPlatformDelegate> platform);
-
-  // Closes all windows, pumps teardown tasks and signal the main message loop
-  // to quit.
-  static void Shutdown();
 
   static Shell* CreateNewWindow(
       BrowserContext* browser_context,
@@ -82,6 +77,10 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
 
   // Returns the currently open windows.
   static std::vector<Shell*>& windows() { return windows_; }
+
+  // Closes all windows, pumps teardown tasks, then returns. The main message
+  // loop will be signalled to quit, before the call returns.
+  static void CloseAllWindows();
 
   // Stores the supplied |quit_closure|, to be run when the last Shell instance
   // is destroyed.

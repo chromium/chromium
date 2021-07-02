@@ -254,11 +254,7 @@ class WebTestControlHost : public WebContentsObserver,
   void WorkQueueStatesChanged(base::Value changed_work_queue_states) override;
 
   void DiscardMainWindow();
-  // Closes all windows opened by the test. This is every window but the main
-  // window, since it is created by the test harness and reused between tests.
   void CloseTestOpenedWindows();
-  // Closes all windows, including the main window.
-  void CloseAllWindows();
 
   // Makes sure that the potentially new renderer associated with |frame| is 1)
   // initialized for the test, 2) kept up to date wrt test flags and 3)

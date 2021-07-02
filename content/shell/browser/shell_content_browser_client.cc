@@ -144,7 +144,7 @@ class ShellControllerImpl : public mojom::ShellController {
                                                         std::move(callback));
   }
 
-  void ShutDown() override { Shell::Shutdown(); }
+  void ShutDown() override { Shell::CloseAllWindows(); }
 };
 
 // https://crbug.com/1219642 consider not needing VariationsServiceClient just
