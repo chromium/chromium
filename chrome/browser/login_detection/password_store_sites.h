@@ -9,8 +9,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace login_detection {
@@ -21,8 +21,7 @@ class PasswordStoreSites
     : public password_manager::PasswordStoreInterface::Observer,
       public password_manager::PasswordStoreConsumer {
  public:
-  explicit PasswordStoreSites(
-      scoped_refptr<password_manager::PasswordStore> store);
+  explicit PasswordStoreSites(password_manager::PasswordStoreInterface* store);
 
   ~PasswordStoreSites() override;
 
@@ -45,7 +44,7 @@ class PasswordStoreSites
       override;
 
   // The password store |this| is observing site entries from.
-  scoped_refptr<password_manager::PasswordStore> password_store_;
+  password_manager::PasswordStoreInterface* password_store_;
 
   // Set of sites saved in the password store. Will be absl::nullopt until the
   // sites are retrieved the fist time.

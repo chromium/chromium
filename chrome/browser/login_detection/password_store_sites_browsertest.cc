@@ -6,6 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/login_detection/password_store_sites.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
@@ -13,10 +14,13 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using password_manager::PasswordStoreInterface;
 namespace login_detection {
 
 class LoginDetectionPasswordStoreSitesBrowserTest
@@ -24,17 +28,16 @@ class LoginDetectionPasswordStoreSitesBrowserTest
  public:
   LoginDetectionPasswordStoreSitesBrowserTest() = default;
 
-  scoped_refptr<password_manager::PasswordStore> GetProfilePasswordStore() {
-    return PasswordStoreFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+  void SetUpOnMainThread() override {
+    profile_password_store_ =
+        CreateAndUseTestPasswordStore(browser()->profile()).get();
+    account_password_store_ =
+        CreateAndUseTestAccountPasswordStore(browser()->profile()).get();
+
+    InProcessBrowserTest::SetUpOnMainThread();
   }
 
-  scoped_refptr<password_manager::PasswordStore> GetAccountPasswordStore() {
-    return AccountPasswordStoreFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
-  }
-
-  void AddLoginForSite(password_manager::PasswordStore* password_store,
+  void AddLoginForSite(password_manager::PasswordStoreInterface* password_store,
                        const GURL& url) {
     password_manager::PasswordForm form;
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
@@ -43,27 +46,34 @@ class LoginDetectionPasswordStoreSitesBrowserTest
     form.username_value = u"my_username";
     form.password_value = u"my_password";
     form.blocked_by_user = false;
-    passwords_helper::AddLogin(password_store, form);
+    password_store->AddLogin(form);
+    // GetLogins() blocks until reading on the background thread is finished
+    // which guarantees that all other tasks on the background thread are
+    // finished too.
+    passwords_helper::GetLogins(password_store);
+    // Once AddLogin() is done on the background thread, the store has posted
+    // OnLoginsChanged() on the main thread. Make sure to process it before
+    // proceeding.
     base::RunLoop().RunUntilIdle();
   }
 
   // Wait for the password store taskrunner to complete its event processing.
   void WaitForPasswordStoreUpdate(
-      password_manager::PasswordStore* password_store) {
-    base::WaitableEvent waitable_event(
-        base::WaitableEvent::ResetPolicy::MANUAL,
-        base::WaitableEvent::InitialState::NOT_SIGNALED);
-    password_store->ScheduleTask(base::BindOnce(
-        &base::WaitableEvent::Signal, base::Unretained(&waitable_event)));
-    waitable_event.Wait();
-
+      password_manager::PasswordStoreInterface* password_store) {
+    // GetLogins() blocks until reading on the background thread is finished
+    // which guarantees that all other tasks on the background thread are
+    // finished too.
+    passwords_helper::GetLogins(password_store);
     // At this point, the password store has completed its processing and posted
-    // events to the main thread.
+    // events (e.g. OnLoginsChanged() or OnGetPasswordStoreResults()) to the
+    // main thread. Make sure to process such events before proceeding.
     base::RunLoop().RunUntilIdle();
   }
 
  protected:
   base::HistogramTester histogram_tester;
+  PasswordStoreInterface* profile_password_store_ = nullptr;
+  PasswordStoreInterface* account_password_store_ = nullptr;
 };
 
 // The code under test depends on feature EnablePasswordsAccountStorage which
@@ -76,13 +86,13 @@ class LoginDetectionPasswordStoreSitesBrowserTest
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionPasswordStoreSitesBrowserTest,
                        DISABLE_ON_CHROMEOS(ProfilePasswordStore)) {
-  auto password_store = GetProfilePasswordStore();
-  PasswordStoreSites password_store_sites(password_store);
-  WaitForPasswordStoreUpdate(password_store.get());
+  PasswordStoreSites password_store_sites(profile_password_store_);
+  WaitForPasswordStoreUpdate(profile_password_store_);
   base::RunLoop().RunUntilIdle();
 
-  AddLoginForSite(password_store.get(), GURL("https://www.foo.com/login.html"));
-  WaitForPasswordStoreUpdate(password_store.get());
+  AddLoginForSite(profile_password_store_,
+                  GURL("https://www.foo.com/login.html"));
+  WaitForPasswordStoreUpdate(profile_password_store_);
   base::RunLoop().RunUntilIdle();
 
   // The site and its subdomains should exist in the password store.
@@ -102,13 +112,13 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionPasswordStoreSitesBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionPasswordStoreSitesBrowserTest,
                        DISABLE_ON_CHROMEOS(AccountPasswordStore)) {
-  auto password_store = GetAccountPasswordStore();
-  PasswordStoreSites password_store_sites(password_store);
-  WaitForPasswordStoreUpdate(password_store.get());
+  PasswordStoreSites password_store_sites(account_password_store_);
+  WaitForPasswordStoreUpdate(account_password_store_);
   base::RunLoop().RunUntilIdle();
 
-  AddLoginForSite(password_store.get(), GURL("https://www.foo.com/login.html"));
-  WaitForPasswordStoreUpdate(password_store.get());
+  AddLoginForSite(account_password_store_,
+                  GURL("https://www.foo.com/login.html"));
+  WaitForPasswordStoreUpdate(account_password_store_);
   base::RunLoop().RunUntilIdle();
 
   // The site and its subdomains should exist in the password store.
@@ -128,12 +138,12 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionPasswordStoreSitesBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionPasswordStoreSitesBrowserTest,
                        DISABLE_ON_CHROMEOS(AccountPasswordStoreExistingLogin)) {
-  auto password_store = GetAccountPasswordStore();
-  AddLoginForSite(password_store.get(), GURL("https://www.foo.com/login.html"));
+  AddLoginForSite(account_password_store_,
+                  GURL("https://www.foo.com/login.html"));
   base::RunLoop().RunUntilIdle();
 
-  PasswordStoreSites password_store_sites(password_store);
-  WaitForPasswordStoreUpdate(password_store.get());
+  PasswordStoreSites password_store_sites(account_password_store_);
+  WaitForPasswordStoreUpdate(account_password_store_);
 
   // The site and its subdomains should exist in the password store.
   EXPECT_TRUE(
@@ -149,12 +159,12 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionPasswordStoreSitesBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionPasswordStoreSitesBrowserTest,
                        DISABLE_ON_CHROMEOS(ProfilePasswordStoreExistingLogin)) {
-  auto password_store = GetProfilePasswordStore();
-  AddLoginForSite(password_store.get(), GURL("https://www.foo.com/login.html"));
+  AddLoginForSite(profile_password_store_,
+                  GURL("https://www.foo.com/login.html"));
   base::RunLoop().RunUntilIdle();
 
-  PasswordStoreSites password_store_sites(password_store);
-  WaitForPasswordStoreUpdate(password_store.get());
+  PasswordStoreSites password_store_sites(profile_password_store_);
+  WaitForPasswordStoreUpdate(profile_password_store_);
 
   // The site and its subdomains should exist in the password store.
   EXPECT_TRUE(
@@ -173,15 +183,14 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionPasswordStoreSitesBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     LoginDetectionPasswordStoreSitesBrowserTest,
     DISABLE_ON_CHROMEOS(QueryBeforePasswordStoreInitialize)) {
-  auto password_store = GetProfilePasswordStore();
-  PasswordStoreSites password_store_sites(password_store);
+  PasswordStoreSites password_store_sites(profile_password_store_);
 
   EXPECT_FALSE(
       password_store_sites.IsSiteInPasswordStore(GURL("https://www.foo.com")));
   histogram_tester.ExpectUniqueSample(
       "Login.PasswordStoreSites.InitializedBeforeQuery", false, 1);
 
-  WaitForPasswordStoreUpdate(password_store.get());
+  WaitForPasswordStoreUpdate(profile_password_store_);
   EXPECT_FALSE(
       password_store_sites.IsSiteInPasswordStore(GURL("https://www.foo.com")));
 

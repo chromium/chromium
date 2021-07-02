@@ -12,8 +12,8 @@
 namespace login_detection {
 
 PasswordStoreSites::PasswordStoreSites(
-    scoped_refptr<password_manager::PasswordStore> password_store)
-    : password_store_(std::move(password_store)) {
+    password_manager::PasswordStoreInterface* password_store)
+    : password_store_(password_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (password_store_) {
     password_store_->AddObserver(this);

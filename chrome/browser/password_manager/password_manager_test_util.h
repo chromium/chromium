@@ -15,4 +15,7 @@ class TestPasswordStore;
 scoped_refptr<password_manager::TestPasswordStore>
 CreateAndUseTestPasswordStore(Profile* profile);
 
+scoped_refptr<password_manager::TestPasswordStore>
+CreateAndUseTestAccountPasswordStore(Profile* profile);
+
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_TEST_UTIL_H_

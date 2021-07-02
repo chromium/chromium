@@ -10,6 +10,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "url/gurl.h"
@@ -36,11 +37,13 @@ LoginDetectionKeyedService::LoginDetectionKeyedService(Profile* profile)
     : profile_(profile),
       field_trial_logged_in_sites_(GetLoggedInSites()),
       profile_password_sites_(PasswordStoreFactory::GetForProfile(
-          profile,
-          ServiceAccessType::EXPLICIT_ACCESS)),
+                                  profile,
+                                  ServiceAccessType::EXPLICIT_ACCESS)
+                                  .get()),
       account_password_sites_(AccountPasswordStoreFactory::GetForProfile(
-          profile,
-          ServiceAccessType::EXPLICIT_ACCESS)) {
+                                  profile,
+                                  ServiceAccessType::EXPLICIT_ACCESS)
+                                  .get()) {
   if (auto* optimization_guide_decider =
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile_)) {
     optimization_guide_decider->RegisterOptimizationTypes(
