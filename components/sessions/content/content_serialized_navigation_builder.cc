@@ -19,6 +19,7 @@
 #include "content/public/browser/navigation_entry_restore_context.h"
 #include "content/public/browser/replaced_navigation_entry_data.h"
 #include "content/public/common/referrer.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 
 namespace sessions {

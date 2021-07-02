@@ -17,6 +17,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

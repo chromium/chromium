@@ -36,10 +36,7 @@ namespace ui {
 class Event;
 }
 
-namespace url {
 class GURL;
-}
-
 class HostContentSettingsMap;
 class PageInfoDelegate;
 class PageInfoUI;

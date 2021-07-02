@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/test/mock_web_contents_observer.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
 namespace content {
 
