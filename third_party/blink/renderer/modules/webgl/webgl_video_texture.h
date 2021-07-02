@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_VIDEO_TEXTURE_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 
 namespace media {
 class VideoFrame;
@@ -16,6 +15,7 @@ namespace blink {
 
 class HTMLVideoElement;
 class VideoFrameMetadata;
+struct WebGLVideoFrameUploadMetadata;
 
 class WebGLVideoTexture final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -39,9 +39,9 @@ class WebGLVideoTexture final : public WebGLExtension {
 
   bool releaseVideoImageWEBGL(ExecutionContext*, unsigned, ExceptionState&);
 
-  // Helper method for filling in VideoFrameUploadMetadata. Will be default
+  // Helper method for filling in WebGLVideoFrameUploadMetadata. Will be default
   // initialized (skipped = false) if the metadata API is disabled.
-  static WebGLTexture::VideoFrameUploadMetadata CreateVideoFrameUploadMetadata(
+  static WebGLVideoFrameUploadMetadata CreateVideoFrameUploadMetadata(
       const media::VideoFrame* frame,
       int already_uploaded_id);
 

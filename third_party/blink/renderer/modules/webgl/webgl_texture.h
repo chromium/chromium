@@ -33,6 +33,15 @@
 
 namespace blink {
 
+// For last-uploaded-frame-metadata API. https://crbug.com/639174
+struct WebGLVideoFrameUploadMetadata {
+  int frame_id = -1;
+  IntRect visible_rect = {};
+  base::TimeDelta timestamp = {};
+  base::TimeDelta expected_timestamp = {};
+  bool skipped = false;
+};
+
 class WebGLTexture : public WebGLSharedPlatform3DObject {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -49,20 +58,11 @@ class WebGLTexture : public WebGLSharedPlatform3DObject {
 
   static GLint ComputeLevelCount(GLsizei width, GLsizei height, GLsizei depth);
 
-  // For last-uploaded-frame-metadata API. https://crbug.com/639174
-  struct VideoFrameUploadMetadata {
-    int frame_id = -1;
-    IntRect visible_rect = {};
-    base::TimeDelta timestamp = {};
-    base::TimeDelta expected_timestamp = {};
-    bool skipped = false;
-  };
-
   int GetLastUploadedVideoFrameId() const {
     return last_uploaded_video_frame_metadata_.frame_id;
   }
 
-  void UpdateLastUploadedFrame(VideoFrameUploadMetadata frame_metadata) {
+  void UpdateLastUploadedFrame(WebGLVideoFrameUploadMetadata frame_metadata) {
     last_uploaded_video_frame_metadata_ = frame_metadata;
   }
 
@@ -96,7 +96,7 @@ class WebGLTexture : public WebGLSharedPlatform3DObject {
 
   GLenum target_;
 
-  VideoFrameUploadMetadata last_uploaded_video_frame_metadata_ = {};
+  WebGLVideoFrameUploadMetadata last_uploaded_video_frame_metadata_ = {};
 };
 
 }  // namespace blink

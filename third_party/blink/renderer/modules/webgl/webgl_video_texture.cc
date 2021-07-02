@@ -156,12 +156,11 @@ bool WebGLVideoTexture::releaseVideoImageWEBGL(
 }
 
 // static
-WebGLTexture::VideoFrameUploadMetadata
-WebGLVideoTexture::CreateVideoFrameUploadMetadata(
+WebGLVideoFrameUploadMetadata WebGLVideoTexture::CreateVideoFrameUploadMetadata(
     const media::VideoFrame* frame,
     int already_uploaded_id) {
   DCHECK(frame);
-  WebGLTexture::VideoFrameUploadMetadata metadata = {};
+  WebGLVideoFrameUploadMetadata metadata = {};
   if (!RuntimeEnabledFeatures::ExtraWebGLVideoTextureMetadataEnabled())
     return metadata;
 
