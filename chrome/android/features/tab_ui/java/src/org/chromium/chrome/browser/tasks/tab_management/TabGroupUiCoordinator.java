@@ -151,7 +151,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)
                 && mScrimCoordinator != null) {
             mTabGridDialogCoordinator =
-                    new TabGridDialogCoordinator(mContext, mTabModelSelector, mTabContentManager,
+                    new TabGridDialogCoordinator(mActivity, mTabModelSelector, mTabContentManager,
                             mTabCreatorManager, mActivity.findViewById(R.id.coordinator), null,
                             null, null, mShareDelegateSupplier, mScrimCoordinator, mRootView);
             mTabGridDialogCoordinator.initWithNative(mContext, mTabModelSelector,

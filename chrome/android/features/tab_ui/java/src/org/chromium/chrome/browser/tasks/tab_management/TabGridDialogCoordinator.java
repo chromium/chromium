@@ -42,11 +42,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final ViewGroup mRootView;
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
-    private ViewGroup mContainerView;
     private TabGridDialogView mDialogView;
-    private boolean mIsInitialized;
 
-    TabGridDialogCoordinator(Context context, TabModelSelector tabModelSelector,
+    TabGridDialogCoordinator(Activity activity, TabModelSelector tabModelSelector,
             TabContentManager tabContentManager, TabCreatorManager tabCreatorManager,
             ViewGroup containerView, TabSwitcherMediator.ResetHandler resetHandler,
             TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
@@ -57,42 +55,40 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                                              : "TabGridDialogInSwitcher";
 
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
-        mContainerView = containerView;
         mRootView = rootView;
 
         mDialogView = containerView.findViewById(R.id.dialog_parent_view);
         if (mDialogView == null) {
-            LayoutInflater.from(context).inflate(
+            LayoutInflater.from(activity).inflate(
                     R.layout.tab_grid_dialog_layout, containerView, true);
             mDialogView = containerView.findViewById(R.id.dialog_parent_view);
             mDialogView.setupScrimCoordinator(scrimCoordinator);
         }
-        Activity activity = (Activity) context;
         SnackbarManager snackbarManager =
                 new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
 
-        mMediator = new TabGridDialogMediator(context, this, mModel, tabModelSelector,
+        mMediator = new TabGridDialogMediator(activity, this, mModel, tabModelSelector,
                 tabCreatorManager, resetHandler, animationSourceViewProvider, shareDelegateSupplier,
                 snackbarManager, mComponentName);
 
         // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to take
         // in a mode parameter instead.
         mTabListCoordinator = new TabListCoordinator(
-                TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)
+                TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)
                                 && SysUtils.isLowEndDevice()
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID,
-                context, tabModelSelector, tabContentManager::getTabThumbnailWithCallback, null,
+                activity, tabModelSelector, tabContentManager::getTabThumbnailWithCallback, null,
                 false, gridCardOnClickListenerProvider, mMediator.getTabGridDialogHandler(),
                 TabProperties.UiType.CLOSABLE, null, null, containerView, false, mComponentName,
                 rootView);
         TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 
         TabGroupUiToolbarView toolbarView =
-                (TabGroupUiToolbarView) LayoutInflater.from(context).inflate(
+                (TabGroupUiToolbarView) LayoutInflater.from(activity).inflate(
                         R.layout.bottom_tab_grid_toolbar, recyclerView, false);
         toolbarView.setupDialogToolbarLayout();
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)) {
+        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)) {
             toolbarView.hideTabGroupsContinuationWidgets();
         }
         mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
@@ -102,8 +98,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     public void initWithNative(Context context, TabModelSelector tabModelSelector,
             TabContentManager tabContentManager, TabGroupTitleEditor tabGroupTitleEditor) {
-        if (mIsInitialized) return;
-
         TabSelectionEditorCoordinator.TabSelectionEditorController controller = null;
         if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)) {
             @TabListCoordinator.TabListMode
