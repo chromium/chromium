@@ -202,6 +202,12 @@ String ExceptionMessages::ReadOnly(const char* detail) {
              : read_only;
 }
 
+String ExceptionMessages::SharedArrayBufferNotAllowed(
+    const char* expected_type) {
+  return String::Format("The provided %s value must not be shared.",
+                        expected_type);
+}
+
 String ExceptionMessages::ValueNotOfType(const char* expected_type) {
   return String::Format("The provided value is not of type '%s'.",
                         expected_type);

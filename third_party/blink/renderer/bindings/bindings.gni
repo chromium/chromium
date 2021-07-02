@@ -57,6 +57,7 @@ bindings_core_v8_files =
                     "core/v8/module_request.cc",
                     "core/v8/module_request.h",
                     "core/v8/native_value_traits.h",
+                    "core/v8/native_value_traits_buffer_sources.cc",
                     "core/v8/native_value_traits_impl.cc",
                     "core/v8/native_value_traits_impl.h",
                     "core/v8/profiler_trace_builder.cc",
