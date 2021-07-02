@@ -11,6 +11,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 
 namespace history_clusters {
@@ -38,6 +39,17 @@ class HistoryClustersServiceTestApi {
     history::BlockUntilHistoryProcessesPendingRequests(history_service_);
 
     return result;
+  }
+
+  void SetClusteringBackendForTest(std::unique_ptr<ClusteringBackend> backend) {
+    DCHECK(backend.get());
+
+    history_clusters_service_->backend_ = std::move(backend);
+    // TODO(tommycli): Eliminate this `backend_weak_factory_` idiom. It's error
+    // prone, and I think we can work around the need for it.
+    history_clusters_service_->backend_weak_factory_ =
+        std::make_unique<base::WeakPtrFactory<ClusteringBackend>>(
+            history_clusters_service_->backend_.get());
   }
 
   HistoryClustersService* const history_clusters_service_;

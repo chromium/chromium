@@ -87,6 +87,7 @@ source_set("test_support") {
   testonly = true
   sources = [ "history_clusters_service_test_api.h" ]
   deps = [
+    ":clustering_backend",
     ":core",
     "//base/test:test_support",
     "//components/history/core/browser",

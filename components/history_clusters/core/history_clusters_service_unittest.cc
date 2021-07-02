@@ -44,6 +44,42 @@ namespace history_clusters {
 
 namespace {
 
+// Trivial backend to allow us to specifically test just the service behavior.
+class TestClusteringBackend : public ClusteringBackend {
+ public:
+  void GetClusters(
+      ClustersCallback callback,
+      const std::vector<history::AnnotatedVisit>& visits) override {
+    callback_ = std::move(callback);
+    last_clustered_visits_ = visits;
+  }
+
+  void FulfillCallback(const std::vector<history::Cluster>& clusters) {
+    std::move(callback_).Run(clusters);
+  }
+
+  const std::vector<history::AnnotatedVisit>& last_clustered_visits() const {
+    return last_clustered_visits_;
+  }
+
+  // Fetches a scored visit by an ID. `visit_id` must be valid. This is a
+  // convenience method used for constructing the fake response.
+  history::ScoredAnnotatedVisit GetVisitById(int visit_id, float score = 0.5) {
+    for (auto& visit : last_clustered_visits_) {
+      if (visit.visit_row.visit_id == visit_id)
+        return {visit, score};
+    }
+
+    NOTREACHED() << "TestClusteringBackend::GetVisitById "
+                 << "could not find visit_id: " << visit_id;
+    return history::ScoredAnnotatedVisit();
+  }
+
+ private:
+  ClustersCallback callback_;
+  std::vector<history::AnnotatedVisit> last_clustered_visits_;
+};
+
 class HistoryClustersServiceTest : public testing::Test {
  public:
   HistoryClustersServiceTest()
@@ -53,6 +89,9 @@ class HistoryClustersServiceTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         run_loop_quit_(run_loop_.QuitClosure()) {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndEnableFeature(kMemories);
+
     CHECK(history_dir_.CreateUniqueTempDir());
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
@@ -61,13 +100,19 @@ class HistoryClustersServiceTest : public testing::Test {
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
             history_clusters_service_.get(), history_service_.get());
+    auto test_backend = std::make_unique<TestClusteringBackend>();
+    test_clustering_backend_ = test_backend.get();
+    history_clusters_service_test_api_->SetClusteringBackendForTest(
+        std::move(test_backend));
   }
 
   HistoryClustersServiceTest(const HistoryClustersServiceTest&) = delete;
   HistoryClustersServiceTest& operator=(const HistoryClustersServiceTest&) =
       delete;
 
-  void EnableMemoriesWithEndpoint(
+  // TODO(tommycli): Move this to a separate test subclass to separate tests
+  // that validate the remote backend vs. the tests that validate the service.
+  void EnableRemoteClusteringBackend(
       const std::string& endpoint_url = kFakeEndpoint,
       const std::string& endpoint_experiment = "") {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
@@ -77,9 +122,8 @@ class HistoryClustersServiceTest : public testing::Test {
                 kMemories,
                 {
                     {"MemoriesExperimentName", endpoint_experiment},
-                    // TODO(tommycli): All the unit tests are written assuming
-                    // we are using the remote backend. We should revamp them
-                    // to use a TestClusteringBackend and simplify the tests.
+                    // We have to disable the on-device backend to get the
+                    // remote backend.
                     {"MemoriesOnDeviceClusteringBackend", "false"},
                 },
             },
@@ -93,12 +137,12 @@ class HistoryClustersServiceTest : public testing::Test {
         {});
 
     // Re-create service after changing flags.
-    // TODO(tommycli): Remove this after migrating tests to use a test backend.
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
         history_service_.get(), shared_url_loader_factory_);
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
             history_clusters_service_.get(), history_service_.get());
+    test_clustering_backend_ = nullptr;
   }
 
   void AddVisit(const history::AnnotatedVisit& visit) {
@@ -166,10 +210,96 @@ class HistoryClustersServiceTest : public testing::Test {
     }
   }
 
-  // Verifies that that a particular hardcoded request is in a pending request
-  // within the URL loader.
-  void VerifyHardcodedTestDataInUrlLoaderRequest(
-      const std::string& expected_experiment_name = "") {
+  // Verifies that the hardcoded visits were passed to the clustering backend.
+  void VerifyTestClusteringBackendRequest() {
+    std::vector<history::AnnotatedVisit> visits =
+        test_clustering_backend_->last_clustered_visits();
+    ASSERT_EQ(visits.size(), 2u);
+    auto& visit = visits[0];
+    EXPECT_EQ(visit.visit_row.visit_id, 2);
+    EXPECT_EQ(visit.visit_row.visit_time, visit_2_time_);
+    EXPECT_EQ(visit.visit_row.visit_duration, base::TimeDelta::FromSeconds(20));
+    EXPECT_EQ(visit.url_row.url(), "https://github.com/");
+    EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
+
+    visit = visits[1];
+    EXPECT_EQ(visit.visit_row.visit_id, 1);
+    EXPECT_EQ(visit.visit_row.visit_time, visit_1_time_);
+    EXPECT_EQ(visit.visit_row.visit_duration,
+              base::TimeDelta::FromMilliseconds(5600));
+    EXPECT_EQ(visit.url_row.url(), "https://google.com/");
+    EXPECT_EQ(visit.context_annotations.page_end_reason, 3);
+    // TODO(tommycli): Add back visit.referring_visit_id() check after updating
+    //  the HistoryService test methods to support that field.
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+
+  // Used to construct a `HistoryClustersService`.
+  base::ScopedTempDir history_dir_;
+  std::unique_ptr<history::HistoryService> history_service_;
+
+  static constexpr char kFakeEndpoint[] = "https://endpoint.com/";
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  std::unique_ptr<HistoryClustersService> history_clusters_service_;
+  std::unique_ptr<HistoryClustersServiceTestApi>
+      history_clusters_service_test_api_;
+
+  // Non-owning pointer. The actual owner is `history_clusters_service_`.
+  TestClusteringBackend* test_clustering_backend_;
+
+  base::CancelableTaskTracker task_tracker_;
+
+  // Used to verify the async callback is invoked.
+  base::RunLoop run_loop_;
+  base::RepeatingClosure run_loop_quit_;
+
+  // Must not be too old otherwise the history layer will ignore the visit.
+  base::Time visit_1_time_ = base::Time::Now() - base::TimeDelta::FromDays(2);
+  base::Time visit_2_time_ = base::Time::Now() - base::TimeDelta::FromDays(1);
+
+  // Tracks the next available navigation ID to be associated with visits.
+  int64_t next_navigation_id_ = 0;
+};
+
+// Useless, but required by the C++14 standard. Please deliver us, C++17.
+constexpr char HistoryClustersServiceTest::kFakeEndpoint[];
+
+TEST_F(HistoryClustersServiceTest, Remote_RemoteClusteringBackend_EndToEnd) {
+  std::string experiment_name = "someExperiment";
+  EnableRemoteClusteringBackend(kFakeEndpoint, experiment_name);
+  AddHardcodedTestDataToHistoryService();
+
+  history_clusters_service_->QueryClusters(
+      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
+        ASSERT_EQ(clusters.size(), 2u);
+
+        ASSERT_EQ(clusters[0]->visits.size(), 2u);
+        EXPECT_EQ(clusters[0]->visits[0]->normalized_url,
+                  "https://github.com/");
+        EXPECT_FLOAT_EQ(clusters[0]->visits[0]->score, 0.66);
+        EXPECT_EQ(clusters[0]->visits[1]->normalized_url,
+                  "https://google.com/");
+        EXPECT_FLOAT_EQ(clusters[0]->visits[1]->score, 0.66);
+
+        ASSERT_EQ(clusters[1]->visits.size(), 1u);
+        EXPECT_EQ(clusters[1]->visits[0]->normalized_url,
+                  "https://github.com/");
+        EXPECT_FLOAT_EQ(clusters[1]->visits[0]->score, 0.66);
+
+        run_loop_quit_.Run();
+      }),
+      &task_tracker_);
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+
+  // This below block verifies the proto request sent to the remote endpoint.
+  {
     EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
     absl::optional<base::Value> value =
@@ -184,7 +314,7 @@ class HistoryClustersServiceTest : public testing::Test {
     proto::GetClustersRequest request;
     ASSERT_TRUE(request.ParseFromString(decoded));
 
-    EXPECT_EQ(request.experiment_name(), expected_experiment_name);
+    EXPECT_EQ(request.experiment_name(), experiment_name);
     ASSERT_EQ(request.visits_size(), 2);
     auto visit = request.visits().at(0);
     EXPECT_EQ(visit.visit_id(), 2);
@@ -204,84 +334,33 @@ class HistoryClustersServiceTest : public testing::Test {
     //  the HistoryService test methods to support that field.
   }
 
-  // Fakes a particular partly hardcoded response from the URL loader.
-  void InjectHardcodedTestDataToUrlLoaderResponse(
-      std::vector<std::vector<int>> clustered_visit_ids) {
+  // This block sends a fake proto response back via the URL loader.
+  {
     proto::GetClustersResponse response;
-    for (auto visit_ids : clustered_visit_ids) {
-      auto* cluster = response.add_clusters();
-      for (auto visit_id : visit_ids) {
-        auto* visit = cluster->add_cluster_visits();
-        visit->set_visit_id(visit_id);
-        visit->set_score(0.66);
-      }
-    }
-    if (!clustered_visit_ids.empty()) {
-      response.mutable_clusters(0)->mutable_keywords()->Add("apples");
-      // We had a bug where we couldn't match against uppercase keywords,
-      // so we therefore want to test against an uppercase keyword.
-      response.mutable_clusters(0)->mutable_keywords()->Add("Red Oranges");
-    }
+
+    auto* cluster = response.add_clusters();
+    auto* visit = cluster->add_cluster_visits();
+    visit->set_visit_id(1);
+    visit->set_score(0.66);
+    visit = cluster->add_cluster_visits();
+    visit->set_visit_id(2);
+    visit->set_score(0.66);
+
+    cluster = response.add_clusters();
+    visit = cluster->add_cluster_visits();
+    visit->set_visit_id(2);
+    visit->set_score(0.66);
+
     test_url_loader_factory_.AddResponse(kFakeEndpoint,
                                          response.SerializeAsString());
     EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   }
-
-  base::test::TaskEnvironment task_environment_;
-
-  // Used to construct a `HistoryClustersService`.
-  base::ScopedTempDir history_dir_;
-  std::unique_ptr<history::HistoryService> history_service_;
-
-  static constexpr char kFakeEndpoint[] = "https://endpoint.com/";
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  std::unique_ptr<HistoryClustersService> history_clusters_service_;
-  std::unique_ptr<HistoryClustersServiceTestApi>
-      history_clusters_service_test_api_;
-
-  base::CancelableTaskTracker task_tracker_;
-
-  // Used to verify the async callback is invoked.
-  base::RunLoop run_loop_;
-  base::RepeatingClosure run_loop_quit_;
-
-  // Must not be too old otherwise the history layer will ignore the visit.
-  base::Time visit_1_time_ = base::Time::Now() - base::TimeDelta::FromDays(2);
-  base::Time visit_2_time_ = base::Time::Now() - base::TimeDelta::FromDays(1);
-
-  // Tracks the next available navigation ID to be associated with visits.
-  int64_t next_navigation_id_ = 0;
-};
-
-// Useless, but required by the C++14 standard. Please deliver us, C++17.
-constexpr char HistoryClustersServiceTest::kFakeEndpoint[];
-
-TEST_F(HistoryClustersServiceTest, VerifyRemoteEndpointRequest) {
-  std::string experiment_name = "someExperiment";
-  EnableMemoriesWithEndpoint(kFakeEndpoint, experiment_name);
-  AddHardcodedTestDataToHistoryService();
-
-  history_clusters_service_->QueryClusters(
-      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
-      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
-        // Ignore the response. We are just testing the request.
-        run_loop_quit_.Run();
-      }),
-      &task_tracker_);
-
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  VerifyHardcodedTestDataInUrlLoaderRequest(experiment_name);
-  InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
 TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
   AddHardcodedTestDataToHistoryService();
 
   history_clusters_service_->QueryClusters(
@@ -310,36 +389,32 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
       &task_tracker_);
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  VerifyHardcodedTestDataInUrlLoaderRequest();
+  VerifyTestClusteringBackendRequest();
 
-  proto::GetClustersResponse response;
+  std::vector<history::Cluster> clusters;
   // This first cluster is meant to validate that the higher scoring "visit 1"
   // gets sorted to the top, even though "visit 1" is older in the hardcoded
   // test data. It's to validate the within-cluster sorting.
-  auto* cluster = response.add_clusters();
-  auto* visit = cluster->add_cluster_visits();
-  visit->set_visit_id(2);
-  visit->set_score(0.5);
-  visit = cluster->add_cluster_visits();
-  visit->set_visit_id(1);
-  visit->set_score(0.9);
-  // This second cluster is meant to validate that this one gets sorted above
-  // the first cluster, since the top visit is newer, even though the visit
-  // score is lower. It's to validate the between-cluster sorting.
-  cluster = response.add_clusters();
-  visit = cluster->add_cluster_visits();
-  visit->set_visit_id(2);
-  visit->set_score(0.1);
-
-  test_url_loader_factory_.AddResponse(kFakeEndpoint,
-                                       response.SerializeAsString());
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(2, 0.5),
+                           test_clustering_backend_->GetVisitById(1, 0.9),
+                       },
+                       {}));
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(2, 0.1),
+                       },
+                       {}));
+  test_clustering_backend_->FulfillCallback(clusters);
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
 TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
   AddHardcodedTestDataToHistoryService();
 
   struct TestData {
@@ -370,9 +445,6 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     base::RunLoop run_loop;
     auto run_loop_quit = run_loop.QuitClosure();
 
-    test_url_loader_factory_.ClearResponses();
-    ASSERT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-
     history_clusters_service_->QueryClusters(
         test_data[i].query, /*max_time=*/base::Time::Now(),
         /* max_count=*/0,
@@ -399,7 +471,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
                 EXPECT_TRUE(base::Contains(
                     cluster->visits[0]->annotations,
                     history_clusters::mojom::Annotation::kTabGrouped));
-                EXPECT_FLOAT_EQ(cluster->visits[0]->score, 0.66);
+                EXPECT_FLOAT_EQ(cluster->visits[0]->score, 0.5);
 
                 EXPECT_EQ(cluster->visits[1]->normalized_url,
                           "https://google.com/");
@@ -413,7 +485,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
                 EXPECT_FALSE(base::Contains(
                     cluster->visits[1]->annotations,
                     history_clusters::mojom::Annotation::kTabGrouped));
-                EXPECT_FLOAT_EQ(cluster->visits[1]->score, 0.66);
+                EXPECT_FLOAT_EQ(cluster->visits[1]->score, 0.5);
 
                 ASSERT_EQ(cluster->keywords.size(), 2u);
                 EXPECT_EQ(cluster->keywords[0], u"apples");
@@ -439,16 +511,31 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
         &task_tracker_);
 
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-    VerifyHardcodedTestDataInUrlLoaderRequest();
-    InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
+    VerifyTestClusteringBackendRequest();
+
+    std::vector<history::Cluster> clusters;
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(1),
+                             test_clustering_backend_->GetVisitById(2),
+                         },
+                         {u"apples", u"Red Oranges"}));
+    clusters.push_back(
+        history::Cluster(0,
+                         {
+                             test_clustering_backend_->GetVisitById(2),
+                         },
+                         {}));
+    test_clustering_backend_->FulfillCallback(clusters);
 
     // Verify the callback is invoked.
     run_loop.Run();
   }
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyVisits) {
-  EnableMemoriesWithEndpoint();
+TEST_F(HistoryClustersServiceTest, Remote_QueryClustersWithEmptyVisits) {
+  EnableRemoteClusteringBackend();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   history_clusters_service_->QueryClusters(
@@ -466,37 +553,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyVisits) {
   run_loop_.Run();
 }
 
-// https://crbug.com/1225511
-#if defined(OS_LINUX)
-#define MAYBE_QueryClustersWithEmptyEndpoint \
-  DISABLED_QueryClustersWithEmptyEndpoint
-#else
-#define MAYBE_QueryClustersWithEmptyEndpoint QueryClustersWithEmptyEndpoint
-#endif
-
-TEST_F(HistoryClustersServiceTest, MAYBE_QueryClustersWithEmptyEndpoint) {
-  EnableMemoriesWithEndpoint("");
-  AddHardcodedTestDataToHistoryService();
-
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-  history_clusters_service_->QueryClusters(
-      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
-      base::BindLambdaForTesting([&](std::vector<mojom::ClusterPtr> clusters) {
-        // Verify the empty response.
-        EXPECT_TRUE(clusters.empty());
-        run_loop_quit_.Run();
-      }),
-      &task_tracker_);
-
-  // Verify no request is made.
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  // Verify the callback is invoked.
-  run_loop_.Run();
-}
-
-TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyResponse) {
-  EnableMemoriesWithEndpoint();
+TEST_F(HistoryClustersServiceTest, Remote_QueryClustersWithEmptyResponse) {
+  EnableRemoteClusteringBackend();
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -521,8 +579,9 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyResponse) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersWithInvalidJsonResponse) {
-  EnableMemoriesWithEndpoint();
+TEST_F(HistoryClustersServiceTest,
+       Remote_QueryClustersWithInvalidJsonResponse) {
+  EnableRemoteClusteringBackend();
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -547,8 +606,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithInvalidJsonResponse) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyJsonResponse) {
-  EnableMemoriesWithEndpoint();
+TEST_F(HistoryClustersServiceTest, Remote_QueryClustersWithEmptyJsonResponse) {
+  EnableRemoteClusteringBackend();
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -573,8 +632,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersWithEmptyJsonResponse) {
   run_loop_.Run();
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersWithPendingRequest) {
-  EnableMemoriesWithEndpoint();
+TEST_F(HistoryClustersServiceTest, Remote_QueryClustersWithPendingRequest) {
+  EnableRemoteClusteringBackend();
   AddHardcodedTestDataToHistoryService();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -750,7 +809,6 @@ TEST_F(HistoryClustersServiceTest,
 }
 
 TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
-  EnableMemoriesWithEndpoint();
   AddHardcodedTestDataToHistoryService();
 
   // Verify that initially, the test keyword doesn't match anything, but this
@@ -759,8 +817,17 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
 
   // Providing the response and running the task loop should populate the cache.
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  VerifyHardcodedTestDataInUrlLoaderRequest("");
-  InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
+  VerifyTestClusteringBackendRequest();
+
+  std::vector<history::Cluster> clusters;
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(1),
+                           test_clustering_backend_->GetVisitById(2),
+                       },
+                       {u"apples"}));
+  test_clustering_backend_->FulfillCallback(clusters);
 
   // Now the query should match the populated cache.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));
