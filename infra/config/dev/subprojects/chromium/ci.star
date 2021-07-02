@@ -62,6 +62,10 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         isolated_server = "https://isolateserver-dev.appspot.com",
         goma_backend = goma.backend.RBE_PROD,
         resultdb_index_by_timestamp = True,
+        # TODO(crbug.com/1225524): remove this after migration.
+        experiments = {
+            "chromium.isolate.use_new_lib": 50,
+        },
         **kwargs
     )
 
@@ -86,7 +90,7 @@ ci_builder(
 ci_builder(
     name = "linux-ssd-rel-swarming",
     description_html = "Ensures builders are using available local SSDs",
-    builderless = False
+    builderless = False,
 )
 
 ci_builder(
