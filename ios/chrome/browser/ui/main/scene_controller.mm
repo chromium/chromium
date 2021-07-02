@@ -1395,7 +1395,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       __weak SceneController* weakSelf = self;
       [reauthAgent
           authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
-            [weakSelf openURLInNewTab:command];
+            if (success) {
+              [weakSelf openURLInNewTab:command];
+            }
           }];
       return;
     }
