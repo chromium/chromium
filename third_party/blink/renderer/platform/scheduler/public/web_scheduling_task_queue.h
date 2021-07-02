@@ -12,9 +12,9 @@
 
 namespace blink {
 
-// This class is used by the experimental Scheduling API to submit tasks to the
-// platform's scheduler through prioritized task queues (see
-// https://github.com/WICG/main-thread-scheduling).
+// This class is used by the Prioritized Task Scheduling API to submit tasks to
+// the platform's scheduler through prioritized task queues (see
+// https://wicg.github.io/scheduling-apis/).
 class PLATFORM_EXPORT WebSchedulingTaskQueue {
  public:
   virtual ~WebSchedulingTaskQueue() = default;
