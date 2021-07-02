@@ -42,6 +42,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @MainDex
 public class TraceEvent implements AutoCloseable {
     private static volatile boolean sEnabled; // True when tracing into Chrome's tracing service.
+    private static AtomicBoolean sNativeTracingReady = new AtomicBoolean();
+    private static AtomicBoolean sUiThreadReady = new AtomicBoolean();
 
     // Trace tags replicated from android.os.Trace.
     public static final long ATRACE_TAG_WEBVIEW = 1L << 4;
@@ -68,6 +70,7 @@ public class TraceEvent implements AutoCloseable {
         private final AtomicBoolean mTraceTagActive = new AtomicBoolean();
         private final long mTraceTag;
         private boolean mShouldWriteToSystemTrace;
+        private boolean mIdleHandlerRegistered;
 
         private static class CategoryConfig {
             public String filter = "";
@@ -292,7 +295,10 @@ public class TraceEvent implements AutoCloseable {
             // state whenever the main run loop becomes idle. Since the check
             // amounts to one JNI call, the overhead of doing this is
             // negligible. See queueIdle().
-            Looper.myQueue().addIdleHandler(this);
+            if (!mIdleHandlerRegistered) {
+                Looper.myQueue().addIdleHandler(this);
+                mIdleHandlerRegistered = true;
+            }
             pollConfig();
         }
 
@@ -639,6 +645,12 @@ public class TraceEvent implements AutoCloseable {
         }
         if (traceTag != 0) {
             sATrace = new ATrace(traceTag);
+            if (sNativeTracingReady.get()) {
+                sATrace.onNativeTracingReady();
+            }
+            if (sUiThreadReady.get()) {
+                sATrace.onUiThreadReady();
+            }
         }
         if (EarlyTraceEvent.enabled() && (sATrace == null || !sATrace.hasActiveSession())) {
             ThreadUtils.getUiThreadLooper().setMessageLogging(LooperMonitorHolder.sInstance);
@@ -648,6 +660,7 @@ public class TraceEvent implements AutoCloseable {
     public static void onNativeTracingReady() {
         // Register an enabled observer, such that java traces are always
         // enabled with native.
+        sNativeTracingReady.set(true);
         TraceEventJni.get().registerEnabledObserver();
         if (sATrace != null) {
             sATrace.onNativeTracingReady();
@@ -656,6 +669,7 @@ public class TraceEvent implements AutoCloseable {
 
     // Called by ThreadUtils.
     static void onUiThreadReady() {
+        sUiThreadReady.set(true);
         if (sATrace != null) {
             sATrace.onUiThreadReady();
         }
