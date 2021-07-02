@@ -63,6 +63,11 @@ const base::Feature kV8Turboprop{"V8Turboprop",
 const base::Feature kV8Sparkplug{"V8Sparkplug",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Makes sure the experimental Sparkplug compiler is only enabled if short
+// builtin calls are enabled too.
+const base::Feature kV8SparkplugNeedsShortBuiltinCalls{
+    "V8SparkplugNeedsShortBuiltinCalls", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables short builtin calls feature.
 const base::Feature kV8ShortBuiltinCalls{"V8ShortBuiltinCalls",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

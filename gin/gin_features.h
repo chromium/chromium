@@ -26,6 +26,7 @@ GIN_EXPORT extern const base::Feature kV8ExperimentalRegexpEngine;
 GIN_EXPORT extern const base::Feature kV8TurboFastApiCalls;
 GIN_EXPORT extern const base::Feature kV8Turboprop;
 GIN_EXPORT extern const base::Feature kV8Sparkplug;
+GIN_EXPORT extern const base::Feature kV8SparkplugNeedsShortBuiltinCalls;
 GIN_EXPORT extern const base::Feature kV8ScriptAblation;
 GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayOnceMs;
 GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayMs;
