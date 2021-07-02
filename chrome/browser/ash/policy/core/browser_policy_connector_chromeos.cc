@@ -45,7 +45,7 @@
 #include "chrome/browser/chromeos/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/bluetooth_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/device_dock_mac_address_source_handler.h"
-#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler.h"
+#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler_impl.h"
 #include "chrome/browser/chromeos/policy/handlers/device_wifi_allowed_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
@@ -254,7 +254,7 @@ void BrowserPolicyConnectorChromeOS::Init(
       std::make_unique<BluetoothPolicyHandler>(ash::CrosSettings::Get());
 
   device_name_policy_handler_ =
-      std::make_unique<DeviceNamePolicyHandler>(ash::CrosSettings::Get());
+      std::make_unique<DeviceNamePolicyHandlerImpl>(ash::CrosSettings::Get());
 
   minimum_version_policy_handler_delegate_ =
       std::make_unique<MinimumVersionPolicyHandlerDelegateImpl>();

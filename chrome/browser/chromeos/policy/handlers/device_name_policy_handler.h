@@ -5,22 +5,16 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_H_
 
-#include <memory>
-#include <string>
-
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/system/statistics_provider.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
-// This class observes the device setting |DeviceHostname|, and calls
-// NetworkStateHandler::SetHostname() appropriately based on the value of that
-// setting.
-class DeviceNamePolicyHandler : public chromeos::NetworkStateHandlerObserver {
+// Provides the current device name policy, and provides
+// hostname only if the template policy is active. Also notifies
+// observers when the policy type and/or hostname changes.
+class DeviceNamePolicyHandler {
  public:
   // Types of policies for device name functionality.
   enum class DeviceNamePolicy {
@@ -32,48 +26,41 @@ class DeviceNamePolicyHandler : public chromeos::NetworkStateHandlerObserver {
     kPolicyHostnameChosenByAdmin,
   };
 
-  explicit DeviceNamePolicyHandler(ash::CrosSettings* cros_settings);
-  ~DeviceNamePolicyHandler() override;
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
 
-  // NetworkStateHandlerObserver overrides
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+    // Called when the policy type and/or hostname has changed.
+    // Use GetDeviceNamePolicy() to get the new policy and
+    // GetHostnameChosenByAdministrator() to get the new hostname.
+    virtual void OnHostnamePolicyChanged() = 0;
+  };
 
-  // Returns the device hostname that DeviceNamePolicyHandler has last set in
-  // shill. This is the hostname after formatting (by FormatHostname()).
-  const std::string& GetDeviceHostname() const;
+  virtual ~DeviceNamePolicyHandler();
+
+  // Returns the device hostname that DeviceNamePolicyHandlerImpl has last set
+  // in shill. This is the hostname after formatting (by FormatHostname()).
+  virtual const std::string& GetDeviceHostname() const = 0;
 
   // Provides the type of policy to be used for device name functionality.
-  DeviceNamePolicy GetDeviceNamePolicy() const;
+  virtual DeviceNamePolicy GetDeviceNamePolicy() const = 0;
 
   // Provides hostname if requested by administrator.
   // Returns null if no hostname was requested by administrator.
-  absl::optional<std::string> GetHostnameChosenByAdministrator() const;
+  virtual absl::optional<std::string> GetHostnameChosenByAdministrator()
+      const = 0;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+ protected:
+  DeviceNamePolicyHandler();
+
+  void NotifyHostnamePolicyChanged();
 
  private:
-  friend class DeviceNamePolicyHandlerTest;
-
-  DeviceNamePolicyHandler(
-      ash::CrosSettings* cros_settings,
-      chromeos::system::StatisticsProvider* statistics_provider);
-
-  void OnDeviceHostnamePropertyChanged();
-
-  void OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded();
-
-  ash::CrosSettings* cros_settings_;
-  chromeos::system::StatisticsProvider* statistics_provider_;
-
-  DeviceNamePolicy device_name_policy_ = DeviceNamePolicy::kNoPolicy;
-  base::CallbackListSubscription policy_subscription_;
-  std::string hostname_;
-  base::WeakPtrFactory<DeviceNamePolicyHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceNamePolicyHandler);
+  base::ObserverList<Observer> observer_list_;
 };
-
-std::ostream& operator<<(
-    std::ostream& stream,
-    const DeviceNamePolicyHandler::DeviceNamePolicy& state);
 
 }  // namespace policy
 
