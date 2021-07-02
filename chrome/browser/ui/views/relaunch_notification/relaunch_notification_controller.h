@@ -33,16 +33,15 @@ class TickClock;
 // On Chrome desktop:
 // - Recommended (1): The controller displays the relaunch recommended bubble on
 //   each change to the UpgradeDetector's upgrade_notification_stage (an
-//   "annoyance level" of low, elevated, or high). Once the high annoyance level
-//   is reached, the controller continually reshows a the bubble on a timer with
-//   a period equal to the time delta between the "elevated" and "high"
-//   showings.
+//   "annoyance level" of low, elevated, grace or high). Once the high annoyance
+//   level is reached, the controller continually reshows a the bubble on a
+//   timer with a period equal to the time delta between the "elevated" and
+//   "high" showings.
 //
-// - Required (2): The controller displays the relaunch required dialog on each
-//   change to the UpgradeDetector's upgrade_notification_stage (described
-//   above). The browser is relaunched one hour after the third and final
-//   showing of the dialog (which takes place when the UpgradeDetector reaches
-//   the high annoyance level).
+// - Required (2): The controller displays the relaunch required dialog when the
+// UpgradeDetector's upgrade_notification_stage changes to an "annoyance level"
+// of low, elevated, and grace. The browser is relaunched when the "annoyance
+// level" reaches "high".
 //
 // On Chrome OS both notifications (recommended and required, described above)
 // are shown in the unified system tray, overwriting the default "update

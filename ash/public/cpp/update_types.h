@@ -9,11 +9,8 @@ namespace ash {
 
 // Urgency of a pending software update. Sets the system tray update icon color.
 // These correspond to values in UpgradeDetector's
-// UpgradeNotificationAnnoyanceLevel enum. Their use is platform-specific. On
-// Chrome OS, kLow severity is issued when an update is detected. kElevated
-// follows after two days, and kHigh two days after that. These time deltas may
-// be overridden by administrators via the RelaunchNotificationPeriod policy
-// setting.
+// UpgradeNotificationAnnoyanceLevel enum. Their use is platform-specific.
+// Please refer to UpgradeDetectorChromeos for details.
 // TODO(jamescook): UpgradeDetector::UpgradeNotificationAnnoyanceLevel could be
 // replaced with this if this moves into a component shared with non-ash chrome.
 enum class UpdateSeverity {
@@ -21,6 +18,7 @@ enum class UpdateSeverity {
   kVeryLow,
   kLow,
   kElevated,
+  kGrace,
   kHigh,
   kCritical,
 };

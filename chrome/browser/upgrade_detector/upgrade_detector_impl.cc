@@ -56,6 +56,8 @@ constexpr auto kDefaultVeryLowThreshold = base::TimeDelta::FromHours(1);
 constexpr auto kDefaultLowThreshold = base::TimeDelta::FromDays(2);
 constexpr auto kDefaultElevatedThreshold = base::TimeDelta::FromDays(4);
 constexpr auto kDefaultHighThreshold = base::TimeDelta::FromDays(7);
+constexpr auto kDefaultGraceThreshold =
+    kDefaultHighThreshold - base::TimeDelta::FromHours(1);
 
 // How long to wait (each cycle) before checking which severity level we should
 // be at. Once we reach the highest severity, the timer will stop.
@@ -161,6 +163,7 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
     // Use the default values when no override is set and we don't expect to
     // adjust the levels according to the relaunch time interval.
     stages_[kStagesIndexHigh] = kDefaultHighThreshold;
+    stages_[kStagesIndexGrace] = kDefaultGraceThreshold;
     stages_[kStagesIndexElevated] = kDefaultElevatedThreshold;
     stages_[kStagesIndexLow] = kDefaultLowThreshold;
     stages_[kStagesIndexVeryLow] = kDefaultVeryLowThreshold;
@@ -185,6 +188,9 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
     stages_[kStagesIndexLow] = effective_notification_period / 3;
     stages_[kStagesIndexElevated] =
         effective_notification_period - stages_[kStagesIndexLow];
+    base::TimeDelta grace_period = GetGracePeriod(
+        stages_[kStagesIndexHigh] - stages_[kStagesIndexElevated]);
+    stages_[kStagesIndexGrace] = stages_[kStagesIndexHigh] - grace_period;
     // "Very low" is one hour, unless "low" is even less.
     stages_[kStagesIndexVeryLow] =
         std::min(stages_[kStagesIndexLow], kDefaultVeryLowThreshold);
@@ -377,6 +383,8 @@ UpgradeDetectorImpl::AnnoyanceLevelToStagesIndex(
       return kStagesIndexLow;
     case UPGRADE_ANNOYANCE_ELEVATED:
       return kStagesIndexElevated;
+    case UPGRADE_ANNOYANCE_GRACE:
+      return kStagesIndexGrace;
     case UPGRADE_ANNOYANCE_HIGH:
       break;
     case UPGRADE_ANNOYANCE_CRITICAL:
@@ -391,6 +399,7 @@ UpgradeDetector::UpgradeNotificationAnnoyanceLevel
 UpgradeDetectorImpl::StageIndexToAnnoyanceLevel(size_t index) {
   static constexpr UpgradeNotificationAnnoyanceLevel kIndexToLevel[] = {
       UpgradeDetector::UPGRADE_ANNOYANCE_HIGH,
+      UpgradeDetector::UPGRADE_ANNOYANCE_GRACE,
       UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED,
       UpgradeDetector::UPGRADE_ANNOYANCE_LOW,
       UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW};

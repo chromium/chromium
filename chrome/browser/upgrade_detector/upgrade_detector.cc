@@ -4,6 +4,7 @@
 
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/bind.h"
@@ -38,6 +39,10 @@ constexpr int kIdleAmount = 2;  // Hours (or seconds, if testing).
 // Maximum duration for a relaunch window.
 constexpr base::TimeDelta kRelaunchWindowMaxDuration =
     base::TimeDelta::FromHours(24);
+
+// The default amount of time between the detector's annoyance level change
+// from UPGRADE_ANNOYANCE_GRACE to UPGRADE_ANNOYANCE_HIGH.
+constexpr auto kDefaultGracePeriod = base::TimeDelta::FromHours(1);
 
 bool UseTestingIntervals() {
   // If a command line parameter specifying how long the upgrade check should
@@ -296,6 +301,12 @@ UpgradeDetector::GetRelaunchWindowPolicyValue() {
 
   return RelaunchWindow(hour.value(), minute.value(),
                         base::TimeDelta::FromMinutes(duration_mins.value()));
+}
+
+// static
+base::TimeDelta UpgradeDetector::GetGracePeriod(
+    base::TimeDelta elevated_to_high_delta) {
+  return std::min(kDefaultGracePeriod, elevated_to_high_delta / 2);
 }
 
 void UpgradeDetector::NotifyUpgrade() {

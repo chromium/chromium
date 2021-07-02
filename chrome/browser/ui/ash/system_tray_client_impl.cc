@@ -97,6 +97,8 @@ ash::UpdateSeverity GetUpdateSeverity(ash::UpdateType update_type,
       return ash::UpdateSeverity::kLow;
     case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
       return ash::UpdateSeverity::kElevated;
+    case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
+      return ash::UpdateSeverity::kGrace;
     case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
       return ash::UpdateSeverity::kHigh;
     case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:

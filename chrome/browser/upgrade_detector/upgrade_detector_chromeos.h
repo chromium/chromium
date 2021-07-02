@@ -82,6 +82,9 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   // The time when high annoyance deadline is reached.
   base::Time high_deadline_;
 
+  // The time when grace annoyance deadline is reached.
+  base::Time grace_deadline_;
+
   // The overridden high annoyance deadline which takes priority over
   // |high_deadline_| for showing relaunch notifications.
   base::Time high_deadline_override_;

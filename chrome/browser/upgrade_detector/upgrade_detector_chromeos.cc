@@ -168,11 +168,18 @@ void UpgradeDetectorChromeos::CalculateDeadlines() {
   elevated_deadline_ =
       std::max(high_deadline_ - heads_up_period, upgrade_detected_time());
 
+  base::TimeDelta grace_period =
+      GetGracePeriod(high_deadline_ - elevated_deadline_);
+  grace_deadline_ = high_deadline_ - grace_period;
+
   if (!high_deadline_override_.is_null() &&
       high_deadline_ > high_deadline_override_) {
     elevated_deadline_ = upgrade_detected_time();
     high_deadline_ = std::max(elevated_deadline_, high_deadline_override_);
+    grace_period = GetGracePeriod(high_deadline_ - elevated_deadline_);
+    grace_deadline_ = high_deadline_ - grace_period;
   }
+  DCHECK(grace_deadline_ >= elevated_deadline_);
 }
 
 void UpgradeDetectorChromeos::UpdateStatusChanged(
@@ -231,9 +238,12 @@ void UpgradeDetectorChromeos::NotifyOnUpgrade() {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
   } else if (current_time >= high_deadline_) {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_HIGH);
+  } else if (current_time >= grace_deadline_) {
+    set_upgrade_notification_stage(UPGRADE_ANNOYANCE_GRACE);
+    next_delay = high_deadline_ - current_time;
   } else if (current_time >= elevated_deadline_) {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_ELEVATED);
-    next_delay = high_deadline_ - current_time;
+    next_delay = grace_deadline_ - current_time;
   } else {
     // If the relaunch notification policy is enabled, the user will be notified
     // at a later time, so set the level to UPGRADE_ANNOYANCE_NONE. Otherwise,

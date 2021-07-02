@@ -50,7 +50,8 @@ class UpgradeDetector {
     // UPGRADE_ANNOYANCE_SEVERE = 4,  // Removed in 2018-03 for lack of use.
     UPGRADE_ANNOYANCE_CRITICAL = 5,  // Red exclamation mark.
     UPGRADE_ANNOYANCE_VERY_LOW = 6,  // Green early warning for canary and dev.
-    UPGRADE_ANNOYANCE_MAX_VALUE = UPGRADE_ANNOYANCE_VERY_LOW
+    UPGRADE_ANNOYANCE_GRACE = 7,     // Red last warning before deadline.
+    UPGRADE_ANNOYANCE_MAX_VALUE = UPGRADE_ANNOYANCE_GRACE
   };
 
   struct RelaunchWindow {
@@ -226,6 +227,11 @@ class UpgradeDetector {
   // Returns the default relaunch window within which the relaunch should take
   // place. It is 2am to 4am from Chrome OS and the whole day for others.
   static RelaunchWindow GetDefaultRelaunchWindow();
+
+  // Returns the delta between "grace" and "high" annoyance levels using
+  // `elevated_to_high_delta` which is the delta between "elevated" and "high"
+  // annoyance levels.
+  static base::TimeDelta GetGracePeriod(base::TimeDelta elevated_to_high_delta);
 
   const base::Clock* clock() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

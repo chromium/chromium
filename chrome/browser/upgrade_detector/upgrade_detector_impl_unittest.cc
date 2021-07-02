@@ -245,6 +245,7 @@ TEST_F(UpgradeDetectorImplTest, VariationsCriticalChanges) {
 // very low: 1h
 // low: 8h
 // elevated: 16h
+// grace: 23h
 // high: 24h
 TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   TestUpgradeDetectorImpl upgrade_detector(GetMockClock(), GetMockTickClock());
@@ -257,6 +258,9 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
                 UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
             base::TimeDelta::FromDays(7));
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_GRACE),
+            base::TimeDelta::FromDays(7) - base::TimeDelta::FromHours(1));
   EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
                 UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
             base::TimeDelta::FromDays(4));
@@ -280,6 +284,9 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
                 UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
             base::TimeDelta::FromHours(24));
+  EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
+                UpgradeDetector::UPGRADE_ANNOYANCE_GRACE),
+            base::TimeDelta::FromHours(23));
   EXPECT_EQ(upgrade_detector.GetThresholdForLevel(
                 UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
             base::TimeDelta::FromHours(16));
@@ -364,7 +371,31 @@ TEST_F(UpgradeDetectorImplTest, TestPeriodChanges) {
   // Fast forward an amount that is still in the "very low" level at the default
   // period.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended()).Times(AnyNumber());
-  FastForwardBy(base::TimeDelta::FromHours(8));
+  FastForwardBy(base::TimeDelta::FromHours(7));
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
+            UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
+
+  // Drop the period so that the current time is in the "grace" level.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended());
+  SetNotificationPeriodPref(base::TimeDelta::FromDays(1));
+  RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
+            UpgradeDetector::UPGRADE_ANNOYANCE_GRACE);
+
+  // Bring it back up.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended());
+  SetNotificationPeriodPref(base::TimeDelta());
+  RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
+            UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
+
+  // Fast forward an amount that is still in the "very low" level at the default
+  // period.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended()).Times(AnyNumber());
+  FastForwardBy(base::TimeDelta::FromHours(1));
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
@@ -464,14 +495,16 @@ TEST_P(UpgradeDetectorImplTimerTest, TestNotificationTimer) {
   detector.UpgradeDetected(TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
 
   // Cache the thresholds for the detector's annoyance levels.
-  const base::TimeDelta thresholds[4] = {
+  const base::TimeDelta thresholds[5] = {
       detector.GetThresholdForLevel(
           UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
       detector.GetThresholdForLevel(UpgradeDetector::UPGRADE_ANNOYANCE_LOW),
       detector.GetThresholdForLevel(
           UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED),
+      detector.GetThresholdForLevel(UpgradeDetector::UPGRADE_ANNOYANCE_GRACE),
       detector.GetThresholdForLevel(UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
   };
+  EXPECT_LE(thresholds[4] - thresholds[3], base::TimeDelta::FromHours(1));
 
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
@@ -521,9 +554,9 @@ TEST_P(UpgradeDetectorImplTimerTest, TestNotificationTimer) {
             TimeAndStage(detector.upgrade_detected_time() + thresholds[2],
                          UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED));
 
-  // Move to the time that high annoyance should be reached. Notifications at
-  // elevated annoyance should arrive every 20 minutes with one final
-  // notification at high annoyance.
+  // Move to the time that grace annoyance level should be reached.
+  // Notifications at elevated annoyance should arrive every 20 minutes with one
+  // final notification at grace annoyance level.
   notifications.clear();
   EXPECT_CALL(mock_observer, OnUpgradeRecommended())
       .WillRepeatedly(AppendTicksAndStage(&detector, &notifications));
@@ -534,10 +567,25 @@ TEST_P(UpgradeDetectorImplTimerTest, TestNotificationTimer) {
             UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
   EXPECT_EQ(notifications.back(),
             TimeAndStage(detector.upgrade_detected_time() + thresholds[3],
+                         UpgradeDetector::UPGRADE_ANNOYANCE_GRACE));
+
+  // Move to the time that high annoyance should be reached. Notifications at
+  // grace annoyance level should arrive every 20 minutes with one final
+  // notification at high annoyance.
+  notifications.clear();
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended())
+      .WillRepeatedly(AppendTicksAndStage(&detector, &notifications));
+  FastForwardBy(thresholds[4] - thresholds[3]);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  ASSERT_GT(notifications.size(), 1U);
+  EXPECT_EQ((notifications.end() - 2)->second,
+            UpgradeDetector::UPGRADE_ANNOYANCE_GRACE);
+  EXPECT_EQ(notifications.back(),
+            TimeAndStage(detector.upgrade_detected_time() + thresholds[4],
                          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH));
 
   // No new notifications after high annoyance has been reached.
-  FastForwardBy(thresholds[3]);
+  FastForwardBy(thresholds[4]);
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   detector.Shutdown();

@@ -65,12 +65,13 @@ class UpgradeDetectorImpl : public UpgradeDetector,
   base::TimeDelta GetThresholdForLevel(UpgradeNotificationAnnoyanceLevel level);
 
  private:
-  // The index of a level in stages_.
+  // The index of a level in `stages_`.
   enum LevelIndex {
     kStagesIndexHigh = 0,
-    kStagesIndexElevated = 1,
-    kStagesIndexLow = 2,
-    kStagesIndexVeryLow = 3,
+    kStagesIndexGrace = 1,
+    kStagesIndexElevated = 2,
+    kStagesIndexLow = 3,
+    kStagesIndexVeryLow = 4,
     kNumStages
   };
 
@@ -127,7 +128,8 @@ class UpgradeDetectorImpl : public UpgradeDetector,
 
   // The various deltas from upgrade detection time to the different annoyance
   // levels; only valid while `upgrade_notification_timer_` is running to
-  // advance through the annoyance levels.
+  // advance through the annoyance levels. Must be sorted in decreasing order of
+  // time.
   std::array<base::TimeDelta, kNumStages> stages_;
 
   // The date the binaries were built.

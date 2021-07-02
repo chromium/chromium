@@ -117,6 +117,7 @@ void RelaunchNotificationController::OnUpgradeRecommended() {
       break;
     case UpgradeDetector::UPGRADE_ANNOYANCE_LOW:
     case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
+    case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
     case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
       ShowRelaunchNotification(current_level, current_high_deadline);
       break;
@@ -247,6 +248,9 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
   // the future, and the browser is within the grace period of the previous
   // deadline. The user has already seen the one-hour countdown so just let it
   // go.
+  // The right thing would be make UpgradeDetector responsible for recomputing
+  // the deadline and not reduce the HIGH annoyance level backwards if it would
+  // make it earlier than a previous GRACE.
   if (level == last_level_ && timer_.IsRunning()) {
     const base::Time& desired_run_time = timer_.desired_run_time();
     DCHECK(!desired_run_time.is_null());
@@ -254,13 +258,21 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
       return;
   }
 
-  // Compute the new deadline (minimally one hour into the future).
-  const base::Time deadline =
-      std::max(high_deadline, now) + kRelaunchGracePeriod;
-
-  // (re)Start the timer to perform the relaunch when the deadline is reached.
-  timer_.Start(FROM_HERE, deadline, this,
-               &RelaunchNotificationController::OnRelaunchDeadlineExpired);
+  base::Time deadline = high_deadline;
+  // (re)Start the timer if it is not running or there has been a deadline
+  // change.
+  if (!timer_.IsRunning() || high_deadline != last_high_deadline_) {
+    // Give the user at least one hour to relaunch if the new deadline is in the
+    // past. This could occur in the following cases :-
+    // a) The device goes to sleep before the first notification and wakes up
+    // after the deadline.
+    // b) A change in policy value moves the deadline in the past.
+    if (high_deadline <= now)
+      deadline = now + kRelaunchGracePeriod;
+    // (re)Start the timer to perform the relaunch when the deadline is reached.
+    timer_.Start(FROM_HERE, deadline, this,
+                 &RelaunchNotificationController::OnRelaunchDeadlineExpired);
+  }
 
   if (platform_impl_.IsRequiredNotificationShown()) {
     platform_impl_.SetDeadline(deadline);
@@ -290,11 +302,12 @@ base::Time RelaunchNotificationController::IncreaseRelaunchDeadlineOnShow() {
 void RelaunchNotificationController::StartReshowTimer() {
   DCHECK_EQ(last_notification_style_, NotificationStyle::kRecommended);
   DCHECK(!last_relaunch_notification_time_.is_null());
-  const auto high_annoyance_delta =
-      upgrade_detector_->GetHighAnnoyanceLevelDelta();
+  // Use the delta between the elevated and high annoyance levels as the
+  // reshow period.
+  const auto reshow_period = upgrade_detector_->GetHighAnnoyanceLevelDelta();
   // Compute the next time to show the notification.
   const auto desired_run_time =
-      last_relaunch_notification_time_ + high_annoyance_delta;
+      last_relaunch_notification_time_ + reshow_period;
   timer_.Start(FROM_HERE, desired_run_time, this,
                &RelaunchNotificationController::OnReshowRelaunchRecommended);
 }

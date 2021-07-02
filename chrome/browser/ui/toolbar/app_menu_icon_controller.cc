@@ -18,7 +18,8 @@ namespace {
 
 // Maps an upgrade level to a severity level. When |show_very_low_upgrade_level|
 // is true, VERY_LOW through HIGH all return Severity::LOW. Otherwise, VERY_LOW
-// is ignored and LOW through HIGH return their respective Severity level.
+// is ignored and LOW through HIGH return their respective Severity level, with
+// GRACE treated the same as HIGH.
 AppMenuIconController::Severity SeverityFromUpgradeLevel(
     bool show_very_low_upgrade_level,
     UpgradeDetector::UpgradeNotificationAnnoyanceLevel level) {
@@ -30,6 +31,7 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
       case UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW:
       case UpgradeDetector::UPGRADE_ANNOYANCE_LOW:
       case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
+      case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
       case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
         return AppMenuIconController::Severity::LOW;
       case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
@@ -46,6 +48,7 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
         return AppMenuIconController::Severity::LOW;
       case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
         return AppMenuIconController::Severity::MEDIUM;
+      case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
       case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
       case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
         return AppMenuIconController::Severity::HIGH;
