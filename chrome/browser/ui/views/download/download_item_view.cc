@@ -139,6 +139,9 @@ constexpr int kMinimumVerticalPadding = 2 + kTopBottomPadding;
 // The analysis service tag for data loss prevention.
 const char kDlpTag[] = "dlp";
 
+// The analysis service tag for malware.
+const char kMalwareTag[] = "malware";
+
 // A stub subclass of Button that has no visuals.
 class TransparentButton : public views::Button {
  public:
@@ -820,16 +823,26 @@ void DownloadItemView::UpdateButtons() {
     prompt_to_scan =
         danger_type == download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
 
-    prompt_to_review =
-        (danger_type ==
-             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
-         danger_type ==
-             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) &&
-        enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-            model_->profile())
-            ->HasCustomInfoToDisplay(
-                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-                kDlpTag);
+    if (danger_type ==
+            download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
+        danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
+      prompt_to_review =
+          enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+              model_->profile())
+              ->HasCustomInfoToDisplay(
+                  enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+                  kDlpTag);
+    } else if (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
+               danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
+               danger_type ==
+                   download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT) {
+      prompt_to_review =
+          enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+              model_->profile())
+              ->HasCustomInfoToDisplay(
+                  enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+                  kMalwareTag);
+    }
 
     prompt_to_discard =
         !prompt_to_review && !prompt_to_scan &&
@@ -1243,6 +1256,14 @@ void DownloadItemView::ReviewButtonPressed() {
         WARNING;
   }
 
+  const char* tag =
+      (danger_type ==
+                   download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
+               danger_type ==
+                   download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK
+           ? kDlpTag
+           : kMalwareTag);
+
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           model_->profile());
@@ -1251,14 +1272,12 @@ void DownloadItemView::ReviewButtonPressed() {
   std::u16string custom_message =
       connectors_service
           ->GetCustomMessage(
-              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-              kDlpTag)
+              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, tag)
           .value_or(u"");
   GURL learn_more_url =
       connectors_service
           ->GetLearnMoreUrl(
-              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-              kDlpTag)
+              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, tag)
           .value_or(GURL());
 
   // This dialog opens itself, and is thereafter owned by constrained window
