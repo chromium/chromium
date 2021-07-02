@@ -10,15 +10,11 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/gfx/vector_icon_types.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -40,11 +36,13 @@ namespace ui {
 class Event;
 }
 
+namespace url {
+class GURL;
+}
+
 class HostContentSettingsMap;
 class PageInfoDelegate;
 class PageInfoUI;
-
-using password_manager::metrics_util::PasswordType;
 
 // The |PageInfo| provides information about a website's permissions,
 // connection state and its identity. It owns a UI that displays the

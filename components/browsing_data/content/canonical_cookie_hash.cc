@@ -5,6 +5,7 @@
 #include "components/browsing_data/content/canonical_cookie_hash.h"
 
 #include "base/hash/hash.h"
+#include "net/cookies/canonical_cookie.h"
 
 namespace canonical_cookie {
 
@@ -12,6 +13,14 @@ size_t FastHash(const net::CanonicalCookie& cookie) {
   return base::PersistentHash(cookie.Name()) +
          3 * base::PersistentHash(cookie.Domain()) +
          7 * base::PersistentHash(cookie.Path());
+}
+
+bool CanonicalCookieComparer::operator()(
+    const net::CanonicalCookie& cookie1,
+    const net::CanonicalCookie& cookie2) const {
+  return cookie1.Name() == cookie2.Name() &&
+         cookie1.Domain() == cookie2.Domain() &&
+         cookie1.Path() == cookie2.Path();
 }
 
 }  // namespace canonical_cookie

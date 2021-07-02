@@ -8,18 +8,18 @@
 #include <stddef.h>
 
 #include <map>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"
-#include "net/cookies/cookie_monster.h"
 
 class GURL;
 
 namespace net {
 class CanonicalCookie;
+using CookieList = std::vector<CanonicalCookie>;
 }
 namespace content {
 struct CookieAccessDetails;
