@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/js/cr.gni")
 
@@ -25,7 +26,6 @@ group("js_modules") {
     ":actions_submenu",
     ":autocomplete_list",
     ":banners",
-    ":breadcrumb",
     ":combobutton",
     ":commandbutton",
     ":default_task_dialog",
@@ -55,6 +55,11 @@ group("js_modules") {
     ":providers_menu",
     ":search_box",
   ]
+}
+
+html_to_js("web_components") {
+  visibility += [ "//ui/file_manager/*" ]
+  js_files = [ "breadcrumb.js" ]
 }
 
 js_type_check("closure_compile_jsmodules") {

@@ -4,190 +4,21 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 
-/**
- * @const {string} breadCrumbTemplate
- */
-const breadCrumbTemplate = `
-  <style>
-    :host([hidden]), [hidden] {
-      display: none !important;
-    }
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    :host-context(html.col-resize) > * {
-      cursor: unset !important;
-    }
-
-    :host {
-      display: flex;
-      font-family: 'Roboto Medium';
-      font-size: 14px;
-      outline: none;
-      overflow: hidden;
-      user-select: none;
-      white-space: nowrap;
-      align-items: center;
-    }
-
-    span[caret] {
-      -webkit-mask-image: url(../../images/files/ui/arrow_right.svg);
-      -webkit-mask-position: center;
-      -webkit-mask-repeat: no-repeat;
-      background-color: currentColor;
-      display: inline-flex;
-      height: 20px;
-      padding: 8px 0;
-      min-width: 20px;
-      width: 20px;
-    }
-
-    :host-context(html[dir='rtl']) span[caret] {
-      transform: scaleX(-1);
-    }
-
-    button {
-      /* don't use browser's background-color. */
-      background-color: unset;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      color: var(--google-grey-700);
-      cursor: pointer;
-      display: inline-block;
-
-      /* don't use browser's button font. */
-      font: inherit;
-      height: 32px;
-      margin: 0;
-
-      /* text rendering debounce: fix a minimum width. */
-      min-width: calc(12px + 1em);
-
-      /* elide wide text */
-      max-width: 200px;
-      outline: none;
-      overflow: hidden;
-      padding: 0px 8px;
-
-      /* text rendering debounce: center. */
-      text-align: center;
-      text-overflow: ellipsis;
-    }
-
-    button[disabled] {
-      color: var(--google-grey-900);
-      cursor: default;
-      font-weight: 500;
-      margin-inline-end: 4px;
-    }
-
-    span[elider] {
-      --tap-target-shift: -7px;
-      -webkit-mask-image: url(../../images/files/ui/menu_ng.svg);
-      -webkit-mask-position: center;
-      -webkit-mask-repeat: no-repeat;
-      background-color: currentColor;
-      height: 48px;
-      margin-top: var(--tap-target-shift);
-      margin-inline-start: var(--tap-target-shift);
-      min-width: 48px;
-      position: relative;
-      transform: rotate(90deg);
-      width: 48px;
-    }
-
-    button[elider] {
-      border-radius: 50%;
-      box-sizing: border-box;
-      display: inline-flex;
-      height: 36px;
-      min-width: 36px;
-      padding: 0;
-      width: 36px;
-    }
-
-    button.dropdown-item {
-      position: relative;
-    }
-
-    :host-context(:root.pointer-active) button.dropdown-item:active {
-      background-color: rgba(0, 0, 0, 4%);
-    }
-
-    :host-context(:root:not(.pointer-active)) button.dropdown-item > paper-ripple {
-      display: none;
-    }
-
-    button.dropdown-item > paper-ripple {
-      --paper-ripple-opacity: 8%;
-      color: black;
-    }
-
-    button:not([disabled]):not(:active):hover {
-      background-color: rgba(0, 0, 0, 4%);
-    }
-
-    :host-context(:root.pointer-active) button:not(:active):hover {
-      background-color: unset;
-      cursor: default;
-    }
-
-    :host-context(:root.focus-outline-visible) > button:focus {
-      background-color: unset;
-      border: 1px solid var(--google-blue-600);
-    }
-
-    :host([checked]) button[elider] {
-      background-color: rgba(0, 0, 0, 12%);
-    }
-
-    button:active {
-      background-color: rgba(0, 0, 0, 12%);
-    }
-
-    #elider-menu button {
-      border: unset;
-      color: rgb(51, 51, 51);
-      display: block;
-      font-family: 'Roboto';
-      font-size: 13px;
-      min-width: 192px;  /* menu width */
-      max-width: min(288px, 40vw);
-      padding: 0 16px;
-      text-align: start;
-    }
-
-    :host-context(:root.focus-outline-visible) #elider-menu button:hover {
-      background-color: unset;
-    }
-
-    :host-context(:root.focus-outline-visible) #elider-menu button:focus {
-      background-color: rgba(0, 0, 0, 4%);
-    }
-  </style>
-
-  <button id='first'></button>
-  <span caret hidden></span>
-  <button elider aria-haspopup='menu' aria-expanded='false'
-      aria-label='$i18n{LOCATION_BREADCRUMB_ELIDER_BUTTON_LABEL}'>
-    <span elider></span>
-  </button>
-  <span caret hidden></span>
-  <button id='second'></button>
-  <span caret hidden></span>
-  <button id='third'></button>
-  <span caret hidden></span>
-  <button id='fourth'></button>
-  <cr-action-menu id='elider-menu'></cr-action-menu>
-`;
+/** @const {!HTMLTemplateElement} */
+const htmlTemplate = html`{__html_template__}`;
 
 /**
  * Class BreadCrumb.
  */
 export class BreadCrumb extends HTMLElement {
   constructor() {
-    /**
-     * Create element content.
-     */
-    super().attachShadow({mode: 'open'}).innerHTML = breadCrumbTemplate;
+    super();
+
+    // Create element content.
+    const fragment = htmlTemplate.content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     /**
      * User interaction signals callback.
