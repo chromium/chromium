@@ -260,7 +260,7 @@ void ProcessMirrorHeader(
 
   // 2. Displaying a reauthentication window
   if (!manage_accounts_params.email.empty()) {
-    // TODO(https://crbug.com/1177728): enable this for lacros.
+    // TODO(https://crbug.com/1226055): enable this for lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Do not display the re-authentication dialog if this event was triggered
     // by supervision being enabled for an account.  In this situation, a
