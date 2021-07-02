@@ -25,7 +25,6 @@ static_library("browser_sync") {
     "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
-    "//components/desks_storage",
     "//components/history/core/browser",
     "//components/history/core/common",
     "//components/password_manager/core/browser",
@@ -42,7 +41,10 @@ static_library("browser_sync") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//components/desks_storage",
+    ]
   }
 }
 

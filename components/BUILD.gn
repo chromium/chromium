@@ -84,7 +84,6 @@ test("components_unittests") {
     "//components/content_settings/core/common:unit_tests",
     "//components/crash/core/common:unit_tests",
     "//components/crx_file:unit_tests",
-    "//components/desks_storage:unit_tests",
     "//components/device_event_log:unit_tests",
     "//components/dom_distiller/core:unit_tests",
     "//components/download:unit_tests",
@@ -461,6 +460,7 @@ test("components_unittests") {
     deps += [
       "//components/arc:unit_tests",
       "//components/arc/mojom:unit_tests",
+      "//components/desks_storage:unit_tests",
       "//components/guest_os:unit_tests",
       "//components/metrics/structured:unit_tests",
       "//components/ownership:unit_tests",

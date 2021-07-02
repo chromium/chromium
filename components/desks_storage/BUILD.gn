@@ -13,6 +13,8 @@ static_library("desks_storage") {
     "core/desk_sync_bridge.h",
     "core/desk_template.cc",
     "core/desk_template.h",
+    "core/local_desk_data_manager.cc",
+    "core/local_desk_data_manager.h",
   ]
   deps = [
     "//base",
@@ -28,7 +30,10 @@ static_library("desks_storage") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "core/desk_sync_bridge_unittest.cc" ]
+  sources = [
+    "core/desk_sync_bridge_unittest.cc",
+    "core/local_desks_data_manager_unittests.cc",
+  ]
   deps = [
     ":desks_storage",
     "//base",

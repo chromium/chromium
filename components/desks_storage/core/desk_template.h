@@ -18,6 +18,9 @@ namespace desks_storage {
 // A desk template being saved. The UUID is a unique identifier for a
 // template. This class is a temporary placeholder. This could be replaced
 // by future ash::DeskTemplate when it is ready.
+//
+// NOTE: This definition will be deleted in an upcoming CL to be replaced by
+// ash::DeskTemplate.
 class DeskTemplate {
  public:
   // Creates a DeskTemplate from the protobuf format.
