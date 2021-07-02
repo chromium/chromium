@@ -58,4 +58,10 @@ absl::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
   return custom_learn_more_url_;
 }
 
+absl::optional<std::u16string>
+ContentAnalysisDownloadsDelegate::OverrideCancelButtonText() const {
+  return l10n_util::GetStringUTF16(
+      IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_DISCARD_FILE_BUTTON);
+}
+
 }  // namespace enterprise_connectors

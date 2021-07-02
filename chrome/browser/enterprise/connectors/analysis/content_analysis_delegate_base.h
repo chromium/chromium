@@ -40,9 +40,18 @@ class ContentAnalysisDelegateBase {
   // pending file transfer.
   virtual void Cancel(bool warning) = 0;
 
+  // Returns the custom message specified by the admin to display in the dialog,
+  // or absl::nullopt if there isn't any.
   virtual absl::optional<std::u16string> GetCustomMessage() const = 0;
 
+  // Returns the custom "learn more" URL specified by the admin to display in
+  // the dialog, or absl::nullopt if there isn't any.
   virtual absl::optional<GURL> GetCustomLearnMoreUrl() const = 0;
+
+  // Returns the text to display on the "cancel" button in the dialog, or
+  // absl::nullopt if no text is specified by this delegate. Takes precedence
+  // over any other text that would be chosen by the dialog.
+  virtual absl::optional<std::u16string> OverrideCancelButtonText() const = 0;
 };
 
 }  // namespace enterprise_connectors

@@ -240,6 +240,11 @@ absl::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
   return absl::nullopt;
 }
 
+absl::optional<std::u16string>
+ContentAnalysisDelegate::OverrideCancelButtonText() const {
+  return absl::nullopt;
+}
+
 // static
 bool ContentAnalysisDelegate::ResultShouldAllowDataUse(
     BinaryUploadService::Result result,

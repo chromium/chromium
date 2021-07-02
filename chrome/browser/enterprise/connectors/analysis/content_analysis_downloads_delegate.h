@@ -35,6 +35,8 @@ class ContentAnalysisDownloadsDelegate : public ContentAnalysisDelegateBase {
 
   absl::optional<GURL> GetCustomLearnMoreUrl() const override;
 
+  absl::optional<std::u16string> OverrideCancelButtonText() const override;
+
  private:
   // Resets |open_file_callback_| and |discard_file_callback_|, ensuring actions
   // can't be attempted on a file that has already been opened or discarded

@@ -168,6 +168,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   absl::optional<GURL> GetCustomLearnMoreUrl() const override;
 
+  absl::optional<std::u16string> OverrideCancelButtonText() const override;
+
   // Returns true if the deep scanning feature is enabled in the upload
   // direction via enterprise policies.  If the appropriate enterprise policies
   // are not set this feature is not enabled.

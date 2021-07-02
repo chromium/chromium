@@ -11311,6 +11311,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE_LEARN_MORE_LINK" desc="Text value of the link passed for the custom message set by the administrator when deep scanning returns a failure.">
       Learn more
     </message>
+    <message name="IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_DISCARD_FILE_BUTTON" desc="Text of the button used for discarding a dangerous file from the Content Analysis Dialog.">
+      Discard file
+    </message>
 
 
     <!-- Deep scanning open now dialog strings -->

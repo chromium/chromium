@@ -587,6 +587,11 @@ std::u16string ContentAnalysisDialog::GetDialogMessage() const {
 
 std::u16string ContentAnalysisDialog::GetCancelButtonText() const {
   int text_id;
+  auto overriden_text = delegate_->OverrideCancelButtonText();
+  if (overriden_text) {
+    return overriden_text.value();
+  }
+
   switch (dialog_state_) {
     case State::SUCCESS:
       NOTREACHED();

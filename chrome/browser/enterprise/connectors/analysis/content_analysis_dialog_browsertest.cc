@@ -764,6 +764,10 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
     absl::optional<GURL> GetCustomLearnMoreUrl() const override {
       return absl::nullopt;
     }
+
+    absl::optional<std::u16string> OverrideCancelButtonText() const override {
+      return absl::nullopt;
+    }
   };
 
   class MockCustomMessageDelegate : public ContentAnalysisDelegateBase {
@@ -782,6 +786,10 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
 
     absl::optional<GURL> GetCustomLearnMoreUrl() const override {
       return learn_more_url_;
+    }
+
+    absl::optional<std::u16string> OverrideCancelButtonText() const override {
+      return absl::nullopt;
     }
 
    private:
