@@ -45,8 +45,8 @@ class ResizeToggleMenu : public views::WidgetObserver {
 
    private:
     // views::View:
-    void Layout() override;
     void OnThemeChanged() override;
+    gfx::Size CalculatePreferredSize() const override;
 
     void UpdateColors();
     void UpdateState();

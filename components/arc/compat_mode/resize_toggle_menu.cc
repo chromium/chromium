@@ -53,18 +53,34 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
                                                  const gfx::VectorIcon& icon,
                                                  int title_string_id)
     : views::Button(std::move(callback)), icon_(icon) {
-  AddChildView(
-      views::Builder<views::ImageView>().CopyAddressTo(&icon_view_).Build());
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetInteriorMargin(gfx::Insets(16, 0, 14, 0))
+      .SetDefault(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kPreferred,
+                                   /*adjust_height_for_width=*/true));
+
+  AddChildView(views::Builder<views::ImageView>()
+                   .CopyAddressTo(&icon_view_)
+                   .SetImageSize(gfx::Size(20, 20))
+                   .SetHorizontalAlignment(views::ImageView::Alignment::kCenter)
+                   .SetVerticalAlignment(views::ImageView::Alignment::kCenter)
+                   .SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 8, 0))
+                   .Build());
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&title_)
                    .SetBackgroundColor(SK_ColorTRANSPARENT)
                    .SetText(l10n_util::GetStringUTF16(title_string_id))
                    .SetVerticalAlignment(gfx::ALIGN_BOTTOM)
-                   .SetLineHeight(20)
+                   .SetLineHeight(16)
                    .SetMultiLine(true)
-                   .SetMaxLines(2)
+                   .SetAllowCharacterBreak(true)
                    .Build());
-  SetPreferredSize(gfx::Size(96, 86));
+
   SetAccessibleName(l10n_util::GetStringUTF16(title_string_id));
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
 
@@ -90,25 +106,14 @@ void ResizeToggleMenu::MenuButtonView::SetSelected(bool is_selected) {
   UpdateColors();
 }
 
-void ResizeToggleMenu::MenuButtonView::Layout() {
-  views::View::Layout();
-
-  constexpr int kIconSize = 20;
-  constexpr int kIconTopPadding = 16;
-
-  gfx::Rect content_bounds_with_padding = GetContentsBounds();
-  content_bounds_with_padding.Inset(gfx::Insets(kIconTopPadding, 0));
-
-  gfx::Rect icon_rect(GetContentsBounds());
-  icon_rect.ClampToCenteredSize(gfx::Size(kIconSize, kIconSize));
-  icon_rect.set_y(content_bounds_with_padding.y());
-  icon_view_->SetBoundsRect(icon_rect);
-  title_->SetBoundsRect(content_bounds_with_padding);
-}
-
 void ResizeToggleMenu::MenuButtonView::OnThemeChanged() {
   views::Button::OnThemeChanged();
   UpdateColors();
+}
+
+gfx::Size ResizeToggleMenu::MenuButtonView::CalculatePreferredSize() const {
+  constexpr int kWidth = 96;
+  return gfx::Size(kWidth, GetHeightForWidth(kWidth));
 }
 
 void ResizeToggleMenu::MenuButtonView::UpdateColors() {
