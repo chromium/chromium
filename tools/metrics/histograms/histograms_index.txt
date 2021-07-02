@@ -16,6 +16,7 @@ tools/metrics/histograms/histograms_xml/browser/histograms.xml
 tools/metrics/histograms/histograms_xml/chrome/histograms.xml
 tools/metrics/histograms/histograms_xml/chromeos/histograms.xml
 tools/metrics/histograms/histograms_xml/cloud/histograms.xml
+tools/metrics/histograms/histograms_xml/commerce/histograms.xml
 tools/metrics/histograms/histograms_xml/compositing/histograms.xml
 tools/metrics/histograms/histograms_xml/content/histograms.xml
 tools/metrics/histograms/histograms_xml/cookie/histograms.xml

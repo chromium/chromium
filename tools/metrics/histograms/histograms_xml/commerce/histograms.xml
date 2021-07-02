@@ -1,0 +1,68 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Commerce histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="LocationIdentifiers">
+  <variant name="EnterTabSwitcher" summary="enters the Tab Switcher."/>
+  <variant name="NavigationComplete" summary="completes a navigation."/>
+</variants>
+
+<histogram name="Commerce.PriceDrops.{LocationIdentifier}.ContainsPrice"
+    enum="BooleanContainsPrice" expires_after="2022-06-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records if a page contains a price, as determined by the commerce data
+    obtained to power the price drop feature. This data is acquired when the
+    user finishes navigating to a page. Recorded when the user
+    {LocationIdentifier}.
+  </summary>
+  <token key="LocationIdentifier" variants="LocationIdentifiers"/>
+</histogram>
+
+<histogram name="Commerce.PriceDrops.{LocationIdentifier}.ContainsPriceDrop"
+    enum="BooleanContainsPriceDrop" expires_after="2022-06-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records if a page contains a decrease in price for an offer, relative to the
+    previously seen price for the offer. This is determined by the commerce data
+    obtained to power the price drop feature. The data is acquired when the user
+    finishes navigating to a page. Recorded when the user {LocationIdentifier}.
+  </summary>
+  <token key="LocationIdentifier" variants="LocationIdentifiers"/>
+</histogram>
+
+<histogram name="Commerce.PriceDrops.{LocationIdentifier}.IsProductDetailPage"
+    enum="BooleanIsProductDetailPage" expires_after="2022-06-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records if a page is a product detail page, as determined by the commerce
+    data obtained to power the price drop feature. This data is acquired when
+    the user finishes navigating to a page. Recorded when the user
+    {LocationIdentifier}.
+  </summary>
+  <token key="LocationIdentifier" variants="LocationIdentifiers"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
