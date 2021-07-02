@@ -5,7 +5,7 @@
 #include "weblayer/browser/verdict_cache_manager_factory.h"
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/safe_browsing/core/verdict_cache_manager.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 

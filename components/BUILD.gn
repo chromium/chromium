@@ -502,9 +502,9 @@ test("components_unittests") {
   if (safe_browsing_mode == 1) {
     deps += [
       "//components/safe_browsing/content/renderer:websocket_sb_handshake_throttle_unittest",
-      "//components/safe_browsing/core:verdict_cache_manager_unittest",
       "//components/safe_browsing/core/browser:ping_manager_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+      "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
       "//components/safe_browsing/core/browser/db:unit_tests_local_db",
       "//components/safe_browsing/core/browser/db:v4_test_util",
       "//components/safe_browsing/core/browser/sync:unittests",

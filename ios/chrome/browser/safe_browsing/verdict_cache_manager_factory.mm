@@ -6,7 +6,7 @@
 
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/safe_browsing/core/verdict_cache_manager.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"

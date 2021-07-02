@@ -106,7 +106,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/safe_browsing/core/verdict_cache_manager.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/site_isolation/pref_names.h"
 #include "content/public/browser/browser_context.h"

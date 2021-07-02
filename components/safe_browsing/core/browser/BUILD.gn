@@ -64,6 +64,46 @@ source_set("safe_browsing_url_checker_unittest") {
   ]
 }
 
+# NOTE: This target is separated from :browser as
+# //components/safe_browsing/core/browser/realtime:url_lookup_service_base,
+# which :browser depends on, depends on this.
+# TODO(crbug.com/1216341): Consider folding all of three these together into
+# :browser, along with the rest of //components/safe_browsing/core/browser.
+source_set("verdict_cache_manager") {
+  sources = [
+    "verdict_cache_manager.cc",
+    "verdict_cache_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/history/core/browser",
+    "//components/keyed_service/core:core",
+    "//components/password_manager/core/browser:browser",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//url",
+  ]
+}
+
+source_set("verdict_cache_manager_unittest") {
+  testonly = true
+  sources = [ "verdict_cache_manager_unittest.cc" ]
+
+  deps = [
+    ":verdict_cache_manager",
+    "//base",
+    "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
+  ]
+}
 source_set("referrer_chain_provider") {
   sources = [ "referrer_chain_provider.h" ]
   deps = [

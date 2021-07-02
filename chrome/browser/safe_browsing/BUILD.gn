@@ -166,8 +166,8 @@ static_library("safe_browsing") {
       "//components/safe_browsing/content/browser/triggers:suspicious_site_trigger",
       "//components/safe_browsing/content/browser/triggers:trigger_throttler",
       "//components/safe_browsing/content/common:file_type_policies",
-      "//components/safe_browsing/core:verdict_cache_manager",
       "//components/safe_browsing/core/browser",
+      "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:allowlist_checker_client",
       "//components/safe_browsing/core/browser/db:metadata_proto",
       "//components/safe_browsing/core/browser/realtime:policy_engine",
@@ -314,7 +314,7 @@ static_library("safe_browsing") {
         "//components/language/core/common",
         "//components/policy/core/browser",
         "//components/prefs",
-        "//components/safe_browsing/core:verdict_cache_manager",
+        "//components/safe_browsing/core/browser:verdict_cache_manager",
         "//components/safe_browsing/core/browser/db",
         "//components/safe_browsing/core/browser/realtime:policy_engine",
         "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
@@ -370,7 +370,7 @@ source_set("verdict_cache_manager_factory") {
     "//components/history/core/browser",
     "//components/keyed_service/content",
     "//components/prefs",
-    "//components/safe_browsing/core:verdict_cache_manager",
+    "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//content/public/browser",
   ]
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/verdict_cache_manager.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,8 +25,7 @@ class VerdictCacheManagerTest : public ::testing::Test {
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
     content_setting_map_ = new HostContentSettingsMap(
         &test_pref_service_, false /* is_off_the_record */,
-        false /* store_last_modified */,
-        false /* restore_session */);
+        false /* store_last_modified */, false /* restore_session */);
     cache_manager_ = std::make_unique<VerdictCacheManager>(
         nullptr, content_setting_map_.get());
   }

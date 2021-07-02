@@ -74,7 +74,7 @@ source_set("password_protection_unittest") {
       "//components/history/core/browser:browser",
       "//components/password_manager/core/browser:browser",
       "//components/safe_browsing/content/common:interfaces",
-      "//components/safe_browsing/core:verdict_cache_manager",
+      "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:test_database_manager",
       "//components/safe_browsing/core/browser/password_protection",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
