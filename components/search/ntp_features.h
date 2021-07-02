@@ -64,6 +64,9 @@ extern const char kNtpDriveModuleDataParam[];
 extern const char kNtpDriveModuleManagedUsersOnlyParam[];
 // Parameter determining the max age in seconds of the cache for drive data.
 extern const char kNtpDriveModuleCacheMaxAgeSParam[];
+// Parameter for communicating the experiment group of the Drive module
+// experiment.
+extern const char kNtpDriveModuleExperimentGroupParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

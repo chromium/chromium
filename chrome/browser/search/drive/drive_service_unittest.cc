@@ -355,6 +355,31 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
                                              base::PersistentHash("drive")));
 }
 
+TEST_F(DriveServiceTest, AddsClientTagIfRequested) {
+  // Make sure we are not in the dismissed time window.
+  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
+  task_environment_.AdvanceClock(DriveService::kDismissDuration);
+
+  // Set client tag.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpDriveModule,
+      {{ntp_features::kNtpDriveModuleExperimentGroupParam, "foo"}});
+
+  service_->GetDriveFiles(DriveService::GetFilesCallback());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo_token", base::Time());
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  std::string request_body(test_url_loader_factory_.pending_requests()
+                               ->at(0)
+                               .request.request_body->elements()
+                               ->at(0)
+                               .As<network::DataElementBytes>()
+                               .AsStringPiece());
+  auto body_value = base::JSONReader::Read(request_body);
+  EXPECT_EQ("foo", *body_value->FindStringPath("client_info.client_tags.name"));
+}
+
 TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {
   bool passed_no_data = false;
   base::MockCallback<DriveService::GetFilesCallback> callback;

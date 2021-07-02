@@ -44,7 +44,10 @@ constexpr char kRequestBody[] = R"({
     "platform_type": "%s",
     "scenario_type": "CHROME_NTP_FILES",
     "language_code": "%s",
-    "request_type": "LIVE_REQUEST"
+    "request_type": "LIVE_REQUEST",
+    "client_tags": {
+      "name": "%s"
+    }
   },
   "max_suggestions": 3,
   "type_detail_fields": "drive_item.title,drive_item.mimeType"
@@ -247,7 +250,11 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
                                                  kTrafficAnnotation);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
   url_loader_->AttachStringForUpload(
-      base::StringPrintf(kRequestBody, kPlatform, application_locale_.c_str()),
+      base::StringPrintf(kRequestBody, kPlatform, application_locale_.c_str(),
+                         base::GetFieldTrialParamValueByFeature(
+                             ntp_features::kNtpDriveModule,
+                             ntp_features::kNtpDriveModuleExperimentGroupParam)
+                             .c_str()),
       "application/json");
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
