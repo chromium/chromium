@@ -6,6 +6,26 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
+if (is_chromeos_ash) {
+  js_type_check("closure_compile_local") {
+    is_polymer3 = true
+    closure_flags = default_closure_args + [
+                      "js_module_root=../../chrome/test/data/webui/",
+                      "js_module_root=./gen/chrome/test/data/webui/",
+                    ]
+    deps = [ ":fake_network_config_mojom" ]
+  }
+
+  js_library("fake_network_config_mojom") {
+    deps = [
+      "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+      "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+      "//ui/webui/resources/js:assert",
+      "//ui/webui/resources/js:promise_resolver",
+    ]
+  }
+}
+
 js_modulizer("modulize") {
   input_files = [ "fake_network_config_mojom.js" ]
 }
@@ -15,6 +35,13 @@ js_library("fake_network_config_mojom.m") {
   if (is_chromeos_ash) {
     sources += [ "$root_gen_dir/chrome/test/data/webui/chromeos/fake_network_config_mojom.m.js" ]
   }
+  if (is_chromeos_ash) {
+    deps = [
+      "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+      "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+      "//ui/webui/resources/js:promise_resolver.m",
+    ]
+  }
   extra_deps = [ ":modulize" ]
 }
 
@@ -23,6 +50,7 @@ group("closure_compile") {
 
   if (is_chromeos_ash) {
     public_deps += [
+      ":closure_compile_local",
       "account_manager:closure_compile",
       "ash_common:closure_compile",
       "diagnostics:closure_compile",
