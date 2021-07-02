@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
+<translation id="2783010256799387990">통과</translation>
 <translation id="2789486458103222910">확인</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2862104018715411648">시작하려면 스캐너에 문서를 놓고 스캔을 선택하세요.</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
+<translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="714876143603641390">LAN 연결</translation>
 <translation id="7162487448488904999">갤러리</translation>
+<translation id="7172721935181587524">이미지 1개</translation>
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7216409898977639127">이동통신사</translation>
 <translation id="7271040990581020067">현재 스캐너를 사용하고 있습니다. 나중에 다시 시도해 주세요.</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">출처</translation>
 <translation id="8297006494302853456">약함</translation>
 <translation id="8302368968391049045">HTTPS 방화벽</translation>
+<translation id="8318753676953949627">이미지 없음</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8352772353338965963">멀티 로그인에 계정을 추가하세요. 비밀번호를 입력하지 않고 모든 로그인 계정에 액세스할 수 있으므로 이 기능은 신뢰할 수 있는 계정에만 사용해야 합니다.</translation>
 <translation id="8364946094152050673">네임서버가 비어 있습니다.</translation>

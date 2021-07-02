@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
+<translation id="2783010256799387990">ԱՆՑԱԾ Է</translation>
 <translation id="2789486458103222910">Եղավ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2862104018715411648">Փաստաթուղթը դրեք սկաների վրա և սեղմեք Սկանավորել</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
 <translation id="4378373042927530923">Չի գործարկվել</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>
 <translation id="7162487448488904999">Ցուցասրահ</translation>
+<translation id="7172721935181587524">1 պատկեր</translation>
 <translation id="7177485034254901881">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
 <translation id="7216409898977639127">Բջջային օպերատոր</translation>
 <translation id="7271040990581020067">Սկաներն այս պահին օգտագործվում է։ Փորձեք ավելի ուշ։</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">Աղբյուր</translation>
 <translation id="8297006494302853456">Թույլ</translation>
 <translation id="8302368968391049045">HTTPS հրապատ</translation>
+<translation id="8318753676953949627">Պատկերներ չկան</translation>
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>
 <translation id="8352772353338965963">Ավելացնել հաշիվ բազմակի մուտքի համակարգում: Բոլոր մուտք գործած հաշիվները մատչելի են առանց գաղտնաբառի մուտքագրման, ուստի այս գործառույթը պետք է միայն օգտագործվի վստահելի հաշիվների հետ:</translation>
 <translation id="8364946094152050673">DNS սերվերները դատարկ են</translation>

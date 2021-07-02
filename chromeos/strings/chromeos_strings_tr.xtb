@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2751739896257479635">EAP Aşama 2 kimlik doğrulaması</translation>
+<translation id="2783010256799387990">BAŞARILI OLDU</translation>
 <translation id="2789486458103222910">Tamam</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2862104018715411648">Dokümanınızı tarayıcıya yerleştirin ve başlamak için Tara'yı seçin</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
 <translation id="4238516577297848345">Devam eden bir yazdırma işi yok</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Resim</translation>
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
@@ -295,6 +297,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
 <translation id="714876143603641390">LAN Bağlantısı</translation>
 <translation id="7162487448488904999">Galeri</translation>
+<translation id="7172721935181587524">1 Resim</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
@@ -344,6 +347,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8294431847097064396">Kaynak</translation>
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8302368968391049045">HTTPS Güvenlik Duvarı</translation>
+<translation id="8318753676953949627">Resim Yok</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
 <translation id="8364946094152050673">Alan adı sunucuları boş</translation>

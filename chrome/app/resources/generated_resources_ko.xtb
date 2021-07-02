@@ -252,6 +252,7 @@
 <translation id="126768002343224824">16배</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1272978324304772054">이 사용자 계정은 기기가 등록된 도메인에 속해 있지 않습니다. 다른 도메인에 등록하려면 먼저 기기 복구 절차를 거쳐야 합니다.</translation>
+<translation id="1273780413309681229">설정 가이드 다시 실행</translation>
 <translation id="1274997165432133392">쿠키 및 기타 사이트 데이터</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> 앱을 제거할 수 없음</translation>
@@ -410,6 +411,7 @@
 <translation id="1442851588227551435">활성 Kerberos 티켓 설정</translation>
 <translation id="1444628761356461360">기기 소유자인 <ph name="OWNER_EMAIL" />이(가) 관리하는 설정입니다.</translation>
 <translation id="144518587530125858">테마('<ph name="IMAGE_PATH" />')를 로드하지 못했습니다.</translation>
+<translation id="1449191289887455076">할당을 확인하고 <ph name="RESPONSE" />하려면 “<ph name="CURRENTKEY" />” 키를 다시 누르세요.</translation>
 <translation id="1451375123200651445">웹페이지, 단일 파일</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />디버그 로그
     <ph name="END_LINK" /> 보내기(권장)</translation>
@@ -519,6 +521,7 @@
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
 <translation id="1567135437923613642">추천 실험 기능 사용</translation>
 <translation id="1567387640189251553">마지막으로 비밀번호를 입력한 후 다른 키보드가 연결되었습니다. 키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
+<translation id="156793199942386351">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="1567993339577891801">자바스크립트 콘솔</translation>
 <translation id="1568323446248056064">디스플레이 기기 설정 열기</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />(게스트)</translation>
@@ -791,6 +794,7 @@
 <translation id="1822140782238030981">이미 Chrome을 사용 중이신가요? 로그인하세요.</translation>
 <translation id="18245044880483936">백업 데이터는 자녀의 드라이브 스토리지 저장용량에 포함되지 않습니다.</translation>
 <translation id="1825565032302550710">포트 번호는 1024와 65535 사이여야 합니다.</translation>
+<translation id="1826192255355608658">Chrome 브라우저 북마크, 비밀번호, 방문 기록 등을 동기화</translation>
 <translation id="1826516787628120939">확인 중</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
 <translation id="1828378091493947763">이 기기에서 지원되지 않는 플러그인입니다.</translation>
@@ -1314,6 +1318,7 @@
 <translation id="2379281330731083556">시스템 대화상자를 사용하여 인쇄... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381756643783702095">보내기 전에 확인(권장)</translation>
 <translation id="2382818385048255866">확장 프로그램 확인</translation>
+<translation id="2383270717570379869">로그인할 경우 <ph name="BEGIN_LINK_SEARCH" />검색 기록<ph name="END_LINK_SEARCH" /> 및 <ph name="BEGIN_LINK_GOOGLE" />다른 활동 형식<ph name="END_LINK_GOOGLE" />이 Google 계정에 저장될 수 있습니다. 언제든지 삭제할 수 있습니다.</translation>
 <translation id="2387052489799050037">홈으로 이동</translation>
 <translation id="2390347491606624519">프록시에 연결할 수 없음: 다시 로그인해 주세요</translation>
 <translation id="2390782873446084770">Wi-Fi 동기화</translation>
@@ -1478,6 +1483,7 @@
 <translation id="2553440850688409052">이 플러그인 숨기기</translation>
 <translation id="2554553592469060349">선택한 파일이 너무 큽니다(최대 크기: 3MB).</translation>
 <translation id="2558896001721082624">시스템 메뉴에 접근성 옵션 항상 표시</translation>
+<translation id="2564407282561292919">검색창의 기록을 삭제합니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="2564520396658920462">AppleScript를 통한 자바스크립트 실행 기능이 꺼져 있습니다. 이 기능을 사용하도록 설정하려면 메뉴 바에서 보기 &gt; 개발자 &gt; Apple Events의 자바스크립트 허용으로 이동하세요. 자세한 내용은 다음 페이지에서 확인하세요. https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">향상된 맞춤법 검사</translation>
 <translation id="2568774940984945469">정보 표시줄 컨테이너</translation>
@@ -1802,6 +1808,7 @@
 <translation id="2907798539022650680">'<ph name="NAME" />'에 연결하지 못함: <ph name="DETAILS" />
     서버 메시지: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">디렉터리별 미디어 갤러리 추가</translation>
+<translation id="2908358077082926882">할당을 삭제하고 <ph name="RESPONSE" />하려면 “<ph name="CURRENTKEY" />” 키를 다시 누르세요.</translation>
 <translation id="2910318910161511225">네트워크에 연결하고 다시 시도해 주세요</translation>
 <translation id="291056154577034373">읽지 않음</translation>
 <translation id="2910718431259223434">문제가 발생했습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -2298,6 +2305,7 @@
 <translation id="3462311546193741693">대부분의 사이트에서 로그아웃됩니다. 동기화된 데이터를 삭제할 수 있도록 Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="3462413494201477527">계정 설정을 취소하시겠습니까?</translation>
 <translation id="346298925039590474">기기의 모든 사용자가 이 모바일 네트워크를 사용할 수 있습니다.</translation>
+<translation id="3463235406897625623">선택 작업에 할당된 유일한 스위치는 삭제할 수 없습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="3464145797867108663">직장 프로필 추가</translation>
 <translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" />님이 관리하는 어린이용 계정입니다.</translation>
 <translation id="3468298837301810372">라벨</translation>
@@ -2308,6 +2316,7 @@
 <translation id="3473479545200714844">화면 돋보기</translation>
 <translation id="3474218480460386727">새 단어는 99자 이하(영문 기준)여야 합니다.</translation>
 <translation id="3475843873335999118">죄송합니다. 지문이 인식되지 않았습니다. 비밀번호를 입력하세요.</translation>
+<translation id="3475986680293081450">키가 일치하지 않습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="3476303763173086583">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">시스템에서 기기 정책을 가져오지 못했습니다.</translation>
 <translation id="347785443197175480"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 계속 허용</translation>
@@ -2366,6 +2375,7 @@
 <translation id="3541823293333232175">할당됨</translation>
 <translation id="3543393733900874979">업데이트 실패(오류: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512를 포함한 X9.62 ECDSA 서명</translation>
+<translation id="3543651705416471414">모든 스위치 할당 지우기</translation>
 <translation id="3544879808695557954">사용자 이름(선택사항)</translation>
 <translation id="354602065659584722">유해한 소프트웨어가 삭제됨</translation>
 <translation id="3547954654003013442">프록시 설정</translation>
@@ -2593,6 +2603,7 @@
 <translation id="3778740492972734840">개발자 도구(&amp;D)</translation>
 <translation id="3778868487658107119">질문을 하고 작업을 지시하세요. 나만의 Google이 언제든지 도와드립니다.</translation>
 <translation id="3781742599892759500">Linux 마이크 액세스</translation>
+<translation id="3782795641773236652">아직 할당된 스위치 또는 키 없음</translation>
 <translation id="378312418865624974">이 컴퓨터의 고유 식별자 조회</translation>
 <translation id="3784372983762739446">블루투스 장치</translation>
 <translation id="3784472333786002075">쿠키는 웹사이트에서 생성된 파일로, 다음과 같은 2가지 유형이 있습니다. 제1사 쿠키는 사용자가 방문하는 사이트에 의해 생성됩니다. 이때 사이트가 주소 표시줄에 나타납니다. 제3사 쿠키는 다른 사이트, 즉 광고나 이미지 등 사용자가 방문하는 웹사이트에 표시되는 일부 콘텐츠를 소유한 사이트에 의해 생성됩니다.</translation>
@@ -2871,6 +2882,7 @@
 <translation id="406070391919917862">백그라운드 애플리케이션</translation>
 <translation id="4061374428807229313">공유하려면 Files 앱에서 마우스 오른쪽 버튼으로 폴더를 클릭한 다음 'Parallels Desktop과 공유'를 선택하세요.</translation>
 <translation id="406213378265872299">맞춤설정된 동작</translation>
+<translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> 앱, 설정 등을 동기화</translation>
 <translation id="4064575710864784237">1x</translation>
 <translation id="4065876735068446555">사용 중인 네트워크(<ph name="NETWORK_ID" />)에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="4066207411788646768">네트워크 내 사용 가능한 프린터를 보려면 인터넷 연결 상태를 확인하세요.</translation>
@@ -2990,6 +3002,7 @@
 <translation id="4217571870635786043">음성기록</translation>
 <translation id="4220648711404560261">활성화 중 오류가 발생했습니다.</translation>
 <translation id="4222772810963087151">빌드 세부정보</translation>
+<translation id="4225020013797061859">"<ph name="ACTION" />" 작업을 할당할 스위치 또는 키를 누르세요.</translation>
 <translation id="4225397296022057997">모든 사이트에서</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
@@ -3141,6 +3154,7 @@
 <translation id="440653823335387109">읽은 페이지</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4408599188496843485">도움말(&amp;E)</translation>
+<translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4409697491990005945">여백</translation>
 <translation id="4410545552906060960">기기를 잠금 해제하려면 비밀번호 대신 번호(PIN)를 사용하세요. 나중에 PIN을 설정하려면 설정으로 이동하세요.</translation>
 <translation id="4411578466613447185">코드 서명자</translation>
@@ -3210,6 +3224,7 @@
 <translation id="4480590691557335796">Chrome이 컴퓨터에서 유해한 소프트웨어를 찾아 삭제할 수 있습니다.</translation>
 <translation id="4481467543947557978">서비스 워커</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
+<translation id="4481906837550700306">설정 가이드를 다시 실행하면 할당된 스위치가 지워집니다. 계속하시겠습니까?</translation>
 <translation id="4482990632723642375">최근에 닫은 탭</translation>
 <translation id="4487489714832036847">Chromebook에서는 기존 소프트웨어 대신 앱을 사용합니다. 생산성, 엔터테인먼트 등을 위한 앱을 활용해 보세요.</translation>
 <translation id="4488257340342212116">카메라 사용이 허용됨</translation>
@@ -4497,6 +4512,7 @@
 <translation id="5938002010494270685">보안 업그레이드 사용 가능</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="5939719276406088041">바로가기를 만들 수 없음</translation>
+<translation id="594048410531370124">알 수 없는 키입니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="5941153596444580863">사용자 추가...</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />에 로그인하세요.</translation>
 <translation id="5941711191222866238">최소화</translation>
@@ -4523,6 +4539,7 @@
 <translation id="5963117322306686970">탭을 묶으려면 탭을 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" />(최대 <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>
+<translation id="5964328685964290415">모든 탐색을 HTTPS로 업그레이드하고 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="5965661248935608907">또한 홈 버튼을 클릭하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있습니다.</translation>
 <translation id="5969728632630673489">단축키 알림 닫힘</translation>
@@ -5817,6 +5834,7 @@
 <translation id="7415454883318062233">설정 완료</translation>
 <translation id="7416362041876611053">알려지지 않은 네트워크 오류입니다.</translation>
 <translation id="741906494724992817">이 앱에는 특별한 권한이 필요하지 않습니다.</translation>
+<translation id="7419565702166471774">항상 보안 연결 사용</translation>
 <translation id="7421067045979951561">프로토콜 핸들러</translation>
 <translation id="742130257665691897">북마크 삭제됨</translation>
 <translation id="7421925624202799674">페이지 소스 보기(&amp;V)</translation>
@@ -5838,6 +5856,7 @@
 <translation id="7434969625063495310">인쇄 서버를 추가할 수 없습니다. 서버 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="7436921188514130341">이름 변경 중에 오류가 발생했습니다.</translation>
 <translation id="7438495332316988804">표준 브라우저는 런처에 'Chrome'이라고 입력하여 찾을 수 있습니다.</translation>
+<translation id="7439446972050308922">Google 계정을 사용해 로그인할 경우 모든 Chrome OS 기기에서 저장된 환경설정을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="7439519621174723623">계속하려면 기기 이름을 추가하세요.</translation>
 <translation id="7441736921018636843">이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하여 동기화 암호를 삭제하세요.</translation>
 <translation id="7441830548568730290">다른 사용자</translation>
@@ -5949,6 +5968,7 @@
 <translation id="7557194624273628371">Linux 포트 전달</translation>
 <translation id="7557411183415085169">Linux 디스크 공간 부족</translation>
 <translation id="7559719679815339381">잠시 기다려주세요. Kiosk 앱을 업데이트하는 중입니다. USB 메모리를 제거하지 마세요.</translation>
+<translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> 동기화</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="756445078718366910">브라우저 창 열기</translation>
 <translation id="7564847347806291057">프로세스 종료</translation>
@@ -5985,6 +6005,7 @@
 <translation id="760197030861754408">연결하려면 <ph name="LANDING_PAGE" />(으)로 이동하세요.</translation>
 <translation id="7602079150116086782">다른 기기의 탭 없음</translation>
 <translation id="7602173054665172958">인쇄 관리</translation>
+<translation id="7603785829538808504">다음 사이트는 맞춤 설정을 따릅니다.</translation>
 <translation id="7604942372593434070">탐색 활동에 액세스</translation>
 <translation id="7605594153474022051">동기화가 작동하지 않음</translation>
 <translation id="7606992457248886637">인증 기관</translation>
@@ -6572,6 +6593,8 @@
 <translation id="8189750580333936930">개인정보 보호 샌드박스</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />에 연결 중</translation>
 <translation id="8191230140820435481">앱, 확장 프로그램 및 테마 관리</translation>
+<translation id="819137301779081601">할당을 시작하려면 새 스위치를 누르세요.
+할당을 삭제하려면 할당된 스위치를 누르세요.</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> 앱이 내 화면의 콘텐츠를 공유하려고 합니다.</translation>
 <translation id="8195027750202970175">디스크에서 차지하는 용량</translation>
 <translation id="8198323535106903877">앱 <ph name="NUMBER_OF_APPS" />개는 자동으로 설치됩니다</translation>
@@ -6604,6 +6627,7 @@
 <translation id="8230446983261649357">사이트의 이미지 표시 허용 안함</translation>
 <translation id="8234795456569844941">Google 엔지니어가 이 문제를 해결하도록 도와주세요. 프로필 오류 메시지가 표시되기 직전에 무슨 일이 있었는지 알려 주시기 바랍니다.</translation>
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" />에서 공유한 페이지</translation>
+<translation id="8236911020904880539">종료</translation>
 <translation id="8236917170563564587">이 탭을 대신 공유</translation>
 <translation id="8237647586961940482">진한 분홍색 및 빨간색</translation>
 <translation id="8239032431519548577">기업 등록 완료</translation>
@@ -7138,6 +7162,7 @@
 <translation id="8834039744648160717">네트워크 구성은 <ph name="USER_EMAIL" />님이 관리합니다.</translation>
 <translation id="8835786707922974220">언제든지 저장된 비밀번호에 액세스할 수 있도록 하세요</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" />에서 데이터를 백업하고 1주일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" /></translation>
+<translation id="8836782447513334597">계속</translation>
 <translation id="8838601485495657486">불투명</translation>
 <translation id="8838770651474809439">햄버거</translation>
 <translation id="883911313571074303">이미지에 주석 달기</translation>
@@ -7219,6 +7244,7 @@
 <translation id="8912810933860534797">자동 스캔 사용</translation>
 <translation id="8915370057835397490">추천 단어 로드 중...</translation>
 <translation id="8916476537757519021">시크릿 모드 서브프레임: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8917293713468567935">로그인할 경우 <ph name="BEGIN_LINK_GOOGLE" />다른 활동 형식<ph name="END_LINK_GOOGLE" />이 Google 계정에 저장될 수 있습니다. 언제든지 삭제할 수 있습니다.</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />님의 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8922624386829239660">마우스로 화면 가장자리를 터치할 경우 화면 움직이기</translation>
 <translation id="8923880975836399332">진한 청록색</translation>
@@ -7328,6 +7354,7 @@
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> 플러그인이 더 이상 지원되지 않습니다.</translation>
 <translation id="9031549947500880805">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다.</translation>
+<translation id="9031811691986152304">다시 시도</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>
 <translation id="9037640663275993951">허용되지 않는 기기입니다.</translation>
@@ -7354,6 +7381,8 @@
 <translation id="9062468308252555888">14배</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />행부터 <ph name="ERROR_LINE_END" />행까지에 오류가 있음</translation>
 <translation id="9063800855227801443">기밀 콘텐츠는 캡처할 수 없음</translation>
+<translation id="9064039204504614208">“<ph name="ACTION" />” 작업을 할당할 스위치를 누르세요.
+이 작업에 여러 스위치를 할당할 수 있습니다.</translation>
 <translation id="9064275926664971810">클릭 한 번으로 양식을 작성하는 자동 완성 사용</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9066782832737749352">텍스트 음성 변환</translation>

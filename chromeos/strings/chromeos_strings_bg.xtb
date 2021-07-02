@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Удостоверяване във фаза 2 през EAP</translation>
+<translation id="2783010256799387990">УСПЕШНО</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2862104018715411648">За да започнете, поставете документа върху скенера и изберете „Сканиране във“</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> изображения</translation>
 <translation id="4378373042927530923">Не е стартирано</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Моят диск</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="714876143603641390">Връзка с LAN</translation>
 <translation id="7162487448488904999">Галерия</translation>
+<translation id="7172721935181587524">1 изображение</translation>
 <translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">Източник</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8302368968391049045">Защитна стена за HTTPS</translation>
+<translation id="8318753676953949627">Няма изображения</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>

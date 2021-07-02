@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
+<translation id="2783010256799387990">УСПЕШЕН</translation>
 <translation id="2789486458103222910">Во ред</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2862104018715411648">Ставете го документот на скенерот и изберете „Скенирај“ за да започнете</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слики</translation>
 <translation id="4378373042927530923">Не е извршена</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мојот Drive</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="714876143603641390">LAN-поврзливост</translation>
 <translation id="7162487448488904999">Галерија</translation>
+<translation id="7172721935181587524">1 слика</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="7271040990581020067">Скенерот се користи во моментов. Обидете се повторно подоцна.</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8302368968391049045">Заштитен ѕид со HTTPS</translation>
+<translation id="8318753676953949627">Нема слики</translation>
 <translation id="8347227221149377169">Налози за печатење</translation>
 <translation id="8352772353338965963">Додајте сметка за повеќекратно најавување. Сите најавени сметки се достапни без лозинка, така што оваа можност треба да се користи само со сметки на кои им се верува.</translation>
 <translation id="8364946094152050673">Празни сервери за име</translation>

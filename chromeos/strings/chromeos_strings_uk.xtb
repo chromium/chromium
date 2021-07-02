@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">2-га фаза автентифікації EAP</translation>
+<translation id="2783010256799387990">ВИКОНАНО</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="2862104018715411648">Щоб почати, покладіть документ і виберіть опцію "Сканувати"</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
+<translation id="4300073214558989">Кількість зображень: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Не виконано</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мій диск</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
 <translation id="7162487448488904999">Галерея</translation>
+<translation id="7172721935181587524">1 зображення</translation>
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
 <translation id="7271040990581020067">Cканер використовується. Повторіть спробу пізніше.</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">Джерело</translation>
 <translation id="8297006494302853456">Слабкий</translation>
 <translation id="8302368968391049045">Брандмауер HTTPS</translation>
+<translation id="8318753676953949627">Немає зображень</translation>
 <translation id="8347227221149377169">Завдання друку</translation>
 <translation id="8352772353338965963">Додайте обліковий запис для паралельного входу. Доступ до всіх облікових записів, у які ви ввійшли, можна отримувати без пароля, тому цю функцію варто використовувати лише з надійними обліковими записами.</translation>
 <translation id="8364946094152050673">Сервери імен порожні</translation>

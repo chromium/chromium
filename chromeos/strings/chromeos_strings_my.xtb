@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">စနစ်</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP အဆင့် ၂ အထောက်အထားစိစစ်ခြင်း</translation>
+<translation id="2783010256799387990">အောင်မြင်သည်</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="2862104018715411648">စကင်ဖတ်စက်ပေါ်တွင် သင်၏စာရွက်စာတမ်းကို ထားရှိပြီး စတင်ရန်အတွက် 'စကင်ဖတ်ရန်' ကို ရွေးပါ</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
 <translation id="4238516577297848345">ပရင့်ထုတ်ရန် ဖိုင်များ လုပ်ဆောင်မနေပါ</translation>
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ပုံ</translation>
 <translation id="4378373042927530923">မလုပ်ဆောင်ပါ</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -294,6 +296,7 @@
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>
 <translation id="7162487448488904999">ပြခန်း</translation>
+<translation id="7172721935181587524">1 ပုံ</translation>
 <translation id="7177485034254901881">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည်။ စီမံခန့်ခွဲသူများက စက်ပစ္စည်းကို အဝေးမှ စီစဉ်သတ်မှတ်နိုင်သည်။</translation>
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="7271040990581020067">စကင်ဖတ်စက်ကို လက်ရှိ သုံးနေသည်။ နောက်မှ ထပ်စမ်းပါ။</translation>
@@ -343,6 +346,7 @@
 <translation id="8294431847097064396">အရင်းအမြစ်</translation>
 <translation id="8297006494302853456">အားမကောင်းပါ</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
+<translation id="8318753676953949627">ပုံများ မရှိပါ</translation>
 <translation id="8347227221149377169">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>
 <translation id="8352772353338965963">အရာ အများအပြားထဲသို့ လက်မှတ်ထိုး ဝင်နိုင်ရန် အတွက် အကောင့် တစ်ခုကို ထည့်ပါ။ လက်မှတ်ထိုး ဝင်ထားသည့် အကောင့်များ အားလုံးကို စကားဝှက် မသုံးရဘဲ သုံးနိုင်မည် ဖြစ်ရာ၊ ဒီအင်္ဂါရပ်ကို ယုံကြည်ရသည့် အကောင့်များ အတွက်သာ အသုံးပြသင့်သည်။</translation>
 <translation id="8364946094152050673">အမည်ဆာဗာအလွတ်များ</translation>

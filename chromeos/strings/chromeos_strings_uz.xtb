@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Tizim</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP autentifikatsiya 2-bosqichi</translation>
+<translation id="2783010256799387990">TUGADI</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2862104018715411648">Hujjatni skanerga joylang va boshlash uchun Skanerlash tugmasini bosing</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Parol muddati tugashiga <ph name="TIME" /> qoldi</translation>
 <translation id="4238516577297848345">Hozir hech nima chop etilmayapti</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
 <translation id="4378373042927530923">Ishga tushmadi</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -295,6 +297,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>
 <translation id="7162487448488904999">Galereya</translation>
+<translation id="7172721935181587524">1 ta rasm</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7216409898977639127">Mobil tarmoq</translation>
 <translation id="7271040990581020067">Skaner hozir band. Keyinroq urining.</translation>
@@ -344,6 +347,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8294431847097064396">Manba</translation>
 <translation id="8297006494302853456">Zaif</translation>
 <translation id="8302368968391049045">HTTPS Fayrvol</translation>
+<translation id="8318753676953949627">Rasmlarsiz</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>

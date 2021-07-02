@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP fase 2-godkendelse</translation>
+<translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2862104018715411648">Placer dit dokument i scanneren, og vælg Scan for at komme i gang</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> billeder</translation>
 <translation id="4378373042927530923">Kørte ikke</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mit drev</translation>
@@ -294,6 +296,7 @@
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="714876143603641390">LAN-forbindelse</translation>
 <translation id="7162487448488904999">Galleri</translation>
+<translation id="7172721935181587524">1 billede</translation>
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7216409898977639127">Mobilselskab</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
@@ -343,6 +346,7 @@
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8302368968391049045">HTTPS-firewall</translation>
+<translation id="8318753676953949627">Der er ingen billeder</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
 <translation id="8364946094152050673">Navneserverne er ikke angivet</translation>

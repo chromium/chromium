@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Overenie totožnosti EAP – 2. fáza:</translation>
+<translation id="2783010256799387990">ÚSPEŠNÉ</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2862104018715411648">Položte dokument na skener a začnite výberom možnosti Skenovať</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
+<translation id="4300073214558989">Počet obrázkov: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Nebolo spustené</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Môj disk</translation>
@@ -295,6 +297,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
 <translation id="714876143603641390">Pripojenie cez miestnu sieť</translation>
 <translation id="7162487448488904999">Galéria</translation>
+<translation id="7172721935181587524">1 obrázok</translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
@@ -344,6 +347,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8294431847097064396">Zdroj</translation>
 <translation id="8297006494302853456">Slabé</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8318753676953949627">Žiadne obrázky</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="8352772353338965963">Pridanie účtu pre viacnásobné prihlásenie. Ku všetkým prihláseným účtom môžete pristupovať bez hesla, takže táto funkcia by mala byť použitá iba s dôveryhodnými účtami.</translation>
 <translation id="8364946094152050673">Prázdne DNS servery</translation>

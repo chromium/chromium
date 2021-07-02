@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
+<translation id="2783010256799387990">SLUTFÖRT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2862104018715411648">Sätt dokumentet i skannern och välj Skanna för att komma igång</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
 <translation id="4378373042927530923">Har inte körts</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Min enhet</translation>
@@ -295,6 +297,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="714876143603641390">LAN-anslutningar</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7172721935181587524">1 bild</translation>
 <translation id="7177485034254901881">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />. Administratörer kan fjärrkonfigurera enheten.</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
@@ -344,6 +347,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8294431847097064396">Källa</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8302368968391049045">HTTPS-brandvägg</translation>
+<translation id="8318753676953949627">Inga bilder</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="8352772353338965963">Lägg till ett konto för multiinloggning. Alla inloggade konton kan öppnas utan lösenord, så använd bara den här funktionen med konton du litar på.</translation>
 <translation id="8364946094152050673">Inga namnservrar har angetts</translation>

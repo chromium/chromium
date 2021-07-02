@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">システム</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP フェーズ 2 認証</translation>
+<translation id="2783010256799387990">合格</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2862104018715411648">スキャナにドキュメントを置いて、[スキャン] を選択してスキャンを開始してください</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">マイドライブ</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="714876143603641390">LAN 接続</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
+<translation id="7172721935181587524">1 件の画像</translation>
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8297006494302853456">弱い</translation>
 <translation id="8302368968391049045">HTTPS ファイアウォール</translation>
+<translation id="8318753676953949627">0 件の画像</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>

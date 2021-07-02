@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2751739896257479635">EAP ავტორიზაციის მე-2 ფაზა</translation>
+<translation id="2783010256799387990">გავლილია</translation>
 <translation id="2789486458103222910">კარგი</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2862104018715411648">დასაწყებად მოათავსეთ დოკუმენტი სკანერზე და აირჩიეთ სკანირება</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> სურათი</translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">გაიმეორეთ</translation>
 <translation id="714876143603641390">LAN-ის კავშირი</translation>
 <translation id="7162487448488904999">გალერეა</translation>
+<translation id="7172721935181587524">1 სურათი</translation>
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
 <translation id="7271040990581020067">სკანერი ამჟამად გამოიყენება. ცადეთ მოგვიანებით.</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">წყარო</translation>
 <translation id="8297006494302853456">სუსტი</translation>
 <translation id="8302368968391049045">HTTPS ქსელის დაცვა</translation>
+<translation id="8318753676953949627">სურათები არ არის</translation>
 <translation id="8347227221149377169">ბეჭდვის დავალებები</translation>
 <translation id="8352772353338965963">დაამატეთ ანგარიში მრავლობითი შესვლისთვის. სისტემაში შესულ ანგარიშზე წვდომის მიღება შესაძლებელია პაროლის შეყვანის გარეშე, ამიტომ ეს ფუნქცია უნდა გამოიყენოთ მხოლოდ სანდო ანგარიშებზე.</translation>
 <translation id="8364946094152050673">სახელის ცარიელი სერვერები</translation>

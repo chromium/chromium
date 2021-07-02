@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Сістэма</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Фаза 2 аўтэнтыфікацыі EAP</translation>
+<translation id="2783010256799387990">ПРОЙДЗЕНА</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2862104018715411648">Каб пачаць работу, палажыце дакумент у сканер і націсніце "Сканіраваць"</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма дзеючых заданняў друку</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
+<translation id="4300073214558989">Відарысаў: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Паслядоўнасць дзеянняў не запускалася</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="714876143603641390">Магчымасць падключэння LAN</translation>
 <translation id="7162487448488904999">Галерэя</translation>
+<translation id="7172721935181587524">1 відарыс</translation>
 <translation id="7177485034254901881">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
 <translation id="7216409898977639127">Сотавы аператар</translation>
 <translation id="7271040990581020067">Сканер зараз выкарыстоўваецца. Паўтарыце спробу пазней.</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">Крыніца</translation>
 <translation id="8297006494302853456">Слабы</translation>
 <translation id="8302368968391049045">Брандмаўар HTTPS</translation>
+<translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
 <translation id="8364946094152050673">Поле сервераў даменных імён пустое</translation>
