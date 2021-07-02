@@ -53,15 +53,15 @@ class WebRemoteFrame : public WebFrame {
       WebFrame* opener);
 
   // Also performs core initialization to associate the created remote frame
-  // with the provided <portal> element.
-  BLINK_EXPORT static WebRemoteFrame* CreateForPortal(
+  // with the provided <portal> or <fencedframe> element.
+  BLINK_EXPORT static WebRemoteFrame* CreateForPortalOrFencedFrame(
       mojom::TreeScopeType,
       WebRemoteFrameClient*,
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      const WebElement& portal_element);
+      const WebElement& frame_owner);
 
   // Specialized factory methods to allow the embedder to replicate the frame
   // tree between processes.

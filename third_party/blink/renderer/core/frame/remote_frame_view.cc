@@ -47,8 +47,11 @@ LocalFrameView* RemoteFrameView::ParentFrameView() const {
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
   if (owner &&
-      owner->OwnerType() == mojom::blink::FrameOwnerElementType::kPortal)
+      (owner->OwnerType() == mojom::blink::FrameOwnerElementType::kPortal ||
+       owner->OwnerType() ==
+           mojom::blink::FrameOwnerElementType::kFencedframe)) {
     return owner->GetDocument().GetFrame()->View();
+  }
 
   // |is_attached_| is only set from AttachToLayout(), which ensures that the
   // parent is a local frame.

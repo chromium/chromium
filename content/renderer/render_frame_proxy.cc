@@ -151,20 +151,21 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
   return proxy.release();
 }
 
-RenderFrameProxy* RenderFrameProxy::CreateProxyForPortal(
+RenderFrameProxy* RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
     AgentSchedulingGroup& agent_scheduling_group,
     RenderFrameImpl* parent,
     int proxy_routing_id,
     const blink::RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
-    const blink::WebElement& portal_element) {
+    const blink::WebElement& frame_owner) {
   auto proxy = base::WrapUnique(
       new RenderFrameProxy(agent_scheduling_group, proxy_routing_id));
-  blink::WebRemoteFrame* web_frame = blink::WebRemoteFrame::CreateForPortal(
-      blink::mojom::TreeScopeType::kDocument, proxy.get(),
-      proxy->blink_interface_registry_.get(),
-      proxy->GetRemoteAssociatedInterfaces(), frame_token, devtools_frame_token,
-      portal_element);
+  blink::WebRemoteFrame* web_frame =
+      blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
+          blink::mojom::TreeScopeType::kDocument, proxy.get(),
+          proxy->blink_interface_registry_.get(),
+          proxy->GetRemoteAssociatedInterfaces(), frame_token,
+          devtools_frame_token, frame_owner);
   proxy->Init(web_frame, parent->render_view());
   return proxy.release();
 }

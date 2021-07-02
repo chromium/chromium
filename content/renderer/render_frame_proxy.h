@@ -97,15 +97,15 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       const base::UnguessableToken& devtools_frame_token,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);
 
-  // Creates a RenderFrameProxy to be used with a portal owned by |parent|.
-  // |routing_id| is the routing id of this new RenderFrameProxy.
-  static RenderFrameProxy* CreateProxyForPortal(
+  // Creates a RenderFrameProxy to be used with a portal or fenced frame owned
+  // by |parent|. |routing_id| is the routing id of this new RenderFrameProxy.
+  static RenderFrameProxy* CreateProxyForPortalOrFencedFrame(
       AgentSchedulingGroup& agent_scheduling_group,
       RenderFrameImpl* parent,
       int proxy_routing_id,
       const blink::RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      const blink::WebElement& portal_element);
+      const blink::WebElement& frame_owner_element);
 
   // Returns the RenderFrameProxy for the given routing ID.
   static RenderFrameProxy* FromRoutingID(int routing_id);

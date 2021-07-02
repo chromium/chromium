@@ -172,6 +172,11 @@ struct DowncastTraits<HTMLPortalElement> {
       return html_element->IsHTMLPortalElement();
     return false;
   }
+  static bool AllowFrom(const Element& element) {
+    if (const HTMLElement* html_element = DynamicTo<HTMLElement>(element))
+      return html_element->IsHTMLPortalElement();
+    return false;
+  }
 };
 
 }  // namespace blink

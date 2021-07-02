@@ -108,6 +108,11 @@ struct DowncastTraits<HTMLFencedFrameElement> {
       return html_element->IsHTMLFencedFrameElement();
     return false;
   }
+  static bool AllowFrom(const Element& element) {
+    if (const HTMLElement* html_element = DynamicTo<HTMLElement>(element))
+      return html_element->IsHTMLFencedFrameElement();
+    return false;
+  }
 };
 
 }  // namespace blink

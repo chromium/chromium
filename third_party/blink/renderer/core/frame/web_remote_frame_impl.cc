@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -54,6 +55,7 @@ WebRemoteFrame* WebRemoteFrame::Create(
       frame_token);
 }
 
+// static
 WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
     WebView* web_view,
     WebRemoteFrameClient* client,
@@ -67,17 +69,18 @@ WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
       frame_token, devtools_frame_token, opener);
 }
 
-WebRemoteFrame* WebRemoteFrame::CreateForPortal(
+// static
+WebRemoteFrame* WebRemoteFrame::CreateForPortalOrFencedFrame(
     mojom::blink::TreeScopeType scope,
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
-    const WebElement& portal_element) {
-  return WebRemoteFrameImpl::CreateForPortal(
+    const WebElement& frame_owner) {
+  return WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
       scope, client, interface_registry, associated_interface_provider,
-      frame_token, devtools_frame_token, portal_element);
+      frame_token, devtools_frame_token, frame_owner);
 }
 
 // static
@@ -111,28 +114,34 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
   return frame;
 }
 
-WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortal(
+WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
     mojom::blink::TreeScopeType scope,
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
-    const WebElement& portal_element) {
+    const WebElement& frame_owner) {
   auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
       frame_token);
 
-  Element* element = portal_element;
-  DCHECK(element->HasTagName(html_names::kPortalTag));
-  DCHECK(
-      RuntimeEnabledFeatures::PortalsEnabled(element->GetExecutionContext()));
-  HTMLPortalElement* portal = static_cast<HTMLPortalElement*>(element);
-  LocalFrame* host_frame = portal->GetDocument().GetFrame();
-  frame->InitializeCoreFrame(*host_frame->GetPage(), portal, nullptr, nullptr,
-                             FrameInsertType::kInsertInConstructor, g_null_atom,
-                             &host_frame->window_agent_factory(),
-                             devtools_frame_token);
+  // We first convert this to a raw blink::Element*, and manually convert this
+  // to an HTMLElement*. That is the only way the IsA<> and To<> casts below
+  // will work.
+  Element* element = frame_owner;
+  DCHECK(IsA<HTMLPortalElement>(element) ||
+         IsA<HTMLFencedFrameElement>(element));
+  ExecutionContext* execution_context = element->GetExecutionContext();
+  DCHECK(RuntimeEnabledFeatures::PortalsEnabled(execution_context) ||
+         RuntimeEnabledFeatures::FencedFramesEnabled(execution_context));
+  HTMLFrameOwnerElement* frame_owner_element =
+      To<HTMLFrameOwnerElement>(element);
+  LocalFrame* host_frame = frame_owner_element->GetDocument().GetFrame();
+  frame->InitializeCoreFrame(
+      *host_frame->GetPage(), frame_owner_element, nullptr, nullptr,
+      FrameInsertType::kInsertInConstructor, g_null_atom,
+      &host_frame->window_agent_factory(), devtools_frame_token);
 
   return frame;
 }
@@ -241,9 +250,11 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
           To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidget();
     }
   } else if (owner && owner->IsLocal()) {
-    // Never gets to this point without |owner| being a portal element.
-    auto* owner_element = To<HTMLFrameOwnerElement>(owner);
-    DCHECK(owner_element->IsHTMLPortalElement());
+    // Never gets to this point unless |owner| is a <portal> or <fencedframe>
+    // element.
+    HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(owner);
+    DCHECK(owner_element->IsHTMLPortalElement() ||
+           owner_element->IsHTMLFencedFrameElement());
     LocalFrame& local_frame =
         owner_element->GetDocument().GetFrame()->LocalFrameRoot();
     ancestor_widget = WebLocalFrameImpl::FromFrame(local_frame)->FrameWidget();
