@@ -2692,6 +2692,9 @@ extern const char kHelpAppSearchServiceIntegrationDescription[];
 extern const char kHideArcMediaNotificationsName[];
 extern const char kHideArcMediaNotificationsDescription[];
 
+extern const char kHoldingSpaceInProgressDownloadsIntegrationName[];
+extern const char kHoldingSpaceInProgressDownloadsIntegrationDescription[];
+
 extern const char kImeAssistAutocorrectName[];
 extern const char kImeAssistAutocorrectDescription[];
 

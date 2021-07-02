@@ -48938,6 +48938,8 @@ from previous Chrome versions.
   <int value="359896413" label="SplitPartiallyOccludedQuads:disabled"/>
   <int value="360391863" label="NTPOfflineBadge:enabled"/>
   <int value="360599302" label="enable-gpu-rasterization"/>
+  <int value="362623880"
+      label="HoldingSpaceInProgressDownloadsIntegration:disabled"/>
   <int value="362644448" label="memlog-in-process"/>
   <int value="362853088" label="AmbientColor:disabled"/>
   <int value="363997248" label="UseXpsForPrinting:enabled"/>
@@ -49150,6 +49152,8 @@ from previous Chrome versions.
   <int value="529235584" label="PhoneHub:enabled"/>
   <int value="530828403" label="AllowStartingServiceManagerOnly:disabled"/>
   <int value="533064367" label="WebRtcHideLocalIpsWithMdns:disabled"/>
+  <int value="533115840"
+      label="HoldingSpaceInProgressDownloadsIntegration:enabled"/>
   <int value="535131384" label="OmniboxTailSuggestions:enabled"/>
   <int value="535194142" label="TemporaryHoldingSpacePreviews:enabled"/>
   <int value="535976218" label="enable-plugin-power-saver"/>

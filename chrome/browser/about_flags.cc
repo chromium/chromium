@@ -7391,6 +7391,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kWin10TabSearchCaptionButton)},
 #endif  // defined(OS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-holding-space-in-progress-downloads-integration",
+     flag_descriptions::kHoldingSpaceInProgressDownloadsIntegrationName,
+     flag_descriptions::kHoldingSpaceInProgressDownloadsIntegrationDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kHoldingSpaceInProgressDownloadsIntegration)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

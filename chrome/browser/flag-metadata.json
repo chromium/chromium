@@ -1976,6 +1976,11 @@
     "expiry_milestone": 80
   },
   {
+    "name": "enable-holding-space-in-progress-downloads-integration",
+    "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "enable-hostname-setting",
     "owners": [ "jhawkins" ],
     "expiry_milestone": 92

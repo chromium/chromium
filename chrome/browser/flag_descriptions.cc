@@ -4682,6 +4682,12 @@ const char kHideArcMediaNotificationsDescription[] =
     "Hides media notifications for ARC apps. Requires "
     "#enable-media-session-notifications to be enabled.";
 
+const char kHoldingSpaceInProgressDownloadsIntegrationName[] =
+    "Enable showing in-progress downloads in Tote.";
+const char kHoldingSpaceInProgressDownloadsIntegrationDescription[] =
+    "Show in-progress download functionality in Tote to increase productivity "
+    "by giving users one place to go to monitor and access their downloads.";
+
 const char kImeAssistAutocorrectName[] = "Enable assistive autocorrect";
 const char kImeAssistAutocorrectDescription[] =
     "Enable assistive auto-correct features for native IME";
