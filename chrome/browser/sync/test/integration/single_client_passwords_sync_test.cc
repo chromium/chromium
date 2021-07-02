@@ -14,6 +14,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -27,7 +28,6 @@ namespace {
 using password_manager::features_util::OptInToAccountStorage;
 using passwords_helper::CreateTestPasswordForm;
 using passwords_helper::GetPasswordCount;
-using passwords_helper::GetPasswordStore;
 using passwords_helper::GetProfilePasswordStoreInterface;
 using passwords_helper::GetVerifierPasswordCount;
 using passwords_helper::GetVerifierPasswordStore;
@@ -277,12 +277,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Make sure the password showed up in the account store and not in the
   // profile store.
-  password_manager::PasswordStore* profile_store =
-      passwords_helper::GetPasswordStore(0);
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
 
-  password_manager::PasswordStore* account_store =
-      passwords_helper::GetAccountPasswordStore(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 }
 
@@ -313,12 +313,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Make sure the password showed up in the account store and not in the
   // profile store.
-  password_manager::PasswordStore* profile_store =
-      passwords_helper::GetPasswordStore(0);
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 0u);
 
-  password_manager::PasswordStore* account_store =
-      passwords_helper::GetAccountPasswordStore(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 }
 
@@ -346,12 +346,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Make sure the password showed up in the account store and not in the
   // profile store.
-  password_manager::PasswordStore* profile_store =
-      passwords_helper::GetPasswordStore(0);
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 0u);
 
-  password_manager::PasswordStore* account_store =
-      passwords_helper::GetAccountPasswordStore(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -368,8 +368,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // Make sure the password showed up in the profile store.
-  password_manager::PasswordStore* profile_store =
-      passwords_helper::GetPasswordStore(0);
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
   ASSERT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
 
   // Sign out again.
@@ -403,8 +403,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 
   // Make sure the password showed up in the account store.
-  password_manager::PasswordStore* account_store =
-      passwords_helper::GetAccountPasswordStore(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 
   // Sign out again.
@@ -442,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 
   // Make sure the password showed up in the account store.
-  password_manager::PasswordStore* account_store =
-      passwords_helper::GetAccountPasswordStore(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 
   // Turn on Sync-the-feature.
@@ -455,8 +455,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Make sure the password is now in the profile store, but *not* in the
   // account store anymore.
-  password_manager::PasswordStore* profile_store =
-      passwords_helper::GetPasswordStore(0);
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 
@@ -495,8 +495,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 
   // Make sure the password showed up in the account store.
-  password_manager::PasswordStore* account_store =
-      passwords_helper::GetAccountPasswordStore(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 
   // Make the account primary and turn on Sync-the-feature.
@@ -509,8 +509,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
   // Make sure the password is now in the profile store, but *not* in the
   // account store anymore.
-  password_manager::PasswordStore* profile_store =
-      passwords_helper::GetPasswordStore(0);
+  password_manager::PasswordStoreInterface* profile_store =
+      passwords_helper::GetProfilePasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 
