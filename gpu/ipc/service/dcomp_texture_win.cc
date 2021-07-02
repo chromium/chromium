@@ -21,6 +21,7 @@
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/dcomp_surface_registry.h"
 #include "ui/gl/scoped_make_current.h"
 
 namespace gpu {
@@ -131,9 +132,8 @@ void DCOMPTexture::SetTextureSize(const gfx::Size& size) {
 
 void DCOMPTexture::SetSurfaceHandle(const base::UnguessableToken& token) {
   bool succeeded = false;
-
-  // TODO(crbug.com/999747): TakeDCOMPSurfaceHandle from `DCOMPSurfaceRegistry`.
-  base::win::ScopedHandle surface_handle;
+  base::win::ScopedHandle surface_handle =
+      gl::DCOMPSurfaceRegistry::GetInstance()->TakeDCOMPSurfaceHandle(token);
   if (surface_handle.IsValid()) {
     surface_handle_.Set(surface_handle.Take());
     succeeded = true;

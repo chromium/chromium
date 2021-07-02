@@ -1,0 +1,50 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef UI_GL_DCOMP_SURFACE_REGISTRY_H_
+#define UI_GL_DCOMP_SURFACE_REGISTRY_H_
+
+#include "base/containers/flat_map.h"
+#include "base/unguessable_token.h"
+#include "base/win/scoped_handle.h"
+#include "ui/gl/gl_export.h"
+
+namespace base {
+template <typename T>
+class NoDestructor;
+}  // namespace base
+
+namespace gl {
+
+// A registry in the GPU process for mapping an `UnguessableToken` to a
+// Windows Direct Composition surface handle. This class is meant to be used as
+// a singleton.
+class GL_EXPORT DCOMPSurfaceRegistry {
+ public:
+  static DCOMPSurfaceRegistry* GetInstance();
+
+  // `GpuServiceImpl` calls this when it receives the corresponding call from
+  // Browser process.
+  base::UnguessableToken RegisterDCOMPSurfaceHandle(
+      base::win::ScopedHandle surface);
+
+  // `DCOMPTexture` calls this to take the ownership of the DCOMP surface handle
+  // when it receives a token from the `MediaFoundationRendererClient` in the
+  // render process.
+  base::win::ScopedHandle TakeDCOMPSurfaceHandle(
+      const base::UnguessableToken& token);
+
+ private:
+  friend base::NoDestructor<DCOMPSurfaceRegistry>;
+
+  DCOMPSurfaceRegistry();
+  ~DCOMPSurfaceRegistry();
+
+  base::flat_map<base::UnguessableToken, base::win::ScopedHandle>
+      surface_handle_map_;
+};
+
+}  // namespace gl
+
+#endif  // UI_GL_DCOMP_SURFACE_REGISTRY_H_
