@@ -199,6 +199,7 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
                                              native_origin_from_anchor);
     case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
     case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
       // Unsupported for now
       return absl::nullopt;
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:

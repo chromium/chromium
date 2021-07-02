@@ -1188,6 +1188,10 @@ absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
     case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
       // Unsupported by ARCore:
       return absl::nullopt;
+    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+      // TODO(https://crbug.com/1143575): Add hit test support for tracked
+      // images.
+      return absl::nullopt;
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
       // Validate that we know which anchor's space the hit test is interested
       // in tracking.
@@ -1427,6 +1431,10 @@ bool ArCoreImpl::NativeOriginExists(
                              : false;
     case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
       return false;
+    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+      // TODO(https://crbug.com/1143575): Needed for anchor creation relaitve to
+      // tracked images.
+      return false;
   }
 }
 
@@ -1471,6 +1479,11 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
                                    native_origin_information.get_anchor_id()))
                              : absl::nullopt;
     case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+      return absl::nullopt;
+
+    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+      // TODO(https://crbug.com/1143575): Needed for hit test and anchors
+      // support for tracked images.
       return absl::nullopt;
   }
 }

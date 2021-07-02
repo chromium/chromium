@@ -378,6 +378,8 @@ OpenXRSceneUnderstandingManager::GetMojoFromNativeOrigin(
       return absl::nullopt;
     case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
       return absl::nullopt;
+    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+      return absl::nullopt;
   }
 }
 

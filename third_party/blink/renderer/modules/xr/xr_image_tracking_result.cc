@@ -48,12 +48,7 @@ XRSpace* XRImageTrackingResult::imageSpace() const {
 
 device::mojom::blink::XRNativeOriginInformationPtr
 XRImageTrackingResult::NativeOrigin() const {
-  // TODO(https://crbug.com/1143575): We'll want these to correspond to an
-  // actual, independent space eventually, but at the moment it's sufficient for
-  // the ARCore implementation to have it be equivalent to the local reference
-  // space.
-  return device::mojom::blink::XRNativeOriginInformation::NewReferenceSpaceType(
-      device::mojom::XRReferenceSpaceType::kLocal);
+  return device::mojom::blink::XRNativeOriginInformation::NewImageIndex(index_);
 }
 
 void XRImageTrackingResult::Trace(Visitor* visitor) const {

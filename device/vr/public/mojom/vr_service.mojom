@@ -514,14 +514,15 @@ enum XRReferenceSpaceType {
 // XRReferenceSpaceType, XRBoundedReferenceSpace) or returns an XRSpace (for
 // example XRAnchor, XRPlane, XRInputSource). Native origin can be identified,
 // depending on its type, by the id of the entity (this is the case for planes
-// and anchors), by reference space type, handedness & joint, or by input source
-// id & input source space type.
+// and anchors), index (for tracked images), by reference space type, handedness
+// & joint, or by input source id & input source space type.
 union XRNativeOriginInformation {
   XRInputSourceSpaceInfo input_source_space_info;
   uint64 plane_id;
   uint64 anchor_id;
   XRReferenceSpaceType reference_space_type;
   XRHandJointSpaceInfo hand_joint_space_info;
+  uint32 image_index;
 };
 
 // Input sources have 2 kinds of native origins, each of them backs a different
