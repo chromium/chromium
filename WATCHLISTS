@@ -922,7 +922,7 @@
       'filepath': 'devtools',
     },
     'diagnostics_ui': {
-      'filepath': 'chromeos/components/diagnostics_ui/',
+      'filepath': 'ash/webui/diagnostics_ui/',
     },
     'discardable_memory': {
         'filepath': 'components/discardable_memory/',

@@ -1016,12 +1016,12 @@
   },
   {
     "name": "diagnostics-app",
-    "owners": [ "//chromeos/components/diagnostics_ui/OWNERS" ],
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 92
   },
   {
     "name": "diagnostics-app-navigation",
-    "owners": [ "//chromeos/components/diagnostics_ui/OWNERS" ],
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 99
   },
   {
@@ -2013,7 +2013,7 @@
   },
   {
     "name": "enable-input-in-diagnostics-app",
-    "owners": [ "//chromeos/components/diagnostics_ui/OWNERS" ],
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 98
   },
   {
@@ -2170,7 +2170,7 @@
   },
   {
     "name": "enable-networking-in-diagnostics-app",
-    "owners": [ "//chromeos/components/diagnostics_ui/OWNERS" ],
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 98
   },
   {

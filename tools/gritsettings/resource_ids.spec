@@ -389,7 +389,7 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2516],
   },
-  "chromeos/components/diagnostics_ui/resources/diagnostics_app_resources.grd": {
+  "ash/webui/diagnostics_ui/resources/diagnostics_app_resources.grd": {
     "includes": [2517],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/resources/file_manager_swa_resources.grd": {

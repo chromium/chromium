@@ -80,3 +80,21 @@ grit("shimless_rma_resources") {
 
   output_dir = "$root_gen_dir/ash"
 }
+
+grit("diagnostics_app_resources") {
+  source = "//ash/webui/diagnostics_ui/resources/diagnostics_app_resources.grd"
+
+  deps = [
+    "//ash/webui/diagnostics_ui/mojom:mojom_js",
+    "//ash/webui/diagnostics_ui/resources:web_components",
+  ]
+
+  outputs = [
+    "ash_diagnostics_app_resources.pak",
+    "grit/ash_diagnostics_app_resources.h",
+    "grit/ash_diagnostics_app_resources_map.cc",
+    "grit/ash_diagnostics_app_resources_map.h",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}

@@ -171,7 +171,7 @@ source_set("event_device_info") {
   ]
 
   visibility += [
-    "//chromeos/components/diagnostics_ui/backend:*",
+    "//ash/webui/diagnostics_ui/backend:*",
     "//ui/chromeos/*",
   ]
 }
@@ -190,7 +190,7 @@ source_set("event_device_info_test_utils") {
     "//base",
   ]
 
-  visibility += [ "//chromeos/components/diagnostics_ui/backend:unit_tests" ]
+  visibility += [ "//ash/webui/diagnostics_ui/backend:unit_tests" ]
 }
 
 source_set("unittests") {

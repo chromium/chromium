@@ -264,25 +264,6 @@ grit("print_management_resources") {
   output_dir = "$root_gen_dir/chromeos"
 }
 
-grit("diagnostics_app_resources") {
-  source =
-      "../components/diagnostics_ui/resources/diagnostics_app_resources.grd"
-
-  deps = [
-    "../components/diagnostics_ui/mojom:mojom_js",
-    "../components/diagnostics_ui/resources:web_components",
-  ]
-
-  outputs = [
-    "chromeos_diagnostics_app_resources.pak",
-    "grit/chromeos_diagnostics_app_resources.h",
-    "grit/chromeos_diagnostics_app_resources_map.cc",
-    "grit/chromeos_diagnostics_app_resources_map.h",
-  ]
-
-  output_dir = "$root_gen_dir/chromeos"
-}
-
 # Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
 grit("eche_bundle_resources") {
   # Obtained via an internal CIPD package in src/DEPS.

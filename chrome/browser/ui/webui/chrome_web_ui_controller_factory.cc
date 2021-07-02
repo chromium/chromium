@@ -152,6 +152,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/webui/diagnostics_ui/diagnostics_ui.h"
+#include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
@@ -229,8 +231,6 @@
 #include "chromeos/components/camera_app_ui/url_constants.h"
 #include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
-#include "chromeos/components/diagnostics_ui/diagnostics_ui.h"
-#include "chromeos/components/diagnostics_ui/url_constants.h"
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 #include "chromeos/components/eche_app_ui/eche_app_ui.h"
 #include "chromeos/components/eche_app_ui/url_constants.h"
