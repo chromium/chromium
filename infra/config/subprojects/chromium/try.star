@@ -1853,6 +1853,37 @@ try_.chromium_win_builder(
     tryjob = try_.job(),
 )
 
+try_.chromium_linux_builder(
+    name = "win10-rel-orchestrator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builderless = False,
+    cores = 2,
+    executable = "recipe:chromium/orchestrator",
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    properties = {
+        "compilator": "win10-compilator",
+    },
+    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+try_.chromium_win_builder(
+    name = "win10-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builderless = False,
+    cores = 16,
+    os = os.WINDOWS_10,
+    ssd = True,
+    goma_jobs = goma.jobs.J300,
+    executable = "recipe:chromium/compilator",
+    properties = {
+        "orchestrator": {
+            "builder_name": "win10-orchestrator",
+            "builder_group": "tryserver.chromium.win",
+        },
+    },
+)
+
 try_.chromium_win_builder(
     name = "win10_chromium_x64_rel_ng_exp",
     builderless = False,
