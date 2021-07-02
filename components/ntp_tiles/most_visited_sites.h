@@ -31,8 +31,6 @@
 #include "components/ntp_tiles/popular_sites.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_source.h"
-#include "components/suggestions/proto/suggestions.pb.h"
-#include "components/suggestions/suggestions_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -122,7 +120,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   //  optional and if null, the associated features will be disabled.
   MostVisitedSites(PrefService* prefs,
                    scoped_refptr<history::TopSites> top_sites,
-                   suggestions::SuggestionsService* suggestions,
                    std::unique_ptr<PopularSites> popular_sites,
                    std::unique_ptr<CustomLinksManager> custom_links,
                    std::unique_ptr<IconCacher> icon_cacher,
@@ -137,9 +134,6 @@ class MostVisitedSites : public history::TopSitesObserver,
 
   // Returns the corresponding object passed at construction.
   history::TopSites* top_sites() { return top_sites_.get(); }
-  suggestions::SuggestionsService* suggestions() {
-    return suggestions_service_;
-  }
   PopularSites* popular_sites() { return popular_sites_.get(); }
   MostVisitedSitesSupervisor* supervisor() { return supervisor_.get(); }
 
@@ -266,8 +260,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   // including the "Add shortcut" button.
   size_t GetMaxNumSites() const;
 
-  // Initialize the query to Top Sites. Called if the SuggestionsService
-  // returned no data.
+  // Initialize the query to Top Sites.
   void InitiateTopSitesQuery();
 
   // If there's a allowlist entry point for the URL, return the large icon path.
@@ -277,17 +270,9 @@ class MostVisitedSites : public history::TopSitesObserver,
   void OnMostVisitedURLsAvailable(
       const history::MostVisitedURLList& visited_list);
 
-  // Callback for when an update is reported by the SuggestionsService.
-  void OnSuggestionsProfileChanged(
-      const suggestions::SuggestionsProfile& suggestions_profile);
-
   // Builds the current tileset based on available caches and notifies the
   // observer.
   void BuildCurrentTiles();
-
-  // Same as above the SuggestionsProfile is provided, no need to read cache.
-  void BuildCurrentTilesGivenSuggestionsProfile(
-      const suggestions::SuggestionsProfile& suggestions_profile);
 
   // Creates allowlist entry point suggestions whose hosts weren't used yet.
   NTPTilesVector CreateAllowlistEntryPointTiles(
@@ -360,7 +345,6 @@ class MostVisitedSites : public history::TopSitesObserver,
 
   PrefService* prefs_;
   scoped_refptr<history::TopSites> top_sites_;
-  suggestions::SuggestionsService* suggestions_service_;
   std::unique_ptr<PopularSites> const popular_sites_;
   std::unique_ptr<CustomLinksManager> const custom_links_;
   std::unique_ptr<IconCacher> const icon_cacher_;
@@ -381,14 +365,12 @@ class MostVisitedSites : public history::TopSitesObserver,
   bool is_custom_links_enabled_ = true;
   bool is_shortcuts_visible_ = true;
 
-  base::CallbackListSubscription suggestions_subscription_;
-
   base::ScopedObservation<history::TopSites, history::TopSitesObserver>
       top_sites_observation_{this};
 
   base::CallbackListSubscription custom_links_subscription_;
 
-  // The main source of personal tiles - either TOP_SITES or SUGGESTIONS_SEVICE.
+  // The main source of personal tiles - either TOP_SITES or CUSTOM_LINKS.
   TileSource mv_source_;
 
   // Current set of tiles. Optional so that the observer can be notified

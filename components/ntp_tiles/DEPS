@@ -11,7 +11,6 @@ include_rules = [
   "+components/search_engines",
   "+components/search",
   "+components/strings/grit/components_strings.h",
-  "+components/suggestions",
   "+components/sync_preferences",
   "+components/url_formatter",
   "+components/variations",

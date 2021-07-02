@@ -18,7 +18,6 @@
 #include "chrome/browser/ntp_tiles/chrome_custom_links_manager_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_popular_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/suggestions/suggestions_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
@@ -37,8 +36,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #endif
-
-using suggestions::SuggestionsServiceFactory;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 namespace {
@@ -119,7 +116,6 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
       profile->GetPrefs(), TopSitesFactory::GetForProfile(profile),
-      SuggestionsServiceFactory::GetForProfile(profile),
 #if defined(OS_ANDROID)
       ChromePopularSitesFactory::NewForProfile(profile),
 #else

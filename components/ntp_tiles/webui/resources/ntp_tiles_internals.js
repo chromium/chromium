@@ -23,11 +23,6 @@ const initialize = function() {
                 }]);
   });
 
-  $('suggestions-fetch').addEventListener('click', function(event) {
-    event.preventDefault();
-    chrome.send('fetchSuggestions');
-  });
-
   $('popular-view-json').addEventListener('click', function(event) {
     event.preventDefault();
     if ($('popular-json-value').textContent === '') {

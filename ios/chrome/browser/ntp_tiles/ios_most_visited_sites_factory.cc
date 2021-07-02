@@ -16,7 +16,6 @@
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/history/top_sites_factory.h"
 #include "ios/chrome/browser/ntp_tiles/ios_popular_sites_factory.h"
-#include "ios/chrome/browser/suggestions/suggestions_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 std::unique_ptr<ntp_tiles::MostVisitedSites>
@@ -25,7 +24,6 @@ IOSMostVisitedSitesFactory::NewForBrowserState(
   return std::make_unique<ntp_tiles::MostVisitedSites>(
       browser_state->GetPrefs(),
       ios::TopSitesFactory::GetForBrowserState(browser_state),
-      suggestions::SuggestionsServiceFactory::GetForBrowserState(browser_state),
       IOSPopularSitesFactory::NewForBrowserState(browser_state),
       /*custom_links=*/nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(

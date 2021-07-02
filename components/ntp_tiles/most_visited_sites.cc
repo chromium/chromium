@@ -29,9 +29,6 @@
 #include "components/search/ntp_features.h"
 
 using history::TopSites;
-using suggestions::ChromeSuggestion;
-using suggestions::SuggestionsProfile;
-using suggestions::SuggestionsService;
 
 namespace ntp_tiles {
 
@@ -120,14 +117,12 @@ std::u16string GenerateShortTitle(const std::u16string& title) {
 MostVisitedSites::MostVisitedSites(
     PrefService* prefs,
     scoped_refptr<history::TopSites> top_sites,
-    SuggestionsService* suggestions,
     std::unique_ptr<PopularSites> popular_sites,
     std::unique_ptr<CustomLinksManager> custom_links,
     std::unique_ptr<IconCacher> icon_cacher,
     std::unique_ptr<MostVisitedSitesSupervisor> supervisor)
     : prefs_(prefs),
       top_sites_(top_sites),
-      suggestions_service_(suggestions),
       popular_sites_(std::move(popular_sites)),
       custom_links_(std::move(custom_links)),
       icon_cacher_(std::move(icon_cacher)),
@@ -139,7 +134,6 @@ MostVisitedSites::MostVisitedSites(
 
   // top_sites_ can be null in tests.
   // TODO(sfiera): have iOS use a dummy TopSites in its tests.
-  DCHECK(suggestions_service_);
   if (supervisor_)
     supervisor_->SetObserver(this);
 }
@@ -168,8 +162,6 @@ bool MostVisitedSites::DoesSourceExist(TileSource source) const {
   switch (source) {
     case TileSource::TOP_SITES:
       return top_sites_ != nullptr;
-    case TileSource::SUGGESTIONS_SERVICE:
-      return suggestions_service_ != nullptr;
     case TileSource::POPULAR_BAKED_IN:
     case TileSource::POPULAR:
       return popular_sites_ != nullptr;
@@ -228,14 +220,10 @@ void MostVisitedSites::AddMostVisitedURLsObserver(Observer* observer,
           custom_links_->RegisterCallbackForOnChanged(base::BindRepeating(
               &MostVisitedSites::OnCustomLinksChanged, base::Unretained(this)));
     }
-
-    suggestions_subscription_ = suggestions_service_->AddCallback(
-        base::BindRepeating(&MostVisitedSites::OnSuggestionsProfileChanged,
-                            base::Unretained(this)));
   }
 
-  // Immediately build the current set of tiles, getting suggestions from the
-  // SuggestionsService's cache or, if that is empty, sites from TopSites.
+  // Immediately build the current set of tiles, getting suggestions from
+  // TopSites.
   BuildCurrentTiles();
   // Also start a request for fresh suggestions.
   Refresh();
@@ -249,12 +237,8 @@ void MostVisitedSites::Refresh() {
   if (top_sites_) {
     // TopSites updates itself after a delay. To ensure up-to-date results,
     // force an update now.
-    // TODO(mastiz): Is seems unnecessary to refresh TopSites if we will end up
-    // using server-side suggestions.
     top_sites_->SyncWithHistory();
   }
-
-  suggestions_service_->FetchSuggestionsData();
 }
 
 void MostVisitedSites::RefreshTiles() {
@@ -424,23 +408,11 @@ void MostVisitedSites::AddOrRemoveBlockedUrl(const GURL& url, bool add_url) {
     else
       top_sites_->RemoveBlockedUrl(url);
   }
-
-  // Only blocklist in the server-side suggestions service if it's active.
-  if (mv_source_ == TileSource::SUGGESTIONS_SERVICE) {
-    if (add_url)
-      suggestions_service_->BlocklistURL(url);
-    else
-      suggestions_service_->UndoBlocklistURL(url);
-  }
 }
 
 void MostVisitedSites::ClearBlockedUrls() {
   if (top_sites_)
     top_sites_->ClearBlockedUrls();
-
-  // Only update the server-side blocklist if it's active.
-  if (mv_source_ == TileSource::SUGGESTIONS_SERVICE)
-    suggestions_service_->ClearBlocklist();
 }
 
 void MostVisitedSites::OnBlockedSitesChanged() {
@@ -484,10 +456,9 @@ base::FilePath MostVisitedSites::GetAllowlistLargeIconPath(const GURL& url) {
 
 void MostVisitedSites::OnMostVisitedURLsAvailable(
     const history::MostVisitedURLList& visited_list) {
-  // Ignore the event if tiles are provided by the Suggestions Service or custom
-  // links, which take precedence.
-  if (IsCustomLinksInitialized() ||
-      mv_source_ == TileSource::SUGGESTIONS_SERVICE) {
+  // Ignore the event if tiles are provided by custom links, which take
+  // precedence.
+  if (IsCustomLinksInitialized()) {
     return;
   }
 
@@ -518,76 +489,14 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
   InitiateNotificationForNewTiles(std::move(tiles));
 }
 
-void MostVisitedSites::OnSuggestionsProfileChanged(
-    const SuggestionsProfile& suggestions_profile) {
-  // Ignore the event if tiles are provided by custom links, which take
-  // precedence.
-  if (IsCustomLinksInitialized() ||
-      (suggestions_profile.suggestions_size() == 0 &&
-       mv_source_ != TileSource::SUGGESTIONS_SERVICE)) {
-    return;
-  }
-
-  BuildCurrentTilesGivenSuggestionsProfile(suggestions_profile);
-}
-
 void MostVisitedSites::BuildCurrentTiles() {
   if (IsCustomLinksInitialized()) {
     BuildCustomLinks(custom_links_->GetLinks());
     return;
   }
 
-  BuildCurrentTilesGivenSuggestionsProfile(
-      suggestions_service_->GetSuggestionsDataFromCache().value_or(
-          SuggestionsProfile()));
-}
-
-void MostVisitedSites::BuildCurrentTilesGivenSuggestionsProfile(
-    const suggestions::SuggestionsProfile& suggestions_profile) {
-  size_t num_tiles = suggestions_profile.suggestions_size();
-  // With no server suggestions, fall back to local TopSites.
-  if (num_tiles == 0 ||
-      !base::FeatureList::IsEnabled(kDisplaySuggestionsServiceTiles)) {
-    mv_source_ = TileSource::TOP_SITES;
-    InitiateTopSitesQuery();
-    return;
-  }
-  if (GetMaxNumSites() < num_tiles)
-    num_tiles = GetMaxNumSites();
-
-  const base::Time profile_timestamp =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMicroseconds(suggestions_profile.timestamp());
-
-  NTPTilesVector tiles;
-  for (size_t i = 0; i < num_tiles; ++i) {
-    const ChromeSuggestion& suggestion_pb = suggestions_profile.suggestions(i);
-    GURL url(suggestion_pb.url());
-    if (supervisor_ && supervisor_->IsBlocked(url))
-      continue;
-
-    NTPTile tile;
-    tile.title =
-        custom_links_
-            ? GenerateShortTitle(base::UTF8ToUTF16(suggestion_pb.title()))
-            : base::UTF8ToUTF16(suggestion_pb.title());
-    tile.url = url;
-    tile.source = TileSource::SUGGESTIONS_SERVICE;
-    // The title is an aggregation of multiple history entries of one site.
-    tile.title_source = TileTitleSource::INFERRED;
-    tile.allowlist_icon_path = GetAllowlistLargeIconPath(url);
-    tile.favicon_url = GURL(suggestion_pb.favicon_url());
-    tile.data_generation_time = profile_timestamp;
-
-    icon_cacher_->StartFetchMostLikely(
-        url, base::BindRepeating(&MostVisitedSites::OnIconMadeAvailable,
-                                 base::Unretained(this), url));
-
-    tiles.push_back(std::move(tile));
-  }
-
-  mv_source_ = TileSource::SUGGESTIONS_SERVICE;
-  InitiateNotificationForNewTiles(std::move(tiles));
+  mv_source_ = TileSource::TOP_SITES;
+  InitiateTopSitesQuery();
 }
 
 NTPTilesVector MostVisitedSites::CreateAllowlistEntryPointTiles(

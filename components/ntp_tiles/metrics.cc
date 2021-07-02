@@ -22,7 +22,6 @@ const int kLastTitleSource = static_cast<int>(TileTitleSource::LAST);
 
 // Identifiers for the various tile sources.
 const char kHistogramClientName[] = "client";
-const char kHistogramServerName[] = "server";
 const char kHistogramPopularName[] = "popular_fetched";
 const char kHistogramBakedInName[] = "popular_baked_in";
 const char kHistogramAllowlistName[] = "allowlist";
@@ -51,8 +50,6 @@ std::string GetSourceHistogramName(TileSource source) {
       return kHistogramPopularName;
     case TileSource::ALLOWLIST:
       return kHistogramAllowlistName;
-    case TileSource::SUGGESTIONS_SERVICE:
-      return kHistogramServerName;
     case TileSource::HOMEPAGE:
       return kHistogramHomepageName;
     case TileSource::CUSTOM_LINKS:

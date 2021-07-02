@@ -14,8 +14,6 @@ namespace ntp_tiles {
 enum class TileSource {
   // Tile comes from the personal top sites list, based on local history.
   TOP_SITES,
-  // Tile comes from the suggestions service, based on synced history.
-  SUGGESTIONS_SERVICE,
   // Tile is regionally popular.
   POPULAR,
   // Tile is a popular site baked into the binary.

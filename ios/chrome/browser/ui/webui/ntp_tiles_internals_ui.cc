@@ -68,7 +68,6 @@ bool IOSNTPTilesInternalsMessageHandlerBridge::DoesSourceExist(
     ntp_tiles::TileSource source) {
   switch (source) {
     case ntp_tiles::TileSource::TOP_SITES:
-    case ntp_tiles::TileSource::SUGGESTIONS_SERVICE:
     case ntp_tiles::TileSource::POPULAR:
     case ntp_tiles::TileSource::POPULAR_BAKED_IN:
     case ntp_tiles::TileSource::HOMEPAGE:

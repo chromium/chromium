@@ -79,12 +79,6 @@ void NTPTilesInternalsMessageHandler::RegisterMessages(
                           base::Unretained(this)));
 
   client_->RegisterMessageCallback(
-      "fetchSuggestions",
-      base::BindRepeating(
-          &NTPTilesInternalsMessageHandler::HandleFetchSuggestions,
-          base::Unretained(this)));
-
-  client_->RegisterMessageCallback(
       "viewPopularSitesJson",
       base::BindRepeating(
           &NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson,
@@ -96,7 +90,6 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
   if (!client_->SupportsNTPTiles()) {
     base::Value disabled(base::Value::Type::DICTIONARY);
     disabled.SetBoolKey("topSites", false);
-    disabled.SetBoolKey("suggestionsService", false);
     disabled.SetBoolKey("popular", false);
     disabled.SetBoolKey("customLinks", false);
     disabled.SetBoolKey("allowlist", false);
@@ -108,7 +101,6 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
   }
   DCHECK_EQ(0u, args->GetSize());
 
-  suggestions_status_.clear();
   popular_sites_json_.clear();
   most_visited_sites_ = client_->MakeMostVisitedSites();
   most_visited_sites_->AddMostVisitedURLsObserver(this, site_count_);
@@ -175,22 +167,6 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
   SendSourceInfo();
 }
 
-void NTPTilesInternalsMessageHandler::HandleFetchSuggestions(
-    const base::ListValue* args) {
-  DCHECK_EQ(0u, args->GetSize());
-  if (!most_visited_sites_->DoesSourceExist(
-          ntp_tiles::TileSource::SUGGESTIONS_SERVICE)) {
-    return;
-  }
-
-  if (most_visited_sites_->suggestions()->FetchSuggestionsData()) {
-    suggestions_status_ = "fetching...";
-  } else {
-    suggestions_status_ = "history sync is disabled, or not yet initialized";
-  }
-  SendSourceInfo();
-}
-
 void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
     const base::ListValue* args) {
   DCHECK_EQ(0u, args->GetSize());
@@ -213,12 +189,6 @@ void NTPTilesInternalsMessageHandler::SendSourceInfo() {
                                       TileSource::CUSTOM_LINKS));
   value.SetBoolKey("allowlist",
                    most_visited_sites_->DoesSourceExist(TileSource::ALLOWLIST));
-
-  if (most_visited_sites_->DoesSourceExist(TileSource::SUGGESTIONS_SERVICE)) {
-    value.SetStringKey("suggestionsService.status", suggestions_status_);
-  } else {
-    value.SetBoolKey("suggestionsService", false);
-  }
 
   if (most_visited_sites_->DoesSourceExist(TileSource::POPULAR)) {
     auto* popular_sites = most_visited_sites_->popular_sites();

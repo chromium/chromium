@@ -461,15 +461,11 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
     return;
   }
 
-  bool has_server_side_suggestions = false;
   int tiles_count = 0;
   for (const absl::optional<ntp_tiles::NTPTileImpression>& impression :
        logged_impressions_) {
     if (!impression.has_value()) {
       break;
-    }
-    if (impression->source == ntp_tiles::TileSource::SUGGESTIONS_SERVICE) {
-      has_server_side_suggestions = true;
     }
     ntp_tiles::metrics::RecordTileImpression(*impression);
     ++tiles_count;
@@ -480,13 +476,7 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
            << "number of tiles: " << tiles_count;
 
   UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime", load_time);
-
-  // Split between ML (aka SuggestionsService) and MV (aka TopSites).
-  if (has_server_side_suggestions) {
-    UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.MostLikely", load_time);
-  } else {
-    UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.MostVisited", load_time);
-  }
+  UMA_HISTOGRAM_LOAD_TIME("NewTabPage.LoadTime.MostVisited", load_time);
 
   // Note: This could be inaccurate if the default search engine was changed
   // since the page load started. That's unlikely enough to not warrant special
