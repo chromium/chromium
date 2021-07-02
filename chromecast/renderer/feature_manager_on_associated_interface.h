@@ -34,6 +34,7 @@ class FeatureManagerOnAssociatedInterface
       const FeatureManagerOnAssociatedInterface&) = delete;
   ~FeatureManagerOnAssociatedInterface() override;
 
+  bool configured() const { return configured_; }
   bool FeatureEnabled(const std::string& feature) const;
   const chromecast::shell::mojom::FeaturePtr& GetFeature(
       const std::string& feature) const;

@@ -19,7 +19,7 @@ void AddChromecastKeySystems(
     std::vector<std::unique_ptr<::media::KeySystemProperties>>*
         key_systems_properties,
     bool enable_persistent_license_support,
-    bool force_software_crypto);
+    bool enable_playready);
 
 }  // namespace media
 }  // namespace chromecast

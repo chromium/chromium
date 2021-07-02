@@ -13,6 +13,7 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
 #include "chromecast/renderer/cast_activity_url_filter_manager.h"
+#include "chromecast/renderer/feature_manager_on_associated_interface.h"
 #include "chromecast/renderer/identification_settings_manager_store.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "media/base/audio_codecs.h"
@@ -93,6 +94,11 @@ class CastContentRendererClient
   CastActivityUrlFilterManager* activity_url_filter_manager() {
     return activity_url_filter_manager_.get();
   }
+
+  // TODO(guohuideng): Move |feature_manager_on_associated_interface_| to
+  // private when we can.
+  FeatureManagerOnAssociatedInterface*
+      main_frame_feature_manager_on_associated_interface_{nullptr};
 
  private:
   // mojom::ApplicationMediaCapabilitiesObserver implementation:

@@ -13,6 +13,8 @@ namespace feature {
 // TODO(b/187524799): Remove this feature when the related features are
 // deprecated.
 extern const char kEnableTrackAppRendererFeatureUse[];
+// Apps use playready.
+extern const char kEnablePlayready[];
 
 }  // namespace feature
 }  // namespace chromecast

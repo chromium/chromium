@@ -17,7 +17,6 @@
 #include "chromecast/public/media/media_capabilities_shlib.h"
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
 #include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
-#include "chromecast/renderer/feature_manager_on_associated_interface.h"
 #include "chromecast/renderer/identification_settings_manager_renderer.h"
 #include "chromecast/renderer/js_channel_bindings.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
@@ -173,7 +172,16 @@ void CastContentRendererClient::RenderFrameCreated(
   DCHECK(render_frame);
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
-  new FeatureManagerOnAssociatedInterface(render_frame);
+  if (render_frame->IsMainFrame()) {
+    if (main_frame_feature_manager_on_associated_interface_) {
+      LOG(DFATAL) << "main_frame_feature_manager_on_associated_interface_ gets "
+                     "overwritten.";
+    }
+    main_frame_feature_manager_on_associated_interface_ =
+        new FeatureManagerOnAssociatedInterface(render_frame);
+  } else {
+    new FeatureManagerOnAssociatedInterface(render_frame);
+  }
   new media_control::MediaPlaybackOptions(render_frame);
 
   // Add script injection support to the RenderFrame, used by Cast platform
@@ -237,7 +245,7 @@ void CastContentRendererClient::AddSupportedKeySystems(
         key_systems_properties) {
   media::AddChromecastKeySystems(key_systems_properties,
                                  false /* enable_persistent_license_support */,
-                                 false /* force_software_crypto */);
+                                 false /* enable_playready */);
 }
 
 bool CastContentRendererClient::IsSupportedAudioType(

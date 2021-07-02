@@ -150,15 +150,18 @@ SupportedCodecs GetCastEmeSupportedCodecs() {
 void AddCmaKeySystems(
     std::vector<std::unique_ptr<::media::KeySystemProperties>>*
         key_systems_properties,
-    bool enable_persistent_license_support) {
+    bool enable_persistent_license_support,
+    bool enable_playready) {
   SupportedCodecs codecs = GetCastEmeSupportedCodecs();
 
   // |codecs| may not be used if Widevine and Playready aren't supported.
   ANALYZER_ALLOW_UNUSED(codecs);
 
 #if BUILDFLAG(ENABLE_PLAYREADY)
-  key_systems_properties->emplace_back(new PlayReadyKeySystemProperties(
-      codecs, codecs, enable_persistent_license_support));
+  if (enable_playready) {
+    key_systems_properties->emplace_back(new PlayReadyKeySystemProperties(
+        codecs, codecs, enable_persistent_license_support));
+  }
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -200,9 +203,12 @@ void AddCastPlayreadyKeySystemAndroid(
 
 void AddCastAndroidKeySystems(
     std::vector<std::unique_ptr<::media::KeySystemProperties>>*
-        key_systems_properties) {
+        key_systems_properties,
+    bool enable_playready) {
 #if BUILDFLAG(ENABLE_PLAYREADY)
-  AddCastPlayreadyKeySystemAndroid(key_systems_properties);
+  if (enable_playready) {
+    AddCastPlayreadyKeySystemAndroid(key_systems_properties);
+  }
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -218,11 +224,12 @@ void AddChromecastKeySystems(
     std::vector<std::unique_ptr<::media::KeySystemProperties>>*
         key_systems_properties,
     bool enable_persistent_license_support,
-    bool force_software_crypto) {
+    bool enable_playready) {
 #if BUILDFLAG(USE_CHROMECAST_CDMS) || BUILDFLAG(ENABLE_WIDEVINE)
-  AddCmaKeySystems(key_systems_properties, enable_persistent_license_support);
+  AddCmaKeySystems(key_systems_properties, enable_persistent_license_support,
+                   enable_playready);
 #elif defined(OS_ANDROID)
-  AddCastAndroidKeySystems(key_systems_properties);
+  AddCastAndroidKeySystems(key_systems_properties, enable_playready);
 #endif  // defined(OS_ANDROID)
 }
 
