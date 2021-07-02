@@ -34,18 +34,11 @@
       'win64-chrome': 'official_goma_x64',
     },
     'chrome.pgo': {
+      'android-arm32-pgo': 'official_goma_android_arm32_pgo',
       'linux-pgo': 'official_goma_linux_pgo',
-      'linux-pgo-beta': 'official_goma_linux_pgo',
-      'linux-pgo-stable': 'official_goma_linux_pgo',
       'mac-pgo': 'official_goma_mac_pgo',
-      'mac-pgo-beta': 'official_goma_mac_pgo',
-      'mac-pgo-stable': 'official_goma_mac_pgo',
       'win32-pgo': 'official_goma_x86_pgo',
-      'win32-pgo-beta': 'official_goma_x86_pgo',
-      'win32-pgo-stable': 'official_goma_x86_pgo',
       'win64-pgo': 'official_goma_x64_pgo',
-      'win64-pgo-beta': 'official_goma_x64_pgo',
-      'win64-pgo-stable': 'official_goma_x64_pgo',
     },
     # Take care when changing any of these builders to ensure that you do not
     # include a configuration with 'chrome_with_codecs' since these builders
@@ -909,6 +902,7 @@
     },
 
     'tryserver.chrome.pgo': {
+      'android-arm32-pgo': 'official_goma_android_arm32_pgo',
       'linux-pgo': 'official_goma_linux_pgo',
       'mac-pgo': 'official_goma_mac_pgo',
       'win32-pgo': 'official_goma_x86_pgo',
@@ -2446,6 +2440,10 @@
       'official', 'goma',
     ],
 
+    'official_goma_android_arm32_pgo': [
+      'official', 'goma', 'android_official', 'arm', 'pgo_phase_1',
+    ],
+
     'official_goma_mac': [
       'official', 'goma', 'no_widevine_cdm_host_verification',
     ],
@@ -2854,6 +2852,15 @@
       'gn_args': 'is_java_debug=true',
     },
 
+    'android_official': {
+      'mixins': ['android', 'android_official_webview_target', 'android_without_codecs', 'clank_custom_args', 'enable_remoting', 'enable_webview_bundles', 'ffmpeg_branding_chrome', 'official'],
+      'gn_args': 'use_signing_keys=true'
+    },
+
+    'android_official_webview_target': {
+      'gn_args': 'system_webview_apk_target="//clank/android_webview:system_webview_google_apk"',
+    },
+
     'android_without_codecs': {
       'gn_args': 'target_os="android"',
     },
@@ -3004,6 +3011,10 @@
       'gn_args': 'is_clang=true',
     },
 
+    'clank_custom_args': {
+      'args_file': '//clank/build/custom_args.gn',
+    },
+
     # Settings used by the codesearch builders to generate cross-references.
     'codesearch': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
@@ -3124,6 +3135,10 @@
       'gn_args': 'skip_archive_compression=false',
     },
 
+    'enable_remoting': {
+      'gn_args': 'enable_remoting=true',
+    },
+
     'enable_v8_oilpan': {
       'gn_args': 'enable_blink_heap_use_v8_oilpan=true',
     },
@@ -3138,6 +3153,10 @@
 
     'enable_vulkan': {
       'gn_args': 'enable_vulkan=true',
+    },
+
+    'enable_webview_bundles': {
+      'gn_args': 'enable_webview_bundles = true'
     },
 
     'eve': {
