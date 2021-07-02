@@ -3390,5 +3390,81 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginSpeculationRules) {
   EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
 }
 
+namespace {
+
+class FrameDisplayStateChangedObserver : public WebContentsObserver {
+ public:
+  explicit FrameDisplayStateChangedObserver(RenderFrameHost& host)
+      : WebContentsObserver(WebContents::FromRenderFrameHost(&host)),
+        target_host_(&host) {}
+
+  void WaitForFrameDisplayStateChanged() {
+    if (changed_count_ > 0) {
+      changed_count_--;
+    } else {
+      base::RunLoop loop;
+      callback_ = loop.QuitClosure();
+      loop.Run();
+    }
+  }
+
+  void FrameDisplayStateChanged(RenderFrameHost* host,
+                                bool is_display_none) override {
+    if (host == target_host_) {
+      if (callback_)
+        std::move(callback_).Run();
+      else
+        changed_count_++;
+    }
+  }
+
+  int changed_count_ = 0;
+  RenderFrameHost* const target_host_;
+  base::OnceClosure callback_;
+};
+
+}  // namespace
+
+// Tests that FrameOwnerProperties are in sync after activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FrameOwnerPropertiesDisplayNone) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/doc-with-display-none-iframe.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_TRUE(AddTestUtilJS(current_frame_host()));
+
+  // Start prerendering a document with a display:none iframe.
+  const int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  RenderFrameHost* prerender_frame_host = GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(ExecJs(prerender_frame_host, "loaded;"));
+
+  // The iframe is at "/empty.html". It should be display none.
+  RenderFrameHost* iframe_host =
+      FindRenderFrameHost(*prerender_frame_host, GetUrl("/empty.html"));
+  EXPECT_FALSE(prerender_frame_host->IsFrameDisplayNone());
+  EXPECT_TRUE(iframe_host->IsFrameDisplayNone());
+
+  // Activate.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+
+  // The frames should still have the same display properties.
+  EXPECT_FALSE(prerender_frame_host->IsFrameDisplayNone());
+  EXPECT_TRUE(iframe_host->IsFrameDisplayNone());
+
+  // Change the display properties.
+  FrameDisplayStateChangedObserver obs(*iframe_host);
+  EXPECT_TRUE(
+      ExecJs(prerender_frame_host,
+             "document.querySelector('iframe').style = 'display: block;'"));
+  obs.WaitForFrameDisplayStateChanged();
+
+  EXPECT_FALSE(prerender_frame_host->IsFrameDisplayNone());
+  EXPECT_FALSE(iframe_host->IsFrameDisplayNone());
+}
+
 }  // namespace
 }  // namespace content
