@@ -39,12 +39,6 @@ class NetworkConnectionTracker;
 class TokenWebData;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace ash {
-class AccountManager;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace account_manager {
 class AccountManagerFacade;
@@ -56,9 +50,6 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     signin::AccountConsistencyMethod account_consistency,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::AccountManager* account_manager,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,

@@ -114,9 +114,6 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
       BuildProfileOAuth2TokenService(
           params->pref_service, account_tracker_service.get(),
           params->network_connection_tracker, params->account_consistency,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-          params->account_manager,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
           params->account_manager_facade, params->is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

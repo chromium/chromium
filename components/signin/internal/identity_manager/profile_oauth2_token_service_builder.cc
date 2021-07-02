@@ -24,16 +24,9 @@
 #include "components/signin/public/webdata/token_web_data.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/account_manager/account_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
-#include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos_legacy.h"
-#include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif
 
 #if defined(OS_IOS)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
@@ -63,19 +56,11 @@ std::unique_ptr<ProfileOAuth2TokenServiceIOSDelegate> CreateIOSOAuthDelegate(
 std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
-    ash::AccountManager* account_manager,
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile) {
-  DCHECK(account_manager);
-  if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
-    return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
-        account_tracker_service, network_connection_tracker,
-        account_manager_facade, is_regular_profile);
-  }
-  return std::make_unique<
-      signin::ProfileOAuth2TokenServiceDelegateChromeOSLegacy>(
-      account_tracker_service, network_connection_tracker, account_manager,
-      is_regular_profile);
+  return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
+      account_tracker_service, network_connection_tracker,
+      account_manager_facade, is_regular_profile);
 }
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -126,9 +111,6 @@ CreateOAuth2TokenServiceDelegate(
     AccountTrackerService* account_tracker_service,
     signin::AccountConsistencyMethod account_consistency,
     SigninClient* signin_client,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::AccountManager* account_manager,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
@@ -153,7 +135,7 @@ CreateOAuth2TokenServiceDelegate(
                                 account_tracker_service);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return CreateCrOsOAuthDelegate(account_tracker_service,
-                                 network_connection_tracker, account_manager,
+                                 network_connection_tracker,
                                  account_manager_facade, is_regular_profile);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // For the time being, Mirror is enabled only in the first / "Main" Profile in
@@ -193,9 +175,6 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     signin::AccountConsistencyMethod account_consistency,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::AccountManager* account_manager,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
@@ -225,9 +204,6 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
       pref_service,
       CreateOAuth2TokenServiceDelegate(
           account_tracker_service, account_consistency, signin_client,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-          account_manager,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
           account_manager_facade, is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
