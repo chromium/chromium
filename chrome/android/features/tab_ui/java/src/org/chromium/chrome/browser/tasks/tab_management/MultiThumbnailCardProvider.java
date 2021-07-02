@@ -310,8 +310,10 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     }
 
     public void initWithNative() {
-        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
-        mTabListFaviconProvider.initWithNative(profile);
+        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+        // incognito profile) instead of always using regular profile. It works correctly now, but
+        // it is not safe.
+        mTabListFaviconProvider.initWithNative(Profile.getLastUsedRegularProfile());
     }
 
     /**
