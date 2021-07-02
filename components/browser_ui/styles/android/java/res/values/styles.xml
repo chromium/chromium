@@ -153,7 +153,7 @@
     <style name="SwitchMaterialDark">
         <item name="colorPrimary">@color/default_control_color_active_dark</item>
         <item name="colorSwitchThumbNormal">@color/modern_grey_100</item>
-        <item name="colorSwitchTrackNormal">@color/neutral_variant_400</item>
+        <item name="colorSwitchTrackNormal">@color/baseline_neutral_variant_400</item>
         <item name="colorControlHighlight">@color/default_control_color_highlight_dark</item>
         <item name="switchStyle">@style/SwitchMaterialStyle</item>
     </style>
@@ -190,7 +190,7 @@
 
     <style name="Base.ColorOverlay" parent="">
         <!-- Attributes that point to the same color/attr in dark and light modes. -->
-        <item name="colorPrimaryContainer">@color/modern_blue_100</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
         <item name="android:textColorPrimary">?attr/colorOnBackground</item>
         <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
 
@@ -199,7 +199,7 @@
         <item name="colorError">@color/google_red_600</item>
         <item name="android:colorBackground">@color/modern_white</item>
         <item name="colorSurface">@color/modern_white</item>
-        <item name="colorSurfaceVariant">@color/neutral_variant_100</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
         <item name="colorOnBackground">@color/modern_grey_900</item>
         <item name="colorOnPrimary">@color/modern_white</item>
         <item name="colorOnSurface">@color/modern_grey_900</item>

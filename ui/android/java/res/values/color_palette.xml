@@ -6,22 +6,22 @@
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- 2021 color palette -->
-    <color name="modern_blue_100">#D3E3FD</color>
-    <!--TODO: Replace with baseline_primary_200 -->
-    <color name="modern_blue_200">@color/baseline_primary_200</color>
-    <color name="modern_blue_600">#0B57D0</color>
-    <color name="modern_grey_100_alpha_12">#1EE3E3E3</color>
-    <color name="modern_grey_900_alpha_12">#1E1F1F1F</color>
-    <color name="modern_grey_900_with_grey_100_alpha_38">#696969</color>
-    <color name="neutral_variant_100">#E1E3E1</color>
-    <color name="neutral_variant_400">#8E918F</color>
-
-    <color name="baseline_neutral_100">#E3E3E3</color>
-    <color name="baseline_neutral_variant_200">#C4C7C5</color>
+    <color name="baseline_primary_100">#D3E3FD</color>
     <color name="baseline_primary_200">#A8C7FA</color>
+    <color name="baseline_primary_600">#0B57D0</color>
     <color name="baseline_primary_800">#062E6F</color>
+    <color name="baseline_neutral_100">#E3E3E3</color>
+    <color name="baseline_neutral_100_alpha_12">#1EE3E3E3</color>
+    <color name="baseline_neutral_900_alpha_12">#1E1F1F1F</color>
+    <color name="baseline_neutral_900_with_neutral_100_alpha_38">#696969</color>
+    <color name="baseline_neutral_variant_100">#E1E3E1</color>
+    <color name="baseline_neutral_variant_200">#C4C7C5</color>
+    <color name="baseline_neutral_variant_400">#8E918F</color>
 
     <color name="baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2">#353637</color>
+
+    <!-- TODO: Change modern_blue_600 to baseline_primary_600 -->
+    <color name="modern_blue_600">@color/baseline_primary_600</color>
 
     <!-- Modern color palette -->
     <color name="modern_white">@android:color/white</color>
