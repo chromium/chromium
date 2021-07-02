@@ -37,18 +37,23 @@ class AuditorTest(unittest.TestCase):
         os.path.relpath(os.path.join(TESTS_DIR, "test_sample_annotations.cc"),
                         SRC_DIR)
     ]
-    all_annotations = Auditor.run_extractor(path_filters)
+    self.auditor_ui = AuditorUI(build_path,
+                                path_filters,
+                                no_filtering=False,
+                                test_only=True)
+    self.auditor = self.auditor_ui.auditor
+    self.auditor.file_filter.git_file_for_testing = os.path.join(
+        TESTS_DIR, "git_list.txt")
 
-    self.auditor_ui = AuditorUI(build_path, path_filters, False)
-
-    global traffic_annotation
-    traffic_annotation = self.auditor_ui.traffic_annotation
-
-    self.auditor = Auditor()
+    all_annotations = self.auditor.run_extractor(build_path, path_filters)
 
     self.sample_annotations = {}
     for annotation in all_annotations:
       self.sample_annotations[annotation.unique_id] = annotation
+
+    # Expose the traffic_annotation_pb2.py import from auditor.py.
+    global traffic_annotation
+    traffic_annotation = self.auditor_ui.traffic_annotation
 
   def deserialize(self,
                   file_name: str) -> Tuple[Annotation, List[AuditorError]]:
@@ -150,39 +155,39 @@ class AuditorTest(unittest.TestCase):
         filter.get_source_files(ignore_list, "tools/traffic_annotation"))
     self.assertEqual([], filter.get_source_files(ignore_list, "content"))
 
-  @unittest.skip("not yet implemented")
   def test_is_safelisted(self):
-    """Tests if Auditor.is_safe_listed() works as expected. Inherently checks
+    """Tests if Auditor._is_safe_listed() works as expected. Inherently checks
     Auditor.load_safe_list() as well."""
-    for t in Auditor.ExceptionType:
+    auditor = Auditor()  # use the real safe_list.txt
+    for t in ExceptionType:
       # Anything in /tools directory is safelisted for all types.
-      self.assertTrue(self.auditor.is_safe_listed("tools/something.cc", t))
-      self.assertTrue(
-          self.auditor.is_safe_listed("tools/somewhere/something.mm", t))
+      self.assertTrue(auditor._is_safe_listed("tools/something.cc", t))
+      self.assertTrue(auditor._is_safe_listed("tools/somewhere/something.mm",
+                                              t))
 
       # Anything in a general folder is not safelisted for any type.
-      self.assertFalse(self.auditor.is_safe_listed("something.cc", t))
-      self.assertFalse(self.auditor.is_safe_listed("content/something.mm", t))
+      self.assertFalse(auditor._is_safe_listed("something.cc", t))
+      self.assertFalse(auditor._is_safe_listed("content/something.mm", t))
 
     # Files defining missing annotation functions in net/ are exception of
     # 'missing' type.
     self.assertTrue(
-        self.auditor.is_safe_listed("net/url_request/url_fetcher.cc",
-                                    Auditor.ExceptionType.MISSING))
+        auditor._is_safe_listed("net/url_request/url_fetcher.cc",
+                                ExceptionType.MISSING))
     self.assertTrue(
-        self.auditor.is_safe_listed("net/url_request/url_request_context.cc",
-                                    Auditor.ExceptionType.MISSING))
+        auditor._is_safe_listed("net/url_request/url_request_context.cc",
+                                ExceptionType.MISSING))
 
     # Files with the word "test" in their path can have the "test" annotation.
     self.assertFalse(
-        self.auditor.is_safe_listed("net/url_request/url_fetcher.cc",
-                                    Auditor.ExceptionType.TEST_ANNOTATION))
+        auditor._is_safe_listed("net/url_request/url_fetcher.cc",
+                                ExceptionType.TEST_ANNOTATION))
     self.assertTrue(
-        self.auditor.is_safe_listed("chrome/browser/test_something.cc",
-                                    Auditor.ExceptionType.TEST_ANNOTATION))
+        auditor._is_safe_listed("chrome/browser/test_something.cc",
+                                ExceptionType.TEST_ANNOTATION))
     self.assertTrue(
-        self.auditor.is_safe_listed("test/send_something.cc",
-                                    Auditor.ExceptionType.TEST_ANNOTATION))
+        auditor._is_safe_listed("test/send_something.cc",
+                                ExceptionType.TEST_ANNOTATION))
 
   def test_annotation_deserialization(self) -> None:
     test_cases = [
@@ -420,7 +425,7 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(false_sample_count, len(errors))
 
   def test_check_complete_annotations(self):
-    """Tests if Auditor.check_annotations_contents() works as expected for
+    """Tests if Auditor.check_annotation_contents() works as expected for
     COMPLETE annotations. It also inherently checks
     Auditor.is_annotation_complete(), Auditor.is_annotation_consistent(), and
     Auditor.is_in_grouping_xml()."""
@@ -515,18 +520,15 @@ class AuditorTest(unittest.TestCase):
 
       logger.debug("Testing: {}".format(test_description))
 
-      self.auditor.errors = []
       self.auditor.extracted_annotations = [annotation]
-      self.auditor.check_annotations_contents()
+      errors = self.auditor.check_annotation_contents()
 
       if expect_error:
-        self.assertEqual(
-            1, len(self.auditor.errors),
-            "test_no={}, errors={}".format(test_no, self.auditor.errors))
+        self.assertEqual(1, len(errors),
+                         "test_no={}, errors={}".format(test_no, errors))
       else:
-        self.assertEqual([], self.auditor.errors,
-                         "test_no={}, errors={}".format(test_no,
-                                                        self.auditor.errors))
+        self.assertEqual([], errors,
+                         "test_no={}, errors={}".format(test_no, errors))
 
       annotations.append(annotation)
 
@@ -536,10 +538,9 @@ class AuditorTest(unittest.TestCase):
       test_no += 1
 
     # Check all.
-    self.auditor.errors = []
     self.auditor.extracted_annotations = annotations
-    self.auditor.check_annotations_contents()
-    self.assertEqual(expected_errors_count, len(self.auditor.errors))
+    errors = self.auditor.check_annotation_contents()
+    self.assertEqual(expected_errors_count, len(errors))
 
   def test_is_completable_with(self):
     """Tests is Annotation.is_completable_with() works as expected."""
@@ -669,17 +670,15 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(expected_diff13, diff13)
     self.assertEqual(expected_diff23, diff23)
 
-  @unittest.skip("not yet implemented")
   def test_annotation_grouping(self):
     """Tests if an annotation is in test_grouping.xml or not."""
     grouping_xml_path = os.path.join(CPP_TESTS_DIR, "test_grouping.xml")
-    annotation_unique_ids = self.auditor.get_grouping_annotations_unique_ids(
-        grouping_xml_path)
+    grouping_xml_ids = self.auditor._get_grouping_xml_ids(grouping_xml_path)
     self.assertCountEqual([
         "foobar_policy_fetcher", "foobar_info_fetcher",
         "fizzbuzz_handle_front_end_messages", "fizzbuzz_hard_coded_data_source",
         "fizzbuzz_http_handler", "widget_grabber"
-    ], annotation_unique_ids)
+    ], grouping_xml_ids)
 
   def test_setup(self) -> None:
     """|self.sample_annotations| should include all those inside
@@ -703,19 +702,19 @@ class AuditorTest(unittest.TestCase):
       sys.stdout = sys.__stdout__
 
   def test_result_ok(self) -> None:
-    self.auditor.parse_extractor_output(
+    errors = self.auditor.parse_extractor_output(
         [self.sample_annotations["ok_annotation"]])
 
     # Assert that correct annotation has been extracted and is OK (no errors).
     self.assertTrue(self.auditor.extracted_annotations)
-    self.assertFalse(self.auditor.errors)
+    self.assertFalse(errors)
 
   def test_syntax_error(self) -> None:
-    self.auditor.parse_extractor_output(
+    errors = self.auditor.parse_extractor_output(
         [self.sample_annotations["syntax_error_annotation"]])
 
-    self.assertTrue(self.auditor.errors)
-    result = self.auditor.errors[0]
+    self.assertTrue(errors)
+    result = errors[0]
     self.assertEqual(AuditorError.Type.SYNTAX, result.type)
     self.assertTrue("sender: \"Cloud Policy\"': Expected \"{\"" in str(result))
 
@@ -724,9 +723,9 @@ class AuditorTest(unittest.TestCase):
         [self.sample_annotations["incomplete_error_annotation"]])
 
     self.assertTrue(self.auditor.extracted_annotations)
-    self.auditor.run_all_checks()
-    self.assertTrue(self.auditor.errors)
-    result = self.auditor.errors[0]
+    errors = self.auditor.run_all_checks([], True)
+    self.assertTrue(errors)
+    result = errors[0]
     self.assertEqual(AuditorError.Type.INCOMPLETE_ANNOTATION, result.type)
 
     expected_missing_fields = [
