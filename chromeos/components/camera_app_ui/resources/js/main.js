@@ -16,7 +16,6 @@ import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as focusRing from './focus_ring.js';
 import {GalleryButton} from './gallerybutton.js';
-import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
@@ -131,7 +130,6 @@ export class App {
       }
     }, {passive: false, capture: true});
 
-    document.title = loadTimeData.getI18nMessage(I18nString.NAME);
     util.setupI18nElements(document.body);
     this.setupToggles_();
     this.setupEffect_();
