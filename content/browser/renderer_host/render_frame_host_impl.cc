@@ -5474,11 +5474,16 @@ void RenderFrameHostImpl::EnterFullscreen(
   // side when the renderer is compromised and the fullscreen request is denied.
   // Fullscreen can only be triggered by: a user activation, a user-generated
   // screen orientation change, or another feature-specific transient allowance.
+  // If the frame is already fullscreen (and this request is a noop or
+  // this request is changing from one display to another), then no user
+  // activation is checked or consumed.
+  //
   // CanEnterFullscreenWithoutUserActivation is only ever true in tests, to
   // allow fullscreen when mocking screen orientation changes.
   // TODO(lanwei): Investigate whether we can terminate the renderer when the
   // user activation has already been consumed.
-  if (!delegate_->HasSeenRecentScreenOrientationChange() &&
+  if (!delegate_->HasEnteredFullscreenMode() &&
+      !delegate_->HasSeenRecentScreenOrientationChange() &&
       !WindowPlacementAllowsFullscreen() && !HasSeenRecentXrOverlaySetup() &&
       !GetContentClient()
            ->browser()
