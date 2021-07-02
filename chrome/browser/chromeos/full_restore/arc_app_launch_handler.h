@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/resourced/resourced_client.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 namespace apps {
@@ -26,7 +27,8 @@ class FullRestoreAppLaunchHandler;
 // 1. Add memory pressure checking before launch ARC apps.
 // 2. Add app launch policy.
 // 3. Check whether the ARC app is ready before launch the ARC apps.
-class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer {
+class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
+                            public chromeos::ResourcedClient::Observer {
  public:
   explicit ArcAppLaunchHandler(FullRestoreAppLaunchHandler* handler);
   ArcAppLaunchHandler(const ArcAppLaunchHandler&) = delete;
@@ -42,6 +44,11 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer {
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+ protected:
+  // Override chromeos::ResourcedClient::Observer
+  void OnMemoryPressure(chromeos::ResourcedClient::PressureLevel level,
+                        uint64_t reclaim_target_kb) override;
+
  private:
   void LaunchApp(const std::string& app_id);
 
@@ -52,6 +59,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer {
   std::set<std::string> app_ids_;
 
   apps::AppRegistryCache& cache_;
+
+  chromeos::ResourcedClient::PressureLevel pressure_level_;
 
   base::WeakPtrFactory<ArcAppLaunchHandler> weak_ptr_factory_{this};
 };

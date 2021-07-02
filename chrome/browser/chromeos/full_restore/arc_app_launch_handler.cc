@@ -30,9 +30,17 @@ ArcAppLaunchHandler::ArcAppLaunchHandler(FullRestoreAppLaunchHandler* handler)
                  ->AppRegistryCache()) {
   // Observe AppRegistryCache to get the notification when the app is ready.
   Observe(&cache_);
+
+  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
+  if (client)
+    client->AddObserver(this);
 }
 
-ArcAppLaunchHandler::~ArcAppLaunchHandler() = default;
+ArcAppLaunchHandler::~ArcAppLaunchHandler() {
+  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
+  if (client)
+    client->RemoveObserver(this);
+}
 
 void ArcAppLaunchHandler::RestoreApp(const std::string& app_id) {
   bool is_ready = false;
@@ -111,6 +119,12 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
                     std::move(window_info));
     }
   }
+}
+
+void ArcAppLaunchHandler::OnMemoryPressure(
+    chromeos::ResourcedClient::PressureLevel level,
+    uint64_t reclaim_target_kb) {
+  pressure_level_ = level;
 }
 
 }  // namespace full_restore
