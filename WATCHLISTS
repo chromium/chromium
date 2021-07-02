@@ -1442,9 +1442,6 @@
         'components/ntp_tiles/|'\
         'ios/chrome/browser/ntp_tiles'
     },
-    'offline_items_collection': {
-      'filepath': 'components/offline_items_collection/',
-    },
     'offline_pages': {
       'filepath': 'components/offline_pages/'\
                   '|chrome/browser/android/offline_pages/'\
@@ -2619,7 +2616,6 @@
                'hansenmichael+watch-nearby@google.com',
                'knollr+watch-nearby@chromium.org',
                'nohle+watch-nearby@chromium.org',
-               'peter+watch-nearby@chromium.org',
                'vecore+watch-nearby@google.com',
                'xlythe+watch-nearby@google.com'],
     'net': ['net-reviews@chromium.org'],
@@ -2639,7 +2635,6 @@
     'nqe': ['tbansal+watch-nqe@chromium.org'],
     'ntp_snippets': ['ntp-dev+reviews@chromium.org'],
     'ntp_tiles': ['ntp-dev+reviews@chromium.org'],
-    'offline_items_collection': ['peter@chromium.org'],
     'offline_pages': ['chili+watch@chromium.org',
                       'carlosk+watch@chromium.org',
                       'dewittj+watch@chromium.org',
@@ -2733,8 +2728,7 @@
     'share_service': ['melzhang+watch+share-service@chromium.org'],
     'share_sheet': ['chrome-sharing-eng+watch@google.com'],
     'sharing': ['knollr+watch-sharing@chromium.org',
-                'mvanouwerkerk+watch-sharing@chromium.org',
-                'peter+watch-sharing@chromium.org'],
+                'mvanouwerkerk+watch-sharing@chromium.org'],
     'site_engagement': ['dominickn+watch-engagement@chromium.org'],
     'site_instance': ['ajwong+watch@chromium.org',
                       'alexmos+watch@chromium.org',
