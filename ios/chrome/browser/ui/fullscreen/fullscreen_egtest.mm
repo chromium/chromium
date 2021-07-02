@@ -94,9 +94,7 @@ void WaitforPDFExtensionView() {
 
 // Verifies that the content offset of the web view is set up at the correct
 // initial value when initially displaying a PDF.
-// TODO(crbug.com/947536): Fails on iOS 12 devices.
-// TODO(crbug.com/1106997): Test fails in simulator builders.
-- (void)DISABLED_testLongPDFInitialState {
+- (void)testLongPDFInitialState {
   GURL URL = web::test::HttpServer::MakeUrl(
       "http://ios/testing/data/http_server_files/two_pages.pdf");
   [ChromeEarlGrey loadURL:URL];
@@ -112,41 +110,30 @@ void WaitforPDFExtensionView() {
 
 // Verifies that the toolbar is not hidden when scrolling a short pdf, as the
 // entire document is visible without hiding the toolbar.
-// TODO(crbug.com/1022029): Enable this test.
-- (void)DISABLED_testSmallWidePDFScroll {
+- (void)testSmallWidePDFScroll {
   GURL URL = web::test::HttpServer::MakeUrl(
       "http://ios/testing/data/http_server_files/single_page_wide.pdf");
   [ChromeEarlGrey loadURL:URL];
   WaitforPDFExtensionView();
 
-  {
-    // TODO(crbug.com/852393): Investigate why synchronization isn't working. Is
-    // an animation going on forever?
-    // Disabled synchonization needs only for iOS 12.
-    std::unique_ptr<ScopedSynchronizationDisabler> disabler =
-        std::make_unique<ScopedSynchronizationDisabler>();
+  // Test that the toolbar is still visible after a user swipes down.
+  // Use a slow swipe here because in this combination of conditions (one
+  // page PDF, overscroll actions enabled, fast swipe), the
+  // |UIScrollViewDelegate scrollViewDidEndDecelerating:| is not called leading
+  // to an EarlGrey infinite wait.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
-    // Test that the toolbar is still visible after a user swipes down.
-    [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-        performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-    [ChromeEarlGreyUI waitForToolbarVisible:YES];
-
-    // Test that the toolbar is still visible even after attempting to hide it
-    // on swipe up.
-    HideToolbarUsingUI();
-    [ChromeEarlGreyUI waitForToolbarVisible:YES];
-  }
+  // Test that the toolbar is still visible even after attempting to hide it
+  // on swipe up.
+  HideToolbarUsingUI();
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
 // Verifies that the toolbar properly appears/disappears when scrolling up/down
 // on a PDF that is long in length and wide in width.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/714329): Re-enable this test on devices.
-#define MAYBE_testLongPDFScroll DISABLED_testLongPDFScroll
-#else
-#define MAYBE_testLongPDFScroll testLongPDFScroll
-#endif
-- (void)MAYBE_testLongPDFScroll {
+- (void)testLongPDFScroll {
   GURL URL = web::test::HttpServer::MakeUrl(
       "http://ios/testing/data/http_server_files/two_pages.pdf");
   [ChromeEarlGrey loadURL:URL];
