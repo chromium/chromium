@@ -324,8 +324,7 @@ void ClipboardHostImpl::ReadPng(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                                   ReadPngCallback callback,
                                   const std::vector<uint8_t>& data) {
-  std::string string_data(
-      reinterpret_cast<const char*>(data.data(), data.data() + data.size()));
+  std::string string_data(data.begin(), data.end());
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::GetPngType(),
       std::move(string_data),
