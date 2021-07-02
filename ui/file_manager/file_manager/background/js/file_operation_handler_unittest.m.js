@@ -62,8 +62,7 @@ class MockDate {
 // Set up the test components.
 export function setUp() {
   // Mock LoadTimeData strings.
-  window.loadTimeData.resetForTesting();
-  window.loadTimeData.overrideValues({
+  window.loadTimeData.resetForTesting({
     COPY_FILE_NAME: 'Copying $1...',
     COPY_TARGET_EXISTS_ERROR: '$1 is already exists.',
     COPY_FILESYSTEM_ERROR: 'Copy filesystem error: $1',

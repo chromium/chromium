@@ -40,8 +40,7 @@ metrics.recordEnum = function(name, value, opt_validValues) {};
 // Set up the test components.
 export function setUp() {
   // Set up string assets.
-  loadTimeData.resetForTesting();
-  loadTimeData.overrideValues({
+  loadTimeData.resetForTesting({
     DEVICE_UNSUPPORTED_MESSAGE: 'DEVICE_UNSUPPORTED: $1',
     DEVICE_UNKNOWN_MESSAGE: 'DEVICE_UNKNOWN: $1',
     MULTIPART_DEVICE_UNSUPPORTED_MESSAGE: 'MULTIPART_DEVICE_UNSUPPORTED: $1',

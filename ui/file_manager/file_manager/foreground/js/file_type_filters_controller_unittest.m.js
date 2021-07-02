@@ -41,8 +41,7 @@ let fileTypeFiltersController;
 
 export function setUp() {
   // Mock loadTimeData strings.
-  loadTimeData.resetForTesting();
-  loadTimeData.overrideValues({
+  loadTimeData.resetForTesting({
     MEDIA_VIEW_AUDIO_ROOT_LABEL: 'Audio',
     MEDIA_VIEW_IMAGES_ROOT_LABEL: 'Images',
     MEDIA_VIEW_VIDEOS_ROOT_LABEL: 'Videos',

@@ -34,7 +34,7 @@ let crostini;
 // Set up the test components.
 export function setUp() {
   // Mock LoadTimeData strings.
-  loadTimeData.resetForTesting();
+  loadTimeData.resetForTesting({});
   loadTimeData.getBoolean = function(key) {
     return loadTimeData.data_[key];
   };

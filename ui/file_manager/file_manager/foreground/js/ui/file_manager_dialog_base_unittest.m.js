@@ -13,10 +13,7 @@ export function setUp() {
   chrome.app = {window: {current: () => null}};
 
   // Mock loadTimeData.
-  window.loadTimeData.resetForTesting();
-  window.loadTimeData.overrideValues({
-    FILES_NG_ENABLED: true,
-  });
+  window.loadTimeData.resetForTesting({});
 }
 
 export async function testShowDialogAfterHide(done) {

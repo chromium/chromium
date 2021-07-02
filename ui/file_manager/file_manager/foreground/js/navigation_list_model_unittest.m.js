@@ -55,8 +55,7 @@ let hoge;
 // Setup the test components.
 export function setUp() {
   // Mock LoadTimeData strings.
-  window.loadTimeData.resetForTesting();
-  window.loadTimeData.overrideValues({
+  window.loadTimeData.resetForTesting({
     MY_FILES_ROOT_LABEL: 'My files',
     DOWNLOADS_DIRECTORY_LABEL: 'Downloads',
     DRIVE_DIRECTORY_LABEL: 'My Drive',

@@ -86,7 +86,7 @@ export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.getString = id => id;
   window.loadTimeData.getBoolean = id => false;
-  window.loadTimeData.resetForTesting();
+  window.loadTimeData.resetForTesting({});
 
   // Mock chome APIs.
   mockChrome = {

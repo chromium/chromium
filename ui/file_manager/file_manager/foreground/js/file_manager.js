@@ -972,7 +972,12 @@ export class FileManager extends EventTarget {
             this.backgroundPage_.background);
 
     await new Promise(resolve => this.fileBrowserBackground_.ready(resolve));
-    loadTimeData.data = this.fileBrowserBackground_.stringData;
+
+    // For the SWA, we load background and foreground in the same Window, avoid
+    // loading the `data` twice.
+    if (!loadTimeData.isInitialized()) {
+      loadTimeData.data = this.fileBrowserBackground_.stringData;
+    }
     if (util.runningInBrowser()) {
       this.fileBrowserBackground_.registerDialog(window);
     }

@@ -20,7 +20,7 @@ let createVolumeInfoOriginal;
 
 export function setUp() {
   loadTimeData.getString = id => id;
-  loadTimeData.resetForTesting();
+  loadTimeData.resetForTesting({});
 
   // Set up mock of chrome.fileManagerPrivate APIs.
   mockChrome = {

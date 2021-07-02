@@ -40,7 +40,7 @@ let a11y;
 export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.getString = id => id;
-  window.loadTimeData.resetForTesting();
+  window.loadTimeData.resetForTesting({});
 
   // Setup mock components.
   volumeManager = new MockVolumeManager();

@@ -27,8 +27,7 @@ export function setUp() {
   ];
   fileSystem.populate(filenames);
 
-  window.loadTimeData.resetForTesting();
-  window.loadTimeData.overrideValues({
+  window.loadTimeData.resetForTesting({
     SIZE_BYTES: '$1 bytes',
     SIZE_KB: '$1 KB',
     SIZE_MB: '$1 MB',

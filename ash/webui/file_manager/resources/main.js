@@ -51,9 +51,6 @@ class FileManagerApp {
     delete window.cr.webUIResponse;
     delete window.cr.webUIListenerCallback;
 
-    // Avoid double loading the LoadTimeData strings.
-    window.loadTimeData.data_ = null;
-
     await new ScriptLoader('foreground/js/main.js', {type: 'module'}).load();
 
     // Restore the window.cr.webUI* objects.

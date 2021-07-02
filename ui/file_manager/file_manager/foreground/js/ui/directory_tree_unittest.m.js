@@ -70,8 +70,7 @@ let mockChrome;
 export function setUp() {
   // Mock LoadTimeData strings.
   window.loadTimeData.getString = id => id;
-  window.loadTimeData.resetForTesting();
-  window.loadTimeData.overrideValues({
+  window.loadTimeData.resetForTesting({
     FILES_TRASH_ENABLED: false,
     UNIFIED_MEDIA_VIEW_ENABLED: false,
   });
