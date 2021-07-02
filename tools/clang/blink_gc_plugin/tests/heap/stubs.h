@@ -398,28 +398,34 @@ public:
     static const bool isGarbageCollected = true;
 };
 
-template<typename T, size_t inlineCapacity = 0>
-class HeapVector : public Vector<T, inlineCapacity, HeapAllocator> { };
+template <typename T, size_t inlineCapacity = 0>
+class HeapVector : public GarbageCollected<HeapVector<T, inlineCapacity>>,
+                   public Vector<T, inlineCapacity, HeapAllocator> {};
 
-template<typename T, size_t inlineCapacity = 0>
-class HeapDeque : public Vector<T, inlineCapacity, HeapAllocator> { };
+template <typename T, size_t inlineCapacity = 0>
+class HeapDeque : public GarbageCollected<HeapDeque<T, inlineCapacity>>,
+                  public Vector<T, inlineCapacity, HeapAllocator> {};
 
-template<typename T>
-class HeapHashSet : public HashSet<T, void, void, HeapAllocator> { };
+template <typename T>
+class HeapHashSet : public GarbageCollected<HeapHashSet<T>>,
+                    public HashSet<T, void, void, HeapAllocator> {};
 
-template<typename T>
-class HeapListHashSet : public ListHashSet<T, void, void, HeapAllocator> { };
+template <typename T>
+class HeapListHashSet : public GarbageCollected<HeapListHashSet<T>>,
+                        public ListHashSet<T, void, void, HeapAllocator> {};
 
-template<typename T>
-class HeapLinkedHashSet : public LinkedHashSet<T, void, HeapAllocator> {
+template <typename T>
+class HeapLinkedHashSet : public GarbageCollected<HeapLinkedHashSet<T>>,
+                          public LinkedHashSet<T, void, HeapAllocator> {};
+
+template <typename T>
+class HeapHashCountedSet : public GarbageCollected<HeapHashCountedSet<T>>,
+                           public HashCountedSet<T, void, void, HeapAllocator> {
 };
 
-template<typename T>
-class HeapHashCountedSet : public HashCountedSet<T, void, void, HeapAllocator> {
-};
-
-template<typename K, typename V>
-class HeapHashMap : public HashMap<K, V, void, void, void, HeapAllocator> { };
+template <typename K, typename V>
+class HeapHashMap : public GarbageCollected<HeapHashMap<K, V>>,
+                    public HashMap<K, V, void, void, void, HeapAllocator> {};
 
 template<typename T>
 struct TraceIfNeeded {
