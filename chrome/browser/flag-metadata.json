@@ -3197,6 +3197,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "google-mobile-services-passwords",
+    "owners": [ "fhorschig", "vasilii" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "handwriting-gesture-editing",
     "owners": [ "essential-inputs-team@google.com" ],
     "expiry_milestone": 95
@@ -5260,12 +5265,7 @@
     // This flag is used for in-the-field debugging of animation issues on
     // Chrome OS.
     "expiry_milestone": -1
-  },
-  {
-    "name": "unified-password-manager-android",
-    "owners": [ "fhorschig", "vasilii" ],
-    "expiry_milestone": 97
-  },
+  }, 
   {
     "name": "unsafely-treat-insecure-origin-as-secure",
     "owners": [ "security-dev" ],

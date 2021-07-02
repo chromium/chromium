@@ -7299,7 +7299,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrivacyReview)},
 
 #if defined(OS_ANDROID)
-    {"unified-password-manager-android",
+    {"google-mobile-services-passwords",
      flag_descriptions::kUnifiedPasswordManagerAndroidName,
      flag_descriptions::kUnifiedPasswordManagerAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
