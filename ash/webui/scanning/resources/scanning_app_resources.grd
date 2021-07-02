@@ -44,6 +44,8 @@
       <include name="IDR_SCANNING_APP_MULTI_PAGE_CHECKBOX_JS" file="${root_gen_dir}/ash/webui/scanning/resources/multi_page_checkbox.js" resource_path="multi_page_checkbox.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_MULTI_PAGE_SCAN_HTML" file="multi_page_scan.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_MULTI_PAGE_SCAN_JS" file="${root_gen_dir}/ash/webui/scanning/resources/multi_page_scan.js" resource_path="multi_page_scan.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_ACTION_TOOLBAR_HTML" file="action_toolbar.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_ACTION_TOOLBAR_JS" file="${root_gen_dir}/ash/webui/scanning/resources/action_toolbar.js" resource_path="action_toolbar.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_ICON_16" file="scanning_app_icon_16.png" type="BINDATA" />
       <include name="IDR_SCANNING_APP_ICON_32" file="scanning_app_icon_32.png" type="BINDATA" />
       <include name="IDR_SCANNING_APP_ICON_48" file="scanning_app_icon_48.png" type="BINDATA" />
@@ -54,6 +56,8 @@
       <include name="IDR_SCANNING_APP_SCANNERS_LOADING_SVG" file="svg/scanners_loading.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_NO_SCANNERS_SVG" file="svg/no_scanners.svg" type="BINDATA" />
       <include name="IDR_SCANNING_APP_READY_TO_SCAN_SVG" file="svg/ready_to_scan.svg" type="BINDATA" />
+      <include name="IDR_SCANNING_APP_REMOVE_PAGE_SVG" file="svg/remove_page.svg" type="BINDATA" />
+      <include name="IDR_SCANNING_APP_RESCAN_PAGE_SVG" file="svg/rescan_page.svg" type="BINDATA" />
     </includes>
 
     <structures>

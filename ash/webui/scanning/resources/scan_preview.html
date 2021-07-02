@@ -109,6 +109,7 @@
     </div>
   </div>
   <div id="scannedImages" hidden$="[[!showScannedImages_]]" aria-hidden="true">
+    <action-toolbar hidden$="[[!multiPageScanChecked]]"></action-toolbar>
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
       <img class="preview-item scanned-image" src="[[url]]">
     </template>

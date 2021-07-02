@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './action_toolbar.js';
 import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
@@ -86,6 +87,9 @@ Polymer({
       type: Number,
       value: null,
     },
+
+    /** @type {boolean} */
+    multiPageScanChecked: Boolean,
   },
 
   observers: [

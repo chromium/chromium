@@ -7,7 +7,7 @@ import 'chrome://scanning/scan_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 
-import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {isVisible} from '../../test_util.m.js';
 
 export function scanPreviewTest() {
@@ -137,5 +137,18 @@ export function scanPreviewTest() {
         /*isHelpOrProgressVisible*/ false, /*isHelperTextVisible*/ false,
         /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ true,
         /*isCancelingProgressVisible*/ false);
+  });
+
+  // Tests that the action toolbar is only displayed for multi-page scans.
+  test('showActionToolbarForMultiPageScans', () => {
+    scanPreview.objectUrls = ['image'];
+    scanPreview.appState = AppState.DONE;
+    scanPreview.multiPageScanChecked = false;
+    assertFalse(isVisible(
+        /** @type {!HTMLElement} */ (scanPreview.$$('action-toolbar'))));
+    scanPreview.multiPageScanChecked = true;
+    flush();
+    assertTrue(isVisible(
+        /** @type {!HTMLElement} */ (scanPreview.$$('action-toolbar'))));
   });
 }

@@ -1,0 +1,44 @@
+<style include="scanning-shared">
+  #actionToolbar {
+    --height: 40px;
+
+    align-items: center;
+    background-color: rgba(var(--google-grey-900-rgb), .8);
+    border-radius:  calc(var(--height) / 2);
+    display: flex;
+    height: var(--height);
+    justify-content: center;
+    width: 176px;
+  }
+
+  .separator {
+    background-color: white;
+    border-inline-start: var(--cr-separator-line);
+    flex-shrink: 0;
+    height: 22px;
+    margin: 0 16px;
+    opacity: .14;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-size: 24px;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-fill-color: var(--google-grey-200);
+  }
+
+  #removePageIcon {
+    --cr-icon-button-margin-end: 16px;
+    --cr-icon-image: url(svg/remove_page.svg);
+  }
+
+  #rescanPageIcon {
+    --cr-icon-image: url(svg/rescan_page.svg);
+  }
+</style>
+<div id="actionToolbar">
+  <div class="separator"></div>
+  <div>
+    <cr-icon-button id="removePageIcon"></cr-icon-button>
+    <cr-icon-button id="rescanPageIcon"></cr-icon-button>
+  </div>
+</div>

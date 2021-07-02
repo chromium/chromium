@@ -10,6 +10,7 @@ import("//tools/polymer/html_to_js.gni")
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":action_toolbar",
     ":color_mode_select",
     ":file_type_select",
     ":loading_page",
@@ -28,6 +29,12 @@ js_type_check("closure_compile_module") {
     ":scanning_browser_proxy",
     ":select_behavior",
     ":source_select",
+  ]
+}
+
+js_library("action_toolbar") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -85,6 +92,7 @@ js_library("scan_done_section") {
 
 js_library("scan_preview") {
   deps = [
+    ":action_toolbar",
     ":scanning_app_types",
     ":scanning_app_util",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
@@ -183,6 +191,7 @@ js_library("mojo_interface_provider") {
 
 html_to_js("web_components") {
   js_files = [
+    "action_toolbar.js",
     "color_mode_select.js",
     "file_type_select.js",
     "loading_page.js",
