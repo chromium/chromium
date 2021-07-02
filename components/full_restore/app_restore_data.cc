@@ -564,7 +564,13 @@ apps::mojom::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
   if (display_id.has_value())
     window_info->display_id = display_id.value();
 
-  if (current_bounds.has_value()) {
+  if (bounds_in_root.has_value()) {
+    window_info->bounds = apps::mojom::Rect::New();
+    window_info->bounds->x = bounds_in_root.value().x();
+    window_info->bounds->y = bounds_in_root.value().y();
+    window_info->bounds->width = bounds_in_root.value().width();
+    window_info->bounds->height = bounds_in_root.value().height();
+  } else if (current_bounds.has_value()) {
     window_info->bounds = apps::mojom::Rect::New();
     window_info->bounds->x = current_bounds.value().x();
     window_info->bounds->y = current_bounds.value().y();

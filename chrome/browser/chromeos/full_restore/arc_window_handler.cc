@@ -51,6 +51,10 @@ void ArcWindowHandler::LaunchArcGhostWindow(
   DCHECK(restore_data->display_id.has_value());
 
   gfx::Rect adjust_bounds = restore_data->current_bounds.value();
+
+  // Replace the screen bounds by root bounds if there is.
+  if (restore_data->bounds_in_root.has_value())
+    adjust_bounds = restore_data->bounds_in_root.value();
   if (restore_data->window_state_type.has_value() &&
       (restore_data->window_state_type.value() ==
            chromeos::WindowStateType::kDefault ||
