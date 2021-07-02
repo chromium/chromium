@@ -33807,6 +33807,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3945" label="ClientHintsUABitness"/>
   <int value="3946" label="DifferentPerspectiveCBOrParent"/>
   <int value="3947" label="WebkitImageSet"/>
+  <int value="3948" label="RTCPeerConnectionWithBlockingCsp"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
