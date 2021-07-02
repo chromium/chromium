@@ -93,6 +93,8 @@ class FullscreenMagnifierController::GestureProviderClient
     : public ui::GestureProviderAuraClient {
  public:
   GestureProviderClient() = default;
+  GestureProviderClient(const GestureProviderClient&) = delete;
+  GestureProviderClient& operator=(const GestureProviderClient&) = delete;
   ~GestureProviderClient() override = default;
 
   // ui::GestureProviderAuraClient overrides:
@@ -108,9 +110,6 @@ class FullscreenMagnifierController::GestureProviderClient
     DCHECK_NE(ui::ET_GESTURE_PINCH_END, event->type());
     DCHECK_NE(ui::ET_GESTURE_PINCH_UPDATE, event->type());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureProviderClient);
 };
 
 FullscreenMagnifierController::FullscreenMagnifierController()

@@ -67,7 +67,8 @@ class MagnifierGlass::BorderRenderer : public ui::LayerDelegate {
     magnifier_shadows_.push_back(params_.bottom_shadow);
     magnifier_shadows_.push_back(params_.top_shadow);
   }
-
+  BorderRenderer(const BorderRenderer&) = delete;
+  BorderRenderer& operator=(const BorderRenderer&) = delete;
   ~BorderRenderer() override = default;
 
  private:
@@ -128,8 +129,6 @@ class MagnifierGlass::BorderRenderer : public ui::LayerDelegate {
   const gfx::Rect magnifier_window_bounds_;
   const Params params_;
   std::vector<gfx::ShadowValue> magnifier_shadows_;
-
-  DISALLOW_COPY_AND_ASSIGN(BorderRenderer);
 };
 
 MagnifierGlass::MagnifierGlass(Params params) : params_(std::move(params)) {}

@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ime/chromeos/ime_bridge_observer.h"
@@ -63,6 +62,9 @@ class ASH_EXPORT FullscreenMagnifierController
   };
 
   FullscreenMagnifierController();
+  FullscreenMagnifierController(const FullscreenMagnifierController&) = delete;
+  FullscreenMagnifierController& operator=(
+      const FullscreenMagnifierController&) = delete;
   ~FullscreenMagnifierController() override;
 
   void set_mouse_following_mode(
@@ -344,8 +346,6 @@ class ASH_EXPORT FullscreenMagnifierController
   // Last move magnifier to rect time - used for ignoring caret updates for a
   // few milliseconds after the last move magnifier to rect call.
   base::TimeTicks last_move_magnifier_to_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenMagnifierController);
 };
 
 }  // namespace ash

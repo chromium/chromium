@@ -5,7 +5,6 @@
 #ifndef ASH_ACCESSIBILITY_MAGNIFIER_MAGNIFIER_TEST_UTILS_H_
 #define ASH_ACCESSIBILITY_MAGNIFIER_MAGNIFIER_TEST_UTILS_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace aura {
@@ -31,6 +30,8 @@ class TestTextInputView;
 class MagnifierFocusTestHelper {
  public:
   MagnifierFocusTestHelper() = default;
+  MagnifierFocusTestHelper(const MagnifierFocusTestHelper&) = delete;
+  MagnifierFocusTestHelper& operator=(const MagnifierFocusTestHelper&) = delete;
   ~MagnifierFocusTestHelper() = default;
 
   static constexpr int kButtonHeight = 20;
@@ -51,8 +52,6 @@ class MagnifierFocusTestHelper {
 
  private:
   TestFocusView* focus_test_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MagnifierFocusTestHelper);
 };
 
 // Defines a test helper for magnifiers unit tests that wants to verify their
@@ -60,6 +59,9 @@ class MagnifierFocusTestHelper {
 class MagnifierTextInputTestHelper {
  public:
   MagnifierTextInputTestHelper() = default;
+  MagnifierTextInputTestHelper(const MagnifierTextInputTestHelper&) = delete;
+  MagnifierTextInputTestHelper& operator=(const MagnifierTextInputTestHelper&) =
+      delete;
   ~MagnifierTextInputTestHelper() = default;
 
   // Creates a text input view in the primary root window with the given
@@ -85,8 +87,6 @@ class MagnifierTextInputTestHelper {
   ui::InputMethod* GetInputMethod();
 
   TestTextInputView* text_input_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MagnifierTextInputTestHelper);
 };
 
 }  // namespace ash

@@ -41,7 +41,8 @@ class TestFocusView : public views::WidgetDelegateView {
   TestFocusView()
       : button_1_(AddChildView(std::make_unique<views::LabelButton>())),
         button_2_(AddChildView(std::make_unique<views::LabelButton>())) {}
-
+  TestFocusView(const TestFocusView&) = delete;
+  TestFocusView& operator=(const TestFocusView&) = delete;
   ~TestFocusView() override = default;
 
   gfx::Size CalculatePreferredSize() const override {
@@ -64,9 +65,6 @@ class TestFocusView : public views::WidgetDelegateView {
 
   views::LabelButton* button_1_;
   views::LabelButton* button_2_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestFocusView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +78,8 @@ class TestTextInputView : public views::WidgetDelegateView {
     AddChildView(text_field_);
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
-
+  TestTextInputView(const TestTextInputView&) = delete;
+  TestTextInputView& operator=(const TestTextInputView&) = delete;
   ~TestTextInputView() override = default;
 
   gfx::Size CalculatePreferredSize() const override {
@@ -91,8 +90,6 @@ class TestTextInputView : public views::WidgetDelegateView {
 
  private:
   views::Textfield* text_field_;  // owned by views hierarchy.
-
-  DISALLOW_COPY_AND_ASSIGN(TestTextInputView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/events/event_handler.h"
@@ -39,6 +38,9 @@ class ASH_EXPORT PartialMagnifierController : public ui::EventHandler {
   };
 
   PartialMagnifierController();
+  PartialMagnifierController(const PartialMagnifierController&) = delete;
+  PartialMagnifierController& operator=(const PartialMagnifierController&) =
+      delete;
   ~PartialMagnifierController() override;
 
   void AddObserver(Observer* observer);
@@ -88,8 +90,6 @@ class ASH_EXPORT PartialMagnifierController : public ui::EventHandler {
   std::unique_ptr<MagnifierGlass> magnifier_glass_;
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartialMagnifierController);
 };
 
 }  // namespace ash

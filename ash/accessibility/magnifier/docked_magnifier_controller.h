@@ -49,6 +49,9 @@ class ASH_EXPORT DockedMagnifierController
       public WindowTreeHostManager::Observer {
  public:
   DockedMagnifierController();
+  DockedMagnifierController(const DockedMagnifierController&) = delete;
+  DockedMagnifierController& operator=(const DockedMagnifierController&) =
+      delete;
   ~DockedMagnifierController() override;
 
   // The height of the black separator layer between the magnifier viewport and
@@ -217,8 +220,6 @@ class ASH_EXPORT DockedMagnifierController
   // Last move magnifier to rect time - used for ignoring caret updates for a
   // few milliseconds after the last move magnifier to rect call.
   base::TimeTicks last_move_magnifier_to_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(DockedMagnifierController);
 };
 
 }  // namespace ash
