@@ -1532,6 +1532,8 @@ external/wpt/webstorage/storage_local-manual.html [ Skip ]
 external/wpt/webstorage/storage_session-manual.html [ Skip ]
 external/wpt/xhr/send-authentication-existing-session-manual.htm [ Skip ]
 external/wpt/xhr/send-authentication-prompt-2-manual.htm [ Skip ]
+external/wpt/virtual-keyboard/virtual-keyboard-show-hide-manual.html [ Skip ]
+external/wpt/virtual-keyboard/virtual-keyboard-css-env-manual.html [ Skip ]
 
 # ==== Tests incompatible with the default WPT Origin Isolation start here ==VV
 # The section below lists web tests that are incompatible with the WPT Origin

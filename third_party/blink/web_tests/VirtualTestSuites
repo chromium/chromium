@@ -1137,5 +1137,10 @@
     "prefix": "disable-ua-ch-platform-feature",
     "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
     "args": ["--disable-features=UACHPlatformEnabledByDefault"]
+  },
+  {
+    "prefix": "virtual-keyboard",
+    "bases": ["external/wpt/virtual-keyboard"],
+    "args": ["--enable-blink-features=VirtualKeyboard"]
   }
 ]
