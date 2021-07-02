@@ -39,6 +39,7 @@ class WaitableEvent;
 }
 
 namespace gpu {
+class DCOMPTexture;
 class GpuChannelManager;
 class GpuChannelMessageFilter;
 class ImageDecodeAcceleratorStub;
@@ -181,6 +182,16 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   void DestroyStreamTexture(int32_t stream_id);
 #endif
 
+#if defined(OS_WIN)
+  bool CreateDCOMPTexture(
+      int32_t route_id,
+      mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver);
+
+  // Called by DCOMPTexture to remove the GpuChannel's reference to the
+  // DCOMPTexture.
+  void DestroyDCOMPTexture(int32_t route_id);
+#endif  // defined(OS_WIN)
+
   SharedImageStub* shared_image_stub() const {
     return shared_image_stub_.get();
   }
@@ -270,6 +281,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
 #if defined(OS_ANDROID)
   // Set of active StreamTextures.
   base::flat_map<int32_t, scoped_refptr<StreamTexture>> stream_textures_;
+#endif
+
+#if defined(OS_WIN)
+  // Set of active DCOMPTextures.
+  base::flat_map<int32_t, scoped_refptr<DCOMPTexture>> dcomp_textures_;
 #endif
 
   // State shared with the IO thread. Receives all GpuChannel interface messages

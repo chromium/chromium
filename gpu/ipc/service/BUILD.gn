@@ -91,11 +91,16 @@ component("service") {
   ldflags = []
   if (is_win) {
     sources += [
+      "dcomp_texture_win.cc",
+      "dcomp_texture_win.h",
       "gpu_memory_buffer_factory_dxgi.cc",
       "gpu_memory_buffer_factory_dxgi.h",
       "image_transport_surface_win.cc",
     ]
-    libs += [ "d3d11.lib" ]
+    libs += [
+      "d3d11.lib",
+      "dcomp.lib",
+    ]
   }
   if (is_mac) {
     sources += [

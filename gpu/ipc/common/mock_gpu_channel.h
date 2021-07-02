@@ -50,6 +50,12 @@ class MockGpuChannel : public mojom::GpuChannel {
                     mojo::PendingAssociatedReceiver<mojom::StreamTexture>,
                     CreateStreamTextureCallback));
 #endif  // defined(OS_ANDROID)
+#if defined(OS_WIN)
+  MOCK_METHOD3(CreateDCOMPTexture,
+               void(int32_t,
+                    mojo::PendingAssociatedReceiver<mojom::DCOMPTexture>,
+                    CreateDCOMPTextureCallback));
+#endif  // defined(OS_WIN)
   MOCK_METHOD4(WaitForTokenInRange,
                void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));
   MOCK_METHOD5(WaitForGetOffsetInRange,

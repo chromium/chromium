@@ -63,6 +63,10 @@
 #include "gpu/ipc/service/stream_texture_android.h"
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_WIN)
+#include "gpu/ipc/service/dcomp_texture_win.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -77,6 +81,17 @@ bool TryCreateStreamTexture(
   return channel->CreateStreamTexture(stream_id, std::move(receiver));
 }
 #endif  // defined(OS_ANDROID)
+
+#if defined(OS_WIN)
+bool TryCreateDCOMPTexture(
+    base::WeakPtr<GpuChannel> channel,
+    int32_t route_id,
+    mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver) {
+  if (!channel)
+    return false;
+  return channel->CreateDCOMPTexture(route_id, std::move(receiver));
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace
 
@@ -146,6 +161,12 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver,
       CreateStreamTextureCallback callback) override;
 #endif  // defined(OS_ANDROID)
+#if defined(OS_WIN)
+  void CreateDCOMPTexture(
+      int32_t route_id,
+      mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver,
+      CreateDCOMPTextureCallback callback) override;
+#endif  // defined(OS_WIN)
   void WaitForTokenInRange(int32_t routing_id,
                            int32_t start,
                            int32_t end,
@@ -288,6 +309,12 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
         break;
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_WIN)
+      case mojom::DeferredRequestParams::Tag::kDestroyDcompTexture:
+        routing_id = request->params->get_destroy_dcomp_texture();
+        break;
+#endif  // defined(OS_WIN)
+
       case mojom::DeferredRequestParams::Tag::kCommandBufferRequest:
         routing_id = request->params->get_command_buffer_request()->routing_id;
         break;
@@ -402,6 +429,24 @@ void GpuChannelMessageFilter::CreateStreamTexture(
 }
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_WIN)
+void GpuChannelMessageFilter::CreateDCOMPTexture(
+    int32_t route_id,
+    mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver,
+    CreateDCOMPTextureCallback callback) {
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    receiver_.reset();
+    return;
+  }
+  main_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TryCreateDCOMPTexture, gpu_channel_->AsWeakPtr(),
+                     route_id, std::move(receiver)),
+      std::move(callback));
+}
+#endif  // defined(OS_WIN)
+
 void GpuChannelMessageFilter::WaitForTokenInRange(
     int32_t routing_id,
     int32_t start,
@@ -483,6 +528,14 @@ GpuChannel::~GpuChannel() {
   }
   stream_textures_.clear();
 #endif  // OS_ANDROID
+
+#if defined(OS_WIN)
+  // Release any references to this channel held by DCOMPTexture.
+  for (auto& dcomp_texture : dcomp_textures_) {
+    dcomp_texture.second->ReleaseChannel();
+  }
+  dcomp_textures_.clear();
+#endif  // defined(OS_WIN)
 
   // Destroy filter first to stop posting tasks to scheduler.
   filter_->Destroy();
@@ -593,6 +646,12 @@ void GpuChannel::ExecuteDeferredRequest(
       break;
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_WIN)
+    case mojom::DeferredRequestParams::Tag::kDestroyDcompTexture:
+      DestroyDCOMPTexture(params->get_destroy_dcomp_texture());
+      break;
+#endif  // defined(OS_WIN)
+
     case mojom::DeferredRequestParams::Tag::kCommandBufferRequest: {
       mojom::DeferredCommandBufferRequest& request =
           *params->get_command_buffer_request();
@@ -695,6 +754,18 @@ void GpuChannel::DestroyStreamTexture(int32_t stream_id) {
   stream_textures_.erase(stream_id);
 }
 #endif
+
+#if defined(OS_WIN)
+void GpuChannel::DestroyDCOMPTexture(int32_t route_id) {
+  auto found = dcomp_textures_.find(route_id);
+  if (found == dcomp_textures_.end()) {
+    LOG(ERROR) << "Trying to destroy a non-existent dcomp texture.";
+    return;
+  }
+  found->second->ReleaseChannel();
+  dcomp_textures_.erase(route_id);
+}
+#endif  // defined(OS_WIN)
 
 // Helper to ensure CreateCommandBuffer below always invokes its response
 // callback.
@@ -867,6 +938,25 @@ bool GpuChannel::CreateStreamTexture(
   return true;
 }
 #endif
+
+#if defined(OS_WIN)
+bool GpuChannel::CreateDCOMPTexture(
+    int32_t route_id,
+    mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver) {
+  auto found = dcomp_textures_.find(route_id);
+  if (found != dcomp_textures_.end()) {
+    LOG(ERROR) << "Trying to create a DCOMPTexture with an existing route_id.";
+    return false;
+  }
+  scoped_refptr<DCOMPTexture> dcomp_texture =
+      DCOMPTexture::Create(this, route_id, std::move(receiver));
+  if (!dcomp_texture) {
+    return false;
+  }
+  dcomp_textures_.emplace(route_id, std::move(dcomp_texture));
+  return true;
+}
+#endif  // defined(OS_WIN)
 
 #if defined(OS_FUCHSIA)
 void GpuChannel::RegisterSysmemBufferCollection(

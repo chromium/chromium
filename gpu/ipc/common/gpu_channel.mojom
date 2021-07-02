@@ -183,6 +183,14 @@ interface GpuChannel {
       int32 stream_id,
       pending_associated_receiver<StreamTexture> receiver) => (bool success);
 
+  // Creates a DCOMPTexture and attaches to the provided `route_id`.
+  // Note: this `route_id` must not conflict with the routing ids for command
+  // buffers or shared image stub. Otherwise, unexpected behaviour can happen
+  // if `Add/RemoveRoute()` is called with a pre-existing routing id.
+  [Sync, EnableIf=is_win] CreateDCOMPTexture(
+      int32 route_id,
+      pending_associated_receiver<DCOMPTexture> receiver) => (bool success);
+
   // Instructs the command buffer to wait asynchronously until its State is
   // changed by the reader to have a current token value within the (inclusive)
   // range [start, end]. Once in range, the command buffer will reply and
@@ -347,6 +355,46 @@ interface StreamTextureClient {
                            VulkanYCbCrInfo? info);
 };
 
+// Interface to control a single DCOMPTexture instance. Implemented in the GPU
+// process and called by renderer clients.
+[EnableIf=is_win]
+interface DCOMPTexture {
+  // Starts sending DCOMP surface notifications via the `client`. Follows the
+  // pattern in `StreamTexture::StartListening()` to delay notifications until
+  // the client side is ready.
+  //
+  // TODO(crbug.com/999747): Investigate if we can remove this by having the
+  // `client` as a parameter to `CreateDCOMPTexture()`.
+  StartListening(pending_associated_remote<DCOMPTextureClient> client);
+
+  // Sets the size of DCOMPTexture.
+  SetTextureSize(gfx.mojom.Size size);
+
+  // Binds the DCOMPTexture to a DCOMP surface handle. The surface handle is
+  // provided as token registered with the DCOMP surface handle registry in the
+  // GPU process.
+  SetSurfaceHandle(mojo_base.mojom.UnguessableToken surface_handle_token);
+};
+
+// Interface used by GPU to notify the client of a DCOMPTexture instance about
+// SharedImage mailbox and DCOMP Surface Handle have been bound to the
+// DCOMPTexture instance. It also notifies client about the change in compositon
+// on-screen output video rectangle. Implemented by renderer clients and called
+// by DCOMPTexture instances in the GPU process.
+[EnableIf=is_win]
+interface DCOMPTextureClient {
+  // Informs the client that a SharedImage mailbox has been bound to the
+  // DCOMPTexture instance.
+  OnSharedImageMailboxBound(Mailbox mailbox);
+
+  // Informs the client that DCOMP surface handle has been bound to the
+  // DCOMPTexture instance.
+  OnDCOMPSurfaceHandleBound(bool success);
+
+  // Informs the client of a change in video composition parameter.
+  OnCompositionParamsChanged(gfx.mojom.Rect output_rect);
+};
+
 // DeferredRequests are batched locally by clients and sent to the service only
 // when flushing the channel via GpuChannelHost's EnsureFlush or VerifyFlush.
 struct DeferredRequest {
@@ -370,6 +418,11 @@ union DeferredRequestParams {
   // by this ID.
   [EnableIf=is_android]
   int32 destroy_stream_texture;
+
+  // Sent to indicate the client wants to destroy the DCOMPTexture identified
+  // by this ID.
+  [EnableIf=is_win]
+  int32 destroy_dcomp_texture;
 };
 
 // Details of a batched request targeting a specific command buffer.

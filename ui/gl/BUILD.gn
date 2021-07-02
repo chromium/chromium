@@ -320,6 +320,8 @@ component("gl") {
       "gl_fence_win.h",
       "gl_image_d3d.cc",
       "gl_image_d3d.h",
+      "gl_image_dcomp_surface.cc",
+      "gl_image_dcomp_surface.h",
       "gl_image_dxgi.cc",
       "gl_image_dxgi.h",
       "hdr_metadata_helper_win.cc",
