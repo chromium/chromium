@@ -107,6 +107,7 @@ class MetricsLogTest : public testing::Test {
     EXPECT_TRUE(system_profile.has_build_timestamp());
     EXPECT_TRUE(system_profile.has_app_version());
     EXPECT_TRUE(system_profile.has_channel());
+    EXPECT_FALSE(system_profile.has_is_extended_stable_channel());
     EXPECT_TRUE(system_profile.has_application_locale());
 
     const SystemProfileProto::OS& os = system_profile.os();
@@ -338,6 +339,20 @@ TEST_F(MetricsLogTest, RecordEnvironment) {
   EXPECT_EQ(kSessionId, log.uma_proto().session_id());
   // Check that the system profile on the log has the correct values set.
   CheckSystemProfile(log.system_profile());
+}
+
+TEST_F(MetricsLogTest, RecordEnvironmentExtendedStable) {
+  TestMetricsServiceClient client;
+  client.set_is_extended_stable_channel(true);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+
+  DelegatingProvider delegating_provider;
+  auto cpu_provider = std::make_unique<metrics::CPUMetricsProvider>();
+  delegating_provider.RegisterMetricsProvider(std::move(cpu_provider));
+  log.RecordEnvironment(&delegating_provider);
+
+  EXPECT_TRUE(log.system_profile().has_is_extended_stable_channel());
+  EXPECT_TRUE(log.system_profile().is_extended_stable_channel());
 }
 
 TEST_F(MetricsLogTest, RecordEnvironmentEnableDefault) {

@@ -63,6 +63,9 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   void set_reporting_is_managed(bool managed) {
     reporting_is_managed_ = managed;
   }
+  void set_is_extended_stable_channel(bool is_extended_stable_channel) {
+    is_extended_stable_channel_ = is_extended_stable_channel;
+  }
   void set_enable_default(EnableMetricsDefault enable_default) {
     enable_default_ = enable_default;
   }
@@ -78,6 +81,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   std::string version_string_;
   int32_t product_;
   bool reporting_is_managed_;
+  bool is_extended_stable_channel_;
   EnableMetricsDefault enable_default_;
   bool should_reset_client_ids_on_cloned_install_ = false;
   MetricsLogStore::StorageLimits storage_limits_;

@@ -20,6 +20,7 @@ TestMetricsServiceClient::TestMetricsServiceClient()
     : version_string_("5.0.322.0-64-devel"),
       product_(ChromeUserMetricsExtension::CHROME),
       reporting_is_managed_(false),
+      is_extended_stable_channel_(false),
       enable_default_(EnableMetricsDefault::DEFAULT_UNKNOWN),
       storage_limits_(MetricsServiceClient::GetStorageLimits()) {}
 
@@ -56,7 +57,7 @@ SystemProfileProto::Channel TestMetricsServiceClient::GetChannel() {
 }
 
 bool TestMetricsServiceClient::IsExtendedStableChannel() {
-  return false;
+  return is_extended_stable_channel_;
 }
 
 std::string TestMetricsServiceClient::GetVersionString() {
