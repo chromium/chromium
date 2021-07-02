@@ -252,18 +252,17 @@ int MemEntryImpl::WriteSparseData(int64_t offset,
   return result;
 }
 
-int MemEntryImpl::GetAvailableRange(int64_t offset,
-                                    int len,
-                                    int64_t* start,
-                                    CompletionOnceCallback callback) {
+RangeResult MemEntryImpl::GetAvailableRange(int64_t offset,
+                                            int len,
+                                            RangeResultCallback callback) {
   if (net_log_.IsCapturing()) {
     NetLogSparseOperation(net_log_, net::NetLogEventType::SPARSE_GET_RANGE,
                           net::NetLogEventPhase::BEGIN, offset, len);
   }
-  int result = InternalGetAvailableRange(offset, len, start);
+  RangeResult result = InternalGetAvailableRange(offset, len);
   if (net_log_.IsCapturing()) {
     net_log_.EndEvent(net::NetLogEventType::SPARSE_GET_RANGE, [&] {
-      return CreateNetLogGetAvailableRangeResultParams(*start, result);
+      return CreateNetLogGetAvailableRangeResultParams(result);
     });
   }
   return result;
@@ -541,17 +540,14 @@ int MemEntryImpl::InternalWriteSparseData(int64_t offset,
   return io_buf->BytesConsumed();
 }
 
-int MemEntryImpl::InternalGetAvailableRange(int64_t offset,
-                                            int len,
-                                            int64_t* start) {
+RangeResult MemEntryImpl::InternalGetAvailableRange(int64_t offset, int len) {
   DCHECK_EQ(PARENT_ENTRY, type());
-  DCHECK(start);
 
   if (!InitSparseInfo())
-    return net::ERR_CACHE_OPERATION_NOT_SUPPORTED;
+    return RangeResult(net::ERR_CACHE_OPERATION_NOT_SUPPORTED);
 
-  if (offset < 0 || len < 0 || !start)
-    return net::ERR_INVALID_ARGUMENT;
+  if (offset < 0 || len < 0)
+    return RangeResult(net::ERR_INVALID_ARGUMENT);
 
   // Truncate |len| to make sure that |offset + len| does not overflow.
   // This is OK since one can't write that far anyway.
@@ -584,12 +580,11 @@ int MemEntryImpl::InternalGetAvailableRange(int64_t offset,
 
       found.SpanningUnion(relevant_in_next_child);
     }
-    *start = found.min();
-    return found.Length();
+
+    return RangeResult(found.min(), found.Length());
   }
 
-  *start = offset;
-  return 0;
+  return RangeResult(offset, 0);
 }
 
 bool MemEntryImpl::InitSparseInfo() {

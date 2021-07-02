@@ -336,25 +336,23 @@ int SparseControl::StartIO(SparseOperation op,
   return net::ERR_IO_PENDING;
 }
 
-int SparseControl::GetAvailableRange(int64_t offset, int len, int64_t* start) {
+RangeResult SparseControl::GetAvailableRange(int64_t offset, int len) {
   DCHECK(init_);
   // We don't support simultaneous IO for sparse data.
   if (operation_ != kNoOperation)
-    return net::ERR_CACHE_OPERATION_NOT_SUPPORTED;
-
-  DCHECK(start);
+    return RangeResult(net::ERR_CACHE_OPERATION_NOT_SUPPORTED);
 
   range_found_ = false;
   int result = StartIO(kGetRangeOperation, offset, nullptr, len,
                        CompletionOnceCallback());
-  if (range_found_) {
-    *start = offset_;
-    return result;
-  }
+  if (range_found_)
+    return RangeResult(offset_, result);
 
-  // This is a failure. We want to return a valid start value in any case.
-  *start = offset;
-  return result < 0 ? result : 0;  // Don't mask error codes to the caller.
+  // This is a failure. We want to return a valid start value if it's just an
+  // empty range, though.
+  if (result < 0)
+    return RangeResult(static_cast<net::Error>(result));
+  return RangeResult(offset, 0);
 }
 
 void SparseControl::CancelIO() {
@@ -720,7 +718,8 @@ void SparseControl::DoChildrenIO() {
   // |finished_| to true.
   if (kGetRangeOperation == operation_ && entry_->net_log().IsCapturing()) {
     entry_->net_log().EndEvent(net::NetLogEventType::SPARSE_GET_RANGE, [&] {
-      return CreateNetLogGetAvailableRangeResultParams(offset_, result_);
+      return CreateNetLogGetAvailableRangeResultParams(
+          RangeResult(offset_, result_));
     });
   }
   if (finished_) {

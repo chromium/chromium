@@ -405,12 +405,12 @@ int EntryImpl::WriteSparseDataImpl(int64_t offset,
   return result;
 }
 
-int EntryImpl::GetAvailableRangeImpl(int64_t offset, int len, int64_t* start) {
+RangeResult EntryImpl::GetAvailableRangeImpl(int64_t offset, int len) {
   int result = InitSparseData();
   if (net::OK != result)
-    return result;
+    return RangeResult(static_cast<net::Error>(result));
 
-  return sparse_->GetAvailableRange(offset, len, start);
+  return sparse_->GetAvailableRange(offset, len);
 }
 
 void EntryImpl::CancelSparseIOImpl() {
@@ -922,16 +922,14 @@ int EntryImpl::WriteSparseData(int64_t offset,
   return net::ERR_IO_PENDING;
 }
 
-int EntryImpl::GetAvailableRange(int64_t offset,
-                                 int len,
-                                 int64_t* start,
-                                 CompletionOnceCallback callback) {
+RangeResult EntryImpl::GetAvailableRange(int64_t offset,
+                                         int len,
+                                         RangeResultCallback callback) {
   if (!background_queue_.get())
-    return net::ERR_UNEXPECTED;
+    return RangeResult(net::ERR_UNEXPECTED);
 
-  background_queue_->GetAvailableRange(this, offset, len, start,
-                                       std::move(callback));
-  return net::ERR_IO_PENDING;
+  background_queue_->GetAvailableRange(this, offset, len, std::move(callback));
+  return RangeResult(net::ERR_IO_PENDING);
 }
 
 bool EntryImpl::CouldBeSparse() const {

@@ -245,11 +245,11 @@ class FailableCacheEntry : public disk_cache::Entry {
                       CompletionOnceCallback callback) override {
     return entry_->WriteSparseData(offset, buf, buf_len, std::move(callback));
   }
-  int GetAvailableRange(int64_t offset,
-                        int len,
-                        int64_t* start,
-                        CompletionOnceCallback callback) override {
-    return entry_->GetAvailableRange(offset, len, start, std::move(callback));
+  disk_cache::RangeResult GetAvailableRange(
+      int64_t offset,
+      int len,
+      disk_cache::RangeResultCallback callback) override {
+    return entry_->GetAvailableRange(offset, len, std::move(callback));
   }
   bool CouldBeSparse() const override { return entry_->CouldBeSparse(); }
   void CancelSparseIO() override { entry_->CancelSparseIO(); }

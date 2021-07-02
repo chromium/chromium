@@ -71,7 +71,7 @@ class NET_EXPORT_PRIVATE EntryImpl
                           IOBuffer* buf,
                           int buf_len,
                           CompletionOnceCallback callback);
-  int GetAvailableRangeImpl(int64_t offset, int len, int64_t* start);
+  RangeResult GetAvailableRangeImpl(int64_t offset, int len);
   void CancelSparseIOImpl();
   int ReadyForSparseIOImpl(CompletionOnceCallback callback);
 
@@ -193,10 +193,9 @@ class NET_EXPORT_PRIVATE EntryImpl
                       IOBuffer* buf,
                       int buf_len,
                       CompletionOnceCallback callback) override;
-  int GetAvailableRange(int64_t offset,
-                        int len,
-                        int64_t* start,
-                        CompletionOnceCallback callback) override;
+  RangeResult GetAvailableRange(int64_t offset,
+                                int len,
+                                RangeResultCallback callback) override;
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;

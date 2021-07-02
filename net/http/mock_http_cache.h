@@ -79,10 +79,9 @@ class MockDiskEntry : public disk_cache::Entry,
                       IOBuffer* buf,
                       int buf_len,
                       CompletionOnceCallback callback) override;
-  int GetAvailableRange(int64_t offset,
-                        int len,
-                        int64_t* start,
-                        CompletionOnceCallback callback) override;
+  RangeResult GetAvailableRange(int64_t offset,
+                                int len,
+                                RangeResultCallback callback) override;
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
   net::Error ReadyForSparseIO(
@@ -123,15 +122,15 @@ class MockDiskEntry : public disk_cache::Entry,
   // if the consumer called Close on the MockDiskEntry.  We achieve that by
   // leveraging the fact that this class is reference counted.
   void CallbackLater(CompletionOnceCallback callback, int result);
+  void CallbackLater(base::OnceClosure callback);
 
-  void RunCallback(CompletionOnceCallback callback, int result);
+  void RunCallback(base::OnceClosure callback);
 
   // When |store| is true, stores the callback to be delivered later; otherwise
   // delivers any callback previously stored.
   static void StoreAndDeliverCallbacks(bool store,
                                        MockDiskEntry* entry,
-                                       CompletionOnceCallback callback,
-                                       int result);
+                                       base::OnceClosure callback);
 
   static const int kNumCacheEntryDataIndices = 3;
 

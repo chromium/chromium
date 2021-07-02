@@ -168,6 +168,7 @@ class DiskCacheTestWithCache : public DiskCacheTest {
                       int64_t offset,
                       net::IOBuffer* buf,
                       int len);
+  // TODO(morlovich): Port all the tests using this to RangeResult.
   int GetAvailableRange(disk_cache::Entry* entry,
                         int64_t offset,
                         int len,

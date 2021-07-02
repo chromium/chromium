@@ -41,6 +41,10 @@ class BackendIO : public BackgroundIO {
             BackendImpl* backend,
             EntryResultCallback callback);
 
+  BackendIO(InFlightIO* controller,
+            BackendImpl* backend,
+            RangeResultCallback callback);
+
   // Runs the actual operation on the background thread.
   void ExecuteOperation();
 
@@ -61,6 +65,11 @@ class BackendIO : public BackgroundIO {
     return !entry_result_callback_.is_null();
   }
   void RunEntryResultCallback();
+
+  bool has_range_result_callback() const {
+    return !range_result_callback_.is_null();
+  }
+  void RunRangeResultCallback();
 
   // The operations we proxy:
   void Init();
@@ -92,10 +101,7 @@ class BackendIO : public BackgroundIO {
                        int64_t offset,
                        net::IOBuffer* buf,
                        int buf_len);
-  void GetAvailableRange(EntryImpl* entry,
-                         int64_t offset,
-                         int len,
-                         int64_t* start);
+  void GetAvailableRange(EntryImpl* entry, int64_t offset, int len);
   void CancelSparseIO(EntryImpl* entry);
   void ReadyForSparseIO(EntryImpl* entry);
 
@@ -155,6 +161,10 @@ class BackendIO : public BackgroundIO {
   Entry* out_entry_;  // if set, already has the user's ref added.
   bool out_entry_opened_;
 
+  // For GetAvailableRange
+  RangeResultCallback range_result_callback_;
+  RangeResult range_result_;
+
   // The arguments of all the operations we proxy:
   std::string key_;
   base::Time initial_time_;
@@ -168,7 +178,6 @@ class BackendIO : public BackgroundIO {
   int buf_len_;
   bool truncate_;
   int64_t offset64_;
-  int64_t* start_;
   base::TimeTicks start_time_;
   base::OnceClosure task_;
 
@@ -230,8 +239,7 @@ class InFlightBackendIO : public InFlightIO {
   void GetAvailableRange(EntryImpl* entry,
                          int64_t offset,
                          int len,
-                         int64_t* start,
-                         net::CompletionOnceCallback callback);
+                         RangeResultCallback callback);
   void CancelSparseIO(EntryImpl* entry);
   void ReadyForSparseIO(EntryImpl* entry, net::CompletionOnceCallback callback);
 

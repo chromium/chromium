@@ -126,10 +126,9 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                       IOBuffer* buf,
                       int buf_len,
                       CompletionOnceCallback callback) override;
-  int GetAvailableRange(int64_t offset,
-                        int len,
-                        int64_t* start,
-                        CompletionOnceCallback callback) override;
+  RangeResult GetAvailableRange(int64_t offset,
+                                int len,
+                                RangeResultCallback callback) override;
   bool CouldBeSparse() const override;
   void CancelSparseIO() override {}
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
@@ -156,7 +155,7 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                         bool truncate);
   int InternalReadSparseData(int64_t offset, IOBuffer* buf, int buf_len);
   int InternalWriteSparseData(int64_t offset, IOBuffer* buf, int buf_len);
-  int InternalGetAvailableRange(int64_t offset, int len, int64_t* start);
+  RangeResult InternalGetAvailableRange(int64_t offset, int len);
 
   // Initializes the children map and sparse info. This method is only called
   // on a parent entry.

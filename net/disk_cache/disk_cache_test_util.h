@@ -62,6 +62,29 @@ class TestEntryResultCompletionCallback
   DISALLOW_COPY_AND_ASSIGN(TestEntryResultCompletionCallback);
 };
 
+// Like net::TestCompletionCallback, but for RangeResultCallback.
+struct RangeResultIsPendingHelper {
+  bool operator()(const disk_cache::RangeResult& result) const {
+    return result.net_error == net::ERR_IO_PENDING;
+  }
+};
+
+class TestRangeResultCompletionCallback
+    : public net::internal::TestCompletionCallbackTemplate<
+          disk_cache::RangeResult,
+          RangeResultIsPendingHelper> {
+ public:
+  TestRangeResultCompletionCallback();
+  ~TestRangeResultCompletionCallback() override;
+
+  disk_cache::RangeResultCallback callback();
+
+ private:
+  // Reference -> Value adapter --- disk_cache wants reference for callback,
+  // base class wants a value.
+  void HelpSetResult(const disk_cache::RangeResult& result);
+};
+
 // -----------------------------------------------------------------------
 
 // Simple helper to deal with the message loop on a test.

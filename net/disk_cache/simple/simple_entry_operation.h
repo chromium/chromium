@@ -92,8 +92,7 @@ class SimpleEntryOperation {
       SimpleEntryImpl* entry,
       int64_t sparse_offset,
       int length,
-      int64_t* out_start,
-      CompletionOnceCallback callback);
+      RangeResultCallback callback);
   static SimpleEntryOperation DoomOperation(SimpleEntryImpl* entry,
                                             CompletionOnceCallback callback);
 
@@ -104,6 +103,9 @@ class SimpleEntryOperation {
   EntryResultCallback ReleaseEntryResultCallback() {
     return std::move(entry_callback_);
   }
+  RangeResultCallback ReleaseRangeResultCalback() {
+    return std::move(range_callback_);
+  }
 
   EntryResultState entry_result_state() { return entry_result_state_; }
 
@@ -112,7 +114,6 @@ class SimpleEntryOperation {
   int offset() const { return offset_; }
   int64_t sparse_offset() const { return sparse_offset_; }
   int length() const { return length_; }
-  int64_t* out_start() { return out_start_; }
   net::IOBuffer* buf() { return buf_.get(); }
   bool truncate() const { return truncate_; }
   bool optimistic() const { return optimistic_; }
@@ -124,7 +125,6 @@ class SimpleEntryOperation {
                        int offset,
                        int64_t sparse_offset,
                        int length,
-                       int64_t* out_start,
                        EntryOperationType type,
                        OpenEntryIndexEnum index_state,
                        int index,
@@ -146,7 +146,7 @@ class SimpleEntryOperation {
   const int length_;
 
   // Used in get available range operations.
-  int64_t* const out_start_;
+  RangeResultCallback range_callback_;
 
   const EntryOperationType type_;
   // Used in the "open or create" operation.

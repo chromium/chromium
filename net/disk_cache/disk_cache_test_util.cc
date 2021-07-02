@@ -92,6 +92,22 @@ TestEntryResultCompletionCallback::callback() {
                         base::Unretained(this));
 }
 
+TestRangeResultCompletionCallback::TestRangeResultCompletionCallback() =
+    default;
+
+TestRangeResultCompletionCallback::~TestRangeResultCompletionCallback() =
+    default;
+
+disk_cache::RangeResultCallback TestRangeResultCompletionCallback::callback() {
+  return base::BindOnce(&TestRangeResultCompletionCallback::HelpSetResult,
+                        base::Unretained(this));
+}
+
+void TestRangeResultCompletionCallback::HelpSetResult(
+    const disk_cache::RangeResult& result) {
+  SetResult(result);
+}
+
 // -----------------------------------------------------------------------
 
 MessageLoopHelper::MessageLoopHelper()

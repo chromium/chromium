@@ -107,14 +107,14 @@ void NetLogSparseReadWrite(const net::NetLogWithSource& net_log,
   });
 }
 
-base::Value CreateNetLogGetAvailableRangeResultParams(int64_t start,
-                                                      int result) {
+base::Value CreateNetLogGetAvailableRangeResultParams(
+    disk_cache::RangeResult result) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  if (result > 0) {
-    dict.SetIntKey("length", result);
-    dict.SetKey("start", net::NetLogNumberValue(start));
+  if (result.net_error == net::OK) {
+    dict.SetIntKey("length", result.available_len);
+    dict.SetKey("start", net::NetLogNumberValue(result.start));
   } else {
-    dict.SetIntKey("net_error", result);
+    dict.SetIntKey("net_error", result.net_error);
   }
   return dict;
 }

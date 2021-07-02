@@ -134,10 +134,9 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
                       net::IOBuffer* buf,
                       int buf_len,
                       CompletionOnceCallback callback) override;
-  int GetAvailableRange(int64_t offset,
-                        int len,
-                        int64_t* start,
-                        CompletionOnceCallback callback) override;
+  RangeResult GetAvailableRange(int64_t offset,
+                                int len,
+                                RangeResultCallback callback) override;
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
@@ -272,8 +271,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
 
   void GetAvailableRangeInternal(int64_t sparse_offset,
                                  int len,
-                                 int64_t* out_start,
-                                 CompletionOnceCallback callback);
+                                 RangeResultCallback callback);
 
   void DoomEntryInternal(CompletionOnceCallback callback);
 
@@ -293,6 +291,11 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // point it is.
   void CloseOperationComplete(
       std::unique_ptr<SimpleEntryCloseResults> in_results);
+
+  // Internal utility method used by other completion methods.
+  // Updaties state and dooms on errors.
+  void UpdateStateAfterOperationComplete(const SimpleEntryStat& entry_stat,
+                                         int result);
 
   // Internal utility method used by other completion methods. Calls
   // |completion_callback| after updating state and dooming on errors.
@@ -328,8 +331,8 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
                                     std::unique_ptr<int> result);
 
   void GetAvailableRangeOperationComplete(
-      CompletionOnceCallback completion_callback,
-      std::unique_ptr<int> result);
+      RangeResultCallback completion_callback,
+      std::unique_ptr<RangeResult> result);
 
   // Called after an asynchronous doom completes.
   void DoomOperationComplete(CompletionOnceCallback callback,

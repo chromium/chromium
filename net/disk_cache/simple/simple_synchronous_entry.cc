@@ -875,8 +875,7 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
 }
 
 void SimpleSynchronousEntry::GetAvailableRange(const SparseRequest& in_entry_op,
-                                               int64_t* out_start,
-                                               int* out_result) {
+                                               RangeResult* out_result) {
   DCHECK(initialized_);
   int64_t offset = in_entry_op.sparse_offset;
   int len = in_entry_op.buf_len;
@@ -907,8 +906,8 @@ void SimpleSynchronousEntry::GetAvailableRange(const SparseRequest& in_entry_op,
   }
 
   int64_t len_from_start = len - (start - offset);
-  *out_start = start;
-  *out_result = static_cast<int>(std::min(avail_so_far, len_from_start));
+  *out_result = RangeResult(
+      start, static_cast<int>(std::min(avail_so_far, len_from_start)));
 }
 
 int SimpleSynchronousEntry::CheckEOFRecord(base::File* file,

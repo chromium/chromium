@@ -49,6 +49,13 @@ BackendIO::BackendIO(InFlightIO* controller,
   entry_result_callback_ = std::move(callback);
 }
 
+BackendIO::BackendIO(InFlightIO* controller,
+                     BackendImpl* backend,
+                     RangeResultCallback callback)
+    : BackendIO(controller, backend) {
+  range_result_callback_ = std::move(callback);
+}
+
 BackendIO::BackendIO(InFlightIO* controller, BackendImpl* backend)
     : BackgroundIO(controller),
       backend_(backend),
@@ -61,8 +68,7 @@ BackendIO::BackendIO(InFlightIO* controller, BackendImpl* backend)
       offset_(0),
       buf_len_(0),
       truncate_(false),
-      offset64_(0),
-      start_(nullptr) {
+      offset64_(0) {
   start_time_ = base::TimeTicks::Now();
 }
 
@@ -113,6 +119,10 @@ void BackendIO::RunEntryResultCallback() {
     entry_result = EntryResult::MakeCreated(out_entry_);
   }
   std::move(entry_result_callback_).Run(std::move(entry_result));
+}
+
+void BackendIO::RunRangeResultCallback() {
+  std::move(range_result_callback_).Run(range_result_);
 }
 
 void BackendIO::Init() {
@@ -236,15 +246,11 @@ void BackendIO::WriteSparseData(EntryImpl* entry,
   buf_len_ = buf_len;
 }
 
-void BackendIO::GetAvailableRange(EntryImpl* entry,
-                                  int64_t offset,
-                                  int len,
-                                  int64_t* start) {
+void BackendIO::GetAvailableRange(EntryImpl* entry, int64_t offset, int len) {
   operation_ = OP_GET_RANGE;
   entry_ = entry;
   offset64_ = offset;
   buf_len_ = len;
-  start_ = start;
 }
 
 void BackendIO::CancelSparseIO(EntryImpl* entry) {
@@ -384,7 +390,8 @@ void BackendIO::ExecuteEntryOperation() {
           base::BindOnce(&BackendIO::OnIOComplete, this));
       break;
     case OP_GET_RANGE:
-      result_ = entry_->GetAvailableRangeImpl(offset64_, buf_len_, start_);
+      range_result_ = entry_->GetAvailableRangeImpl(offset64_, buf_len_);
+      result_ = range_result_.net_error;
       break;
     case OP_CANCEL_IO:
       entry_->CancelSparseIOImpl();
@@ -581,15 +588,13 @@ void InFlightBackendIO::WriteSparseData(EntryImpl* entry,
   PostOperation(FROM_HERE, operation.get());
 }
 
-void InFlightBackendIO::GetAvailableRange(
-    EntryImpl* entry,
-    int64_t offset,
-    int len,
-    int64_t* start,
-    net::CompletionOnceCallback callback) {
+void InFlightBackendIO::GetAvailableRange(EntryImpl* entry,
+                                          int64_t offset,
+                                          int len,
+                                          RangeResultCallback callback) {
   scoped_refptr<BackendIO> operation(
       new BackendIO(this, backend_, std::move(callback)));
-  operation->GetAvailableRange(entry, offset, len, start);
+  operation->GetAvailableRange(entry, offset, len);
   PostOperation(FROM_HERE, operation.get());
 }
 
@@ -619,6 +624,11 @@ void InFlightBackendIO::OnOperationComplete(BackgroundIO* operation,
 
   if (op->has_callback() && (!cancel || op->IsEntryOperation()))
     op->RunCallback(op->result());
+
+  if (op->has_range_result_callback()) {
+    DCHECK(op->IsEntryOperation());
+    op->RunRangeResultCallback();
+  }
 
   if (op->has_entry_result_callback() && !cancel) {
     DCHECK(!op->IsEntryOperation());

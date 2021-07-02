@@ -566,13 +566,12 @@ int SimpleEntryImpl::WriteSparseData(int64_t offset,
   return net::ERR_IO_PENDING;
 }
 
-int SimpleEntryImpl::GetAvailableRange(int64_t offset,
-                                       int len,
-                                       int64_t* start,
-                                       CompletionOnceCallback callback) {
+RangeResult SimpleEntryImpl::GetAvailableRange(int64_t offset,
+                                               int len,
+                                               RangeResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (offset < 0 || len < 0)
-    return net::ERR_INVALID_ARGUMENT;
+    return RangeResult(net::ERR_INVALID_ARGUMENT);
 
   // Truncate |len| to make sure that |offset + len| does not overflow.
   // This is OK since one can't write that far anyway.
@@ -582,8 +581,8 @@ int SimpleEntryImpl::GetAvailableRange(int64_t offset,
 
   ScopedOperationRunner operation_runner(this);
   pending_operations_.push(SimpleEntryOperation::GetAvailableRangeOperation(
-      this, offset, len, start, std::move(callback)));
-  return net::ERR_IO_PENDING;
+      this, offset, len, std::move(callback)));
+  return RangeResult(net::ERR_IO_PENDING);
 }
 
 bool SimpleEntryImpl::CouldBeSparse() const {
@@ -766,8 +765,7 @@ void SimpleEntryImpl::RunNextOperationIfNeeded() {
         break;
       case SimpleEntryOperation::TYPE_GET_AVAILABLE_RANGE:
         GetAvailableRangeInternal(operation.sparse_offset(), operation.length(),
-                                  operation.out_start(),
-                                  operation.ReleaseCallback());
+                                  operation.ReleaseRangeResultCalback());
         break;
       case SimpleEntryOperation::TYPE_DOOM:
         DoomEntryInternal(operation.ReleaseCallback());
@@ -1308,18 +1306,17 @@ void SimpleEntryImpl::WriteSparseDataInternal(
                                              std::move(reply), entry_priority_);
 }
 
-void SimpleEntryImpl::GetAvailableRangeInternal(
-    int64_t sparse_offset,
-    int len,
-    int64_t* out_start,
-    net::CompletionOnceCallback callback) {
+void SimpleEntryImpl::GetAvailableRangeInternal(int64_t sparse_offset,
+                                                int len,
+                                                RangeResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScopedOperationRunner operation_runner(this);
 
   if (state_ == STATE_FAILURE || state_ == STATE_UNINITIALIZED) {
     if (!callback.is_null()) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), net::ERR_FAILED));
+          FROM_HERE,
+          base::BindOnce(std::move(callback), RangeResult(net::ERR_FAILED)));
     }
     // |this| may be destroyed after return here.
     return;
@@ -1328,12 +1325,11 @@ void SimpleEntryImpl::GetAvailableRangeInternal(
   DCHECK_EQ(STATE_READY, state_);
   state_ = STATE_IO_PENDING;
 
-  std::unique_ptr<int> result(new int());
-  OnceClosure task =
-      base::BindOnce(&SimpleSynchronousEntry::GetAvailableRange,
-                     base::Unretained(synchronous_entry_),
-                     SimpleSynchronousEntry::SparseRequest(sparse_offset, len),
-                     out_start, result.get());
+  auto result = std::make_unique<RangeResult>();
+  OnceClosure task = base::BindOnce(
+      &SimpleSynchronousEntry::GetAvailableRange,
+      base::Unretained(synchronous_entry_),
+      SimpleSynchronousEntry::SparseRequest(sparse_offset, len), result.get());
   OnceClosure reply =
       base::BindOnce(&SimpleEntryImpl::GetAvailableRangeOperationComplete, this,
                      std::move(callback), std::move(result));
@@ -1494,8 +1490,7 @@ void SimpleEntryImpl::CreationOperationComplete(
   }
 }
 
-void SimpleEntryImpl::EntryOperationComplete(
-    net::CompletionOnceCallback completion_callback,
+void SimpleEntryImpl::UpdateStateAfterOperationComplete(
     const SimpleEntryStat& entry_stat,
     int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1508,7 +1503,13 @@ void SimpleEntryImpl::EntryOperationComplete(
     state_ = STATE_READY;
     UpdateDataFromEntryStat(entry_stat);
   }
+}
 
+void SimpleEntryImpl::EntryOperationComplete(
+    net::CompletionOnceCallback completion_callback,
+    const SimpleEntryStat& entry_stat,
+    int result) {
+  UpdateStateAfterOperationComplete(entry_stat, result);
   if (!completion_callback.is_null()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(completion_callback), result));
@@ -1623,15 +1624,20 @@ void SimpleEntryImpl::WriteSparseOperationComplete(
 }
 
 void SimpleEntryImpl::GetAvailableRangeOperationComplete(
-    net::CompletionOnceCallback completion_callback,
-    std::unique_ptr<int> result) {
+    RangeResultCallback completion_callback,
+    std::unique_ptr<RangeResult> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(synchronous_entry_);
   DCHECK(result);
 
   SimpleEntryStat entry_stat(last_used_, last_modified_, data_size_,
                              sparse_data_size_);
-  EntryOperationComplete(std::move(completion_callback), entry_stat, *result);
+  UpdateStateAfterOperationComplete(entry_stat, result->net_error);
+  if (!completion_callback.is_null()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(completion_callback), *result));
+  }
+  RunNextOperationIfNeeded();
 }
 
 void SimpleEntryImpl::DoomOperationComplete(

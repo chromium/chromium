@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
+#include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -45,6 +46,7 @@ using net::test::IsOk;
 using base::Time;
 using disk_cache::EntryResult;
 using disk_cache::EntryResultCallback;
+using disk_cache::RangeResult;
 using disk_cache::ScopedEntryPtr;
 
 // Tests that can run with different types of caches.
@@ -1734,57 +1736,66 @@ void DiskCacheEntryTest::GetAvailableRangeTest() {
   EXPECT_EQ(kSize, WriteSparseData(entry, 0x20F4400, buf.get(), kSize));
 
   // We stop at the first empty block.
-  int64_t start;
-  net::TestCompletionCallback cb;
-  int rv = entry->GetAvailableRange(
-      0x20F0000, kSize * 2, &start, cb.callback());
-  EXPECT_EQ(kSize, cb.GetResult(rv));
-  EXPECT_EQ(0x20F0000, start);
+  TestRangeResultCompletionCallback cb;
+  RangeResult result = cb.GetResult(
+      entry->GetAvailableRange(0x20F0000, kSize * 2, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(kSize, result.available_len);
+  EXPECT_EQ(0x20F0000, result.start);
 
-  start = 0;
-  rv = entry->GetAvailableRange(0, kSize, &start, cb.callback());
-  EXPECT_EQ(0, cb.GetResult(rv));
-  rv = entry->GetAvailableRange(
-      0x20F0000 - kSize, kSize, &start, cb.callback());
-  EXPECT_EQ(0, cb.GetResult(rv));
-  rv = entry->GetAvailableRange(0, 0x2100000, &start, cb.callback());
-  EXPECT_EQ(kSize, cb.GetResult(rv));
-  EXPECT_EQ(0x20F0000, start);
+  result = cb.GetResult(entry->GetAvailableRange(0, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+
+  result = cb.GetResult(
+      entry->GetAvailableRange(0x20F0000 - kSize, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+
+  result = cb.GetResult(entry->GetAvailableRange(0, 0x2100000, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(kSize, result.available_len);
+  EXPECT_EQ(0x20F0000, result.start);
 
   // We should be able to Read based on the results of GetAvailableRange.
-  start = -1;
-  rv = entry->GetAvailableRange(0x2100000, kSize, &start, cb.callback());
-  EXPECT_EQ(0, cb.GetResult(rv));
-  rv = entry->ReadSparseData(start, buf.get(), kSize, cb.callback());
-  EXPECT_EQ(0, cb.GetResult(rv));
+  net::TestCompletionCallback read_cb;
+  result =
+      cb.GetResult(entry->GetAvailableRange(0x2100000, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+  int rv =
+      entry->ReadSparseData(result.start, buf.get(), kSize, read_cb.callback());
+  EXPECT_EQ(0, read_cb.GetResult(rv));
 
-  start = 0;
-  rv = entry->GetAvailableRange(0x20F2000, kSize, &start, cb.callback());
-  EXPECT_EQ(0x2000, cb.GetResult(rv));
-  EXPECT_EQ(0x20F2000, start);
-  EXPECT_EQ(0x2000, ReadSparseData(entry, start, buf.get(), kSize));
+  result =
+      cb.GetResult(entry->GetAvailableRange(0x20F2000, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0x2000, result.available_len);
+  EXPECT_EQ(0x20F2000, result.start);
+  EXPECT_EQ(0x2000, ReadSparseData(entry, result.start, buf.get(), kSize));
 
   // Make sure that we respect the |len| argument.
-  start = 0;
-  rv = entry->GetAvailableRange(
-      0x20F0001 - kSize, kSize, &start, cb.callback());
-  EXPECT_EQ(1, cb.GetResult(rv));
-  EXPECT_EQ(0x20F0000, start);
+  result = cb.GetResult(
+      entry->GetAvailableRange(0x20F0001 - kSize, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(1, result.available_len);
+  EXPECT_EQ(0x20F0000, result.start);
 
   // Use very small ranges. Write at offset 50.
   const int kTinyLen = 10;
   EXPECT_EQ(kTinyLen, WriteSparseData(entry, 50, buf.get(), kTinyLen));
 
-  start = -1;
-  rv = entry->GetAvailableRange(kTinyLen * 2, kTinyLen, &start, cb.callback());
-  EXPECT_EQ(0, cb.GetResult(rv));
-  EXPECT_EQ(kTinyLen * 2, start);
+  result = cb.GetResult(
+      entry->GetAvailableRange(kTinyLen * 2, kTinyLen, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+  EXPECT_EQ(kTinyLen * 2, result.start);
 
   // Get a huge range with maximum boundary
-  start = -1;
-  rv = entry->GetAvailableRange(0x2100000, std::numeric_limits<int32_t>::max(),
-                                &start, cb.callback());
-  EXPECT_EQ(0, cb.GetResult(rv));
+  result = cb.GetResult(entry->GetAvailableRange(
+      0x2100000, std::numeric_limits<int32_t>::max(), cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
 
   entry->Close();
 }
@@ -1831,24 +1842,27 @@ TEST_F(DiskCacheEntryTest, GetAvailableRangeBlockFileDiscontinuous) {
   // Try to query a range starting from that block 0.
   // The cache tracks: [0, 612) [1024, 3072).
   // The request is for: [812, 2059) so response should be [1024, 2059), which
-  // has lenth = 1035. Previously this return a negative number for rv.
-  int64_t start = -1;
-  net::TestCompletionCallback cb;
-  int rv = entry->GetAvailableRange(812, 1247, &start, cb.callback());
-  EXPECT_EQ(1035, cb.GetResult(rv));
-  EXPECT_EQ(1024, start);
+  // has length = 1035. Previously this return a negative number for rv.
+  TestRangeResultCompletionCallback cb;
+  RangeResult result =
+      cb.GetResult(entry->GetAvailableRange(812, 1247, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(1035, result.available_len);
+  EXPECT_EQ(1024, result.start);
 
   // Now query [512, 1536). This matches both [512, 612) and [1024, 1536),
   // so this should return [512, 612).
-  rv = entry->GetAvailableRange(512, 1024, &start, cb.callback());
-  EXPECT_EQ(100, cb.GetResult(rv));
-  EXPECT_EQ(512, start);
+  result = cb.GetResult(entry->GetAvailableRange(512, 1024, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(100, result.available_len);
+  EXPECT_EQ(512, result.start);
 
   // Now query next portion, [612, 1636). This now just should produce
   // [1024, 1636)
-  rv = entry->GetAvailableRange(612, 1024, &start, cb.callback());
-  EXPECT_EQ(612, cb.GetResult(rv));
-  EXPECT_EQ(1024, start);
+  result = cb.GetResult(entry->GetAvailableRange(612, 1024, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(612, result.available_len);
+  EXPECT_EQ(1024, result.start);
 
   // Do a continuous small write, this one at [3072, 3684).
   // This means the cache tracks [1024, 3072) via bitmaps and [3072, 3684)
@@ -1857,9 +1871,10 @@ TEST_F(DiskCacheEntryTest, GetAvailableRangeBlockFileDiscontinuous) {
                                         buf_small.get(), kSmallSize));
 
   // Query [2048, 4096). Should get [2048, 3684)
-  rv = entry->GetAvailableRange(2048, 2048, &start, cb.callback());
-  EXPECT_EQ(1636, cb.GetResult(rv));
-  EXPECT_EQ(2048, start);
+  result = cb.GetResult(entry->GetAvailableRange(2048, 2048, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(1636, result.available_len);
+  EXPECT_EQ(2048, result.start);
 
   // Now write at [4096, 4708). Since only one sub-kb thing is tracked, this
   // now tracks  [1024, 3072) via bitmaps and [4096, 4708) as the last write.
@@ -1867,22 +1882,26 @@ TEST_F(DiskCacheEntryTest, GetAvailableRangeBlockFileDiscontinuous) {
                                         buf_small.get(), kSmallSize));
 
   // Query [2048, 4096). Should get [2048, 3072)
-  rv = entry->GetAvailableRange(2048, 2048, &start, cb.callback());
-  EXPECT_EQ(1024, cb.GetResult(rv));
-  EXPECT_EQ(2048, start);
+  result = cb.GetResult(entry->GetAvailableRange(2048, 2048, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(1024, result.available_len);
+  EXPECT_EQ(2048, result.start);
 
   // Query 2K more after that: [3072, 5120). Should get [4096, 4708)
-  rv = entry->GetAvailableRange(3072, 2048, &start, cb.callback());
-  EXPECT_EQ(612, cb.GetResult(rv));
-  EXPECT_EQ(4096, start);
+  result = cb.GetResult(entry->GetAvailableRange(3072, 2048, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(612, result.available_len);
+  EXPECT_EQ(4096, result.start);
 
   // Also double-check that offsets within later children are correctly
   // computed.
   EXPECT_EQ(kSmallSize, WriteSparseData(entry, /* offset = */ 0x200400,
                                         buf_small.get(), kSmallSize));
-  rv = entry->GetAvailableRange(0x100000, 0x200000, &start, cb.callback());
-  EXPECT_EQ(kSmallSize, cb.GetResult(rv));
-  EXPECT_EQ(0x200400, start);
+  result =
+      cb.GetResult(entry->GetAvailableRange(0x100000, 0x200000, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(kSmallSize, result.available_len);
+  EXPECT_EQ(0x200400, result.start);
 
   entry->Close();
 }
@@ -1908,42 +1927,46 @@ TEST_F(DiskCacheEntryTest, SparseWriteDropped) {
   int offset = 1024 - 500;
   int rv = 0;
   net::TestCompletionCallback cb;
-  int64_t start;
+  TestRangeResultCompletionCallback range_cb;
+  RangeResult result;
   for (int i = 0; i < 5; i++) {
     // Check result of last GetAvailableRange.
-    EXPECT_EQ(0, rv);
+    EXPECT_EQ(0, result.available_len);
 
     rv = entry->WriteSparseData(offset, buf_1.get(), kSize, cb.callback());
     EXPECT_EQ(kSize, cb.GetResult(rv));
 
-    rv = entry->GetAvailableRange(offset - 100, kSize, &start, cb.callback());
-    EXPECT_EQ(0, cb.GetResult(rv));
+    result = range_cb.GetResult(
+        entry->GetAvailableRange(offset - 100, kSize, range_cb.callback()));
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(0, result.available_len);
 
-    rv = entry->GetAvailableRange(offset, kSize, &start, cb.callback());
-    rv = cb.GetResult(rv);
-    if (!rv) {
+    result = range_cb.GetResult(
+        entry->GetAvailableRange(offset, kSize, range_cb.callback()));
+    if (!result.available_len) {
       rv = entry->ReadSparseData(offset, buf_2.get(), kSize, cb.callback());
       EXPECT_EQ(0, cb.GetResult(rv));
-      rv = 0;
     }
     offset += 1024 * i + 100;
   }
 
   // The last write started 100 bytes below a bundary, so there should be 80
   // bytes after the boundary.
-  EXPECT_EQ(80, rv);
-  EXPECT_EQ(1024 * 7, start);
-  rv = entry->ReadSparseData(start, buf_2.get(), kSize, cb.callback());
+  EXPECT_EQ(80, result.available_len);
+  EXPECT_EQ(1024 * 7, result.start);
+  rv = entry->ReadSparseData(result.start, buf_2.get(), kSize, cb.callback());
   EXPECT_EQ(80, cb.GetResult(rv));
   EXPECT_EQ(0, memcmp(buf_1.get()->data() + 100, buf_2.get()->data(), 80));
 
   // And even that part is dropped when another write changes the offset.
-  offset = start;
+  offset = result.start;
   rv = entry->WriteSparseData(0, buf_1.get(), kSize, cb.callback());
   EXPECT_EQ(kSize, cb.GetResult(rv));
 
-  rv = entry->GetAvailableRange(offset, kSize, &start, cb.callback());
-  EXPECT_EQ(0, cb.GetResult(rv));
+  result = range_cb.GetResult(
+      entry->GetAvailableRange(offset, kSize, range_cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
   entry->Close();
 }
 
@@ -1963,16 +1986,19 @@ TEST_F(DiskCacheEntryTest, SparseSquentialWriteNotDropped) {
 
   // Any starting offset is fine as long as it is 1024-bytes aligned.
   int rv = 0;
+  RangeResult result;
   net::TestCompletionCallback cb;
-  int64_t start;
+  TestRangeResultCompletionCallback range_cb;
   int64_t offset = 1024 * 11;
   for (; offset < 20000; offset += kSize) {
     rv = entry->WriteSparseData(offset, buf_1.get(), kSize, cb.callback());
     EXPECT_EQ(kSize, cb.GetResult(rv));
 
-    rv = entry->GetAvailableRange(offset, kSize, &start, cb.callback());
-    EXPECT_EQ(kSize, cb.GetResult(rv));
-    EXPECT_EQ(offset, start);
+    result = range_cb.GetResult(
+        entry->GetAvailableRange(offset, kSize, range_cb.callback()));
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(kSize, result.available_len);
+    EXPECT_EQ(offset, result.start);
 
     rv = entry->ReadSparseData(offset, buf_2.get(), kSize, cb.callback());
     EXPECT_EQ(kSize, cb.GetResult(rv));
@@ -1985,9 +2011,11 @@ TEST_F(DiskCacheEntryTest, SparseSquentialWriteNotDropped) {
   // Verify again the last write made.
   ASSERT_THAT(OpenEntry(key, &entry), IsOk());
   offset -= kSize;
-  rv = entry->GetAvailableRange(offset, kSize, &start, cb.callback());
-  EXPECT_EQ(kSize, cb.GetResult(rv));
-  EXPECT_EQ(offset, start);
+  result = range_cb.GetResult(
+      entry->GetAvailableRange(offset, kSize, range_cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(kSize, result.available_len);
+  EXPECT_EQ(offset, result.start);
 
   rv = entry->ReadSparseData(offset, buf_2.get(), kSize, cb.callback());
   EXPECT_EQ(kSize, cb.GetResult(rv));
@@ -2100,40 +2128,46 @@ TEST_F(DiskCacheEntryTest, MemoryOnlyMisalignedGetAvailableRange) {
   EXPECT_EQ(8192, entry->WriteSparseData(50000, buf.get(), 8192,
                                          net::CompletionOnceCallback()));
 
-  int64_t start;
-  net::TestCompletionCallback cb;
+  TestRangeResultCompletionCallback cb;
   // Test that we stop at a discontinuous child at the second block.
-  int rv = entry->GetAvailableRange(0, 10000, &start, cb.callback());
-  EXPECT_EQ(1024, cb.GetResult(rv));
-  EXPECT_EQ(0, start);
+  RangeResult result =
+      cb.GetResult(entry->GetAvailableRange(0, 10000, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(1024, result.available_len);
+  EXPECT_EQ(0, result.start);
 
   // Test that number of bytes is reported correctly when we start from the
   // middle of a filled region.
-  rv = entry->GetAvailableRange(512, 10000, &start, cb.callback());
-  EXPECT_EQ(512, cb.GetResult(rv));
-  EXPECT_EQ(512, start);
+  result = cb.GetResult(entry->GetAvailableRange(512, 10000, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(512, result.available_len);
+  EXPECT_EQ(512, result.start);
 
   // Test that we found bytes in the child of next block.
-  rv = entry->GetAvailableRange(1024, 10000, &start, cb.callback());
-  EXPECT_EQ(1024, cb.GetResult(rv));
-  EXPECT_EQ(5120, start);
+  result = cb.GetResult(entry->GetAvailableRange(1024, 10000, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(1024, result.available_len);
+  EXPECT_EQ(5120, result.start);
 
   // Test that the desired length is respected. It starts within a filled
   // region.
-  rv = entry->GetAvailableRange(5500, 512, &start, cb.callback());
-  EXPECT_EQ(512, cb.GetResult(rv));
-  EXPECT_EQ(5500, start);
+  result = cb.GetResult(entry->GetAvailableRange(5500, 512, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(512, result.available_len);
+  EXPECT_EQ(5500, result.start);
 
   // Test that the desired length is respected. It starts before a filled
   // region.
-  rv = entry->GetAvailableRange(5000, 620, &start, cb.callback());
-  EXPECT_EQ(500, cb.GetResult(rv));
-  EXPECT_EQ(5120, start);
+  result = cb.GetResult(entry->GetAvailableRange(5000, 620, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(500, result.available_len);
+  EXPECT_EQ(5120, result.start);
 
   // Test that multiple blocks are scanned.
-  rv = entry->GetAvailableRange(40000, 20000, &start, cb.callback());
-  EXPECT_EQ(8192, cb.GetResult(rv));
-  EXPECT_EQ(50000, start);
+  result = cb.GetResult(entry->GetAvailableRange(40000, 20000, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(8192, result.available_len);
+  EXPECT_EQ(50000, result.start);
 
   entry->Close();
 }
@@ -2338,53 +2372,64 @@ void DiskCacheEntryTest::PartialSparseEntry() {
   EXPECT_EQ(500, ReadSparseData(entry, kSize, buf2.get(), kSize));
   EXPECT_EQ(0, ReadSparseData(entry, 99, buf2.get(), kSize));
 
-  int rv;
-  int64_t start;
-  net::TestCompletionCallback cb;
+  TestRangeResultCompletionCallback cb;
+  RangeResult result;
   if (memory_only_ || simple_cache_mode_) {
-    rv = entry->GetAvailableRange(0, 600, &start, cb.callback());
-    EXPECT_EQ(100, cb.GetResult(rv));
-    EXPECT_EQ(500, start);
+    result = cb.GetResult(entry->GetAvailableRange(0, 600, cb.callback()));
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(100, result.available_len);
+    EXPECT_EQ(500, result.start);
   } else {
-    rv = entry->GetAvailableRange(0, 2048, &start, cb.callback());
-    EXPECT_EQ(1024, cb.GetResult(rv));
-    EXPECT_EQ(1024, start);
+    result = cb.GetResult(entry->GetAvailableRange(0, 2048, cb.callback()));
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(1024, result.available_len);
+    EXPECT_EQ(1024, result.start);
   }
-  rv = entry->GetAvailableRange(kSize, kSize, &start, cb.callback());
-  EXPECT_EQ(500, cb.GetResult(rv));
-  EXPECT_EQ(kSize, start);
-  rv = entry->GetAvailableRange(20 * 1024, 10000, &start, cb.callback());
+  result = cb.GetResult(entry->GetAvailableRange(kSize, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(500, result.available_len);
+  EXPECT_EQ(kSize, result.start);
+  result =
+      cb.GetResult(entry->GetAvailableRange(20 * 1024, 10000, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
   if (memory_only_ || simple_cache_mode_)
-    EXPECT_EQ(3616, cb.GetResult(rv));
+    EXPECT_EQ(3616, result.available_len);
   else
-    EXPECT_EQ(3072, cb.GetResult(rv));
+    EXPECT_EQ(3072, result.available_len);
 
-  EXPECT_EQ(20 * 1024, start);
+  EXPECT_EQ(20 * 1024, result.start);
 
   // 1. Query before a filled 1KB block.
   // 2. Query within a filled 1KB block.
   // 3. Query beyond a filled 1KB block.
   if (memory_only_ || simple_cache_mode_) {
-    rv = entry->GetAvailableRange(19400, kSize, &start, cb.callback());
-    EXPECT_EQ(3496, cb.GetResult(rv));
-    EXPECT_EQ(20000, start);
+    result =
+        cb.GetResult(entry->GetAvailableRange(19400, kSize, cb.callback()));
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(3496, result.available_len);
+    EXPECT_EQ(20000, result.start);
   } else {
-    rv = entry->GetAvailableRange(19400, kSize, &start, cb.callback());
-    EXPECT_EQ(3016, cb.GetResult(rv));
-    EXPECT_EQ(20480, start);
+    result =
+        cb.GetResult(entry->GetAvailableRange(19400, kSize, cb.callback()));
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(3016, result.available_len);
+    EXPECT_EQ(20480, result.start);
   }
-  rv = entry->GetAvailableRange(3073, kSize, &start, cb.callback());
-  EXPECT_EQ(1523, cb.GetResult(rv));
-  EXPECT_EQ(3073, start);
-  rv = entry->GetAvailableRange(4600, kSize, &start, cb.callback());
-  EXPECT_EQ(0, cb.GetResult(rv));
-  EXPECT_EQ(4600, start);
+  result = cb.GetResult(entry->GetAvailableRange(3073, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(1523, result.available_len);
+  EXPECT_EQ(3073, result.start);
+  result = cb.GetResult(entry->GetAvailableRange(4600, kSize, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
+  EXPECT_EQ(4600, result.start);
 
   // Now make another write and verify that there is no hole in between.
   EXPECT_EQ(kSize, WriteSparseData(entry, 500 + kSize, buf1.get(), kSize));
-  rv = entry->GetAvailableRange(1024, 10000, &start, cb.callback());
-  EXPECT_EQ(7 * 1024 + 500, cb.GetResult(rv));
-  EXPECT_EQ(1024, start);
+  result = cb.GetResult(entry->GetAvailableRange(1024, 10000, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(7 * 1024 + 500, result.available_len);
+  EXPECT_EQ(1024, result.start);
   EXPECT_EQ(kSize, ReadSparseData(entry, kSize, buf2.get(), kSize));
   EXPECT_EQ(0, memcmp(buf2->data(), buf1->data() + kSize - 500, 500));
   EXPECT_EQ(0, memcmp(buf2->data() + 500, buf1->data(), kSize - 500));
@@ -2483,17 +2528,17 @@ void DiskCacheEntryTest::SparseClipEnd(int64_t max_index,
     EXPECT_EQ(0, memcmp(buf->data(), read_buf->data(), kSize));
   }
 
-  int64_t out_start = 0;
-  net::TestCompletionCallback cb;
-  rv = entry->GetAvailableRange(kOffset - kSize, kSize * 3, &out_start,
-                                cb.callback());
-  rv = cb.GetResult(rv);
+  TestRangeResultCompletionCallback cb;
+  RangeResult result = cb.GetResult(
+      entry->GetAvailableRange(kOffset - kSize, kSize * 3, cb.callback()));
   if (expect_unsupported) {
     // GetAvailableRange just returns nothing found, not an error.
-    EXPECT_EQ(rv, 0);
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(result.available_len, 0);
   } else {
-    EXPECT_EQ(kSize, rv);
-    EXPECT_EQ(kOffset, out_start);
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(kSize, result.available_len);
+    EXPECT_EQ(kOffset, result.start);
   }
 
   entry->Close();
@@ -2534,11 +2579,11 @@ TEST_F(DiskCacheEntryTest, SparseClipEnd2) {
   EXPECT_EQ(net::ERR_CACHE_OPERATION_NOT_SUPPORTED, rv);
 
   // GetAvailableRange just returns nothing.
-  net::TestCompletionCallback cb;
-  int64_t out_start = 0;
-  rv = entry->GetAvailableRange(kLimit, kSize * 3, &out_start, cb.callback());
-  rv = cb.GetResult(rv);
-  EXPECT_EQ(rv, 0);
+  TestRangeResultCompletionCallback cb;
+  RangeResult result =
+      cb.GetResult(entry->GetAvailableRange(kLimit, kSize * 3, cb.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
   entry->Close();
 }
 
@@ -2620,14 +2665,14 @@ TEST_F(DiskCacheEntryTest, CancelSparseIO) {
   CacheTestFillBuffer(buf->data(), kSize, false);
 
   // This will open and write two "real" entries.
-  net::TestCompletionCallback cb1, cb2, cb3, cb4, cb5;
+  net::TestCompletionCallback cb1, cb2, cb3, cb4;
   int rv = entry->WriteSparseData(
       1024 * 1024 - 4096, buf.get(), kSize, cb1.callback());
   EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
 
-  int64_t offset = 0;
-  rv = entry->GetAvailableRange(offset, kSize, &offset, cb5.callback());
-  rv = cb5.GetResult(rv);
+  TestRangeResultCompletionCallback cb5;
+  RangeResult result =
+      cb5.GetResult(entry->GetAvailableRange(0, kSize, cb5.callback()));
   if (!cb1.have_result()) {
     // We may or may not have finished writing to the entry. If we have not,
     // we cannot start another operation at this time.
@@ -2646,10 +2691,10 @@ TEST_F(DiskCacheEntryTest, CancelSparseIO) {
 
   if (!cb1.have_result()) {
     EXPECT_EQ(net::ERR_CACHE_OPERATION_NOT_SUPPORTED,
-              entry->ReadSparseData(offset, buf.get(), kSize,
+              entry->ReadSparseData(result.start, buf.get(), kSize,
                                     net::CompletionOnceCallback()));
     EXPECT_EQ(net::ERR_CACHE_OPERATION_NOT_SUPPORTED,
-              entry->WriteSparseData(offset, buf.get(), kSize,
+              entry->WriteSparseData(result.start, buf.get(), kSize,
                                      net::CompletionOnceCallback()));
   }
 
@@ -2661,8 +2706,10 @@ TEST_F(DiskCacheEntryTest, CancelSparseIO) {
   EXPECT_THAT(cb3.WaitForResult(), IsOk());
   EXPECT_THAT(cb4.WaitForResult(), IsOk());
 
-  rv = entry->GetAvailableRange(offset, kSize, &offset, cb5.callback());
-  EXPECT_EQ(0, cb5.GetResult(rv));
+  result = cb5.GetResult(
+      entry->GetAvailableRange(result.start, kSize, cb5.callback()));
+  EXPECT_EQ(net::OK, result.net_error);
+  EXPECT_EQ(0, result.available_len);
   entry->Close();
 }
 
@@ -5041,9 +5088,11 @@ TEST_F(DiskCacheEntryTest, SimpleCacheSparseErrorHandling) {
   // Similarly for other ops.
   EXPECT_EQ(net::ERR_FAILED, WriteSparseData(entry, 0, buffer.get(), kSize));
   net::TestCompletionCallback cb;
-  int64_t start;
-  int rv = entry->GetAvailableRange(0, 1024, &start, cb.callback());
-  EXPECT_EQ(net::ERR_FAILED, cb.GetResult(rv));
+
+  TestRangeResultCompletionCallback range_cb;
+  RangeResult result = range_cb.GetResult(
+      entry->GetAvailableRange(0, 1024, range_cb.callback()));
+  EXPECT_EQ(net::ERR_FAILED, result.net_error);
 
   entry->Close();
   disk_cache::FlushCacheThreadForTesting();
