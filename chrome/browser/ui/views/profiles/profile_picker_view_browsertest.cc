@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/common/pref_names.h"
@@ -920,14 +921,8 @@ class ProfilePickerSeparateEnterpriseCreationFlowBrowserTest
             /*enable_feature=*/false) {}
 };
 
-// Flaky on Win: https://crbug.com/1215038
-#if defined(OS_WIN) || defined(OS_MAC)
-#define MAYBE_CreateSignedInProfile DISABLED_CreateSignedInProfile
-#else
-#define MAYBE_CreateSignedInProfile CreateSignedInProfile
-#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerSeparateEnterpriseCreationFlowBrowserTest,
-                       MAYBE_CreateSignedInProfile) {
+                       CreateSignedInProfile) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartSigninFlow();
 
@@ -957,8 +952,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSeparateEnterpriseCreationFlowBrowserTest,
 
   // Now the sync consent screen is shown, simulate closing the UI with "No,
   // thanks".
-  LoginUIServiceFactory::GetForProfile(profile_being_created)
-      ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
+  // Note: this test is using login_ui_test_utils, which is better than what
+  // other tests are doing. However, other tests cannot be converted because:
+  // - login_ui_test_utils only supports the modal dialog (not the picker)
+  // - login_ui_test_utils requires the dialog to actually be opened when it is
+  //   called (and not some enterprise confirmation or error dialog).
+  login_ui_test_utils::CancelSyncConfirmationDialog(new_browser);
 
   // Check expectations when the profile creation flow is done.
   ProfileAttributesEntry* entry =
