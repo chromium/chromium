@@ -26382,6 +26382,35 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       If this setting is set to disallowed, users will not be allowed to enable HTTPS-Only Mode.
       Force enabling HTTPS-Only Mode is not currently supported.''',
     },
+    {
+      'name': 'DesktopSharingHubEnabled',
+      'owners': ['kristipark@chromium.org', 'jeffreycohen@chromium.org', 'file://components/send_tab_to_self/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable desktop sharing hub',
+        },
+        {
+          'value': False,
+          'caption': 'Disable desktop sharing hub',
+        },
+      ],
+      'default': True,
+      'supported_on': ['chrome.win:93-', 'chrome.linux:93-', 'chrome.mac:93-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': True,
+      'id': 871,
+      'caption': '''Enable desktop sharing in the omnibox and 3-dot menu''',
+      'tags': [],
+      'desc': '''Setting the policy to True or leaving it unset lets users share or save the current webpage using actions provided by the desktop sharing hub. The sharing hub is accessed through either an omnibox icon or the 3-dot menu.
+
+       Setting the policy to False removes the sharing icon from the omnibox and the entry from the 3-dot menu.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -27316,6 +27345,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 870,
+  'highest_id_currently_used': 871,
   'highest_atomic_group_id_currently_used': 40
 }

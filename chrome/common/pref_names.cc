@@ -3265,4 +3265,11 @@ const char kManagedWebAppsAccessToDeviceAttributesAllowed[] =
     "policy.managed_web_apps_access_to_device_attributes_allowed";
 #endif
 
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+// A boolean indicating whether the desktop sharing hub is enabled by enterprise
+// policy.
+const char kDesktopSharingHubEnabled[] =
+    "sharing_hub.desktop_sharing_hub_enabled";
+#endif
+
 }  // namespace prefs

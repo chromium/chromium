@@ -8056,6 +8056,15 @@
       }
     ]
   },
+  "DesktopSharingHubEnabled": {
+    "os": ["win", "linux", "mac"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "DesktopSharingHubEnabled": true },
+        "prefs": { "sharing_hub.desktop_sharing_hub_enabled": {} }
+      }
+    ]
+  },
   "InsecureFormsWarningsEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [

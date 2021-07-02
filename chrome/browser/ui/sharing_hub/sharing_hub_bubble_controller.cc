@@ -10,6 +10,7 @@
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service_factory.h"
@@ -115,11 +116,9 @@ bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(features::kSharesheet) &&
          base::FeatureList::IsEnabled(features::kChromeOSSharingHub);
+#else
+  return SharingHubOmniboxEnabled(web_contents_->GetBrowserContext());
 #endif
-
-  // TODO(1186845): Check enterprise policy
-
-  return true;
 }
 
 std::vector<SharingHubAction>

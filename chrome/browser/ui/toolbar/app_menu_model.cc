@@ -839,7 +839,7 @@ void AppMenuModel::Build() {
   CreateZoomMenu();
   AddSeparator(ui::UPPER_SEPARATOR);
 
-  if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu)) {
+  if (sharing_hub::SharingHubAppMenuEnabled(browser()->profile())) {
     sub_menus_.push_back(
         std::make_unique<sharing_hub::SharingHubSubMenuModel>(browser_));
     AddSubMenuWithStringId(IDC_SHARING_HUB_MENU, IDS_SHARING_HUB_TITLE,

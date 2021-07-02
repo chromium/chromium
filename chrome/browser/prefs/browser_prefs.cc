@@ -69,6 +69,7 @@
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/browser/storage/appcache_feature_prefs.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
@@ -1274,6 +1275,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   preinstalled_apps::RegisterProfilePrefs(registry);
+#endif
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+  sharing_hub::RegisterProfilePrefs(registry);
 #endif
 
 #if defined(TOOLKIT_VIEWS)

@@ -114,6 +114,7 @@ void SharingHubModel::PopulateThirdPartyActions() {
                                           base::ASCIIToUTF16(target.nickname()),
                                           kQrcodeGeneratorIcon, false});
       third_party_action_urls_[id] = GURL(target.url());
+      id++;
     }
   }
 }

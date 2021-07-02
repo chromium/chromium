@@ -1161,6 +1161,10 @@ extern const char kExplicitlyAllowedNetworkPorts[];
 extern const char kManagedWebAppsAccessToDeviceAttributesAllowed[];
 #endif
 
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+extern const char kDesktopSharingHubEnabled[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

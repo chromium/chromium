@@ -1307,6 +1307,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSigninInterceptionEnabled,
     prefs::kSigninInterceptionEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDesktopSharingHubEnabled,
+    prefs::kDesktopSharingHubEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS)
