@@ -11,13 +11,12 @@ import androidx.annotation.VisibleForTesting;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.page_annotations.BuyableProductPageAnnotation;
 import org.chromium.chrome.browser.page_annotations.PageAnnotation;
@@ -66,28 +65,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final long TWO_UNITS = 2 * MICROS_TO_UNITS;
     private static final long TEN_UNITS = 10 * MICROS_TO_UNITS;
     private static final int MINIMUM_DROP_PERCENTAGE = 10;
-    private static final long ONE_WEEK_MS = TimeUnit.DAYS.toMillis(7);
+    private static final int ONE_WEEK_MS = (int) TimeUnit.DAYS.toMillis(7);
 
     @VisibleForTesting
     public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
 
-    private static final long NINETY_DAYS_SECONDS = TimeUnit.DAYS.toSeconds(90);
-
-    public static final IntCachedFieldTrialParameter STALE_TAB_THRESHOLD_SECONDS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    STALE_TAB_THRESHOLD_SECONDS_PARAM, (int) NINETY_DAYS_SECONDS);
-
-    public static final IntCachedFieldTrialParameter TIME_TO_LIVE_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    TIME_TO_LIVE_MS_PARAM, (int) ONE_HOUR_MS);
-
-    public static final IntCachedFieldTrialParameter DISPLAY_TIME_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    DISPLAY_TIME_MS_PARAM, (int) ONE_WEEK_MS);
-
-    public static final BooleanCachedFieldTrialParameter PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM, false);
+    private static final int NINETY_DAYS_SECONDS = (int) TimeUnit.DAYS.toSeconds(90);
 
     @VisibleForTesting
     public static final long NO_TRANSITIONS_OCCURRED = -1;
@@ -98,6 +81,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     protected static PageAnnotationsServiceFactory sPageAnnotationsServiceFactory =
             new PageAnnotationsServiceFactory();
+
+    private static boolean sPriceTrackingWithOptimizationGuideForTesting;
 
     public long mLastPriceChangeTimeMs = NO_TRANSITIONS_OCCURRED;
 
@@ -127,7 +112,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         private static final OptimizationGuideBridgeFactory sOptimizationGuideBridgeFactory;
         static {
             List<HintsProto.OptimizationType> optimizationTypes;
-            if (PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE.getValue()) {
+            if (isPriceTrackingWithOptimizationGuideEnabled()) {
                 optimizationTypes =
                         Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
                                 HintsProto.OptimizationType.PRICE_TRACKING);
@@ -301,7 +286,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (ShoppingPersistedTabData.PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE.getValue()) {
+                if (isPriceTrackingWithOptimizationGuideEnabled()) {
                     prefetchOnNewNavigation(tab, navigationHandle);
                 }
             }
@@ -331,7 +316,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 (supplierCallback)
                         -> {
                     if (getTimeSinceTabLastOpenedMs(tab)
-                            > TimeUnit.SECONDS.toMillis(STALE_TAB_THRESHOLD_SECONDS.getValue())) {
+                            > TimeUnit.SECONDS.toMillis(getStaleTabThresholdSeconds())) {
                         supplierCallback.onResult(null);
                         return;
                     }
@@ -342,7 +327,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             return;
                         }
 
-                        if (PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE.getValue()) {
+                        if (isPriceTrackingWithOptimizationGuideEnabled()) {
                             OptimizationGuideBridgeFactoryHolder.sOptimizationGuideBridgeFactory
                                     .create()
                                     .canApplyOptimization(tab.getUrl(),
@@ -681,7 +666,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private boolean isPriceChangeStale() {
         return mLastPriceChangeTimeMs != NO_TRANSITIONS_OCCURRED
-                && System.currentTimeMillis() - mLastPriceChangeTimeMs > DISPLAY_TIME_MS.getValue();
+                && System.currentTimeMillis() - mLastPriceChangeTimeMs > getDisplayTimeMs();
     }
 
     private boolean isQualifyingPriceDrop() {
@@ -774,7 +759,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @Override
     public long getTimeToLiveMs() {
-        return TIME_TO_LIVE_MS.getValue();
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, TIME_TO_LIVE_MS_PARAM,
+                    (int) ONE_HOUR_MS);
+        }
+        return (int) ONE_HOUR_MS;
     }
 
     @VisibleForTesting
@@ -791,6 +781,47 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public void destroy() {
         mTab.removeObserver(mUrlUpdatedObserver);
         super.destroy();
+    }
+
+    /**
+     * @return the threshold in seconds at which a {@link Tab} is considered stale
+     * (and we no longer acquire shopping data for stale tabs).
+     */
+    public static int getStaleTabThresholdSeconds() {
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, STALE_TAB_THRESHOLD_SECONDS_PARAM,
+                    NINETY_DAYS_SECONDS);
+        }
+        return NINETY_DAYS_SECONDS;
+    }
+
+    /**
+     * @return true is acquiring pricing data using OptimizationGuide is enabled.
+     */
+    public static boolean isPriceTrackingWithOptimizationGuideEnabled() {
+        if (sPriceTrackingWithOptimizationGuideForTesting) {
+            return true;
+        }
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM, false);
+        }
+        return false;
+    }
+
+    @VisibleForTesting
+    public static void enablePriceTrackingWithOptimizationGuideForTesting() {
+        sPriceTrackingWithOptimizationGuideForTesting = true;
+    }
+
+    private static int getDisplayTimeMs() {
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, DISPLAY_TIME_MS_PARAM, ONE_WEEK_MS);
+        }
+        return ONE_WEEK_MS;
     }
 
     private static long getTimeSinceTabLastOpenedMs(Tab tab) {

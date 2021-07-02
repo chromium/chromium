@@ -42,7 +42,7 @@ public final class TabHelpers {
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).
         if (!tab.isIncognito() && !((TabImpl) tab).isCustomTab()
                 && PriceTrackingUtilities.isPriceTrackingEligible()
-                && ShoppingPersistedTabData.PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE.getValue()) {
+                && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
             ShoppingPersistedTabData.from(tab);
         }
 
