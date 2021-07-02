@@ -448,8 +448,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewMacWindowControlsOverlayTest,
   EXPECT_FALSE(browser_view_->ShouldDescendIntoChildForEventHandling(
       browser_view_->GetWidget()->GetNativeView(), kPoint));
 
-  // Validate that a point at the border is not marked as draggable.
-  constexpr gfx::Point kBorderPoint(50, 1);
+  // Validate that a point at the border that does not intersect with the
+  // overlays is not marked as draggable.
+  constexpr gfx::Point kBorderPoint(100, 1);
   EXPECT_NE(frame_view_->NonClientHitTest(kBorderPoint), HTCAPTION);
   EXPECT_TRUE(browser_view_->ShouldDescendIntoChildForEventHandling(
       browser_view_->GetWidget()->GetNativeView(), kBorderPoint));

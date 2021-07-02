@@ -20,9 +20,11 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/window/hit_test_utils.h"
 
 WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
                                                BrowserView* browser_view)
@@ -264,9 +266,11 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
     // BrowserView paints to a layer, so this view must do the same to ensure
     // that it paints on top of the BrowserView.
     SetPaintToLayer();
+    views::SetHitTestComponent(this, static_cast<int>(HTCAPTION));
   } else {
     SetBackground(nullptr);
     DestroyLayer();
+    views::SetHitTestComponent(this, static_cast<int>(HTNOWHERE));
   }
 }
 

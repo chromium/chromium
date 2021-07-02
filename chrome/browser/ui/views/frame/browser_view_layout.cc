@@ -237,6 +237,27 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   views::View::ConvertPointToTarget(
       parent, browser_view_, &point_in_browser_view_coords);
 
+  // Let the frame handle any events that fall within the bounds of the window
+  // controls overlay.
+  if (browser_view_->IsWindowControlsOverlayEnabled() &&
+      browser_view_->GetActiveWebContents()) {
+    // The window controls overlays are to the left and/or right of the
+    // |titlebar_area_rect|.
+    gfx::Rect titlebar_area_rect =
+        browser_view_->GetActiveWebContents()->GetWindowsControlsOverlayRect();
+
+    // The top area rect is the same height as the |titlebar_area_rect| but
+    // fills the full width of the browser view.
+    gfx::Rect top_area_rect(0, titlebar_area_rect.y(), browser_view_->width(),
+                            titlebar_area_rect.height());
+
+    // If the point is within the top_area_rect but not the titlebar_area_rect,
+    // then it must be in the window controls overlay.
+    if (top_area_rect.Contains(point_in_browser_view_coords) &&
+        !titlebar_area_rect.Contains(point_in_browser_view_coords))
+      return HTNOWHERE;
+  }
+
   // Determine if the TabStrip exists and is capable of being clicked on. We
   // might be a popup window without a TabStrip.
   if (delegate_->IsTabStripVisible()) {
