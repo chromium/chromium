@@ -140,7 +140,6 @@ TEST_F(OptimizationGuideBridgeTest, RegisterOptimizationTypes) {
 TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationAsyncHasHint) {
   RegisterOptimizationTypes();
   EXPECT_CALL(*optimization_guide_keyed_service_, GetHintsManager())
-      .Times(2)
       .WillRepeatedly(Return(optimization_guide_hints_manager_.get()));
   optimization_guide::proto::PerformanceHintsMetadata hints_metadata;
   auto* hint = hints_metadata.add_performance_hints();
