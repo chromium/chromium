@@ -1624,7 +1624,8 @@ class TabListMediator {
             }
 
             // For tab group card in grid tab switcher, the favicon is the composed favicon.
-            mTabListFaviconProvider.getComposedFaviconImageAsync(urls, faviconCallback);
+            mTabListFaviconProvider.getComposedFaviconImageAsync(
+                    urls, pseudoTab.isIncognito(), faviconCallback);
 
             return;
         }

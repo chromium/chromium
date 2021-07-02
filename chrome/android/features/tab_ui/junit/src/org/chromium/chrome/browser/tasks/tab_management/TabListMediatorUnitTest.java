@@ -2435,7 +2435,7 @@ public class TabListMediatorUnitTest {
         mModel.get(0).model.set(TabProperties.FAVICON, null);
         doNothing()
                 .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), mCallbackCaptor.capture());
+                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
 
         // Test a group of three.
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -2443,7 +2443,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(tabs, TAB1_ID);
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab1, mFaviconBitmap);
         List<GURL> urls = new ArrayList<>(Arrays.asList(TAB1_URL, TAB2_URL, TAB3_URL));
-        verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), any());
+        verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
         mCallbackCaptor.getValue().onResult(mFaviconDrawable);
         assertThat(mModel.get(0).model.get(TabProperties.FAVICON), equalTo(mFaviconDrawable));
 
@@ -2456,7 +2456,7 @@ public class TabListMediatorUnitTest {
         mTabObserverCaptor.getValue().onFaviconUpdated(mTab2, mFaviconBitmap);
         urls = new ArrayList<>(Arrays.asList(TAB2_URL, TAB1_URL, TAB3_URL, TAB2_URL));
 
-        verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), any());
+        verify(mTabListFaviconProvider).getComposedFaviconImageAsync(eq(urls), anyBoolean(), any());
         mCallbackCaptor.getValue().onResult(mFaviconDrawable);
         assertThat(mModel.get(1).model.get(TabProperties.FAVICON), equalTo(mFaviconDrawable));
     }
@@ -2470,7 +2470,7 @@ public class TabListMediatorUnitTest {
         mModel.get(1).model.set(TabProperties.FAVICON, null);
         doNothing()
                 .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), mCallbackCaptor.capture());
+                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
 
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
@@ -2497,7 +2497,7 @@ public class TabListMediatorUnitTest {
         mModel.get(1).model.set(TabProperties.FAVICON, null);
         doNothing()
                 .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), mCallbackCaptor.capture());
+                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
 
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
@@ -2524,7 +2524,7 @@ public class TabListMediatorUnitTest {
         mModel.get(1).model.set(TabProperties.FAVICON, null);
         doNothing()
                 .when(mTabListFaviconProvider)
-                .getComposedFaviconImageAsync(any(), mCallbackCaptor.capture());
+                .getComposedFaviconImageAsync(any(), anyBoolean(), mCallbackCaptor.capture());
 
         TabImpl tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
