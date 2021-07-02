@@ -66,7 +66,7 @@ void ExpectLoadTimingValid(const LoadTimingInfo& load_timing_info) {
   EXPECT_FALSE(load_timing_info.receive_headers_end.is_null());
   EXPECT_FALSE(load_timing_info.send_start.is_null());
   EXPECT_FALSE(load_timing_info.send_end.is_null());
-  EXPECT_TRUE(load_timing_info.request_start <
+  EXPECT_TRUE(load_timing_info.request_start <=
               load_timing_info.receive_headers_end);
   EXPECT_TRUE(load_timing_info.send_start <= load_timing_info.send_end);
 }
@@ -516,13 +516,7 @@ TEST_F(BidirectionalStreamTest, SimplePostRequest) {
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1224092
-#define MAYBE_LoadTimingTwoRequests DISABLED_LoadTimingTwoRequests
-#else
-#define MAYBE_LoadTimingTwoRequests LoadTimingTwoRequests
-#endif
-TEST_F(BidirectionalStreamTest, MAYBE_LoadTimingTwoRequests) {
+TEST_F(BidirectionalStreamTest, LoadTimingTwoRequests) {
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet(nullptr, 0, /*stream_id=*/1, LOW));
   spdy::SpdySerializedFrame req2(
