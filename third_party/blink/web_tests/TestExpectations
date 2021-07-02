@@ -6407,8 +6407,10 @@ crbug.com/1196745 [ Mac10.15 ] editing/selection/editable-links.html [ Skip ]
 crbug.com/1067455 wpt_internal/webid/* [ Failure ]
 crbug.com/1067455 virtual/webid/* [ Pass ]
 
-# Will be fixed by PlzDedicatedWorker.
+# Is fixed by PlzDedicatedWorker.
 crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.https.html [ Timeout ]
+crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.https.html [ Pass ]
+
 # These timeout because COEP reporting to a worker is not implemented.
 crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
 crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]

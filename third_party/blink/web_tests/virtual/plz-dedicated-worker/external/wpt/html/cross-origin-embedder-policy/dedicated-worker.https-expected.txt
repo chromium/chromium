@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS COEP: none worker in COEP: none frame
+PASS COEP: none worker in COEP: require-corp frame
+PASS COEP: require-corp worker in COEP: none frame
+PASS COEP: require-corp worker in COEP: require-corp frame
+PASS COEP: none module worker in COEP: none frame
+PASS COEP: none module worker in COEP: require-corp frame
+PASS COEP: require-corp module worker in COEP: none frame
+PASS COEP: require-corp module worker in COEP: require-corp frame
+Harness: the test ran to completion.
+

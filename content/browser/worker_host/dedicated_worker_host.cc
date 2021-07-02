@@ -405,11 +405,18 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
         coep_reporter.InitWithNewPipeAndPassReceiver());
   }
 
+  network::mojom::ClientSecurityStatePtr client_security_state =
+      ancestor_render_frame_host->BuildClientSecurityState();
+  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    client_security_state->cross_origin_embedder_policy =
+        cross_origin_embedder_policy();
+  }
+
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
           ancestor_render_frame_host, GetStorageKey().origin(), isolation_info_,
-          ancestor_render_frame_host->BuildClientSecurityState(),
-          std::move(coep_reporter), worker_process_host_,
+          std::move(client_security_state), std::move(coep_reporter),
+          worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
               blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
               ? network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit
