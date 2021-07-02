@@ -17,7 +17,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
-#include "ash/system/holding_space/holding_space_view_builder.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -37,7 +36,6 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 namespace {
@@ -95,6 +93,19 @@ class PaintCallbackLabel : public views::Label {
   using Callback = base::RepeatingCallback<void(views::Label*, gfx::Canvas*)>;
   void SetCallback(Callback callback) { callback_ = std::move(callback); }
 
+  void SetPaintToLayer(bool fills_bounds_opaquely) {
+    views::Label::SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(fills_bounds_opaquely);
+  }
+
+  void SetStyle(bubble_utils::LabelStyle style) {
+    bubble_utils::ApplyStyle(this, style);
+  }
+
+  void SetViewAccessibilityIsIgnored(bool is_ignored) {
+    GetViewAccessibility().OverrideIsIgnored(is_ignored);
+  }
+
  private:
   // views::Label:
   void OnPaint(gfx::Canvas* canvas) override {
@@ -108,6 +119,9 @@ class PaintCallbackLabel : public views::Label {
 
 BEGIN_VIEW_BUILDER(/*no export*/, PaintCallbackLabel, views::Label)
 VIEW_BUILDER_PROPERTY(PaintCallbackLabel::Callback, Callback)
+VIEW_BUILDER_PROPERTY(bubble_utils::LabelStyle, Style)
+VIEW_BUILDER_PROPERTY(bool, PaintToLayer)
+VIEW_BUILDER_PROPERTY(bool, ViewAccessibilityIsIgnored)
 END_VIEW_BUILDER
 
 // ProgressRingView ------------------------------------------------------------
@@ -162,38 +176,24 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns a label builder with given `style`, `elide_behavior`, and `callback`.
-std::unique_ptr<HoldingSpaceViewBuilder<views::Label>> CreateLabelBuilder(
-    bubble_utils::LabelStyle style,
-    gfx::ElideBehavior elide_behavior,
-    PaintCallbackLabel::Callback callback) {
-  auto label = views::Builder<PaintCallbackLabel>()
-                   .SetCallback(std::move(callback))
-                   .SetElideBehavior(elide_behavior)
-                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                   .SetPaintToLayer()
-                   .Build();
-
-  // NOTE: A11y events are handled by `HoldingSpaceItemChipView`.
-  label->GetViewAccessibility().OverrideIsIgnored(true);
-  label->layer()->SetFillsBoundsOpaquely(false);
-  bubble_utils::ApplyStyle(label.get(), style);
-  return std::make_unique<HoldingSpaceViewBuilder<views::Label>>(
-      std::move(label));
+// Returns a label builder.
+// NOTE: A11y events are handled by `HoldingSpaceItemChipView`.
+views::Builder<PaintCallbackLabel> CreateLabelBuilder() {
+  auto label = views::Builder<PaintCallbackLabel>();
+  label.SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetPaintToLayer(/*fills_bounds_opaquely=*/false)
+      .SetViewAccessibilityIsIgnored(true);
+  return label;
 }
 
-// Returns a secondary action builder that invokes `callback` on press.
-std::unique_ptr<views::Builder<views::ImageButton>>
-CreateSecondaryActionBuilder(views::ImageButton::PressedCallback callback) {
+// Returns a secondary action builder.
+views::Builder<views::ImageButton> CreateSecondaryActionBuilder() {
   using HorizontalAlignment = views::ImageButton::HorizontalAlignment;
   using VerticalAlignment = views::ImageButton::VerticalAlignment;
-  auto secondary_action =
-      std::make_unique<views::Builder<views::ImageButton>>();
-  secondary_action->SetCallback(std::move(callback))
-      .SetFocusBehavior(views::View::FocusBehavior::NEVER)
+  auto secondary_action = views::Builder<views::ImageButton>();
+  secondary_action.SetFocusBehavior(views::View::FocusBehavior::NEVER)
       .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
-      .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
-      .SetVisible(false);
+      .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE);
   return secondary_action;
 }
 
@@ -231,74 +231,71 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
       base::BindRepeating(&HoldingSpaceItemChipView::OnSecondaryActionPressed,
                           base::Unretained(this));
 
-  HoldingSpaceViewBuilder<HoldingSpaceItemChipView>(this)
+  views::Builder<HoldingSpaceItemChipView>(this)
       .SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight))
       .SetLayoutManager(std::move(layout_manager))
       .AddChild(
-          HoldingSpaceViewBuilder<views::View>(
-              views::Builder<ProgressRingView>()
-                  .SetHoldingSpaceItem(item)
-                  .SetUseDefaultFillLayout(true))
+          views::Builder<ProgressRingView>()
+              .SetHoldingSpaceItem(item)
+              .SetUseDefaultFillLayout(true)
+              .AddChild(views::Builder<ObservableRoundedImageView>()
+                            .SetCornerRadius(kHoldingSpaceChipIconSize / 2)
+                            .SetBoundsChangedCallback(base::BindRepeating(
+                                &HoldingSpaceItemChipView::UpdateImageTransform,
+                                base::Unretained(this)))
+                            .CopyAddressTo(&image_)
+                            .SetID(kHoldingSpaceItemImageId))
+              .AddChild(CreateCheckmarkBuilder())
               .AddChild(
-                  HoldingSpaceViewBuilder<RoundedImageView>(
-                      views::Builder<ObservableRoundedImageView>()
-                          .SetCornerRadius(kHoldingSpaceChipIconSize / 2)
-                          .SetBoundsChangedCallback(base::BindRepeating(
-                              &HoldingSpaceItemChipView::UpdateImageTransform,
-                              base::Unretained(this))))
-                      .CopyAddressTo(&image_)
-                      .SetID(kHoldingSpaceItemImageId))
-              .AddChild(CreateCheckmark())
-              .AddChild(
-                  HoldingSpaceViewBuilder<views::View>(
-                      views::Builder<views::View>()
-                          .CopyAddressTo(&secondary_action_container_)
-                          .SetID(kHoldingSpaceItemSecondaryActionContainerId)
-                          .SetUseDefaultFillLayout(true)
-                          .SetVisible(false))
-                      .AddChild(CreateSecondaryActionBuilder(
-                                    secondary_action_callback)
-                                    ->CopyAddressTo(&secondary_action_pause_)
-                                    .SetID(kHoldingSpaceItemPauseButtonId))
-                      .AddChild(CreateSecondaryActionBuilder(
-                                    secondary_action_callback)
-                                    ->CopyAddressTo(&secondary_action_resume_)
+                  views::Builder<views::View>()
+                      .CopyAddressTo(&secondary_action_container_)
+                      .SetID(kHoldingSpaceItemSecondaryActionContainerId)
+                      .SetUseDefaultFillLayout(true)
+                      .SetVisible(false)
+                      .AddChild(CreateSecondaryActionBuilder()
+                                    .CopyAddressTo(&secondary_action_pause_)
+                                    .SetID(kHoldingSpaceItemPauseButtonId)
+                                    .SetCallback(secondary_action_callback)
+                                    .SetVisible(false))
+                      .AddChild(CreateSecondaryActionBuilder()
+                                    .CopyAddressTo(&secondary_action_resume_)
                                     .SetID(kHoldingSpaceItemResumeButtonId)
-                                    .SetFlipCanvasOnPaintForRTLUI(false))))
+                                    .SetCallback(secondary_action_callback)
+                                    .SetFlipCanvasOnPaintForRTLUI(false)
+                                    .SetVisible(false))))
       .AddChild(
-          HoldingSpaceViewBuilder<views::View>(
-              views::Builder<views::View>()
-                  .SetUseDefaultFillLayout(true)
-                  .SetProperty(views::kFlexBehaviorKey,
-                               views::FlexSpecification(
-                                   views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kUnbounded)))
+          views::Builder<views::View>()
+              .SetUseDefaultFillLayout(true)
+              .SetProperty(views::kFlexBehaviorKey,
+                           views::FlexSpecification(
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded))
               .AddChild(
-                  HoldingSpaceViewBuilder<views::View>(
-                      views::Builder<views::BoxLayoutView>()
-                          .SetOrientation(Orientation::kVertical)
-                          .SetMainAxisAlignment(MainAxisAlignment::kCenter)
-                          .SetCrossAxisAlignment(CrossAxisAlignment::kStretch)
-                          .SetInsideBorderInsets(kLabelMargins))
-                      .AddChild(CreateLabelBuilder(
-                                    bubble_utils::LabelStyle::kChipTitle,
-                                    gfx::ELIDE_MIDDLE,
-                                    paint_label_mask_callback)
-                                    ->CopyAddressTo(&primary_label_)
-                                    .SetID(kHoldingSpaceItemPrimaryChipLabelId))
+                  views::Builder<views::BoxLayoutView>()
+                      .SetOrientation(Orientation::kVertical)
+                      .SetMainAxisAlignment(MainAxisAlignment::kCenter)
+                      .SetCrossAxisAlignment(CrossAxisAlignment::kStretch)
+                      .SetInsideBorderInsets(kLabelMargins)
                       .AddChild(
-                          CreateLabelBuilder(
-                              bubble_utils::LabelStyle::kChipBody,
-                              gfx::FADE_TAIL, paint_label_mask_callback)
-                              ->CopyAddressTo(&secondary_label_)
-                              .SetID(kHoldingSpaceItemSecondaryChipLabelId)))
-              .AddChild(
-                  HoldingSpaceViewBuilder<views::BoxLayoutView>(
-                      views::Builder<views::BoxLayoutView>()
-                          .SetOrientation(Orientation::kHorizontal)
-                          .SetMainAxisAlignment(MainAxisAlignment::kEnd)
-                          .SetCrossAxisAlignment(CrossAxisAlignment::kCenter))
-                      .AddChild(CreatePrimaryAction(/*min_size=*/gfx::Size()))))
+                          CreateLabelBuilder()
+                              .CopyAddressTo(&primary_label_)
+                              .SetID(kHoldingSpaceItemPrimaryChipLabelId)
+                              .SetStyle(bubble_utils::LabelStyle::kChipTitle)
+                              .SetElideBehavior(gfx::ELIDE_MIDDLE)
+                              .SetCallback(paint_label_mask_callback))
+                      .AddChild(
+                          CreateLabelBuilder()
+                              .CopyAddressTo(&secondary_label_)
+                              .SetID(kHoldingSpaceItemSecondaryChipLabelId)
+                              .SetStyle(bubble_utils::LabelStyle::kChipBody)
+                              .SetElideBehavior(gfx::FADE_TAIL)
+                              .SetCallback(paint_label_mask_callback)))
+              .AddChild(views::Builder<views::BoxLayoutView>()
+                            .SetOrientation(Orientation::kHorizontal)
+                            .SetMainAxisAlignment(MainAxisAlignment::kEnd)
+                            .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
+                            .AddChild(CreatePrimaryActionBuilder(
+                                /*min_size=*/gfx::Size()))))
       .BuildChildren();
 
   // Subscribe to be notified of changes to `item_`'s image.

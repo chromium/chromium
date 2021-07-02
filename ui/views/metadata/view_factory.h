@@ -27,7 +27,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   BaseViewBuilderT& operator=(BaseViewBuilderT&&) = default;
   ~BaseViewBuilderT() override = default;
 
-  Builder& CopyAddressTo(ViewClass_** view_address) {
+  template <typename View>
+  Builder& CopyAddressTo(View** view_address) {
     *view_address = view_ ? view_.get() : root_view_;
     return *static_cast<Builder*>(this);
   }

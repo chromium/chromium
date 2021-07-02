@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 class ImageButton;
@@ -67,6 +68,13 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   base::CallbackListSubscription image_subscription_;
 };
 
+BEGIN_VIEW_BUILDER(/* no export */,
+                   HoldingSpaceItemChipView,
+                   HoldingSpaceItemView)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::HoldingSpaceItemChipView)
 
 #endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_CHIP_VIEW_H_

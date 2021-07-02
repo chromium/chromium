@@ -10,7 +10,6 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_util.h"
-#include "ash/system/holding_space/holding_space_view_builder.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "components/vector_icons/vector_icons.h"
@@ -24,7 +23,6 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -40,45 +38,42 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
   using CrossAxisAlignment = views::BoxLayout::CrossAxisAlignment;
   using MainAxisAlignment = views::BoxLayout::MainAxisAlignment;
 
-  HoldingSpaceViewBuilder<HoldingSpaceItemScreenCaptureView>(this)
-      .SetPreferredSize(kHoldingSpaceScreenCaptureSize)
+  views::Builder<HoldingSpaceItemScreenCaptureView> builder(this);
+  builder.SetPreferredSize(kHoldingSpaceScreenCaptureSize)
       .SetLayoutManager(std::make_unique<views::FillLayout>())
       .AddChild(views::Builder<RoundedImageView>()
                     .CopyAddressTo(&image_)
                     .SetID(kHoldingSpaceItemImageId)
-                    .SetCornerRadius(kHoldingSpaceCornerRadius))
-      .AddChildIf(
-          item->type() == HoldingSpaceItem::Type::kScreenRecording,
-          base::BindOnce(
-              [](views::ImageView** play_icon) -> std::unique_ptr<views::View> {
-                return views::Builder<views::BoxLayoutView>()
-                    .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                    .SetMainAxisAlignment(MainAxisAlignment::kCenter)
-                    .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
-                    .SetFocusBehavior(views::View::FocusBehavior::NEVER)
-                    .AddChild(
-                        views::Builder<views::ImageView>()
-                            .CopyAddressTo(play_icon)
-                            .SetID(kHoldingSpaceScreenCapturePlayIconId)
-                            .SetPreferredSize(kPlayIconSize)
-                            .SetImageSize(gfx::Size(kHoldingSpaceIconSize,
-                                                    kHoldingSpaceIconSize)))
-                    .Build();
-              },
-              &play_icon_))
-      .AddChild(HoldingSpaceViewBuilder<views::FlexLayoutView>(
-                    views::Builder<views::FlexLayoutView>()
-                        .SetOrientation(views::LayoutOrientation::kHorizontal)
-                        .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-                        .SetInteriorMargin(
-                            kCheckmarkAndPrimaryActionContainerPadding))
-                    .AddChild(CreateCheckmark())
-                    .AddChild(views::Builder<views::View>().SetProperty(
-                        views::kFlexBehaviorKey,
-                        views::FlexSpecification(
-                            views::MinimumFlexSizeRule::kScaleToZero,
-                            views::MaximumFlexSizeRule::kUnbounded)))
-                    .AddChild(CreatePrimaryAction(kPrimaryActionSize)))
+                    .SetCornerRadius(kHoldingSpaceCornerRadius));
+
+  if (item->type() == HoldingSpaceItem::Type::kScreenRecording) {
+    builder.AddChild(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetMainAxisAlignment(MainAxisAlignment::kCenter)
+            .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
+            .SetFocusBehavior(views::View::FocusBehavior::NEVER)
+            .AddChild(views::Builder<views::ImageView>()
+                          .CopyAddressTo(&play_icon_)
+                          .SetID(kHoldingSpaceScreenCapturePlayIconId)
+                          .SetPreferredSize(kPlayIconSize)
+                          .SetImageSize(gfx::Size(kHoldingSpaceIconSize,
+                                                  kHoldingSpaceIconSize))));
+  }
+
+  builder
+      .AddChild(
+          views::Builder<views::FlexLayoutView>()
+              .SetOrientation(views::LayoutOrientation::kHorizontal)
+              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+              .SetInteriorMargin(kCheckmarkAndPrimaryActionContainerPadding)
+              .AddChild(CreateCheckmarkBuilder())
+              .AddChild(views::Builder<views::View>().SetProperty(
+                  views::kFlexBehaviorKey,
+                  views::FlexSpecification(
+                      views::MinimumFlexSizeRule::kScaleToZero,
+                      views::MaximumFlexSizeRule::kUnbounded)))
+              .AddChild(CreatePrimaryActionBuilder(kPrimaryActionSize)))
       .BuildChildren();
 
   // Subscribe to be notified of changes to `item_`'s image.

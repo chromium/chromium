@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -80,8 +81,10 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   bool selected() const { return selected_; }
 
  protected:
-  std::unique_ptr<views::ImageView> CreateCheckmark();
-  std::unique_ptr<views::View> CreatePrimaryAction(const gfx::Size& min_size);
+  views::Builder<views::ImageView> CreateCheckmarkBuilder();
+  views::Builder<views::View> CreatePrimaryActionBuilder(
+      const gfx::Size& min_size);
+
   virtual void OnPrimaryActionVisibilityChanged(bool visible) {}
   virtual void OnSelectionUiChanged();
 
@@ -128,6 +131,11 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   base::WeakPtrFactory<HoldingSpaceItemView> weak_factory_{this};
 };
 
+BEGIN_VIEW_BUILDER(/* no export */, HoldingSpaceItemView, views::View)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::HoldingSpaceItemView)
 
 #endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEW_H_

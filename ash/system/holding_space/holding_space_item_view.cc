@@ -27,7 +27,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/vector_icons.h"
@@ -329,16 +328,17 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
   OnSelectionUiChanged();
 }
 
-std::unique_ptr<views::ImageView> HoldingSpaceItemView::CreateCheckmark() {
+views::Builder<views::ImageView>
+HoldingSpaceItemView::CreateCheckmarkBuilder() {
   DCHECK(!checkmark_);
-  return views::Builder<views::ImageView>()
-      .CopyAddressTo(&checkmark_)
+  auto checkmark = views::Builder<views::ImageView>();
+  checkmark.CopyAddressTo(&checkmark_)
       .SetID(kHoldingSpaceItemCheckmarkId)
-      .SetVisible(selected())
-      .Build();
+      .SetVisible(selected());
+  return checkmark;
 }
 
-std::unique_ptr<views::View> HoldingSpaceItemView::CreatePrimaryAction(
+views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
     const gfx::Size& min_size) {
   DCHECK(!primary_action_container_);
   DCHECK(!primary_action_cancel_);
@@ -350,8 +350,8 @@ std::unique_ptr<views::View> HoldingSpaceItemView::CreatePrimaryAction(
   gfx::Size preferred_size(kHoldingSpaceIconSize, kHoldingSpaceIconSize);
   preferred_size.SetToMax(min_size);
 
-  return views::Builder<views::View>()
-      .CopyAddressTo(&primary_action_container_)
+  auto primary_action = views::Builder<views::View>();
+  primary_action.CopyAddressTo(&primary_action_container_)
       .SetID(kHoldingSpaceItemPrimaryActionContainerId)
       .SetUseDefaultFillLayout(true)
       .SetVisible(false)
@@ -378,8 +378,8 @@ std::unique_ptr<views::View> HoldingSpaceItemView::CreatePrimaryAction(
               .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
               .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
               .SetPreferredSize(preferred_size)
-              .SetVisible(false))
-      .Build();
+              .SetVisible(false));
+  return primary_action;
 }
 
 void HoldingSpaceItemView::OnSelectionUiChanged() {

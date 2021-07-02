@@ -12,6 +12,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -24,6 +25,9 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
   views::LabelButton* button = nullptr;
   views::LabelButton* scroll_button = nullptr;
   views::ScrollView* scroll_view = nullptr;
+  views::View* view_with_layout_manager = nullptr;
+  auto layout_manager = std::make_unique<views::FillLayout>();
+  auto* layout_manager_ptr = layout_manager.get();
   auto view = views::Builder<views::View>()
                   .CopyAddressTo(&parent)
                   .SetEnabled(false)
@@ -49,7 +53,10 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
                            .SetContents(views::Builder<views::LabelButton>()
                                             .CopyAddressTo(&scroll_button)
                                             .SetText(u"ScrollTest"))
-                           .SetHeader(views::Builder<views::View>().SetID(2))})
+                           .SetHeader(views::Builder<views::View>().SetID(2)),
+                       views::Builder<views::LabelButton>()
+                           .CopyAddressTo(&view_with_layout_manager)
+                           .SetLayoutManager(std::move(layout_manager))})
                   .Build();
   ASSERT_TRUE(view.get());
   EXPECT_NE(parent, nullptr);
@@ -65,6 +72,9 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
   EXPECT_NE(scroll_button, nullptr);
   EXPECT_EQ(scroll_button->GetText(), u"ScrollTest");
   EXPECT_EQ(scroll_button, scroll_view->contents());
+  EXPECT_NE(view_with_layout_manager, nullptr);
+  EXPECT_TRUE(views::IsViewClass<views::LabelButton>(view_with_layout_manager));
+  EXPECT_EQ(view_with_layout_manager->GetLayoutManager(), layout_manager_ptr);
 }
 
 TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
