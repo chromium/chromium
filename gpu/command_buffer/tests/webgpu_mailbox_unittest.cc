@@ -308,7 +308,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
 
     // Clear the texture using a render pass.
     wgpu::RenderPassColorAttachmentDescriptor color_desc = {};
-    color_desc.attachment = texture.CreateView();
+    color_desc.view = texture.CreateView();
     color_desc.loadOp = wgpu::LoadOp::Clear;
     color_desc.storeOp = wgpu::StoreOp::Store;
     color_desc.clearColor = {0, 255, 0, 255};
@@ -355,7 +355,6 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     copy_dst.buffer = readback_buffer;
     copy_dst.layout.offset = 0;
     copy_dst.layout.bytesPerRow = 256;
-    copy_dst.layout.rowsPerImage = 0;
 
     wgpu::Extent3D copy_size = {1, 1, 1};
 

@@ -355,7 +355,6 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
       dst_copy_view.buffer = dst_buffer;
       dst_copy_view.layout.bytesPerRow = 256;
       dst_copy_view.layout.offset = 0;
-      dst_copy_view.layout.rowsPerImage = 0;
 
       wgpu::Extent3D copy_extent = {static_cast<uint32_t>(size.width()),
                                     static_cast<uint32_t>(size.height()), 1};
