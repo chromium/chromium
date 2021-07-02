@@ -162,6 +162,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @After
     public void tearDown() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
+        ShadowPaymentFeatureList.reset();
     }
 
     @Override
@@ -708,5 +709,38 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         PaymentRequestService service2 = defaultBuilder().build();
         show(service2);
         assertErrorAndReason(ErrorStrings.ANOTHER_UI_SHOWING, PaymentErrorReason.ALREADY_SHOWING);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_success() {
+        ShadowPaymentFeatureList.setEnabledFeature(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION);
+        Assert.assertNotNull(defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForHavingOptions() {
+        ShadowPaymentFeatureList.setEnabledFeature(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION);
+        PaymentOptions options = new PaymentOptions();
+        options.requestShipping = true;
+        Assert.assertNull(defaultBuilder()
+                                  .setOnlySpcMethodWithoutPaymentOptions()
+                                  .setOptions(options)
+                                  .build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    // The restriction is imposed only when the SPC flag is enabled.
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_notApplicableWhenSpcDisabled() {
+        PaymentOptions options = new PaymentOptions();
+        options.requestShipping = true;
+        Assert.assertNotNull(defaultBuilder()
+                                     .setOnlySpcMethodWithoutPaymentOptions()
+                                     .setOptions(options)
+                                     .build());
     }
 }

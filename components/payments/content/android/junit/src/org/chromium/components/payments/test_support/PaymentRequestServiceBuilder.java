@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
+import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
@@ -220,6 +221,14 @@ public class PaymentRequestServiceBuilder implements Delegate {
 
     public PaymentRequestServiceBuilder setOptions(PaymentOptions options) {
         mOptions = options;
+        return this;
+    }
+
+    public PaymentRequestServiceBuilder setOnlySpcMethodWithoutPaymentOptions() {
+        mMethodData = new PaymentMethodData[1];
+        mMethodData[0] = new PaymentMethodData();
+        mMethodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
+        mOptions = new PaymentOptions();
         return this;
     }
 

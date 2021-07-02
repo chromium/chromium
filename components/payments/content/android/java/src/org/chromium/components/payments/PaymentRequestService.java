@@ -531,6 +531,16 @@ public class PaymentRequestService
                     PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
             return false;
         }
+        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                    PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
+                && methodData.containsKey(MethodStrings.SECURE_PAYMENT_CONFIRMATION)
+                && (methodData.size() > 1 || options.requestPayerEmail || options.requestPayerPhone
+                        || options.requestShipping || options.requestPayerName)) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                    PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+            return false;
+        }
         mBrowserPaymentRequest.modifyMethodDataIfNeeded(methodData);
         methodData = Collections.unmodifiableMap(methodData);
 
