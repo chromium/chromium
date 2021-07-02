@@ -134,6 +134,8 @@ class RecordInfo {
 
   bool HasOptionalFinalizer();
 
+  bool HasTypeAlias(std::string marker_name) const;
+
   RecordCache* cache_;
   clang::CXXRecordDecl* record_;
   const std::string name_;

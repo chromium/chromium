@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "Config.h"
 #include "RecordInfo.h"
+
+#include <string>
+
+#include "Config.h"
 #include "clang/Sema/Sema.h"
 
 using namespace clang;
@@ -241,9 +244,24 @@ RecordInfo* RecordCache::Lookup(CXXRecordDecl* record) {
               .first->second;
 }
 
+bool RecordInfo::HasTypeAlias(std::string marker_name) const {
+  for (Decl* decl : record_->decls()) {
+    TypeAliasDecl* alias = dyn_cast<TypeAliasDecl>(decl);
+    if (!alias)
+      continue;
+    if (alias->getName() == marker_name)
+      return true;
+  }
+  return false;
+}
+
 bool RecordInfo::IsStackAllocated() {
   if (is_stack_allocated_ == kNotComputed) {
     is_stack_allocated_ = kFalse;
+    if (HasTypeAlias("IsStackAllocatedTypeMarker")) {
+      is_stack_allocated_ = kTrue;
+      return is_stack_allocated_;
+    }
     for (Bases::iterator it = GetBases().begin();
          it != GetBases().end();
          ++it) {
