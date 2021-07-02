@@ -8,6 +8,7 @@
 #include <deque>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -37,6 +38,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -900,24 +902,51 @@ TEST_F(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
 }
 
 // Base class for tests of the holding space downloads section parameterized by
-// the set of holding space item types which are expected to appear there.
+// the set of holding space item types which are expected to appear there and
+// whether or not the in-progress downloads integration feature is enabled.
 class HoldingSpaceTrayDownloadsSectionTest
     : public HoldingSpaceTrayTest,
-      public ::testing::WithParamInterface<HoldingSpaceItem::Type> {
+      public ::testing::WithParamInterface<
+          std::tuple<HoldingSpaceItem::Type, bool>> {
  public:
-  HoldingSpaceItem::Type GetType() const { return GetParam(); }
+  HoldingSpaceTrayDownloadsSectionTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpaceInProgressDownloadsIntegration,
+        IsInProgressDownloadsIntegrationEnabled());
+  }
+
+  // Returns the max number of downloads given the test parameterization.
+  size_t GetMaxNumberOfDownloads() const {
+    return IsInProgressDownloadsIntegrationEnabled()
+               ? kMaxDownloadsWithInProgressDownloadIntegration
+               : kMaxDownloads;
+  }
+
+  // Returns the holding space item type given the test parameterization.
+  HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
+
+  // Returns whether in-progress downloads integration is enabled given test
+  // parameterization.
+  bool IsInProgressDownloadsIntegrationEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceTrayDownloadsSectionTest,
-    ::testing::Values(HoldingSpaceItem::Type::kArcDownload,
-                      HoldingSpaceItem::Type::kDiagnosticsLog,
-                      HoldingSpaceItem::Type::kDownload,
-                      HoldingSpaceItem::Type::kLacrosDownload,
-                      HoldingSpaceItem::Type::kNearbyShare,
-                      HoldingSpaceItem::Type::kPrintedPdf,
-                      HoldingSpaceItem::Type::kScan));
+    ::testing::Combine(
+        ::testing::Values(HoldingSpaceItem::Type::kArcDownload,
+                          HoldingSpaceItem::Type::kDiagnosticsLog,
+                          HoldingSpaceItem::Type::kDownload,
+                          HoldingSpaceItem::Type::kLacrosDownload,
+                          HoldingSpaceItem::Type::kNearbyShare,
+                          HoldingSpaceItem::Type::kPrintedPdf,
+                          HoldingSpaceItem::Type::kScan),
+        ::testing::Bool()));
 
 // Tests how download chips are updated during item addition, removal and
 // initialization.
@@ -931,7 +960,8 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
 
   // Add a download item and verify recent file bubble gets shown.
-  HoldingSpaceItem* item_1 = AddItem(GetType(), base::FilePath("/tmp/fake_1"));
+  std::vector<HoldingSpaceItem*> items;
+  items.push_back(AddItem(GetType(), base::FilePath("/tmp/fake_1")));
 
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
   EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
@@ -942,65 +972,77 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
 
   // Add partially initialized download item - verify it doesn't get shown in
   // the UI yet.
-  HoldingSpaceItem* item_2 =
-      AddPartiallyInitializedItem(GetType(), base::FilePath("/tmp/fake_2"));
+  items.push_back(
+      AddPartiallyInitializedItem(GetType(), base::FilePath("/tmp/fake_2")));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
   ASSERT_EQ(1u, download_chips.size());
-  EXPECT_EQ(item_1->id(),
+  EXPECT_EQ(items[0]->id(),
             HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
 
-  // Add another download, and verify it's shown in the UI.
-  HoldingSpaceItem* item_3 = AddItem(GetType(), base::FilePath("/tmp/fake_3"));
+  // Add a few more download items until the section reaches capacity.
+  for (size_t i = 2; i <= GetMaxNumberOfDownloads(); ++i) {
+    items.push_back(AddItem(
+        GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
+  }
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(2u, download_chips.size());
-  EXPECT_EQ(item_3->id(),
-            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
-  EXPECT_EQ(item_1->id(),
-            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+
+  // All downloads should be visible except for that which is associated with
+  // the partially initialized item at index == `1`.
+  for (int download_chip_index = 0, item_index = items.size() - 1;
+       item_index >= 0; --item_index) {
+    if (item_index != 1) {
+      HoldingSpaceItemView* download_chip =
+          HoldingSpaceItemView::Cast(download_chips.at(download_chip_index++));
+      EXPECT_EQ(download_chip->item()->id(), items[item_index]->id());
+    }
+  }
 
   // Fully initialize partially initialized item, and verify it gets added to
   // the section, in the order of addition, replacing the oldest item.
-  model()->InitializeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
+  model()->InitializeOrRemoveItem(items[1]->id(), GURL("filesystem:fake_2"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(2u, download_chips.size());
-  EXPECT_EQ(item_3->id(),
-            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
-  EXPECT_EQ(item_2->id(),
-            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+
+  for (int download_chip_index = 0, item_index = items.size() - 1;
+       item_index > 0; ++download_chip_index, --item_index) {
+    HoldingSpaceItemView* download_chip =
+        HoldingSpaceItemView::Cast(download_chips.at(download_chip_index));
+    EXPECT_EQ(download_chip->item()->id(), items[item_index]->id());
+  }
 
   // Remove the newest item, and verify the section gets updated.
-  model()->RemoveItem(item_3->id());
+  auto item_it = items.end() - 1;
+  model()->RemoveItem((*item_it)->id());
+  items.erase(item_it);
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(2u, download_chips.size());
-  EXPECT_EQ(item_2->id(),
-            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
-  EXPECT_EQ(item_1->id(),
-            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
 
-  // Remove other items, and verify the recent files bubble gets hidden.
-  model()->RemoveItem(item_2->id());
+  for (int download_chip_index = 0, item_index = items.size() - 1;
+       item_index >= 0; ++download_chip_index, --item_index) {
+    HoldingSpaceItemView* download_chip =
+        HoldingSpaceItemView::Cast(download_chips.at(download_chip_index));
+    EXPECT_EQ(download_chip->item()->id(), items[item_index]->id());
+  }
 
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-  download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(1u, download_chips.size());
-  EXPECT_EQ(item_1->id(),
-            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+  // Remove other items and verify the recent files bubble gets hidden.
+  while (!items.empty()) {
+    model()->RemoveItem(items.front()->id());
+    items.erase(items.begin());
+  }
 
-  model()->RemoveItem(item_1->id());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
-
   EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   // Pinned bubble is showing "educational" info, and it should remain shown.
@@ -1016,7 +1058,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 
   // Add a number of initialized download items.
   std::deque<HoldingSpaceItem*> items;
-  for (size_t i = 0; i < kMaxDownloads; ++i) {
+  for (size_t i = 0; i < GetMaxNumberOfDownloads(); ++i) {
     items.push_back(AddItem(
         GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
   }
@@ -1048,45 +1090,59 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 
   // Add partially initialized download item - verify it doesn't get shown in
   // the UI yet.
-  HoldingSpaceItem* item_1 =
-      AddPartiallyInitializedItem(GetType(), base::FilePath("/tmp/fake_1"));
+  std::vector<HoldingSpaceItem*> items;
+  items.push_back(
+      AddPartiallyInitializedItem(GetType(), base::FilePath("/tmp/fake_1")));
 
-  // Add two download items.
-  HoldingSpaceItem* item_2 = AddItem(GetType(), base::FilePath("/tmp/fake_2"));
-  HoldingSpaceItem* item_3 = AddItem(GetType(), base::FilePath("/tmp/fake_3"));
+  // Add download items until the section reaches capacity.
+  for (size_t i = 1; i < GetMaxNumberOfDownloads() + 1; ++i) {
+    items.push_back(AddItem(
+        GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
+  }
+
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(2u, download_chips.size());
-  EXPECT_EQ(item_3->id(),
-            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
-  EXPECT_EQ(item_2->id(),
-            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+
+  for (size_t download_chip_index = 0, item_index = items.size() - 1;
+       item_index > 0; ++download_chip_index, --item_index) {
+    HoldingSpaceItemView* download_chip =
+        HoldingSpaceItemView::Cast(download_chips.at(download_chip_index));
+    EXPECT_EQ(download_chip->item()->id(), items[item_index]->id());
+  }
 
   // Fully initialize partially initialized item, and verify it's not added to
   // the section.
-  model()->InitializeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
+  model()->InitializeOrRemoveItem(items[0]->id(), GURL("filesystem:fake_1"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(2u, download_chips.size());
-  EXPECT_EQ(item_3->id(),
-            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
-  EXPECT_EQ(item_2->id(),
-            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+
+  for (size_t download_chip_index = 0, item_index = items.size() - 1;
+       item_index > 0; ++download_chip_index, --item_index) {
+    HoldingSpaceItemView* download_chip =
+        HoldingSpaceItemView::Cast(download_chips.at(download_chip_index));
+    EXPECT_EQ(download_chip->item()->id(), items[item_index]->id());
+  }
 
   // Remove the oldest item, and verify the section doesn't get updated.
-  model()->RemoveItem(item_1->id());
+  model()->RemoveItem(items.front()->id());
+  items.erase(items.begin());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(2u, download_chips.size());
-  EXPECT_EQ(item_3->id(),
-            HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
-  EXPECT_EQ(item_2->id(),
-            HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
+  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+
+  for (int download_chip_index = 0, item_index = items.size() - 1;
+       item_index >= 0; ++download_chip_index, --item_index) {
+    HoldingSpaceItemView* download_chip =
+        HoldingSpaceItemView::Cast(download_chips.at(download_chip_index));
+    EXPECT_EQ(download_chip->item()->id(), items[item_index]->id());
+  }
 }
 
 // Tests that a partially initialized download item does not get shown if a full
