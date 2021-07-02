@@ -31,6 +31,7 @@ generate_grd("build_grdp") {
     "error.svg",
     "icon_copy_content.svg",
     "icon_cancel.svg",
+    "icon_file.png",
     "icon_search.svg",
     "icon_refresh.svg",
     "open_in_new.svg",
