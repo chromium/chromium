@@ -12,8 +12,10 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "remoting/host/setup/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -129,45 +131,59 @@ TEST_F(NativeMessagingReaderTest, SingleGoodMessage) {
   RunAndWaitForOperationComplete();
   ASSERT_FALSE(on_error_signaled_);
   ASSERT_TRUE(message_);
-  base::DictionaryValue* message_dict;
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
-  int result;
-  ASSERT_TRUE(message_dict->GetInteger("foo", &result));
+
+  ASSERT_TRUE(message_->is_dict());
+  absl::optional<int> result =
+      base::Value::AsDictionaryValue(*message_).FindIntKey("foo");
+  ASSERT_TRUE(result.has_value());
   ASSERT_EQ(42, result);
 }
 
 TEST_F(NativeMessagingReaderTest, MultipleGoodMessages) {
-  WriteMessage("{}");
-  RunAndWaitForOperationComplete();
-  ASSERT_FALSE(on_error_signaled_);
-  ASSERT_TRUE(message_);
-  base::DictionaryValue* message_dict;
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
+  {
+    WriteMessage("{}");
+    RunAndWaitForOperationComplete();
+    ASSERT_FALSE(on_error_signaled_);
+    ASSERT_TRUE(message_);
+    ASSERT_TRUE(message_->is_dict());
+    ASSERT_TRUE(base::Value::AsDictionaryValue(*message_).DictEmpty());
+  }
 
-  int result;
-  WriteMessage("{\"foo\": 42}");
-  RunAndWaitForOperationComplete();
-  ASSERT_FALSE(on_error_signaled_);
-  ASSERT_TRUE(message_);
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
-  ASSERT_TRUE(message_dict->GetInteger("foo", &result));
-  ASSERT_EQ(42, result);
+  {
+    WriteMessage("{\"foo\": 42}");
+    RunAndWaitForOperationComplete();
+    ASSERT_FALSE(on_error_signaled_);
+    ASSERT_TRUE(message_);
+    ASSERT_TRUE(message_->is_dict());
+    absl::optional<int> result =
+        base::Value::AsDictionaryValue(*message_).FindIntKey("foo");
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(42, result);
+  }
 
-  WriteMessage("{\"bar\": 43}");
-  RunAndWaitForOperationComplete();
-  ASSERT_FALSE(on_error_signaled_);
-  ASSERT_TRUE(message_);
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
-  ASSERT_TRUE(message_dict->GetInteger("bar", &result));
-  ASSERT_EQ(43, result);
+  {
+    WriteMessage("{\"bar\": 43}");
+    RunAndWaitForOperationComplete();
+    ASSERT_FALSE(on_error_signaled_);
+    ASSERT_TRUE(message_);
+    ASSERT_TRUE(message_->is_dict());
+    absl::optional<int> result =
+        base::Value::AsDictionaryValue(*message_).FindIntKey("bar");
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(43, result);
+  }
 
-  WriteMessage("{\"baz\": 44}");
-  RunAndWaitForOperationComplete();
-  ASSERT_FALSE(on_error_signaled_);
-  ASSERT_TRUE(message_);
-  ASSERT_TRUE(message_->GetAsDictionary(&message_dict));
-  ASSERT_TRUE(message_dict->GetInteger("baz", &result));
-  ASSERT_EQ(44, result);
+  {
+    WriteMessage("{\"baz\": 44}");
+    RunAndWaitForOperationComplete();
+    ASSERT_FALSE(on_error_signaled_);
+    ASSERT_TRUE(message_);
+    ASSERT_TRUE(message_->is_dict());
+    absl::optional<int> result =
+        base::Value::AsDictionaryValue(*message_).FindIntKey("baz");
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(44, result);
+  }
 }
 
 TEST_F(NativeMessagingReaderTest, InvalidLength) {
