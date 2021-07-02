@@ -216,7 +216,7 @@ constexpr char kTimezoneRegion[] = "America/Denver";
 constexpr uint32_t kFakeTotalMemory = 1287312;
 constexpr uint32_t kFakeFreeMemory = 981239;
 constexpr uint32_t kFakeAvailableMemory = 98719321;
-constexpr uint32_t kFakePageFaults = 896123761;
+constexpr uint64_t kFakePageFaults = 896123761;
 // Backlight test values:
 constexpr char kFakeBacklightPath[] = "/sys/class/backlight/fake_backlight";
 constexpr uint32_t kFakeMaxBrightness = 769;

@@ -1304,7 +1304,7 @@ message MemoryInfo {
   // Available memory, in KiB.
   optional uint32 available_memory_kib = 3;
   // Number of page faults since the last boot.
-  optional uint32 page_faults_since_last_boot = 4;
+  optional uint64 page_faults_since_last_boot = 4;
 }
 
 // Information about the device's backlights.
