@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
@@ -1161,8 +1162,11 @@ void InputMethodManagerImpl::LoadNecessaryComponentExtensions(
   // image. If specified component extension IME no longer exists, falling back
   // to an existing IME.
   DCHECK(state);
+  TRACE_EVENT0("ime",
+               "InputMethodManagerImpl::LoadNecessaryComponentExtensions");
   std::vector<std::string> unfiltered_input_method_ids;
   unfiltered_input_method_ids.swap(state->active_input_method_ids);
+  std::set<std::string> ext_loaded;
   for (const auto& unfiltered_input_method_id : unfiltered_input_method_ids) {
     if (!extension_ime_util::IsComponentExtensionIME(
             unfiltered_input_method_id)) {
@@ -1172,7 +1176,7 @@ void InputMethodManagerImpl::LoadNecessaryComponentExtensions(
                    unfiltered_input_method_id)) {
       if (enable_extension_loading_) {
         component_extension_ime_manager_->LoadComponentExtensionIME(
-            state->profile, unfiltered_input_method_id);
+            state->profile, unfiltered_input_method_id, &ext_loaded);
       }
 
       state->active_input_method_ids.push_back(unfiltered_input_method_id);
