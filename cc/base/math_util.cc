@@ -564,15 +564,18 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
 
           float z = point.z();
           if (std::abs(z) > HomogeneousCoordinate::kInfiniteCoordinate) {
-            // From the clamping to max_distance above, we know that
-            // std::abs(z_at_xy_zero) < kInfiniteCoordinate.
-            DCHECK_LE(std::abs(z_at_xy_zero),
-                      HomogeneousCoordinate::kInfiniteCoordinate);
-            float z_offset = z - z_at_xy_zero;
+            // From the clamping to max_distance above, we should have
+            // made std::abs(z_at_xy_zero) < kInfiniteCoordinate.
+            // However, if it started off very large we might not have.
+            float z_at_xy_zero_clamped =
+                std::min(float{HomogeneousCoordinate::kInfiniteCoordinate},
+                         std::max(-HomogeneousCoordinate::kInfiniteCoordinate,
+                                  z_at_xy_zero));
+            float z_offset = z - z_at_xy_zero_clamped;
             float z_space =
                 (z > 0 ? HomogeneousCoordinate::kInfiniteCoordinate
                        : -HomogeneousCoordinate::kInfiniteCoordinate) -
-                z_at_xy_zero;
+                z_at_xy_zero_clamped;
             DCHECK_NE(z_offset, 0.0f);
             DCHECK_NE(z_space, 0.0f);
             DCHECK_EQ(z_offset > 0, z_space > 0);
