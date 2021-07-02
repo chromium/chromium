@@ -779,6 +779,24 @@
   <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_OFF" desc="Label for the checkbox which set the color mode to default color than calculated from the current wallpaper.">
     Neutral
   </message>
+    <message name="IDS_SETTINGS_DARK_MODE_ON_AT_SUNSET" desc="The sub label for the automatic schedule which explains that Dark Mode will turn on automatically at sunset.">
+    Dark mode will turn on automatically at sunset
+  </message>
+  <message name="IDS_SETTINGS_DARK_MODE_OFF_AT_SUNRISE" desc="The sub label for the automatic schedule which explains that Dark Mode will turn off automatically at sunrise.">
+    Dark mode will turn off automatically at sunrise
+  </message>
+  <message name="IDS_SETTINGS_DARK_MODE_SCHEDULE_CUSTOM" desc="The label of the option to set a custom schedule of the Dark Mode feature.">
+    Custom
+  </message>
+  <message name="IDS_SETTINGS_DARK_MODE_SCHEDULE_LABEL" desc="The label for the automatic schedule section of the Dark Mode feature.">
+    Schedule
+  </message>
+  <message name="IDS_SETTINGS_DARK_MODE_SCHEDULE_NEVER" desc="The label of the option to turn off the automatic schedule of the Dark Mode feature.">
+    Never
+  </message>
+  <message name="IDS_SETTINGS_DARK_MODE_SCHEDULE_SUNSET_TO_SUNRISE" desc="The label of the option to set the automatic schedule of the Dark Mode feature to turn on at sunset and off at sunrise.">
+    Sunset to sunrise
+  </message>
 
   <!-- Search and Assistant section. -->
   <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL" desc="Label in OS settings describing search engine behavior.">
