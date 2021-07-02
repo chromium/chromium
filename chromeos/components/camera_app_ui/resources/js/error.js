@@ -23,7 +23,7 @@ import {
  */
 export let StackFrame;
 
-const PRODUCT_NAME = 'Chrome_ChromeOS';
+const PRODUCT_NAME = 'ChromeOS_CameraApp';
 
 /**
  * Converts v8 CallSite object to StackFrame.
