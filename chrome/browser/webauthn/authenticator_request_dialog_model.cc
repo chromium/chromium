@@ -871,6 +871,15 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
           if (!priority_transport) {
             priority_transport = cable;
           }
+
+          // If this is a caBLEv1 or server-link request then offering to "Try
+          // Again" is unfortunate because the server won't send another ping
+          // to the phone. It is valid if trying to use USB devices but the
+          // confusion of the caBLE case overrides that.
+          //
+          // The only other case here is device::kWebAuthPhoneSupport mode,
+          // which is purely for testing so we don't worry about it.
+          offer_try_again_in_ui_ = false;
         }
         break;
       }
@@ -928,7 +937,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     }
   }
 
-  // At most one mechanisms has priority.
+  // At most one mechanism has priority.
   DCHECK_LE(std::count_if(mechanisms_.begin(), mechanisms_.end(),
                           [](const Mechanism& m) { return m.priority; }),
             1);
