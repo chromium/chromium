@@ -13,14 +13,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string_split.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/policy_export.h"
@@ -344,15 +340,19 @@ class POLICY_EXPORT DeviceManagementService {
   // TaskRunner used to schedule retry attempts.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  // Used to create tasks which run delayed on the UI thread.
+  // Used to run delayed tasks (e.g. |Initialize()|).
   base::WeakPtrFactory<DeviceManagementService> weak_ptr_factory_{this};
 };
 
 // Base class used to implement job configurations.
 class POLICY_EXPORT JobConfigurationBase
     : public DeviceManagementService::JobConfiguration {
+ public:
+  JobConfigurationBase(const JobConfigurationBase&) = delete;
+  JobConfigurationBase& operator=(const JobConfigurationBase&) = delete;
+
  protected:
   JobConfigurationBase(JobType type,
                        DMAuth auth_data,
@@ -395,8 +395,6 @@ class POLICY_EXPORT JobConfigurationBase
 
   // Query parameters for the network request.
   ParameterMap query_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobConfigurationBase);
 };
 
 }  // namespace policy

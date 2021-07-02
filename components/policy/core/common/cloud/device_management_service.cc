@@ -7,13 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -392,7 +391,7 @@ class DeviceManagementService::JobImpl : public Job {
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<JobImpl> weak_ptr_factory_{this};
 };
 
@@ -614,7 +613,7 @@ DeviceManagementService::CreateJob(std::unique_ptr<JobConfiguration> config) {
 
 void DeviceManagementService::ScheduleInitialization(
     int64_t delay_milliseconds) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (initialized_)
     return;
@@ -626,7 +625,7 @@ void DeviceManagementService::ScheduleInitialization(
 }
 
 void DeviceManagementService::Initialize() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialized_)
     return;
   initialized_ = true;
@@ -635,7 +634,7 @@ void DeviceManagementService::Initialize() {
 }
 
 void DeviceManagementService::Shutdown() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -643,12 +642,12 @@ DeviceManagementService::DeviceManagementService(
     std::unique_ptr<Configuration> configuration)
     : configuration_(std::move(configuration)),
       initialized_(false),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(configuration_);
 }
 
 void DeviceManagementService::JobImpl::Start() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CreateUrlLoader();
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
