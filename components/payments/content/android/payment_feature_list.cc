@@ -20,6 +20,7 @@ namespace {
 // components/payments/core/features.h, content/public/common/content_features.h
 // or the .h file (for Android only features).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &::features::kSecurePaymentConfirmation,
     &::features::kServiceWorkerPaymentApps,
     &::features::kWebPayments,
     &::features::kWebPaymentsMinimalUI,

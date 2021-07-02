@@ -888,7 +888,9 @@ public class PaymentRequestService
         PaymentApp selectedApp = mBrowserPaymentRequest.getSelectedPaymentApp();
         // TODO(crbug.com/1211947): Deduplicate this part with
         // SecurePaymentConfirmationController::SetupModelAndShowDialogIfApplicable().
-        return selectedApp != null && selectedApp.getPaymentAppType() == PaymentAppType.INTERNAL
+        return PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                       PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
+                && selectedApp != null && selectedApp.getPaymentAppType() == PaymentAppType.INTERNAL
                 && selectedApp.getInstrumentMethodNames().size() == 1
                 && selectedApp.getInstrumentMethodNames().contains(
                         MethodStrings.SECURE_PAYMENT_CONFIRMATION)

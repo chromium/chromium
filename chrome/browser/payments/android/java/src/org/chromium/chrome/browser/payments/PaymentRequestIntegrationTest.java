@@ -91,6 +91,10 @@ public class PaymentRequestIntegrationTest {
 
         ShadowPaymentFeatureList.setFeatureEnabled(
                 PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES, true);
         PaymentRequestService.resetShowingPaymentRequestForTest();
         PaymentAppService.getInstance().resetForTest();
 
