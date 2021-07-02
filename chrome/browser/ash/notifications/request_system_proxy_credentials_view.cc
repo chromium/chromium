@@ -19,6 +19,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
@@ -29,6 +30,35 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+class ErrorLabelView : public views::Label {
+ public:
+  METADATA_HEADER(ErrorLabelView);
+
+  explicit ErrorLabelView(bool show_error_label)
+      : Label(l10n_util::GetStringUTF16(
+            IDS_SYSTEM_PROXY_AUTH_DIALOG_ERROR_LABEL)) {
+    SetEnabled(true);
+    SetVisible(show_error_label);
+  }
+  ErrorLabelView(const ErrorLabelView&) = delete;
+  ErrorLabelView& operator=(const ErrorLabelView&) = delete;
+  ~ErrorLabelView() override = default;
+
+  // views::View:
+  void OnThemeChanged() override {
+    Label::OnThemeChanged();
+    SetEnabledColor(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_AlertSeverityHigh));
+  }
+};
+
+BEGIN_METADATA(ErrorLabelView, views::Label)
+END_METADATA
+
+}  // namespace
 
 namespace ash {
 
@@ -155,20 +185,15 @@ void RequestSystemProxyCredentialsView::Init() {
                               related_vertical_spacing);
   auto error_icon = std::make_unique<views::ImageView>();
   const int kIconSize = 18;
-  error_icon->SetImage(
-      gfx::CreateVectorIcon(vector_icons::kInfoOutlineIcon, kIconSize,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_AlertSeverityHigh)));
+  error_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kInfoOutlineIcon,
+      ui::NativeTheme::kColorId_AlertSeverityHigh, kIconSize));
   error_icon->SetImageSize(gfx::Size(kIconSize, kIconSize));
   error_icon->SetVisible(show_error_label_);
   layout->AddView(std::move(error_icon));
-  auto error_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_ERROR_LABEL));
-  error_label->SetEnabled(true);
-  error_label->SetVisible(show_error_label_);
-  error_label->SetEnabledColor(error_label->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_AlertSeverityHigh));
-  error_label_ = layout->AddView(std::move(error_label));
+
+  error_label_ =
+      layout->AddView(std::make_unique<ErrorLabelView>(show_error_label_));
 }
 
 BEGIN_METADATA(RequestSystemProxyCredentialsView, views::DialogDelegateView)

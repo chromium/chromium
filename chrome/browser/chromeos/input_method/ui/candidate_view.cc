@@ -48,47 +48,83 @@ class VerticalCandidateLabel : public views::Label {
 BEGIN_METADATA(VerticalCandidateLabel, views::Label)
 END_METADATA
 
-// Creates the shortcut label, and returns it (never returns nullptr).
-// The label text is not set in this function.
-std::unique_ptr<views::Label> CreateShortcutLabel(
-    ui::CandidateWindow::Orientation orientation,
-    const ui::NativeTheme& theme) {
-  auto shortcut_label = std::make_unique<views::Label>();
+// The label text is not set in this class.
+class ShortcutLabel : public views::Label {
+ public:
+  METADATA_HEADER(ShortcutLabel);
+  explicit ShortcutLabel(ui::CandidateWindow::Orientation orientation)
+      : orientation_(orientation) {
+    // TODO(tapted): Get this FontList from views::style.
+    if (orientation == ui::CandidateWindow::VERTICAL) {
+      SetFontList(font_list().Derive(kFontSizeDelta, gfx::Font::NORMAL,
+                                     gfx::Font::Weight::BOLD));
+    } else {
+      SetFontList(font_list().DeriveWithSizeDelta(kFontSizeDelta));
+    }
+    // TODO(satorux): Maybe we need to use language specific fonts for
+    // candidate_label, like Chinese font for Chinese input method?
 
-  // TODO(tapted): Get this FontList from views::style.
-  if (orientation == ui::CandidateWindow::VERTICAL) {
-    shortcut_label->SetFontList(shortcut_label->font_list().Derive(
-        kFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::BOLD));
-  } else {
-    shortcut_label->SetFontList(
-        shortcut_label->font_list().DeriveWithSizeDelta(kFontSizeDelta));
+    // Setup paddings.
+    const gfx::Insets kVerticalShortcutLabelInsets(1, 6, 1, 6);
+    const gfx::Insets kHorizontalShortcutLabelInsets(1, 3, 1, 0);
+    const gfx::Insets insets = (orientation == ui::CandidateWindow::VERTICAL
+                                    ? kVerticalShortcutLabelInsets
+                                    : kHorizontalShortcutLabelInsets);
+    SetBorder(views::CreateEmptyBorder(insets.top(), insets.left(),
+                                       insets.bottom(), insets.right()));
+
+    SetElideBehavior(gfx::NO_ELIDE);
   }
-  // TODO(satorux): Maybe we need to use language specific fonts for
-  // candidate_label, like Chinese font for Chinese input method?
+  ShortcutLabel(const ShortcutLabel&) = delete;
+  ShortcutLabel& operator=(const ShortcutLabel&) = delete;
+  ~ShortcutLabel() override = default;
 
-  // Setup paddings.
-  const gfx::Insets kVerticalShortcutLabelInsets(1, 6, 1, 6);
-  const gfx::Insets kHorizontalShortcutLabelInsets(1, 3, 1, 0);
-  const gfx::Insets insets = (orientation == ui::CandidateWindow::VERTICAL
-                                  ? kVerticalShortcutLabelInsets
-                                  : kHorizontalShortcutLabelInsets);
-  shortcut_label->SetBorder(views::CreateEmptyBorder(
-      insets.top(), insets.left(), insets.bottom(), insets.right()));
-
-  // Add decoration based on the orientation.
-  if (orientation == ui::CandidateWindow::VERTICAL) {
-    // Set the background color.
-    SkColor blackish = color_utils::AlphaBlend(
-        SK_ColorBLACK,
-        theme.GetSystemColor(ui::NativeTheme::kColorId_WindowBackground),
-        0.25f);
-    shortcut_label->SetBackground(
-        views::CreateSolidBackground(SkColorSetA(blackish, 0xE0)));
+  // views::Label:
+  void OnThemeChanged() override {
+    Label::OnThemeChanged();
+    // Add decoration based on the orientation.
+    if (orientation_ == ui::CandidateWindow::VERTICAL) {
+      // Set the background color.
+      SkColor blackish = color_utils::AlphaBlend(
+          SK_ColorBLACK,
+          GetNativeTheme()->GetSystemColor(
+              ui::NativeTheme::kColorId_WindowBackground),
+          0.25f);
+      SetBackground(views::CreateSolidBackground(SkColorSetA(blackish, 0xE0)));
+    }
   }
-  shortcut_label->SetElideBehavior(gfx::NO_ELIDE);
 
-  return shortcut_label;
-}
+ private:
+  const ui::CandidateWindow::Orientation orientation_;
+};
+
+BEGIN_METADATA(ShortcutLabel, views::Label)
+END_METADATA
+
+// The label text is not set in this class.
+class AnnotationLabel : public views::Label {
+ public:
+  METADATA_HEADER(AnnotationLabel);
+  AnnotationLabel() {
+    // Change the font size and color.
+    SetFontList(font_list().DeriveWithSizeDelta(kFontSizeDelta));
+    SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    SetElideBehavior(gfx::NO_ELIDE);
+  }
+  AnnotationLabel(const AnnotationLabel&) = delete;
+  AnnotationLabel& operator=(const AnnotationLabel&) = delete;
+  ~AnnotationLabel() override = default;
+
+  // views::Label:
+  void OnThemeChanged() override {
+    Label::OnThemeChanged();
+    SetEnabledColor(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_LabelSecondaryColor));
+  }
+};
+
+BEGIN_METADATA(AnnotationLabel, views::Label)
+END_METADATA
 
 // Creates the candidate label, and returns it (never returns nullptr).
 // The label text is not set in this function.
@@ -111,24 +147,6 @@ std::unique_ptr<views::Label> CreateCandidateLabel(
   return candidate_label;
 }
 
-// Creates the annotation label, and return it (never returns nullptr).
-// The label text is not set in this function.
-std::unique_ptr<views::Label> CreateAnnotationLabel(
-    ui::CandidateWindow::Orientation orientation,
-    const ui::NativeTheme& theme) {
-  auto annotation_label = std::make_unique<views::Label>();
-
-  // Change the font size and color.
-  annotation_label->SetFontList(
-      annotation_label->font_list().DeriveWithSizeDelta(kFontSizeDelta));
-  annotation_label->SetEnabledColor(
-      theme.GetSystemColor(ui::NativeTheme::kColorId_LabelSecondaryColor));
-  annotation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  annotation_label->SetElideBehavior(gfx::NO_ELIDE);
-
-  return annotation_label;
-}
-
 }  // namespace
 
 CandidateView::CandidateView(PressedCallback callback,
@@ -136,17 +154,12 @@ CandidateView::CandidateView(PressedCallback callback,
     : views::Button(std::move(callback)), orientation_(orientation) {
   SetBorder(views::CreateEmptyBorder(1, 1, 1, 1));
 
-  const ui::NativeTheme& theme = *GetNativeTheme();
-  shortcut_label_ = AddChildView(CreateShortcutLabel(orientation, theme));
+  shortcut_label_ = AddChildView(std::make_unique<ShortcutLabel>(orientation));
   candidate_label_ = AddChildView(CreateCandidateLabel(orientation));
-  annotation_label_ = AddChildView(CreateAnnotationLabel(orientation, theme));
+  annotation_label_ = AddChildView(std::make_unique<AnnotationLabel>());
 
-  if (orientation == ui::CandidateWindow::VERTICAL) {
-    auto infolist_icon = std::make_unique<views::View>();
-    infolist_icon->SetBackground(views::CreateSolidBackground(
-        theme.GetSystemColor(ui::NativeTheme::kColorId_FocusedBorderColor)));
-    infolist_icon_ = AddChildView(std::move(infolist_icon));
-  }
+  if (orientation == ui::CandidateWindow::VERTICAL)
+    infolist_icon_ = AddChildView(std::make_unique<views::View>());
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }
@@ -298,6 +311,15 @@ void CandidateView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                              candidate_index_ + 1);
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
                              total_candidates_);
+}
+
+void CandidateView::OnThemeChanged() {
+  Button::OnThemeChanged();
+  if (infolist_icon_) {
+    infolist_icon_->SetBackground(
+        views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_FocusedBorderColor)));
+  }
 }
 
 BEGIN_METADATA(CandidateView, views::Button)

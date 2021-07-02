@@ -106,15 +106,21 @@ class InformationTextArea : public views::View {
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
     AddChildView(label_);
+  }
+
+  InformationTextArea(const InformationTextArea&) = delete;
+  InformationTextArea& operator=(const InformationTextArea&) = delete;
+
+  // views::View:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
     SetBackground(views::CreateSolidBackground(
         color_utils::AlphaBlend(SK_ColorBLACK,
                                 GetNativeTheme()->GetSystemColor(
                                     ui::NativeTheme::kColorId_WindowBackground),
                                 0.0625f)));
+    UpdateBorder();
   }
-
-  InformationTextArea(const InformationTextArea&) = delete;
-  InformationTextArea& operator=(const InformationTextArea&) = delete;
 
   // Sets the text alignment.
   void SetAlignment(gfx::HorizontalAlignment alignment) {
@@ -126,8 +132,15 @@ class InformationTextArea : public views::View {
 
   // Sets the border thickness for top/bottom.
   void SetBorderFromPosition(BorderPosition position) {
+    position_ = position;
+    UpdateBorder();
+  }
+
+  void UpdateBorder() {
+    if (!position_ || !GetWidget())
+      return;
     SetBorder(views::CreateSolidSidedBorder(
-        (position == TOP) ? 1 : 0, 0, (position == BOTTOM) ? 1 : 0, 0,
+        (position_ == TOP) ? 1 : 0, 0, (position_ == BOTTOM) ? 1 : 0, 0,
         GetNativeTheme()->GetSystemColor(
             ui::NativeTheme::kColorId_MenuBorderColor)));
   }
@@ -142,6 +155,7 @@ class InformationTextArea : public views::View {
  private:
   views::Label* label_;
   int min_width_;
+  absl::optional<BorderPosition> position_;
 };
 
 BEGIN_METADATA(InformationTextArea, views::View)
@@ -168,10 +182,6 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   // of the frame view created by the BubbleDialogDelegateView is consistent
   // with what CandidateWindowView expects.
   set_use_round_corners(false);
-
-  SetBorder(views::CreateSolidBorder(
-      1, GetNativeTheme()->GetSystemColor(
-             ui::NativeTheme::kColorId_MenuBorderColor)));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -212,6 +222,13 @@ views::Widget* CandidateWindowView::InitWidget() {
       std::make_unique<CandidateWindowBorder>());
   GetBubbleFrameView()->OnThemeChanged();
   return widget;
+}
+
+void CandidateWindowView::OnThemeChanged() {
+  BubbleDialogDelegateView::OnThemeChanged();
+  SetBorder(views::CreateSolidBorder(
+      1, GetNativeTheme()->GetSystemColor(
+             ui::NativeTheme::kColorId_MenuBorderColor)));
 }
 
 void CandidateWindowView::UpdateVisibility() {

@@ -92,15 +92,10 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
  public:
   METADATA_HEADER(SharesheetImagePreview);
   explicit SharesheetImagePreview(size_t file_count) {
-    const int border_radius =
-        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::Emphasis::kMedium);
     SetBackground(views::CreateRoundedRectBackground(
-        kImagePreviewPlaceholderBackgroundColor, border_radius));
-    SetBorder(views::CreateRoundedRectBorder(
-        /* thickness */ 1, border_radius,
-        GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+        kImagePreviewPlaceholderBackgroundColor,
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kMedium)));
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         /* inside_border_insets */ gfx::Insets(),
@@ -183,6 +178,16 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   void OnGestureEvent(ui::GestureEvent* event) override {
     if (event->type() == ui::ET_GESTURE_TAP)
       was_pressed_ = true;
+  }
+
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    SetBorder(views::CreateRoundedRectBorder(
+        /*thickness=*/1,
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kMedium),
+        GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_UnfocusedBorderColor)));
   }
 
   void AddRowToImageContainerView() {
