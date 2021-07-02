@@ -139,14 +139,9 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
 // Smoke test that ensures that when a node gets focus, the layer with the
 // focus highlight actually gets drawn.
 //
-// Flaky on Mac. TODO(crbug.com/1083806): Enable this test.
-#if defined(OS_MAC)
-#define MAYBE_DrawsHighlight DISABLED_DrawsHighlight
-#else
-#define MAYBE_DrawsHighlight DrawsHighlight
-#endif
+// Flaky on all platforms. TODO(crbug.com/1083806): Enable this test.
 IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
-                       MAYBE_DrawsHighlight) {
+                       DISABLED_DrawsHighlight) {
   ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html,"
                       "<body style='background-color: rgb(204, 255, 255);'>"
