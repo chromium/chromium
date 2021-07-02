@@ -7,12 +7,10 @@
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/browser/notification_source.h"
@@ -56,17 +54,8 @@ class WidgetBoundsChangeWaiter : public views::WidgetObserver {
 
 class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
  public:
-  ProfilePickerInteractiveUiTest()
-      : feature_list_(features::kSignInProfileCreation) {}
-
+  ProfilePickerInteractiveUiTest() = default;
   ~ProfilePickerInteractiveUiTest() override = default;
-
-  void ShowAndFocusPicker(ProfilePicker::EntryPoint entry_point) {
-    ProfilePicker::Show(entry_point);
-    WaitForLayoutWithoutToolbar();
-    EXPECT_TRUE(
-        ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));
-  }
 
   void SendCloseWindowKeyboardCommand() {
     // Close window using keyboard.
@@ -115,14 +104,13 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
         widget()->GetNativeWindow(), key, /*control=*/false,
         /*shift=*/false, alt, command));
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that the main picker view can be closed with keyboard shortcut.
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, CloseWithKeyboard) {
   // Open a new picker.
-  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   SendCloseWindowKeyboardCommand();
@@ -136,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, CloseWithKeyboard) {
 // keyboard shortcut to exit Chrome.
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
   // Open a new picker.
-  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
@@ -164,9 +153,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                        MAYBE_FullscreenWithKeyboard) {
   // Open a new picker.
-  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
+
   EXPECT_FALSE(widget()->IsFullscreen());
   WidgetBoundsChangeWaiter bounds_waiter(widget());
 
@@ -193,7 +184,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 // Checks that the signin web view is able to process keyboard events.
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                        CloseSigninWithKeyboard) {
-  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  WaitForLayoutWithoutToolbar();
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
@@ -213,11 +205,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
 // Checks that both the signin web view and the main picker view are able to
 // process a back keyboard event.
+// Flaky on all platforms. http://crbug.com/1173544
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       NavigateBackWithKeyboard) {
+                       DISABLED_NavigateBackWithKeyboard) {
   // Simulate walking through the flow starting at the picker so that navigating
   // back to the picker makes sense.
-  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   web_contents()->GetController().LoadURL(
       GURL("chrome://profile-picker/new-profile"), content::Referrer(),
@@ -236,6 +230,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
   // Navigate back with the keyboard.
   SendBackKeyboardCommand();
+
   WaitForLayoutWithoutToolbar();
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker/new-profile"));
 
