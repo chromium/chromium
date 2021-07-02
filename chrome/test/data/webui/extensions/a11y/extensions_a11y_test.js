@@ -41,6 +41,12 @@ var CrExtensionsA11yTest = class extends PolymerTest {
         'skip-link': {enabled: false},
         // TODO(crbug.com/761461): enable after addressing flaky tests.
         'color-contrast': {enabled: false},
+        // TODO(crbug.com/1226013): Fails when the device is managed (due to
+        // violations in <managed-footnote>, happens on some Win bots.
+        'region': {enabled: false},
+        // TODO(crbug.com/1226013): Fails when the device is managed (due to
+        // violations in <managed-footnote>, happens on some Win bots.
+        'link-in-text-block': {enabled: false},
       },
     };
   }
@@ -105,13 +111,7 @@ AccessibilityTest.define('CrExtensionsA11yTest', {
   name: 'NoExtensions',
 
   /** @override */
-  // TODO(crbug.com/1002627): when bug is addressed, this should be replaced
-  // with axeOptions: CrExtensionsA11yTest.axeOptions,
-  axeOptions: Object.assign({}, CrExtensionsA11yTest.axeOptions, {
-    'rules': Object.assign({}, CrExtensionsA11yTest.axeOptions.rules, {
-      'link-in-text-block': {enabled: false},
-    })
-  }),
+  axeOptions: CrExtensionsA11yTest.axeOptions,
 
   /** @override */
   violationFilter: CrExtensionsA11yTest.violationFilter,
