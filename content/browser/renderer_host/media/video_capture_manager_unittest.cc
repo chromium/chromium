@@ -133,6 +133,8 @@ class WrappedDeviceFactory : public media::FakeVideoCaptureDeviceFactory {
             }));
   }
 
+  bool has_active_devices() const { return !devices_.empty(); }
+
   MOCK_METHOD0(WillSuspendDevice, void());
   MOCK_METHOD0(WillResumeDevice, void());
 
@@ -207,6 +209,11 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
 
   void GenerateScreenLockedEvent() {
     ProcessScreenlockEvent(SCREEN_LOCK_EVENT);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void GenerateScreenUnlockedEvent() {
+    ProcessScreenlockEvent(SCREEN_UNLOCK_EVENT);
     base::RunLoop().RunUntilIdle();
   }
 };
@@ -874,6 +881,87 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
   ApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+
+  StopClient(client_id);
+  vcm_->Close(video_session_id);
+
+  // Wait to check callbacks before removing the listener.
+  base::RunLoop().RunUntilIdle();
+  vcm_->UnregisterListener(listener_.get());
+}
+#else
+TEST_F(VideoCaptureManagerTest, PauseAndResumeDeviceOnScreenLock) {
+  vcm_->set_idle_close_timeout_for_testing(base::TimeDelta());
+
+  InSequence s;
+
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_));
+  auto video_session_id = vcm_->Open(devices_.front());
+  auto client_id = StartClient(video_session_id, true);
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+
+  // Pretend screen is locked, which should close the device.
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+  ASSERT_FALSE(video_capture_device_factory_->has_active_devices());
+
+  // Starting another client while the screen is locked should defer the actual
+  // start of the device, but appear open. Since the device is already started,
+  // the OnStarted() will appear before Opened().
+  EXPECT_CALL(*frame_observer_, OnStarted(_));
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  auto video_session_id2 = vcm_->Open(devices_.front());
+  auto client_id2 = StartClient(video_session_id2, true);
+  ASSERT_FALSE(video_capture_device_factory_->has_active_devices());
+
+  // Unlock the screen now.
+  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(2);
+  screenlock_monitor_source_->GenerateScreenUnlockedEvent();
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+
+  EXPECT_CALL(*listener_,
+              Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                     video_session_id));
+  EXPECT_CALL(*listener_,
+              Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                     video_session_id2));
+
+  StopClient(client_id);
+  vcm_->Close(video_session_id);
+
+  StopClient(client_id2);
+  vcm_->Close(video_session_id2);
+
+  // Wait to check callbacks before removing the listener.
+  base::RunLoop().RunUntilIdle();
+  vcm_->UnregisterListener(listener_.get());
+}
+
+TEST_F(VideoCaptureManagerTest, ScreenLockDoesNothingBeforeTimeout) {
+  vcm_->set_idle_close_timeout_for_testing(base::TimeDelta::Max());
+  InSequence s;
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_));
+  auto video_session_id = vcm_->Open(devices_.front());
+  auto client_id = StartClient(video_session_id, true);
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+
+  // Pretend screen is locked, which should do nothing since timeout hasn't
+  // elapsed.
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+  EXPECT_TRUE(video_capture_device_factory_->has_active_devices());
+  EXPECT_TRUE(vcm_->is_idle_close_timer_running_for_testing());
+
+  screenlock_monitor_source_->GenerateScreenUnlockedEvent();
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+  EXPECT_FALSE(vcm_->is_idle_close_timer_running_for_testing());
+
+  EXPECT_CALL(*listener_,
+              Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                     video_session_id));
 
   StopClient(client_id);
   vcm_->Close(video_session_id);

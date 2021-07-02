@@ -191,6 +191,13 @@ class CONTENT_EXPORT VideoCaptureManager
   void OnDeviceLaunchAborted() override;
   void OnDeviceConnectionLost(VideoCaptureController* controller) override;
 
+  bool is_idle_close_timer_running_for_testing() const {
+    return idle_close_timer_.IsRunning();
+  }
+  void set_idle_close_timeout_for_testing(base::TimeDelta timeout) {
+    idle_close_timeout_ = timeout;
+  }
+
  private:
   class CaptureDeviceStartRequest;
 
@@ -258,10 +265,10 @@ class CONTENT_EXPORT VideoCaptureManager
   void MaybePostDesktopCaptureWindowId(
       const media::VideoCaptureSessionId& session_id);
 
-#if defined(OS_ANDROID)
   void ReleaseDevices();
   void ResumeDevices();
 
+#if defined(OS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
   bool application_state_has_running_activities_;
@@ -315,6 +322,11 @@ class CONTENT_EXPORT VideoCaptureManager
   // Map used by DesktopCapture.
   std::map<media::VideoCaptureSessionId, gfx::NativeViewId>
       notification_window_ids_;
+
+  // Closes video device capture sessions after a timeout. Idle timeout value
+  // chosen based on UMA metrics. See https://crbug.com/1163105#c28
+  base::TimeDelta idle_close_timeout_ = base::TimeDelta::FromSeconds(15);
+  base::OneShotTimer idle_close_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoCaptureManager);
 };

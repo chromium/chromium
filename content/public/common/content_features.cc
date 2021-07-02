@@ -776,6 +776,9 @@ const base::Feature kDisableProcessReuse{"DisableProcessReuse",
 const base::Feature kSpareRendererForSitePerProcess{
     "SpareRendererForSitePerProcess", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kStopVideoCaptureOnScreenLock{
+    "StopVideoCaptureOnScreenLock", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables the out-of-process Storage Service.
 const base::Feature kStorageServiceOutOfProcess{
     "StorageServiceOutOfProcess", base::FEATURE_ENABLED_BY_DEFAULT};
