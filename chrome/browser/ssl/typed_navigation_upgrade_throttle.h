@@ -45,6 +45,9 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* handle);
 
+  static bool IsNavigationUsingHttpsAsDefaultScheme(
+      content::NavigationHandle* handle);
+
   ~TypedNavigationUpgradeThrottle() override;
 
   // content::NavigationThrottle:
@@ -55,12 +58,6 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
   content::NavigationThrottle::ThrottleCheckResult WillProcessResponse()
       override;
   const char* GetNameForLogging() override;
-
-  // Returns true if an SSL error with this navigation handle should not result
-  // in an interstitial because the HTTPS load will fall back to HTTP on
-  // failure.
-  static bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
-      content::NavigationHandle* handle);
 
   // Sets the port used by the embedded https server. This is used to determine
   // the correct port while upgrading URLs to https if the original URL has a

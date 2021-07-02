@@ -53,8 +53,8 @@ SSLErrorNavigationThrottle::WillFailRequest() {
 
   // If the scheme of this navigation was upgraded to HTTPS (because the user
   // didn't type a scheme), don't show an error.
-  // TypedNavigationUpgradeThrottle will handle the error and fall back to HTTP
-  // as needed.
+  // TypedNavigationUpgradeThrottle or HttpsOnlyModeNavigationThrottle will
+  // handle the error and fall back to HTTP as needed.
   if (std::move(
           should_ignore_interstitial_because_navigation_defaulted_to_https_callback_)
           .Run(handle)) {

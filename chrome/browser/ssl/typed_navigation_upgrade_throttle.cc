@@ -40,28 +40,6 @@ int g_https_port_for_testing = 0;
 // Used to compute the fallback URL from the https URL.
 int g_http_port_for_testing = 0;
 
-bool IsNavigationUsingHttpsAsDefaultScheme(content::NavigationHandle* handle) {
-  content::NavigationUIData* ui_data = handle->GetNavigationUIData();
-  // UI data can be null in the case of navigations to interstitials.
-  if (!ui_data) {
-    return false;
-  }
-  // Only handle HTTPS navigations typed in the omnibox. If a navigation has
-  // HTTP URL, either the omnibox didn't upgrade the navigation to HTTPS, or it
-  // previously upgraded and we fell back to HTTP so there is no need to
-  // observe again.
-  // TODO(crbug.com/1161620): There are cases where we don't currently upgrade
-  // even though we probably should. Make a decision for the ones listed in the
-  // bug and potentially identify more.
-  bool is_using_https_as_default_scheme =
-      static_cast<ChromeNavigationUIData*>(ui_data)
-          ->is_using_https_as_default_scheme();
-  return is_using_https_as_default_scheme && handle->IsInPrimaryMainFrame() &&
-         !handle->IsSameDocument() &&
-         handle->GetURL().SchemeIs(url::kHttpsScheme) &&
-         !handle->GetWebContents()->IsPortal();
-}
-
 void RecordUMA(TypedNavigationUpgradeThrottle::Event event) {
   base::UmaHistogramEnumeration(TypedNavigationUpgradeThrottle::kHistogramName,
                                 event);
@@ -143,6 +121,30 @@ TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(
   return base::WrapUnique(new TypedNavigationUpgradeThrottle(handle));
 }
 
+// static
+bool TypedNavigationUpgradeThrottle::IsNavigationUsingHttpsAsDefaultScheme(
+    content::NavigationHandle* handle) {
+  content::NavigationUIData* ui_data = handle->GetNavigationUIData();
+  // UI data can be null in the case of navigations to interstitials.
+  if (!ui_data) {
+    return false;
+  }
+  // Only handle HTTPS navigations typed in the omnibox. If a navigation has
+  // HTTP URL, either the omnibox didn't upgrade the navigation to HTTPS, or it
+  // previously upgraded and we fell back to HTTP so there is no need to
+  // observe again.
+  // TODO(crbug.com/1161620): There are cases where we don't currently upgrade
+  // even though we probably should. Make a decision for the ones listed in the
+  // bug and potentially identify more.
+  bool is_using_https_as_default_scheme =
+      static_cast<ChromeNavigationUIData*>(ui_data)
+          ->is_using_https_as_default_scheme();
+  return is_using_https_as_default_scheme && handle->IsInPrimaryMainFrame() &&
+         !handle->IsSameDocument() &&
+         handle->GetURL().SchemeIs(url::kHttpsScheme) &&
+         !handle->GetWebContents()->IsPortal();
+}
+
 TypedNavigationUpgradeThrottle::~TypedNavigationUpgradeThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -207,16 +209,6 @@ TypedNavigationUpgradeThrottle::WillProcessResponse() {
 
 const char* TypedNavigationUpgradeThrottle::GetNameForLogging() {
   return "TypedNavigationUpgradeThrottle";
-}
-
-// static
-bool TypedNavigationUpgradeThrottle::
-    ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
-        content::NavigationHandle* handle) {
-  DCHECK_EQ(url::kHttpsScheme, handle->GetURL().scheme());
-  return base::FeatureList::IsEnabled(
-             omnibox::kDefaultTypedNavigationsToHttps) &&
-         IsNavigationUsingHttpsAsDefaultScheme(handle);
 }
 
 // static

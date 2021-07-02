@@ -147,6 +147,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
+#include "chrome/browser/ssl/https_defaulted_callbacks.h"
+#include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
+#include "chrome/browser/ssl/https_only_mode_upgrade_interceptor.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/ssl/ssl_client_auth_metrics.h"
@@ -4136,8 +4139,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       std::make_unique<CertificateReportingServiceCertReporter>(web_contents),
       base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp),
       base::BindOnce(
-          &TypedNavigationUpgradeThrottle::
-              ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)));
+          &ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)));
 
   throttles.push_back(std::make_unique<LoginNavigationThrottle>(handle));
 
@@ -4230,6 +4232,14 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
           handle),
       &throttles);
 #endif
+
+  // TODO(crbug.com/1218526): Pass in a ChromeSecurityBlockingPageFactory so
+  // that the nav throttle can create interstitials.
+  if (profile && profile->GetPrefs()) {
+    MaybeAddThrottle(HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
+                         handle, profile->GetPrefs()),
+                     &throttles);
+  }
 
   return throttles;
 }
@@ -4943,6 +4953,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   if (SearchPrefetchServiceIsEnabled()) {
     interceptors.push_back(std::make_unique<SearchPrefetchURLLoaderInterceptor>(
         frame_tree_node_id));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kHttpsOnlyMode)) {
+    interceptors.push_back(
+        std::make_unique<HttpsOnlyModeUpgradeInterceptor>(frame_tree_node_id));
   }
 
   return interceptors;
