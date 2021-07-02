@@ -430,7 +430,7 @@ public class RelatedSearchesControl {
     }
 
     /** Returns whether we have Related Searches to show or not.  */
-    private boolean hasReleatedSearchesToShow() {
+    boolean hasReleatedSearchesToShow() {
         return mIsEnabled && mRelatedSearchesSuggestions != null
                 && mRelatedSearchesSuggestions.size() > 0;
     }

@@ -714,6 +714,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             int quickActionCategory, @CardTag int cardTagEnum,
             @Nullable List<String> relatedSearchesInBar,
             @Nullable List<String> relatedSearchesInContent) {
+        boolean hadInBarSuggestions = getRelatedSearchesInBarControl().hasReleatedSearchesToShow();
         getRelatedSearchesInBarControl().setRelatedSearchesSuggestions(relatedSearchesInBar);
         getRelatedSearchesInContentControl().setRelatedSearchesSuggestions(
                 relatedSearchesInContent);
@@ -732,9 +733,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 quickActionUri, quickActionCategory, mToolbarManager.getPrimaryColor());
         getImageControl().setThumbnailUrl(thumbnailUrl);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)
-                && relatedSearchesInBar.size() > 0) {
-            getSearchBarControl().animateInBarRelatedSearches();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
+            if (getRelatedSearchesInBarControl().hasReleatedSearchesToShow()
+                    != hadInBarSuggestions) {
+                getSearchBarControl().animateInBarRelatedSearches(!hadInBarSuggestions);
+            }
         }
     }
 

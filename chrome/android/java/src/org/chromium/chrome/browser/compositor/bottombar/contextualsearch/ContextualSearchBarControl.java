@@ -517,8 +517,7 @@ public class ContextualSearchBarControl {
         if (mTextOpacityAnimation == null) {
             mTextOpacityAnimation = CompositorAnimator.ofFloat(
                     mContextualSearchPanel.getAnimationHandler(), TRANSPARENT_OPACITY, FULL_OPACITY,
-                    OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
-            mTextOpacityAnimation.addUpdateListener(
+                    OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
                     animator -> updateSearchBarTextOpacity(animator.getAnimatedValue()));
         }
         mTextOpacityAnimation.cancel();
@@ -553,12 +552,16 @@ public class ContextualSearchBarControl {
     }
 
     /** Animates showing Related Searches in the bottom part of the Bar. */
-    public void animateInBarRelatedSearches() {
-        if (mInBarRelatedSearchesAnimation == null) {
-            mInBarRelatedSearchesAnimation =
-                    CompositorAnimator.ofFloat(mContextualSearchPanel.getAnimationHandler(), 0.f,
-                            1.f, OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
-            mInBarRelatedSearchesAnimation.addUpdateListener(
+    void animateInBarRelatedSearches(boolean shouldGrowNotShrink) {
+        if (mInBarRelatedSearchesAnimation != null && mInBarRelatedSearchesAnimation.isRunning()) {
+            mInBarRelatedSearchesAnimation.cancel();
+        }
+        if (mInBarRelatedSearchesAnimation == null || mInBarRelatedSearchesAnimation.hasEnded()) {
+            float startValue = shouldGrowNotShrink ? 0.f : 1.f;
+            float endValue = shouldGrowNotShrink ? 1.f : 0.f;
+            mInBarRelatedSearchesAnimation = CompositorAnimator.ofFloat(
+                    mContextualSearchPanel.getAnimationHandler(), startValue, endValue,
+                    OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
                     animator -> updateInBarRelatedSearchesSize(animator.getAnimatedValue()));
             mInBarRelatedSearchesAnimation.start();
         }
