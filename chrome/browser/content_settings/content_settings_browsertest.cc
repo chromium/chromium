@@ -920,7 +920,8 @@ class ContentSettingsBackForwardCacheBrowserTest : public ContentSettingsTest {
           {// Set a very long TTL before expiration (longer than the test
            // timeout) so tests that are expecting deletion don't pass when
            // they shouldn't.
-           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+           {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+           {"ignore_outstanding_network_request_for_testing", "true"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
     ContentSettingsTest::SetUpCommandLine(command_line);
@@ -930,15 +931,8 @@ class ContentSettingsBackForwardCacheBrowserTest : public ContentSettingsTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223445
-#define MAYBE_StateRestoredWhenNavigatingBack \
-  DISABLED_StateRestoredWhenNavigatingBack
-#else
-#define MAYBE_StateRestoredWhenNavigatingBack StateRestoredWhenNavigatingBack
-#endif
 IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
-                       MAYBE_StateRestoredWhenNavigatingBack) {
+                       StateRestoredWhenNavigatingBack) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL test_url = embedded_test_server()->GetURL("a.com", "/setcookie.html");
