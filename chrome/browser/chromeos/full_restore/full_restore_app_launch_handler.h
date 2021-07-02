@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FULL_RESTORE_FULL_RESTORE_APP_LAUNCH_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_FULL_RESTORE_FULL_RESTORE_APP_LAUNCH_HANDLER_H_
 
+#include <utility>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
 #include "components/full_restore/restore_data.h"
@@ -19,6 +21,8 @@ class Profile;
 
 namespace chromeos {
 namespace full_restore {
+
+class ArcAppLaunchHandler;
 
 // The FullRestoreAppLaunchHandler class calls FullRestoreReadHandler to read
 // the full restore data from the full restore data file on a background task
@@ -59,6 +63,7 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
 
  private:
   friend class FullRestoreAppLaunchHandlerArcAppBrowserTest;
+  friend class ArcAppLaunchHandler;
 
   void OnGetRestoreData(
       std::unique_ptr<::full_restore::RestoreData> restore_data);
@@ -76,6 +81,8 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
       const ::full_restore::RestoreData::LaunchList& launch_list) override;
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
   void RecordArcGhostWindowLaunch(bool is_arc_ghost_window) override;
+
+  std::unique_ptr<ArcAppLaunchHandler> arc_app_launch_handler_;
 
   bool should_restore_ = false;
 

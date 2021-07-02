@@ -15,8 +15,10 @@
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
@@ -144,6 +146,9 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
     should_launch_browser_ = false;
   }
 
+  if (arc::IsArcAllowedForProfile(profile_))
+    arc_app_launch_handler_ = std::make_unique<ArcAppLaunchHandler>(this);
+
   LaunchApps();
 }
 
@@ -173,49 +178,8 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
 void FullRestoreAppLaunchHandler::LaunchArcApp(
     const std::string& app_id,
     const ::full_restore::RestoreData::LaunchList& launch_list) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  DCHECK(proxy);
-  auto* arc_handler = FullRestoreArcTaskHandler::GetForProfile(profile_);
-
-  for (const auto& it : launch_list) {
-    RecordRestoredAppLaunch(apps::AppTypeName::kArc);
-
-    DCHECK(it.second->event_flag.has_value());
-
-    apps::mojom::WindowInfoPtr window_info =
-        HandleArcWindowInfo(it.second->GetAppWindowInfo());
-
-    // Set an ARC session id to find the restore window id based on the new
-    // created ARC task id in FullRestoreReadHandler.
-    int32_t arc_session_id =
-        ::full_restore::FullRestoreReadHandler::GetInstance()
-            ->GetArcSessionId();
-    window_info->window_id = arc_session_id;
-    ::full_restore::FullRestoreReadHandler::GetInstance()
-        ->SetArcSessionIdForWindowId(arc_session_id, it.first);
-
-#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-    if (!window_info->bounds.is_null() && arc_handler &&
-        arc_handler->window_handler()) {
-      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
-      arc_handler->window_handler()->LaunchArcGhostWindow(
-          app_id, arc_session_id, it.second.get());
-    } else {
-      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
-    }
-#endif
-
-    if (it.second->intent.has_value()) {
-      proxy->LaunchAppWithIntent(app_id, it.second->event_flag.value(),
-                                 std::move(it.second->intent.value()),
-                                 apps::mojom::LaunchSource::kFromFullRestore,
-                                 std::move(window_info));
-    } else {
-      proxy->Launch(app_id, it.second->event_flag.value(),
-                    apps::mojom::LaunchSource::kFromFullRestore,
-                    std::move(window_info));
-    }
-  }
+  if (arc_app_launch_handler_)
+    arc_app_launch_handler_->RestoreApp(app_id);
 }
 
 void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(

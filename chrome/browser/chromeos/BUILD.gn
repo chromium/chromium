@@ -2453,6 +2453,8 @@ source_set("chromeos") {
     "first_run/first_run.h",
     "full_restore/app_launch_handler.cc",
     "full_restore/app_launch_handler.h",
+    "full_restore/arc_app_launch_handler.cc",
+    "full_restore/arc_app_launch_handler.h",
     "full_restore/arc_ghost_window_delegate.cc",
     "full_restore/arc_ghost_window_delegate.h",
     "full_restore/arc_ghost_window_shell_surface.cc",
