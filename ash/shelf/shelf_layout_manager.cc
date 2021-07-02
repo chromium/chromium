@@ -381,7 +381,6 @@ ShelfLayoutManager::~ShelfLayoutManager() {
 
   for (auto& observer : observers_)
     observer.WillDeleteShelfLayoutManager();
-  display::Screen::GetScreen()->RemoveObserver(this);
   auto* shell = Shell::Get();
   shell->locale_update_controller()->RemoveObserver(this);
   shell->RemoveShellObserver(this);
@@ -405,7 +404,6 @@ void ShelfLayoutManager::InitObservers() {
   state_.session_state = shell->session_controller()->GetSessionState();
   shelf_background_type_ = GetShelfBackgroundType();
   wallpaper_controller_observation_.Observe(shell->wallpaper_controller());
-  display::Screen::GetScreen()->AddObserver(this);
 
   // DesksController could be null when virtual desks feature is not enabled.
   if (DesksController::Get())

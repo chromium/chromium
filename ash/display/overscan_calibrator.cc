@@ -20,7 +20,6 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 
 namespace ash {
@@ -125,11 +124,9 @@ OverscanCalibrator::OverscanCalibrator(const display::Display& target_display,
   Shell::Get()->window_tree_host_manager()->SetOverscanInsets(display_.id(),
                                                               gfx::Insets());
   UpdateUILayer();
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 OverscanCalibrator::~OverscanCalibrator() {
-  display::Screen::GetScreen()->RemoveObserver(this);
   // Overscan calibration has finished without commit, so the display has to
   // be the original offset.
   if (!committed_) {

@@ -81,6 +81,8 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
   // Window bounds when not in fullscreen
   gfx::Rect panel_bounds_ = gfx::Rect(0, 0, 0, 0);
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   // Determines whether panel is hidden when browser is in fullscreen.
   bool always_visible_ = false;
 

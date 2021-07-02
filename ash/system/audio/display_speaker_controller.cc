@@ -9,7 +9,6 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
-#include "ui/display/screen.h"
 
 inline cras::DisplayRotation ToCRASDisplayRotation(
     display::Display::Rotation rotation) {
@@ -28,13 +27,11 @@ inline cras::DisplayRotation ToCRASDisplayRotation(
 namespace ash {
 
 DisplaySpeakerController::DisplaySpeakerController() {
-  display::Screen::GetScreen()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
 }
 
 DisplaySpeakerController::~DisplaySpeakerController() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 void DisplaySpeakerController::OnDisplayAdded(

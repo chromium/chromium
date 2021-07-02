@@ -21,7 +21,6 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -221,14 +220,12 @@ ScreenOrientationController::ScreenOrientationController()
       current_rotation_(display::Display::ROTATE_0) {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   AccelerometerReader::GetInstance()->AddObserver(this);
 }
 
 ScreenOrientationController::~ScreenOrientationController() {
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->RemoveObserver(this);
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   AccelerometerReader::GetInstance()->RemoveObserver(this);

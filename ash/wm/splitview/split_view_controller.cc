@@ -705,7 +705,6 @@ SplitViewController::SplitViewController(aura::Window* root_window)
       split_view_metrics_controller_(
           std::make_unique<SplitViewMetricsController>(this)) {
   Shell::Get()->accessibility_controller()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   split_view_type_ = Shell::Get()->tablet_mode_controller()->InTabletMode()
                          ? SplitViewType::kTabletType
@@ -715,7 +714,6 @@ SplitViewController::SplitViewController(aura::Window* root_window)
 SplitViewController::~SplitViewController() {
   if (Shell::Get()->tablet_mode_controller())
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
   if (Shell::Get()->accessibility_controller())
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
   EndSplitView();

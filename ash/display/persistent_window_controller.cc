@@ -14,7 +14,6 @@
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -44,13 +43,9 @@ bool ShouldProcessWindowList() {
 
 constexpr char PersistentWindowController::kNumOfWindowsRestoredHistogramName[];
 
-PersistentWindowController::PersistentWindowController() {
-  display::Screen::GetScreen()->AddObserver(this);
-}
+PersistentWindowController::PersistentWindowController() = default;
 
-PersistentWindowController::~PersistentWindowController() {
-  display::Screen::GetScreen()->RemoveObserver(this);
-}
+PersistentWindowController::~PersistentWindowController() = default;
 
 void PersistentWindowController::OnWillProcessDisplayChanges() {
   if (!ShouldProcessWindowList())

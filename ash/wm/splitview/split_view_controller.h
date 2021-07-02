@@ -551,6 +551,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // The metrics controller for the same root window.
   std::unique_ptr<SplitViewMetricsController> split_view_metrics_controller_;
 
+  // Register for DisplayObserver callbacks.
+  display::ScopedDisplayObserver display_observer_{this};
+
   // A pointer to the to-be-snapped window that will be activated after it's
   // snapped in splitview. There can be two cases when this value can be
   // non-nullptr, when SnapWindow() explicitly specifies the window needs to be

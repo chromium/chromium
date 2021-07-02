@@ -31,6 +31,9 @@ class DisplaySpeakerController : public display::DisplayObserver,
  private:
   // Update the state of internal speakers based on orientation.
   void UpdateInternalSpeakerForDisplayRotation();
+
+  display::ScopedDisplayObserver display_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(DisplaySpeakerController);
 };
 

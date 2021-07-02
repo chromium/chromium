@@ -26,7 +26,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -465,8 +464,7 @@ class ASH_EXPORT LockContentsView
   // all actions are executed.
   std::vector<DisplayLayoutAction> layout_actions_;
 
-  base::ScopedObservation<display::Screen, display::DisplayObserver>
-      display_observation_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   // All error bubbles and the tooltip view are child views of LockContentsView,
   // and will be torn down when LockContentsView is torn down.

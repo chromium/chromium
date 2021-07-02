@@ -235,7 +235,7 @@ WindowTreeHostManager::WindowTreeHostManager()
 WindowTreeHostManager::~WindowTreeHostManager() = default;
 
 void WindowTreeHostManager::Start() {
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
   Shell::Get()
       ->display_configurator()
       ->content_protection_manager()
@@ -269,7 +269,7 @@ void WindowTreeHostManager::Shutdown() {
       ->display_configurator()
       ->content_protection_manager()
       ->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
 
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
 

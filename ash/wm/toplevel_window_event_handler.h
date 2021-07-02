@@ -176,6 +176,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   std::unique_ptr<ScopedWindowResizer> window_resizer_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   EndClosure end_closure_;
 
   // Are we running a nested run loop from RunMoveLoop().

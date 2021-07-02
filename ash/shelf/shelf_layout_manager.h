@@ -637,6 +637,8 @@ class ASH_EXPORT ShelfLayoutManager
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       wallpaper_controller_observation_{this};
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   // Location of the most recent mouse drag event in screen coordinate.
   gfx::Point last_mouse_drag_position_;
 

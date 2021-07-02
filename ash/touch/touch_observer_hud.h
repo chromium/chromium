@@ -84,6 +84,8 @@ class ASH_EXPORT TouchObserverHud
 
   views::Widget* widget_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(TouchObserverHud);
 };
 

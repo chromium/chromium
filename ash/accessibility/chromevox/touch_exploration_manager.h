@@ -96,6 +96,7 @@ class ASH_EXPORT TouchExplorationManager
   RootWindowController* root_window_controller_;
   CrasAudioHandler* audio_handler_;
   aura::Window* observing_window_;
+  display::ScopedDisplayObserver display_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TouchExplorationManager);
 };

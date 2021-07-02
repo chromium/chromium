@@ -45,7 +45,6 @@ TouchExplorationManager::TouchExplorationManager(
   Shell::Get()->accessibility_controller()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
   UpdateTouchExplorationState();
 }
 
@@ -56,7 +55,6 @@ TouchExplorationManager::~TouchExplorationManager() {
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   if (observing_window_)
     observing_window_->RemoveObserver(this);

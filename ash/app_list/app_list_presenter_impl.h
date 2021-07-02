@@ -21,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -212,8 +211,7 @@ class ASH_EXPORT AppListPresenterImpl
   std::unique_ptr<AppListPresenterEventFilter> event_filter_;
 
   // An observer that notifies AppListView when the display has changed.
-  base::ScopedObservation<display::Screen, display::DisplayObserver>
-      display_observation_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   // An observer that notifies AppListView when the shelf state has changed.
   base::ScopedMultiSourceObservation<Shelf, ShelfObserver> shelf_observation_{

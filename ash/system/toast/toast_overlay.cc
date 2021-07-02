@@ -108,13 +108,9 @@ class ToastOverlayLabel : public views::Label {
 //  ToastDisplayObserver
 class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
  public:
-  ToastDisplayObserver(ToastOverlay* overlay) : overlay_(overlay) {
-    display::Screen::GetScreen()->AddObserver(this);
-  }
+  ToastDisplayObserver(ToastOverlay* overlay) : overlay_(overlay) {}
 
-  ~ToastDisplayObserver() override {
-    display::Screen::GetScreen()->RemoveObserver(this);
-  }
+  ~ToastDisplayObserver() override {}
 
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
@@ -123,6 +119,9 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
 
  private:
   ToastOverlay* const overlay_;
+
+  display::ScopedDisplayObserver display_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(ToastDisplayObserver);
 };
 

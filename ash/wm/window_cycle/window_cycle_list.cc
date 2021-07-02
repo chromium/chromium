@@ -1161,7 +1161,6 @@ void WindowCycleList::InitWindowCycleView() {
   params.parent = root_window->GetChildById(kShellWindowId_OverlayContainer);
   params.bounds = cycle_view_->GetTargetBounds();
 
-  screen_observer_.Observe(display::Screen::GetScreen());
   widget->Init(std::move(params));
   widget->Show();
   cycle_view_->FadeInLayer();

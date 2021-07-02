@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -60,6 +61,8 @@ class ASH_EXPORT OutputProtectionDelegate : public aura::WindowObserver,
   // RAII wrapper to register/unregister ContentProtectionManager client.
   struct ClientIdHolder;
   std::unique_ptr<ClientIdHolder> client_;
+
+  absl::optional<display::ScopedDisplayObserver> display_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OutputProtectionDelegate);
 };

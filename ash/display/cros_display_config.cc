@@ -515,7 +515,6 @@ class CrosDisplayConfig::ObserverImpl
       public ScreenOrientationController::Observer {
  public:
   explicit ObserverImpl() {
-    display::Screen::GetScreen()->AddObserver(this);
     Shell::Get()->tablet_mode_controller()->AddObserver(this);
     Shell::Get()->screen_orientation_controller()->AddObserver(this);
   }
@@ -523,7 +522,6 @@ class CrosDisplayConfig::ObserverImpl
   ~ObserverImpl() override {
     Shell::Get()->screen_orientation_controller()->RemoveObserver(this);
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-    display::Screen::GetScreen()->RemoveObserver(this);
   }
 
   void AddObserver(
@@ -564,6 +562,7 @@ class CrosDisplayConfig::ObserverImpl
   }
 
   mojo::AssociatedRemoteSet<mojom::CrosDisplayConfigObserver> observers_;
+  display::ScopedDisplayObserver display_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ObserverImpl);
 };

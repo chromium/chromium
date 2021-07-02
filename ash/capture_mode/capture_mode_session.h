@@ -359,6 +359,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // False only when we end the session to start recording.
   bool a11y_alert_on_session_exit_ = true;
 
+  // The display observer between init/shutdown.
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   // True once Shutdown() is called.
   bool is_shutting_down_ = false;
 

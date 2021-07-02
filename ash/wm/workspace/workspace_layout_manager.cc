@@ -108,7 +108,6 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
   Shell::Get()->AddShellObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
   root_window_->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
   backdrop_controller_ = std::make_unique<BackdropController>(window_);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
   settings_bubble_container_ = window->GetRootWindow()->GetChildById(
@@ -131,7 +130,6 @@ WorkspaceLayoutManager::~WorkspaceLayoutManager() {
     window_state->RemoveObserver(this);
     window->RemoveObserver(this);
   }
-  display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);

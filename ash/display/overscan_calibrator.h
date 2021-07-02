@@ -70,6 +70,9 @@ class ASH_EXPORT OverscanCalibrator : public ui::LayerDelegate,
   // The visualization layer for the current calibration region.
   std::unique_ptr<ui::Layer> calibration_layer_;
 
+  // Register for DisplayObserver callbacks.
+  display::ScopedDisplayObserver display_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(OverscanCalibrator);
 };
 

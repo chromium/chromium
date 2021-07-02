@@ -410,6 +410,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   std::unique_ptr<OverviewHighlightController> highlight_controller_;
 
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   DISALLOW_COPY_AND_ASSIGN(OverviewSession);
 };
 

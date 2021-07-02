@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/animation/tween.h"
@@ -337,6 +338,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Object responsible for observing accessibility settings relevant to shelf
   // config.
   std::unique_ptr<ShelfAccessibilityObserver> accessibility_observer_;
+
+  // Receive callbacks from DisplayObserver.
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   base::ObserverList<Observer> observers_;
 

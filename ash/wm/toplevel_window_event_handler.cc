@@ -205,11 +205,9 @@ void ToplevelWindowEventHandler::ScopedWindowResizer::OnWindowDestroying(
 ToplevelWindowEventHandler::ToplevelWindowEventHandler()
     : first_finger_hittest_(HTNOWHERE) {
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 ToplevelWindowEventHandler::~ToplevelWindowEventHandler() {
-  display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
 }
 

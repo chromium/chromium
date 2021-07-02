@@ -49,14 +49,12 @@ OutputProtectionDelegate::OutputProtectionDelegate(aura::Window* window)
     return;
 
   window_->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 OutputProtectionDelegate::~OutputProtectionDelegate() {
   if (!window_)
     return;
 
-  display::Screen::GetScreen()->RemoveObserver(this);
   window_->RemoveObserver(this);
   MaybeSetCaptureModeWindowProtection(window_,
                                       display::CONTENT_PROTECTION_METHOD_NONE);
@@ -86,7 +84,7 @@ void OutputProtectionDelegate::OnWindowHierarchyChanged(
 
 void OutputProtectionDelegate::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window, window_);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
   window_->RemoveObserver(this);
   MaybeSetCaptureModeWindowProtection(window_,
                                       display::CONTENT_PROTECTION_METHOD_NONE);

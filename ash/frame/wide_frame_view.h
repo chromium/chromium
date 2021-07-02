@@ -88,6 +88,8 @@ class ASH_EXPORT WideFrameView
 
   std::unique_ptr<views::Widget> widget_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   HeaderView* header_view_ = nullptr;
 
   std::unique_ptr<FrameContextMenuController> frame_context_menu_controller_;

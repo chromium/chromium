@@ -70,7 +70,6 @@ class TestObserver : public WindowTreeHostManager::Observer,
  public:
   TestObserver() {
     Shell::Get()->window_tree_host_manager()->AddObserver(this);
-    display::Screen::GetScreen()->AddObserver(this);
     aura::client::GetFocusClient(Shell::GetPrimaryRootWindow())
         ->AddObserver(this);
     ::wm::GetActivationClient(Shell::GetPrimaryRootWindow())->AddObserver(this);
@@ -78,7 +77,6 @@ class TestObserver : public WindowTreeHostManager::Observer,
 
   ~TestObserver() override {
     Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
-    display::Screen::GetScreen()->RemoveObserver(this);
     aura::client::GetFocusClient(Shell::GetPrimaryRootWindow())
         ->RemoveObserver(this);
     ::wm::GetActivationClient(Shell::GetPrimaryRootWindow())
@@ -165,6 +163,8 @@ class TestObserver : public WindowTreeHostManager::Observer,
 
   int focus_changed_count_ = 0;
   int activation_changed_count_ = 0;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };

@@ -127,7 +127,6 @@ constexpr std::array<int, 7>
 AppListPresenterImpl::AppListPresenterImpl(AppListControllerImpl* controller)
     : controller_(controller) {
   DCHECK(controller_);
-  display_observation_.Observe(display::Screen::GetScreen());
 }
 
 AppListPresenterImpl::~AppListPresenterImpl() {

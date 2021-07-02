@@ -169,6 +169,8 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   aura::Window* accessibility_bubble_container_;
   BubbleWindowObserver accessibility_bubble_window_observer_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   // Set of windows we're listening to.
   WindowSet windows_;
 

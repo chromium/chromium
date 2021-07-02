@@ -94,6 +94,8 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
 
   // The origin of the menu bounds in different screen orientations.
   std::unordered_map<OrientationLockType, gfx::Point> menu_bounds_origins_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

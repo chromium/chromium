@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
@@ -137,6 +138,9 @@ class ASH_EXPORT ScreenshotController : public ui::EventHandler,
 
   // The object to specify the crosshair cursor.
   std::unique_ptr<ScopedCursorSetter> cursor_setter_;
+
+  // The display observer while in a screenshot session.
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   // True while taking a partial or window screen.
   bool in_screenshot_session_ = false;

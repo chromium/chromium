@@ -388,7 +388,7 @@ void ScreenshotController::StartWindowScreenshotSession() {
   in_screenshot_session_ = true;
   mode_ = WINDOW;
 
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
   for (aura::Window* root : Shell::GetAllRootWindows()) {
     layers_[root] = std::make_unique<ScreenshotLayer>(
         this,
@@ -411,7 +411,7 @@ void ScreenshotController::StartPartialScreenshotSession(
     return;
   in_screenshot_session_ = true;
   mode_ = PARTIAL;
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
   for (aura::Window* root : Shell::GetAllRootWindows()) {
     layers_[root] = std::make_unique<ScreenshotLayer>(
         this,
@@ -441,7 +441,7 @@ void ScreenshotController::CancelScreenshotSession() {
   root_window_ = nullptr;
   SetSelectedWindow(nullptr);
   in_screenshot_session_ = false;
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
   layers_.clear();
   cursor_setter_.reset();
   EnableMouseWarp(true);

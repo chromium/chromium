@@ -171,19 +171,14 @@ void ActivateUnderneathWindowInSplitViewMode(
 
 }  // namespace
 
-BackGestureEventHandler::BackGestureEventHandler()
-    : gesture_provider_(this, this) {
+BackGestureEventHandler::BackGestureEventHandler() {
   if (features::AreContextualNudgesEnabled()) {
     nudge_controller_ =
         std::make_unique<BackGestureContextualNudgeControllerImpl>();
   }
-
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
-BackGestureEventHandler::~BackGestureEventHandler() {
-  display::Screen::GetScreen()->RemoveObserver(this);
-}
+BackGestureEventHandler::~BackGestureEventHandler() = default;
 
 void BackGestureEventHandler::OnDisplayMetricsChanged(
     const display::Display& display,

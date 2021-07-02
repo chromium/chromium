@@ -112,7 +112,10 @@ class BackGestureEventHandler : public display::DisplayObserver,
   // OnTouchEvent session. This is done to avoid tap down event be used by the
   // window that is underneath to do other things (e.g, highlight a menu item)
   // instead of going back.
-  ui::GestureProviderAura gesture_provider_;
+  ui::GestureProviderAura gesture_provider_{this, this};
+
+  // Register for DisplayObserver callbacks.
+  display::ScopedDisplayObserver display_observer_{this};
 
   // False if BackGestureEventHandler should not handle touch events directly in
   // OnTouchEvent(), but should wait after touch ack is received. This is needed

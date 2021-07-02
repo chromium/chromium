@@ -15,7 +15,6 @@
 namespace ash {
 
 AccessibilityPanelLayoutManager::AccessibilityPanelLayoutManager() {
-  display::Screen::GetScreen()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
 }
@@ -23,7 +22,6 @@ AccessibilityPanelLayoutManager::AccessibilityPanelLayoutManager() {
 AccessibilityPanelLayoutManager::~AccessibilityPanelLayoutManager() {
   Shell::Get()->RemoveShellObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 void AccessibilityPanelLayoutManager::SetAlwaysVisible(bool always_visible) {

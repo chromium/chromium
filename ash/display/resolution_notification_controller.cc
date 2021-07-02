@@ -21,7 +21,6 @@
 #include "ui/display/display_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
-#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -67,12 +66,10 @@ ResolutionNotificationController::ResolutionChangeInfo::
 
 ResolutionNotificationController::ResolutionNotificationController() {
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 ResolutionNotificationController::~ResolutionNotificationController() {
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(

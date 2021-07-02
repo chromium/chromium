@@ -158,7 +158,7 @@ void ShelfConfig::Init() {
   Shell* const shell = Shell::Get();
 
   shell->app_list_controller()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
   shell->system_tray_model()->virtual_keyboard()->AddObserver(this);
   shell->overview_controller()->AddObserver(this);
   shell->session_controller()->AddObserver(this);
@@ -175,7 +175,7 @@ void ShelfConfig::Shutdown() {
   shell->session_controller()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
   shell->system_tray_model()->virtual_keyboard()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
   shell->app_list_controller()->RemoveObserver(this);
 }
 

@@ -154,10 +154,8 @@ int GetWidgetOffsetFromBottom(const views::Widget* widget) {
 
 class TestDisplayObserver : public display::DisplayObserver {
  public:
-  TestDisplayObserver() { display::Screen::GetScreen()->AddObserver(this); }
-  ~TestDisplayObserver() override {
-    display::Screen::GetScreen()->RemoveObserver(this);
-  }
+  TestDisplayObserver() = default;
+  ~TestDisplayObserver() override = default;
 
   int metrics_change_count() const { return metrics_change_count_; }
 
@@ -168,6 +166,7 @@ class TestDisplayObserver : public display::DisplayObserver {
     metrics_change_count_++;
   }
 
+  display::ScopedDisplayObserver display_observer_{this};
   int metrics_change_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestDisplayObserver);

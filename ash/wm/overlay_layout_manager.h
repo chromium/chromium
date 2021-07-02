@@ -31,6 +31,8 @@ class ASH_EXPORT OverlayLayoutManager : public WmDefaultLayoutManager,
  private:
   aura::Window* overlay_container_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(OverlayLayoutManager);
 };
 

@@ -297,6 +297,9 @@ class ASH_EXPORT ScreenOrientationController
   // orientation.
   std::unordered_map<aura::Window*, LockInfo> lock_info_map_;
 
+  // Register for DisplayObserver callbacks.
+  display::ScopedDisplayObserver display_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(ScreenOrientationController);
 };
 

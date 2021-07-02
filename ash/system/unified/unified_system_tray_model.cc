@@ -68,6 +68,8 @@ class UnifiedSystemTrayModel::SizeObserver : public display::DisplayObserver,
 
   UnifiedSystemTrayModel* const owner_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   // Keep track of current system tray size.
   UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size_;
 };
@@ -113,13 +115,11 @@ void UnifiedSystemTrayModel::DBusObserver::KeyboardBrightnessChanged(
 UnifiedSystemTrayModel::SizeObserver::SizeObserver(
     UnifiedSystemTrayModel* owner)
     : owner_(owner) {
-  display::Screen::GetScreen()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
   system_tray_size_ = owner_->GetSystemTrayButtonSize();
 }
 
 UnifiedSystemTrayModel::SizeObserver::~SizeObserver() {
-  display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
 }
 

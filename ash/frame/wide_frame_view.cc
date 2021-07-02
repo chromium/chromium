@@ -92,7 +92,6 @@ WideFrameView::WideFrameView(views::Widget* target)
           std::make_unique<FrameContextMenuController>(target_, this)) {
   // WideFrameView is owned by its client, not by Views.
   SetOwnedByWidget(false);
-  display::Screen::GetScreen()->AddObserver(this);
 
   aura::Window* target_window = target->GetNativeWindow();
   target_window->AddObserver(this);
@@ -138,7 +137,6 @@ WideFrameView::WideFrameView(views::Widget* target)
 WideFrameView::~WideFrameView() {
   if (widget_)
     widget_->CloseNow();
-  display::Screen::GetScreen()->RemoveObserver(this);
   if (target_) {
     HeaderView* target_header_view = GetTargetHeaderView();
     target_header_view->SetShouldPaintHeader(true);

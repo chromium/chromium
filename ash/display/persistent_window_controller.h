@@ -42,6 +42,9 @@ class ASH_EXPORT PersistentWindowController : public display::DisplayObserver {
   // Temporary storage that stores windows that may need persistent info
   // stored on display removal. Cleared when display changes are processed.
   aura::WindowTracker need_persistent_info_windows_;
+
+  // Register for DisplayObserver callbacks.
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

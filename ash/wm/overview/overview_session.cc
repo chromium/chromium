@@ -52,7 +52,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
@@ -239,7 +238,7 @@ void OverviewSession::Init(const WindowList& windows,
 
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->AddObserver(this);
 
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
   base::RecordAction(base::UserMetricsAction("WindowSelector_Overview"));
   // Send an a11y alert.
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
@@ -261,7 +260,7 @@ void OverviewSession::Shutdown() {
 
   // Stop observing screen metrics changes first to avoid auto-positioning
   // windows in response to work area changes from window activation.
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
 
   // Stop observing split view state changes before restoring window focus.
   // Otherwise the activation of the window triggers OnSplitViewStateChanged()
@@ -1162,7 +1161,7 @@ bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
 }
 
 void OverviewSession::RemoveAllObservers() {
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
   if (active_window_before_overview_)
     active_window_before_overview_->RemoveObserver(this);
   active_window_before_overview_ = nullptr;

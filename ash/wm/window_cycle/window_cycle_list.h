@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
-#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -186,8 +185,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   views::Widget* cycle_ui_widget_ = nullptr;
 
   // The window list will dismiss if the display metrics change.
-  base::ScopedObservation<display::Screen, display::DisplayObserver>
-      screen_observer_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   // A timer to delay showing the UI. Quick Alt+Tab should not flash a UI.
   base::OneShotTimer show_ui_timer_;

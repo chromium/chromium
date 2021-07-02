@@ -252,6 +252,9 @@ class ASH_EXPORT VideoRecordingWatcher
   // If |window_being_recorded_| is not a root window, we must make a request to
   // make it capturable by the |FrameSinkVideoCapturer|.
   aura::ScopedWindowCaptureRequest non_root_window_capture_request_;
+
+  // Register for DisplayObserver callbacks.
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

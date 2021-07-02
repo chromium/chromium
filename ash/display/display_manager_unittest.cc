@@ -83,12 +83,12 @@ class DisplayManagerTest : public AshTestBase,
 
   void SetUp() override {
     AshTestBase::SetUp();
-    display::Screen::GetScreen()->AddObserver(this);
+    display_observer_.emplace(this);
     Shell::GetPrimaryRootWindow()->AddObserver(this);
   }
   void TearDown() override {
     Shell::GetPrimaryRootWindow()->RemoveObserver(this);
-    display::Screen::GetScreen()->RemoveObserver(this);
+    display_observer_.reset();
     AshTestBase::TearDown();
   }
 
@@ -181,6 +181,8 @@ class DisplayManagerTest : public AshTestBase,
   size_t did_process_count_ = 0u;
   bool root_window_destroyed_ = false;
   uint32_t changed_metrics_ = 0u;
+
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayManagerTest);
 };

@@ -188,6 +188,8 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   std::unique_ptr<TabletModeToggleFullscreenEventHandler> event_handler_;
 
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   // True when tablet mode is about to end.
   bool is_exiting_ = false;
 

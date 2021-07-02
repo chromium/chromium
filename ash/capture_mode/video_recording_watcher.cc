@@ -203,7 +203,6 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   if (recording_source_ == CaptureModeSource::kRegion)
     partial_region_bounds_ = controller_->user_capture_region();
 
-  display::Screen::GetScreen()->AddObserver(this);
   window_being_recorded_->AddObserver(this);
   TabletModeController::Get()->AddObserver(this);
 
@@ -233,7 +232,6 @@ VideoRecordingWatcher::~VideoRecordingWatcher() {
         ->cursor_window_controller()
         ->RemoveObserver(this);
   }
-  display::Screen::GetScreen()->RemoveObserver(this);
   window_being_recorded_->RemoveObserver(this);
 }
 

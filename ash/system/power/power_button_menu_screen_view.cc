@@ -129,14 +129,10 @@ PowerButtonMenuScreenView::PowerButtonMenuScreenView(
   power_button_menu_view_ = new PowerButtonMenuView(power_button_position_);
   AddChildView(power_button_menu_view_);
 
-  display::Screen::GetScreen()->AddObserver(this);
-
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
-PowerButtonMenuScreenView::~PowerButtonMenuScreenView() {
-  display::Screen::GetScreen()->RemoveObserver(this);
-}
+PowerButtonMenuScreenView::~PowerButtonMenuScreenView() = default;
 
 void PowerButtonMenuScreenView::ScheduleShowHideAnimation(bool show) {
   power_button_screen_background_shield_->ScheduleShowHideAnimation(show);

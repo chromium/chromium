@@ -93,6 +93,8 @@ class ASH_EXPORT ResolutionNotificationController
 
   std::unique_ptr<ResolutionChangeInfo> change_info_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   base::WeakPtr<DisplayChangeDialog> confirmation_dialog_;
 
   base::WeakPtrFactory<ResolutionNotificationController> weak_factory_{this};
