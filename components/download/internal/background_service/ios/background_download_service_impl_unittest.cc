@@ -40,7 +40,8 @@ class MockBackgroundDownloadTaskHelper : public BackgroundDownloadTaskHelper {
   ~MockBackgroundDownloadTaskHelper() override = default;
   MOCK_METHOD(void,
               StartDownload,
-              (const RequestParams&,
+              (const std::string& guid,
+               const RequestParams&,
                const SchedulingParams&,
                CompletionCallback),
               (override));
@@ -114,8 +115,8 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadDbFailure) {
 TEST_F(BackgroundDownloadServiceImplTest, StartDownloadHelperFailure) {
   store_->TriggerInit(/*success=*/true, empty_entries());
   EXPECT_CALL(start_callback_, Run(kGuid, StartResult::ACCEPTED));
-  EXPECT_CALL(*download_helper_, StartDownload(_, _, _))
-      .WillOnce(RunCallback<2>(/*success=*/false, base::FilePath()));
+  EXPECT_CALL(*download_helper_, StartDownload(_, _, _, _))
+      .WillOnce(RunCallback<3>(/*success=*/false, base::FilePath()));
   EXPECT_CALL(*client_,
               OnDownloadFailed(kGuid, CompletionInfoIs(base::FilePath()),
                                download::Client::FailureReason::UNKNOWN));
@@ -129,8 +130,8 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadHelperFailure) {
 TEST_F(BackgroundDownloadServiceImplTest, StartDownloadSuccess) {
   store_->TriggerInit(/*success=*/true, empty_entries());
   EXPECT_CALL(start_callback_, Run(kGuid, StartResult::ACCEPTED));
-  EXPECT_CALL(*download_helper_, StartDownload(_, _, _))
-      .WillOnce(RunCallback<2>(/*success=*/true, base::FilePath(kFilePath)));
+  EXPECT_CALL(*download_helper_, StartDownload(_, _, _, _))
+      .WillOnce(RunCallback<3>(/*success=*/true, base::FilePath(kFilePath)));
   EXPECT_CALL(
       *client_,
       OnDownloadSucceeded(kGuid, CompletionInfoIs(base::FilePath(kFilePath))));

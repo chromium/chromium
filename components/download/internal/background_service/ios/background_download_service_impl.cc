@@ -140,7 +140,7 @@ void BackgroundDownloadServiceImpl::OnItemAdded(bool success,
   InvokeStartCallback(guid, DownloadParams::StartResult::ACCEPTED,
                       std::move(callback));
   download_helper_->StartDownload(
-      entry->request_params, entry->scheduling_params,
+      entry->guid, entry->request_params, entry->scheduling_params,
       base::BindRepeating(&BackgroundDownloadServiceImpl::OnDownloadFinished,
                           weak_ptr_factory_.GetWeakPtr(), entry->client,
                           entry->guid));

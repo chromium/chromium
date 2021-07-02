@@ -39,7 +39,8 @@ class BackgroundDownloadTaskHelper {
       delete;
 
   // Starts a download.
-  virtual void StartDownload(const RequestParams& request_params,
+  virtual void StartDownload(const std::string& guid,
+                             const RequestParams& request_params,
                              const SchedulingParams& scheduling_params,
                              CompletionCallback completion_callback) = 0;
 };

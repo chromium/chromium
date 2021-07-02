@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/download/public/background_service/download_params.h"
 #include "net/base/mac/url_conversions.h"
 
@@ -108,7 +109,8 @@ using CompletionCallback =
 
 namespace download {
 
-// Implementation of BackgroundDownloadTaskHelper.
+// Implementation of BackgroundDownloadTaskHelper based on
+// NSURLSessionDownloadTask api.
 class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
  public:
   BackgroundDownloadTaskHelperImpl(const base::FilePath& download_dir)
@@ -116,17 +118,21 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
   ~BackgroundDownloadTaskHelperImpl() override = default;
 
  private:
-  void StartDownload(const RequestParams& request_params,
+  void StartDownload(const std::string& guid,
+                     const RequestParams& request_params,
                      const SchedulingParams& scheduling_params,
                      CompletionCallback completion_callback) override {
-    // TODO(xingliu): Support more parameters in download::DownloadParams, the
-    // session id should have guid as suffix. Implement
-    // handleEventsForBackgroundURLSession and invoke the callback passed from
-    // it.
+    // TODO(xingliu): Implement handleEventsForBackgroundURLSession and invoke
+    // the callback passed from it.
     NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
-        backgroundSessionConfigurationWithIdentifier:@"background_download"];
+        backgroundSessionConfigurationWithIdentifier:
+            base::SysUTF8ToNSString("background_download_" + guid)];
     configuration.sessionSendsLaunchEvents = YES;
-    configuration.discretionary = NO;
+    configuration.discretionary =
+        scheduling_params.network_requirements !=
+            SchedulingParams::NetworkRequirements::NONE ||
+        scheduling_params.battery_requirements !=
+            SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
     BackgroundDownloadDelegate* delegate = [[BackgroundDownloadDelegate alloc]
         initWithDownloadDirectory:download_dir_
                 completionHandler:completion_callback];
@@ -134,8 +140,15 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
                                                           delegate:delegate
                                                      delegateQueue:nil];
     NSURL* url = net::NSURLWithGURL(request_params.url);
+    NSMutableURLRequest* request =
+        [[NSMutableURLRequest alloc] initWithURL:url];
+    [request setHTTPMethod:base::SysUTF8ToNSString(request_params.method)];
+    net::HttpRequestHeaders::Iterator it(request_params.request_headers);
+    while (it.GetNext()) {
+      [request setValue:base::SysUTF8ToNSString(it.value())
+          forHTTPHeaderField:base::SysUTF8ToNSString(it.name())];
+    }
 
-    NSURLRequest* request = [NSURLRequest requestWithURL:url];
     NSURLSessionDownloadTask* downloadTask =
         [session downloadTaskWithRequest:request];
     [downloadTask resume];

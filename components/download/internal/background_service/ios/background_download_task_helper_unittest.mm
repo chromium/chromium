@@ -24,18 +24,13 @@
 
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using net::test_server::HttpMethod;
 
 const char kDefaultResponseContent[] = "1234";
+const char kHeaderValue[] = "abcd1234";
+const char kGuid[] = "kale consumer";
 
 namespace download {
-
-std::unique_ptr<HttpResponse> DefaultResponse(const HttpRequest& request) {
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_code(net::HTTP_OK);
-  response->set_content(kDefaultResponseContent);
-  response->set_content_type("text/plain");
-  return response;
-}
 
 class BackgroundDownloadTaskHelperTest : public PlatformTest {
  protected:
@@ -44,7 +39,9 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
-    server_.RegisterRequestHandler(base::BindRepeating(&DefaultResponse));
+    server_.RegisterRequestHandler(
+        base::BindRepeating(&BackgroundDownloadTaskHelperTest::DefaultResponse,
+                            base::Unretained(this)));
     server_handle_ = server_.StartAndReturnHandle();
     helper_ = BackgroundDownloadTaskHelper::Create(dir_.GetPath());
   }
@@ -52,9 +49,12 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
   void Download(const std::string& relative_url) {
     DownloadParams params;
     params.request_params.url = server_.GetURL(relative_url);
+    params.request_params.method = "POST";
+    params.request_params.request_headers.SetHeader(
+        net::HttpRequestHeaders::kIfMatch, kHeaderValue);
     base::RunLoop loop;
     helper_->StartDownload(
-        params.request_params, params.scheduling_params,
+        kGuid, params.request_params, params.scheduling_params,
         base::BindLambdaForTesting([&](bool, const base::FilePath& file_path) {
           std::string content;
           ASSERT_TRUE(base::ReadFileToString(file_path, &content));
@@ -62,12 +62,28 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
           loop.Quit();
         }));
     loop.Run();
+    DCHECK(request_sent_);
+    auto it = request_sent_->headers.find(net::HttpRequestHeaders::kIfMatch);
+    EXPECT_EQ(kHeaderValue, it->second);
+    EXPECT_EQ(HttpMethod::METHOD_POST, request_sent_->method);
   }
 
+  const HttpRequest* request_sent() const { return request_sent_.get(); }
+
  private:
+  std::unique_ptr<HttpResponse> DefaultResponse(const HttpRequest& request) {
+    request_sent_.reset(new HttpRequest(request));
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content(kDefaultResponseContent);
+    response->set_content_type("text/plain");
+    return response;
+  }
+
   base::test::TaskEnvironment task_environment_;
   net::EmbeddedTestServer server_;
   net::test_server::EmbeddedTestServerHandle server_handle_;
+  std::unique_ptr<HttpRequest> request_sent_;
   base::ScopedTempDir dir_;
   std::unique_ptr<BackgroundDownloadTaskHelper> helper_;
 };
