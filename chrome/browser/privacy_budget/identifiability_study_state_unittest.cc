@@ -16,6 +16,7 @@
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
+#include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,12 +52,6 @@ std::string SurfaceListString(
       [](const auto& v) { return base::NumberToString(v.ToUkmMetricHash()); });
   return base::JoinString(list_as_strings, ",");
 }
-
-// Make names short
-using IdentifiableSurfaceSet =
-    test_utils::InspectableIdentifiabilityStudyState::IdentifiableSurfaceSet;
-using IdentifiableSurfaceTypeSet = test_utils::
-    InspectableIdentifiabilityStudyState::IdentifiableSurfaceTypeSet;
 
 }  // namespace
 

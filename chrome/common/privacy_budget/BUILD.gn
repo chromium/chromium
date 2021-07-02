@@ -11,6 +11,7 @@ source_set("privacy_budget") {
     "privacy_budget_features.h",
     "privacy_budget_settings_provider.cc",
     "privacy_budget_settings_provider.h",
+    "types.h",
   ]
 
   public_deps = [

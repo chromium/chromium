@@ -12,6 +12,7 @@
 #include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
+#include "chrome/common/privacy_budget/types.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -108,10 +109,6 @@ class IdentifiabilityStudyState {
  private:
   friend class test_utils::InspectableIdentifiabilityStudyState;
 
-  using IdentifiableSurfaceSet =
-      PrivacyBudgetSettingsProvider::IdentifiableSurfaceSet;
-  using IdentifiableSurfaceTypeSet =
-      PrivacyBudgetSettingsProvider::IdentifiableSurfaceTypeSet;
   using SurfaceSelectionRateMap =
       base::flat_map<blink::IdentifiableSurface,
                      int,

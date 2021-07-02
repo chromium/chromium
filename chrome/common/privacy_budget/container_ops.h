@@ -15,8 +15,8 @@
 #include "base/strings/string_piece.h"
 
 namespace internal {
-// Note that these implementations aren't meant for to be used outside of the
-// narrow usage within this directory.
+// Note that these implementations aren't meant to be used outside of the narrow
+// usage within this directory.
 
 // Moves a random subset of |num| elements from |from| to |to|. The type |T|
 // must satisfy |UnorderedAssociativeContainer|.
@@ -47,7 +47,7 @@ bool ExtractIf(T* from, T* to, Predicate predicate) {
   to_be_moved.reserve(from->size());
   std::copy_if(from->begin(), from->end(),
                std::inserter(to_be_moved, to_be_moved.end()), predicate);
-  for (const auto& v : to_be_moved)
+  for (const auto v : to_be_moved)
     from->erase(v);
   to->insert(to_be_moved.begin(), to_be_moved.end());
   return !to_be_moved.empty();

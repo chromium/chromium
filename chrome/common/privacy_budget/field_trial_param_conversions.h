@@ -5,101 +5,107 @@
 #ifndef CHROME_COMMON_PRIVACY_BUDGET_FIELD_TRIAL_PARAM_CONVERSIONS_H_
 #define CHROME_COMMON_PRIVACY_BUDGET_FIELD_TRIAL_PARAM_CONVERSIONS_H_
 
+#include <iterator>
 #include <type_traits>
+#include <vector>
 
-#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 // The Encode/Decode families of functions are meant to be used to encode
 // various types so that they can be specified via field trial configurations
 // and Prefs.
 
+namespace privacy_budget_internal {
+
+// DecodeIdentifiabilityType() overloads should not be called directly. Instead
+// use either DecodeIdentifiabilityFieldTrialParam() or
+// EncodeIdentifiabilityFieldTrialParam().
+//
+// DecodeIdentifiabilityType(StringPiece s,V* v) decodes a element of type
+// V serialized as a string and referred to via StringPiece s and stores it in
+// *v.
 bool DecodeIdentifiabilityType(const base::StringPiece,
                                blink::IdentifiableSurface*);
-
 bool DecodeIdentifiabilityType(const base::StringPiece,
                                blink::IdentifiableSurface::Type*);
+bool DecodeIdentifiabilityType(const base::StringPiece, int*);
+bool DecodeIdentifiabilityType(const base::StringPiece, unsigned int*);
+bool DecodeIdentifiabilityType(const base::StringPiece, double*);
+bool DecodeIdentifiabilityType(const base::StringPiece,
+                               std::vector<blink::IdentifiableSurface>*);
 
-// This explosion of DecodeIdentifiabilityTypePair specializations is a great
-// example of why you don't want to go down the path of templates if you could
-// ever avoid it.
-//
-// The variability here is that unordered_map uses pair<K,V> as its value_type
-// while map uses pair<const K, V>. Per spec, unordered_map should also use the
-// latter, but alas, that is not the case.
-//
-// Adding to the confusion, pair<const K, V> is non-movable and non-copyable. So
-// it can't be returned via a trivial *out parameter. Amazing.
-template <typename U,
-          typename V = typename U::value_type,
-          typename P = typename std::remove_const<typename V::first_type>::type>
-std::pair<V, bool> DecodeIdentifiabilityTypePair(base::StringPiece s) {
+// V is a std::pair<P,R> where P and R are types known to
+// DecodeIdentifiabilityType().
+template <
+    typename V,
+    typename P = typename std::remove_const<typename V::first_type>::type,
+    typename R = typename std::remove_const<typename V::second_type>::type>
+bool DecodeIdentifiabilityType(base::StringPiece s, V* result) {
   auto pieces =
       base::SplitStringPiece(s, ";", base::WhitespaceHandling::TRIM_WHITESPACE,
                              base::SplitResult::SPLIT_WANT_NONEMPTY);
   if (pieces.size() != 2)
-    return {V(), false};
-  P type_id;
-  int rate;
-  if (!DecodeIdentifiabilityType(pieces[0], &type_id) ||
-      !base::StringToInt(pieces[1], &rate))
-    return {V(), false};
-  if (rate < 0 || rate > features::kMaxIdentifiabilityStudySurfaceSelectionRate)
-    return {V(), false};
-  return {V(type_id, rate), true};
-}
-
-template <
-    typename U,
-    typename S = std::enable_if_t<
-        std::is_same<typename U::key_type, typename U::value_type>::value>>
-std::pair<typename U::value_type, bool> DecodeIdentifiabilityTypePair(
-    base::StringPiece s) {
-  using P = typename U::value_type;
-  P value;
-  if (!DecodeIdentifiabilityType(s, &value))
-    return {P(), false};
-  return {value, true};
+    return false;
+  P first;
+  R second;
+  if (!DecodeIdentifiabilityType(pieces[0], &first) ||
+      !DecodeIdentifiabilityType(pieces[1], &second))
+    return false;
+  ::new (result) V(std::move(first), std::move(second));
+  return true;
 }
 
 std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface&);
-
 std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface::Type&);
-
+std::string EncodeIdentifiabilityType(const unsigned int&);
+template <typename T, typename U>
+std::string EncodeIdentifiabilityType(const std::pair<T, U>& v) {
+  return base::StrCat({EncodeIdentifiabilityType(v.first), ";",
+                       base::NumberToString(v.second)});
+}
 std::string EncodeIdentifiabilityType(
-    const std::pair<const blink::IdentifiableSurface, int>&);
+    const std::vector<blink::IdentifiableSurface>& value);
 
-std::string EncodeIdentifiabilityType(
-    const std::pair<const blink::IdentifiableSurface::Type, int>&);
+template <typename T>
+struct NoOpFilter {
+  bool operator()(T t) { return true; }
+};
 
-std::string EncodeIdentifiabilityType(
-    const std::pair<blink::IdentifiableSurface, int>&);
+// Instantiate with a type and inherit from std::true_type in order to sort the
+// encoded elements of a container. The ordering is undefined but stable across
+// versions of Chrome.
+template <typename T>
+struct SortWhenSerializing : std::false_type {};
 
-std::string EncodeIdentifiabilityType(
-    const std::pair<blink::IdentifiableSurface::Type, int>&);
+}  // namespace privacy_budget_internal
 
 // Decodes a field trial parameter containing a list of values. The result is
 // returned in the form of a container type that must be specified at
 // instantiation. There should be a valid DecodeIdentifiabilityType
 // specialization for the container's value type.
 template <typename T,
-          std::pair<typename T::value_type, bool> Decoder(
-              const base::StringPiece) = DecodeIdentifiabilityTypePair<T>>
+          char Separator = ',',
+          typename V = typename T::value_type,
+          bool ElementDecoder(const base::StringPiece, V*) =
+              &privacy_budget_internal::DecodeIdentifiabilityType>
 T DecodeIdentifiabilityFieldTrialParam(base::StringPiece encoded_value) {
   T result;
-  auto hashes = base::SplitStringPiece(
-      encoded_value, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
-  for (const auto& hash : hashes) {
-    auto decoded = Decoder(hash);
-    if (!decoded.second)
+  auto pieces =
+      base::SplitStringPiece(encoded_value, std::string(1, Separator),
+                             base::WhitespaceHandling::TRIM_WHITESPACE,
+                             base::SplitResult::SPLIT_WANT_NONEMPTY);
+  auto inserter = std::inserter(result, result.end());
+  for (const auto& piece : pieces) {
+    V v;
+    if (!ElementDecoder(piece, &v))
       continue;
-    result.insert(decoded.first);
+    inserter = v;
   }
   return result;
 }
@@ -109,13 +115,18 @@ T DecodeIdentifiabilityFieldTrialParam(base::StringPiece encoded_value) {
 // value_type must have a corresponding EncodeIdentifiabilityType
 // specialization.
 template <typename T,
-          std::string Encoder(const typename T::value_type&) =
-              EncodeIdentifiabilityType>
+          std::string ElementEncoder(const typename T::value_type&) =
+              privacy_budget_internal::EncodeIdentifiabilityType>
 std::string EncodeIdentifiabilityFieldTrialParam(const T& source) {
-  std::vector<std::string> result;
-  std::transform(source.begin(), source.end(), std::back_inserter(result),
-                 [](auto& v) { return Encoder(v); });
-  return base::JoinString(result, ",");
+  std::vector<std::string> encoded_elements;
+  std::transform(source.begin(), source.end(),
+                 std::back_inserter(encoded_elements),
+                 [](auto& v) { return ElementEncoder(v); });
+  if (privacy_budget_internal::SortWhenSerializing<
+          typename std::remove_cv<T>::type>::value) {
+    base::ranges::sort(encoded_elements);
+  }
+  return base::JoinString(encoded_elements, ",");
 }
 
 #endif  // CHROME_COMMON_PRIVACY_BUDGET_FIELD_TRIAL_PARAM_CONVERSIONS_H_

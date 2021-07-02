@@ -5,10 +5,8 @@
 #ifndef CHROME_COMMON_PRIVACY_BUDGET_PRIVACY_BUDGET_SETTINGS_PROVIDER_H_
 #define CHROME_COMMON_PRIVACY_BUDGET_PRIVACY_BUDGET_SETTINGS_PROVIDER_H_
 
-#include <memory>
-#include <unordered_set>
-
 #include "base/containers/flat_map.h"
+#include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
@@ -34,12 +32,6 @@
 class PrivacyBudgetSettingsProvider final
     : public blink::IdentifiabilityStudySettingsProvider {
  public:
-  using IdentifiableSurfaceSet =
-      std::unordered_set<blink::IdentifiableSurface,
-                         blink::IdentifiableSurfaceHash>;
-  using IdentifiableSurfaceTypeSet =
-      std::unordered_set<blink::IdentifiableSurface::Type>;
-
   PrivacyBudgetSettingsProvider();
   PrivacyBudgetSettingsProvider(const PrivacyBudgetSettingsProvider&);
   PrivacyBudgetSettingsProvider(PrivacyBudgetSettingsProvider&&);

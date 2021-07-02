@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRIVACY_BUDGET_INSPECTABLE_IDENTIFIABILITY_STUDY_STATE_H_
 
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
+#include "chrome/common/privacy_budget/types.h"
 
 namespace test_utils {
 
@@ -13,9 +14,6 @@ namespace test_utils {
 // internals. Use this as a last resort.
 class InspectableIdentifiabilityStudyState : public IdentifiabilityStudyState {
  public:
-  using IdentifiabilityStudyState::IdentifiableSurfaceSet;
-  using IdentifiabilityStudyState::IdentifiableSurfaceTypeSet;
-
   explicit InspectableIdentifiabilityStudyState(PrefService* pref_service)
       : IdentifiabilityStudyState(pref_service) {}
 
