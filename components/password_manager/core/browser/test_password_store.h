@@ -80,6 +80,8 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
       const override;
 
   // PasswordStoreBackend interface
+  void GetAllLoginsAsync(LoginsReply callback) override;
+  void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
       const std::vector<PasswordFormDigest>& forms) override;
@@ -94,10 +96,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
       const PasswordFormDigest& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
-  bool FillAutofillableLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms) override;
-  bool FillBlocklistLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
   std::vector<InteractionsStats> GetSiteStatsImpl(
       const GURL& origin_domain) override;
@@ -150,7 +148,9 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   bool DeleteAndRecreateDatabaseFile() override;
 
  private:
-  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsBulk(
+  LoginsResult GetAllLoginsInternal();
+  LoginsResult GetAutofillableLoginsInternal();
+  LoginsResult FillMatchingLoginsBulk(
       const std::vector<PasswordFormDigest>& forms);
 
   const password_manager::IsAccountStore is_account_store_;

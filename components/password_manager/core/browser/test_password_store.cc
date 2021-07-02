@@ -144,6 +144,22 @@ TestPasswordStore::CreateBackgroundTaskRunner() const {
   return base::SequencedTaskRunnerHandle::Get();
 }
 
+void TestPasswordStore::GetAllLoginsAsync(LoginsReply callback) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TestPasswordStore::GetAllLoginsInternal,
+                     RetainedRef(this)),
+      std::move(callback));
+}
+
+void TestPasswordStore::GetAutofillableLoginsAsync(LoginsReply callback) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TestPasswordStore::GetAutofillableLoginsInternal,
+                     RetainedRef(this)),
+      std::move(callback));
+}
+
 void TestPasswordStore::FillMatchingLoginsAsync(
     LoginsReply callback,
     const std::vector<PasswordFormDigest>& forms) {
@@ -262,28 +278,6 @@ TestPasswordStore::FillMatchingLoginsByPassword(
     }
   }
   return matched_forms;
-}
-
-bool TestPasswordStore::FillAutofillableLogins(
-    std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  for (const auto& forms_for_realm : stored_passwords_) {
-    for (const PasswordForm& form : forms_for_realm.second) {
-      if (!form.blocked_by_user)
-        forms->push_back(std::make_unique<PasswordForm>(form));
-    }
-  }
-  return true;
-}
-
-bool TestPasswordStore::FillBlocklistLogins(
-    std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  for (const auto& forms_for_realm : stored_passwords_) {
-    for (const PasswordForm& form : forms_for_realm.second) {
-      if (form.blocked_by_user)
-        forms->push_back(std::make_unique<PasswordForm>(form));
-    }
-  }
-  return true;
 }
 
 DatabaseCleanupResult TestPasswordStore::DeleteUndecryptableLogins() {
@@ -457,8 +451,28 @@ bool TestPasswordStore::DeleteAndRecreateDatabaseFile() {
   return true;
 }
 
-std::vector<std::unique_ptr<PasswordForm>>
-TestPasswordStore::FillMatchingLoginsBulk(
+LoginsResult TestPasswordStore::GetAllLoginsInternal() {
+  LoginsResult forms;
+  for (const auto& elements : stored_passwords_) {
+    for (const auto& password_form : elements.second) {
+      forms.push_back(std::make_unique<PasswordForm>(password_form));
+    }
+  }
+  return forms;
+}
+
+LoginsResult TestPasswordStore::GetAutofillableLoginsInternal() {
+  LoginsResult forms;
+  for (const auto& forms_for_realm : stored_passwords_) {
+    for (const PasswordForm& form : forms_for_realm.second) {
+      if (!form.blocked_by_user)
+        forms.push_back(std::make_unique<PasswordForm>(form));
+    }
+  }
+  return forms;
+}
+
+LoginsResult TestPasswordStore::FillMatchingLoginsBulk(
     const std::vector<PasswordFormDigest>& forms) {
   std::vector<std::unique_ptr<PasswordForm>> results;
   for (const auto& form : forms) {

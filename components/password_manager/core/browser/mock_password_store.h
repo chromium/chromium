@@ -22,6 +22,10 @@ class MockPasswordStore : public PasswordStore {
  public:
   MockPasswordStore();
 
+  // PasswordStoreInterface
+
+  MOCK_METHOD(void, GetAutofillableLogins, (PasswordStoreConsumer*), (override));
+
   MOCK_METHOD1(RemoveLogin, void(const PasswordForm&));
   MOCK_METHOD2(Unblocklist, void(const PasswordFormDigest&, base::OnceClosure));
   MOCK_METHOD2(GetLogins,

@@ -195,18 +195,6 @@ PasswordStoreImpl::FillMatchingLoginsByPassword(
   return matched_forms;
 }
 
-bool PasswordStoreImpl::FillAutofillableLogins(
-    std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  return login_db_ && login_db_->GetAutofillableLogins(forms);
-}
-
-bool PasswordStoreImpl::FillBlocklistLogins(
-    std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  return login_db_ && login_db_->GetBlocklistLogins(forms);
-}
-
 DatabaseCleanupResult PasswordStoreImpl::DeleteUndecryptableLogins() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (!login_db_)
@@ -378,6 +366,19 @@ bool PasswordStoreImpl::DeleteAndRecreateDatabaseFile() {
   return login_db_ && login_db_->DeleteAndRecreateDatabaseFile();
 }
 
+void PasswordStoreImpl::GetAllLoginsAsync(LoginsReply callback) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&PasswordStoreImpl::GetAllLoginsInternal, this),
+      std::move(callback));
+}
+
+void PasswordStoreImpl::GetAutofillableLoginsAsync(LoginsReply callback) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::GetAutofillableLoginsInternal, this),
+      std::move(callback));
+}
+
 void PasswordStoreImpl::FillMatchingLoginsAsync(
     LoginsReply callback,
     const std::vector<PasswordFormDigest>& forms) {
@@ -398,8 +399,29 @@ void PasswordStoreImpl::ResetLoginDB() {
   login_db_.reset();
 }
 
-std::vector<std::unique_ptr<PasswordForm>>
-PasswordStoreImpl::FillMatchingLoginsInternal(
+LoginsResult PasswordStoreImpl::GetAllLoginsInternal() {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  PrimaryKeyToFormMap key_to_form_map;
+
+  if (!login_db_ || login_db_->GetAllLogins(&key_to_form_map) !=
+                        FormRetrievalResult::kSuccess)
+    return {};
+
+  std::vector<std::unique_ptr<PasswordForm>> obtained_forms;
+  for (auto& pair : key_to_form_map) {
+    obtained_forms.push_back(std::move(pair.second));
+  }
+  return obtained_forms;
+}
+
+LoginsResult PasswordStoreImpl::GetAutofillableLoginsInternal() {
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  if (!login_db_ || !login_db_->GetAutofillableLogins(&results))
+    return {};
+  return results;
+}
+
+LoginsResult PasswordStoreImpl::FillMatchingLoginsInternal(
     const std::vector<PasswordFormDigest>& forms) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
 

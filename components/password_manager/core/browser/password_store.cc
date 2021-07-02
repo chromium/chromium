@@ -207,29 +207,33 @@ void PasswordStore::GetLoginsByPassword(
 
 void PasswordStore::GetAutofillableLogins(PasswordStoreConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  PostLoginsTaskAndReplyToConsumerWithResult(
-      consumer,
-      base::BindOnce(&PasswordStore::GetAutofillableLoginsImpl, this));
+
+  backend_->GetAutofillableLoginsAsync(
+      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
+                     consumer->GetWeakPtr(), base::RetainedRef(this)));
 }
 
 void PasswordStore::GetAllLogins(PasswordStoreConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  PostLoginsTaskAndReplyToConsumerWithResult(
-      consumer, base::BindOnce(&PasswordStore::GetAllLoginsImpl, this));
+
+  backend_->GetAllLoginsAsync(
+      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
+                     consumer->GetWeakPtr(), base::RetainedRef(this)));
 }
 
 void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
     PasswordStoreConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "passwords",
-      "PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation",
-      consumer);
-  PostLoginsTaskAndReplyToConsumerWithProcessedResult(
-      "PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation",
-      consumer, base::BindOnce(&PasswordStore::GetAllLoginsImpl, this),
+
+  auto consumer_reply =
+      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
+                     consumer->GetWeakPtr(), base::RetainedRef(this));
+
+  auto affiliation_injection =
       base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
-                     this));
+                     this, std::move(consumer_reply));
+
+  backend_->GetAllLoginsAsync(std::move(affiliation_injection));
 }
 
 SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {
@@ -796,33 +800,6 @@ PasswordStore::GetLoginsByPasswordImpl(
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("passwords", "PasswordStore::GetLoginsByPasswordImpl");
   return FillMatchingLoginsByPassword(plain_text_password);
-}
-
-std::vector<std::unique_ptr<PasswordForm>>
-PasswordStore::GetAutofillableLoginsImpl() {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::GetAutofillableLoginsImpl");
-  std::vector<std::unique_ptr<PasswordForm>> obtained_forms;
-  if (!FillAutofillableLogins(&obtained_forms))
-    obtained_forms.clear();
-  return obtained_forms;
-}
-
-std::vector<std::unique_ptr<PasswordForm>> PasswordStore::GetAllLoginsImpl() {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::GetAllLoginsImpl");
-  std::vector<std::unique_ptr<PasswordForm>> results;
-  for (auto fill_logins : {&PasswordStore::FillAutofillableLogins,
-                           &PasswordStore::FillBlocklistLogins}) {
-    std::vector<std::unique_ptr<PasswordForm>> obtained_forms;
-    if ((this->*fill_logins)(&obtained_forms)) {
-      results.insert(results.end(),
-                     std::make_move_iterator(obtained_forms.begin()),
-                     std::make_move_iterator(obtained_forms.end()));
-    }
-  }
-
-  return results;
 }
 
 std::vector<InsecureCredential>

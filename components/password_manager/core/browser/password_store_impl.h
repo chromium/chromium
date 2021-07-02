@@ -63,10 +63,6 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
       const PasswordFormDigest& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
-  bool FillAutofillableLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms) override;
-  bool FillBlocklistLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
   void AddSiteStatsImpl(const InteractionsStats& stats) override;
   void RemoveSiteStatsImpl(const GURL& origin_domain) override;
@@ -105,6 +101,9 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
 
  private:
   // Implements PasswordStoreBackend interface.
+
+  void GetAllLoginsAsync(LoginsReply callback) override;
+  void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
       const std::vector<PasswordFormDigest>& forms) override;
@@ -112,8 +111,14 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   // Resets |login_db_| on the background sequence.
   void ResetLoginDB();
 
+  // Synchronous implementation of GetAllLoginsAsync.
+  LoginsResult GetAllLoginsInternal();
+
+  // Synchronous implementation of GetAutofillableLoginsAsync.
+  LoginsResult GetAutofillableLoginsInternal();
+
   // Synchronous implementation of FillMatchingLoginsAsync.
-  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsInternal(
+  LoginsResult FillMatchingLoginsInternal(
       const std::vector<PasswordFormDigest>& forms);
 
   // The login SQL database. The LoginDatabase instance is received via the

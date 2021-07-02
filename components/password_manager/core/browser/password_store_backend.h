@@ -38,6 +38,15 @@ class PasswordStoreBackend {
   PasswordStoreBackend& operator=(PasswordStoreBackend&&) = delete;
   virtual ~PasswordStoreBackend() = default;
 
+  // Returns the complete list of PasswordForms (regardless of their blocklist
+  // status) and notify `consumer` on completion. Callback is called on the main
+  // sequence.
+  virtual void GetAllLoginsAsync(LoginsReply callback) = 0;
+
+  // Returns the complete list of non-blocklist PasswordForms. Callback is
+  // called on the main sequence.
+  virtual void GetAutofillableLoginsAsync(LoginsReply callback) = 0;
+
   // Returns all PasswordForms with the same or PSL-matched signon_realm as
   // a form in |forms|. If multiple forms are given, those will be concatenated.
   // Callback is called on the main sequence.

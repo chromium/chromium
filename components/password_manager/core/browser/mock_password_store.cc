@@ -10,7 +10,6 @@
 namespace password_manager {
 
 MockPasswordStore::MockPasswordStore() = default;
-
 MockPasswordStore::~MockPasswordStore() = default;
 
 scoped_refptr<base::SequencedTaskRunner>

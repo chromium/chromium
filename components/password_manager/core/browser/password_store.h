@@ -319,16 +319,6 @@ class PasswordStore : protected PasswordStoreSync,
   virtual std::vector<std::unique_ptr<PasswordForm>>
   FillMatchingLoginsByPassword(const std::u16string& plain_text_password) = 0;
 
-  // Overwrites |forms| with all stored non-blocklisted credentials. Returns
-  // true on success.
-  virtual bool FillAutofillableLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms) WARN_UNUSED_RESULT = 0;
-
-  // Overwrites |forms| with all stored blocklisted credentials. Returns true on
-  // success.
-  virtual bool FillBlocklistLogins(
-      std::vector<std::unique_ptr<PasswordForm>>* forms) WARN_UNUSED_RESULT = 0;
-
   // Synchronous implementation for manipulating with statistics.
   virtual void AddSiteStatsImpl(const InteractionsStats& stats) = 0;
   virtual void RemoveSiteStatsImpl(const GURL& origin_domain) = 0;
@@ -503,15 +493,6 @@ class PasswordStore : protected PasswordStoreSync,
   // Note: subclasses should implement FillMatchingLoginsByPassword() instead.
   std::vector<std::unique_ptr<PasswordForm>> GetLoginsByPasswordImpl(
       const std::u16string& plain_text_password);
-
-  // Finds all non-blocklist PasswordForms and returns the result.
-  std::vector<std::unique_ptr<PasswordForm>> GetAutofillableLoginsImpl();
-
-  // Finds all blocklist PasswordForms and returns the result.
-  std::vector<std::unique_ptr<PasswordForm>> GetBlocklistLoginsImpl();
-
-  // Finds all PasswordForms and returns the result.
-  std::vector<std::unique_ptr<PasswordForm>> GetAllLoginsImpl();
 
   // Extended version of GetMatchingInsecureCredentialsImpl that also returns
   // credentials stored for the specified affiliated Android applications or Web
