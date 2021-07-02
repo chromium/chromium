@@ -88,6 +88,7 @@ std::unique_ptr<::full_restore::WindowInfo> BuildWindowInfo(
       extra.maximum_size = widget->GetMaximumSize();
       extra.minimum_size = widget->GetMinimumSize();
       extra.title = window->GetTitle();
+      extra.bounds_in_root = window->GetBoundsInRootWindow();
       window_info->arc_extra_info = extra;
     }
   }

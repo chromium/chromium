@@ -27,6 +27,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
     absl::optional<gfx::Size> maximum_size;
     absl::optional<gfx::Size> minimum_size;
     absl::optional<std::u16string> title;
+    absl::optional<gfx::Rect> bounds_in_root;
   };
 
   WindowInfo();

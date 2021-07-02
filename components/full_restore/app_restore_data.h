@@ -102,6 +102,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   absl::optional<gfx::Size> minimum_size;
   absl::optional<gfx::Size> maximum_size;
   absl::optional<std::u16string> title;
+  absl::optional<gfx::Rect> bounds_in_root;
   absl::optional<uint32_t> primary_color;
   absl::optional<uint32_t> status_bar_color;
 };

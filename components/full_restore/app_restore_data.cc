@@ -34,6 +34,7 @@ constexpr char kPreMinimizedShowStateTypeKey[] = "pre_min_state";
 constexpr char kMinimumSizeKey[] = "min_size";
 constexpr char kMaximumSizeKey[] = "max_size";
 constexpr char kTitleKey[] = "title";
+constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kPrimaryColorKey[] = "primary_color";
 constexpr char kStatusBarColorKey[] = "status_bar_color";
 
@@ -253,6 +254,7 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   maximum_size = GetSizeFromDict(*data_dict, kMaximumSizeKey);
   minimum_size = GetSizeFromDict(*data_dict, kMinimumSizeKey);
   title = GetU16StringValueFromDict(*data_dict, kTitleKey);
+  bounds_in_root = GetBoundsRectFromDict(*data_dict, kBoundsInRoot);
   primary_color = GetUIntValueFromDict(*data_dict, kPrimaryColorKey);
   status_bar_color = GetUIntValueFromDict(*data_dict, kStatusBarColorKey);
 
@@ -335,6 +337,9 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (title.has_value())
     data->title = title.value();
+
+  if (bounds_in_root.has_value())
+    data->bounds_in_root = bounds_in_root.value();
 
   if (primary_color.has_value())
     data->primary_color = primary_color.value();
@@ -428,6 +433,11 @@ base::Value AppRestoreData::ConvertToValue() const {
     launch_info_dict.SetStringKey(kTitleKey, base::UTF16ToUTF8(title.value()));
   }
 
+  if (bounds_in_root.has_value()) {
+    launch_info_dict.SetKey(kBoundsInRoot,
+                            ConvertRectToValue(bounds_in_root.value()));
+  }
+
   if (primary_color.has_value()) {
     launch_info_dict.SetKey(kPrimaryColorKey,
                             ConvertUintToValue(primary_color.value()));
@@ -469,6 +479,7 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
     minimum_size = window_info.arc_extra_info->minimum_size;
     maximum_size = window_info.arc_extra_info->maximum_size;
     title = window_info.arc_extra_info->title;
+    bounds_in_root = window_info.arc_extra_info->bounds_in_root;
   }
 }
 
@@ -488,6 +499,7 @@ void AppRestoreData::ClearWindowInfo() {
   minimum_size.reset();
   maximum_size.reset();
   title.reset();
+  bounds_in_root.reset();
   primary_color.reset();
   status_bar_color.reset();
 }
@@ -533,11 +545,12 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
   }
 
   if (maximum_size.has_value() || minimum_size.has_value() ||
-      title.has_value()) {
+      title.has_value() || bounds_in_root.has_value()) {
     window_info->arc_extra_info = WindowInfo::ArcExtraInfo();
     window_info->arc_extra_info->maximum_size = maximum_size;
     window_info->arc_extra_info->minimum_size = minimum_size;
     window_info->arc_extra_info->title = title;
+    window_info->arc_extra_info->bounds_in_root = bounds_in_root;
   }
 
   // Display id is set as the app launch parameter, so we don't need to return

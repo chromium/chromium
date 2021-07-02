@@ -92,6 +92,9 @@ constexpr uint32_t kStatusBarColor2(0xFF000000);
 constexpr char16_t kTitle1[] = u"test title1";
 constexpr char16_t kTitle2[] = u"test title2";
 
+constexpr gfx::Rect kBoundsInRoot1(11, 21, 111, 121);
+constexpr gfx::Rect kBoundsInRoot2(31, 41, 131, 141);
+
 }  // namespace
 
 // Unit tests for restore data.
@@ -156,6 +159,7 @@ class RestoreDataTest : public testing::Test {
     window_info1.arc_extra_info->maximum_size = kMaxSize1;
     window_info1.arc_extra_info->minimum_size = kMinSize1;
     window_info1.arc_extra_info->title = kTitle1;
+    window_info1.arc_extra_info->bounds_in_root = kBoundsInRoot1;
 
     WindowInfo window_info2;
     window_info2.activation_index = kActivationIndex2;
@@ -167,6 +171,7 @@ class RestoreDataTest : public testing::Test {
     window_info2.arc_extra_info = WindowInfo::ArcExtraInfo();
     window_info2.arc_extra_info->minimum_size = kMinSize2;
     window_info2.arc_extra_info->title = kTitle2;
+    window_info2.arc_extra_info->bounds_in_root = kBoundsInRoot2;
 
     WindowInfo window_info3;
     window_info3.activation_index = kActivationIndex3;
@@ -204,6 +209,7 @@ class RestoreDataTest : public testing::Test {
                             absl::optional<gfx::Size> max_size,
                             absl::optional<gfx::Size> min_size,
                             absl::optional<std::u16string> title,
+                            absl::optional<gfx::Rect> bounds_in_root,
                             uint32_t primary_color,
                             uint32_t status_bar_color) {
     EXPECT_TRUE(data->container.has_value());
@@ -283,6 +289,13 @@ class RestoreDataTest : public testing::Test {
       EXPECT_FALSE(data->title.has_value());
     }
 
+    if (bounds_in_root.has_value()) {
+      EXPECT_TRUE(data->bounds_in_root.has_value());
+      EXPECT_EQ(bounds_in_root.value(), data->bounds_in_root.value());
+    } else {
+      EXPECT_FALSE(data->bounds_in_root.has_value());
+    }
+
     if (primary_color) {
       EXPECT_TRUE(data->primary_color.has_value());
       EXPECT_EQ(primary_color, data->primary_color.value());
@@ -319,8 +332,8 @@ class RestoreDataTest : public testing::Test {
         CreateIntent(kIntentActionSend, kMimeType, kShareText1),
         kAppTypeBrower1, kActivationIndex1, kDeskId1, kVisibleOnAllWorkspaces1,
         kCurrentBounds1, kWindowStateType1, kPreMinimizedWindowStateType1,
-        kMaxSize1, kMinSize1, std::u16string(kTitle1), kPrimaryColor1,
-        kStatusBarColor1);
+        kMaxSize1, kMinSize1, std::u16string(kTitle1), kBoundsInRoot1,
+        kPrimaryColor1, kStatusBarColor1);
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
@@ -332,8 +345,8 @@ class RestoreDataTest : public testing::Test {
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
         kAppTypeBrower2, kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2,
         kCurrentBounds2, kWindowStateType2, kPreMinimizedWindowStateType2,
-        absl::nullopt, kMinSize2, std::u16string(kTitle2), kPrimaryColor2,
-        kStatusBarColor2);
+        absl::nullopt, kMinSize2, std::u16string(kTitle2), kBoundsInRoot2,
+        kPrimaryColor2, kStatusBarColor2);
 
     // Verify for |kAppId2|.
     const auto launch_list_it2 =
@@ -350,7 +363,7 @@ class RestoreDataTest : public testing::Test {
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
         kAppTypeBrower3, kActivationIndex3, kDeskId3, kVisibleOnAllWorkspaces3,
         kCurrentBounds3, kWindowStateType3, kPreMinimizedWindowStateType3,
-        absl::nullopt, absl::nullopt, absl::nullopt, 0, 0);
+        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt, 0, 0);
   }
 
   RestoreData& restore_data() { return restore_data_; }
@@ -413,7 +426,7 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
       CreateIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
       kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2, kCurrentBounds2,
       kWindowStateType2, kPreMinimizedWindowStateType2, absl::nullopt,
-      kMinSize2, kTitle2, kPrimaryColor2, kStatusBarColor2);
+      kMinSize2, kTitle2, kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2);
 
   // Verify the restore data for |kAppId2| still exists.
   const auto launch_list_it2 =
