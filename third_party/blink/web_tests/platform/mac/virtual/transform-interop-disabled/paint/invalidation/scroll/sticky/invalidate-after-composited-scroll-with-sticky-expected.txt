@@ -19,12 +19,12 @@
     },
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [345, 2020],
+      "bounds": [345, 2018],
       "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (sticky positioned) DIV id='sticky'",
-      "bounds": [345, 20],
+      "bounds": [345, 18],
       "transform": 4
     },
     {
@@ -64,7 +64,8 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -35, 0, 1]
-      ]
+      ],
+      "flattenInheritedTransform": false
     },
     {
       "id": 4,
@@ -74,7 +75,8 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, 35, 0, 1]
-      ]
+      ],
+      "flattenInheritedTransform": false
     }
   ]
 }

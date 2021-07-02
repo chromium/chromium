@@ -1,0 +1,8 @@
+PASS: event at (120, 128) hit box4 at offset (1, 1)
+PASS: event at (336, 87) hit box7 at offset (1, 1)
+FAIL: event at (348, 86) expected to hit box7 at (15, 1) but hit box8 at (1, 1)
+PASS: event at (582, 87) hit box11 at offset (1, 1)
+FAIL: event at (594, 86) expected to hit box11 at (15, 1) but hit box12 at (1, 1)
+
+ 
+ 
