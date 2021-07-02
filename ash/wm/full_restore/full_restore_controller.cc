@@ -43,10 +43,6 @@ namespace {
 
 FullRestoreController* g_instance = nullptr;
 
-// Callback for testing which is run when `OnWidgetInitialized()` triggers a
-// read from file.
-FullRestoreController::ReadWindowCallback g_read_window_callback_for_testing;
-
 // Callback for testing which is run when `SaveWindowImpl()` triggers a write to
 // file.
 FullRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
@@ -71,10 +67,8 @@ constexpr ShellWindowId kAppParentContainers[9] = {
 constexpr AppType kSupportedAppTypes[3] = {
     AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP};
 
-std::unique_ptr<full_restore::WindowInfo> GetWindowInfo(aura::Window* window) {
-  return g_read_window_callback_for_testing
-             ? g_read_window_callback_for_testing.Run(window)
-             : full_restore::GetWindowInfo(window);
+full_restore::WindowInfo* GetWindowInfo(aura::Window* window) {
+  return window->GetProperty(full_restore::kWindowInfoKey);
 }
 
 // Returns the sibling of `window` that `window` should be stacked below based
@@ -132,7 +126,7 @@ aura::Window* GetSiblingToStackBelow(aura::Window* window) {
 // window is visible to handle the case where the display a window is restored
 // to is drastically smaller than the pre-restore display.
 void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
-  std::unique_ptr<full_restore::WindowInfo> window_info = GetWindowInfo(window);
+  full_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (!window_info)
     return;
 
@@ -263,7 +257,7 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
   DCHECK(window);
   DCHECK(window->GetProperty(full_restore::kParentToHiddenContainerKey));
 
-  std::unique_ptr<full_restore::WindowInfo> window_info = GetWindowInfo(window);
+  full_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (window_info) {
     const int desk_id = window_info->desk_id
                             ? int{*window_info->desk_id}
@@ -451,10 +445,7 @@ void FullRestoreController::SaveWindowImpl(
 
 void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
     aura::Window* window) {
-  std::unique_ptr<full_restore::WindowInfo> window_info =
-      g_read_window_callback_for_testing
-          ? g_read_window_callback_for_testing.Run(window)
-          : full_restore::GetWindowInfo(window);
+  full_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (window_info) {
     // Snap the window if necessary.
     auto state_type = window_info->window_state_type;
@@ -513,11 +504,6 @@ void FullRestoreController::CancelAndRemoveRestorePropertyClearCallback(
 
   restore_property_clear_callbacks_[window].Cancel();
   restore_property_clear_callbacks_.erase(window);
-}
-
-void FullRestoreController::SetReadWindowCallbackForTesting(
-    ReadWindowCallback callback) {
-  g_read_window_callback_for_testing = std::move(callback);
 }
 
 void FullRestoreController::SetSaveWindowCallbackForTesting(

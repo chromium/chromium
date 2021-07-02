@@ -35,9 +35,6 @@ class ASH_EXPORT FullRestoreController
       public full_restore::FullRestoreInfo::Observer,
       public aura::WindowObserver {
  public:
-  using ReadWindowCallback =
-      base::RepeatingCallback<std::unique_ptr<full_restore::WindowInfo>(
-          aura::Window*)>;
   using SaveWindowCallback =
       base::RepeatingCallback<void(const full_restore::WindowInfo&)>;
 
@@ -123,11 +120,6 @@ class ASH_EXPORT FullRestoreController
   // Cancels and removes the Full Restore property clear callback for `window`
   // from `restore_property_clear_callbacks_`.
   void CancelAndRemoveRestorePropertyClearCallback(aura::Window* window);
-
-  // Sets a callback for testing that will be read from in
-  // `OnWidgetInitialized()`.
-  void SetReadWindowCallbackForTesting(ReadWindowCallback callback);
-
   // Sets a callback for testing that will be fired immediately when
   // SaveWindowImpl is about to notify the full restore component we want to
   // write to file.

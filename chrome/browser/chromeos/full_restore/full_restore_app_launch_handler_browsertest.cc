@@ -398,7 +398,9 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_TRUE(FindWebAppWindow());
+  aura::Window* web_app_window = FindWebAppWindow();
+  ASSERT_TRUE(web_app_window);
+  EXPECT_TRUE(web_app_window->GetProperty(::full_restore::kWindowInfoKey));
 }
 
 // Tests that restoring windows that are minimized will restore their
@@ -743,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
       window->GetProperty(::full_restore::kRestoreWindowIdKey);
   EXPECT_NE(0, restore_window_id);
 
-  auto window_info = ::full_restore::GetWindowInfo(window);
+  auto* window_info = window->GetProperty(::full_restore::kWindowInfoKey);
   ASSERT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
   int32_t* index = window->GetProperty(::full_restore::kActivationIndexKey);
@@ -1594,12 +1596,13 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   // Check if the surface properly restores desk state and activation index.
   arc_window = shell_surface->GetWidget()->GetNativeWindow();
-  EXPECT_TRUE(arc_window);
+  ASSERT_TRUE(arc_window);
   EXPECT_EQ(kDeskId,
             arc_window->GetProperty(aura::client::kWindowWorkspaceKey));
   int32_t* index = arc_window->GetProperty(::full_restore::kActivationIndexKey);
   ASSERT_TRUE(index);
   EXPECT_EQ(kActivationIndex, *index);
+  EXPECT_TRUE(arc_window->GetProperty(::full_restore::kWindowInfoKey));
 
   // Check if it's also left-snapped.
   EXPECT_EQ(kWindowStateType,

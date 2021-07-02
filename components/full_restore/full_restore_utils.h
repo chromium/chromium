@@ -84,6 +84,9 @@ extern const ui::ClassProperty<bool>* const kParentToHiddenContainerKey;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<bool>* const kLaunchedFromFullRestoreKey;
 
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<WindowInfo*>* const kWindowInfoKey;
+
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(FULL_RESTORE)
 void SaveAppLaunchInfo(const base::FilePath& profile_path,

@@ -231,6 +231,10 @@ void FullRestoreReadHandler::ModifyWidgetParams(
   if (!window_info)
     return;
 
+  WindowInfo* window_info_ptr = window_info->Clone();
+  out_params->init_properties_container.SetProperty(kWindowInfoKey,
+                                                    window_info_ptr);
+
   if (window_info->activation_index) {
     const int32_t index = *window_info->activation_index;
     // kActivationIndexKey is owned, which allows for passing in this raw

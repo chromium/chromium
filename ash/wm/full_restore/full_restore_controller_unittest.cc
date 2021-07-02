@@ -120,45 +120,19 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   views::Widget* CreateTestFullRestoredWidget(
       int32_t activation_index,
       const gfx::Rect& bounds = gfx::Rect(200, 200),
-      aura::Window* root_window = Shell::GetPrimaryRootWindow(),
-      absl::optional<int32_t> restore_window_id = absl::nullopt,
-      chromeos::WindowStateType window_state_type =
-          chromeos::WindowStateType::kNormal,
-      bool is_taskless_arc_app = false) {
-    // Full restore widgets are inactive when created as we do not want to take
-    // activation from a possible activated window, and we want to stack them in
-    // a certain order.
-    DCHECK(root_window->IsRootWindow());
-    TestWidgetBuilder widget_builder;
-    widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
-        .SetBounds(bounds)
-        .SetShow(false)
-        .SetContext(root_window)
-        .SetShowState(chromeos::ToWindowShowState(window_state_type))
-        .SetWindowProperty(full_restore::kActivationIndexKey,
-                           new int32_t(activation_index))
-        .SetWindowProperty(full_restore::kLaunchedFromFullRestoreKey, true);
-    // If this is not given, the window will get assigned an id in
-    // `OnWindowInitialized()`.
-    if (restore_window_id) {
-      widget_builder.SetWindowProperty(full_restore::kRestoreWindowIdKey,
-                                       *restore_window_id);
-    }
+      aura::Window* root_window = Shell::GetPrimaryRootWindow()) {
+    // If this is a new window, finds and sets a new restore window id.
+    int32_t restore_window_id = 1;
+    while (fake_full_restore_file_.contains(restore_window_id))
+      ++restore_window_id;
 
-    if (is_taskless_arc_app) {
-      widget_builder
-          .SetWindowProperty(full_restore::kParentToHiddenContainerKey, true)
-          .SetWindowProperty(aura::client::kAppType,
-                             static_cast<int>(AppType::ARC_APP));
-    }
-
-    views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
-    SetResizable(widget);
-    if (!is_taskless_arc_app)
-      FullRestoreController::Get()->OnWidgetInitialized(widget);
-    if (window_state_type != chromeos::WindowStateType::kMinimized)
-      widget->Show();
-    return widget;
+    AddEntryToFakeFile(restore_window_id, bounds,
+                       chromeos::WindowStateType::kNormal, activation_index,
+                       WindowTreeHostManager::GetPrimaryDisplayId(),
+                       /*desk_id=*/1);
+    return CreateTestFullRestoredWidgetFromRestoreId(
+        restore_window_id,
+        /*is_taskless_arc_app=*/false);
   }
 
   // Mocks creating a widget based on the window info in
@@ -172,13 +146,52 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
     full_restore::WindowInfo* info =
         fake_full_restore_file_[restore_window_id].info.get();
-    const gfx::Rect bounds = info->current_bounds.value_or(gfx::Rect(200, 200));
-    const int32_t activation_index = info->activation_index.value_or(-1);
-    const auto window_state_type =
-        info->window_state_type.value_or(chromeos::WindowStateType::kNormal);
-    return CreateTestFullRestoredWidget(
-        activation_index, bounds, Shell::GetPrimaryRootWindow(),
-        restore_window_id, window_state_type, is_taskless_arc_app);
+    DCHECK(info);
+    DCHECK(info->current_bounds);
+    DCHECK(info->window_state_type);
+    DCHECK(info->activation_index);
+    DCHECK(info->display_id);
+
+    full_restore::WindowInfo* info_clone = info->Clone();
+
+    aura::Window* context = Shell::GetRootWindowForDisplayId(*info->display_id);
+    // The display may have been disconnected.
+    if (!context)
+      context = Shell::GetPrimaryRootWindow();
+    DCHECK(context->IsRootWindow());
+
+    // Full restore widgets are inactive when created as we do not want to take
+    // activation from a possible activated window, and we want to stack them in
+    // a certain order.
+    TestWidgetBuilder widget_builder;
+    widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
+        .SetBounds(*info->current_bounds)
+        .SetShow(false)
+        .SetContext(context)
+        .SetShowState(chromeos::ToWindowShowState(*info->window_state_type))
+        .SetWindowProperty(full_restore::kWindowInfoKey, info_clone)
+        .SetWindowProperty(full_restore::kActivationIndexKey,
+                           new int32_t(*info->activation_index))
+        .SetWindowProperty(full_restore::kLaunchedFromFullRestoreKey, true)
+        .SetWindowProperty(full_restore::kRestoreWindowIdKey,
+                           restore_window_id);
+
+    // Set some additional properties if we are mocking a ARC window that is
+    // created without a task.
+    if (is_taskless_arc_app) {
+      widget_builder
+          .SetWindowProperty(full_restore::kParentToHiddenContainerKey, true)
+          .SetWindowProperty(aura::client::kAppType,
+                             static_cast<int>(AppType::ARC_APP));
+    }
+
+    views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
+    SetResizable(widget);
+    if (!is_taskless_arc_app)
+      FullRestoreController::Get()->OnWidgetInitialized(widget);
+    if (info->window_state_type != chromeos::WindowStateType::kMinimized)
+      widget->Show();
+    return widget;
   }
 
   views::Widget* CreateTestFullRestoredWidgetFromRestoreId(
@@ -249,9 +262,6 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
     AshTestBase::SetUp();
 
-    FullRestoreController::Get()->SetReadWindowCallbackForTesting(
-        base::BindRepeating(&FullRestoreControllerTest::OnGetWindowInfo,
-                            base::Unretained(this)));
     FullRestoreController::Get()->SetSaveWindowCallbackForTesting(
         base::BindRepeating(&FullRestoreControllerTest::OnSaveWindow,
                             base::Unretained(this)));
@@ -551,6 +561,7 @@ TEST_F(FullRestoreControllerTest, Activation) {
   wm::ActivateWindow(window1.get());
   wm::ActivateWindow(window2.get());
   wm::ActivateWindow(window3.get());
+
   EXPECT_EQ(2, GetActivationIndex(window1.get()));
   EXPECT_EQ(1, GetActivationIndex(window2.get()));
   EXPECT_EQ(0, GetActivationIndex(window3.get()));
@@ -942,6 +953,7 @@ TEST_F(FullRestoreControllerTest, TabletToClamshell) {
   // Check that the values in the fake file can be restored in clamshell mode.
   full_restore::WindowInfo* window_info = GetWindowInfo(window);
   ASSERT_TRUE(window_info);
+  ASSERT_TRUE(window_info->activation_index);
   ASSERT_TRUE(window_info->current_bounds);
   ASSERT_TRUE(window_info->window_state_type);
   EXPECT_EQ(expected_bounds, *window_info->current_bounds);
@@ -952,7 +964,6 @@ TEST_F(FullRestoreControllerTest, TabletToClamshell) {
 
   // Leave tablet mode, and then mock creating the window from full restore
   // file. Test that the state and bounds are as expected in clamshell mode.
-  widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   TabletModeControllerTestApi().LeaveTabletMode();
   auto* restored_window =
       CreateTestFullRestoredWidgetFromRestoreId(restore_id)->GetNativeWindow();

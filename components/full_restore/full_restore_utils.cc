@@ -14,6 +14,8 @@
 #include "components/full_restore/window_info.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(FULL_RESTORE), int32_t*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(FULL_RESTORE),
+                                       full_restore::WindowInfo*)
 
 namespace full_restore {
 
@@ -25,6 +27,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppTypeBrowser, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(int32_t, kActivationIndexKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kParentToHiddenContainerKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kLaunchedFromFullRestoreKey, false)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowInfo, kWindowInfoKey, nullptr)
 
 void SaveAppLaunchInfo(const base::FilePath& profile_path,
                        std::unique_ptr<AppLaunchInfo> app_launch_info) {

@@ -35,6 +35,8 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
   WindowInfo& operator=(const WindowInfo&) = delete;
   ~WindowInfo();
 
+  WindowInfo* Clone();
+
   aura::Window* window;
 
   // Index in MruWindowTracker to restore window stack. A lower index
