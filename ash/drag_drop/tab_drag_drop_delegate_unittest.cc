@@ -74,7 +74,7 @@ class TabDragDropDelegateTest : public AshTestBase {
     // Create a dummy window and exit overview mode since drags can't be
     // initiated from overview mode.
     dummy_window_ = CreateToplevelTestWindow();
-    ASSERT_TRUE(Shell::Get()->overview_controller()->EndOverview());
+    ASSERT_TRUE(ExitOverview());
   }
 
   void TearDown() override {

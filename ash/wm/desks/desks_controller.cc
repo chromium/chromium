@@ -549,6 +549,7 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
       // overview shutdown animation is complete. See https://crbug.com/1001586.
       const bool immediate_exit = source == DesksSwitchSource::kUserSwitch;
       overview_controller->EndOverview(
+          OverviewEndAction::kDeskActivation,
           immediate_exit ? OverviewEnterExitType::kImmediateExit
                          : OverviewEnterExitType::kNormal);
     }

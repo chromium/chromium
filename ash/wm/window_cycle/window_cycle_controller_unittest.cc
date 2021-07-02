@@ -1360,7 +1360,7 @@ TEST_F(WindowCycleControllerTest,
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 
   // Open an overview session.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(InOverviewSession());
 
   // Open the window cycle list. Scroll right to second item. Overview mode

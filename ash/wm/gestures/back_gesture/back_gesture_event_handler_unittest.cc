@@ -204,7 +204,7 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, GoBackInOverviewMode) {
   WindowState::Get(top_window())->Unminimize();
   ASSERT_FALSE(WindowState::Get(top_window())->IsMinimized());
   auto* shell = Shell::Get();
-  shell->overview_controller()->StartOverview();
+  EnterOverview();
   ASSERT_TRUE(shell->overview_controller()->InOverviewSession());
   GenerateBackSequence();
   // Should trigger go back instead of minimize the window since it is in
@@ -213,9 +213,9 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, GoBackInOverviewMode) {
 
   // Swipe back at overview mode without opened window should still trigger
   // going back.
-  shell->overview_controller()->EndOverview();
+  ExitOverview();
   ResetTopWindow();
-  shell->overview_controller()->StartOverview();
+  EnterOverview();
   GenerateBackSequence();
   EXPECT_EQ(2, target_back_release.accelerator_count());
   EXPECT_TRUE(shell->app_list_controller()->IsHomeScreenVisible());
@@ -376,7 +376,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
 
   // Start overview first and then snap window in splitview to make sure
   // window activation order remains the same.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   split_view_controller->SnapWindow(left_window.get(),

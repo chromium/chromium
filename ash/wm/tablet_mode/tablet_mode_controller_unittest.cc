@@ -617,7 +617,7 @@ TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
   ASSERT_FALSE(IsTabletModeStarted());
 
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->StartOverview());
+  EXPECT_TRUE(EnterOverview());
 
   UpdateDisplay("800x600");
   base::RunLoop().RunUntilIdle();
@@ -1776,7 +1776,7 @@ TEST_F(TabletModeControllerScreenshotTest, FromOverviewNoScreenshot) {
   window2->layer()->GetAnimator()->StopAnimating();
 
   // Enter overview.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   ShellTestApi().WaitForOverviewAnimationState(
       OverviewAnimationState::kEnterAnimationComplete);
 

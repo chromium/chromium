@@ -61350,6 +61350,44 @@ Called by update_net_trust_anchors.py.-->
   <int value="17" label="FlingToCloseTabletTouch"/>
 </enum>
 
+<enum name="OverviewEndAction">
+  <int value="0"
+      label="SplitView related, e.g, both snapped, window activation"/>
+  <int value="1" label="Dragging window from shelf in tablet mode"/>
+  <int value="2" label="Exiting overview to home launcher"/>
+  <int value="3" label="Click or tap outside of the windows in overview"/>
+  <int value="4" label="Window activated in overview"/>
+  <int value="5" label="Last window in overview being removed"/>
+  <int value="6" label="Display added while in overivew"/>
+  <int value="7" label="Pressing shortcut F5"/>
+  <int value="8" label="Pressing key Escape or Back"/>
+  <int value="9" label="Desk activation"/>
+  <int value="10" label="Pressing overview button"/>
+  <int value="11" label="Long pressing overview button in split view mode"/>
+  <int value="12" label="Three fingers swiping down on the trackpad"/>
+  <int value="13" label="Enabled Docked Magnifier"/>
+  <int value="14" label="Switching user happens with multi users login"/>
+  <int value="15" label="Started window cycle"/>
+  <int value="16" label="Opened app list while in clamshell mode"/>
+  <int value="17" label="Shelf alignment changed"/>
+  <int value="18" label="Shutting down"/>
+  <int value="19" label="Exiting overview through dev tools"/>
+  <int value="20" label="Exiting overview in tests"/>
+</enum>
+
+<enum name="OverviewStartAction">
+  <int value="0" label="SplitView related, e.g, one window snapped"/>
+  <int value="1" label="Pressing shortcut F5"/>
+  <int value="2" label="Dragging window from shelf in tablet mode"/>
+  <int value="3" label="Going from home launcher to overview"/>
+  <int value="4" label="Pressing overview button"/>
+  <int value="5" label="Long pressing overview button in split view mode"/>
+  <int value="6" label="Going from Bento bar to overview"/>
+  <int value="7" label="Three fingers swiping up on the trackpad"/>
+  <int value="8" label="Entering overview through dev tools"/>
+  <int value="9" label="Entering overview in tests"/>
+</enum>
+
 <enum name="P2PLookupResult">
   <int value="0" label="Found"/>
   <int value="1" label="Not Found"/>

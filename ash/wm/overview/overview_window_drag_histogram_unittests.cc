@@ -64,7 +64,7 @@ class OverviewWindowDragHistogramTest : public AshTestBase {
   }
 
   gfx::Point EnterOverviewAndGetItemCenterPoint() {
-    Shell::Get()->overview_controller()->StartOverview();
+    EnterOverview();
     return gfx::ToRoundedPoint(
         GetOverviewItemForWindow(window_.get())->target_bounds().CenterPoint());
   }

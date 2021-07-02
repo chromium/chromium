@@ -211,7 +211,7 @@ TEST_F(WmGestureHandlerTest, HorizontalScrollInOverview) {
   // Enter overview mode as if using an accelerator.
   // Entering overview mode with an upwards three-finger scroll gesture would
   // have the same result (allow selection using horizontal scroll).
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(InOverviewSession());
 
   // Scrolls until a window is highlight, ignoring any desks items (if any).
@@ -377,8 +377,7 @@ TEST_F(DesksGestureHandlerTest, NoDeskChangesInLockScreen) {
 TEST_F(WmGestureHandlerTest, ActivateHighlightedDeskWithVerticalScroll) {
   auto* desks_controller = DesksController::Get();
 
-  auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(InOverviewSession());
 
   // Create a new desk (we have two desks now).
@@ -389,7 +388,8 @@ TEST_F(WmGestureHandlerTest, ActivateHighlightedDeskWithVerticalScroll) {
   EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   // Move highlight to the second desk.
-  OverviewSession* overview_session = overview_controller->overview_session();
+  OverviewSession* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
   DeskMiniView* mini_view_1 =
       overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
           ->desks_bar_view()

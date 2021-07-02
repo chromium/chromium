@@ -611,20 +611,20 @@ TEST_F(AppListControllerImplTest,
 // closed.
 TEST_F(AppListControllerImplTest,
        CloseAppListShownFromOverviewAfterTabletExit) {
+  auto* shell = Shell::Get();
+  auto* tablet_mode_controller = shell->tablet_mode_controller();
   // Move to tablet mode and back.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  tablet_mode_controller->SetEnabledForTest(true);
+  tablet_mode_controller->SetEnabledForTest(false);
 
   std::unique_ptr<aura::Window> w(
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
-  OverviewController* const overview_controller =
-      Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
 
   // Press home button - verify overview exits and the app list is shown.
   PressHomeButton();
 
-  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(shell->overview_controller()->InOverviewSession());
   EXPECT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
   GetAppListTestHelper()->CheckVisibility(true);
   ASSERT_TRUE(GetAppListView()->GetWidget());
@@ -911,14 +911,13 @@ TEST_F(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
 TEST_F(AppListControllerImplTest,
        HomeScreenVisibleAfterDisplayUpdateInOverview) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
 
   // Trigger a display configuration change, this simulates screen rotation.
   Shell::Get()->app_list_controller()->OnDisplayConfigurationChanged();
 
   // End overview mode, the home launcher should be visible.
-  overview_controller->EndOverview();
+  ExitOverview();
   ShellTestApi().WaitForOverviewAnimationState(
       OverviewAnimationState::kExitAnimationComplete);
 

@@ -109,7 +109,7 @@ TEST_F(OverviewWindowDragControllerTest, NoDragToCloseUsingMouse) {
   base::RunLoop().RunUntilIdle();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_session = overview_controller->overview_session();
   auto* overview_item =
@@ -144,7 +144,7 @@ TEST_F(OverviewWindowDragControllerTest,
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 
   auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_session = overview_controller->overview_session();
   const auto* overview_grid =
@@ -196,7 +196,7 @@ TEST_F(OverviewWindowDragControllerTest, WindowDestroyedDuringDragging) {
   std::unique_ptr<aura::Window> window =
       CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   auto* overview_session = overview_controller->overview_session();
   auto* overview_item =
@@ -294,7 +294,7 @@ class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
   void StartDraggingAndValidateDesksBarShifted(aura::Window* window) {
     // Enter overview mode, and start dragging the window. Validate that the
     // desks bar widget is shifted down to make room for the indicators.
-    overview_controller()->StartOverview();
+    EnterOverview();
     EXPECT_TRUE(overview_controller()->InOverviewSession());
     auto* overview_item = GetOverviewItemForWindow(window);
     ASSERT_TRUE(overview_item);

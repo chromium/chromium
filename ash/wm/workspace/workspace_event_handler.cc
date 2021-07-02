@@ -143,7 +143,7 @@ void WorkspaceEventHandler::HandleResizeDoubleClick(WindowState* target_state,
         DCHECK_EQ(gfx::Size(), target->delegate()->GetMaximumSize());
         overview_controller->overview_session()
             ->SetWindowListNotAnimatedWhenExiting(target->GetRootWindow());
-        overview_controller->EndOverview();
+        overview_controller->EndOverview(OverviewEndAction::kSplitView);
       }
 
       const WMEvent wm_event(WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE);

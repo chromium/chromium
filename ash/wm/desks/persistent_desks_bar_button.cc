@@ -114,7 +114,8 @@ PersistentDesksBarOverviewButton::PersistentDesksBarOverviewButton()
 PersistentDesksBarOverviewButton::~PersistentDesksBarOverviewButton() = default;
 
 void PersistentDesksBarOverviewButton::OnButtonPressed() {
-  Shell::Get()->overview_controller()->StartOverview();
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kBentoBar);
 }
 
 }  // namespace ash

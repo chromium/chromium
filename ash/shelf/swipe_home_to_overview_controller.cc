@@ -196,7 +196,8 @@ void SwipeHomeToOverviewController::FinalizeDragAndShowOverview() {
   // NOTE: No need to update the home launcher opacity and scale here - the
   // AppListControllerImpl will update the home launcher state when it detects
   // that the overview is starting.
-  Shell::Get()->overview_controller()->StartOverview();
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kExitHomeLauncher);
 
   // No need to keep blur disabled for the drag - note that blur might remain
   // disabled at this point due to the started overview transition (which

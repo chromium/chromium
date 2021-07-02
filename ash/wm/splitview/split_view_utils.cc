@@ -385,9 +385,9 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
   SplitViewController::State state = split_view_controller->state();
   if (state == SplitViewController::State::kLeftSnapped ||
       state == SplitViewController::State::kRightSnapped) {
-    overview_controller->StartOverview();
+    overview_controller->StartOverview(OverviewStartAction::kSplitView);
   } else {
-    overview_controller->EndOverview();
+    overview_controller->EndOverview(OverviewEndAction::kSplitView);
   }
 }
 

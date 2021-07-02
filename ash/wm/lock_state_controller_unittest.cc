@@ -729,9 +729,8 @@ TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
                              ->wallpaper_widget_controller()
                              ->wallpaper_view();
 
-  auto* overview_controller = Shell::Get()->overview_controller();
   // Enter Overview and verify wallpaper properties.
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
 
   // Start lock animation and verify wallpaper properties.

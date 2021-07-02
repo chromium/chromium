@@ -406,12 +406,12 @@ TEST_F(AshMessagePopupCollectionTest, BaselineInOverview) {
   EXPECT_NE(baseline_with_visible_shelf, baseline_with_hidden_shelf);
 
   auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const int baseline_in_overview = popup_collection()->GetBaseline();
   EXPECT_EQ(baseline_in_overview, baseline_with_visible_shelf);
 
-  overview_controller->EndOverview();
+  ExitOverview();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   const int baseline_no_overview = popup_collection()->GetBaseline();
   EXPECT_EQ(baseline_no_overview, baseline_with_hidden_shelf);

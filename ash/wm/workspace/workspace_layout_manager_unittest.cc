@@ -1379,13 +1379,13 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropTest) {
   }
 
   // Toggle overview.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   base::RunLoop().RunUntilIdle();
   backdrop = test_helper.GetBackdropWindow();
   ASSERT_TRUE(backdrop);
   EXPECT_FALSE(backdrop->IsVisible());
 
-  Shell::Get()->overview_controller()->EndOverview();
+  ExitOverview();
   base::RunLoop().RunUntilIdle();
   backdrop = test_helper.GetBackdropWindow();
   ASSERT_TRUE(backdrop);
@@ -1423,12 +1423,12 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropTest) {
   }
 
   // Toggle overview with the delegate.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   base::RunLoop().RunUntilIdle();
   backdrop = test_helper.GetBackdropWindow();
   ASSERT_TRUE(backdrop);
   EXPECT_FALSE(backdrop->IsVisible());
-  Shell::Get()->overview_controller()->EndOverview();
+  ExitOverview();
   base::RunLoop().RunUntilIdle();
   backdrop = test_helper.GetBackdropWindow();
   ASSERT_TRUE(backdrop);

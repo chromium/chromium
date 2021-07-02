@@ -790,7 +790,7 @@ TEST_F(DragHandleContextualNudgeTest, OverviewCancelsNudgeShow) {
   DragHandle* const drag_handle = shelf_widget->GetDragHandle();
 
   ASSERT_TRUE(drag_handle->has_show_drag_handle_timer_for_testing());
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   ASSERT_FALSE(drag_handle->has_show_drag_handle_timer_for_testing());
 }
 
@@ -812,7 +812,7 @@ TEST_F(DragHandleContextualNudgeTest, DragHandleTapShowNudgeInOverview) {
   TabletModeControllerTestApi().LeaveTabletMode();
   TabletModeControllerTestApi().EnterTabletMode();
 
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   ASSERT_FALSE(drag_handle->has_show_drag_handle_timer_for_testing());
 
   GetEventGenerator()->GestureTapAt(
@@ -844,8 +844,7 @@ TEST_F(DragHandleContextualNudgeTest,
 
   // Go into split view mode by first going into overview, and then snapping
   // the open window on one side.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   SplitViewController* split_view_controller =
       SplitViewController::Get(shelf_widget->GetNativeWindow());
   split_view_controller->SnapWindow(window.get(), SplitViewController::LEFT);
@@ -875,8 +874,7 @@ TEST_F(DragHandleContextualNudgeTest, DragHandleNudgeHiddenOnSplitScreen) {
 
   // Go into split view mode by first going into overview, and then snapping
   // the open window on one side.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   SplitViewController* split_view_controller =
       SplitViewController::Get(shelf_widget->GetNativeWindow());
   split_view_controller->SnapWindow(window.get(), SplitViewController::LEFT);

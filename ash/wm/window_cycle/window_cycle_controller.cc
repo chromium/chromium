@@ -236,7 +236,8 @@ void WindowCycleController::StartCycling() {
   shell->event_rewriter_controller()->SetAltDownRemappingEnabled(false);
 
   // End overview as the window cycle list takes over window switching.
-  shell->overview_controller()->EndOverview();
+  shell->overview_controller()->EndOverview(
+      OverviewEndAction::kStartedWindowCycle);
 
   WindowCycleController::WindowList window_list = CreateWindowList();
   SaveCurrentActiveDeskAndWindow(window_list);

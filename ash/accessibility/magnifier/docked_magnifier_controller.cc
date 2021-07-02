@@ -550,7 +550,8 @@ void DockedMagnifierController::OnEnabledPrefChanged() {
       split_view_controller->EndSplitView(
           SplitViewController::EndReason::kNormal);
     }
-    overview_controller->EndOverview();
+    overview_controller->EndOverview(
+        OverviewEndAction::kEnabledDockedMagnifier);
   }
 
   if (new_enabled) {

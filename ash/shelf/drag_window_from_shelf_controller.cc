@@ -189,7 +189,9 @@ void DragWindowFromShelfController::Drag(const gfx::PointF& location_in_screen,
   if (std::abs(scroll_y) <= kOpenOverviewThreshold &&
       !overview_controller->InOverviewSession() &&
       windows_hider_->WindowsMinimized()) {
-    overview_controller->StartOverview(OverviewEnterExitType::kImmediateEnter);
+    overview_controller->StartOverview(
+        OverviewStartAction::kDragWindowFromShelf,
+        OverviewEnterExitType::kImmediateEnter);
     OnWindowDragStartedInOverview();
   }
 
@@ -257,8 +259,10 @@ absl::optional<ShelfWindowDragResult> DragWindowFromShelfController::EndDrag(
   window_drag_result_ = absl::nullopt;
   if (ShouldGoToHomeScreen(location_in_screen, velocity_y)) {
     DCHECK(!in_splitview);
-    if (in_overview)
-      overview_controller->EndOverview(OverviewEnterExitType::kFadeOutExit);
+    if (in_overview) {
+      overview_controller->EndOverview(OverviewEndAction::kDragWindowFromShelf,
+                                       OverviewEnterExitType::kFadeOutExit);
+    }
     window_drag_result_ = ShelfWindowDragResult::kGoToHomeScreen;
   } else if (ShouldRestoreToOriginalBounds(location_in_screen, velocity_y)) {
     window_drag_result_ = ShelfWindowDragResult::kRestoreToOriginalBounds;
@@ -299,8 +303,10 @@ void DragWindowFromShelfController::CancelDrag() {
 
   // End overview if it was opened during dragging.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  if (overview_controller->InOverviewSession())
-    overview_controller->EndOverview(OverviewEnterExitType::kImmediateExit);
+  if (overview_controller->InOverviewSession()) {
+    overview_controller->EndOverview(OverviewEndAction::kDragWindowFromShelf,
+                                     OverviewEnterExitType::kImmediateExit);
+  }
   ReshowHiddenWindowsOnDragEnd();
 
   window_drag_result_ = ShelfWindowDragResult::kDragCanceled;
@@ -719,6 +725,7 @@ void DragWindowFromShelfController::OnWindowRestoredToOrignalBounds(
   base::AutoReset<bool> auto_reset(&during_window_restoration_callback_, true);
   if (end_overview) {
     Shell::Get()->overview_controller()->EndOverview(
+        OverviewEndAction::kDragWindowFromShelf,
         OverviewEnterExitType::kImmediateExit);
   }
   ReshowHiddenWindowsOnDragEnd();

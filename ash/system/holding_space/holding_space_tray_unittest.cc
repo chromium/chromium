@@ -747,7 +747,7 @@ TEST_F(
 
   // Transition to overview, the shelf is expected to remain in home screen
   // style state.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   ShellTestApi().WaitForOverviewAnimationState(
       OverviewAnimationState::kEnterAnimationComplete);
 

@@ -953,7 +953,7 @@ void OverviewGrid::OnSplitViewStateChanged(
       (split_view_controller->InClamshellSplitViewMode() &&
        overview_session_->IsEmpty())) {
     overview_session_->RestoreWindowActivation(false);
-    overview_controller->EndOverview();
+    overview_controller->EndOverview(OverviewEndAction::kSplitView);
     return;
   }
 

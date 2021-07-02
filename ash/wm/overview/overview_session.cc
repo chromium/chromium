@@ -76,8 +76,8 @@ constexpr int kKeyboardHoldScrollingDp = 15;
 
 // Tries to end overview. Returns true if overview is successfully ended, or
 // just was not active in the first place.
-bool EndOverview() {
-  return Shell::Get()->overview_controller()->EndOverview();
+bool EndOverview(OverviewEndAction action) {
+  return Shell::Get()->overview_controller()->EndOverview(action);
 }
 
 // A self-deleting window state observer that runs the given callback when its
@@ -333,7 +333,7 @@ void OverviewSession::OnGridEmpty() {
           ->InTabletSplitViewMode()) {
     UpdateNoWindowsWidget();
   } else {
-    EndOverview();
+    EndOverview(OverviewEndAction::kLastWindowRemoved);
   }
 }
 
@@ -737,7 +737,7 @@ void OverviewSession::OnWindowActivating(
     // Cancel overview session and do not restore activation when active window
     // is set to nullptr. This happens when removing a display.
     RestoreWindowActivation(false);
-    EndOverview();
+    EndOverview(OverviewEndAction::kWindowActivating);
     return;
   }
 
@@ -769,7 +769,7 @@ void OverviewSession::OnWindowActivating(
   if (gained_active == Shell::Get()->app_list_controller()->GetWindow() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     RestoreWindowActivation(false);
-    EndOverview();
+    EndOverview(OverviewEndAction::kAppListActivatedInClamshell);
     return;
   }
 
@@ -808,7 +808,7 @@ void OverviewSession::OnWindowActivating(
 
   // Don't restore window activation on exit if a window was just activated.
   RestoreWindowActivation(false);
-  EndOverview();
+  EndOverview(OverviewEndAction::kWindowActivating);
 }
 
 aura::Window* OverviewSession::GetOverviewFocusWindow() {
@@ -927,10 +927,10 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 }
 
 void OverviewSession::OnDisplayAdded(const display::Display& display) {
-  if (EndOverview())
+  if (EndOverview(OverviewEndAction::kDisplayAdded))
     return;
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->EndSplitView();
-  EndOverview();
+  EndOverview(OverviewEndAction::kDisplayAdded);
 }
 
 void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
@@ -1008,7 +1008,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   switch (key_code) {
     case ui::VKEY_BROWSER_BACK:
     case ui::VKEY_ESCAPE:
-      EndOverview();
+      EndOverview(OverviewEndAction::kKeyEscapeOrBack);
       break;
     case ui::VKEY_UP:
       ++num_key_presses_;
@@ -1068,7 +1068,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
 
 void OverviewSession::OnShellDestroying() {
   // Cancel selection will call |Shutdown()|, which will remove observer.
-  EndOverview();
+  EndOverview(OverviewEndAction::kShuttingDown);
 }
 
 void OverviewSession::OnShelfAlignmentChanged(aura::Window* root_window,
@@ -1097,7 +1097,7 @@ void OverviewSession::OnShelfAlignmentChanged(aura::Window* root_window,
   // doesn't get updated anyways (see https://crbug.com/834400). In this case,
   // even updating the grid bounds won't make any difference, so we simply exit
   // overview.
-  EndOverview();
+  EndOverview(OverviewEndAction::kShelfAlignmentChanged);
 }
 
 void OverviewSession::OnSplitViewStateChanged(

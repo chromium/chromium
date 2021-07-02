@@ -1458,7 +1458,7 @@ TEST_F(ScrollableShelfViewWithAppScalingTest,
   // Pin an app icon then enter the overview mode. Verify that app scaling is
   // turned on.
   const ShelfID shelf_id = AddAppShortcut();
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   WaitForOverviewAnimation(/*enter=*/true);
   EXPECT_EQ(HotseatDensity::kSemiDense,
             hotseat_widget->target_hotseat_density());
@@ -1470,7 +1470,7 @@ TEST_F(ScrollableShelfViewWithAppScalingTest,
   EXPECT_EQ(HotseatDensity::kNormal, hotseat_widget->target_hotseat_density());
 
   // Exit overview mode. Verify the hotseat density.
-  Shell::Get()->overview_controller()->EndOverview();
+  ExitOverview();
   WaitForOverviewAnimation(/*enter=*/false);
   EXPECT_EQ(HotseatDensity::kNormal, hotseat_widget->target_hotseat_density());
 }

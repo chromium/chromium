@@ -827,8 +827,10 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
     // If overview session is active (e.g. on one side of the split view), end
     // it immediately, to prevent overview UI being visible while transitioning
     // to home screen.
-    if (overview_controller->InOverviewSession())
-      overview_controller->EndOverview(OverviewEnterExitType::kImmediateExit);
+    if (overview_controller->InOverviewSession()) {
+      overview_controller->EndOverview(OverviewEndAction::kEnterHomeLauncher,
+                                       OverviewEnterExitType::kImmediateExit);
+    }
 
     // End split view mode.
     split_view_controller->EndSplitView(
@@ -838,7 +840,8 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
   // If overview is active (if overview was active in split view, it exited by
   // this point), just fade it out to home screen.
   if (overview_controller->InOverviewSession()) {
-    overview_controller->EndOverview(OverviewEnterExitType::kFadeOutExit);
+    overview_controller->EndOverview(OverviewEndAction::kEnterHomeLauncher,
+                                     OverviewEnterExitType::kFadeOutExit);
     return true;
   }
 

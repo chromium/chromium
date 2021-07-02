@@ -667,7 +667,7 @@ TEST_F(MultiWindowResizeControllerTest, HiddenInOverview) {
   EXPECT_TRUE(IsShowing());
 
   // Tests that after starting overview, the widget is hidden.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_FALSE(HasPendingShow());
   EXPECT_FALSE(IsShowing());
 }

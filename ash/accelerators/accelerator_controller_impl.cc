@@ -912,9 +912,9 @@ void HandleToggleOverview() {
   base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   if (overview_controller->InOverviewSession())
-    overview_controller->EndOverview();
+    overview_controller->EndOverview(OverviewEndAction::kAccelerator);
   else
-    overview_controller->StartOverview();
+    overview_controller->StartOverview(OverviewStartAction::kAccelerator);
 }
 
 void HandleToggleUnifiedDesktop() {

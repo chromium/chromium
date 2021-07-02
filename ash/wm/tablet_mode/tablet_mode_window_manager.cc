@@ -207,7 +207,7 @@ void TabletModeWindowManager::Shutdown() {
         overview_controller->overview_session()->IsEmpty()) {
       split_view_controller->EndSplitView(
           SplitViewController::EndReason::kExitTabletMode);
-      overview_controller->EndOverview();
+      overview_controller->EndOverview(OverviewEndAction::kSplitView);
     }
   }
 

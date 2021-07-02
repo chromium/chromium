@@ -40,8 +40,9 @@ void OverviewTestApi::SetOverviewMode(
             : OverviewAnimationState::kExitAnimationComplete,
       std::move(done_callback));
 
-  const bool animation_started = start ? overview_controller->StartOverview()
-                                       : overview_controller->EndOverview();
+  const bool animation_started =
+      start ? overview_controller->StartOverview(OverviewStartAction::kTests)
+            : overview_controller->EndOverview(OverviewEndAction::kTests);
 
   if (!animation_started)
     waiter->Cancel();

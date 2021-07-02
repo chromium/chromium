@@ -552,12 +552,11 @@ TEST_F(ShellTest, NoWindowTabFocus) {
   // Confirm that pressing tab when overview mode is open does not go to home
   // button. Tab should be handled by overview mode and not hit the shell event
   // handler.
-  auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   generator->PressKey(ui::VKEY_TAB, ui::EF_NONE);
   generator->ReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
   EXPECT_FALSE(home_button->GetNativeView()->HasFocus());
-  overview_controller->EndOverview();
+  ExitOverview();
 
   // Hit shift tab and expect that focus is on status widget.
   generator->PressKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);

@@ -14,6 +14,7 @@
 #include "ash/wm/desks/persistent_desks_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/metrics/histogram_macros.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -172,6 +173,8 @@ void PersistentDesksBarController::ToggleEnabledState() {
   is_enabled_ = !is_enabled_;
   if (!is_enabled_)
     DestroyBarWidget();
+
+  UMA_HISTOGRAM_BOOLEAN("Ash.Desks.BentoBarEnabled", is_enabled_);
 }
 
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {

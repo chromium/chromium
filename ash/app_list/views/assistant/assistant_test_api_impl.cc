@@ -145,7 +145,8 @@ void AssistantTestApiImpl::SetTabletMode(bool enable) {
 }
 
 void AssistantTestApiImpl::StartOverview() {
-  Shell::Get()->overview_controller()->StartOverview();
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
 }
 
 void AssistantTestApiImpl::SetConsentStatus(

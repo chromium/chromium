@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/test/task_environment.h"
@@ -192,6 +193,12 @@ class AshTestBase : public testing::Test {
   // event.
   void SimulateMouseClickAt(ui::test::EventGenerator* event_generator,
                             const views::View* target_view);
+
+  // Enters/Exits overview mode with the given animation type `type`.
+  bool EnterOverview(
+      OverviewEnterExitType type = OverviewEnterExitType::kNormal);
+  bool ExitOverview(
+      OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
  protected:
   enum UserSessionBlockReason {

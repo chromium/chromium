@@ -137,11 +137,13 @@ void ExitFullscreenModeForTabAndWait(Browser* browser,
 }
 
 void StartOverview() {
-  ash::Shell::Get()->overview_controller()->StartOverview();
+  ash::Shell::Get()->overview_controller()->StartOverview(
+      ash::OverviewStartAction::kTests);
 }
 
 void EndOverview() {
-  ash::Shell::Get()->overview_controller()->EndOverview();
+  ash::Shell::Get()->overview_controller()->EndOverview(
+      ash::OverviewEndAction::kTests);
 }
 
 bool IsShelfVisible() {

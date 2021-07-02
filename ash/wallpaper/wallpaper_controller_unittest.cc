@@ -2187,7 +2187,7 @@ TEST_F(WallpaperControllerTest, LockDuringOverview) {
       /*preview_mode=*/false, /*always_on_top=*/false);
   TestWallpaperControllerObserver observer(controller_);
 
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
 
   EXPECT_FALSE(controller_->IsWallpaperBlurredForLockState());
   EXPECT_EQ(0, observer.blur_changed_count());
@@ -2370,7 +2370,7 @@ TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnOverviewStart) {
   // the user wallpaper info remains unchanged, and enters overview mode
   // properly.
   ClearWallpaperCount();
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());

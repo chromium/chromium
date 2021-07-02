@@ -253,6 +253,7 @@ void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
     // ending desk screenshot. This makes sure that the ending desk
     // screenshot will only show the windows in that desk, not overview stuff.
     Shell::Get()->overview_controller()->EndOverview(
+        OverviewEndAction::kDeskActivation,
         OverviewEnterExitType::kImmediateExit);
   }
   SplitViewController* split_view_controller =

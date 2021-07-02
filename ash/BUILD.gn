@@ -1627,6 +1627,8 @@ component("ash") {
     "wm/overview/overview_item.h",
     "wm/overview/overview_item_view.cc",
     "wm/overview/overview_item_view.h",
+    "wm/overview/overview_metrics.cc",
+    "wm/overview/overview_metrics.h",
     "wm/overview/overview_observer.h",
     "wm/overview/overview_session.cc",
     "wm/overview/overview_session.h",

@@ -120,14 +120,15 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
     if (overview_controller->AcceptSelection())
       return true;
-    overview_controller->EndOverview();
+    overview_controller->EndOverview(OverviewEndAction::k3FingerVerticalScroll);
   } else {
     auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
     if (window_cycle_controller->IsCycling())
       window_cycle_controller->CancelCycling();
 
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
-    overview_controller->StartOverview();
+    overview_controller->StartOverview(
+        OverviewStartAction::k3FingerVerticalScroll);
   }
 
   return true;

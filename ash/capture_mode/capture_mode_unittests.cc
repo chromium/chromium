@@ -1719,7 +1719,7 @@ TEST_F(CaptureModeTest, WindowChangesDuringCountdown) {
   // Activation changes (such as opening overview) should not terminate the
   // countdown.
   start_countdown();
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(controller->IsActive());
   EXPECT_FALSE(controller->is_recording_in_progress());
 

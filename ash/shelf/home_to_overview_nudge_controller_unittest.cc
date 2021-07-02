@@ -256,13 +256,13 @@ TEST_F(HomeToOverviewNudgeControllerTest, ShownOnHomeScreen) {
   EXPECT_FALSE(GetNudgeController()->HasHideTimerForTesting());
 
   // Transitioning to overview should hide the nudge.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
 
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
 
   // Ending overview, and transitioning to the home screen again should not show
   // the nudge.
-  Shell::Get()->overview_controller()->EndOverview();
+  ExitOverview();
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
   EXPECT_EQ(gfx::Transform(),
             GetHotseatWidget()->GetLayerForNudgeAnimation()->transform());

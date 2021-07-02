@@ -1295,7 +1295,7 @@ TEST_F(ClientControlledShellSurfaceDragTest, DragWindowFromTopInTabletMode) {
 
   // Drag the window long enough (pass one fourth of the screen vertical
   // height) to snap the window to splitscreen.
-  shell->overview_controller()->EndOverview();
+  shell->overview_controller()->EndOverview(ash::OverviewEndAction::kTests);
   SendGestureEvents(window, gfx::Point(0, 210));
   EXPECT_EQ(ash::WindowState::Get(window)->GetStateType(),
             WindowStateType::kPrimarySnapped);

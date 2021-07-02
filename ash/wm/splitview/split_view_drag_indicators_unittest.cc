@@ -53,9 +53,9 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
   void ToggleOverview() {
     auto* overview_controller = Shell::Get()->overview_controller();
     if (overview_controller->InOverviewSession())
-      overview_controller->EndOverview();
+      ExitOverview();
     else
-      overview_controller->StartOverview();
+      EnterOverview();
 
     if (!overview_controller->InOverviewSession()) {
       overview_session_ = nullptr;

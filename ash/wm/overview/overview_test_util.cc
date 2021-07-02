@@ -68,9 +68,9 @@ const aura::Window* GetOverviewHighlightedWindow() {
 void ToggleOverview(OverviewEnterExitType type) {
   auto* overview_controller = Shell::Get()->overview_controller();
   if (overview_controller->InOverviewSession())
-    overview_controller->EndOverview(type);
+    overview_controller->EndOverview(OverviewEndAction::kTests, type);
   else
-    overview_controller->StartOverview(type);
+    overview_controller->StartOverview(OverviewStartAction::kTests, type);
 }
 
 void WaitForOverviewEnterAnimation() {

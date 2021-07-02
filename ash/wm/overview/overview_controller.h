@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/delayed_animation_observer.h"
 #include "ash/wm/overview/overview_delegate.h"
+#include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
@@ -33,12 +34,15 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   OverviewController();
   ~OverviewController() override;
 
-  // Starts/Ends overview with |type|. Returns true if enter or exit overview
-  // successful. Depending on |type| the enter/exit animation will look
-  // different.
+  // Starts/Ends overview with `type`. Returns true if enter or exit overview
+  // successful. Depending on `type` the enter/exit animation will look
+  // different. `action` is used by UMA to record the reasons that trigger
+  // overview starts or ends. E.g, pressing the overview button.
   bool StartOverview(
+      OverviewStartAction action,
       OverviewEnterExitType type = OverviewEnterExitType::kNormal);
-  bool EndOverview(OverviewEnterExitType type = OverviewEnterExitType::kNormal);
+  bool EndOverview(OverviewEndAction action,
+                   OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
   // Returns true if overview mode is active.
   bool InOverviewSession() const;

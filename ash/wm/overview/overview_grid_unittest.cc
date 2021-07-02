@@ -279,8 +279,7 @@ TEST_F(OverviewGridTest, SnappedWindow) {
   // We cannot create a grid object like in the other tests because creating a
   // grid calls |GetGridBoundsInScreen| with split view state both snapped which
   // is an unnatural state.
-  Shell::Get()->overview_controller()->StartOverview(
-      OverviewEnterExitType::kNormal);
+  EnterOverview();
 
   // Tests that |window3| is not animated even though its bounds are larger than
   // |window2| because it is fully occluded by |window1| + |window2| and the

@@ -1551,13 +1551,12 @@ TEST_F(TabletModeWindowManagerTest, DontChangeBoundsForMinimizedWindow) {
   EXPECT_TRUE(window_state->IsMinimized());
   EXPECT_EQ(window->bounds(), rect);
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_EQ(window->bounds(), rect);
 
   // Exit overview mode will update all windows' bounds. However, if the window
   // is minimized, the bounds will not be updated.
-  overview_controller->EndOverview();
+  ExitOverview();
   EXPECT_EQ(window->bounds(), rect);
 }
 
@@ -1623,7 +1622,7 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
   // 1. Clamshell -> tablet. If overview is active, it should still be kept
   // active after transition.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  EXPECT_TRUE(overview_controller->StartOverview());
+  EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   EXPECT_TRUE(manager);
@@ -1636,7 +1635,7 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
 
   // 3. Clamshell -> tablet. If overview is inactive, it should still be kept
   // inactive after transition. All windows will be maximized.
-  EXPECT_TRUE(overview_controller->EndOverview());
+  EXPECT_TRUE(ExitOverview());
   EXPECT_FALSE(overview_controller->InOverviewSession());
   CreateTabletModeWindowManager();
   EXPECT_FALSE(overview_controller->InOverviewSession());
@@ -1698,7 +1697,7 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
 
   // 10. Tablet -> Clamshell. If overview and splitview are both active, after
   // transition, they will remain both active.
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   DestroyTabletModeWindowManager();
@@ -1777,7 +1776,7 @@ TEST_F(TabletModeWindowManagerTest, HomeLauncherVisibilityTest) {
   // Clamshell -> Tablet mode transition. If overview is active, it will remain
   // in overview.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  EXPECT_TRUE(overview_controller->StartOverview());
+  EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   EXPECT_TRUE(manager);

@@ -88,13 +88,15 @@ void TestControllerAsh::ClickWindow(const std::string& window_id) {
 void TestControllerAsh::EnterOverviewMode(EnterOverviewModeCallback callback) {
   overview_waiters_.push_back(std::make_unique<OverviewWaiter>(
       /*wait_for_enter=*/true, std::move(callback), this));
-  ash::Shell::Get()->overview_controller()->StartOverview();
+  ash::Shell::Get()->overview_controller()->StartOverview(
+      ash::OverviewStartAction::kTests);
 }
 
 void TestControllerAsh::ExitOverviewMode(ExitOverviewModeCallback callback) {
   overview_waiters_.push_back(std::make_unique<OverviewWaiter>(
       /*wait_for_enter=*/false, std::move(callback), this));
-  ash::Shell::Get()->overview_controller()->EndOverview();
+  ash::Shell::Get()->overview_controller()->EndOverview(
+      ash::OverviewEndAction::kTests);
 }
 
 void TestControllerAsh::EnterTabletMode(EnterTabletModeCallback callback) {

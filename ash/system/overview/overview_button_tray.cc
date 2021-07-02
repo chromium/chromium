@@ -146,9 +146,9 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
                                : absl::make_optional(event.time_stamp());
 
   if (overview_controller->InOverviewSession())
-    overview_controller->EndOverview();
+    overview_controller->EndOverview(OverviewEndAction::kOverviewButton);
   else
-    overview_controller->StartOverview();
+    overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
   Shell::Get()->metrics()->RecordUserMetricsAction(UMA_TRAY_OVERVIEW);
 
   // The return value doesn't matter here. OnOverviewModeStarting() and

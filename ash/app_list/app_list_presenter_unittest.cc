@@ -4211,14 +4211,13 @@ TEST_P(AppListPresenterHomeLauncherTest, LauncherShowsAfterOverviewMode) {
   GetAppListTestHelper()->CheckVisibility(true);
 
   // Enable overview mode.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
 
   // Test that the AppListView is transparent.
   EXPECT_EQ(0.0f, GetAppListView()->GetWidget()->GetLayer()->opacity());
 
   // Disable overview mode.
-  overview_controller->EndOverview();
+  ExitOverview();
 
   // Show the launcher, test that the opacity is restored.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -4263,13 +4262,13 @@ TEST_P(AppListPresenterHomeLauncherTest, OpacityInOverviewMode) {
 
   // Enable overview mode.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   ui::Layer* layer = GetAppListView()->GetWidget()->GetNativeWindow()->layer();
   EXPECT_EQ(0.0f, layer->opacity());
 
   // Disable overview mode.
-  overview_controller->EndOverview();
+  ExitOverview();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_EQ(1.0f, layer->opacity());
 }
@@ -4300,12 +4299,11 @@ TEST_P(AppListPresenterHomeLauncherTest,
        AppListShownAfterWallpaperPreviewAndExitOverviewMode) {
   EnableTabletMode(true);
   wallpaper_test_api_->StartWallpaperPreview();
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_FALSE(IsAppListVisible());
 
   // Disable overview mode.
-  overview_controller->EndOverview();
+  ExitOverview();
   EXPECT_TRUE(IsAppListVisible());
 }
 
@@ -4367,7 +4365,7 @@ TEST_P(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
   GetAppListTestHelper()->CheckVisibility(true);
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   GoHome();
@@ -4387,7 +4385,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   std::unique_ptr<aura::Window> dummy_window(CreateTestWindowInShellWithId(1));
 
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);

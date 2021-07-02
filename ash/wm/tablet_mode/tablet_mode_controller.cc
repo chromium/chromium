@@ -1141,7 +1141,8 @@ void TabletModeController::FinishInitTabletMode() {
       SplitViewController::Get(Shell::GetPrimaryRootWindow())->state();
   if (state == SplitViewController::State::kLeftSnapped ||
       state == SplitViewController::State::kRightSnapped) {
-    Shell::Get()->overview_controller()->StartOverview();
+    Shell::Get()->overview_controller()->StartOverview(
+        OverviewStartAction::kSplitView);
   }
 
   UpdateInternalInputDevicesEventBlocker();

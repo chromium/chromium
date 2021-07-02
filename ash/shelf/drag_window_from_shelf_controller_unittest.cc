@@ -280,7 +280,7 @@ TEST_F(DragWindowFromShelfControllerTest, MayOrMayNotReShowHiddenWindows) {
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
       window1.get()));
   EXPECT_FALSE(window2->IsVisible());
-  overview_controller->EndOverview();
+  ExitOverview();
 
   // If the dragged window is snapped in splitview, while the other windows are
   // showing in overview, do not reshow the hidden windows.
@@ -518,7 +518,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
-  overview_controller->EndOverview();
+  ExitOverview();
 
   // If the window is flung with a small velocity:
   StartDrag(window1.get(), shelf_bounds.left_center());
@@ -548,7 +548,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
-  overview_controller->EndOverview();
+  ExitOverview();
 }
 
 // Test wallpaper should be blurred as in overview, even though overview might
