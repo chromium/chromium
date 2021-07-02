@@ -301,7 +301,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                         TabUiColorProvider.getMiniThumbnailPlaceHolderColor(context, isIncognito));
                 mThumbnailFramePaint.setColor(
                         TabUiColorProvider.getMiniThumbnailFrameColor(context, isIncognito));
-                mTextPaint.setColor(TabUiColorProvider.getTitleTextColor(context, isIncognito));
+                mTextPaint.setColor(
+                        TabUiColorProvider.getTabGroupNumberTextColor(context, isIncognito));
                 mFaviconBackgroundPaint.setColor(
                         TabUiColorProvider.getFaviconBackgroundColor(context, isIncognito));
             }
