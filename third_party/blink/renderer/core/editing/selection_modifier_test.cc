@@ -210,7 +210,8 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     for (Node* node : {a, b, c, d, e, f}) {
       if (node == b || node == f) {
         modifier.Modify(move, direction, granularity);
-        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
+                  modifier.Selection().Base());
       }
       modifier.Modify(move, direction, granularity);
       EXPECT_EQ(Position(node, 1), modifier.Selection().Base());
@@ -233,7 +234,8 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
       EXPECT_EQ(Position(node, 1), modifier.Selection().Base());
       modifier.Modify(move, direction, granularity);
       if (node == f || node == b) {
-        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
+                  modifier.Selection().Base());
         modifier.Modify(move, direction, granularity);
       }
     }
@@ -250,7 +252,8 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     for (Node* node : {a, b, c, d, e, f}) {
       if (node == b || node == f) {
         modifier.Modify(move, direction, granularity);
-        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
+                  modifier.Selection().Base());
       }
       modifier.Modify(move, direction, granularity);
       EXPECT_EQ(Position(node, skip_space ? 2 : 1),
@@ -274,7 +277,8 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
       EXPECT_EQ(Position(node, 2), modifier.Selection().Base());
       modifier.Modify(move, direction, granularity);
       if (node == f || node == b) {
-        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
+                  modifier.Selection().Base());
         modifier.Modify(move, direction, granularity);
       }
     }
@@ -292,7 +296,9 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     for (int i = 0; i <= 3; ++i) {
       SelectionModifier modifier(GetFrame(), makeSelection(Position(a, i)));
       for (Node* node : {a, b, c, d, e, f}) {
-        EXPECT_EQ(Position(node, i), modifier.Selection().Base());
+        EXPECT_EQ(i == 0 && node == b ? Position::BeforeNode(*node)
+                                      : Position(node, i),
+                  modifier.Selection().Base());
         modifier.Modify(move, direction, granularity);
       }
       EXPECT_EQ(Position(f, 3), modifier.Selection().Base());
@@ -305,7 +311,9 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     for (int i = 0; i <= 3; ++i) {
       SelectionModifier modifier(GetFrame(), makeSelection(Position(f, i)));
       for (Node* node : {f, e, d, c, b, a}) {
-        EXPECT_EQ(Position(node, i), modifier.Selection().Base());
+        EXPECT_EQ(i == 0 && node == b ? Position::BeforeNode(*node)
+                                      : Position(node, i),
+                  modifier.Selection().Base());
         modifier.Modify(move, direction, granularity);
       }
       EXPECT_EQ(Position(a, 0), modifier.Selection().Base());

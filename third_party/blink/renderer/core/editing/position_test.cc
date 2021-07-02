@@ -275,4 +275,29 @@ TEST_F(PositionTest, LastPositionInShadowHost) {
   EXPECT_EQ(flat, ToPositionInFlatTree(dom));
 }
 
+TEST_F(PositionTest, ComparePositionsAcrossShadowBoundary) {
+  SetBodyContent("<p id=host>foo</p>");
+  ShadowRoot* shadow_root = SetShadowContent("<div>bar</div>", "host");
+  Element* body = GetDocument().body();
+  Element* host = GetDocument().getElementById("host");
+  Node* child = shadow_root->firstChild();
+  Node* grandchild = child->firstChild();
+  std::array<Node*, 4> nodes = {body, host, child, grandchild};
+  unsigned size = nodes.size();
+  for (unsigned i = 0; i < size; ++i) {
+    for (unsigned j = 0; j < i; ++j) {
+      EXPECT_LT(Position(nodes[j], 0), Position(nodes[i], 0));
+      EXPECT_LT(PositionInFlatTree(nodes[j], 0),
+                PositionInFlatTree(nodes[i], 0));
+    }
+    EXPECT_EQ(Position(nodes[i], 0), Position(nodes[i], 0));
+    EXPECT_EQ(PositionInFlatTree(nodes[i], 0), PositionInFlatTree(nodes[i], 0));
+    for (unsigned j = i + 1; j < size; ++j) {
+      EXPECT_GT(Position(nodes[j], 0), Position(nodes[i], 0));
+      EXPECT_GT(PositionInFlatTree(nodes[j], 0),
+                PositionInFlatTree(nodes[i], 0));
+    }
+  }
+}
+
 }  // namespace blink

@@ -300,9 +300,9 @@ int16_t ComparePositions(const Position& a, const Position& b) {
   int16_t bias = 0;
   if (node_a == node_b) {
     if (has_descendent_a)
-      bias = -1;
-    else if (has_descendent_b)
       bias = 1;
+    else if (has_descendent_b)
+      bias = -1;
   }
 
   int16_t result =
