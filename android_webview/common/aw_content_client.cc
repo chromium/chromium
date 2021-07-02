@@ -46,7 +46,7 @@ std::u16string AwContentClient::GetLocalizedString(int message_id) {
 
 base::StringPiece AwContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   // TODO(boliu): Used only by WebKit, so only bundle those resources for
   // Android WebView.
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

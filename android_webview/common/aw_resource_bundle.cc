@@ -47,7 +47,7 @@ void InitResourceBundleRendererSide() {
   ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(base::File(pak_fd),
                                                           pak_region);
 
-  std::pair<int, ui::ScaleFactor> extra_paks[] = {
+  std::pair<int, ui::ResourceScaleFactor> extra_paks[] = {
       {kAndroidWebViewMainPakDescriptor, ui::SCALE_FACTOR_NONE},
       {kAndroidWebView100PercentPakDescriptor, ui::SCALE_FACTOR_100P}};
 
