@@ -63,7 +63,7 @@ bool AreWebAppsUserInstallable(Profile* profile) {
     return false;
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
-         !profile->IsEphemeralGuestProfile() && !profile->IsOffTheRecord();
+         !profile->IsOffTheRecord();
 }
 
 content::BrowserContext* GetBrowserContextForWebApps(
@@ -82,8 +82,7 @@ content::BrowserContext* GetBrowserContextForWebAppMetrics(
   const bool is_web_app_metrics_enabled =
       site_engagement::SiteEngagementService::IsEnabled() &&
       AreWebAppsEnabled(original_profile) &&
-      !original_profile->IsGuestSession() &&
-      !original_profile->IsEphemeralGuestProfile();
+      !original_profile->IsGuestSession();
   return is_web_app_metrics_enabled ? original_profile : nullptr;
 }
 

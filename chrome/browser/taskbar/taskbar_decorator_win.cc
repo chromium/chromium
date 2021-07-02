@@ -191,7 +191,7 @@ void DrawTaskbarDecoration(gfx::NativeWindow window, const gfx::Image* image) {
 }
 
 void UpdateTaskbarDecoration(Profile* profile, gfx::NativeWindow window) {
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile() ||
+  if (profile->IsGuestSession() ||
       // Browser process and profile manager may be null in tests.
       (g_browser_process && g_browser_process->profile_manager() &&
        g_browser_process->profile_manager()

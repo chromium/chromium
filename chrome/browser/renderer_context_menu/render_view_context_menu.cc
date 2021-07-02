@@ -2962,9 +2962,6 @@ bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
   if (browser_context_->IsOffTheRecord() || !params_.link_url.is_valid())
     return false;
 
-  if (Profile::FromBrowserContext(browser_context_)->IsEphemeralGuestProfile())
-    return false;
-
   if (!IsURLAllowedInIncognito(params_.link_url, browser_context_))
     return false;
 

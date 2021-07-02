@@ -297,7 +297,7 @@ absl::optional<bool> ChromeWebAuthenticationDelegate::
   // available (behind an additional interstitial) in Incognito mode.
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
+  if (profile->IsGuestSession()) {
     return false;
   }
 

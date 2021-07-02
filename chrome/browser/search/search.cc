@@ -171,7 +171,7 @@ struct NewTabURLDetails {
     // This function may also be called by other off-the-record profiles that
     // can exceptionally open a browser window.
     // See OTRProfileID::AllowsBrowserWindows() for more context.
-    if (profile->IsOffTheRecord() || profile->IsEphemeralGuestProfile())
+    if (profile->IsOffTheRecord())
       return NewTabURLDetails(GURL(), NEW_TAB_URL_INCOGNITO);
 
 #if defined(OS_ANDROID)

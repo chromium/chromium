@@ -17,8 +17,7 @@ SessionService* SessionServiceFactory::GetForProfile(Profile* profile) {
   // For Android we do not store sessions in the SessionService.
   return nullptr;
 #else
-  if (profile->IsOffTheRecord() || profile->IsGuestSession() ||
-      profile->IsEphemeralGuestProfile())
+  if (profile->IsOffTheRecord() || profile->IsGuestSession())
     return nullptr;
 
   return static_cast<SessionService*>(
