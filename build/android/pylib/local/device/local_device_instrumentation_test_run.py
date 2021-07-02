@@ -556,8 +556,6 @@ class LocalDeviceInstrumentationTestRun(
                                   (test[0]['class'], test[0]['method'])
                                   if isinstance(test, list) else '%s_%s' %
                                   (test['class'], test['method']))
-      if self._test_instance.jacoco_coverage_type:
-        coverage_basename += "_" + self._test_instance.jacoco_coverage_type
       extras['coverage'] = 'true'
       coverage_directory = os.path.join(
           device.GetExternalStoragePath(), 'chrome', 'test', 'coverage')

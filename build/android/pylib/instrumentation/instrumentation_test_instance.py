@@ -528,7 +528,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._initializeTestControlAttributes(args)
 
     self._coverage_directory = None
-    self._jacoco_coverage_type = None
     self._initializeTestCoverageAttributes(args)
 
     self._store_tombstones = False
@@ -727,12 +726,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   def _initializeTestCoverageAttributes(self, args):
     self._coverage_directory = args.coverage_dir
-    if ("Batch", "UnitTests") in self._annotations and (
-        "Batch", "UnitTests") not in self._excluded_annotations:
-      self._jacoco_coverage_type = "unit_tests_only"
-    elif ("Batch", "UnitTests") not in self._annotations and (
-        "Batch", "UnitTests") in self._excluded_annotations:
-      self._jacoco_coverage_type = "unit_tests_excluded"
 
   def _initializeLogAttributes(self, args):
     self._enable_java_deobfuscation = args.enable_java_deobfuscation
@@ -813,10 +806,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def flags(self):
     return self._flags
-
-  @property
-  def jacoco_coverage_type(self):
-    return self._jacoco_coverage_type
 
   @property
   def junit3_runner_class(self):
