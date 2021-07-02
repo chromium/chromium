@@ -32,9 +32,6 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       delegate_(delegate),
       window_id_(manager_->AddWindow(this)),
       event_dispatcher_(this),
-      keyboard_service_(base::ComponentContextForProcess()
-                            ->svc()
-                            ->Connect<fuchsia::ui::input3::Keyboard>()),
       scenic_session_(manager_->GetScenic()),
       safe_presenter_(&scenic_session_),
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
@@ -64,11 +61,19 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
 
   delegate_->OnAcceleratedWidgetAvailable(window_id_);
 
-  keyboard_service_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "input3.Keyboard service disconnected.";
-  });
-  keyboard_client_ = std::make_unique<KeyboardClient>(keyboard_service_.get(),
-                                                      CloneViewRef(), this);
+  if (properties.enable_keyboard) {
+    virtual_keyboard_enabled_ = properties.enable_virtual_keyboard;
+    keyboard_service_ = base::ComponentContextForProcess()
+                            ->svc()
+                            ->Connect<fuchsia::ui::input3::Keyboard>();
+    keyboard_service_.set_error_handler([](zx_status_t status) {
+      ZX_LOG(ERROR, status) << "input3.Keyboard service disconnected.";
+    });
+    keyboard_client_ = std::make_unique<KeyboardClient>(keyboard_service_.get(),
+                                                        CloneViewRef(), this);
+  } else {
+    DCHECK(!properties.enable_virtual_keyboard);
+  }
 }
 
 ScenicWindow::~ScenicWindow() {

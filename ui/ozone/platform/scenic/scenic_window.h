@@ -61,6 +61,8 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
   // Returns a ViewRef associated with this window.
   fuchsia::ui::views::ViewRef CloneViewRef();
 
+  bool virtual_keyboard_enabled() const { return virtual_keyboard_enabled_; }
+
   // PlatformWindow implementation.
   gfx::Rect GetBounds() const override;
   void SetBounds(const gfx::Rect& bounds) override;
@@ -163,6 +165,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
   absl::optional<fuchsia::ui::gfx::ViewProperties> view_properties_;
 
   bool visible_ = false;
+  bool virtual_keyboard_enabled_ = false;
 
   // Tracks if the View was previously hidden due to having a size of zero.
   // If the View was previously zero sized, then we need to re-attach it to

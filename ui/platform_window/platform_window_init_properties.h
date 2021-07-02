@@ -80,6 +80,12 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   fuchsia::ui::views::ViewToken view_token;
   scenic::ViewRefPair view_ref_pair;
   static bool allow_null_view_token_for_test;
+
+  // Specifies whether handling of keypress events from the system is enabled.
+  bool enable_keyboard = false;
+
+  // Specifies whether system virtual keyboard support is enabled.
+  bool enable_virtual_keyboard = false;
 #endif
 
   bool activatable = true;

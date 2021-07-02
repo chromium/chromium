@@ -313,6 +313,31 @@ bool HandleContentDirectoriesParam(fuchsia::web::CreateContextParams* params,
   return true;
 }
 
+bool HandleKeyboardFeatureFlags(fuchsia::web::ContextFeatureFlags features,
+                                base::CommandLine* launch_args) {
+  const bool enable_keyboard =
+      (features & fuchsia::web::ContextFeatureFlags::KEYBOARD) ==
+      fuchsia::web::ContextFeatureFlags::KEYBOARD;
+  const bool enable_virtual_keyboard =
+      (features & fuchsia::web::ContextFeatureFlags::VIRTUAL_KEYBOARD) ==
+      fuchsia::web::ContextFeatureFlags::VIRTUAL_KEYBOARD;
+
+  if (enable_keyboard) {
+    AppendToSwitch(switches::kEnableFeatures, features::kKeyboardInput.name,
+                   launch_args);
+
+    if (enable_virtual_keyboard) {
+      AppendToSwitch(switches::kEnableFeatures, features::kVirtualKeyboard.name,
+                     launch_args);
+    }
+  } else if (enable_virtual_keyboard) {
+    LOG(ERROR) << "VIRTUAL_KEYBOARD feature requires KEYBOARD.";
+    return false;
+  }
+
+  return true;
+}
+
 // Returns false if the config is present but has invalid contents.
 bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
                                        base::CommandLine* command_line) {
@@ -640,6 +665,10 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
   if (!HandleUserAgentParams(&params, &launch_args)) {
     return ZX_ERR_INVALID_ARGS;
   }
+  if (!HandleKeyboardFeatureFlags(features, &launch_args)) {
+    return ZX_ERR_INVALID_ARGS;
+  }
+
   HandleUnsafelyTreatInsecureOriginsAsSecureParam(&params, &launch_args);
   HandleCorsExemptHeadersParam(&params, &launch_args);
 

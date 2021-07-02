@@ -134,8 +134,9 @@ VirtualKeyboardControllerFuchsia::GetFocusedTextType() const {
 void VirtualKeyboardControllerFuchsia::UpdateTextType() {
   // Only send updates if the type has changed.
   auto new_type = GetFocusedTextType();
+  DVLOG(1) << "UpdateTextType() called (current: " << requested_type_
+           << ", new: " << new_type << ")";
   if (new_type != requested_type_) {
-    DVLOG(1) << "SetTextType " << static_cast<int>(new_type);
     controller_service_->SetTextType(new_type);
     requested_type_ = new_type;
   }

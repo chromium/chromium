@@ -435,6 +435,8 @@ test("web_engine_browsertests") {
     "browser/headless_browsertest.cc",
     "browser/input_browsertest.cc",
     "browser/media_browsertest.cc",
+    "browser/mock_virtual_keyboard.cc",
+    "browser/mock_virtual_keyboard.h",
     "browser/navigation_policy_browsertest.cc",
     "browser/permissions_browsertest.cc",
     "browser/theme_manager_browsertest.cc",

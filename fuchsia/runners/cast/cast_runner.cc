@@ -566,7 +566,9 @@ fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
   *params.mutable_features() |=
       fuchsia::web::ContextFeatureFlags::NETWORK |
-      fuchsia::web::ContextFeatureFlags::LEGACYMETRICS;
+      fuchsia::web::ContextFeatureFlags::LEGACYMETRICS |
+      fuchsia::web::ContextFeatureFlags::KEYBOARD |
+      fuchsia::web::ContextFeatureFlags::VIRTUAL_KEYBOARD;
   EnsureSoftwareVideoDecodersAreDisabled(params.mutable_features());
   params.set_remote_debugging_port(CastRunner::kRemoteDebuggingPort);
 

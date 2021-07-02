@@ -20,6 +20,15 @@ constexpr base::Feature kHandleMemoryPressureInRenderer{
 constexpr base::Feature kEnableSoftwareOnlyVideoCodecs{
     "SoftwareOnlyVideoCodecs", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables keyboard input handling via the fuchsia.ui.input3.Keyboard interface.
+constexpr base::Feature kKeyboardInput{"KeyboardInput",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables use of virtual keyboards via the
+// fuchsia.input.virtualkeyboard.Controller interface.
+constexpr base::Feature kVirtualKeyboard{"VirtualKeyboard",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 #endif  // FUCHSIA_ENGINE_FEATURES_H_

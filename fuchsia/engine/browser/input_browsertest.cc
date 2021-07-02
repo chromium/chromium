@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/input/virtualkeyboard/cpp/fidl.h>
 #include <fuchsia/ui/input3/cpp/fidl.h>
 #include <fuchsia/ui/input3/cpp/fidl_test_base.h>
 #include <memory>
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia/base/test/scoped_connection_checker.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/context_impl.h"
+#include "fuchsia/engine/features.h"
 #include "fuchsia/engine/test/frame_for_test.h"
 #include "fuchsia/engine/test/scenic_test_helper.h"
 #include "fuchsia/engine/test/test_data.h"
@@ -75,13 +79,16 @@ void AppendValueList(std::vector<T>* vec, T&& value, Args&&... args) {
 
 class FakeKeyboard : public fuchsia::ui::input3::testing::Keyboard_TestBase {
  public:
-  explicit FakeKeyboard(sys::OutgoingDirectory* additional_services) {
-    keyboard_binding_.emplace(additional_services, this);
-  }
+  explicit FakeKeyboard(sys::OutgoingDirectory* additional_services)
+      : binding_(additional_services, this) {}
   ~FakeKeyboard() override = default;
 
   FakeKeyboard(const FakeKeyboard&) = delete;
   FakeKeyboard& operator=(const FakeKeyboard&) = delete;
+
+  base::ScopedServiceBinding<fuchsia::ui::input3::Keyboard>* binding() {
+    return &binding_;
+  }
 
   // Sends |key_event| to |listener_|;
   void SendKeyEvent(KeyEvent key_event) {
@@ -112,25 +119,33 @@ class FakeKeyboard : public fuchsia::ui::input3::testing::Keyboard_TestBase {
 
  private:
   fuchsia::ui::input3::KeyboardListenerPtr listener_;
-  absl::optional<base::ScopedServiceBinding<fuchsia::ui::input3::Keyboard>>
-      keyboard_binding_;
+  base::ScopedServiceBinding<fuchsia::ui::input3::Keyboard> binding_;
 
   // Counters to make sure key events are acked in order.
   int num_sent_events_ = 0;
   int num_acked_events_ = 0;
 };
 
-class InputTest : public cr_fuchsia::WebEngineBrowserTest {
+class KeyboardInputTest : public cr_fuchsia::WebEngineBrowserTest {
  public:
-  InputTest() {
+  KeyboardInputTest() {
     set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
   }
-  ~InputTest() override = default;
+  ~KeyboardInputTest() override = default;
 
-  InputTest(const InputTest&) = delete;
-  InputTest& operator=(const InputTest&) = delete;
+  KeyboardInputTest(const KeyboardInputTest&) = delete;
+  KeyboardInputTest& operator=(const KeyboardInputTest&) = delete;
 
  protected:
+  virtual void SetUpService() {
+    keyboard_service_.emplace(component_context_->additional_services());
+  }
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kKeyboardInput}, {});
+    cr_fuchsia::WebEngineBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -146,7 +161,9 @@ class InputTest : public cr_fuchsia::WebEngineBrowserTest {
         base::TestComponentContextForProcess::InitialState::kCloneAll);
     component_context_->additional_services()
         ->RemovePublicService<fuchsia::ui::input3::Keyboard>();
-    keyboard_service_.emplace(component_context_->additional_services());
+    SetUpService();
+    virtual_keyboard_checker_.emplace(
+        component_context_->additional_services());
 
     fuchsia::web::NavigationControllerPtr controller;
     frame_for_test_.ptr()->GetNavigationController(controller.NewRequest());
@@ -180,10 +197,14 @@ class InputTest : public cr_fuchsia::WebEngineBrowserTest {
   cr_fuchsia::FrameForTest frame_for_test_;
   cr_fuchsia::ScenicTestHelper scenic_test_helper_;
   absl::optional<FakeKeyboard> keyboard_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  absl::optional<
+      NeverConnectedChecker<fuchsia::input::virtualkeyboard::ControllerCreator>>
+      virtual_keyboard_checker_;
 };
 
 // Check that printable keys are sent and received correctly.
-IN_PROC_BROWSER_TEST_F(InputTest, PrintableKeys) {
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, PrintableKeys) {
   // Send key press events from the Fuchsia keyboard service.
   // Pressing character keys will generate a JavaScript keydown event followed
   // by a keypress event. Releasing any key generates a keyup event.
@@ -205,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(InputTest, PrintableKeys) {
 }
 
 // Check that character virtual keys are sent and received correctly.
-IN_PROC_BROWSER_TEST_F(InputTest, Characters) {
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, Characters) {
   // Send key press events from the Fuchsia keyboard service.
   // Pressing character keys will generate a JavaScript keydown event followed
   // by a keypress event. Releasing any key generates a keyup event.
@@ -221,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(InputTest, Characters) {
 }
 
 // Verify that character events are not affected by active modifiers.
-IN_PROC_BROWSER_TEST_F(InputTest, ShiftCharacter) {
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftCharacter) {
   keyboard_service_->SendKeyEvent(
       CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
@@ -238,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(InputTest, ShiftCharacter) {
 }
 
 // Verifies that codepoints outside the 16-bit Unicode BMP are rejected.
-IN_PROC_BROWSER_TEST_F(InputTest, CharacterInBmp) {
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterInBmp) {
   const wchar_t kSigma = 0x03C3;
   keyboard_service_->SendKeyEvent(
       CreateCharacterEvent(kSigma, KeyEventType::PRESSED));
@@ -252,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(InputTest, CharacterInBmp) {
 
 // Verifies that codepoints beyond the range of allowable UCS-2 values
 // are rejected.
-IN_PROC_BROWSER_TEST_F(InputTest, CharacterBeyondBmp) {
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterBeyondBmp) {
   const uint32_t kRamenEmoji = 0x1F35C;
 
   // Send key press events from the Fuchsia keyboard service.
@@ -270,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(InputTest, CharacterBeyondBmp) {
   ExpectKeyEventsEqual(ExpectedKeyValue("", "a", kKeyPress));
 }
 
-IN_PROC_BROWSER_TEST_F(InputTest, ShiftPrintableKeys) {
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftPrintableKeys) {
   keyboard_service_->SendKeyEvent(
       CreateKeyEvent(Key::LEFT_SHIFT, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
@@ -298,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(InputTest, ShiftPrintableKeys) {
                        ExpectedKeyValue("Period", ".", kKeyPress));
 }
 
-IN_PROC_BROWSER_TEST_F(InputTest, ShiftNonPrintableKeys) {
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftNonPrintableKeys) {
   keyboard_service_->SendKeyEvent(
       CreateKeyEvent(Key::RIGHT_SHIFT, KeyEventType::PRESSED));
   keyboard_service_->SendKeyEvent(
@@ -317,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(InputTest, ShiftNonPrintableKeys) {
                        ExpectedKeyValue("ShiftRight", "Shift", kKeyUp));
 }
 
-IN_PROC_BROWSER_TEST_F(InputTest, Disconnect) {
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, Disconnect) {
   // Disconnect the keyboard service.
   keyboard_service_.reset();
 
@@ -326,6 +347,30 @@ IN_PROC_BROWSER_TEST_F(InputTest, Disconnect) {
   // Make sure the page is still available and there are no crashes.
   EXPECT_TRUE(cr_fuchsia::ExecuteJavaScript(frame_for_test_.ptr().get(), "true")
                   ->GetBool());
+}
+
+class KeyboardInputTestWithoutKeyboardFeature : public KeyboardInputTest {
+ public:
+  KeyboardInputTestWithoutKeyboardFeature() = default;
+  ~KeyboardInputTestWithoutKeyboardFeature() override = default;
+
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({}, {});
+    cr_fuchsia::WebEngineBrowserTest::SetUp();
+  }
+
+  void SetUpService() override {
+    keyboard_input_checker_.emplace(component_context_->additional_services());
+  }
+
+  absl::optional<NeverConnectedChecker<fuchsia::ui::input3::Keyboard>>
+      keyboard_input_checker_;
+};
+
+IN_PROC_BROWSER_TEST_F(KeyboardInputTestWithoutKeyboardFeature, NoFeature) {
+  // Test will verify that |keyboard_input_checker_| never received a connection
+  // request at teardown time.
 }
 
 }  // namespace
