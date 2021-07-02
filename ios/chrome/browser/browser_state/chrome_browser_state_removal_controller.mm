@@ -22,6 +22,8 @@
 #include "ios/chrome/browser/chrome_constants.h"
 #include "ios/chrome/browser/chrome_paths_internal.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -63,10 +65,13 @@ std::string GetGaiaIdForBrowserState(const std::string& browser_state_path,
 }
 
 // Returns the email's domain of the identity associated with |gaia_id|.
-std::string GetDomainForGaiaId(const std::string& gaia_id) {
-  ChromeIdentity* identity = ios::GetChromeBrowserProvider()
-                                 ->GetChromeIdentityService()
-                                 ->GetIdentityWithGaiaID(gaia_id);
+std::string GetDomainForGaiaId(ChromeBrowserState* browser_state,
+                               const std::string& gaia_id) {
+  ChromeAccountManagerService* account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  ChromeIdentity* identity =
+      account_manager_service->GetIdentityWithGaiaID(gaia_id);
+
   if (![identity userEmail])
     return std::string();
   return gaia::ExtractDomainName(
@@ -109,7 +114,8 @@ void ChromeBrowserStateRemovalController::RemoveBrowserStatesIfNecessary() {
         GetGaiaIdForBrowserState(browser_state_to_keep, info_cache);
     std::string last_used_gaia_id =
         GetGaiaIdForBrowserState(browser_state_last_used, info_cache);
-    std::string last_used_domain = GetDomainForGaiaId(last_used_gaia_id);
+    std::string last_used_domain = GetDomainForGaiaId(
+        manager->GetLastUsedBrowserState(), last_used_gaia_id);
     if (gaia_id.empty() && last_used_domain == kGmailDomain) {
       // If browser state to keep is not the last used one, wasn't
       // authenticated, and the last used browser state was a normal account
