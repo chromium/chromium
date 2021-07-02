@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
 
+import org.chromium.android_webview.services.ComponentUpdaterSafeModeUtils;
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
@@ -70,14 +71,18 @@ public class AwComponentUpdateService extends JobService {
     public boolean onStartJob(JobParameters params) {
         assert mJobParameters == null;
         mJobParameters = params;
-        return startUpdates();
+        return maybeStartUpdates();
     }
 
     // Called by JobScheduler.
     @Override
     public boolean onStopJob(JobParameters params) {
+        ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(
+                new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()));
+
         // TODO(https://crbug.com/1221092): Stop native updates when onStopJob, onDestroy are
         // called.
+
         setUnexpectedExit(false);
         mJobParameters = null;
 
@@ -96,7 +101,7 @@ public class AwComponentUpdateService extends JobService {
         // Always keep the most recent startId as this is the one that should be used to stop
         // the service.
         mServiceStartedId = startId;
-        if (!startUpdates()) {
+        if (!maybeStartUpdates()) {
             stopSelf(startId);
             mServiceStartedId = 0;
         }
@@ -109,10 +114,16 @@ public class AwComponentUpdateService extends JobService {
      * @return {@code true} if it successfully triggers component updates or if component are
      *         already updating, {@code false} if it fails to trigger the updates.
      */
-    private boolean startUpdates() {
+    private boolean maybeStartUpdates() {
         if (mIsUpdating) {
             return true;
         }
+
+        if (ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(new File(
+                    ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()))) {
+            return false;
+        }
+
         maybeRecordUnexpectedExit();
 
         // TODO(http://crbug.com/1179297) look at doing this in a task on a background thread
@@ -138,6 +149,9 @@ public class AwComponentUpdateService extends JobService {
     // Call the appropriate stop method according to how the service is launched.
     private void stopService() {
         mIsUpdating = false;
+        ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(
+                new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()));
+
         // Service is launched as a started service.
         if (mServiceStartedId > 0) {
             stopSelf(mServiceStartedId);

@@ -15,6 +15,7 @@ import com.android.webview.chromium.WebViewLibraryPreloader;
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.ProductConfig;
 import org.chromium.android_webview.common.CommandLineUtil;
+import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.devui.util.WebViewPackageHelper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -62,6 +63,12 @@ public class WebViewApkApplication extends Application {
         // MonochromeApplication has its own locale configuration already, so call this here
         // rather than in maybeInitProcessGlobals.
         ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
+
+        // Only register nonembedded SafeMode actions for webview_apk or webview_service processes.
+        if (isWebViewProcess()) {
+            SafeModeController controller = SafeModeController.getInstance();
+            controller.registerActions(NonembeddedSafeModeActionsList.sList);
+        }
     }
 
     @Override

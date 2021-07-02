@@ -86476,6 +86476,7 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="Failed (no versions)"/>
   <int value="3" label="Failed (no file descriptors)"/>
   <int value="4" label="Failed (error opening file descriptors)"/>
+  <int value="5" label="Failed (Component Updater SafeMode enabled)"/>
 </enum>
 
 <enum name="WebViewDrawAndSubmissionType">

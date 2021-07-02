@@ -21,9 +21,11 @@ android_library("nonembedded_java") {
   sources = [
     "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
     "java/src/org/chromium/android_webview/nonembedded/AwNonembeddedUmaRecorder.java",
+    "java/src/org/chromium/android_webview/nonembedded/ComponentUpdaterResetSafeModeAction.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseActivity.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseContentProvider.java",
     "java/src/org/chromium/android_webview/nonembedded/NetworkFetcherTask.java",
+    "java/src/org/chromium/android_webview/nonembedded/NonembeddedSafeModeActionsList.java",
     "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
   ]
   deps = [
@@ -91,6 +93,7 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/AwMinidumpUploadJobService.java",
     "java/src/org/chromium/android_webview/services/AwMinidumpUploaderDelegate.java",
     "java/src/org/chromium/android_webview/services/AwVariationsSeedFetcher.java",
+    "java/src/org/chromium/android_webview/services/ComponentUpdaterSafeModeUtils.java",
     "java/src/org/chromium/android_webview/services/ComponentsProviderPathUtil.java",
     "java/src/org/chromium/android_webview/services/ComponentsProviderService.java",
     "java/src/org/chromium/android_webview/services/CrashReceiverService.java",

@@ -66,15 +66,17 @@ public class ComponentsProviderService extends Service {
     // can't be reused.
     @IntDef({GetFilesResultCode.SUCCESS, GetFilesResultCode.FAILED_NOT_INSTALLED,
             GetFilesResultCode.FAILED_NO_VERSIONS, GetFilesResultCode.FAILED_NO_FDS,
-            GetFilesResultCode.FAILED_OPENING_FDS})
+            GetFilesResultCode.FAILED_OPENING_FDS,
+            GetFilesResultCode.FAILED_COMPONENT_UPDATER_SAFEMODE_ENABLED})
     private @interface GetFilesResultCode {
         int SUCCESS = 0;
         int FAILED_NOT_INSTALLED = 1;
         int FAILED_NO_VERSIONS = 2;
         int FAILED_NO_FDS = 3;
         int FAILED_OPENING_FDS = 4;
+        int FAILED_COMPONENT_UPDATER_SAFEMODE_ENABLED = 5;
         // Keep this one at the end and increment appropriately when adding new entries.
-        int COUNT = 5;
+        int COUNT = 6;
     }
 
     private File mDirectory;
@@ -84,6 +86,16 @@ public class ComponentsProviderService extends Service {
         @Override
         public void getFilesForComponent(String componentId, ResultReceiver resultReceiver) {
             final long startTime = System.currentTimeMillis();
+
+            if (ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(mDirectory)) {
+                Log.w(TAG,
+                        "Component Updater Reset Mode enabled. Not handing out configs. "
+                                + componentId);
+                resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+                recordGetFilesResultAndDuration(
+                        GetFilesResultCode.FAILED_COMPONENT_UPDATER_SAFEMODE_ENABLED, startTime);
+                return;
+            }
 
             // Note that there's no need to sanitize input because this method will check if there
             // is an existing folder under `mDirectory` with a name that equals the received
@@ -144,6 +156,14 @@ public class ComponentsProviderService extends Service {
     @Override
     public void onCreate() {
         mDirectory = new File(ComponentsProviderPathUtil.getComponentsServingDirectoryPath());
+        if (ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(mDirectory)) {
+            JobScheduler jobScheduler =
+                    (JobScheduler) ContextUtils.getApplicationContext().getSystemService(
+                            Context.JOB_SCHEDULER_SERVICE);
+            jobScheduler.cancel(JOB_ID);
+            return;
+        }
+
         if (!mDirectory.exists() && !mDirectory.mkdirs()) {
             Log.e(TAG, "Failed to create directory " + mDirectory.getAbsolutePath());
             return;
