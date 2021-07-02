@@ -936,6 +936,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   ChromeBroadcaster* broadcaster = self.fullscreenController->broadcaster();
   if (_broadcasting) {
     _toolbarUIState = [[ToolbarUIState alloc] init];
+    // Must update _toolbarUIState with current toolbar height state before
+    // starting broadcasting.
+    [self updateToolbarState];
     StartBroadcastingToolbarUI(_toolbarUIState, broadcaster);
 
     _mainContentUIUpdater = [[MainContentUIStateUpdater alloc]
