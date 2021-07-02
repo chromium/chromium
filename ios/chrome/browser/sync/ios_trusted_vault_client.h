@@ -7,11 +7,14 @@
 
 #include "components/sync/driver/trusted_vault_client.h"
 
+class ChromeAccountManagerService;
+
 // iOS version of TrustedVaultClient. This class uses the Chrome trusted vault
 // service to store the shared keys.
 class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
  public:
-  IOSTrustedVaultClient();
+  explicit IOSTrustedVaultClient(
+      ChromeAccountManagerService* account_manager_service);
   ~IOSTrustedVaultClient() override;
 
   // TrustedVaultClient implementation.
@@ -37,6 +40,9 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
   // Not copyable or movable
   IOSTrustedVaultClient(const IOSTrustedVaultClient&) = delete;
   IOSTrustedVaultClient& operator=(const IOSTrustedVaultClient&) = delete;
+
+ private:
+  ChromeAccountManagerService* account_manager_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_
