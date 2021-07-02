@@ -256,18 +256,19 @@ void ContextualSearchLayer::SetProperties(
     ui::Resource* related_searches_resource = resource_manager_->GetResource(
         ui::ANDROID_RESOURCE_TYPE_DYNAMIC, related_searches_in_bar_resource_id);
     DCHECK(related_searches_resource);
-    gfx::Size related_searches_size(search_panel_width,
-                                    related_searches_resource->size().height());
-    if (related_searches_in_bar_->parent() != layer_) {
-      layer_->AddChild(related_searches_in_bar_);
+    if (related_searches_resource) {
+      gfx::Size related_searches_size(
+          search_panel_width, related_searches_resource->size().height());
+      if (related_searches_in_bar_->parent() != layer_) {
+        layer_->AddChild(related_searches_in_bar_);
+      }
+      related_searches_in_bar_->SetUIResourceId(
+          related_searches_resource->ui_resource()->id());
+      related_searches_in_bar_->SetBounds(related_searches_size);
+      related_searches_in_bar_->SetPosition(
+          gfx::PointF(0.f, search_bar_bottom - related_searches_in_bar_height -
+                               related_searches_in_bar_redundant_padding));
     }
-    related_searches_in_bar_->SetUIResourceId(
-        related_searches_resource->ui_resource()->id());
-    related_searches_in_bar_->SetBounds(related_searches_size);
-    related_searches_in_bar_->SetPosition(
-        gfx::PointF(0.f, search_bar_bottom - related_searches_in_bar_height -
-                             related_searches_in_bar_redundant_padding));
-
   } else if (related_searches_in_bar_.get() &&
              related_searches_in_bar_->parent()) {
     related_searches_in_bar_->RemoveFromParent();
@@ -282,18 +283,19 @@ void ContextualSearchLayer::SetProperties(
         resource_manager_->GetResource(ui::ANDROID_RESOURCE_TYPE_DYNAMIC,
                                        related_searches_in_content_resource_id);
     DCHECK(related_searches_resource);
-    int related_searches_height = related_searches_resource->size().height();
-    gfx::Size related_searches_size(search_panel_width,
-                                    related_searches_height);
-    if (related_searches_in_content_->parent() != layer_)
-      layer_->AddChild(related_searches_in_content_);
-    related_searches_in_content_->SetUIResourceId(
-        related_searches_resource->ui_resource()->id());
-    related_searches_in_content_->SetBounds(related_searches_size);
-    related_searches_in_content_->SetPosition(
-        gfx::PointF(0.f, next_section_top));
-    next_section_top += related_searches_height;
-
+    if (related_searches_resource) {
+      int related_searches_height = related_searches_resource->size().height();
+      gfx::Size related_searches_size(search_panel_width,
+                                      related_searches_height);
+      if (related_searches_in_content_->parent() != layer_)
+        layer_->AddChild(related_searches_in_content_);
+      related_searches_in_content_->SetUIResourceId(
+          related_searches_resource->ui_resource()->id());
+      related_searches_in_content_->SetBounds(related_searches_size);
+      related_searches_in_content_->SetPosition(
+          gfx::PointF(0.f, next_section_top));
+      next_section_top += related_searches_height;
+    }
   } else if (related_searches_in_content_.get() &&
              related_searches_in_content_->parent()) {
     related_searches_in_content_->RemoveFromParent();
