@@ -129,13 +129,15 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kNone;
   else
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kDrop;
+  gfx::NativeView parent = nullptr;
   if (bubble->has_parent()) {
     if (bubble->parent_window()) {
-      bubble_params.parent = bubble->parent_window();
+      parent = bubble->parent_window();
     } else if (bubble->anchor_widget()) {
-      bubble_params.parent = bubble->anchor_widget()->GetNativeView();
+      parent = bubble->anchor_widget()->GetNativeView();
     }
   }
+  bubble_params.parent = parent;
   bubble_params.activatable = bubble->CanActivate()
                                   ? Widget::InitParams::Activatable::kYes
                                   : Widget::InitParams::Activatable::kNo;
@@ -146,8 +148,8 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   // On Mac, having a parent window creates a permanent stacking order, so
   // there's no need to do this. Also, calling StackAbove() on Mac shows the
   // bubble implicitly, for which the bubble is currently not ready.
-  if (bubble->has_parent() && bubble_params.parent)
-    bubble_widget->StackAbove(bubble_params.parent);
+  if (bubble->has_parent() && parent)
+    bubble_widget->StackAbove(parent);
 #endif
   return bubble_widget;
 }
