@@ -631,8 +631,13 @@ void RenderThreadImpl::Init() {
 // but the system default is true.
 #if defined(OS_MAC)
   is_elastic_overscroll_enabled_ = true;
-#elif defined(OS_WIN) || defined(OS_ANDROID)
+#elif defined(OS_WIN)
   is_elastic_overscroll_enabled_ =
+      base::FeatureList::IsEnabled(features::kElasticOverscroll);
+#elif defined(OS_ANDROID)
+  is_elastic_overscroll_enabled_ =
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableOverscrollEdgeEffect) &&
       base::FeatureList::IsEnabled(features::kElasticOverscroll);
 #else
   is_elastic_overscroll_enabled_ = false;

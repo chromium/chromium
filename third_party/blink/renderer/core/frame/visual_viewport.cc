@@ -37,6 +37,7 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/solid_color_scrollbar_layer.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -297,7 +298,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   }
 
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(::features::kElasticOverscroll) &&
+  if (Platform::Current()->IsElasticOverscrollEnabled() &&
       base::GetFieldTrialParamValueByFeature(
           ::features::kElasticOverscroll, ::features::kElasticOverscrollType) !=
           ::features::kElasticOverscrollTypeTransform) {
