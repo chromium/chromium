@@ -52,7 +52,7 @@ bool VerifyMemberProof(const SecureBoxPublicKey& key,
   return hmac.Verify(key.ExportToBytes(), member_proof);
 }
 
-std::vector<uint8_t> ComputeRotationProof(
+std::vector<uint8_t> ComputeRotationProofForTesting(  // IN-TEST
     const std::vector<uint8_t>& trusted_vault_key,
     const std::vector<uint8_t>& prev_trusted_vault_key) {
   return SecureBoxSymmetricEncrypt(
