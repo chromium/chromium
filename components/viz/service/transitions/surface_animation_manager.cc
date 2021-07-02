@@ -5,23 +5,35 @@
 #include "components/viz/service/transitions/surface_animation_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/transition_utils.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_saved_frame_storage.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/transform.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace viz {
 namespace {
@@ -55,6 +67,7 @@ constexpr float kScaleProportion = 1.1f;
 void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
                                    const gfx::Rect& output_rect,
                                    const gfx::Transform& src_transform,
+                                   SkBlendMode blend_mode,
                                    float src_opacity,
                                    bool y_flipped,
                                    ResourceId id) {
@@ -66,7 +79,7 @@ void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
       /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
       /*opacity=*/src_opacity,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+      /*blend_mode=*/blend_mode, /*sorting_context_id=*/0);
 
   auto* src_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   float vertex_opacity[] = {1.f, 1.f, 1.f, 1.f};
@@ -92,15 +105,8 @@ void CreateAndAppendSharedRenderPassDrawQuad(
     gfx::Transform transform,
     float opacity,
     CompositorRenderPassId render_pass_id,
+    SkBlendMode blend_mode,
     const CompositorRenderPassDrawQuad& sample_quad) {
-  gfx::Transform rect_scale;
-  // Convert the needed destination rect to be a scale on the sample quad rect.
-  // This ensures that the rects match but are scaled, instead of being clipped.
-  rect_scale.Scale(
-      rect.width() / static_cast<float>(sample_quad.rect.width()),
-      rect.height() / static_cast<float>(sample_quad.rect.height()));
-  transform.PreconcatTransform(rect_scale);
-
   auto* quad_state = render_pass->CreateAndAppendSharedQuadState();
   quad_state->SetAll(
       /*quad_to_target_transform=*/transform,
@@ -110,14 +116,14 @@ void CreateAndAppendSharedRenderPassDrawQuad(
       /*clip_rect=*/absl::nullopt,
       /*are_contents_opaque=*/false,
       /*opacity=*/opacity,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+      /*blend_mode=*/blend_mode, /*sorting_context_id=*/0);
 
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
   quad->SetNew(
       /*shared_quad_state=*/quad_state,
-      /*rect=*/sample_quad.rect,
-      /*visible_rect=*/sample_quad.visible_rect,
+      /*rect=*/rect,
+      /*visible_rect=*/rect,
       /*render_pass_id=*/render_pass_id,
       /*mask_resource_id=*/sample_quad.mask_resource_id(),
       /*mask_uv_rect=*/sample_quad.mask_uv_rect,
@@ -127,6 +133,62 @@ void CreateAndAppendSharedRenderPassDrawQuad(
       /*tex_coord_rect=*/sample_quad.tex_coord_rect,
       /*force_anti_aliasing_off=*/sample_quad.force_anti_aliasing_off,
       /*backdrop_filter_quality*/ sample_quad.backdrop_filter_quality);
+}
+
+std::unique_ptr<gfx::AnimationCurve> CreateOpacityCurve(
+    float start_opacity,
+    float end_opacity,
+    gfx::FloatAnimationCurve::Target* target) {
+  auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
+
+  // The curve starts at opacity delay and runs for opacity animation, so it
+  // potentially has 4 points:
+  // time 0 == start opacity
+  // time 'delay' == start opacity
+  // time 'delay' + 'duration' == end opacity
+  // time end of animation == end opacity
+  float_curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::TimeDelta(), start_opacity, nullptr));
+  if (!kSharedOpacityAnimationDelay.is_zero()) {
+    float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
+        kSharedOpacityAnimationDelay, start_opacity, nullptr));
+  }
+  float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
+      kSharedOpacityAnimationDuration + kSharedOpacityAnimationDelay,
+      end_opacity, nullptr));
+  float_curve->AddKeyframe(gfx::FloatKeyframe::Create(kDefaultAnimationDuration,
+                                                      end_opacity, nullptr));
+  float_curve->set_target(target);
+  return float_curve;
+}
+
+std::unique_ptr<gfx::AnimationCurve> CreateSizeCurve(
+    const gfx::SizeF& start_size,
+    std::unique_ptr<gfx::TimingFunction> timing_function,
+    gfx::SizeAnimationCurve::Target* target) {
+  auto size_curve = gfx::KeyframedSizeAnimationCurve::Create();
+  size_curve->AddKeyframe(gfx::SizeKeyframe::Create(
+      base::TimeDelta(), start_size, timing_function->Clone()));
+  size_curve->AddKeyframe(gfx::SizeKeyframe::Create(
+      kDefaultAnimationDuration, start_size, std::move(timing_function)));
+  size_curve->set_target(target);
+  return size_curve;
+}
+
+std::unique_ptr<gfx::AnimationCurve> CreateTransformCurve(
+    const gfx::Transform& transform,
+    std::unique_ptr<gfx::TimingFunction> timing_function,
+    gfx::TransformAnimationCurve::Target* target) {
+  gfx::TransformOperations transform_ops;
+  transform_ops.AppendMatrix(transform);
+
+  auto transform_curve = gfx::KeyframedTransformAnimationCurve::Create();
+  transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
+      base::TimeDelta(), transform_ops, timing_function->Clone()));
+  transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
+      kDefaultAnimationDuration, transform_ops, std::move(timing_function)));
+  transform_curve->set_target(target);
+  return transform_curve;
 }
 
 }  // namespace
@@ -312,8 +374,9 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
 
   if (src_on_top) {
     CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
-                                  src_transform, root_animation_.src_opacity(),
-                                  y_flipped, saved_textures_->root.resource.id);
+                                  src_transform, SkBlendMode::kSrcOver,
+                                  root_animation_.src_opacity(), y_flipped,
+                                  saved_textures_->root.resource.id);
   }
 
   auto* dst_quad_state = animation_pass->CreateAndAppendSharedQuadState();
@@ -345,8 +408,9 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
 
   if (!src_on_top) {
     CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
-                                  src_transform, root_animation_.src_opacity(),
-                                  y_flipped, saved_textures_->root.resource.id);
+                                  src_transform, SkBlendMode::kSrcOver,
+                                  root_animation_.src_opacity(), y_flipped,
+                                  saved_textures_->root.resource.id);
   }
 
   interpolated_frame.render_pass_list.push_back(std::move(animation_pass));
@@ -431,47 +495,57 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
       animate_directive_->shared_render_pass_ids();
   for (size_t i = 0; i < shared_render_pass_ids.size(); ++i) {
     const CompositorRenderPassId& shared_pass_id = shared_render_pass_ids[i];
-    AnimationState& animation = shared_animations_[i];
+    SharedAnimationState& animation = shared_animations_[i];
     auto& draw_data = shared_draw_data[shared_pass_id];
 
-    bool has_destination_pass = draw_data.render_pass && draw_data.draw_quad;
+    const bool has_destination_pass =
+        draw_data.render_pass && draw_data.draw_quad;
+    const bool should_have_destination_pass = !shared_pass_id.is_null();
+    DCHECK(!has_destination_pass || should_have_destination_pass);
 
     // We have to retarget the animations, whether or not we have a destination
-    // pass.
+    // pass. Ideally we should only need an opacity curve (to fade out the src
+    // element) if the dest element is missing but we try to handle the dest
+    // element getting added or removed during the transition gracefully by
+    // pausing the animation to it's current state.
+    auto* opacity_model = animation.driver().GetKeyframeModel(
+        SharedAnimationState::kCombinedOpacity);
+    float target_opacity = 0.f;
+    if (has_destination_pass)
+      target_opacity = draw_data.opacity;
+    else if (should_have_destination_pass)
+      target_opacity = animation.combined_opacity();
+    opacity_model->Retarget(
+        latest_time_, SharedAnimationState::kCombinedOpacity, target_opacity);
 
-    // If we have a rect model, it means we have a source texture because we
-    // would have only created the rect model if we had a source texture (see
-    // `CreateSharedElementCurves()`). If the destination also exists, we have
-    // to target it since that's our target. If it isn't there, but was there at
-    // some point, then we have to retarget the animmation to its current value
-    // so that the animation stops moving.
-    //
-    // If we don't have a
-    // rect_model, meaning that we don't have a source texture, we update the
-    // state to whatever the destination rect is directly on the animation.
-    gfx::KeyframeModel* rect_model =
-        animation.driver().GetKeyframeModel(AnimationState::kRect);
-    const gfx::Rect target_rect =
-        has_destination_pass ? draw_data.draw_quad->rect : animation.rect();
-    if (rect_model) {
-      rect_model->Retarget(latest_time_, AnimationState::kRect, target_rect);
+    auto* size_model =
+        animation.driver().GetKeyframeModel(SharedAnimationState::kContentSize);
+    gfx::SizeF target_size =
+        has_destination_pass
+            ? gfx::SizeF(draw_data.render_pass->output_rect.size())
+            : animation.content_size();
+    if (size_model) {
+      size_model->Retarget(latest_time_, SharedAnimationState::kContentSize,
+                           target_size);
     } else {
-      animation.OnRectAnimated(target_rect, AnimationState::kRect, nullptr);
+      animation.OnSizeAnimated(target_size, SharedAnimationState::kContentSize,
+                               nullptr);
     }
 
-    // Now do the same for transform animation.
-    gfx::KeyframeModel* transform_model =
-        animation.driver().GetKeyframeModel(AnimationState::kSrcTransform);
+    auto* transform_model = animation.driver().GetKeyframeModel(
+        SharedAnimationState::kCombinedTransform);
     gfx::TransformOperations target_transform_ops;
     target_transform_ops.AppendMatrix(
         has_destination_pass ? draw_data.render_pass->transform_to_root_target
-                             : animation.src_transform().Apply());
+                             : animation.combined_transform().Apply());
     if (transform_model) {
-      transform_model->Retarget(latest_time_, AnimationState::kSrcTransform,
+      transform_model->Retarget(latest_time_,
+                                SharedAnimationState::kCombinedTransform,
                                 target_transform_ops);
     } else {
       animation.OnTransformAnimated(target_transform_ops,
-                                    AnimationState::kSrcTransform, nullptr);
+                                    SharedAnimationState::kCombinedTransform,
+                                    nullptr);
     }
 
     // Now that we have updated the animations, we can append the interpolations
@@ -479,14 +553,49 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     const absl::optional<TransferableResourceTracker::PositionedResource>&
         src_texture = saved_textures_->shared[i];
 
-    const gfx::Rect& rect = animation.rect();
-    const gfx::Transform& transform = animation.src_transform().Apply();
-    float opacity = animation.src_opacity();
+    const float content_opacity = animation.content_opacity();
+    const gfx::Size content_size = gfx::ToFlooredSize(animation.content_size());
+    const float combined_opacity = animation.combined_opacity();
+    const gfx::Transform combined_transform =
+        animation.combined_transform().Apply();
 
+    std::unique_ptr<CompositorRenderPass> transition_pass;
+    if (src_texture.has_value() && has_destination_pass) {
+      size_t num_of_quads = 2;
+      transition_pass =
+          CompositorRenderPass::Create(num_of_quads, num_of_quads);
+      gfx::Rect output_rect(content_size);
+      max_id = TransitionUtils::NextRenderPassId(max_id);
+      transition_pass->SetNew(max_id, output_rect, output_rect,
+                              combined_transform);
+    }
+
+    // The quad list is in front to back order. So adding the src texture first
+    // makes it so it draws on top of the dest texture.
     if (src_texture.has_value()) {
       bool y_flipped = !src_texture->resource.is_software;
-      CreateAndAppendSrcTextureQuad(animation_pass, rect, transform,
-                                    opacity * src_texture->draw_data.opacity,
+      gfx::Transform src_transform;
+      src_transform.Scale(static_cast<float>(content_size.width()) /
+                              src_texture->draw_data.rect.width(),
+                          static_cast<float>(content_size.height()) /
+                              src_texture->draw_data.rect.height());
+      float src_opacity = 1.f - content_opacity;
+
+      // Use kPlus mode to add the pixel values from src and destination
+      // textures. This ensures the blending pass is a no-op if the 2 have the
+      // same content.
+      SkBlendMode blend_mode = SkBlendMode::kPlus;
+
+      auto* pass_for_draw = transition_pass.get();
+      if (!pass_for_draw) {
+        pass_for_draw = animation_pass;
+        src_transform.ConcatTransform(combined_transform);
+        src_opacity *= combined_opacity;
+        blend_mode = SkBlendMode::kSrcOver;
+      }
+
+      CreateAndAppendSrcTextureQuad(pass_for_draw, src_texture->draw_data.rect,
+                                    src_transform, blend_mode, src_opacity,
                                     y_flipped, src_texture->resource.id);
       interpolated_frame->resource_list.push_back(src_texture->resource);
     }
@@ -498,19 +607,71 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     // shared render pass, and update it with all the right values.
     auto pass_copy = draw_data.render_pass->DeepCopy();
     max_id = pass_copy->id = TransitionUtils::NextRenderPassId(max_id);
-    pass_copy->transform_to_root_target = transform;
+    gfx::Vector2dF dest_scale(static_cast<float>(content_size.width()) /
+                                  pass_copy->output_rect.width(),
+                              static_cast<float>(content_size.height()) /
+                                  pass_copy->output_rect.height());
+    pass_copy->transform_to_root_target = combined_transform;
+    pass_copy->transform_to_root_target.Scale(dest_scale.x(), dest_scale.y());
 
-    // Create an quad for the pass into our animation pass.
-    // TODO(vmpstr): This needs to be a more sophisticated blending. See
-    // crbug.com/1201251 for details.
+    auto* pass_for_draw = transition_pass.get();
+    gfx::Transform dest_transform;
+    dest_transform.Scale(dest_scale.x(), dest_scale.y());
+    float dest_opacity = content_opacity;
+
+    // Use kSrc mode to clear the intermediate texture used for blending with
+    // dest content.
+    SkBlendMode blend_mode = SkBlendMode::kSrc;
+    if (!pass_for_draw) {
+      pass_for_draw = animation_pass;
+      dest_transform.ConcatTransform(combined_transform);
+      dest_opacity *= combined_opacity;
+      blend_mode = SkBlendMode::kSrcOver;
+    }
+
     CreateAndAppendSharedRenderPassDrawQuad(
-        animation_pass, rect, transform, draw_data.opacity * (1.f - opacity),
-        pass_copy->id, *draw_data.draw_quad);
+        pass_for_draw, draw_data.render_pass->output_rect, dest_transform,
+        dest_opacity, pass_copy->id, blend_mode, *draw_data.draw_quad);
 
     // Finally, add the pass into the interpolated frame. Make sure this comes
     // after CreateAndAppend* call, because we use a pass id, so we need to
     // access the pass before moving it here.
     interpolated_frame->render_pass_list.emplace_back(std::move(pass_copy));
+
+    if (transition_pass) {
+      auto* quad_state = animation_pass->CreateAndAppendSharedQuadState();
+      gfx::Rect rect(content_size);
+      quad_state->SetAll(
+          /*quad_to_target_transform=*/combined_transform,
+          /*quad_layer_rect=*/rect,
+          /*visible_layer_rect=*/rect,
+          /*mask_filter_info=*/gfx::MaskFilterInfo(),
+          /*clip_rect=*/absl::nullopt,
+          /*are_contents_opaque=*/false,
+          /*opacity=*/combined_opacity,
+          /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+
+      auto* quad =
+          animation_pass
+              ->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
+      quad->SetNew(
+          /*shared_quad_state=*/quad_state,
+          /*rect=*/rect,
+          /*visible_rect=*/rect,
+          /*render_pass_id=*/transition_pass->id,
+          /*mask_resource_id=*/kInvalidResourceId,
+          /*mask_uv_rect=*/gfx::RectF(),
+          /*mask_texture_size=*/gfx::Size(),
+          /*filters_scale=*/gfx::Vector2dF(),
+          /*filters_origin=*/gfx::PointF(),
+          /*tex_coord_rect=*/gfx::RectF(rect),
+          /*force_anti_aliasing_off=*/
+          draw_data.draw_quad->force_anti_aliasing_off,
+          /*backdrop_filter_quality=*/0.f);
+
+      interpolated_frame->render_pass_list.emplace_back(
+          std::move(transition_pass));
+    }
   }
 }
 
@@ -564,11 +725,11 @@ void SurfaceAnimationManager::CreateRootAnimationCurves(
 
   gfx::TransformOperations start_transform;
   gfx::TransformOperations end_transform;
-  int transform_property_id = AnimationState::kDstTransform;
+  int transform_property_id = RootAnimationState::kDstTransform;
 
   float start_opacity = 0.0f;
   float end_opacity = 1.0f;
-  int opacity_property_id = AnimationState::kDstOpacity;
+  int opacity_property_id = RootAnimationState::kDstOpacity;
 
   DCHECK(save_directive_.has_value());
 
@@ -591,30 +752,30 @@ void SurfaceAnimationManager::CreateRootAnimationCurves(
     }
     case CompositorFrameTransitionDirective::Effect::kRevealLeft: {
       end_transform.AppendTranslate(-delta, 0.0f, 0.0f);
-      transform_property_id = AnimationState::kSrcTransform;
+      transform_property_id = RootAnimationState::kSrcTransform;
       std::swap(start_opacity, end_opacity);
-      opacity_property_id = AnimationState::kSrcOpacity;
+      opacity_property_id = RootAnimationState::kSrcOpacity;
       break;
     }
     case CompositorFrameTransitionDirective::Effect::kRevealRight: {
       end_transform.AppendTranslate(delta, 0.0f, 0.0f);
-      transform_property_id = AnimationState::kSrcTransform;
+      transform_property_id = RootAnimationState::kSrcTransform;
       std::swap(start_opacity, end_opacity);
-      opacity_property_id = AnimationState::kSrcOpacity;
+      opacity_property_id = RootAnimationState::kSrcOpacity;
       break;
     }
     case CompositorFrameTransitionDirective::Effect::kRevealUp: {
       end_transform.AppendTranslate(0.0f, -delta, 0.0f);
-      transform_property_id = AnimationState::kSrcTransform;
+      transform_property_id = RootAnimationState::kSrcTransform;
       std::swap(start_opacity, end_opacity);
-      opacity_property_id = AnimationState::kSrcOpacity;
+      opacity_property_id = RootAnimationState::kSrcOpacity;
       break;
     }
     case CompositorFrameTransitionDirective::Effect::kRevealDown: {
       end_transform.AppendTranslate(0.0f, delta, 0.0f);
-      transform_property_id = AnimationState::kSrcTransform;
+      transform_property_id = RootAnimationState::kSrcTransform;
       std::swap(start_opacity, end_opacity);
-      opacity_property_id = AnimationState::kSrcOpacity;
+      opacity_property_id = RootAnimationState::kSrcOpacity;
       break;
     }
     case CompositorFrameTransitionDirective::Effect::kExplode: {
@@ -629,22 +790,22 @@ void SurfaceAnimationManager::CreateRootAnimationCurves(
       end_transform.AppendScale(kScaleProportion, kScaleProportion, 1.0f);
       end_transform.AppendTranslate(-output_size.width() * 0.5f,
                                     -output_size.height() * 0.5f, 0.0f);
-      transform_property_id = AnimationState::kSrcTransform;
+      transform_property_id = RootAnimationState::kSrcTransform;
       std::swap(start_opacity, end_opacity);
-      opacity_property_id = AnimationState::kSrcOpacity;
+      opacity_property_id = RootAnimationState::kSrcOpacity;
       break;
     }
     case CompositorFrameTransitionDirective::Effect::kFade: {
       // Fade is effectively an explode with no scaling.
-      transform_property_id = AnimationState::kSrcTransform;
+      transform_property_id = RootAnimationState::kSrcTransform;
       std::swap(start_opacity, end_opacity);
-      opacity_property_id = AnimationState::kSrcOpacity;
+      opacity_property_id = RootAnimationState::kSrcOpacity;
       break;
     }
     case CompositorFrameTransitionDirective::Effect::kNone: {
-      transform_property_id = AnimationState::kSrcTransform;
+      transform_property_id = RootAnimationState::kSrcTransform;
       start_opacity = end_opacity = 0.0f;
-      opacity_property_id = AnimationState::kSrcOpacity;
+      opacity_property_id = RootAnimationState::kSrcOpacity;
       break;
     }
     case CompositorFrameTransitionDirective::Effect::kImplode: {
@@ -672,7 +833,7 @@ void SurfaceAnimationManager::CreateRootAnimationCurves(
   // but ease into position, eg.
   std::unique_ptr<gfx::CubicBezierTimingFunction> timing_function =
       gfx::CubicBezierTimingFunction::CreatePreset(
-          opacity_property_id == AnimationState::kSrcOpacity
+          opacity_property_id == RootAnimationState::kSrcOpacity
               ? gfx::CubicBezierTimingFunction::EaseType::EASE_IN
               : gfx::CubicBezierTimingFunction::EaseType::EASE_OUT);
 
@@ -739,85 +900,65 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
   for (size_t i = 0; i < saved_textures_->shared.size(); ++i) {
     auto& shared = saved_textures_->shared[i];
     auto& state = shared_animations_[i];
+    const bool has_src_element = shared.has_value();
 
-    // Opacity goes from 1 to 0 linearly on the source.
-    float start_opacity = 1.f;
-    float end_opacity = 0.f;
-
-    auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
-    float_curve->set_target(&state);
-
-    // The curve starts at opacity delay and runs for opacity animation, so it
-    // potentially has 4 points:
-    // time 0 == start opacity
-    // time 'delay' == start opacity
-    // time 'delay' + 'duration' == end opacity
-    // time end of animation == end opacity
-    float_curve->AddKeyframe(
-        gfx::FloatKeyframe::Create(base::TimeDelta(), start_opacity, nullptr));
-    if (!kSharedOpacityAnimationDelay.is_zero()) {
-      float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-          kSharedOpacityAnimationDelay, start_opacity, nullptr));
-    }
-    float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-        kSharedOpacityAnimationDuration + kSharedOpacityAnimationDelay,
-        end_opacity, nullptr));
-    float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-        kDefaultAnimationDuration, end_opacity, nullptr));
-
+    // The kSrcOpacity curve animates the screen space opacity applied to the
+    // blended content from src and dest elements. The value goes from the
+    // src element's opacity value to dest element's opacity value.
+    // - If the src element is missing, the start opacity is 0 to allow the dest
+    //   element to gradually fade in.
+    // - If the dest element is missing, the end opacity is 0 to allow the src
+    //   element to gradually fade out.
+    // The animation is re-targeted once the dest element values are known.
+    float start_opacity = has_src_element ? shared->draw_data.opacity : 0.f;
+    auto opacity_curve = CreateOpacityCurve(start_opacity, 1.f, &state);
     state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
-        std::move(float_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
-        AnimationState::kSrcOpacity));
+        std::move(opacity_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
+        SharedAnimationState::kCombinedOpacity));
 
-    // If we don't have a source, we will always use the destination
-    // rect/transform, so don't create the animation curves for those.
-    if (!shared.has_value())
+    if (!has_src_element)
       continue;
 
-    // Set transform value to be the same at the start and end; we will
-    // re-target the end transform when we update the curves for a given
-    // compositor frame if needed.
-    // The specific timing function is fine tuned for the effect.
+    // The specific timing function is fine tuned for these effects.
     auto ease_timing =
         gfx::CubicBezierTimingFunction::Create(0.4, 0.0, 0.2, 1.0);
 
-    gfx::TransformOperations transform_ops;
-    transform_ops.AppendMatrix(shared->draw_data.target_transform);
+    // Interpolation between the 2 textures involves an opacity animation (to
+    // cross-fade the content) and a scale animation to transition the content
+    // size.
+    auto content_size_curve =
+        CreateSizeCurve(gfx::SizeF(shared->draw_data.rect.size()),
+                        ease_timing->Clone(), &state);
+    state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
+        std::move(content_size_curve),
+        gfx::KeyframeEffect::GetNextKeyframeModelId(),
+        SharedAnimationState::kContentSize));
+    auto content_opacity_curve =
+        CreateOpacityCurve(/*start_opacity=*/0.f, /*end_opacity=*/1.f, &state);
+    state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
+        std::move(content_opacity_curve),
+        gfx::KeyframeEffect::GetNextKeyframeModelId(),
+        SharedAnimationState::kContentOpacity));
 
-    auto transform_curve = gfx::KeyframedTransformAnimationCurve::Create();
-    transform_curve->set_target(&state);
-    transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
-        base::TimeDelta(), transform_ops, ease_timing->Clone()));
-    transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
-        kDefaultAnimationDuration, transform_ops, ease_timing->Clone()));
-    // Note that src and dst share the transform, but we use src value here.
+    // The screen space transform for the interpolated texture is animated from
+    // src element to dest element value. The animation is re-targeted once the
+    // dest element values are known.
+    auto transform_curve = CreateTransformCurve(
+        shared->draw_data.target_transform, ease_timing->Clone(), &state);
     state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
         std::move(transform_curve),
         gfx::KeyframeEffect::GetNextKeyframeModelId(),
-        AnimationState::kSrcTransform));
-
-    const gfx::Rect& rect = shared->draw_data.rect;
-
-    auto rect_curve = gfx::KeyframedRectAnimationCurve::Create();
-    rect_curve->set_target(&state);
-    rect_curve->AddKeyframe(gfx::RectKeyframe::Create(base::TimeDelta(), rect,
-                                                      ease_timing->Clone()));
-    rect_curve->AddKeyframe(gfx::RectKeyframe::Create(
-        kDefaultAnimationDuration, rect, ease_timing->Clone()));
-    // Note that src and dst share the rect, but we use src value here.
-    state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
-        std::move(rect_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
-        AnimationState::kRect));
+        SharedAnimationState::kCombinedTransform));
   }
 }
 
-// AnimationState
-SurfaceAnimationManager::AnimationState::AnimationState() = default;
-SurfaceAnimationManager::AnimationState::AnimationState(AnimationState&&) =
-    default;
-SurfaceAnimationManager::AnimationState::~AnimationState() = default;
+// RootAnimationState
+SurfaceAnimationManager::RootAnimationState::RootAnimationState() = default;
+SurfaceAnimationManager::RootAnimationState::RootAnimationState(
+    RootAnimationState&&) = default;
+SurfaceAnimationManager::RootAnimationState::~RootAnimationState() = default;
 
-void SurfaceAnimationManager::AnimationState::OnFloatAnimated(
+void SurfaceAnimationManager::RootAnimationState::OnFloatAnimated(
     const float& value,
     int target_property_id,
     gfx::KeyframeModel* keyframe_model) {
@@ -828,7 +969,7 @@ void SurfaceAnimationManager::AnimationState::OnFloatAnimated(
   }
 }
 
-void SurfaceAnimationManager::AnimationState::OnTransformAnimated(
+void SurfaceAnimationManager::RootAnimationState::OnTransformAnimated(
     const gfx::TransformOperations& operations,
     int target_property_id,
     gfx::KeyframeModel* keyframe_model) {
@@ -839,20 +980,52 @@ void SurfaceAnimationManager::AnimationState::OnTransformAnimated(
   }
 }
 
-void SurfaceAnimationManager::AnimationState::OnRectAnimated(
-    const gfx::Rect& value,
-    int target_property_id,
-    gfx::KeyframeModel* keyframe_model) {
-  DCHECK_EQ(target_property_id, kRect);
-  rect_ = value;
-}
-
-void SurfaceAnimationManager::AnimationState::Reset() {
+void SurfaceAnimationManager::RootAnimationState::Reset() {
   src_opacity_ = 1.0f;
   dst_opacity_ = 1.0f;
   src_transform_ = gfx::TransformOperations();
   dst_transform_ = gfx::TransformOperations();
-  rect_ = gfx::Rect();
+}
+
+SurfaceAnimationManager::SharedAnimationState::SharedAnimationState() = default;
+SurfaceAnimationManager::SharedAnimationState::SharedAnimationState(
+    SharedAnimationState&&) = default;
+SurfaceAnimationManager::SharedAnimationState::~SharedAnimationState() =
+    default;
+
+void SurfaceAnimationManager::SharedAnimationState::OnFloatAnimated(
+    const float& value,
+    int target_property_id,
+    gfx::KeyframeModel* keyframe_model) {
+  if (target_property_id == kContentOpacity) {
+    content_opacity_ = value;
+  } else {
+    DCHECK_EQ(target_property_id, kCombinedOpacity);
+    combined_opacity_ = value;
+  }
+}
+
+void SurfaceAnimationManager::SharedAnimationState::OnTransformAnimated(
+    const gfx::TransformOperations& operations,
+    int target_property_id,
+    gfx::KeyframeModel* keyframe_model) {
+  DCHECK_EQ(target_property_id, kCombinedTransform);
+  combined_transform_ = operations;
+}
+
+void SurfaceAnimationManager::SharedAnimationState::OnSizeAnimated(
+    const gfx::SizeF& value,
+    int target_property_id,
+    gfx::KeyframeModel* keyframe_model) {
+  DCHECK_EQ(target_property_id, kContentSize);
+  content_size_ = value;
+}
+
+void SurfaceAnimationManager::SharedAnimationState::Reset() {
+  content_opacity_ = 1.0f;
+  content_size_ = gfx::SizeF();
+  combined_opacity_ = 1.0f;
+  combined_transform_ = gfx::TransformOperations();
 }
 
 SurfaceAnimationManager::RenderPassDrawData::RenderPassDrawData() = default;

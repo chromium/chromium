@@ -134,11 +134,8 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
     DCHECK_EQ(CalculatePhase(now_delta), KeyframeModel::Phase::ACTIVE);
     auto* keyframed_curve = AnimationTraits<T>::ToKeyframedCurve(curve_.get());
     DCHECK(keyframed_curve);
-    auto new_curve = keyframed_curve->Retarget(now_delta, new_target_value);
-    if (new_curve) {
+    if (auto new_curve = keyframed_curve->Retarget(now_delta, new_target_value))
       curve_ = std::move(new_curve);
-      curve_->Tick(now_delta, property_id, this);
-    }
   }
 
   // Some clients may run threaded animations and may need to defer starting

@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/test/animation_utils.h"
 #include "ui/gfx/geometry/test/size_test_util.h"
 #include "ui/gfx/test/gfx_util.h"
@@ -329,6 +330,36 @@ TEST(KeyframeAnimationTest, RetargetOpacityTransition) {
 
   animator.Tick(start_time + MicrosecondsToDelta(7500));
   EXPECT_FLOAT_EQ(0.75f, target.opacity());
+}
+
+TEST(KeyframeAnimationTest, RetargetTransitionBeforeLastKeyframe) {
+  TestAnimationTarget target;
+  KeyframeEffect animator;
+
+  std::unique_ptr<KeyframedFloatAnimationCurve> curve(
+      gfx::KeyframedFloatAnimationCurve::Create());
+  curve->AddKeyframe(FloatKeyframe::Create(base::TimeDelta(), 1.0f, nullptr));
+  curve->AddKeyframe(
+      FloatKeyframe::Create(MicrosecondsToDelta(5000), 0.5f, nullptr));
+  curve->AddKeyframe(
+      FloatKeyframe::Create(MicrosecondsToDelta(10000), 0.0f, nullptr));
+  curve->set_target(&target);
+  animator.AddKeyframeModel(KeyframeModel::Create(
+      std::move(curve), KeyframeEffect::GetNextKeyframeModelId(),
+      kOpacityPropertyId));
+
+  base::TimeTicks start_time = MicrosecondsToTicks(1000000);
+  animator.Tick(start_time);
+  EXPECT_EQ(1.f, target.opacity());
+
+  animator.GetKeyframeModel(kOpacityPropertyId)
+      ->Retarget(start_time + MicrosecondsToDelta(4000), kOpacityPropertyId,
+                 0.1f);
+  animator.Tick(start_time + MicrosecondsToDelta(5000));
+  EXPECT_FLOAT_EQ(0.5f, target.opacity());
+
+  animator.Tick(start_time + MicrosecondsToDelta(7500));
+  EXPECT_FLOAT_EQ(0.3f, target.opacity());
 }
 
 TEST(KeyframeAnimationTest, LayoutOffsetTransitions) {
