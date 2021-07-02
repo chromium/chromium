@@ -72,13 +72,33 @@ const char* kCopiedSwitchNames[] = { switches::kV, switches::kVModule };
 const int kDefaultRdpScreenWidth = 1280;
 const int kDefaultRdpScreenHeight = 768;
 
-// RDC 6.1 (W2K8) supports dimensions of up to 4096x2048.
-const int kMaxRdpScreenWidth = 4096;
-const int kMaxRdpScreenHeight = 2048;
-
 // The minimum effective screen dimensions supported by Windows are 800x600.
 const int kMinRdpScreenWidth = 800;
 const int kMinRdpScreenHeight = 600;
+
+// Win7 SP1 (and Vista) supports dimensions up to 4096x2048.
+const int kMaxRdpScreenWidthForWin7 = 4096;
+const int kMaxRdpScreenHeightForWin7 = 2048;
+
+// Win8+ supports dimensions up to 8192x8192.
+const int kMaxRdpScreenWidthForWin8AndLater = 8192;
+const int kMaxRdpScreenHeightForWin8AndLater = 8192;
+
+int GetMaxRdpScreenWidth() {
+  static int max_rdp_screen_width =
+      base::win::GetVersion() >= base::win::Version::WIN8
+          ? kMaxRdpScreenWidthForWin8AndLater
+          : kMaxRdpScreenWidthForWin7;
+  return max_rdp_screen_width;
+}
+
+int GetMaxRdpScreenHeight() {
+  static int max_rdp_screen_height =
+      base::win::GetVersion() >= base::win::Version::WIN8
+          ? kMaxRdpScreenHeightForWin8AndLater
+          : kMaxRdpScreenHeightForWin7;
+  return max_rdp_screen_height;
+}
 
 // Default dots per inch used by RDP is 96 DPI.
 const int kDefaultRdpDpi = 96;
@@ -106,8 +126,8 @@ const wchar_t kSecurityLayerValueName[] = L"SecurityLayer";
 
 webrtc::DesktopSize GetBoundedRdpDesktopSize(int width, int height) {
   return webrtc::DesktopSize(
-      base::ClampToRange(width, kMinRdpScreenWidth, kMaxRdpScreenWidth),
-      base::ClampToRange(height, kMinRdpScreenHeight, kMaxRdpScreenHeight));
+      base::ClampToRange(width, kMinRdpScreenWidth, GetMaxRdpScreenWidth()),
+      base::ClampToRange(height, kMinRdpScreenHeight, GetMaxRdpScreenHeight()));
 }
 
 // DesktopSession implementation which attaches to the host's physical console.
