@@ -21,6 +21,7 @@
 
 namespace ash {
 
+class AppListA11yAnnouncer;
 class AppsContainerView;
 class AppListFolderItem;
 class AppListItemView;
@@ -40,6 +41,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   AppListFolderView(AppsContainerView* container_view,
                     AppListModel* model,
                     ContentsView* contents_view,
+                    AppListA11yAnnouncer* a11y_announcer,
                     AppListViewDelegate* view_delegate);
   AppListFolderView(const AppListFolderView&) = delete;
   AppListFolderView& operator=(const AppListFolderView&) = delete;
@@ -58,10 +60,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Schedules an animation to show or hide the view.
   // If |show| is false, the view should be set to invisible after the
   // animation is done unless |hide_for_reparent| is true.
-  // |announcement_view| - view used for accessibility notifications.
-  void ScheduleShowHideAnimation(bool show,
-                                 bool hide_for_reparent,
-                                 views::View* announcement_view);
+  void ScheduleShowHideAnimation(bool show, bool hide_for_reparent);
 
   // Hides the view immediately without animation.
   void HideViewImmediately();
@@ -162,14 +161,11 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Returns nullptr if there isn't one associated with this widget.
   ui::Compositor* GetCompositor();
 
-  // Creates accessibility event for opening folder if |open| is true.
-  // Otherwise, creates the event for closing folder.
-  void CreateOpenOrCloseFolderAccessibilityEvent(
-      bool open,
-      views::View* announcement_view);
-
   // Views below are not owned by views hierarchy.
   AppsContainerView* container_view_;
+
+  // Used to send accessibility alerts. Owned by the parent apps container.
+  AppListA11yAnnouncer* const a11y_announcer_;
 
   // The view is used to draw a background with corner radius.
   views::View* background_view_;  // Owned by views hierarchy.

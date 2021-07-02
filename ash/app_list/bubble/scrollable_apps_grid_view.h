@@ -20,7 +20,8 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
  public:
   METADATA_HEADER(ScrollableAppsGridView);
 
-  ScrollableAppsGridView(AppListViewDelegate* view_delegate,
+  ScrollableAppsGridView(AppListA11yAnnouncer* a11y_announcer,
+                         AppListViewDelegate* view_delegate,
                          AppsGridViewFolderDelegate* folder_delegate);
   ScrollableAppsGridView(const ScrollableAppsGridView&) = delete;
   ScrollableAppsGridView& operator=(const ScrollableAppsGridView&) = delete;

@@ -13,6 +13,7 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/apps_container_view.h"
@@ -637,6 +638,9 @@ AppListView::AppListView(AppListViewDelegate* delegate)
 }
 
 AppListView::~AppListView() {
+  // Shutdown a11y announcer before the announcement view gets removed.
+  a11y_announcer_->Shutdown();
+
   // Remove child views first to ensure no remaining dependencies on delegate_.
   RemoveAllChildViews(true);
 }
@@ -691,7 +695,6 @@ void AppListView::InitContents() {
   DCHECK(!app_list_background_shield_);
   DCHECK(!app_list_main_view_);
   DCHECK(!search_box_view_);
-  DCHECK(!announcement_view_);
 
   auto app_list_background_shield =
       std::make_unique<AppListBackgroundShieldView>(
@@ -703,6 +706,9 @@ void AppListView::InitContents() {
   app_list_background_shield_ =
       AddChildView(std::move(app_list_background_shield));
 
+  a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
+      AddChildView(std::make_unique<views::View>()));
+
   auto app_list_main_view = std::make_unique<AppListMainView>(delegate_, this);
   search_box_view_ =
       new SearchBoxView(app_list_main_view.get(), delegate_, this);
@@ -713,7 +719,6 @@ void AppListView::InitContents() {
   app_list_main_view_ = app_list_main_view.get();
   app_list_main_view->Init(0, search_box_view_);
   AddChildView(std::move(app_list_main_view));
-  announcement_view_ = AddChildView(std::make_unique<views::View>());
 }
 
 void AppListView::InitWidget(gfx::NativeView parent) {
@@ -1303,25 +1308,21 @@ void AppListView::MaybeCreateAccessibilityEvent(AppListViewState new_state) {
   if (new_state == app_list_state_)
     return;
 
-  if ((new_state != AppListViewState::kPeeking &&
-       new_state != AppListViewState::kFullscreenAllApps)) {
-    return;
-  }
-
   if (!delegate_->AppListTargetVisibility())
     return;
 
-  std::u16string state_announcement;
-
-  if (new_state == AppListViewState::kPeeking) {
-    state_announcement = l10n_util::GetStringUTF16(
-        IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT);
-  } else {
-    state_announcement = l10n_util::GetStringUTF16(
-        IDS_APP_LIST_ALL_APPS_ACCESSIBILITY_ANNOUNCEMENT);
+  switch (new_state) {
+    case AppListViewState::kPeeking:
+      a11y_announcer_->AnnouncePeekingState();
+      break;
+    case AppListViewState::kFullscreenAllApps:
+      a11y_announcer_->AnnounceFullscreenState();
+      break;
+    case AppListViewState::kClosed:
+    case AppListViewState::kHalf:
+    case AppListViewState::kFullscreenSearch:
+      break;
   }
-  announcement_view_->GetViewAccessibility().OverrideName(state_announcement);
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
 void AppListView::EnsureWidgetBoundsMatchCurrentState() {

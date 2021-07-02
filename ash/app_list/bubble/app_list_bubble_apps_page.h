@@ -5,6 +5,8 @@
 #ifndef ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_APPS_PAGE_H_
 #define ASH_APP_LIST_BUBBLE_APP_LIST_BUBBLE_APPS_PAGE_H_
 
+#include <memory>
+
 #include "ash/app_list/bubble/scrollable_apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -12,6 +14,7 @@
 
 namespace ash {
 
+class AppListA11yAnnouncer;
 class AppListViewDelegate;
 class RecentAppsView;
 class ScrollableAppsGridView;
@@ -37,6 +40,7 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
  private:
   friend class AppListTestHelper;
 
+  std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
   RecentAppsView* recent_apps_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;

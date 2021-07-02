@@ -41,6 +41,8 @@ source_set("app_list") {
     "home_launcher_animation_info.h",
     "paged_view_structure.cc",
     "paged_view_structure.h",
+    "views/app_list_a11y_announcer.cc",
+    "views/app_list_a11y_announcer.h",
     "views/app_list_drag_and_drop_host.h",
     "views/app_list_folder_view.cc",
     "views/app_list_folder_view.h",

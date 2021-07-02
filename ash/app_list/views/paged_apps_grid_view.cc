@@ -172,8 +172,10 @@ class PagedAppsGridView::FadeoutLayerDelegate : public ui::LayerDelegate {
 
 PagedAppsGridView::PagedAppsGridView(
     ContentsView* contents_view,
+    AppListA11yAnnouncer* a11y_announcer,
     AppsGridViewFolderDelegate* folder_delegate)
     : AppsGridView(contents_view,
+                   a11y_announcer,
                    contents_view->GetAppListMainView()->view_delegate(),
                    folder_delegate),
       contents_view_(contents_view),

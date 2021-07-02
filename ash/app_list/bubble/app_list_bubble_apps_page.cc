@@ -5,7 +5,6 @@
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 
 #include <limits>
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -13,6 +12,7 @@
 #include "ash/app_list/bubble/recent_apps_view.h"
 #include "ash/app_list/bubble/scrollable_apps_grid_view.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -44,6 +44,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   DCHECK(view_delegate);
 
   SetUseDefaultFillLayout(true);
+
+  a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
+      AddChildView(std::make_unique<views::View>()));
 
   // The entire page scrolls.
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
@@ -90,7 +93,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // All apps section.
   scrollable_apps_grid_view_ =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
-          view_delegate, /*folder_delegate=*/nullptr));
+          a11y_announcer_.get(), view_delegate,
+          /*folder_delegate=*/nullptr));
   scrollable_apps_grid_view_->Init();
   AppListModel* model = view_delegate->GetModel();
   scrollable_apps_grid_view_->SetModel(model);
@@ -100,7 +104,11 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scroll_view_->SetContents(std::move(scroll_contents));
 }
 
-AppListBubbleAppsPage::~AppListBubbleAppsPage() = default;
+AppListBubbleAppsPage::~AppListBubbleAppsPage() {
+  // `a11y_announcer_` depends on a child view, so shut it down before view
+  // hierarchy is destroyed.
+  a11y_announcer_->Shutdown();
+}
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)
 END_METADATA

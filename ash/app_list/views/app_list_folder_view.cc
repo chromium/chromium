@@ -12,6 +12,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
@@ -452,10 +453,13 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
 AppListFolderView::AppListFolderView(AppsContainerView* container_view,
                                      AppListModel* model,
                                      ContentsView* contents_view,
+                                     AppListA11yAnnouncer* a11y_announcer,
                                      AppListViewDelegate* view_delegate)
     : container_view_(container_view),
+      a11y_announcer_(a11y_announcer),
       view_model_(new views::ViewModel),
       model_(model) {
+  DCHECK(a11y_announcer_);
   DCHECK(view_delegate);
   // The background's corner radius cannot be changed in the same layer of the
   // contents container using layer animation, so use another layer to perform
@@ -471,7 +475,7 @@ AppListFolderView::AppListFolderView(AppsContainerView* container_view,
   view_model_->Add(contents_container_, kIndexContentsContainer);
 
   items_grid_view_ = contents_container_->AddChildView(
-      std::make_unique<PagedAppsGridView>(contents_view, this));
+      std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer, this));
   items_grid_view_->Init();
   items_grid_view_->SetModel(model);
   view_model_->Add(items_grid_view_, kIndexChildItems);
@@ -511,11 +515,13 @@ void AppListFolderView::SetAppListFolderItem(AppListFolderItem* folder) {
   UpdatePreferredBounds();
 }
 
-void AppListFolderView::ScheduleShowHideAnimation(
-    bool show,
-    bool hide_for_reparent,
-    views::View* announcement_view) {
-  CreateOpenOrCloseFolderAccessibilityEvent(show, announcement_view);
+void AppListFolderView::ScheduleShowHideAnimation(bool show,
+                                                  bool hide_for_reparent) {
+  if (show)
+    a11y_announcer_->AnnounceFolderOpened();
+  else
+    a11y_announcer_->AnnounceFolderClosed();
+
   show_hide_metrics_tracker_ =
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
   show_hide_metrics_tracker_->Start(
@@ -877,16 +883,6 @@ void AppListFolderView::StartSetupDragInRootLevelAppsGridView(
 
 ui::Compositor* AppListFolderView::GetCompositor() {
   return GetWidget()->GetCompositor();
-}
-
-void AppListFolderView::CreateOpenOrCloseFolderAccessibilityEvent(
-    bool open,
-    views::View* announcement_view) {
-  announcement_view->GetViewAccessibility().OverrideName(
-      ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-          open ? IDS_APP_LIST_FOLDER_OPEN_FOLDER_ACCESSIBILE_NAME
-               : IDS_APP_LIST_FOLDER_CLOSE_FOLDER_ACCESSIBILE_NAME));
-  announcement_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
 BEGIN_METADATA(AppListFolderView, views::View)

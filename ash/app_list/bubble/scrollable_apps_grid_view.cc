@@ -28,9 +28,13 @@ const int kVerticalTilePadding = 8;
 }  // namespace
 
 ScrollableAppsGridView::ScrollableAppsGridView(
+    AppListA11yAnnouncer* a11y_announcer,
     AppListViewDelegate* view_delegate,
     AppsGridViewFolderDelegate* folder_delegate)
-    : AppsGridView(/*contents_view=*/nullptr, view_delegate, folder_delegate) {
+    : AppsGridView(/*contents_view=*/nullptr,
+                   a11y_announcer,
+                   view_delegate,
+                   folder_delegate) {
   // TODO(crbug.com/1211608): Get rid of rows_per_page in this class.
   SetLayout(/*cols=*/5, /*rows_per_page=*/std::numeric_limits<int>::max());
 }

@@ -42,6 +42,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                                      public ui::ImplicitAnimationObserver {
  public:
   PagedAppsGridView(ContentsView* contents_view,
+                    AppListA11yAnnouncer* a11y_announcer,
                     AppsGridViewFolderDelegate* folder_delegate);
   PagedAppsGridView(const PagedAppsGridView&) = delete;
   PagedAppsGridView& operator=(const PagedAppsGridView&) = delete;

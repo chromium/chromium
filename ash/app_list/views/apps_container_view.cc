@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -72,8 +73,11 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
 
   AppListViewDelegate* view_delegate =
       contents_view_->GetAppListMainView()->view_delegate();
-  apps_grid_view_ = AddChildView(std::make_unique<PagedAppsGridView>(
-      contents_view, /*folder_delegate=*/nullptr));
+  AppListA11yAnnouncer* a11y_announcer =
+      contents_view->app_list_view()->a11y_announcer();
+  apps_grid_view_ = AddChildView(
+      std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer,
+                                          /*folder_delegate=*/nullptr));
   apps_grid_view_->Init();
 
   // Page switcher should be initialized after AppsGridView.
@@ -83,13 +87,13 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
   page_switcher_ = AddChildView(std::move(page_switcher));
 
   auto app_list_folder_view = std::make_unique<AppListFolderView>(
-      this, model, contents_view_, view_delegate);
-  // The folder view is initially hidden.
-  app_list_folder_view->SetVisible(false);
-  auto folder_background_view =
-      std::make_unique<FolderBackgroundView>(app_list_folder_view.get());
-  folder_background_view_ = AddChildView(std::move(folder_background_view));
+      this, model, contents_view_, a11y_announcer, view_delegate);
+  folder_background_view_ = AddChildView(
+      std::make_unique<FolderBackgroundView>(app_list_folder_view.get()));
+
   app_list_folder_view_ = AddChildView(std::move(app_list_folder_view));
+  // The folder view is initially hidden.
+  app_list_folder_view_->SetVisible(false);
 
   apps_grid_view_->SetModel(model);
   apps_grid_view_->SetItemList(model->top_level_item_list());
@@ -590,9 +594,6 @@ void AppsContainerView::SetShowState(ShowState show_state,
   // calculated based on the layout.
   Layout();
 
-  views::View* announcement_view =
-      contents_view_->app_list_view()->announcement_view();
-
   switch (show_state_) {
     case SHOW_APPS:
       page_switcher_->SetCanProcessEventsWithinSubtree(true);
@@ -600,8 +601,7 @@ void AppsContainerView::SetShowState(ShowState show_state,
       apps_grid_view_->ResetForShowApps();
       app_list_folder_view_->ResetItemsGridForClose();
       if (show_apps_with_animation) {
-        app_list_folder_view_->ScheduleShowHideAnimation(false, false,
-                                                         announcement_view);
+        app_list_folder_view_->ScheduleShowHideAnimation(false, false);
       } else {
         app_list_folder_view_->HideViewImmediately();
       }
@@ -609,14 +609,12 @@ void AppsContainerView::SetShowState(ShowState show_state,
     case SHOW_ACTIVE_FOLDER:
       page_switcher_->SetCanProcessEventsWithinSubtree(false);
       folder_background_view_->SetVisible(true);
-      app_list_folder_view_->ScheduleShowHideAnimation(true, false,
-                                                       announcement_view);
+      app_list_folder_view_->ScheduleShowHideAnimation(true, false);
       break;
     case SHOW_ITEM_REPARENT:
       page_switcher_->SetCanProcessEventsWithinSubtree(true);
       folder_background_view_->SetVisible(false);
-      app_list_folder_view_->ScheduleShowHideAnimation(false, true,
-                                                       announcement_view);
+      app_list_folder_view_->ScheduleShowHideAnimation(false, true);
       break;
     default:
       NOTREACHED();

@@ -16,6 +16,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -45,7 +46,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -256,11 +256,14 @@ constexpr float AppsGridView::kCardifiedScale;
 constexpr int AppsGridView::kDefaultAnimationDuration;
 
 AppsGridView::AppsGridView(ContentsView* contents_view,
+                           AppListA11yAnnouncer* a11y_announcer,
                            AppListViewDelegate* app_list_view_delegate,
                            AppsGridViewFolderDelegate* folder_delegate)
     : folder_delegate_(folder_delegate),
       contents_view_(contents_view),
+      a11y_announcer_(a11y_announcer),
       app_list_view_delegate_(app_list_view_delegate) {
+  DCHECK(a11y_announcer_);
   DCHECK(app_list_view_delegate_);
 }
 
@@ -1028,8 +1031,10 @@ void AppsGridView::SetSelectedItemByIndex(const GridIndex& index) {
   selected_view_ = new_selection;
   selected_view_->SchedulePaint();
   selected_view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
-  if (selected_view_->HasNotificationBadge())
-    AnnounceItemNotificationBadge(selected_view_->title()->GetText());
+  if (selected_view_->HasNotificationBadge()) {
+    a11y_announcer_->AnnounceItemNotificationBadge(
+        selected_view_->title()->GetText());
+  }
 }
 
 GridIndex AppsGridView::GetIndexOfView(const AppListItemView* view) const {
@@ -1496,8 +1501,8 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
   const bool target_view_is_folder = target_view->is_folder();
 
   AppListItemView* folder_item = MoveItemToFolder(selected_view_, target_index);
-  AnnounceKeyboardFoldering(moving_view_title, target_view_title,
-                            target_view_is_folder);
+  a11y_announcer_->AnnounceKeyboardFoldering(
+      moving_view_title, target_view_title, target_view_is_folder);
   DCHECK(folder_item->is_folder());
   folder_item->RequestFocus();
   Layout();
@@ -2808,63 +2813,9 @@ void AppsGridView::MaybeCreateFolderDroppingAccessibilityEvent() {
       GetViewDisplayedAtSlotOnCurrentPage(drop_target_.slot);
   DCHECK(drop_view);
 
-  AnnounceFolderDrop(drag_view_->title()->GetText(),
-                     drop_view->title()->GetText(), drop_view->is_folder());
-}
-
-views::View* AppsGridView::GetAnnouncementView() {
-  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
-  if (!contents_view_)
-    return nullptr;
-  return contents_view_->app_list_view()->announcement_view();
-}
-
-void AppsGridView::AnnounceItemNotificationBadge(
-    const std::u16string& selected_view_title) {
-  // Set a11y name to announce the notification badge for the focused item.
-  views::View* announcement_view = GetAnnouncementView();
-  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
-  if (!announcement_view)
-    return;
-  announcement_view->GetViewAccessibility().OverrideName(
-      l10n_util::GetStringFUTF16(IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE,
-                                 selected_view_title));
-  announcement_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-}
-
-void AppsGridView::AnnounceFolderDrop(const std::u16string& moving_view_title,
-                                      const std::u16string& target_view_title,
-                                      bool target_is_folder) {
-  // Set a11y name to announce possible move to folder or creation of folder.
-  views::View* announcement_view = GetAnnouncementView();
-  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
-  if (!announcement_view)
-    return;
-  announcement_view->GetViewAccessibility().OverrideName(
-      l10n_util::GetStringFUTF16(
-          target_is_folder
-              ? IDS_APP_LIST_APP_DRAG_MOVE_TO_FOLDER_ACCESSIBILE_NAME
-              : IDS_APP_LIST_APP_DRAG_CREATE_FOLDER_ACCESSIBILE_NAME,
-          moving_view_title, target_view_title));
-  announcement_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-}
-
-void AppsGridView::AnnounceKeyboardFoldering(
-    const std::u16string& moving_view_title,
-    const std::u16string& target_view_title,
-    bool target_is_folder) {
-  // Set a11y name to announce keyboard move to folder or creation of folder.
-  views::View* announcement_view = GetAnnouncementView();
-  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
-  if (!announcement_view)
-    return;
-  announcement_view->GetViewAccessibility().OverrideName(
-      l10n_util::GetStringFUTF16(
-          target_is_folder
-              ? IDS_APP_LIST_APP_KEYBOARD_MOVE_TO_FOLDER_ACCESSIBILE_NAME
-              : IDS_APP_LIST_APP_KEYBOARD_CREATE_FOLDER_ACCESSIBILE_NAME,
-          moving_view_title, target_view_title));
-  announcement_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  a11y_announcer_->AnnounceFolderDrop(drag_view_->title()->GetText(),
+                                      drop_view->title()->GetText(),
+                                      drop_view->is_folder());
 }
 
 void AppsGridView::MaybeCreateDragReorderAccessibilityEvent() {
@@ -2891,22 +2842,11 @@ void AppsGridView::MaybeCreateDragReorderAccessibilityEvent() {
 }
 
 void AppsGridView::AnnounceReorder(const GridIndex& target_index) {
+  const int page = target_index.page + 1;
   const int row =
       ((target_index.slot - (target_index.slot % cols_)) / cols_) + 1;
   const int col = (target_index.slot % cols_) + 1;
-  const int page = target_index.page + 1;
-
-  // Set the accessible name of the announcement view.
-  views::View* announcement_view = GetAnnouncementView();
-  // TODO(crbug.com/1211608): Support announcements in ScrollableAppsGridView.
-  if (!announcement_view)
-    return;
-  announcement_view->GetViewAccessibility().OverrideName(
-      l10n_util::GetStringFUTF16(
-          IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME,
-          base::NumberToString16(page), base::NumberToString16(row),
-          base::NumberToString16(col)));
-  announcement_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  a11y_announcer_->AnnounceAppsGridReorder(page, row, col);
 }
 
 void AppsGridView::CreateGhostImageView() {

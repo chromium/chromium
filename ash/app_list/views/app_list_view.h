@@ -38,6 +38,7 @@ class ImplicitAnimationObserver;
 }  // namespace ui
 
 namespace ash {
+class AppListA11yAnnouncer;
 class AppsContainerView;
 class ApplicationDragAndDropHost;
 class AppListBackgroundShieldView;
@@ -361,7 +362,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   AppListMainView* app_list_main_view() const { return app_list_main_view_; }
 
-  views::View* announcement_view() const { return announcement_view_; }
+  AppListA11yAnnouncer* a11y_announcer() { return a11y_announcer_.get(); }
 
   bool is_fullscreen() const {
     return app_list_state_ == AppListViewState::kFullscreenAllApps ||
@@ -608,11 +609,8 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // view header is visible when onscreen keyboard is shown.
   bool offset_to_show_folder_with_onscreen_keyboard_ = false;
 
-  // View used to announce:
-  // 1. state transition for peeking and fullscreen
-  // 2. folder opening and closing.
-  // 3. app dragging in AppsGridView.
-  views::View* announcement_view_ = nullptr;  // Owned by AppListView.
+  // Used for announcing accessibility alerts.
+  std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
 
   // Records the presentation time for app launcher dragging.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;

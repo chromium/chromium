@@ -42,6 +42,7 @@ class AppsGridViewTest;
 class AppsGridViewTestApi;
 }  // namespace test
 
+class AppListA11yAnnouncer;
 class ApplicationDragAndDropHost;
 class AppListConfig;
 class AppListItem;
@@ -94,6 +95,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // TODO(crbug.com/1211608): Remove `contents_view`. ScrollableAppsGridView
   // doesn't have one.
   AppsGridView(ContentsView* contents_view,
+               AppListA11yAnnouncer* a11y_announcer,
                AppListViewDelegate* app_list_view_delegate,
                AppsGridViewFolderDelegate* folder_delegate);
   AppsGridView(const AppsGridView&) = delete;
@@ -715,28 +717,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // folder or creating a folder with two apps.
   void MaybeCreateFolderDroppingAccessibilityEvent();
 
-  // Returns the view used for accessibility announcements (spoken feedback).
-  views::View* GetAnnouncementView();
-
-  // Modifies the announcement view to verbalize that the focused view has new
-  // updates, based on the item having a notification badge.
-  void AnnounceItemNotificationBadge(const std::u16string& selected_view_title);
-
-  // Modifies the announcement view to verbalize that the current drag will move
-  // |moving_view_title| and create a folder or move it into an existing folder
-  // with |target_view_title|.
-  void AnnounceFolderDrop(const std::u16string& moving_view_title,
-                          const std::u16string& target_view_title,
-                          bool target_is_folder);
-
-  // Modifies the announcement view to vervalize that the most recent keyboard
-  // foldering action has either moved |moving_view_title| into
-  // |target_view_title| folder or that |moving_view_title| and
-  // |target_view_title| have formed a new folder.
-  void AnnounceKeyboardFoldering(const std::u16string& moving_view_title,
-                                 const std::u16string& target_view_title,
-                                 bool target_is_folder);
-
   // During an app drag, creates an a11y event to verbalize drop target
   // location.
   void MaybeCreateDragReorderAccessibilityEvent();
@@ -761,6 +741,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // TODO(crbug.com/1211608): Remove this member.
   ContentsView* contents_view_ = nullptr;
 
+  AppListA11yAnnouncer* const a11y_announcer_;
   AppListViewDelegate* const app_list_view_delegate_;
 
   // Keeps the individual AppListItemView. Owned by views hierarchy.
