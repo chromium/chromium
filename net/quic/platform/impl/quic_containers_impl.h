@@ -8,16 +8,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "net/third_party/quiche/src/common/quiche_linked_hash_map.h"
 
 namespace quic {
-
-// The default hasher used by hash tables.
-template <typename Key>
-using QuicDefaultHasherImpl = absl::Hash<Key>;
-
-template <typename Key, typename Value, typename Hash>
-using QuicLinkedHashMapImpl = quiche::QuicheLinkedHashMap<Key, Value, Hash>;
 
 // TODO(wub): Switch to absl::InlinedVector once it is allowed.
 template <typename T, size_t N, typename A = std::allocator<T>>

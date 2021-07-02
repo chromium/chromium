@@ -248,7 +248,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   void SetIetfConnectionMigrationFlagsAndConnectionOptions() {
     FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
     FLAGS_quic_reloadable_flag_quic_send_path_response2 = true;
-    FLAGS_quic_reloadable_flag_quic_use_connection_id_on_default_path_v2 = true;
     FLAGS_quic_reloadable_flag_quic_server_reverse_validate_new_path3 = true;
     FLAGS_quic_reloadable_flag_quic_group_path_response_and_challenge_sending_closer =
         true;
