@@ -99,6 +99,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
@@ -3745,7 +3746,7 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
   FrameTreeNode* node = rfhi->frame_tree_node();
 
   blink::mojom::CommonNavigationParamsPtr common_params =
-      CreateCommonNavigationParams();
+      blink::CreateCommonNavigationParams();
   // |url| might be empty, such as when LoadPostCommitErrorPage happens before
   // the frame actually committed (e.g. iframe with "src" set to a
   // slow-responding URL). We should rewrite the URL to about:blank in this
@@ -3753,7 +3754,7 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
   // non-empty unreachable URL.
   common_params->url = url.is_empty() ? GURL("about:blank") : url;
   blink::mojom::CommitNavigationParamsPtr commit_params =
-      CreateCommitNavigationParams();
+      blink::CreateCommitNavigationParams();
   commit_params->original_url = common_params->url;
 
   // Error pages have a fully permissive FramePolicy.

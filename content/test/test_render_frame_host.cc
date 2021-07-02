@@ -17,7 +17,6 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame_messages.mojom.h"
-#include "content/common/navigation_params.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/url_constants.h"
@@ -36,6 +35,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
@@ -323,7 +323,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
           absl::nullopt /* web_bundle_token */);
-  auto common_params = CreateCommonNavigationParams();
+  auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = url;
   common_params->initiator_origin = GetLastCommittedOrigin();
   common_params->referrer = blink::mojom::Referrer::New(

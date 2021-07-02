@@ -118,8 +118,6 @@ source_set("common") {
     "mojo_core_library_support.cc",
     "mojo_core_library_support.h",
     "navigation_gesture.h",
-    "navigation_params.cc",
-    "navigation_params.h",
     "navigation_params_utils.h",
     "origin_util.cc",
     "partition_alloc_support.cc",

@@ -12,7 +12,6 @@
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
-#include "content/common/navigation_params.h"
 #include "content/public/browser/navigation_controller.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
