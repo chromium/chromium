@@ -757,6 +757,13 @@ experimental domain Audits
       string url
       optional SourceCodeLocation location
 
+  type WasmCrossOriginModuleSharingIssueDetails extends object
+    properties
+      string wasmModuleUrl
+      string sourceOrigin
+      string targetOrigin
+      boolean isWarning
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -774,6 +781,7 @@ experimental domain Audits
       AttributionReportingIssue
       QuirksModeIssue
       NavigatorUserAgentIssue
+      WasmCrossOriginModuleSharingIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -792,6 +800,7 @@ experimental domain Audits
       optional AttributionReportingIssueDetails attributionReportingIssueDetails
       optional QuirksModeIssueDetails quirksModeIssueDetails
       optional NavigatorUserAgentIssueDetails navigatorUserAgentIssueDetails
+      optional WasmCrossOriginModuleSharingIssueDetails wasmCrossOriginModuleSharingIssue
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

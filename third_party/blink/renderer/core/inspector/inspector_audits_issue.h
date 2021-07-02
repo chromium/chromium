@@ -100,6 +100,13 @@ class CORE_EXPORT AuditsIssue {
       ExecutionContext* execution_context,
       WTF::String url);
 
+  static void ReportCrossOriginWasmModuleSharingIssue(
+      ExecutionContext* execution_context,
+      const std::string& wasm_source_url,
+      WTF::String source_origin,
+      WTF::String target_origin,
+      bool is_warning);
+
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);
 
