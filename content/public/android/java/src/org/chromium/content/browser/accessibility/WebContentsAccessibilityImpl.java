@@ -1770,7 +1770,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         return charSequence;
     }
 
-    protected void convertWebRectToAndroidCoordinates(Rect rect) {
+    protected void convertWebRectToAndroidCoordinates(Rect rect, Bundle extras) {
         // Offset by the scroll position.
         AccessibilityCoordinates ac = mDelegate.getAccessibilityCoordinates();
         rect.offset(-(int) ac.getScrollX(), -(int) ac.getScrollY());
@@ -1789,11 +1789,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         mView.getLocationOnScreen(viewLocation);
         rect.offset(viewLocation[0], viewLocation[1]);
 
-        // Clip to the viewport bounds.
+        // Clip to the viewport bounds, and add unclipped values to the Bundle.
         int viewportRectTop = viewLocation[1] + (int) ac.getContentOffsetYPix();
         int viewportRectBottom = viewportRectTop + ac.getLastFrameViewportHeightPixInt();
-        if (rect.top < viewportRectTop) rect.top = viewportRectTop;
-        if (rect.bottom > viewportRectBottom) rect.bottom = viewportRectBottom;
+        if (rect.top < viewportRectTop) {
+            extras.putInt("AccessibilityNodeInfo.unclippedTop", rect.top);
+            rect.top = viewportRectTop;
+        }
+        if (rect.bottom > viewportRectBottom) {
+            extras.putInt("AccessibilityNodeInfo.unclippedBottom", rect.bottom);
+            rect.bottom = viewportRectBottom;
+        }
     }
 
     protected void requestSendAccessibilityEvent(AccessibilityEvent event) {
@@ -1835,7 +1841,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         node.setBoundsInParent(boundsInParent);
 
         Rect rect = new Rect(absoluteLeft, absoluteTop, absoluteLeft + width, absoluteTop + height);
-        convertWebRectToAndroidCoordinates(rect);
+        convertWebRectToAndroidCoordinates(rect, node.getExtras());
 
         node.setBoundsInScreen(rect);
 
