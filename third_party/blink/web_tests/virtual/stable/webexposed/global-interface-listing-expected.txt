@@ -7218,19 +7218,6 @@ interface SourceBufferList : EventTarget
     method constructor
     setter onaddsourcebuffer
     setter onremovesourcebuffer
-interface SpeechSynthesis : EventTarget
-    attribute @@toStringTag
-    getter onvoiceschanged
-    getter paused
-    getter pending
-    getter speaking
-    method cancel
-    method constructor
-    method getVoices
-    method pause
-    method resume
-    method speak
-    setter onvoiceschanged
 interface SpeechSynthesisErrorEvent : SpeechSynthesisEvent
     attribute @@toStringTag
     getter error
@@ -7272,14 +7259,6 @@ interface SpeechSynthesisUtterance : EventTarget
     setter text
     setter voice
     setter volume
-interface SpeechSynthesisVoice
-    attribute @@toStringTag
-    getter default
-    getter lang
-    getter localService
-    getter name
-    getter voiceURI
-    method constructor
 interface StaticRange : AbstractRange
     attribute @@toStringTag
     method constructor
