@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/dm_policy_manager.h"
 
+#include "base/enterprise_util.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/unittest_util.h"
@@ -107,7 +108,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
 
   auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
 
-  EXPECT_TRUE(policy_manager->IsManaged());
+  EXPECT_EQ(policy_manager->IsManaged(), base::IsMachineExternallyManaged());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   int last_check_period_minutes = 0;
@@ -181,7 +182,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
 
   auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
 
-  EXPECT_TRUE(policy_manager->IsManaged());
+  EXPECT_EQ(policy_manager->IsManaged(), base::IsMachineExternallyManaged());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   int last_check_period_minutes = 0;
@@ -271,7 +272,7 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
 
   auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
 
-  EXPECT_TRUE(policy_manager->IsManaged());
+  EXPECT_EQ(policy_manager->IsManaged(), base::IsMachineExternallyManaged());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   int last_check_period_minutes = 0;

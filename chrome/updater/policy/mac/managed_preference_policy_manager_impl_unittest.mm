@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 
+#include "base/enterprise_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/updater/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestPolicyValues) {
       [[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]);
   EXPECT_NSEQ([policyManager source], @"ManagedPreference");
-  EXPECT_TRUE([policyManager managed]);
+  EXPECT_EQ([policyManager managed], base::IsMachineExternallyManaged());
 
   // Verify global level policies.
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);
@@ -77,7 +78,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestNoGlobalPolicy) {
       [[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]);
   EXPECT_NSEQ([policyManager source], @"ManagedPreference");
-  EXPECT_TRUE([policyManager managed]);
+  EXPECT_EQ([policyManager managed], base::IsMachineExternallyManaged());
 
   // Verify global level policies are set to default.
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);
@@ -116,7 +117,7 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestInvalidPolicyValues) {
       [[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]);
   EXPECT_NSEQ([policyManager source], @"ManagedPreference");
-  EXPECT_TRUE([policyManager managed]);
+  EXPECT_EQ([policyManager managed], base::IsMachineExternallyManaged());
 
   // Verify global level policies.
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);

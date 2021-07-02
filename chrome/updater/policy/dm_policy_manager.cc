@@ -57,7 +57,7 @@ DMPolicyManager::DMPolicyManager(
 DMPolicyManager::~DMPolicyManager() = default;
 
 bool DMPolicyManager::IsManaged() const {
-  return true;
+  return base::IsMachineExternallyManaged();
 }
 
 std::string DMPolicyManager::source() const {

@@ -9,11 +9,11 @@
 
 #include <userenv.h>
 
+#include "base/enterprise_util.h"
 #include "base/scoped_generic.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
-#include "base/win/win_util.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/win/win_constants.h"
 
@@ -81,7 +81,7 @@ GroupPolicyManager::GroupPolicyManager() {
 GroupPolicyManager::~GroupPolicyManager() = default;
 
 bool GroupPolicyManager::IsManaged() const {
-  return policies_.DictSize() > 0 && base::win::IsEnrolledToDomain();
+  return policies_.DictSize() > 0 && base::IsMachineExternallyManaged();
 }
 
 std::string GroupPolicyManager::source() const {
@@ -203,7 +203,7 @@ bool GroupPolicyManager::GetStringPolicy(const std::string& key,
 void GroupPolicyManager::LoadAllPolicies() {
   scoped_hpolicy policy_lock;
 
-  if (base::win::IsEnrolledToDomain()) {
+  if (base::IsMachineExternallyManaged()) {
     // GPO rules mandate a call to EnterCriticalPolicySection() before reading
     // policies (and a matching LeaveCriticalPolicySection() call after read).
     // Acquire the lock for domain-joined machines because group policies are

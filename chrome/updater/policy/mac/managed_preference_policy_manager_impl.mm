@@ -4,6 +4,7 @@
 
 #import "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 
+#include "base/enterprise_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
@@ -216,7 +217,7 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
 - (instancetype)initWithDictionary:(CRUUpdatePolicyDictionary*)policies {
   if (([super init])) {
-    _managed = (policies.count > 0);
+    _managed = policies.count > 0 && base::IsMachineExternallyManaged();
 
     // Always create a global policy instance for default values.
     _globalPolicy.reset([[CRUManagedPreferenceGlobalPolicySettings alloc]
