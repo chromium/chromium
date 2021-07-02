@@ -6,14 +6,20 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_PROTOCOL_HANDLER_MANAGER_H_
 
 #include "base/bind.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <vector>
 
+class Profile;
+
 namespace web_app {
+
+// TODO(crbug.com/1225132): Clean this up and include web_app_id.h.
+using AppId = std::string;
+
+class AppRegistrar;
 
 class ProtocolHandlerManager {
  public:

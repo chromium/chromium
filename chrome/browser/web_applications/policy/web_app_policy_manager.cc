@@ -15,6 +15,7 @@
 #include "base/syslog_logging.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"

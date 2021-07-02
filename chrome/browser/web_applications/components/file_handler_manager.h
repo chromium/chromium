@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -23,6 +22,8 @@ class WebContents;
 }
 
 namespace web_app {
+
+class AppRegistrar;
 
 class FileHandlerManager {
  public:

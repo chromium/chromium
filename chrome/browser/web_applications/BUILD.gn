@@ -13,25 +13,32 @@ group("web_app_test_group") {
 
 source_set("web_applications") {
   sources = [
+    "app_shortcut_manager.cc",
     "daily_metrics_helper.cc",
     "daily_metrics_helper.h",
     "extension_status_utils.h",
+    "externally_installed_web_app_prefs.cc",
     "externally_managed_app_install_task.cc",
     "externally_managed_app_install_task.h",
+    "externally_managed_app_manager.cc",
     "externally_managed_app_manager_impl.cc",
     "externally_managed_app_manager_impl.h",
     "externally_managed_app_registration_task.cc",
     "externally_managed_app_registration_task.h",
+    "file_handler_manager.cc",
     "file_handlers_permission_helper.cc",
     "file_handlers_permission_helper.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
+    "install_finalizer.cc",
+    "install_manager.cc",
     "isolation_prefs_utils.cc",
     "isolation_prefs_utils.h",
     "manifest_update_manager.cc",
     "manifest_update_manager.h",
     "manifest_update_task.cc",
     "manifest_update_task.h",
+    "os_integration_manager.cc",
     "policy/web_app_policy_manager.cc",
     "policy/web_app_policy_manager.h",
     "policy/web_app_policy_manager_observer.h",
@@ -39,12 +46,14 @@ source_set("web_applications") {
     "preinstalled_web_app_manager.h",
     "preinstalled_web_app_utils.cc",
     "preinstalled_web_app_utils.h",
+    "protocol_handler_manager.cc",
     "system_web_apps/system_web_app_background_task.cc",
     "system_web_apps/system_web_app_background_task.h",
     "system_web_apps/system_web_app_delegate.cc",
     "system_web_apps/system_web_app_delegate.h",
     "system_web_apps/system_web_app_manager.cc",
     "system_web_apps/system_web_app_manager.h",
+    "url_handler_manager.cc",
     "web_app.cc",
     "web_app.h",
     "web_app_database.cc",
@@ -53,6 +62,7 @@ source_set("web_applications") {
     "web_app_database_factory.h",
     "web_app_file_handler_manager.cc",
     "web_app_file_handler_manager.h",
+    "web_app_helpers.cc",
     "web_app_icon_manager.cc",
     "web_app_icon_manager.h",
     "web_app_install_finalizer.cc",
@@ -84,7 +94,17 @@ source_set("web_applications") {
     "web_app_sync_install_delegate.h",
     "web_app_tab_helper.cc",
     "web_app_tab_helper.h",
+    "web_app_utils.cc",
   ]
+
+  if (is_linux) {
+    # Desktop linux, doesn't count ChromeOS.
+    sources += [ "web_app_file_handler_registration_linux.cc" ]
+  }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [ "url_handler_manager_impl.cc" ]
+  }
 
   # web_applications must not depend on //chrome/browser/extensions and //extensions
   deps = [
@@ -96,6 +116,9 @@ source_set("web_applications") {
     "//chrome/browser/web_applications/preinstalled_web_apps",
     "//chrome/common",
     "//components/content_settings/core/browser",
+
+    # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
+    "//components/crx_file",
     "//components/device_event_log",
     "//components/keep_alive_registry:keep_alive_registry",
     "//components/keyed_service/content",
@@ -103,6 +126,7 @@ source_set("web_applications") {
     "//components/pref_registry",
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/site_engagement/content",
     "//components/sync",
     "//components/user_manager",
     "//components/webapps/browser",

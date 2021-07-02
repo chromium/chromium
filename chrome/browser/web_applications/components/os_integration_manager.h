@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/protocol_handler_manager.h"
@@ -33,6 +32,7 @@ class WebContents;
 
 namespace web_app {
 
+class AppRegistrar;
 class AppIconManager;
 class TestOsIntegrationManager;
 class WebAppUiManager;

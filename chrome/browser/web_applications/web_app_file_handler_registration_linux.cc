@@ -154,8 +154,8 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const apps::FileHandlers& file_handlers) {
   if (!file_handlers.empty()) {
     RegisterMimeTypesOnLinuxCallback callback =
-        GetRegisterMimeTypesCallbackForTesting()
-            ? std::move(GetRegisterMimeTypesCallbackForTesting())
+        GetRegisterMimeTypesCallbackForTesting()                   // IN-TEST
+            ? std::move(GetRegisterMimeTypesCallbackForTesting())  // IN-TEST
             : base::BindOnce(&DoRegisterMimeTypes);
     RegisterMimeTypesOnLinux(app_id, profile, file_handlers,
                              std::move(callback));
@@ -205,9 +205,9 @@ void RegisterMimeTypesOnLinux(const AppId& app_id,
       base::BindOnce(&OnRegisterMimeTypes));
 }
 
-void SetRegisterMimeTypesOnLinuxCallbackForTesting(
+void SetRegisterMimeTypesOnLinuxCallbackForTesting(  // IN-TEST
     RegisterMimeTypesOnLinuxCallback callback) {
-  GetRegisterMimeTypesCallbackForTesting() = std::move(callback);
+  GetRegisterMimeTypesCallbackForTesting() = std::move(callback);  // IN-TEST
 }
 
 }  // namespace web_app

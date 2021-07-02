@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/components/install_manager.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
 
 namespace web_app {
 

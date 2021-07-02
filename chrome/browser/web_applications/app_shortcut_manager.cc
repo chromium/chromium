@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -87,7 +88,7 @@ void AppShortcutManager::GetAppExistingShortCutLocation(
 
 void AppShortcutManager::SetShortcutUpdateCallbackForTesting(
     base::OnceCallback<void(const ShortcutInfo*)> callback) {
-  GetShortcutUpdateCallbackForTesting() = std::move(callback);
+  GetShortcutUpdateCallbackForTesting() = std::move(callback);  // IN-TEST
 }
 
 bool AppShortcutManager::CanCreateShortcuts() const {

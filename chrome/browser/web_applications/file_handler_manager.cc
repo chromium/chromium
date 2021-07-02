@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "content/public/browser/browser_task_traits.h"
