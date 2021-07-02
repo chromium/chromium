@@ -72,14 +72,13 @@ class OpenURLObserver : public WebContentsObserver {
         callback_(std::move(callback)) {}
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    DCHECK(web_contents());
-    if (!navigation_handle->HasCommitted()) {
-      // Return error.
-      RunCallback(GlobalRenderFrameHostId());
+    if (navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {
+      // This navigation is not for the frame this observer is interested in,
+      // return and keeping observing.
       return;
     }
 
-    if (navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {
+    if (!navigation_handle->HasCommitted()) {
       // Return error.
       RunCallback(GlobalRenderFrameHostId());
       return;
