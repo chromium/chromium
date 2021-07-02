@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_TASK_RUNNER_H_
 
 #include "base/sequenced_task_runner.h"
+#include "base/synchronization/lock.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/gpu_export.h"
 
@@ -44,7 +45,9 @@ class GPU_EXPORT SchedulerTaskRunner : public base::SequencedTaskRunner {
 
   Scheduler& scheduler_;
   const SequenceId sequence_id_;
-  bool is_running_ = true;
+
+  base::Lock lock_;
+  bool is_running_ GUARDED_BY(lock_) = true;
 };
 
 }  // namespace gpu

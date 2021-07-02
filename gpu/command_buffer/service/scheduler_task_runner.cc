@@ -42,6 +42,7 @@ SchedulerTaskRunner::SchedulerTaskRunner(Scheduler& scheduler,
 SchedulerTaskRunner::~SchedulerTaskRunner() = default;
 
 void SchedulerTaskRunner::ShutDown() {
+  base::AutoLock lock(lock_);
   is_running_ = false;
 }
 
@@ -55,6 +56,7 @@ bool SchedulerTaskRunner::PostNonNestableDelayedTask(
     const base::Location& from_here,
     base::OnceClosure task,
     base::TimeDelta delay) {
+  base::AutoLock lock(lock_);
   if (!is_running_)
     return false;
 
@@ -72,6 +74,16 @@ bool SchedulerTaskRunner::RunsTasksInCurrentSequence() const {
 }
 
 void SchedulerTaskRunner::RunTask(base::OnceClosure task) {
+  {
+    // Handle the case where the sequence was shut down after this task was
+    // posted but before it had a chance to run. Note that we don't hold the
+    // lock while invoking the task below, since a task may reenter this object
+    // to e.g. call ShutDown() or post a new task.
+    base::AutoLock lock(lock_);
+    if (!is_running_)
+      return;
+  }
+
   // Scheduler doesn't nest tasks, so we don't support nesting.
   DCHECK(!GetCurrentTaskRunner());
   SetCurrentTaskRunner(this);
