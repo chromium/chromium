@@ -157,7 +157,7 @@ TEST_F(ThreadTest, StartWithOptions_StackSize) {
 #else
   options.stack_size = 3072 * sizeof(uintptr_t);
 #endif
-  EXPECT_TRUE(a.StartWithOptions(options));
+  EXPECT_TRUE(a.StartWithOptions(std::move(options)));
   EXPECT_TRUE(a.task_runner());
   EXPECT_TRUE(a.IsRunning());
 
@@ -180,7 +180,7 @@ TEST_F(ThreadTest, StartWithOptions_NonJoinable) {
 
   Thread::Options options;
   options.joinable = false;
-  EXPECT_TRUE(a->StartWithOptions(options));
+  EXPECT_TRUE(a->StartWithOptions(std::move(options)));
   EXPECT_TRUE(a->task_runner());
   EXPECT_TRUE(a->IsRunning());
 
@@ -246,7 +246,7 @@ TEST_F(ThreadTest, DISABLED_DestroyWhileRunningNonJoinableIsSafe) {
     Thread a("DestroyWhileRunningNonJoinableIsSafe");
     Thread::Options options;
     options.joinable = false;
-    EXPECT_TRUE(a.StartWithOptions(options));
+    EXPECT_TRUE(a.StartWithOptions(std::move(options)));
     EXPECT_TRUE(a.WaitUntilThreadStarted());
   }
 
@@ -362,7 +362,7 @@ TEST_F(ThreadTest, StartTwiceNonJoinableNotAllowed) {
 
   Thread::Options options;
   options.joinable = false;
-  EXPECT_TRUE(a->StartWithOptions(options));
+  EXPECT_TRUE(a->StartWithOptions(std::move(options)));
   EXPECT_TRUE(a->task_runner());
   EXPECT_TRUE(a->IsRunning());
 
@@ -585,14 +585,15 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
 TEST_F(ThreadTest, ProvidedThreadDelegate) {
   Thread thread("ThreadDelegate");
   base::Thread::Options options;
-  options.delegate = new SequenceManagerThreadDelegate();
-  thread.StartWithOptions(options);
+  options.delegate = std::make_unique<SequenceManagerThreadDelegate>();
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      options.delegate->GetDefaultTaskRunner();
+  thread.StartWithOptions(std::move(options));
 
   base::WaitableEvent event;
-
-  options.delegate->GetDefaultTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
+                                                  base::Unretained(&event)));
   event.Wait();
 
   thread.Stop();

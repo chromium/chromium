@@ -349,13 +349,13 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  options.delegate = browser_io_thread_delegate.release();
+  options.delegate = std::move(browser_io_thread_delegate);
   // Up the priority of the |io_thread_| as some of its IPCs relate to
   // display tasks.
   if (base::FeatureList::IsEnabled(
           ::features::kBrowserUseDisplayThreadPriority))
     options.priority = base::ThreadPriority::DISPLAY;
-  if (!io_thread->StartWithOptions(options))
+  if (!io_thread->StartWithOptions(std::move(options)))
     LOG(FATAL) << "Failed to start BrowserThread:IO";
   return io_thread;
 }

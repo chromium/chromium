@@ -122,6 +122,22 @@ Thread::Options::Options(Options&& other)
   other.moved_from = true;
 }
 
+Thread::Options& Thread::Options::operator=(Thread::Options&& other) {
+  DCHECK_NE(this, &other);
+
+  message_pump_type = std::move(other.message_pump_type);
+  delegate = std::move(other.delegate);
+  timer_slack = std::move(other.timer_slack);
+  task_queue_time_domain = std::move(other.task_queue_time_domain);
+  message_pump_factory = std::move(other.message_pump_factory);
+  stack_size = std::move(other.stack_size);
+  priority = std::move(other.priority);
+  joinable = std::move(other.joinable);
+  other.moved_from = true;
+
+  return *this;
+}
+
 Thread::Options::~Options() = default;
 
 Thread::Thread(const std::string& name)
@@ -149,10 +165,10 @@ bool Thread::Start() {
   if (com_status_ == STA)
     options.message_pump_type = MessagePumpType::UI;
 #endif
-  return StartWithOptions(options);
+  return StartWithOptions(std::move(options));
 }
 
-bool Thread::StartWithOptions(const Options& options) {
+bool Thread::StartWithOptions(Options options) {
   DCHECK(options.IsValid());
   DCHECK(owning_sequence_checker_.CalledOnValidSequence());
   DCHECK(!delegate_);
@@ -175,7 +191,7 @@ bool Thread::StartWithOptions(const Options& options) {
   if (options.delegate) {
     DCHECK(!options.message_pump_factory);
     DCHECK(!options.task_queue_time_domain);
-    delegate_ = WrapUnique(options.delegate);
+    delegate_ = std::move(options.delegate);
   } else if (options.message_pump_factory) {
     delegate_ = std::make_unique<SequenceManagerThreadDelegate>(
         MessagePumpType::CUSTOM, options.message_pump_factory,

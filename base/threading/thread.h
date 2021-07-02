@@ -80,7 +80,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     Options();
     Options(MessagePumpType type, size_t size);
     Options(Options&& other);
-    Options& operator=(const Options&& other) = delete;
+    Options& operator=(Options&& other);
     ~Options();
 
     // Specifies the type of message pump that will be allocated on the thread.
@@ -89,8 +89,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
 
     // An unbound Delegate that will be bound to the thread. Ownership
     // of |delegate| will be transferred to the thread.
-    // TODO(alexclarke): This should be a std::unique_ptr
-    Delegate* delegate = nullptr;
+    std::unique_ptr<Delegate> delegate = nullptr;
 
     // Specifies timer slack for thread message loop.
     TimerSlack timer_slack = TIMER_SLACK_NONE;
@@ -171,7 +170,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // Note: This function can't be called on Windows with the loader lock held;
   // i.e. during a DllMain, global object construction or destruction, atexit()
   // callback.
-  bool StartWithOptions(const Options& options);
+  bool StartWithOptions(Options options);
 
   // Starts the thread and wait for the thread to start and run initialization
   // before returning. It's same as calling Start() and then
