@@ -193,7 +193,11 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // LacrosChromeServiceImpl might be null in unit tests.
   auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (lacros_chrome_service &&
+
+  // For requests for fake (including file) video capture device factory, we
+  // don't need to forward the request to Ash-Chrome.
+  if (!media::ShouldUseFakeVideoCaptureDeviceFactory() &&
+      lacros_chrome_service &&
       lacros_chrome_service->IsVideoCaptureDeviceFactoryAvailable()) {
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
         device_factory_ash;

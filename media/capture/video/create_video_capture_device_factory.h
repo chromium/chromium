@@ -14,6 +14,8 @@
 
 namespace media {
 
+bool CAPTURE_EXPORT ShouldUseFakeVideoCaptureDeviceFactory();
+
 std::unique_ptr<VideoCaptureDeviceFactory> CAPTURE_EXPORT
 CreateVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
