@@ -65,15 +65,9 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
 // TODO(sprang): Figure out why test times out on Win 10 and ChromeOS.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_RunsScreenshareFromOneTabToAnother \
-  RunsScreenshareFromOneTabToAnother
-#else
-#define MAYBE_RunsScreenshareFromOneTabToAnother \
-  DISABLED_RunsScreenshareFromOneTabToAnother
-#endif
+// TODO(crbug.com/1225911): Test is flaky on Linux.
 IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
-                       MAYBE_RunsScreenshareFromOneTabToAnother) {
+                       DISABLED_RunsScreenshareFromOneTabToAnother) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadDesktopCaptureExtension();
   left_tab_ = OpenTestPageInNewTab(kMainWebrtcTestHtmlPage);
