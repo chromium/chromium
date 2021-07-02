@@ -482,33 +482,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   String ToString(bool as_matrix = false) const;
 
  private:
-  // multiply passed 2D point by matrix (assume z=0)
-  void MultVecMatrix(double x, double y, double& dst_x, double& dst_y) const;
-  FloatPoint InternalMapPoint(const FloatPoint& source_point) const {
-    double result_x;
-    double result_y;
-    MultVecMatrix(source_point.X(), source_point.Y(), result_x, result_y);
-    return FloatPoint(static_cast<float>(result_x),
-                      static_cast<float>(result_y));
-  }
-
-  // multiply passed 3D point by matrix
-  void MultVecMatrix(double x,
-                     double y,
-                     double z,
-                     double& dst_x,
-                     double& dst_y,
-                     double& dst_z) const;
-  FloatPoint3D InternalMapPoint(const FloatPoint3D& source_point) const {
-    double result_x;
-    double result_y;
-    double result_z;
-    MultVecMatrix(source_point.X(), source_point.Y(), source_point.Z(),
-                  result_x, result_y, result_z);
-    return FloatPoint3D(static_cast<float>(result_x),
-                        static_cast<float>(result_y),
-                        static_cast<float>(result_z));
-  }
+  FloatPoint InternalMapPoint(const FloatPoint& source_point) const;
+  FloatPoint3D InternalMapPoint(const FloatPoint3D& source_point) const;
 
   void SetMatrix(const Matrix4& m) { memcpy(&matrix_, &m, sizeof(Matrix4)); }
 

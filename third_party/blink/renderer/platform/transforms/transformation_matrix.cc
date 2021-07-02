@@ -84,9 +84,7 @@ typedef double Vector3[3];
 static void Clamp(double& value) {
   // TODO(crbug.com/1224320): We should prevent NaN input from outside.
   // To prevent crashes, the following clamp NaN to 0 is added.
-  if (std::isnan(value))
-    value = 0;
-  value = clampTo<double>(value);
+  value = UNLIKELY(std::isnan(value)) ? 0 : clampTo<double>(value);
 }
 
 static void ClampMatrix(TransformationMatrix::Matrix4& matrix) {
@@ -95,6 +93,11 @@ static void ClampMatrix(TransformationMatrix::Matrix4& matrix) {
       Clamp(matrix[i][j]);
     }
   }
+}
+
+static float ClampToFloat(double value) {
+  // TODO(crbug.com/1224320): See Clamp() about isnan.
+  return UNLIKELY(std::isnan(value)) ? 0 : clampTo<float>(value);
 }
 
 // inverse(original_matrix, inverse_matrix)
@@ -842,7 +845,6 @@ FloatPoint TransformationMatrix::ProjectPoint(const FloatPoint& p,
   double y = p.Y();
   double z = -(M13() * x + M23() * y + M43()) / M33();
 
-  // FIXME: use multVecMatrix()
   double out_x = x * M11() + y * M21() + z * M31() + M41();
   double out_y = x * M12() + y * M22() + z * M32() + M42();
 
@@ -1635,38 +1637,40 @@ TransformationMatrix& TransformationMatrix::Multiply(
   return *this;
 }
 
-void TransformationMatrix::MultVecMatrix(double x,
-                                         double y,
-                                         double& result_x,
-                                         double& result_y) const {
-  Clamp(result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0]);
-  Clamp(result_y = matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1]);
+FloatPoint TransformationMatrix::InternalMapPoint(
+    const FloatPoint& source_point) const {
+  double x = source_point.X();
+  double y = source_point.Y();
+  double result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0];
+  double result_y = matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1];
   double w = matrix_[3][3] + x * matrix_[0][3] + y * matrix_[1][3];
   if (w != 1 && w != 0) {
-    Clamp(result_x /= w);
-    Clamp(result_y /= w);
+    result_x /= w;
+    result_y /= w;
   }
+  return FloatPoint(ClampToFloat(result_x), ClampToFloat(result_y));
 }
 
-void TransformationMatrix::MultVecMatrix(double x,
-                                         double y,
-                                         double z,
-                                         double& result_x,
-                                         double& result_y,
-                                         double& result_z) const {
-  Clamp(result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0] +
-                   z * matrix_[2][0]);
-  Clamp(result_y = matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1] +
-                   z * matrix_[2][1]);
-  Clamp(result_z = matrix_[3][2] + x * matrix_[0][2] + y * matrix_[1][2] +
-                   z * matrix_[2][2]);
+FloatPoint3D TransformationMatrix::InternalMapPoint(
+    const FloatPoint3D& source_point) const {
+  double x = source_point.X();
+  double y = source_point.Y();
+  double z = source_point.Z();
+  double result_x =
+      matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0] + z * matrix_[2][0];
+  double result_y =
+      matrix_[3][1] + x * matrix_[0][1] + y * matrix_[1][1] + z * matrix_[2][1];
+  double result_z =
+      matrix_[3][2] + x * matrix_[0][2] + y * matrix_[1][2] + z * matrix_[2][2];
   double w =
       matrix_[3][3] + x * matrix_[0][3] + y * matrix_[1][3] + z * matrix_[2][3];
   if (w != 1 && w != 0) {
-    Clamp(result_x /= w);
-    Clamp(result_y /= w);
-    Clamp(result_z /= w);
+    result_x /= w;
+    result_y /= w;
+    result_z /= w;
   }
+  return FloatPoint3D(ClampToFloat(result_x), ClampToFloat(result_y),
+                      ClampToFloat(result_z));
 }
 
 bool TransformationMatrix::IsInvertible() const {
