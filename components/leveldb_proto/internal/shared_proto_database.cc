@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
+#include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
@@ -478,6 +479,7 @@ void SharedProtoDatabase::OnDatabaseInit(bool create_if_missing,
     delete_obsolete_task_.Reset(base::BindOnce(
         &SharedProtoDatabase::DestroyObsoleteSharedProtoDatabaseClients, this,
         std::move(keep_shared_db_alive)));
+    base::AutoLock lock(delete_obsolete_delay_lock_);
     task_runner_->PostDelayedTask(FROM_HERE, delete_obsolete_task_.callback(),
                                   delete_obsolete_delay_);
   }
@@ -603,6 +605,12 @@ void SharedProtoDatabase::DestroyObsoleteSharedProtoDatabaseClients(
       std::make_unique<ProtoLevelDBWrapper>(task_runner_, db_.get());
   SharedProtoDatabaseClient::DestroyObsoleteSharedProtoDatabaseClients(
       std::move(db_wrapper), std::move(done));
+}
+
+void SharedProtoDatabase::SetDeleteObsoleteDelayForTesting(
+    base::TimeDelta delay) {
+  base::AutoLock lock(delete_obsolete_delay_lock_);
+  delete_obsolete_delay_ = delay;
 }
 
 LevelDB* SharedProtoDatabase::GetLevelDBForTesting() const {

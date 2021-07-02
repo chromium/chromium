@@ -63,6 +63,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseProvider {
 
   virtual ~ProtoDatabaseProvider();
 
+  // This method is thread safe.
   void SetSharedDBDeleteObsoleteDelayForTesting(base::TimeDelta delay);
 
  private:

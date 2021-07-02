@@ -56,7 +56,7 @@ void ProtoDatabaseProvider::SetSharedDBDeleteObsoleteDelayForTesting(
     base::TimeDelta delay) {
   base::AutoLock lock(get_db_lock_);
   if (db_)
-    db_->set_delete_obsolete_delay_for_testing(delay);  // IN-TEST
+    db_->SetDeleteObsoleteDelayForTesting(delay);  // IN-TEST
 }
 
 }  // namespace leveldb_proto

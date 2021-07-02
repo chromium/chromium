@@ -254,7 +254,7 @@ TEST_F(SharedProtoDatabaseTest, CancelDeleteObsoleteClients) {
 }
 
 TEST_F(SharedProtoDatabaseTest, DeleteObsoleteClients) {
-  db()->set_delete_obsolete_delay_for_testing(base::TimeDelta());
+  db()->SetDeleteObsoleteDelayForTesting(base::TimeDelta());
   EXPECT_CALL(*db(), DestroyObsoleteSharedProtoDatabaseClients(_)).Times(1);
   base::RunLoop run_init_loop;
   InitDB(true /* create_if_missing */, "TestDatabaseUMA",
