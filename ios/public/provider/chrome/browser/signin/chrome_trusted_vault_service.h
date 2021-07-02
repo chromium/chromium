@@ -41,6 +41,18 @@ class ChromeTrustedVaultService {
       ChromeIdentity* chrome_identity,
       base::OnceCallback<void(const TrustedVaultSharedKeyList&)> callback) = 0;
 
+  // Invoked when the result of FetchKeys() contains keys that are not
+  // up-to-date. |cb| is run upon completion and returns false if the call did
+  // not make any difference (e.g. the operation is unsupported) or true if
+  // some change may have occurred (which indicates a second FetchKeys() attempt
+  // is worth). During the execution, before |cb| is invoked, the behavior is
+  // unspecified if FetchKeys() is invoked, that is, FetchKeys() may or may not
+  // treat existing keys as stale (only guaranteed upon completion of
+  // MarkLocalKeysAsStale()).
+  // TODO(crbug.com/1100278): Make pure virtual.
+  virtual void MarkLocalKeysAsStale(ChromeIdentity* chrome_identity,
+                                    base::OnceCallback<void(bool)> callback);
+
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
   virtual void GetDegradedRecoverabilityStatus(

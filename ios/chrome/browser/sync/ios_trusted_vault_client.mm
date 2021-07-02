@@ -50,10 +50,8 @@ void IOSTrustedVaultClient::FetchKeys(
 
   ios::ChromeBrowserProvider* browser_provider =
       ios::GetChromeBrowserProvider();
-  ios::ChromeTrustedVaultService* trusted_vault_service =
-      browser_provider->GetChromeTrustedVaultService();
-  DCHECK(trusted_vault_service);
-  trusted_vault_service->FetchKeys(identity, std::move(callback));
+  browser_provider->GetChromeTrustedVaultService()->FetchKeys(
+      identity, std::move(callback));
 }
 
 void IOSTrustedVaultClient::StoreKeys(
@@ -67,8 +65,13 @@ void IOSTrustedVaultClient::StoreKeys(
 void IOSTrustedVaultClient::MarkKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
-  // TODO(crbug.com/1100278): Needs implementation.
-  std::move(callback).Run(false);
+  ChromeIdentity* identity =
+      account_manager_service_->GetIdentityWithGaiaID(account_info.gaia);
+
+  ios::ChromeBrowserProvider* browser_provider =
+      ios::GetChromeBrowserProvider();
+  browser_provider->GetChromeTrustedVaultService()->MarkLocalKeysAsStale(
+      identity, std::move(callback));
 }
 
 void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
@@ -87,6 +90,6 @@ void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure callback) {
-  // TODO(crbug.com/1100278): Needs implementation.
-  std::move(callback).Run();
+  // Not used on iOS.
+  NOTREACHED();
 }
