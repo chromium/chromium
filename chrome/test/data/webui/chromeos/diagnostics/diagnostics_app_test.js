@@ -101,15 +101,17 @@ export function appTestSuite() {
     return flushTasks();
   }
 
-  test('SystemPagePopulated', () => {
-    return initializeDiagnosticsApp(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          const systemPage =
-              dx_utils.getNavigationViewPanelElement(page, 'system-page');
-          assertTrue(!!systemPage);
-          assertTrue(isVisible(systemPage));
-        });
-  });
+  if (window.isNetworkEnabled || window.isInputEnabled) {
+    test('SystemPagePopulated', () => {
+      return initializeDiagnosticsApp(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            const systemPage =
+                dx_utils.getNavigationViewPanelElement(page, 'system-page');
+            assertTrue(!!systemPage);
+            assertTrue(isVisible(systemPage));
+          });
+    });
+  }
 }

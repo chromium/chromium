@@ -24,7 +24,23 @@ GEN('#include "content/public/test/browser_test.h"');
 
 const dxTestSuites = 'chromeos/diagnostics/diagnostics_app_unified_test.js';
 
-this['DiagnosticsApp'] = class extends PolymerTest {
+this.DiagnosticsApp = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return `chrome://diagnostics/test_loader.html?module=${dxTestSuites}`;
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kDiagnosticsApp',
+      ],
+    };
+  }
+};
+
+this.DiagnosticsAppWithNetwork = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return `chrome://diagnostics/test_loader.html?module=${dxTestSuites}`;
@@ -37,6 +53,23 @@ this['DiagnosticsApp'] = class extends PolymerTest {
         'chromeos::features::kDiagnosticsApp',
         'chromeos::features::kEnableNetworkingInDiagnosticsApp',
         'chromeos::features::kDiagnosticsAppNavigation',
+      ],
+    };
+  }
+};
+
+this.DiagnosticsAppWithInput = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return `chrome://diagnostics/test_loader.html?module=${dxTestSuites}`;
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kDiagnosticsApp',
+        'chromeos::features::kEnableInputInDiagnosticsApp',
       ],
     };
   }
@@ -77,15 +110,32 @@ const debug_suites_list = [
 
 TEST_F('DiagnosticsApp', 'BrowserTest', function() {
   assertDeepEquals(
-      debug_suites_list, test_suites_list,
+      debug_suites_list, Object.keys(test_suites_list),
       'List of registered tests suites and debug suites do not match.\n' +
           'Did you forget to add your test in debug_suites_list?');
+
+  mocha.run();
+});
+
+TEST_F('DiagnosticsAppWithNetwork', 'BrowserTest', function() {
+  mocha.run();
+});
+
+TEST_F('DiagnosticsAppWithInput', 'BrowserTest', function() {
   mocha.run();
 });
 
 // Register each suite listed as individual tests for debugging purposes.
 for (const suiteName of debug_suites_list) {
   TEST_F('DiagnosticsApp', `MANUAL_${suiteName}`, function() {
+    runMochaSuite(suiteName);
+  });
+
+  TEST_F('DiagnosticsAppWithNetwork', `MANUAL_${suiteName}`, function() {
+    runMochaSuite(suiteName);
+  });
+
+  TEST_F('DiagnosticsAppWithInput', `MANUAL_${suiteName}`, function() {
     runMochaSuite(suiteName);
   });
 }

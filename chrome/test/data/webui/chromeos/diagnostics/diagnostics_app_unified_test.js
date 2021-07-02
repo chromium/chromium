@@ -33,30 +33,37 @@ import {systemPageTestSuite} from './system_page_test.js';
 import {textBadgeTestSuite} from './text_badge_test.js';
 import {wifiInfoTestSuite} from './wifi_info_test.js';
 
-window.test_suites_list = [];
+window.isNetworkEnabled = window.loadTimeData.getBoolean('isNetworkingEnabled');
+window.isInputEnabled = window.loadTimeData.getBoolean('isInputEnabled');
+window.test_suites_list = {};
 
-function runSuite(suiteName, testFn) {
-  window.test_suites_list.push(suiteName);
-  suite(suiteName, testFn);
+function runSuite(suiteName, testFn, condition = 'default') {
+  window.test_suites_list[suiteName] = condition;
+
+  if (condition === 'default' ||
+      (condition === 'network' && window.isNetworkEnabled) ||
+      (condition === 'input' && window.isInputEnabled)) {
+    suite(suiteName, testFn);
+  }
 }
 
 runSuite('App', appTestSuite);
 runSuite('BatteryStatusCard', batteryStatusCardTestSuite);
-runSuite('CellularInfo', cellularInfoTestSuite);
-runSuite('ConnectivityCard', connectivityCardTestSuite);
+runSuite('CellularInfo', cellularInfoTestSuite, 'network');
+runSuite('ConnectivityCard', connectivityCardTestSuite, 'network');
 runSuite('CpuCard', cpuCardTestSuite);
 runSuite('DataPoint', dataPointTestSuite);
 runSuite('DiagnosticsUtils', diagnosticsUtilsTestSuite);
-runSuite('EthernetInfo', ethernetInfoTestSuite);
+runSuite('EthernetInfo', ethernetInfoTestSuite, 'network');
 runSuite('FakeMojoInterface', fakeMojoProviderTestSuite);
 runSuite('FakeNetworkHealthProvider', fakeNetworkHealthProviderTestSuite);
 runSuite('FakeSystemDataProvider', fakeSystemDataProviderTestSuite);
 runSuite('FakeSystemRoutineContoller', fakeSystemRoutineContollerTestSuite);
-runSuite('InputList', inputListTestSuite);
+runSuite('InputList', inputListTestSuite, 'input');
 runSuite('MemoryCard', memoryCardTestSuite);
-runSuite('NetworkCard', networkCardTestSuite);
-runSuite('NetworkInfo', networkInfoTestSuite);
-runSuite('NetworkList', networkListTestSuite);
+runSuite('NetworkCard', networkCardTestSuite, 'network');
+runSuite('NetworkInfo', networkInfoTestSuite, 'network');
+runSuite('NetworkList', networkListTestSuite, 'network');
 runSuite('OverviewCard', overviewCardTestSuite);
 runSuite('PercentBarChart', percentBarChartTestSuite);
 runSuite('RealtimeCpuChart', realtimeCpuChartTestSuite);
@@ -66,4 +73,4 @@ runSuite('RoutineResultList', routineResultListTestSuite);
 runSuite('RoutineSection', routineSectionTestSuite);
 runSuite('SystemPage', systemPageTestSuite);
 runSuite('TextBadge', textBadgeTestSuite);
-runSuite('WifiInfo', wifiInfoTestSuite);
+runSuite('WifiInfo', wifiInfoTestSuite, 'network');
