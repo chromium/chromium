@@ -41,6 +41,9 @@ class AwGLSurface : public gl::GLSurfaceEGL {
   virtual void RecalculateClipAndTransform(gfx::Size* viewport,
                                            gfx::Rect* clip_rect,
                                            gfx::Transform* transform) {}
+  // Returns true if this GLSurface created fbo to implement stencil clipping.
+  // This doesn't take into account if fbo was created by Android.
+  virtual bool IsDrawingToFBO();
 
  protected:
   ~AwGLSurface() override;

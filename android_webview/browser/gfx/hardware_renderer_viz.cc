@@ -418,9 +418,10 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
       allow_surface_control;
 
   auto* overlay_processor = on_viz_->overlay_processor();
-  const bool overlays_enabled_by_hwui =
-      overlays_params.overlays_mode == OverlaysParams::Mode::Enabled;
-  if (overlays_enabled_by_hwui && overlay_processor) {
+  const bool can_use_overlays =
+      overlays_params.overlays_mode == OverlaysParams::Mode::Enabled &&
+      !output_surface_provider_.gl_surface()->IsDrawingToFBO();
+  if (can_use_overlays && overlay_processor) {
     DCHECK(overlays_params.get_surface_control);
     allow_surface_control.emplace(overlay_processor,
                                   overlays_params.get_surface_control);
@@ -430,7 +431,7 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
       base::BindOnce(&HardwareRendererViz::OnViz::DrawAndSwapOnViz,
                      base::Unretained(on_viz_.get()), viewport, clip, transform,
                      surface_id_, device_scale_factor_, params.color_space,
-                     overlays_enabled_by_hwui, child_frame_.get()));
+                     can_use_overlays, child_frame_.get()));
 
   MergeTransactionIfNeeded(overlays_params.merge_transaction);
 

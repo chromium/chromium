@@ -297,4 +297,10 @@ void AwGLSurfaceExternalStencil::RecalculateClipAndTransform(
   }
 }
 
+bool AwGLSurfaceExternalStencil::IsDrawingToFBO() {
+  const auto& stencil_state =
+      android_webview::ScopedAppGLStateRestore::Current()->stencil_state();
+  return stencil_state.stencil_test_enabled;
+}
+
 }  // namespace android_webview

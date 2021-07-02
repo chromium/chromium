@@ -99,4 +99,8 @@ void AwGLSurface::MaybeDidPresent(const gfx::PresentationFeedback& feedback) {
   std::move(pending_presentation_callback_).Run(feedback);
 }
 
+bool AwGLSurface::IsDrawingToFBO() {
+  return false;
+}
+
 }  // namespace android_webview

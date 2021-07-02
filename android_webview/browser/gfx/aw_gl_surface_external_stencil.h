@@ -21,6 +21,7 @@ class AwGLSurfaceExternalStencil : public AwGLSurface {
   void RecalculateClipAndTransform(gfx::Size* viewport,
                                    gfx::Rect* clip_rect,
                                    gfx::Transform* transform) override;
+  bool IsDrawingToFBO() override;
 
  protected:
   ~AwGLSurfaceExternalStencil() override;
