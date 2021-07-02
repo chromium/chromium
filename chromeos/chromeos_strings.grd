@@ -911,6 +911,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_NO_ETHERNET" desc="The label for the text displayed when a dongle is connected to a device but an Ethernet connection is not detected.">
         No Ethernet connection detected
       </message>
+      <message name="IDS_DIAGNOSTICS_OVERVIEW" desc="The label for the overview navigation panel item.">
+        Overview
+      </message>
+      <message name="IDS_DIAGNOSTICS_CONNECTIVITY" desc="The label for the connectivity navigation panel item.">
+        Connectivity
+      </message>
 
       <message name="IDS_ECHE_APP_DEFAULT_DEVICE_NAME" desc="The default device name used to display on Android endpoint of Eche app.">
         <ph name="GIVEN_NAME">$1<ex>Josh</ex></ph>'s <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>

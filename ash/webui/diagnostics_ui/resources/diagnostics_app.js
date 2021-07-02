@@ -53,9 +53,15 @@ Polymer({
   /** @override */
   attached() {
     if (this.showNavPanel_) {
-      this.$$('#navigationPanel').addSelector('System', 'system-page');
+      this.$$('#navigationPanel')
+          .addSelector(
+              loadTimeData.getString('overviewText'), 'system-page',
+              'navigation-selector:laptop-chromebook');
       if (this.isNetworkingEnabled_) {
-        this.$$('#navigationPanel').addSelector('Connectivity', 'network-list');
+        this.$$('#navigationPanel')
+            .addSelector(
+                loadTimeData.getString('connectivityText'), 'network-list',
+                'navigation-selector:ethernet');
       }
       if (this.isInputEnabled_) {
         this.$$('#navigationPanel').addSelector('Input', 'input-list');
