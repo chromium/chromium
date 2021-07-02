@@ -67,7 +67,7 @@ void ContentInfoBarManager::RenderProcessGone(base::TerminationStatus status) {
 
 void ContentInfoBarManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
