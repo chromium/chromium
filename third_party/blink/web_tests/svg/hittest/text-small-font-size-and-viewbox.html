@@ -21,13 +21,16 @@ svg {
 test(function() {
   var links = document.querySelectorAll('a');
 
+  // The ideal bounding box of the first link in the document is
+  // (0.00, 85.02) - (36.36, 89.56). However, we should have some
+  // tolerance because our scaled font size is an integer.
   [
-    { x: 2, y: 85 },
+    { x: 2, y: 86 },
     { x: 4, y: 87 },
-    { x: 2, y: 89 },
-    { x: 6, y: 85 },
+    { x: 2, y: 88 },
+    { x: 6, y: 86 },
     { x: 4, y: 87 },
-    { x: 6, y: 89 },
+    { x: 6, y: 88 },
     { x: 10, y: 87 },
     { x: 14, y: 87 },
     { x: 18, y: 87 },
@@ -37,6 +40,9 @@ test(function() {
     assert_equals(document.elementFromPoint(point.x, point.y), links[0], point.x + ',' + point.y);
   });
 
+  // The ideal bounding box of the second link in the document is
+  // (275.31, 167.20) - (311.67, 171.75). However, we should have some
+  // tolerance because our scaled font size is an integer.
   [
     { x: 278, y: 169 },
     { x: 276, y: 171 },

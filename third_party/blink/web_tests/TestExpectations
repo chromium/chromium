@@ -4176,7 +4176,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/filters/filter-on-filter-for-te
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/filters/filter-on-tspan.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-fill-none-with-nested-tspan.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-multiple-dx-values.svg [ Failure Pass ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-small-font-size.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/masking/mask-of-root.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/stroke/non-scaling-stroke-text-decoration.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/stroke/non-scaling-stroke-text-decoration-dashed.html [ Failure ]

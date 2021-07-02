@@ -19,6 +19,7 @@ g text:hover {
   </g>
 </svg>
 <script>
+// The text bouding box in the document is (70,26) - (550,106).
 test(function() {
   var textElement = document.querySelector('text');
   // Should hit <text>.
@@ -37,7 +38,7 @@ test(function() {
     { x: 69, y: 26 },
     { x: 69, y: 105 },
     { x: 69, y: 107 },
-    { x: 300, y: 26 },
+    { x: 300, y: 25 },
     { x: 300, y: 107 },
     { x: 550, y: 26 },
     { x: 550, y: 105 },

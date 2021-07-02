@@ -147,10 +147,8 @@ void NGSvgTextLayoutAlgorithm::Layout(
     FloatRect scaled_rect(x, y, width, height);
     const float scaling_factor = layout_object->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
-    PhysicalRect unscaled_rect(LayoutUnit(x / scaling_factor),
-                               LayoutUnit(y / scaling_factor),
-                               LayoutUnit(width / scaling_factor),
-                               LayoutUnit(height / scaling_factor));
+    FloatRect unscaled_rect = scaled_rect;
+    unscaled_rect.Scale(1 / scaling_factor);
     auto data = std::make_unique<NGSvgFragmentData>();
     data->shape_result = item->TextShapeResult();
     data->text_offset = item->TextOffset();
@@ -159,7 +157,9 @@ void NGSvgTextLayoutAlgorithm::Layout(
     data->angle = info.rotate.value_or(0.0f);
     data->baseline_shift = info.baseline_shift;
     data->in_text_path = info.in_text_path;
-    item.item.ConvertToSvgText(std::move(data), unscaled_rect, info.hidden);
+    item.item.ConvertToSvgText(std::move(data),
+                               PhysicalRect::EnclosingRect(unscaled_rect),
+                               info.hidden);
     unscaled_visual_rect.Unite(item.item.ObjectBoundingBox());
   }
   if (items[0]->Type() == NGFragmentItem::kLine) {

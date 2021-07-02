@@ -956,6 +956,11 @@ PhysicalRect NGFragmentItem::ComputeTextBoundsRectForHitTest(
     ink_overflow.Move(border_rect.offset);
     return ink_overflow;
   }
+  // We should not ignore fractional parts of border_rect in SVG because this
+  // item might have much larger screen size than border_rect.
+  // See svg/hittest/text-small-font-size.html.
+  if (Type() == kSvgText)
+    return border_rect;
   return PhysicalRect(PixelSnappedIntRect(border_rect));
 }
 
