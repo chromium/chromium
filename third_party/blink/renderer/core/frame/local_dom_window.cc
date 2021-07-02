@@ -330,7 +330,7 @@ HttpsState LocalDOMWindow::GetHttpsState() const {
   return CalculateHttpsState(GetSecurityOrigin());
 }
 
-ResourceFetcher* LocalDOMWindow::Fetcher() const {
+ResourceFetcher* LocalDOMWindow::Fetcher() {
   return document()->Fetcher();
 }
 

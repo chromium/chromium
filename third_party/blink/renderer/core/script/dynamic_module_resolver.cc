@@ -397,8 +397,6 @@ void DynamicModuleResolver::ResolveDynamically(
   // highly discouraged since it breaks layering. Rewrite this.
   auto* execution_context =
       ExecutionContext::From(modulator_->GetScriptState());
-  if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context))
-    scope->EnsureFetcher();
   modulator_->FetchTree(url, module_type, execution_context->Fetcher(),
                         mojom::blink::RequestContextType::SCRIPT,
                         network::mojom::RequestDestination::kScript, options,

@@ -266,10 +266,7 @@ ScriptPromise ServiceWorkerRegistration::update(
     return ScriptPromise();
   }
 
-  // The fetcher is lazily loaded in a worker global scope.
   auto* execution_context = ExecutionContext::From(script_state);
-  if (auto* global_scope = DynamicTo<WorkerGlobalScope>(execution_context))
-    global_scope->EnsureFetcher();
 
   const FetchClientSettingsObject& settings_object =
       execution_context->Fetcher()

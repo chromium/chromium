@@ -108,8 +108,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
 
   // Returns the resource fetcher for subresources (a.k.a. inside settings
   // resource fetcher). See core/workers/README.md for details.
-  ResourceFetcher* Fetcher() const override;
-  ResourceFetcher* EnsureFetcher();
+  ResourceFetcher* Fetcher() override;
 
   // ResourceFetcher for off-the-main-thread worker top-level script fetching,
   // corresponding to "outside" fetch client's settings object.

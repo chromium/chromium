@@ -202,7 +202,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     return &timers_;
   }
 
-  virtual ResourceFetcher* Fetcher() const = 0;
+  virtual ResourceFetcher* Fetcher() = 0;
 
   SecurityContext& GetSecurityContext() { return security_context_; }
   const SecurityContext& GetSecurityContext() const {

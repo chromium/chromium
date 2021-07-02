@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -108,8 +107,6 @@ ThreadableLoader::ThreadableLoader(
                      &ThreadableLoader::DidTimeout) {
   DCHECK(client);
   if (!resource_fetcher_) {
-    if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_))
-      scope->EnsureFetcher();
     resource_fetcher_ = execution_context_->Fetcher();
   }
 }

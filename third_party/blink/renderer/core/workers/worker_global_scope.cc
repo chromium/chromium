@@ -372,7 +372,6 @@ bool WorkerGlobalScope::FetchClassicImportedScript(
   ExecutionContext* execution_context = GetExecutionContext();
   WorkerClassicScriptLoader* classic_script_loader =
       MakeGarbageCollected<WorkerClassicScriptLoader>();
-  EnsureFetcher();
   classic_script_loader->LoadSynchronously(
       *execution_context, Fetcher(), script_url,
       mojom::blink::RequestContextType::SCRIPT,

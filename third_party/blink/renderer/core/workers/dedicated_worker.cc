@@ -102,12 +102,6 @@ DedicatedWorker::DedicatedWorker(ExecutionContext* context,
   DCHECK(script_request_url_.IsValid());
   DCHECK(context_proxy_);
 
-  // For nested workers, ensure the inside ResourceFetcher because it may not
-  // have been used yet.
-  // For documents, the ResourceFetcher is always already valid.
-  if (auto* scope = DynamicTo<WorkerGlobalScope>(*context))
-    scope->EnsureFetcher();
-
   outside_fetch_client_settings_object_ =
       MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
           context->Fetcher()->GetProperties().GetFetchClientSettingsObject());

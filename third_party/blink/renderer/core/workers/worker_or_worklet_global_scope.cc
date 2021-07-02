@@ -282,11 +282,12 @@ void WorkerOrWorkletGlobalScope::InitializeWebFetchContextIfNeeded() {
   }
 }
 
-ResourceFetcher* WorkerOrWorkletGlobalScope::EnsureFetcher() {
+ResourceFetcher* WorkerOrWorkletGlobalScope::Fetcher() {
   DCHECK(IsContextThread());
   // Worklets don't support subresource fetch.
   DCHECK(IsWorkerGlobalScope());
 
+  // Check if the fetcher has already been initialized, otherwise initialize it.
   if (inside_settings_resource_fetcher_)
     return inside_settings_resource_fetcher_;
 
@@ -363,14 +364,6 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
     fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   resource_fetchers_.insert(fetcher);
   return fetcher;
-}
-
-ResourceFetcher* WorkerOrWorkletGlobalScope::Fetcher() const {
-  DCHECK(IsContextThread());
-  // Worklets don't support subresource fetch.
-  DCHECK(IsWorkerGlobalScope());
-  DCHECK(inside_settings_resource_fetcher_);
-  return inside_settings_resource_fetcher_;
 }
 
 ResourceFetcher* WorkerOrWorkletGlobalScope::CreateOutsideSettingsFetcher(

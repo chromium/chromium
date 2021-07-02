@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
@@ -108,11 +107,6 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
     if (!params.Url().IsLocalFile()) {
       params.SetCrossOriginAccessControl(security_origin,
                                          kCrossOriginAttributeAnonymous);
-    }
-    // For Workers, Fetcher is lazily loaded, so we must ensure it's available
-    // here.
-    if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
-      scope->EnsureFetcher();
     }
     fetched_ = MakeGarbageCollected<FontResourceHelper>(
         FontResource::Fetch(params, context->Fetcher(), client),

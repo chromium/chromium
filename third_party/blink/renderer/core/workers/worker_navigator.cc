@@ -45,8 +45,7 @@ String WorkerNavigator::GetAcceptLanguages() {
   WorkerOrWorkletGlobalScope* global_scope =
       To<WorkerOrWorkletGlobalScope>(GetExecutionContext());
   auto* web_worker_fetch_context =
-      static_cast<WorkerFetchContext*>(
-          (&global_scope->EnsureFetcher()->Context()))
+      static_cast<WorkerFetchContext*>((&global_scope->Fetcher()->Context()))
           ->GetWebWorkerFetchContext();
   return web_worker_fetch_context->GetAcceptLanguages();
 }

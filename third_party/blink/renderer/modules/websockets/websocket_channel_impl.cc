@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/websockets/inspector_websocket_events.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -74,6 +73,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "v8/include/v8.h"
 
@@ -262,10 +262,7 @@ WebSocketChannelImpl::WebSocketChannelImpl(
           mojo::SimpleWatcher::ArmingPolicy::MANUAL,
           execution_context->GetTaskRunner(TaskType::kNetworking)),
       file_reading_task_runner_(
-          execution_context->GetTaskRunner(TaskType::kFileReading)) {
-  if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_))
-    scope->EnsureFetcher();
-}
+          execution_context->GetTaskRunner(TaskType::kFileReading)) {}
 
 WebSocketChannelImpl::~WebSocketChannelImpl() = default;
 
