@@ -120,16 +120,16 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
   ValidateTraceEvents(StopTracingAndAnalyze());
 
   // Check UKM.
-  // Since UKM rounds to an integer while the JS API returns a double, we'll
-  // assert that the UKM and JS values are within 1.0 of each other. Comparing
-  // with strict equality could round incorrectly and introduce flakiness into
-  // the test.
+  // Since UKM rounds to an integer while the JS API returns a coarsened double,
+  // we'll assert that the UKM and JS values are within 1.2 of each other.
+  // Comparing with strict equality could round incorrectly and introduce
+  // flakiness into the test.
   ExpectUKMPageLoadMetricNear(
       PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName,
-      lcp_timestamps[2].value(), 1.0);
+      lcp_timestamps[2].value(), 1.2);
   ExpectUKMPageLoadMetricNear(
       PageLoad::kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName,
-      lcp_timestamps[2].value(), 1.0);
+      lcp_timestamps[2].value(), 1.2);
 
   // Check UMA.
   // Similar to UKM, rounding could introduce flakiness, so use helper to
