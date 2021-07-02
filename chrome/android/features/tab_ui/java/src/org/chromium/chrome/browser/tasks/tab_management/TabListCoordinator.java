@@ -233,8 +233,7 @@ public class TabListCoordinator
         // incognito profile) instead of always using regular profile. It works correctly now, but
         // it is not safe.
         TabListFaviconProvider tabListFaviconProvider =
-                new TabListFaviconProvider(mContext, mMode == TabListMode.STRIP,
-                        mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL);
+                new TabListFaviconProvider(mContext, mMode == TabListMode.STRIP);
 
         mMediator = new TabListMediator(context, mModel, mMode, tabModelSelector, thumbnailProvider,
                 titleProvider, tabListFaviconProvider, actionOnRelatedTabs,
