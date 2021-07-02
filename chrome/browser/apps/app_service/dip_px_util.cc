@@ -30,7 +30,8 @@ int ConvertBetweenDipAndPx(int value,
                            bool invert) {
   float scale = GetPrimaryDisplayScaleFactor();
   if (quantize_to_supported_scale_factor) {
-    scale = ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(scale));
+    scale = ui::GetScaleForResourceScaleFactor(
+        ui::GetSupportedResourceScaleFactor(scale));
   }
   DCHECK_NE(0.0f, scale);
   if (invert) {
@@ -51,8 +52,8 @@ int ConvertPxToDip(int px, bool quantize_to_supported_scale_factor) {
   return ConvertBetweenDipAndPx(px, quantize_to_supported_scale_factor, true);
 }
 
-ui::ScaleFactor GetPrimaryDisplayUIScaleFactor() {
-  return ui::GetSupportedScaleFactor(GetPrimaryDisplayScaleFactor());
+ui::ResourceScaleFactor GetPrimaryDisplayUIScaleFactor() {
+  return ui::GetSupportedResourceScaleFactor(GetPrimaryDisplayScaleFactor());
 }
 
 }  // namespace apps_util

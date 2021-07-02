@@ -165,12 +165,12 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
   ASSERT_FALSE(src.isNull());
   ASSERT_FALSE(dst.isNull());
 
-  const std::vector<ui::ScaleFactor>& scale_factors =
-      ui::GetSupportedScaleFactors();
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
   for (auto& scale_factor : scale_factors) {
-    const float scale = ui::GetScaleForScaleFactor(scale_factor);
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     ASSERT_TRUE(src.HasRepresentation(scale));
     ASSERT_TRUE(dst.HasRepresentation(scale));
     ASSERT_TRUE(
@@ -342,12 +342,12 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     apps::ScaleToSize scale_to_size_in_px;
     int size_in_dip =
         ash::SharedAppListConfig::instance().default_grid_icon_dimension();
-    for (auto scale_factor : ui::GetSupportedScaleFactors()) {
-      int size_in_px =
-          gfx::ScaleToFlooredSize(gfx::Size(size_in_dip, size_in_dip),
-                                  ui::GetScaleForScaleFactor(scale_factor))
-              .width();
-      scale_to_size_in_px[ui::GetScaleForScaleFactor(scale_factor)] =
+    for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+      int size_in_px = gfx::ScaleToFlooredSize(
+                           gfx::Size(size_in_dip, size_in_dip),
+                           ui::GetScaleForResourceScaleFactor(scale_factor))
+                           .width();
+      scale_to_size_in_px[ui::GetScaleForResourceScaleFactor(scale_factor)] =
           size_in_px;
       icon_sizes_in_px.emplace_back(size_in_px);
     }
@@ -383,10 +383,10 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
         size_in_dip, extensions::ChromeAppIcon::ResizeFunction(),
         true /* app_launchable */, true /* from_bookmark */,
         extensions::ChromeAppIcon::Badge::kNone, &output_image_skia);
-    for (auto scale_factor : ui::GetSupportedScaleFactors()) {
+    for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
       // Force the icon to be loaded.
       output_image_skia.GetRepresentation(
-          ui::GetScaleForScaleFactor(scale_factor));
+          ui::GetScaleForResourceScaleFactor(scale_factor));
     }
   }
 

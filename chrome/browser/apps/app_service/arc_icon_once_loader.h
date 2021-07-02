@@ -75,7 +75,7 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
   // false. Otherwise add the ArcAppIcon to |in_flight_requests_| so that we
   // can calculate how many in flight icon loading requests, and return true.
   void MaybeStartIconRequest(ArcAppIcon* arc_app_icon,
-                             ui::ScaleFactor scale_factor);
+                             ui::ResourceScaleFactor scale_factor);
 
   // When get the reply from |arc_app_icon| or remove the app, remove
   // |arc_app_icon| from |in_flight_requests_| and |pending_requests_|, and
@@ -98,7 +98,7 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
   std::set<ArcAppIcon*> in_flight_requests_;
 
   // The ArcAppIcon map to record the pending icon loading requests.
-  std::map<ArcAppIcon*, std::set<ui::ScaleFactor>> pending_requests_;
+  std::map<ArcAppIcon*, std::set<ui::ResourceScaleFactor>> pending_requests_;
 };
 
 }  // namespace apps

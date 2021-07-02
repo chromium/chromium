@@ -69,11 +69,11 @@ class ArcAppIcon {
 
   // Starts loading the icon at every supported scale factor. The |observer_|
   // will be notified as progress is made. "Supported" is in the same sense as
-  // ui::GetSupportedScaleFactors().
+  // ui::GetSupportedResourceScaleFactors().
   virtual void LoadSupportedScaleFactors();
 
   // Whether every supported scale factor was successfully loaded. "Supported"
-  // is in the same sense as ui::GetSupportedScaleFactors().
+  // is in the same sense as ui::GetSupportedResourceScaleFactors().
   //
   // For the adaptive icon, if there is a non-adaptive icon for some scale
   // refactors, sets all scale factors as the non-adaptive icon, and copy
@@ -94,7 +94,8 @@ class ArcAppIcon {
   }
   // Returns |compressed_images_| and valid if the |icon_type_| is
   // IconType::kCompressed.
-  const std::map<ui::ScaleFactor, std::string>& compressed_images() const {
+  const std::map<ui::ResourceScaleFactor, std::string>& compressed_images()
+      const {
     DCHECK_EQ(IconType::kCompressed, icon_type_);
     return compressed_images_;
   }
@@ -128,14 +129,14 @@ class ArcAppIcon {
   struct ReadResult {
     ReadResult(bool error,
                bool request_to_install,
-               ui::ScaleFactor scale_factor,
+               ui::ResourceScaleFactor scale_factor,
                bool resize_allowed,
                std::vector<std::string> unsafe_icon_data);
     ~ReadResult();
 
     const bool error;
     const bool request_to_install;
-    const ui::ScaleFactor scale_factor;
+    const ui::ResourceScaleFactor scale_factor;
     const bool resize_allowed;
     const std::vector<std::string> unsafe_icon_data;
   };
@@ -155,7 +156,7 @@ class ArcAppIcon {
   // install required resource from ARC side. ArcAppListPrefs notifies UI items
   // that new icon is available and corresponding item should invoke
   // LoadImageForScaleFactor again.
-  virtual void LoadForScaleFactor(ui::ScaleFactor scale_factor);
+  virtual void LoadForScaleFactor(ui::ResourceScaleFactor scale_factor);
 
   virtual void OnIconRead(std::unique_ptr<ArcAppIcon::ReadResult> read_result);
 
@@ -166,14 +167,14 @@ class ArcAppIcon {
   class Source;
   class DecodeRequest;
 
-  void MaybeRequestIcon(ui::ScaleFactor scale_factor);
+  void MaybeRequestIcon(ui::ResourceScaleFactor scale_factor);
   static std::unique_ptr<ArcAppIcon::ReadResult> ReadOnBackgroundThread(
       ArcAppIcon::IconType icon_type,
-      ui::ScaleFactor scale_factor,
+      ui::ResourceScaleFactor scale_factor,
       const std::vector<base::FilePath>& paths,
       const std::vector<base::FilePath>& default_app_paths);
   static std::unique_ptr<ArcAppIcon::ReadResult> ReadSingleIconFile(
-      ui::ScaleFactor scale_factor,
+      ui::ResourceScaleFactor scale_factor,
       const base::FilePath& path,
       const base::FilePath& default_app_path);
 
@@ -207,21 +208,21 @@ class ArcAppIcon {
   // the old icon_png_data, when the adaptive icon feature is enabled in the
   // stable release, and the adaptive icon flag is removed.
   static std::unique_ptr<ArcAppIcon::ReadResult> ReadAdaptiveIconFiles(
-      ui::ScaleFactor scale_factor,
+      ui::ResourceScaleFactor scale_factor,
       const std::vector<base::FilePath>& paths,
       const std::vector<base::FilePath>& default_app_paths);
   static std::unique_ptr<ArcAppIcon::ReadResult>
   ReadDefaultAppAdaptiveIconFiles(
-      ui::ScaleFactor scale_factor,
+      ui::ResourceScaleFactor scale_factor,
       const std::vector<base::FilePath>& default_app_paths);
   static std::unique_ptr<ArcAppIcon::ReadResult> ReadFile(
       bool request_to_install,
-      ui::ScaleFactor scale_factor,
+      ui::ResourceScaleFactor scale_factor,
       bool resize_allowed,
       const base::FilePath& path);
   static std::unique_ptr<ArcAppIcon::ReadResult> ReadFiles(
       bool request_to_install,
-      ui::ScaleFactor scale_factor,
+      ui::ResourceScaleFactor scale_factor,
       bool resize_allowed,
       const base::FilePath& foreground_path,
       const base::FilePath& background_path);
@@ -231,13 +232,13 @@ class ArcAppIcon {
       bool resize_allowed,
       bool retain_padding,
       gfx::ImageSkia& image_skia,
-      std::map<ui::ScaleFactor, base::Time>& incomplete_scale_factors);
+      std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors);
   void UpdateImageSkia(
-      ui::ScaleFactor scale_factor,
+      ui::ResourceScaleFactor scale_factor,
       const SkBitmap& bitmap,
       gfx::ImageSkia& image_skia,
-      std::map<ui::ScaleFactor, base::Time>& incomplete_scale_factors);
-  void UpdateCompressed(ui::ScaleFactor scale_factor, std::string data);
+      std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors);
+  void UpdateCompressed(ui::ResourceScaleFactor scale_factor, std::string data);
   void DiscardDecodeRequest(DecodeRequest* request, bool is_decode_success);
 
   content::BrowserContext* const context_;
@@ -255,16 +256,18 @@ class ArcAppIcon {
 
   // For some apps, some scales have the adaptive icons, but some are not. So
   // using a map to present which scale is the adaptive icon, which is not.
-  std::map<ui::ScaleFactor, bool> is_adaptive_icons_;
+  std::map<ui::ResourceScaleFactor, bool> is_adaptive_icons_;
 
   gfx::ImageSkia image_skia_;
-  std::map<ui::ScaleFactor, std::string> compressed_images_;
+  std::map<ui::ResourceScaleFactor, std::string> compressed_images_;
   gfx::ImageSkia foreground_image_skia_;
   gfx::ImageSkia background_image_skia_;
 
-  std::map<ui::ScaleFactor, base::Time> incomplete_scale_factors_;
-  std::map<ui::ScaleFactor, base::Time> foreground_incomplete_scale_factors_;
-  std::map<ui::ScaleFactor, base::Time> background_incomplete_scale_factors_;
+  std::map<ui::ResourceScaleFactor, base::Time> incomplete_scale_factors_;
+  std::map<ui::ResourceScaleFactor, base::Time>
+      foreground_incomplete_scale_factors_;
+  std::map<ui::ResourceScaleFactor, base::Time>
+      background_incomplete_scale_factors_;
 
   // Contains pending image decode requests.
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;

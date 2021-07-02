@@ -1342,7 +1342,7 @@ TEST_F(WebAppIconManagerTest, CacheNewAppFavicon) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();
@@ -1386,7 +1386,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();
@@ -1425,7 +1425,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();
@@ -1439,7 +1439,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();
@@ -1462,7 +1462,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
 
 TEST_F(WebAppIconManagerTest,
        CacheAppFavicon_UiScaleFactors_DownsizingFromSingleIcon) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();
@@ -1498,7 +1498,7 @@ TEST_F(WebAppIconManagerTest,
 
 TEST_F(WebAppIconManagerTest,
        CacheAppFavicon_UiScaleFactors_BiggerUiScaleFactorIconMissing) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_300P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();
@@ -1542,7 +1542,7 @@ class WebAppIconManagerTest_NotificationIconAndTitle
 
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_NoMissingIcons) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();
@@ -1590,7 +1590,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
 
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_CacheAfterAppInstall) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_200P, ui::SCALE_FACTOR_300P});
 
   icon_manager().Start();
@@ -1638,7 +1638,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
 
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_NoThemeColor) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_300P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();
@@ -1673,7 +1673,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
 
 TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
        CacheAppMonochromeFavicon_NoIcons) {
-  ui::test::ScopedSetSupportedScaleFactors scoped_scale_factors(
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P});
 
   std::unique_ptr<WebApp> web_app = test::CreateMinimalWebApp();

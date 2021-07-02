@@ -57,10 +57,10 @@ namespace {
 const int kSizeInDip = 64;
 
 void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia) {
-  for (auto scale_factor : ui::GetSupportedScaleFactors()) {
+  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
     // Force the icon to be loaded.
     output_image_skia.GetRepresentation(
-        ui::GetScaleForScaleFactor(scale_factor));
+        ui::GetScaleForResourceScaleFactor(scale_factor));
   }
 }
 
@@ -84,12 +84,12 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
   ASSERT_FALSE(src.isNull());
   ASSERT_FALSE(dst.isNull());
 
-  const std::vector<ui::ScaleFactor>& scale_factors =
-      ui::GetSupportedScaleFactors();
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
   for (auto& scale_factor : scale_factors) {
-    const float scale = ui::GetScaleForScaleFactor(scale_factor);
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     ASSERT_TRUE(src.HasRepresentation(scale));
     ASSERT_TRUE(dst.HasRepresentation(scale));
     ASSERT_TRUE(
@@ -1042,12 +1042,12 @@ TEST_F(WebAppIconFactoryTest,
       icon_bitmaps, /*icon_effects=*/apps::IconEffects::kNone,
       /*size_hint_in_dip=*/32);
 
-  const std::vector<ui::ScaleFactor>& scale_factors =
-      ui::GetSupportedScaleFactors();
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
   for (auto& scale_factor : scale_factors) {
-    const float scale = ui::GetScaleForScaleFactor(scale_factor);
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
     EXPECT_EQ(
         SK_ColorYELLOW,
@@ -1083,8 +1083,8 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_MatchBigger) {
       icon_bitmaps, /*icon_effects=*/apps::IconEffects::kNone,
       /*size_hint_in_dip=*/32);
 
-  const std::vector<ui::ScaleFactor>& scale_factors =
-      ui::GetSupportedScaleFactors();
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
   // Expects 32px and 64px to be chosen for 32dip-normal and 32dip-hi-DPI (2.0f
@@ -1092,7 +1092,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_MatchBigger) {
   const std::vector<SkColor> expected_colors{SK_ColorRED, SK_ColorGREEN};
 
   for (int i = 0; i < scale_factors.size(); ++i) {
-    const float scale = ui::GetScaleForScaleFactor(scale_factors[i]);
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
     EXPECT_EQ(
         expected_colors[i],
@@ -1118,12 +1118,12 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
 
   EnsureRepresentationsLoaded(converted_image);
 
-  const std::vector<ui::ScaleFactor>& scale_factors =
-      ui::GetSupportedScaleFactors();
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
   ASSERT_EQ(2U, scale_factors.size());
 
   for (int i = 0; i < scale_factors.size(); ++i) {
-    const float scale = ui::GetScaleForScaleFactor(scale_factors[i]);
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
     ASSERT_TRUE(converted_image.HasRepresentation(scale));
 
     // No color in the upper left corner.

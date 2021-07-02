@@ -31,7 +31,7 @@ class ArcIconOnceLoader::SizeSpecificLoader : public ArcAppIcon::Observer {
   void LoadIcon(const std::string& app_id,
                 base::OnceCallback<void(ArcAppIcon*)> callback);
   void Remove(const std::string& app_id);
-  void Reload(const std::string& app_id, ui::ScaleFactor scale_factor);
+  void Reload(const std::string& app_id, ui::ResourceScaleFactor scale_factor);
 
   // ArcAppIcon::Observer overrides.
   void OnIconUpdated(ArcAppIcon* icon) override;
@@ -107,7 +107,7 @@ void ArcIconOnceLoader::SizeSpecificLoader::LoadIcon(
   iter = icons_.insert(std::make_pair(app_id, std::move(arc_app_icon))).first;
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     host_.MaybeStartIconRequest(iter->second.get(),
-                                ui::ScaleFactor::NUM_SCALE_FACTORS);
+                                ui::ResourceScaleFactor::NUM_SCALE_FACTORS);
     return;
   }
   iter->second->LoadSupportedScaleFactors();
@@ -125,7 +125,7 @@ void ArcIconOnceLoader::SizeSpecificLoader::Remove(const std::string& app_id) {
 
 void ArcIconOnceLoader::SizeSpecificLoader::Reload(
     const std::string& app_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   auto iter = icons_.find(app_id);
   if (iter != icons_.end()) {
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
@@ -249,12 +249,13 @@ void ArcIconOnceLoader::SetArcAppIconFactoryForTesting(
   arc_app_icon_factory_ = std::move(arc_app_icon_factory);
 }
 
-void ArcIconOnceLoader::MaybeStartIconRequest(ArcAppIcon* arc_app_icon,
-                                              ui::ScaleFactor scale_factor) {
+void ArcIconOnceLoader::MaybeStartIconRequest(
+    ArcAppIcon* arc_app_icon,
+    ui::ResourceScaleFactor scale_factor) {
   DCHECK(arc_app_icon);
   if (in_flight_requests_.size() < kMaxSimultaneousIconRequests) {
     in_flight_requests_.insert(arc_app_icon);
-    if (scale_factor == ui::ScaleFactor::NUM_SCALE_FACTORS) {
+    if (scale_factor == ui::ResourceScaleFactor::NUM_SCALE_FACTORS) {
       arc_app_icon->LoadSupportedScaleFactors();
     } else {
       arc_app_icon->LoadForScaleFactor(scale_factor);
@@ -282,12 +283,12 @@ void ArcIconOnceLoader::MaybeLoadPendingIconRequest() {
     ArcAppIcon* arc_app_icon = it->first;
     DCHECK(arc_app_icon);
 
-    std::set<ui::ScaleFactor>& scale_factors = it->second;
+    std::set<ui::ResourceScaleFactor>& scale_factors = it->second;
     DCHECK(!scale_factors.empty());
 
     // Handle all pending icon loading requests for |arc_app_icon|.
     for (auto scale_factor : scale_factors) {
-      if (scale_factor == ui::ScaleFactor::NUM_SCALE_FACTORS) {
+      if (scale_factor == ui::ResourceScaleFactor::NUM_SCALE_FACTORS) {
         arc_app_icon->LoadSupportedScaleFactors();
       } else {
         arc_app_icon->LoadForScaleFactor(scale_factor);

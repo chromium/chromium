@@ -148,7 +148,7 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
       info_list.push_back(extensions::ImageLoader::ImageRepresentation(
           resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
           gfx::Size(size, size),
-          GetScaleForScaleFactor(ui::SCALE_FACTOR_100P)));
+          GetScaleForResourceScaleFactor(ui::SCALE_FACTOR_100P)));
     }
   }
 
@@ -167,7 +167,8 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
     }
     info_list.push_back(extensions::ImageLoader::ImageRepresentation(
         resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
-        gfx::Size(size, size), GetScaleForScaleFactor(ui::SCALE_FACTOR_100P)));
+        gfx::Size(size, size),
+        GetScaleForResourceScaleFactor(ui::SCALE_FACTOR_100P)));
   }
 
   // |info_list| may still be empty at this point, in which case
