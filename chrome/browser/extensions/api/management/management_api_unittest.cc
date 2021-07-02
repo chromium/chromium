@@ -126,8 +126,7 @@ bool ManagementApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
     const base::ListValue& args) {
   return extension_function_test_utils::RunFunction(
-      function.get(), base::WrapUnique(args.DeepCopy()), browser(),
-      api_test_utils::NONE);
+      function.get(), args.CreateDeepCopy(), browser(), api_test_utils::NONE);
 }
 
 bool ManagementApiUnitTest::RunSetEnabledFunction(
