@@ -221,8 +221,15 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
         boolean isOffTheRecord =
                 IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false);
-        OTRProfileID otrProfileID = entry == null ? DownloadUtils.getOTRProfileIDFromIntent(intent)
-                                                  : entry.otrProfileID;
+
+        OTRProfileID otrProfileID;
+        if (entry != null) {
+            otrProfileID = entry.otrProfileID;
+        } else {
+            // If the profile doesn't exist, then do not perform any action.
+            if (!DownloadUtils.doesProfileExistFromIntent(intent)) return;
+            otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
+        }
         assert !isOffTheRecord || otrProfileID != null;
 
         // Handle actions that do not require a specific entry or service delegate.
@@ -383,6 +390,8 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 intent, DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE, false);
         boolean isOffTheRecord = IntentUtils.safeGetBooleanExtra(
                 intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
+        // If the profile doesn't exist, then do not open the download.
+        if (!DownloadUtils.doesProfileExistFromIntent(intent)) return;
         OTRProfileID otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
         assert !isOffTheRecord || otrProfileID != null;
         Uri originalUrl = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_ORIGINATING_URI);

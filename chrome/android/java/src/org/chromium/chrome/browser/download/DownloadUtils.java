@@ -127,6 +127,12 @@ public class DownloadUtils {
             otrProfileID = profile != null ? profile.getOTRProfileID() : otrProfileID;
         }
 
+        // If the profile is off-the-record and it does not exist, then do not start the activity.
+        if (OTRProfileID.isOffTheRecord(otrProfileID)
+                && !Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID)) {
+            return false;
+        }
+
         if (isTablet) {
             // Download Home shows up as a tab on tablets.
             LoadUrlParams params = new LoadUrlParams(UrlConstants.DOWNLOADS_URL);
@@ -188,6 +194,17 @@ public class DownloadUtils {
     public static OTRProfileID getOTRProfileIDFromIntent(Intent intent) {
         String serializedId = IntentUtils.safeGetString(intent.getExtras(), EXTRA_OTR_PROFILE_ID);
         return OTRProfileID.deserialize(serializedId);
+    }
+
+    /**
+     * @param intent An {@link Intent} instance.
+     * @return The boolean to state whether the profile exists or not.
+     */
+    public static boolean doesProfileExistFromIntent(Intent intent) {
+        String serializedId = IntentUtils.safeGetString(intent.getExtras(), EXTRA_OTR_PROFILE_ID);
+        OTRProfileID otrProfileID = OTRProfileID.deserializeWithoutVerify(serializedId);
+        return otrProfileID == null
+                || Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID);
     }
 
     /**
