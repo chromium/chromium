@@ -51,8 +51,6 @@ class MockDisplaySystemDelegate
   MOCK_METHOD(void,
               UnregisterClient,
               (display::ContentProtectionManager::ClientId));
-  MOCK_METHOD(void, AddObserver, (display::DisplayObserver*));
-  MOCK_METHOD(void, RemoveObserver, (display::DisplayObserver*));
   MOCK_METHOD(const std::vector<display::DisplaySnapshot*>&,
               cached_displays,
               (),
@@ -89,7 +87,6 @@ class OutputProtectionImplTest : public testing::Test {
 
     EXPECT_CALL(*delegate_, RegisterClient())
         .WillOnce(Return(absl::optional<uint64_t>(kFakeClientId)));
-    EXPECT_CALL(*delegate_, AddObserver(_));
   }
 
   void UpdateDisplays(size_t count) {
@@ -102,7 +99,6 @@ class OutputProtectionImplTest : public testing::Test {
 
   ~OutputProtectionImplTest() override {
     EXPECT_CALL(*delegate_, UnregisterClient(_));
-    EXPECT_CALL(*delegate_, RemoveObserver(_));
     output_protection_mojo_.reset();
     base::RunLoop().RunUntilIdle();
   }
