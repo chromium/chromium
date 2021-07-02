@@ -86,10 +86,9 @@ NotificationPlatformBridge* GetSystemNotificationPlatformBridge(
 
 // Returns the NotificationPlatformBridge to use for the message center. May be
 // a nullptr for platforms where the message center is not available.
-std::unique_ptr<NotificationPlatformBridge> CreateMessageCenterBridge(
-    Profile* profile) {
+NotificationPlatformBridge* GetMessageCenterBridge() {
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
-  return std::make_unique<NotificationPlatformBridgeMessageCenter>(profile);
+  return NotificationPlatformBridgeMessageCenter::Get();
 #else
   return nullptr;
 #endif
@@ -101,7 +100,7 @@ NotificationPlatformBridgeDelegator::NotificationPlatformBridgeDelegator(
     Profile* profile,
     base::OnceClosure ready_callback)
     : profile_(profile),
-      message_center_bridge_(CreateMessageCenterBridge(profile_)),
+      message_center_bridge_(GetMessageCenterBridge()),
       system_bridge_(GetSystemNotificationPlatformBridge(profile_)),
       ready_callback_(std::move(ready_callback)) {
   // Initialize the |system_bridge_| if system notifications are available,
@@ -141,7 +140,7 @@ void NotificationPlatformBridgeDelegator::GetDisplayed(
     GetDisplayedNotificationsCallback callback) const {
   // TODO(knollr): Query both bridges to get all notifications.
   NotificationPlatformBridge* bridge =
-      system_bridge_ ? system_bridge_ : message_center_bridge_.get();
+      system_bridge_ ? system_bridge_ : message_center_bridge_;
   DCHECK(bridge);
   bridge->GetDisplayed(profile_, std::move(callback));
 }
@@ -161,7 +160,7 @@ NotificationPlatformBridgeDelegator::GetBridgeForType(
   if (system_bridge_ && NotificationPlatformBridge::CanHandleType(type))
     return system_bridge_;
 #endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
-  return message_center_bridge_.get();
+  return message_center_bridge_;
 }
 
 void NotificationPlatformBridgeDelegator::

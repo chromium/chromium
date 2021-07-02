@@ -59,7 +59,7 @@ class NotificationPlatformBridgeDelegator {
 
   // Bridge responsible for displaying notifications on the platform. The
   // message center's bridge is maintained for platforms where it is available.
-  std::unique_ptr<NotificationPlatformBridge> message_center_bridge_;
+  NotificationPlatformBridge* message_center_bridge_;
   NotificationPlatformBridge* system_bridge_;
   base::OnceClosure ready_callback_;
 
