@@ -144,8 +144,9 @@
     },
     "new_tilings": {
       "ci_095": 0.334,
-      "avg": 16.692,
-      "cpu_wall_time_ratio": 0.372
+      "avg": 19.224,
+      "cpu_wall_time_ratio": 0.372,
+      "_comment": "Return to 16.692 after crbug.com/1225374"
     },
     "chip_tune": {
       "ci_095": 0.355,

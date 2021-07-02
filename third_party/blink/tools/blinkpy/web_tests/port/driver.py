@@ -530,8 +530,18 @@ class Driver(object):
         cmd.extend(self._port.additional_driver_flags())
         if self._port.get_option('enable_leak_detection'):
             cmd.append('--enable-leak-detection')
-
         cmd.extend(per_test_args)
+
+        # The following code temporarily disables CompositeAfterPaint in web
+        # tests unless it is explicitly enabled. CompositeAfterPaint is enabled
+        # via fieldtrial_testing_config.json which would make web tests run
+        # with CompositeAfterPaint. This is disabled in order to stage the
+        # enabling of the feature because of the number of rebaselines needed.
+        # TODO(pdr): Remove this code and run web tests with
+        # CompositeAfterPaint.
+        if '--enable-blink-features=CompositeAfterPaint' not in cmd:
+            cmd.append('--disable-blink-features=CompositeAfterPaint')
+
         cmd = coalesce_repeated_switches(cmd)
         cmd.append('-')
         return cmd
