@@ -193,5 +193,24 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsLegacyItem) {
   EXPECT_EQ(devtools.lines.size(), 1u);
 }
 
+TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
+  const String& body_content = R"HTML(
+    <div style="columns: 2; height: 300px; width: 300px; background: orange;">
+      <div style="display: flex; background: blue;" id=flexbox>
+        <div style="width: 100px; height: 300px; background: grey;"></div>
+      </div>
+    </div>
+  )HTML";
+  // TODO(crbug.com/660611): Remove next 6 lines when flex fragmentation ships.
+  SetBodyInnerHTML(body_content);
+  UpdateAllLifecyclePhasesForTest();
+  LayoutObject* flexbox = GetLayoutObjectByElementId("flexbox");
+  EXPECT_NE(flexbox, nullptr);
+  if (!flexbox->IsLayoutNGFlexibleBox())
+    return;
+  DevtoolsFlexInfo devtools = LayoutForDevtools(body_content);
+  EXPECT_EQ(devtools.lines.size(), 1u);
+}
+
 }  // namespace
 }  // namespace blink
