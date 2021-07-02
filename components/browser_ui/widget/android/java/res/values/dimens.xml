@@ -130,8 +130,8 @@
     <dimen name="tile_view_title_margin_top_modern">61dp</dimen>
 
     <!-- Chips layout dimensions -->
-    <dimen name="chip_list_inter_chip_padding">2.5dp</dimen>
-    <dimen name="chip_list_side_padding">-16dp</dimen>
+    <dimen name="chip_list_chip_spacing">2.5dp</dimen>
+    <dimen name="chip_list_side_padding">16dp</dimen>
 
     <!-- Misc. app menu dimens -->
     <dimen name="app_menu_corner_size">8dp</dimen>

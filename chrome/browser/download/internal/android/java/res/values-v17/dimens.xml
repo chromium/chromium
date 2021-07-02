@@ -4,10 +4,6 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Chip list -->
-    <dimen name="chip_list_inter_chip_padding">2.5dp</dimen>
-    <dimen name="chip_list_side_padding">16dp</dimen>
-
     <!-- Download manager dimensions -->
     <dimen name="download_manager_ideal_image_width">150dp</dimen>
     <dimen name="download_manager_image_padding">5dp</dimen>

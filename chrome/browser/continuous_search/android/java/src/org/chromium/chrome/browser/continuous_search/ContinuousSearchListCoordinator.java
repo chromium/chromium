@@ -110,12 +110,11 @@ public class ContinuousSearchListCoordinator {
     }
 
     private static class SpaceItemDecoration extends ItemDecoration {
-        private final int mInterPaddingPx;
+        private final int mChipSpacingPx;
         private final int mSidePaddingPx;
 
         public SpaceItemDecoration(Resources resources) {
-            mInterPaddingPx =
-                    (int) resources.getDimensionPixelSize(R.dimen.chip_list_inter_chip_padding);
+            mChipSpacingPx = (int) resources.getDimensionPixelSize(R.dimen.chip_list_chip_spacing);
             mSidePaddingPx = (int) resources.getDimensionPixelSize(R.dimen.chip_list_side_padding);
         }
 
@@ -125,8 +124,8 @@ public class ContinuousSearchListCoordinator {
             boolean isFirst = position == 0;
             boolean isLast = position == parent.getAdapter().getItemCount() - 1;
 
-            outRect.left = isFirst ? mSidePaddingPx : mInterPaddingPx;
-            outRect.right = isLast ? mSidePaddingPx : mInterPaddingPx;
+            outRect.left = isFirst ? mSidePaddingPx : mChipSpacingPx;
+            outRect.right = isLast ? mSidePaddingPx : mChipSpacingPx;
         }
     }
 }

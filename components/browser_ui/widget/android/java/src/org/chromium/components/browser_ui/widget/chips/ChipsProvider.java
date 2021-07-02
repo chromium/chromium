@@ -22,4 +22,10 @@ public interface ChipsProvider {
 
     /** @return A list of {@link Chip} objects that are currently visible. */
     List<Chip> getChips();
+
+    /** @return The spacing between the chips in pixels. */
+    int getChipSpacingPx();
+
+    /** @return The pixels in front of the first chip or the pixels after the last chip. */
+    int getSidePaddingPx();
 }

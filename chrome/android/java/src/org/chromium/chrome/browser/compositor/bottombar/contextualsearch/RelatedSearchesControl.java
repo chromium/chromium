@@ -468,6 +468,18 @@ public class RelatedSearchesControl {
             return mChips;
         }
 
+        @Override
+        public int getChipSpacingPx() {
+            return mContext.getResources().getDimensionPixelSize(
+                    R.dimen.contextual_search_chip_list_chip_spacing);
+        }
+
+        @Override
+        public int getSidePaddingPx() {
+            return mContext.getResources().getDimensionPixelSize(
+                    R.dimen.contextual_search_chip_list_side_padding);
+        }
+
         private void handleChipTapped(int tappedChipIndex) {
             onSuggestionClicked(tappedChipIndex);
             if (mSelectedChip != NO_SELECTED_CHIP) mChips.get(mSelectedChip).selected = false;

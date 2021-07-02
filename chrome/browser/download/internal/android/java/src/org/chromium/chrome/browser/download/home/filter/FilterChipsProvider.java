@@ -133,6 +133,16 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
         return visibleChips;
     }
 
+    @Override
+    public int getChipSpacingPx() {
+        return mContext.getResources().getDimensionPixelSize(R.dimen.chip_list_chip_spacing);
+    }
+
+    @Override
+    public int getSidePaddingPx() {
+        return mContext.getResources().getDimensionPixelSize(R.dimen.chip_list_side_padding);
+    }
+
     // OfflineItemFilterObserver implementation.
     // Post calls to generateFilterStates() avoid re-entrancy.
     @Override

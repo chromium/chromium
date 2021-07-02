@@ -8,12 +8,12 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
-import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
@@ -41,7 +41,7 @@ public class ChipsCoordinator implements ChipsProvider.Observer {
         mProvider = provider;
 
         // Build the underlying components.
-        mView = createView(context);
+        mView = createView(context, provider);
 
         mView.setAdapter(new RecyclerViewAdapter<>(
                 new SimpleRecyclerViewMcp<>(mModel, null, ChipsViewHolder::bind),
@@ -71,24 +71,23 @@ public class ChipsCoordinator implements ChipsProvider.Observer {
         mModel.set(chips);
     }
 
-    private static RecyclerView createView(Context context) {
+    private static RecyclerView createView(Context context, ChipsProvider provider) {
         RecyclerView view = new RecyclerView(context);
         view.setLayoutManager(
                 new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        view.addItemDecoration(new SpaceItemDecoration(context));
+        view.addItemDecoration(
+                new SpaceItemDecoration(provider.getChipSpacingPx(), provider.getSidePaddingPx()));
         view.getItemAnimator().setChangeDuration(0);
         return view;
     }
 
     private static class SpaceItemDecoration extends ItemDecoration {
-        private final int mInterPaddingPx;
+        private final int mChipSpacingPx;
         private final int mSidePaddingPx;
 
-        public SpaceItemDecoration(Context context) {
-            mInterPaddingPx = (int) context.getResources().getDimensionPixelSize(
-                    R.dimen.chip_list_inter_chip_padding);
-            mSidePaddingPx = (int) context.getResources().getDimensionPixelSize(
-                    R.dimen.chip_list_side_padding);
+        public SpaceItemDecoration(@Px int chipSpacingPx, @Px int sidePaddingPx) {
+            mChipSpacingPx = chipSpacingPx;
+            mSidePaddingPx = sidePaddingPx;
         }
 
         @Override
@@ -97,8 +96,8 @@ public class ChipsCoordinator implements ChipsProvider.Observer {
             boolean isFirst = position == 0;
             boolean isLast = position == parent.getAdapter().getItemCount() - 1;
 
-            outRect.left = isFirst ? mSidePaddingPx : mInterPaddingPx;
-            outRect.right = isLast ? mSidePaddingPx : mInterPaddingPx;
+            outRect.left = isFirst ? mSidePaddingPx : mChipSpacingPx;
+            outRect.right = isLast ? mSidePaddingPx : mChipSpacingPx;
         }
     }
 }
