@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_ONLINE_WALLPAPER_PARAMS_H_
-#define ASH_PUBLIC_CPP_ONLINE_WALLPAPER_PARAMS_H_
+#ifndef ASH_PUBLIC_CPP_WALLPAPER_ONLINE_WALLPAPER_PARAMS_H_
+#define ASH_PUBLIC_CPP_WALLPAPER_ONLINE_WALLPAPER_PARAMS_H_
 
 #include <cstdint>
 #include <string>
 
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -50,4 +50,4 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_ONLINE_WALLPAPER_PARAMS_H_
+#endif  // ASH_PUBLIC_CPP_WALLPAPER_ONLINE_WALLPAPER_PARAMS_H_

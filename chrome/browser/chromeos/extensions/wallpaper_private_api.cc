@@ -9,8 +9,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/online_wallpaper_params.h"
-#include "ash/public/cpp/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"

@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"

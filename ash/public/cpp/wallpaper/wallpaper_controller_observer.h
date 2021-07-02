@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_OBSERVER_H_
-#define ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_OBSERVER_H_
+#ifndef ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_OBSERVER_H_
+#define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
@@ -48,4 +48,4 @@ class ASH_PUBLIC_EXPORT WallpaperControllerObserver {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_OBSERVER_H_
+#endif  // ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_OBSERVER_H_

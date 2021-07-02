@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 
-#include "ash/public/cpp/online_wallpaper_params.h"
-#include "ash/public/cpp/wallpaper_controller_observer.h"
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/notreached.h"
 #include "components/account_id/account_id.h"
 #include "url/gurl.h"

@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "ash/public/cpp/wallpaper_controller_client.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {

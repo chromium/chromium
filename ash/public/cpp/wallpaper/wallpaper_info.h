@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_WALLPAPER_INFO_H_
-#define ASH_PUBLIC_CPP_WALLPAPER_INFO_H_
+#ifndef ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_INFO_H_
+#define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_INFO_H_
 
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -56,4 +56,4 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_WALLPAPER_INFO_H_
+#endif  // ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_INFO_H_

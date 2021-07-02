@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/gfx/image/image_skia.h"
 

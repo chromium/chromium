@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/online_wallpaper_params.h"
-#include "ash/public/cpp/wallpaper_controller.h"
-#include "ash/public/cpp/wallpaper_info.h"
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"

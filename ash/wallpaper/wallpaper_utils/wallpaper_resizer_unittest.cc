@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"

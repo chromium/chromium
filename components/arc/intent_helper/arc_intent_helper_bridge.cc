@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"

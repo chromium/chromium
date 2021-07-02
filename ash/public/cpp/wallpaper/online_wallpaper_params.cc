@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 
 #include <cstdint>
 #include <string>

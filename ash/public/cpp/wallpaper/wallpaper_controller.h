@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_H_
-#define ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_H_
+#ifndef ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_H_
+#define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_H_
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/online_wallpaper_params.h"
-#include "ash/public/cpp/wallpaper_info.h"
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 
@@ -299,4 +299,4 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_WALLPAPER_CONTROLLER_H_
+#endif  // ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_H_

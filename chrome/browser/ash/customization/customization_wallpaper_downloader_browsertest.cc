@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
