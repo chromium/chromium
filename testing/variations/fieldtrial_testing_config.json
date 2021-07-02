@@ -1936,6 +1936,21 @@
             ]
         }
     ],
+    "ClankDetailedLanguageSettings": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DetailedLanguageSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClickAsPointerEvent": [
         {
             "platforms": [
@@ -2839,21 +2854,6 @@
                     "name": "Enabled",
                     "disable_features": [
                         "SynchronizedScrolling"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DetailedLanguageSettings": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DetailedLanguageSettings"
                     ]
                 }
             ]
