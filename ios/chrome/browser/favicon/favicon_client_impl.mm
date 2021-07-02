@@ -43,13 +43,14 @@ void GetFaviconBitmapForNativeURL(
   if (resource_id == -1)
     return;
 
-  // Use ui::GetSupportedScaleFactors() because native URL favicon comes from
-  // resources.
-  std::vector<ui::ScaleFactor> scale_factors = ui::GetSupportedScaleFactors();
+  // Use ui::GetSupportedResourceScaleFactors() because native URL favicon comes
+  // from resources.
+  std::vector<ui::ResourceScaleFactor> scale_factors =
+      ui::GetSupportedResourceScaleFactors();
 
   std::vector<gfx::Size> candidate_sizes;
-  for (ui::ScaleFactor scale_factor : scale_factors) {
-    float scale = ui::GetScaleForScaleFactor(scale_factor);
+  for (ui::ResourceScaleFactor scale_factor : scale_factors) {
+    float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     int candidate_size = static_cast<int>(gfx::kFaviconSize * scale + 0.5f);
     candidate_sizes.push_back(gfx::Size(candidate_size, candidate_size));
   }
@@ -59,7 +60,7 @@ void GetFaviconBitmapForNativeURL(
                             &selected_indices, nullptr);
 
   for (size_t selected_index : selected_indices) {
-    ui::ScaleFactor scale_factor = scale_factors[selected_index];
+    ui::ResourceScaleFactor scale_factor = scale_factors[selected_index];
     favicon_base::FaviconRawBitmapResult favicon_bitmap;
     favicon_bitmap.icon_type = favicon_base::IconType::kFavicon;
     favicon_bitmap.pixel_size = candidate_sizes[selected_index];

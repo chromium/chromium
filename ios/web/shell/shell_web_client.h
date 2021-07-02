@@ -25,7 +25,7 @@ class ShellWebClient : public WebClient {
   std::string GetUserAgent(UserAgentType type) const override;
   base::StringPiece GetDataResource(
       int resource_id,
-      ui::ScaleFactor scale_factor) const override;
+      ui::ResourceScaleFactor scale_factor) const override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
   void BindInterfaceReceiverFromMainFrame(
       WebState* web_state,

@@ -58,7 +58,7 @@ std::u16string WebClient::GetLocalizedString(int message_id) const {
 
 base::StringPiece WebClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return base::StringPiece();
 }
 

@@ -29,7 +29,7 @@ class ChromeWebClient : public web::WebClient {
   std::u16string GetLocalizedString(int message_id) const override;
   base::StringPiece GetDataResource(
       int resource_id,
-      ui::ScaleFactor scale_factor) const override;
+      ui::ResourceScaleFactor scale_factor) const override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
   void GetAdditionalWebUISchemes(
       std::vector<std::string>* additional_schemes) override;

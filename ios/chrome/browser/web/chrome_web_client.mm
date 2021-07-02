@@ -267,7 +267,7 @@ std::u16string ChromeWebClient::GetLocalizedString(int message_id) const {
 
 base::StringPiece ChromeWebClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }

@@ -63,7 +63,7 @@ std::string ShellWebClient::GetUserAgent(UserAgentType type) const {
 
 base::StringPiece ShellWebClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }

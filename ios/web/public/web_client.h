@@ -94,8 +94,9 @@ class WebClient {
   virtual std::u16string GetLocalizedString(int message_id) const;
 
   // Returns the contents of a resource in a StringPiece given the resource id.
-  virtual base::StringPiece GetDataResource(int resource_id,
-                                            ui::ScaleFactor scale_factor) const;
+  virtual base::StringPiece GetDataResource(
+      int resource_id,
+      ui::ResourceScaleFactor scale_factor) const;
 
   // Returns the raw bytes of a scale independent data resource.
   virtual base::RefCountedMemory* GetDataResourceBytes(int resource_id) const;

@@ -59,7 +59,7 @@ NSString* GetErrorPage(const GURL& url,
           GetApplicationContext()->GetApplicationLocale(),
           /*is_blocked_by_extension=*/false);
 
-  ui::ScaleFactor scale_factor =
+  ui::ResourceScaleFactor scale_factor =
       ui::ResourceBundle::GetSharedInstance().GetMaxScaleFactor();
 
   std::string extracted_string =
