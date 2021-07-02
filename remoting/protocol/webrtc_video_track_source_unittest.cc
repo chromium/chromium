@@ -16,6 +16,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
+using testing::InSequence;
 using testing::Property;
 using webrtc::BasicDesktopFrame;
 using webrtc::DesktopSize;
@@ -63,6 +64,27 @@ TEST_F(WebrtcVideoTrackSourceTest, CapturedFrameSentToAddedSink) {
       new rtc::RefCountedObject<WebrtcVideoTrackSource>(base::DoNothing());
   source->AddOrUpdateSink(&video_sink_, rtc::VideoSinkWants());
   source->SendCapturedFrame(std::move(frame), nullptr);
+
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(WebrtcVideoTrackSourceTest, FramesHaveIncrementingIds) {
+  {
+    InSequence s;
+    EXPECT_CALL(video_sink_, OnFrame(Property(&VideoFrame::id, 0)));
+    EXPECT_CALL(video_sink_, OnFrame(Property(&VideoFrame::id, 1)));
+    EXPECT_CALL(video_sink_, OnFrame(Property(&VideoFrame::id, 2)));
+  }
+
+  rtc::scoped_refptr<WebrtcVideoTrackSource> source =
+      new rtc::RefCountedObject<WebrtcVideoTrackSource>(base::DoNothing());
+  source->AddOrUpdateSink(&video_sink_, rtc::VideoSinkWants());
+  source->SendCapturedFrame(
+      std::make_unique<BasicDesktopFrame>(DesktopSize(100, 100)), nullptr);
+  source->SendCapturedFrame(
+      std::make_unique<BasicDesktopFrame>(DesktopSize(100, 100)), nullptr);
+  source->SendCapturedFrame(
+      std::make_unique<BasicDesktopFrame>(DesktopSize(100, 100)), nullptr);
 
   task_environment_.FastForwardUntilNoTasksRemain();
 }

@@ -87,6 +87,12 @@ void WebrtcVideoTrackSource::SendCapturedFrame(
 
   webrtc::VideoFrame video_frame = WebrtcVideoFrameAdapter::CreateVideoFrame(
       std::move(desktop_frame), std::move(frame_stats));
+
+  // Wrap-around behavior of '++' is defined for unsigned types.
+  // VideoFrame::id() is a 16-bit number which could wrap back to 0 many times
+  // during a connection.
+  video_frame.set_id(frame_id_++);
+
   sink_->OnFrame(video_frame);
 }
 

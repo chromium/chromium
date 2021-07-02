@@ -54,6 +54,10 @@ class WebrtcVideoTrackSource
   rtc::VideoSinkInterface<webrtc::VideoFrame>* sink_ = nullptr;
   base::RepeatingClosure add_sink_callback_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
+  // Incrementing ID to be attached to each VideoFrame, so that the
+  // encoder-wrapper can detect if a frame was dropped.
+  uint16_t frame_id_ = 0;
 };
 
 }  // namespace protocol

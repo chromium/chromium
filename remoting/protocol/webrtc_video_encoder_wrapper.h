@@ -105,10 +105,19 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // frames in parallel, which the encoders are not prepared to handle.
   bool encode_pending_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  // Stores the expected id of the next incoming frame to be encoded. If this
+  // does not match, it means that WebRTC dropped a frame, and the original
+  // DesktopFrame's updated-region should not be passed to the encoder.
+  // Consecutive frames have incrementing IDs, wrapping around to 0 (which can
+  // happen many times during a connection - the unsigned type guarantees that
+  // the '++' operator will wrap to 0 after overflow).
+  uint16_t next_frame_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
   // Keeps track of any update-rectangles from dropped frames. When WebRTC
   // requests to encode a frame, this class will either:
-  // * Send it to be encoded - this accumulated update-rect will be added to
-  //   the incoming frame, then it will be reset to empty.
+  // * Send it to be encoded - if any prior frames were dropped, this
+  //   accumulated update-rect will be added to the incoming frame, then it will
+  //   be reset to empty.
   // * Drop the frame - the frame's update-rect will be stored and combined with
   //   this accumulated update-rect.
   // This tracking is similar to what WebRTC does whenever it drops frames
