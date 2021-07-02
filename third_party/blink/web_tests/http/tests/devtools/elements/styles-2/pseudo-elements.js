@@ -20,6 +20,14 @@
         color: teal;
       }
 
+      #inspected::highlight(foo) {
+        color: fuchsia;
+      }
+
+      #inspected::highlight(bar) {
+        color: cyan;
+      }
+
       #inspected {
         display: list-item;
       }

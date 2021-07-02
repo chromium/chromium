@@ -44,6 +44,15 @@ element.style { ()
 #inspected::grammar-error { (<style>)
     color: teal;
 
+======== Pseudo ::highlight element ========
+[expanded] 
+#inspected::highlight(bar) { (<style>)
+    color: cyan;
+
+[expanded] 
+#inspected::highlight(foo) { (<style>)
+    color: fuchsia;
+
 ======== Pseudo ::marker element ========
 [expanded] 
 [$#inspected::marker$] { (<style>)

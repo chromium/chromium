@@ -184,6 +184,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::SpellingError;
     case kPseudoIdGrammarError:
       return protocol::DOM::PseudoTypeEnum::GrammarError;
+    case kPseudoIdHighlight:
+      return protocol::DOM::PseudoTypeEnum::Highlight;
     case kPseudoIdFirstLineInherited:
       return protocol::DOM::PseudoTypeEnum::FirstLineInherited;
     case kPseudoIdScrollbar:
@@ -203,8 +205,6 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kPseudoIdInputListButton:
       return protocol::DOM::PseudoTypeEnum::InputListButton;
     case kAfterLastInternalPseudoId:
-    case kPseudoIdHighlight:
-      // TODO(http://crbug.com/1195196)
     case kPseudoIdNone:
       CHECK(false);
       return "";
