@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
@@ -32,6 +34,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/chrome_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
 
 namespace em = enterprise_management;
 
@@ -128,7 +134,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
               EXPECT_FALSE(report->has_browser_version());
               EXPECT_FALSE(report->has_channel());
               EXPECT_FALSE(report->has_installed_browser_version());
-#else
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
               EXPECT_NE(std::string(), report->browser_version());
               EXPECT_TRUE(report->has_channel());
               const auto* build_state = g_browser_process->GetBuildState();
@@ -139,7 +145,20 @@ class BrowserReportGeneratorTest : public ::testing::Test {
                 EXPECT_EQ(report->installed_browser_version(),
                           build_state->installed_version()->GetString());
               }
-#endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+              if (chrome::IsExtendedStableChannel()) {
+                EXPECT_TRUE(report->has_is_extended_stable_channel());
+                EXPECT_TRUE(report->is_extended_stable_channel());
+                EXPECT_EQ(report->channel(), em::Channel::CHANNEL_STABLE);
+              } else {
+                EXPECT_FALSE(report->has_is_extended_stable_channel());
+                EXPECT_NE(report->channel(), em::Channel::CHANNEL_UNKNOWN);
+              }
+#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+              EXPECT_FALSE(report->has_is_extended_stable_channel());
+              EXPECT_EQ(report->channel(), em::Channel::CHANNEL_UNKNOWN);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
               EXPECT_NE(std::string(), report->executable_path());
 
@@ -247,5 +266,18 @@ TEST_F(BrowserReportGeneratorTest, ExtensionRequestOnlyWithoutThrottler) {
   throttler()->Disable();
   GenerateExtensinRequestReportAndVerify({});
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
+TEST_F(BrowserReportGeneratorTest, ExtendedStableChannel) {
+  chrome::ScopedChannelOverride channel_override(
+      chrome::ScopedChannelOverride::Channel::kExtendedStable);
+
+  ASSERT_TRUE(chrome::IsExtendedStableChannel());
+  InitializeProfile();
+  InitializeIrregularProfiles();
+  InitializePlugin();
+  GenerateAndVerify();
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)
 
 }  // namespace enterprise_reporting
