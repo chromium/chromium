@@ -4689,6 +4689,7 @@ static_library("browser") {
       "//chromeos/strings",
       "//chromeos/ui/base",
       "//chromeos/ui/vector_icons",
+      "//components/account_manager_core",
       "//components/arc",
       "//components/arc:arc_base",
       "//components/arc:arc_base_utils",
@@ -4813,7 +4814,6 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/ui/frame",
-      "//components/account_manager_core",
       "//ui/platform_window",
     ]
   }

@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "ash/components/account_manager/access_token_fetcher.h"
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ui.h"
 #include "base/callback_forward.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -31,9 +31,9 @@ namespace crosapi {
 // Account Manager.
 class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
     : public mojom::AccountManager,
-      public ash::AccountManager::Observer {
+      public account_manager::AccountManager::Observer {
  public:
-  explicit AccountManagerAsh(ash::AccountManager* account_manager);
+  explicit AccountManagerAsh(account_manager::AccountManager* account_manager);
   AccountManagerAsh(const AccountManagerAsh&) = delete;
   AccountManagerAsh& operator=(const AccountManagerAsh&) = delete;
   ~AccountManagerAsh() override;
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
       const std::string& oauth_consumer_name,
       CreateAccessTokenFetcherCallback callback) override;
 
-  // ash::AccountManager::Observer:
+  // account_manager::AccountManager::Observer:
   void OnTokenUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
 
@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
 
   ShowAddAccountDialogCallback account_addition_callback_;
   bool account_addition_in_progress_ = false;
-  ash::AccountManager* const account_manager_;
+  account_manager::AccountManager* const account_manager_;
   std::unique_ptr<ash::AccountManagerUI> account_manager_ui_;
   std::vector<std::unique_ptr<AccessTokenFetcher>>
       pending_access_token_requests_;

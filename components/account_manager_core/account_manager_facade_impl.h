@@ -25,7 +25,7 @@ class OAuth2AccessTokenConsumer;
 namespace account_manager {
 
 // ChromeOS-specific implementation of |AccountManagerFacade| that talks to
-// |ash::AccountManager| over Mojo. Used by both Lacros and Ash.
+// |account_manager::AccountManager| over Mojo. Used by both Lacros and Ash.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
     : public AccountManagerFacade,
       public crosapi::mojom::AccountManagerObserver {

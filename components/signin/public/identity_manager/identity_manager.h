@@ -33,7 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace ash {
+namespace account_manager {
 class AccountManager;
 }
 #endif
@@ -365,7 +365,7 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<DeviceAccountsSynchronizer> device_accounts_synchronizer;
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::AccountManager* ash_account_manager = nullptr;
+    account_manager::AccountManager* ash_account_manager = nullptr;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     SigninClient* signin_client = nullptr;
@@ -610,7 +610,7 @@ class IdentityManager : public KeyedService,
   AccountFetcherService* GetAccountFetcherService() const;
   GaiaCookieManagerService* GetGaiaCookieManagerService() const;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::AccountManager* GetAshAccountManager() const;
+  account_manager::AccountManager* GetAshAccountManager() const;
 #endif
 
   // Populates and returns an AccountInfo object corresponding to |account_id|,
@@ -700,7 +700,7 @@ class IdentityManager : public KeyedService,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::AccountManager* ash_account_manager_ = nullptr;
+  account_manager::AccountManager* ash_account_manager_ = nullptr;
 #endif
 
   const bool allow_access_token_fetch_;

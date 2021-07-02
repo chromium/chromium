@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
@@ -39,6 +38,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
@@ -92,7 +92,7 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
  public:
   AccountMigrationBaseStep(
       const std::string& id,
-      AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       signin::IdentityManager* identity_manager)
       : AccountMigrationRunner::Step(id),
@@ -116,7 +116,8 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
     if (base::Contains(account_manager_accounts_,
                        ::account_manager::AccountKey{
                            gaia_id, account_manager::AccountType::kGaia})) {
-      // Do not overwrite any existing account in |AccountManager|.
+      // Do not overwrite any existing account in
+      // |account_manager::AccountManager|.
       VLOG(1) << "Ignoring migration of existing account: " << email;
       return;
     }
@@ -124,11 +125,13 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
     account_manager_->UpsertAccount(
         ::account_manager::AccountKey{gaia_id,
                                       account_manager::AccountType::kGaia},
-        email, AccountManager::kInvalidToken);
+        email, account_manager::AccountManager::kInvalidToken);
     VLOG(1) << "Successfully migrated: " << email;
   }
 
-  AccountManager* account_manager() { return account_manager_; }
+  account_manager::AccountManager* account_manager() {
+    return account_manager_;
+  }
 
   account_manager::AccountManagerFacade* account_manager_facade() {
     return account_manager_facade_;
@@ -160,15 +163,15 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
   }
 
   // A non-owning pointer to Account Manager.
-  AccountManager* const account_manager_;
+  account_manager::AccountManager* const account_manager_;
   // A non-owning pointer.
   account_manager::AccountManagerFacade* const account_manager_facade_;
 
   // Non-owning pointer.
   signin::IdentityManager* const identity_manager_;
 
-  // A temporary cache of accounts in |AccountManager|, guaranteed to be
-  // up-to-date when |StartMigration| is called.
+  // A temporary cache of accounts in |account_manager::AccountManager|,
+  // guaranteed to be up-to-date when |StartMigration| is called.
   std::vector<::account_manager::AccountKey> account_manager_accounts_;
 
   base::WeakPtrFactory<AccountMigrationBaseStep> weak_factory_{this};
@@ -176,14 +179,14 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
 };
 
 // An |AccountMigrationRunner::Step| to migrate the Chrome OS Device Account's
-// LST to |AccountManager|.
+// LST to |account_manager::AccountManager|.
 class DeviceAccountMigration : public AccountMigrationBaseStep,
                                public WebDataServiceConsumer {
  public:
   DeviceAccountMigration(
       const ::account_manager::AccountKey& device_account,
       const std::string& device_account_raw_email,
-      AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       signin::IdentityManager* identity_manager,
       scoped_refptr<TokenWebData> token_web_data)
@@ -302,13 +305,13 @@ class DeviceAccountMigration : public AccountMigrationBaseStep,
 };
 
 // An |AccountMigrationRunner::Step| to migrate the Chrome content area accounts
-// to |AccountManager|. The objective is to migrate the account names only. We
-// cannot migrate any credentials (cookies).
+// to |account_manager::AccountManager|. The objective is to migrate the account
+// names only. We cannot migrate any credentials (cookies).
 class ContentAreaAccountsMigration : public AccountMigrationBaseStep,
                                      signin::IdentityManager::Observer {
  public:
   ContentAreaAccountsMigration(
-      AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
 
       signin::IdentityManager* identity_manager)
@@ -374,16 +377,16 @@ class ContentAreaAccountsMigration : public AccountMigrationBaseStep,
 };
 
 // An |AccountMigrationRunner::Step| to migrate ARC accounts to
-// |AccountManager|. The objective is to migrate the account names and Gaia ids
-// only. We cannot migrate any credentials.
-// This is a timed |Step|. Since ARC can fail independently of Chrome, we can be
-// potentially waiting forever to get a callback from ARC. If we do not have a
-// timeout, this |Step| can make the rest of migration |Step|s wait forever.
+// |account_manager::AccountManager|. The objective is to migrate the account
+// names and Gaia ids only. We cannot migrate any credentials. This is a timed
+// |Step|. Since ARC can fail independently of Chrome, we can be potentially
+// waiting forever to get a callback from ARC. If we do not have a timeout, this
+// |Step| can make the rest of migration |Step|s wait forever.
 class ArcAccountsMigration : public AccountMigrationBaseStep,
                              public arc::ArcSessionManagerObserver {
  public:
   ArcAccountsMigration(
-      AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       signin::IdentityManager* identity_manager,
       arc::ArcAuthService* arc_auth_service)
@@ -684,7 +687,8 @@ AccountManagerMigratorFactory::AccountManagerMigratorFactory()
     : BrowserContextKeyedServiceFactory(
           "AccountManagerMigrator",
           BrowserContextDependencyManager::GetInstance()) {
-  // Stores the LSTs, that need to be copied over to |AccountManager|.
+  // Stores the LSTs, that need to be copied over to
+  // |account_manager::AccountManager|.
   DependsOn(WebDataServiceFactory::GetInstance());
   // Account reconciliation is paused for the duration of migration and needs to
   // be re-enabled once migration is done.

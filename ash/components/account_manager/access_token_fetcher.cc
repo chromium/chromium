@@ -19,7 +19,7 @@
 namespace crosapi {
 
 AccessTokenFetcher::AccessTokenFetcher(
-    ash::AccountManager* account_manager,
+    account_manager::AccountManager* account_manager,
     mojom::AccountKeyPtr mojo_account_key,
     const std::string& consumer_name,
     base::OnceCallback<void(AccessTokenFetcher*)> done_callback,

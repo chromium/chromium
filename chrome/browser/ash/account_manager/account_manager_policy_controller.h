@@ -22,27 +22,27 @@ class Profile;
 
 namespace account_manager {
 class AccountManagerFacade;
+class AccountManager;
 }
 
 namespace ash {
-class AccountManager;
 class EduCoexistenceConsentInvalidationController;
 
 class AccountManagerPolicyController : public KeyedService {
  public:
   AccountManagerPolicyController(
       Profile* profile,
-      AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       const AccountId& device_account_id);
   ~AccountManagerPolicyController() override;
 
-  // Starts applying the behaviour required by |AccountManager|
+  // Starts applying the behaviour required by |account_manager::AccountManager|
   // specific prefs and policies.
   void Start();
 
  private:
-  // Callback handler for |AccountManager::GetAccounts|.
+  // Callback handler for |account_manager::AccountManager::GetAccounts|.
   void RemoveSecondaryAccounts(const std::vector<::account_manager::Account>&);
 
   // Callback for handling changes in |kSecondaryGoogleAccountSigninAllowed|
@@ -69,7 +69,7 @@ class AccountManagerPolicyController : public KeyedService {
 
   // Non-owning pointers.
   Profile* const profile_;
-  AccountManager* const account_manager_;
+  account_manager::AccountManager* const account_manager_;
   account_manager::AccountManagerFacade* const account_manager_facade_;
 
   const AccountId device_account_id_;

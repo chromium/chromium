@@ -57,8 +57,8 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // for the Secondary Account which received an error.
   void HandleSecondaryAccountError(const CoreAccountId& account_id);
 
-  // `ash::AccountManager::CheckDummyGaiaTokenForAllAccounts` callback
-  // handler.
+  // `account_manager::AccountManager::CheckDummyGaiaTokenForAllAccounts`
+  // callback handler.
   void OnCheckDummyGaiaTokenForAllAccounts(
       const std::vector<std::pair<account_manager::Account, bool>>&
           account_dummy_token_list);
@@ -85,7 +85,7 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   signin::IdentityManager* const identity_manager_;
 
   // A non-owning pointer.
-  ash::AccountManager* const account_manager_;
+  account_manager::AccountManager* const account_manager_;
 
   // Used to keep track of the message center notifications.
   std::string device_account_notification_id_;

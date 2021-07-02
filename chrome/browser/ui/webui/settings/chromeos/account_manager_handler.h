@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -15,6 +14,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -27,10 +27,11 @@ class AccountManagerUIHandler
       public account_manager::AccountManagerFacade::Observer,
       public signin::IdentityManager::Observer {
  public:
-  // Accepts non-owning pointers to |AccountManager|, |AccountManagerFacade|
-  // and |IdentityManager|. Both of these must outlive |this| instance.
+  // Accepts non-owning pointers to |account_manager::AccountManager|,
+  // |AccountManagerFacade| and |IdentityManager|. Both of these must outlive
+  // |this| instance.
   AccountManagerUIHandler(
-      AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       signin::IdentityManager* identity_manager);
   ~AccountManagerUIHandler() override;
@@ -41,8 +42,8 @@ class AccountManagerUIHandler
   void OnJavascriptDisallowed() override;
 
   // |AccountManagerFacade::Observer| overrides.
-  // |AccountManager| is considered to be the source of truth for account
-  // information.
+  // |account_manager::AccountManager| is considered to be the source of truth
+  // for account information.
   void OnAccountUpserted(const ::account_manager::Account& account) override;
   void OnAccountRemoved(const ::account_manager::Account& account) override;
 
@@ -76,7 +77,8 @@ class AccountManagerUIHandler
   // WebUI "showWelcomeDialogIfRequired" message callback.
   void HandleShowWelcomeDialogIfRequired(const base::ListValue* args);
 
-  // |AccountManager::CheckDummyGaiaTokenForAllAccounts| callback.
+  // |account_manager::AccountManager::CheckDummyGaiaTokenForAllAccounts|
+  // callback.
   void OnCheckDummyGaiaTokenForAllAccounts(
       base::Value callback_id,
       const std::vector<std::pair<::account_manager::Account, bool>>&
@@ -100,8 +102,8 @@ class AccountManagerUIHandler
 
   Profile* profile_ = nullptr;
 
-  // A non-owning pointer to |AccountManager|.
-  AccountManager* const account_manager_;
+  // A non-owning pointer to |account_manager::AccountManager|.
+  account_manager::AccountManager* const account_manager_;
 
   // A non-owning pointer to |AccountManagerFacade|.
   account_manager::AccountManagerFacade* const account_manager_facade_;

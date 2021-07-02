@@ -60,9 +60,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/signin/internal/identity_manager/test_profile_oauth2_token_service_delegate_chromeos.h"
 #endif
 
@@ -346,7 +346,7 @@ class IdentityManagerTest : public testing::Test {
                                         temp_profile_dir_.GetPath());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::AccountManager::RegisterPrefs(pref_service_.registry());
+    account_manager::AccountManager::RegisterPrefs(pref_service_.registry());
     auto* ash_account_manager = GetAccountManagerFactory()->GetAccountManager(
         temp_profile_dir_.GetPath().value());
     ash_account_manager->InitializeInEphemeralMode(

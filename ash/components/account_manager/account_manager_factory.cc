@@ -7,15 +7,15 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 
 namespace ash {
 
 AccountManagerFactory::AccountManagerFactory() = default;
 AccountManagerFactory::~AccountManagerFactory() = default;
 
-AccountManager* AccountManagerFactory::GetAccountManager(
+account_manager::AccountManager* AccountManagerFactory::GetAccountManager(
     const std::string& profile_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -30,7 +30,7 @@ crosapi::AccountManagerAsh* AccountManagerFactory::GetAccountManagerAsh(
 }
 
 AccountManagerFactory::AccountManagerHolder::AccountManagerHolder(
-    std::unique_ptr<AccountManager> account_manager,
+    std::unique_ptr<account_manager::AccountManager> account_manager,
     std::unique_ptr<crosapi::AccountManagerAsh> account_manager_ash)
     : account_manager(std::move(account_manager)),
       account_manager_ash(std::move(account_manager_ash)) {}
@@ -42,7 +42,7 @@ AccountManagerFactory::GetAccountManagerHolder(
     const std::string& profile_path) {
   auto it = account_managers_.find(profile_path);
   if (it == account_managers_.end()) {
-    auto account_manager = std::make_unique<AccountManager>();
+    auto account_manager = std::make_unique<account_manager::AccountManager>();
     auto account_manager_ash =
         std::make_unique<crosapi::AccountManagerAsh>(account_manager.get());
     it = account_managers_

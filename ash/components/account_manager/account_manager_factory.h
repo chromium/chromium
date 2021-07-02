@@ -9,10 +9,13 @@
 #include <string>
 #include <unordered_map>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ash.h"
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
+
+namespace account_manager {
+class AccountManager;
+}  // namespace account_manager
 
 namespace ash {
 
@@ -33,7 +36,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerFactory {
   ~AccountManagerFactory();
 
   // Returns the |AccountManager| corresponding to the given |profile_path|.
-  AccountManager* GetAccountManager(const std::string& profile_path);
+  account_manager::AccountManager* GetAccountManager(
+      const std::string& profile_path);
 
   // Returns the |AccountManagerAsh| corresponding to the given |profile_path|.
   crosapi::AccountManagerAsh* GetAccountManagerAsh(
@@ -42,13 +46,13 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerFactory {
  private:
   struct AccountManagerHolder {
     AccountManagerHolder(
-        std::unique_ptr<AccountManager> account_manager,
+        std::unique_ptr<account_manager::AccountManager> account_manager,
         std::unique_ptr<crosapi::AccountManagerAsh> account_manager_ash);
     AccountManagerHolder(const AccountManagerHolder&) = delete;
     AccountManagerHolder& operator=(const AccountManagerHolder&) = delete;
     ~AccountManagerHolder();
 
-    const std::unique_ptr<AccountManager> account_manager;
+    const std::unique_ptr<account_manager::AccountManager> account_manager;
     const std::unique_ptr<crosapi::AccountManagerAsh> account_manager_ash;
   };
 

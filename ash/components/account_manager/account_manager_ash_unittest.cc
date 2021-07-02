@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/components/account_manager/access_token_fetcher.h"
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ui.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -22,6 +21,7 @@
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -170,21 +170,22 @@ class FakeAccountManagerUI : public ash::AccountManagerUI {
 };
 
 // A test spy for intercepting AccountManager calls.
-class AccountManagerSpy : public ash::AccountManager {
+class AccountManagerSpy : public account_manager::AccountManager {
  public:
   AccountManagerSpy() = default;
   AccountManagerSpy(const AccountManagerSpy&) = delete;
   AccountManagerSpy& operator=(const AccountManagerSpy&) = delete;
   ~AccountManagerSpy() override = default;
 
-  // ash::AccountManager override:
+  // account_manager::AccountManager override:
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const ::account_manager::AccountKey& account_key,
       OAuth2AccessTokenConsumer* consumer) override {
     num_access_token_fetches_++;
     last_access_token_account_key_ = account_key;
 
-    return ash::AccountManager::CreateAccessTokenFetcher(account_key, consumer);
+    return account_manager::AccountManager::CreateAccessTokenFetcher(
+        account_key, consumer);
   }
 
   int num_access_token_fetches() const { return num_access_token_fetches_; }

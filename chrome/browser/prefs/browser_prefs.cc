@@ -260,7 +260,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -367,6 +366,7 @@
 #include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/timezone/timezone_resolver.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/arc/arc_prefs.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/quirks/quirks_manager.h"
@@ -1189,7 +1189,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   arc::prefs::RegisterProfilePrefs(registry);
   ArcAppListPrefs::RegisterProfilePrefs(registry);
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
-  ash::AccountManager::RegisterPrefs(registry);
+  account_manager::AccountManager::RegisterPrefs(registry);
   ash::ApkWebAppService::RegisterProfilePrefs(registry);
   ash::app_time::AppActivityRegistry::RegisterProfilePrefs(registry);
   ash::app_time::AppTimeController::RegisterProfilePrefs(registry);

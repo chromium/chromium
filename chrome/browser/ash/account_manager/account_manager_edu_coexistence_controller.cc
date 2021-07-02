@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,7 +40,7 @@ void EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
 EduCoexistenceConsentInvalidationController::
     EduCoexistenceConsentInvalidationController(
         Profile* profile,
-        AccountManager* account_manager,
+        account_manager::AccountManager* account_manager,
         account_manager::AccountManagerFacade* account_manager_facade,
         const AccountId& device_account_id)
     : profile_(profile),
@@ -158,7 +158,8 @@ void EduCoexistenceConsentInvalidationController::InvalidateEduAccounts(
     }
 
     // This account is a Secondary EDU Gaia account. Invalidate it.
-    account_manager_->UpdateToken(account.key, AccountManager::kInvalidToken);
+    account_manager_->UpdateToken(
+        account.key, account_manager::AccountManager::kInvalidToken);
   }
 }
 

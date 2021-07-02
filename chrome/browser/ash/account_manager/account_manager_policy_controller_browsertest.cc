@@ -71,11 +71,12 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     account_manager_->UpsertAccount(
         ::account_manager::AccountKey{primary_account_info.gaia,
                                       account_manager::AccountType::kGaia},
-        primary_account_info.email, AccountManager::kInvalidToken);
+        primary_account_info.email,
+        account_manager::AccountManager::kInvalidToken);
     account_manager_->UpsertAccount(
         ::account_manager::AccountKey{kFakeSecondaryGaiaId,
                                       account_manager::AccountType::kGaia},
-        kFakeSecondaryUsername, AccountManager::kInvalidToken);
+        kFakeSecondaryUsername, account_manager::AccountManager::kInvalidToken);
 
     AccountManagerPolicyControllerFactory::GetForBrowserContext(profile());
   }
@@ -114,7 +115,7 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
  private:
   base::ScopedTempDir temp_dir_;
   // Non-owning pointer.
-  AccountManager* account_manager_ = nullptr;
+  account_manager::AccountManager* account_manager_ = nullptr;
   // Non-owning pointer.
   account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
   std::unique_ptr<Profile> profile_;

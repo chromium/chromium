@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
@@ -33,6 +32,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "dbus/message.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,13 +60,14 @@ void SetupAccountManager(Profile* profile, const AccountId& account_id) {
   auto* account_manager =
       factory->GetAccountManager(profile->GetPath().value());
   DCHECK(account_manager);
-  // |AccountManager::UpsertAccount| is idempotent and safe to call multiple
-  // times.
+  // |account_manager::AccountManager::UpsertAccount| is idempotent and safe to
+  // call multiple times.
   account_manager->UpsertAccount(
       ::account_manager::AccountKey{
           account_id.GetObjGuid(),
           account_manager::AccountType::kActiveDirectory},
-      account_id.GetUserEmail(), AccountManager::kActiveDirectoryDummyToken);
+      account_id.GetUserEmail(),
+      account_manager::AccountManager::kActiveDirectoryDummyToken);
 }
 
 }  // namespace

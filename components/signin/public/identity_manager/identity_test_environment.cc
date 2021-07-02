@@ -38,8 +38,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/signin/internal/identity_manager/test_profile_oauth2_token_service_delegate_chromeos.h"
 #endif
 
@@ -191,7 +191,7 @@ IdentityTestEnvironment::IdentityTestEnvironment(
   IdentityManager::RegisterProfilePrefs(test_pref_service->registry());
   IdentityManager::RegisterLocalStatePrefs(test_pref_service->registry());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::AccountManager::RegisterPrefs(test_pref_service->registry());
+  account_manager::AccountManager::RegisterPrefs(test_pref_service->registry());
 
   owned_identity_manager_ = BuildIdentityManagerForTests(
       test_signin_client, test_pref_service, base::FilePath(),
@@ -225,10 +225,11 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
     account_manager->InitializeInEphemeralMode(
         signin_client->GetURLLoaderFactory());
   } else {
-    ash::AccountManager::DelayNetworkCallRunner immediate_callback_runner =
-        base::BindRepeating([](base::OnceClosure closure) -> void {
-          std::move(closure).Run();
-        });
+    account_manager::AccountManager::DelayNetworkCallRunner
+        immediate_callback_runner =
+            base::BindRepeating([](base::OnceClosure closure) -> void {
+              std::move(closure).Run();
+            });
     account_manager->Initialize(user_data_dir,
                                 signin_client->GetURLLoaderFactory(),
                                 immediate_callback_runner, base::DoNothing());

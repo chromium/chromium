@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/account_manager/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "ash/components/account_manager/tokens.pb.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -26,6 +25,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/tokens.pb.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -40,7 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace ash {
+namespace account_manager {
 
 namespace {
 
@@ -81,34 +81,33 @@ void RecordInitializationTime(
 
 // Returns `nullopt` if `account_type` is `ACCOUNT_TYPE_UNSPECIFIED`.
 absl::optional<::account_manager::AccountType> FromProtoAccountType(
-    const account_manager::AccountType& account_type) {
+    const internal::AccountType& account_type) {
   switch (account_type) {
-    case account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
+    case internal::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
       return absl::nullopt;
-    case account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+    case internal::AccountType::ACCOUNT_TYPE_GAIA:
       static_assert(
-          static_cast<int>(account_manager::AccountType::ACCOUNT_TYPE_GAIA) ==
+          static_cast<int>(internal::AccountType::ACCOUNT_TYPE_GAIA) ==
               static_cast<int>(::account_manager::AccountType::kGaia),
           "Underlying enum values must match");
       return ::account_manager::AccountType::kGaia;
-    case account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
-      static_assert(
-          static_cast<int>(
-              account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY) ==
-              static_cast<int>(
-                  ::account_manager::AccountType::kActiveDirectory),
-          "Underlying enum values must match");
+    case internal::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+      static_assert(static_cast<int>(
+                        internal::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY) ==
+                        static_cast<int>(
+                            ::account_manager::AccountType::kActiveDirectory),
+                    "Underlying enum values must match");
       return ::account_manager::AccountType::kActiveDirectory;
   }
 }
 
-account_manager::AccountType ToProtoAccountType(
+internal::AccountType ToProtoAccountType(
     const ::account_manager::AccountType& account_type) {
   switch (account_type) {
     case ::account_manager::AccountType::kGaia:
-      return account_manager::AccountType::ACCOUNT_TYPE_GAIA;
+      return internal::AccountType::ACCOUNT_TYPE_GAIA;
     case ::account_manager::AccountType::kActiveDirectory:
-      return account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY;
+      return internal::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY;
   }
 }
 
@@ -397,7 +396,7 @@ AccountManager::AccountMap AccountManager::LoadAccountsFromDisk(
     return accounts;
   }
 
-  account_manager::Accounts accounts_proto;
+  internal::Accounts accounts_proto;
   success = accounts_proto.ParseFromString(token_file_data);
   if (!success) {
     LOG(ERROR) << "Failed to parse tokens from file";
@@ -691,10 +690,10 @@ void AccountManager::PersistAccountsAsync() {
 }
 
 std::string AccountManager::GetSerializedAccounts() {
-  account_manager::Accounts accounts_proto;
+  internal::Accounts accounts_proto;
 
   for (const auto& account : accounts_) {
-    account_manager::Account* account_proto = accounts_proto.add_accounts();
+    internal::Account* account_proto = accounts_proto.add_accounts();
     account_proto->set_id(account.first.id);
     account_proto->set_account_type(
         ToProtoAccountType(account.first.account_type));
@@ -886,4 +885,4 @@ AccountManager::GetUrlLoaderFactory() {
   return url_loader_factory_;
 }
 
-}  // namespace ash
+}  // namespace account_manager

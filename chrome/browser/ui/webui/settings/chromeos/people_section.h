@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PEOPLE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PEOPLE_SECTION_H_
 
-#include "ash/components/account_manager/account_manager.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -79,7 +79,7 @@ class PeopleSection : public OsSettingsSection,
       const std::vector<::account_manager::Account>& accounts);
   void UpdateRemoveFingerprintSearchTags();
 
-  AccountManager* account_manager_ = nullptr;
+  account_manager::AccountManager* account_manager_ = nullptr;
   account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
   syncer::SyncService* sync_service_;
   SupervisedUserService* supervised_user_service_;

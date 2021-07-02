@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/account_manager/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 
 #include <set>
 #include <string>
@@ -28,7 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace account_manager {
 
 namespace {
 
@@ -770,4 +770,4 @@ TEST_F(AccountManagerTest, AccessTokenFetchFailsForUnknownAccounts) {
   RunAllPendingTasks();
 }
 
-}  // namespace ash
+}  // namespace account_manager

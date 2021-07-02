@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 

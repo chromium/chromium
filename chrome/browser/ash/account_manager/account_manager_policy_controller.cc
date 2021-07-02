@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -25,7 +25,7 @@ namespace ash {
 
 AccountManagerPolicyController::AccountManagerPolicyController(
     Profile* profile,
-    AccountManager* account_manager,
+    account_manager::AccountManager* account_manager,
     account_manager::AccountManagerFacade* account_manager_facade,
     const AccountId& device_account_id)
     : profile_(profile),
@@ -168,7 +168,8 @@ void AccountManagerPolicyController::
     }
 
     // This account is a Secondary Gaia account. Invalidate it.
-    account_manager_->UpdateToken(account.key, AccountManager::kInvalidToken);
+    account_manager_->UpdateToken(
+        account.key, account_manager::AccountManager::kInvalidToken);
   }
 
   profile_->GetPrefs()->SetString(

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_H_
-#define ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_H_
+#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_H_
+#define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -36,9 +36,9 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace ash {
+namespace account_manager {
 
-class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManager {
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
  public:
   // A dummy token stored against Active Directory accounts in Account Manager.
   // Accounts stored in Account Manager must have a token associated with them.
@@ -433,12 +433,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManager {
   base::WeakPtrFactory<AccountManager> weak_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace account_manager
 
-// TODO(https://crbug.com/1164001): remove after the pending migrations are
-// finished.
-namespace chromeos {
-using ::ash::AccountManager;
-}
-
-#endif  // ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_H_
+#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_H_

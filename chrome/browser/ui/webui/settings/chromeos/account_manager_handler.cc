@@ -164,7 +164,7 @@ class AccountBuilder {
 }  // namespace
 
 AccountManagerUIHandler::AccountManagerUIHandler(
-    AccountManager* account_manager,
+    account_manager::AccountManager* account_manager,
     account_manager::AccountManagerFacade* account_manager_facade,
     signin::IdentityManager* identity_manager)
     : account_manager_(account_manager),

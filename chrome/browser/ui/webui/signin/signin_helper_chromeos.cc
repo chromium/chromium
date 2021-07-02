@@ -4,15 +4,15 @@
 
 #include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ash.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 namespace chromeos {
 
 SigninHelper::SigninHelper(
-    ash::AccountManager* account_manager,
+    account_manager::AccountManager* account_manager,
     crosapi::AccountManagerAsh* account_manager_ash,
     const base::RepeatingClosure& close_dialog_closure,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -86,7 +86,7 @@ void SigninHelper::Exit() {
   base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
 }
 
-ash::AccountManager* SigninHelper::GetAccountManager() {
+account_manager::AccountManager* SigninHelper::GetAccountManager() {
   return account_manager_;
 }
 

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/signin/public/base/avatar_icon_util.h"

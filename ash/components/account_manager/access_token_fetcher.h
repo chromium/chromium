@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "base/callback_forward.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccessTokenFetcher
   // `done_callback` is called after an access token fetch is complete. Used by
   // the owner of `this` object to figure out when it is safe to delete it.
   AccessTokenFetcher(
-      ash::AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       mojom::AccountKeyPtr mojo_account_key,
       const std::string& consumer_name,
       base::OnceCallback<void(AccessTokenFetcher*)> done_callback,

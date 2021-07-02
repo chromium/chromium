@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -130,6 +129,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/flags_ui/flags_ui_metrics.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
@@ -520,10 +520,10 @@ UserSessionManager::~UserSessionManager() {
 // Observes the Device Account's LST and informs UserSessionManager about it.
 // Used by UserSessionManager to keep the user's token handle up to date.
 class UserSessionManager::DeviceAccountGaiaTokenObserver
-    : public AccountManager::Observer {
+    : public account_manager::AccountManager::Observer {
  public:
   DeviceAccountGaiaTokenObserver(
-      AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       const AccountId& account_id,
       base::RepeatingCallback<void(const AccountId& account_id)> callback)
       : account_id_(account_id), callback_(callback) {
@@ -537,7 +537,7 @@ class UserSessionManager::DeviceAccountGaiaTokenObserver
 
   ~DeviceAccountGaiaTokenObserver() override = default;
 
-  // AccountManager::Observer overrides:
+  // account_manager::AccountManager::Observer overrides:
   void OnTokenUpserted(const account_manager::Account& account) override {
     if (account.key.account_type != account_manager::AccountType::kGaia)
       return;
@@ -558,7 +558,8 @@ class UserSessionManager::DeviceAccountGaiaTokenObserver
   const AccountId account_id_;
   // `callback_` is called when `account_id`'s LST changes.
   base::RepeatingCallback<void(const AccountId& account_id)> callback_;
-  base::ScopedObservation<AccountManager, AccountManager::Observer>
+  base::ScopedObservation<account_manager::AccountManager,
+                          account_manager::AccountManager::Observer>
       account_manager_observation_{this};
 };
 
@@ -1359,11 +1360,12 @@ void UserSessionManager::InitProfilePreferences(
     // Set the Primary Account. Since `IdentityManager` requires that the
     // account is seeded before it can be set as primary, there are three main
     // steps in this process:
-    // 1. Make sure that the Primary Account is present in `AccountManager`.
+    // 1. Make sure that the Primary Account is present in
+    // `account_manager::AccountManager`.
     // 2. Seed it into `IdentityManager`.
     // 3. Set it as the Primary Account.
 
-    AccountManager* account_manager =
+    account_manager::AccountManager* account_manager =
         g_browser_process->platform_part()
             ->GetAccountManagerFactory()
             ->GetAccountManager(profile->GetPath().value());
@@ -1373,15 +1375,16 @@ void UserSessionManager::InitProfilePreferences(
     const ::account_manager::AccountKey account_key{
         gaia_id, account_manager::AccountType::kGaia};
 
-    // 1. Make sure that the account is present in `AccountManager`.
+    // 1. Make sure that the account is present in
+    // `account_manager::AccountManager`.
     if (!user_context.GetRefreshToken().empty()) {
-      // `AccountManager::UpsertAccount` is idempotent. We can safely call it
-      // without checking for re-auth cases.
-      // We MUST NOT revoke old Device Account tokens (`revoke_old_token` =
-      // `false`), otherwise Gaia will revoke all tokens associated to this
-      // user's device id, including `refresh_token_` and the user will be
-      // stuck performing an online auth with Gaia at every login. See
-      // https://crbug.com/952570 and https://crbug.com/865189 for context.
+      // `account_manager::AccountManager::UpsertAccount` is idempotent. We can
+      // safely call it without checking for re-auth cases. We MUST NOT revoke
+      // old Device Account tokens (`revoke_old_token` = `false`), otherwise
+      // Gaia will revoke all tokens associated to this user's device id,
+      // including `refresh_token_` and the user will be stuck performing an
+      // online auth with Gaia at every login. See https://crbug.com/952570 and
+      // https://crbug.com/865189 for context.
       account_manager->UpsertAccount(account_key,
                                      user->GetDisplayEmail() /* raw_email */,
                                      user_context.GetRefreshToken());
@@ -1392,9 +1395,9 @@ void UserSessionManager::InitProfilePreferences(
       // Set account with dummy token to let IdentitManager know that account
       // exists and we can safely configure the primary account at the step 2.
       // The real token will be set later during the migration.
-      account_manager->UpsertAccount(account_key,
-                                     user->GetDisplayEmail() /* raw_email */,
-                                     AccountManager::kInvalidToken);
+      account_manager->UpsertAccount(
+          account_key, user->GetDisplayEmail() /* raw_email */,
+          account_manager::AccountManager::kInvalidToken);
     }
     DCHECK(account_manager->IsTokenAvailable(account_key));
 

@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package ash.account_manager;
+package account_manager.internal;
 
 enum AccountType {
   ACCOUNT_TYPE_UNSPECIFIED = 0;  // Proto best practice for enums.

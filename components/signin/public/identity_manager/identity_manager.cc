@@ -521,7 +521,7 @@ GaiaCookieManagerService* IdentityManager::GetGaiaCookieManagerService() const {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-ash::AccountManager* IdentityManager::GetAshAccountManager() const {
+account_manager::AccountManager* IdentityManager::GetAshAccountManager() const {
   return ash_account_manager_;
 }
 #endif

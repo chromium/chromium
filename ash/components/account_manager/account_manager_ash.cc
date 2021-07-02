@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/components/account_manager/access_token_fetcher.h"
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ui.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -19,6 +18,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,7 +51,8 @@ void ReportErrorStatusFromHasDummyGaiaToken(
 
 }  // namespace
 
-AccountManagerAsh::AccountManagerAsh(ash::AccountManager* account_manager)
+AccountManagerAsh::AccountManagerAsh(
+    account_manager::AccountManager* account_manager)
     : account_manager_(account_manager) {
   DCHECK(account_manager_);
   account_manager_->AddObserver(this);

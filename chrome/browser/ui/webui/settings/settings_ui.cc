@@ -102,7 +102,6 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
@@ -121,6 +120,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/login/auth/password_visibility_utils.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/user_manager/user.h"
 #include "ui/base/ui_base_features.h"

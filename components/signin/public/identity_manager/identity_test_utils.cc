@@ -23,8 +23,8 @@
 #include "google_apis/gaia/gaia_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -44,7 +44,7 @@ void UpdateRefreshTokenForAccount(
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::AccountManager* account_manager,
+    account_manager::AccountManager* account_manager,
 #endif
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,

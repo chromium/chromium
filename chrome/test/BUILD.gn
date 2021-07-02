@@ -504,6 +504,7 @@ static_library("test_support") {
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",
+      "//components/account_manager_core:test_support",
     ]
   }
 

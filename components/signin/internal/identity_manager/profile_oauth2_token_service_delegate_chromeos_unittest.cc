@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ash.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -22,6 +21,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -40,8 +40,8 @@ namespace signin {
 
 namespace {
 
+using ::account_manager::AccountManager;
 using ::account_manager::AccountManagerFacade;
-using ::ash::AccountManager;
 
 constexpr char kGaiaId[] = "gaia-id";
 constexpr char kGaiaToken[] = "gaia-token";

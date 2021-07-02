@@ -77,7 +77,7 @@ struct IdentityManagerBuildParams {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::AccountManager* account_manager = nullptr;
+  account_manager::AccountManager* account_manager = nullptr;
   account_manager::AccountManagerFacade* account_manager_facade = nullptr;
   bool is_regular_profile = false;
 #endif

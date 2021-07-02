@@ -44,7 +44,7 @@
 namespace chromeos {
 namespace {
 
-using ::ash::AccountManager;
+using ::account_manager::AccountManager;
 
 constexpr char kCrosAddAccountFlow[] = "crosAddAccount";
 constexpr char kCrosAddAccountEduFlow[] = "crosAddAccountEdu";
@@ -91,7 +91,7 @@ std::string GetInlineLoginFlowName(Profile* profile, const std::string* email) {
 class ChildSigninHelper : public SigninHelper {
  public:
   ChildSigninHelper(
-      ash::AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       crosapi::AccountManagerAsh* account_manager_ash,
       const base::RepeatingClosure& close_dialog_closure,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -170,7 +170,7 @@ class ChildSigninHelper : public SigninHelper {
 class EduCoexistenceChildSigninHelper : public SigninHelper {
  public:
   EduCoexistenceChildSigninHelper(
-      ash::AccountManager* account_manager,
+      account_manager::AccountManager* account_manager,
       crosapi::AccountManagerAsh* account_manager_ash,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& gaia_id,

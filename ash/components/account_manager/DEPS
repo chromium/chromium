@@ -2,5 +2,4 @@ include_rules = [
   "+chromeos/crosapi/mojom",
   "+components/account_manager_core",
   "+google_apis/gaia",
-  "+third_party/protobuf",
 ]
