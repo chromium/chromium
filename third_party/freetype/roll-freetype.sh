@@ -2,7 +2,7 @@
 
 rolldeps() {
   STEP="roll-deps" &&
-  REVIEWERS=$(paste -s -d, third_party/freetype/OWNERS) &&
+  REVIEWERS=$(grep -E -v "^$|#|(per-file)" third_party/freetype/OWNERS | paste -s -d, -) &&
   roll-dep -r "${REVIEWERS}" "$@" src/third_party/freetype/src/
 }
 
