@@ -93,7 +93,7 @@ class AppLauncher : public ProfileObserver,
  private:
   explicit AppLauncher(Profile* profile) : profile_(profile) {
     profile->AddObserver(this);
-    web_app::WebAppProvider::Get(profile)
+    web_app::WebAppProvider::GetForSystemWebApps(profile)
         ->system_web_app_manager()
         .on_apps_synchronized()
         .Post(FROM_HERE,
