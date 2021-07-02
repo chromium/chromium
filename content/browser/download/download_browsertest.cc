@@ -234,6 +234,7 @@ class MockDownloadManagerObserver : public DownloadManager::Observer {
 
   MOCK_METHOD2(OnDownloadCreated,
                void(DownloadManager*, download::DownloadItem*));
+  MOCK_METHOD1(OnDownloadDropped, void(DownloadManager*));
   MOCK_METHOD1(ModelChanged, void(DownloadManager*));
   void ManagerGoingDown(DownloadManager* manager) override {
     DCHECK_EQ(manager_, manager);
@@ -2290,6 +2291,38 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RedirectUnsafeDownload) {
   // tests may also fail even if the download passed the security check.
   EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
             downloads[0]->GetLastReason());
+}
+
+// Verify that DownloadUrl() with no DownloadManagerDelegate drops the download.
+IN_PROC_BROWSER_TEST_F(DownloadContentTest, NoDownloadManagerDelegateDownload) {
+  const GURL download_url =
+      embedded_test_server()->GetURL("/download/download-test.lib");
+  TestDownloadHttpResponse::StartServing(TestDownloadHttpResponse::Parameters(),
+                                         download_url);
+
+  // Unset the DownloadManagerDelegate.
+  auto* download_manager = DownloadManagerForShell(shell());
+  download_manager->GetDelegate()->Shutdown();
+  download_manager->SetDelegate(nullptr);
+
+  MockDownloadManagerObserver dm_observer(download_manager);
+  EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(0);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(1);
+
+  // Create download parameters with renderer process information. This is
+  // required to go through the DownloadManagerDelegate code path.
+  auto download_parameters =
+      DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          shell()->web_contents(), download_url, TRAFFIC_ANNOTATION_FOR_TESTS);
+  download_parameters->set_content_initiated(true);
+  download_manager->DownloadUrl(std::move(download_parameters));
+
+  // Verify there were no downloads.
+  EXPECT_TRUE(EnsureNoPendingDownloads());
+
+  std::vector<download::DownloadItem*> downloads;
+  download_manager->GetAllDownloads(&downloads);
+  EXPECT_TRUE(downloads.empty());
 }
 
 // If the server response for the resumption request specifies a bad range (i.e.

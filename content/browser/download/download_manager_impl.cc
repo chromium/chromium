@@ -1383,7 +1383,7 @@ void DownloadManagerImpl::BeginDownloadInternal(
                                       params->render_frame_host_routing_id());
   bool content_initiated = params->content_initiated();
   // If it's from the web, we don't trust it, so we push the throttle on.
-  if (rfh && content_initiated) {
+  if (rfh && content_initiated && delegate_) {
     WebContents::Getter web_contents_getter = base::BindRepeating(
         WebContents::FromFrameTreeNodeId, rfh->GetFrameTreeNodeId());
     const GURL& url = params->url();
@@ -1394,12 +1394,10 @@ void DownloadManagerImpl::BeginDownloadInternal(
             &DownloadManagerImpl::BeginResourceDownloadOnChecksComplete,
             weak_factory_.GetWeakPtr(), std::move(params),
             std::move(blob_url_loader_factory), is_new_download, site_url);
-    if (delegate_) {
-      delegate_->CheckDownloadAllowed(
-          std::move(web_contents_getter), url, method, std::move(initiator),
-          false /* from_download_cross_origin_redirect */, content_initiated,
-          std::move(on_can_download_checks_done));
-    }
+    delegate_->CheckDownloadAllowed(
+        std::move(web_contents_getter), url, method, std::move(initiator),
+        false /* from_download_cross_origin_redirect */, content_initiated,
+        std::move(on_can_download_checks_done));
     return;
   }
 
