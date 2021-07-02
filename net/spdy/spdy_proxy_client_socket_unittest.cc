@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/address_list.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/proxy_server.h"
 #include "net/base/test_completion_callback.h"
@@ -49,6 +50,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "url/scheme_host_port.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -85,6 +87,7 @@ static const char kRedirectUrl[] = "https://example.com/";
 
 // Creates a SpdySession with a StreamSocket, instead of a ClientSocketHandle.
 base::WeakPtr<SpdySession> CreateSpdyProxySession(
+    const url::SchemeHostPort& destination,
     HttpNetworkSession* http_session,
     SpdySessionDependencies* session_deps,
     const SpdySessionKey& key,
@@ -94,12 +97,13 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
       NetLogWithSource()));
 
   auto transport_params = base::MakeRefCounted<TransportSocketParams>(
-      key.host_port_pair(), NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      destination, NetworkIsolationKey(), SecureDnsPolicy::kAllow,
       OnHostResolutionCallback());
 
   SSLConfig ssl_config;
   auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
-      transport_params, nullptr, nullptr, key.host_port_pair(), ssl_config,
+      transport_params, nullptr, nullptr,
+      HostPortPair::FromSchemeHostPort(destination), ssl_config,
       key.privacy_mode(), key.network_isolation_key());
   TestConnectJobDelegate connect_job_delegate;
   SSLConnectJob connect_job(MEDIUM, SocketTag(), common_connect_job_params,
@@ -255,9 +259,9 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
       session_->CreateCommonConnectJobParams());
 
   // Creates the SPDY session and stream.
-  spdy_session_ = CreateSpdyProxySession(session_.get(), &session_deps_,
-                                         endpoint_spdy_session_key_,
-                                         common_connect_job_params_.get());
+  spdy_session_ = CreateSpdyProxySession(
+      url::SchemeHostPort(url_), session_.get(), &session_deps_,
+      endpoint_spdy_session_key_, common_connect_job_params_.get());
 
   base::WeakPtr<SpdyStream> spdy_stream(
       CreateStreamSynchronously(

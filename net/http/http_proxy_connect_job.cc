@@ -19,6 +19,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source_type.h"
@@ -39,6 +40,7 @@
 #include "net/spdy/spdy_stream.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -153,6 +155,16 @@ HttpProxySocketParams::HttpProxySocketParams(
   // implies |transport_params_| is null, per the above DCHECKs.
   if (is_quic_)
     DCHECK(ssl_params_);
+
+  // Only supports proxy endpoints without scheme for now.
+  // TODO(crbug.com/1206799): Handle scheme.
+  if (transport_params_) {
+    DCHECK(absl::holds_alternative<HostPortPair>(
+        transport_params_->destination()));
+  } else {
+    DCHECK(absl::holds_alternative<HostPortPair>(
+        ssl_params_->GetDirectConnectionParams()->destination()));
+  }
 }
 
 HttpProxySocketParams::~HttpProxySocketParams() = default;
@@ -670,8 +682,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   ResetTimer(kHttpProxyConnectJobTunnelTimeout);
 
   next_state_ = STATE_QUIC_PROXY_CREATE_STREAM;
-  const HostPortPair& proxy_server =
-      ssl_params->GetDirectConnectionParams()->destination();
+  const HostPortPair& proxy_server = GetDestination();
   quic_stream_request_ = std::make_unique<QuicStreamRequest>(
       common_connect_job_params()->quic_stream_factory);
 
@@ -822,12 +833,18 @@ void HttpProxyConnectJob::OnAuthChallenge() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-const HostPortPair& HttpProxyConnectJob::GetDestination() {
+const HostPortPair& HttpProxyConnectJob::GetDestination() const {
+  const TransportSocketParams* transport_params;
   if (params_->transport_params()) {
-    return params_->transport_params()->destination();
+    transport_params = params_->transport_params().get();
   } else {
-    return params_->ssl_params()->GetDirectConnectionParams()->destination();
+    transport_params = params_->ssl_params()->GetDirectConnectionParams().get();
   }
+
+  // TODO(crbug.com/1206799): Handle proxy destination with scheme.
+  DCHECK(
+      absl::holds_alternative<HostPortPair>(transport_params->destination()));
+  return absl::get<HostPortPair>(transport_params->destination());
 }
 
 std::string HttpProxyConnectJob::GetUserAgent() const {
@@ -838,8 +855,7 @@ std::string HttpProxyConnectJob::GetUserAgent() const {
 
 SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   return SpdySessionKey(
-      params_->ssl_params()->GetDirectConnectionParams()->destination(),
-      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+      GetDestination(), ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kTrue, socket_tag(),
       params_->network_isolation_key(),
       params_->ssl_params()->GetDirectConnectionParams()->secure_dns_policy());

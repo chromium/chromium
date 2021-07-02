@@ -215,7 +215,7 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
 
   void OnAuthChallenge();
 
-  const HostPortPair& GetDestination();
+  const HostPortPair& GetDestination() const;
 
   std::string GetUserAgent() const;
 

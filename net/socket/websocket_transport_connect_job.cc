@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -23,8 +24,27 @@
 #include "net/socket/transport_connect_job.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/socket/websocket_transport_connect_sub_job.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
+
+namespace {
+
+// TODO(crbug.com/1206799): Delete once endpoint usage is converted to using
+// url::SchemeHostPort when available.
+HostPortPair ToLegacyDestinationEndpoint(
+    const TransportSocketParams::Endpoint& endpoint) {
+  if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
+    return HostPortPair::FromSchemeHostPort(
+        absl::get<url::SchemeHostPort>(endpoint));
+  }
+
+  DCHECK(absl::holds_alternative<HostPortPair>(endpoint));
+  return absl::get<HostPortPair>(endpoint);
+}
+
+}  // namespace
 
 std::unique_ptr<WebSocketTransportConnectJob>
 WebSocketTransportConnectJob::Factory::Create(
@@ -131,9 +151,9 @@ int WebSocketTransportConnectJob::DoResolveHost() {
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
   DCHECK_EQ(SecureDnsPolicy::kAllow, params_->secure_dns_policy());
-  request_ = host_resolver()->CreateRequest(params_->destination(),
-                                            params_->network_isolation_key(),
-                                            net_log(), parameters);
+  request_ = host_resolver()->CreateRequest(
+      ToLegacyDestinationEndpoint(params_->destination()),
+      params_->network_isolation_key(), net_log(), parameters);
 
   return request_->Start(base::BindOnce(
       &WebSocketTransportConnectJob::OnIOComplete, base::Unretained(this)));
@@ -159,7 +179,8 @@ int WebSocketTransportConnectJob::DoResolveHostComplete(int result) {
   if (!params_->host_resolution_callback().is_null()) {
     OnHostResolutionCallbackResult callback_result =
         params_->host_resolution_callback().Run(
-            params_->destination(), request_->GetAddressResults().value());
+            ToLegacyDestinationEndpoint(params_->destination()),
+            request_->GetAddressResults().value());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&WebSocketTransportConnectJob::OnIOComplete,

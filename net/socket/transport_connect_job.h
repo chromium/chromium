@@ -22,6 +22,8 @@
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -31,17 +33,22 @@ class SocketTag;
 class NET_EXPORT_PRIVATE TransportSocketParams
     : public base::RefCounted<TransportSocketParams> {
  public:
+  // Representation of the destination endpoint of the transport
+  // socket/connection. Unlike ConnectJobFactory::Endpoint, this does not have a
+  // `using_ssl` field for schemeless endpoints because that has no meaning for
+  // transport parameters.
+  using Endpoint = absl::variant<url::SchemeHostPort, HostPortPair>;
+
   // |host_resolution_callback| will be invoked after the the hostname is
   // resolved. |network_isolation_key| is passed to the HostResolver to prevent
   // cross-NIK leaks. If |host_resolution_callback| does not return OK, then the
   // connection will be aborted with that value.
-  TransportSocketParams(
-      const HostPortPair& host_port_pair,
-      const NetworkIsolationKey& network_isolation_key,
-      SecureDnsPolicy secure_dns_policy,
-      const OnHostResolutionCallback& host_resolution_callback);
+  TransportSocketParams(Endpoint destination,
+                        NetworkIsolationKey network_isolation_key,
+                        SecureDnsPolicy secure_dns_policy,
+                        OnHostResolutionCallback host_resolution_callback);
 
-  const HostPortPair& destination() const { return destination_; }
+  const Endpoint& destination() const { return destination_; }
   const NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;
   }
@@ -54,7 +61,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   friend class base::RefCounted<TransportSocketParams>;
   ~TransportSocketParams();
 
-  const HostPortPair destination_;
+  const Endpoint destination_;
   const NetworkIsolationKey network_isolation_key_;
   const SecureDnsPolicy secure_dns_policy_;
   const OnHostResolutionCallback host_resolution_callback_;

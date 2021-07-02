@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
@@ -31,6 +32,8 @@
 #include "net/socket/socket_performance_watcher_factory.h"
 #include "net/socket/tcp_client_socket.h"
 #include "net/socket/websocket_transport_connect_job.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -46,17 +49,30 @@ bool AddressListOnlyContainsIPv6(const AddressList& list) {
   return true;
 }
 
+// TODO(crbug.com/1206799): Delete once endpoint usage is converted to using
+// url::SchemeHostPort when available.
+HostPortPair ToLegacyDestinationEndpoint(
+    const TransportSocketParams::Endpoint& endpoint) {
+  if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
+    return HostPortPair::FromSchemeHostPort(
+        absl::get<url::SchemeHostPort>(endpoint));
+  }
+
+  DCHECK(absl::holds_alternative<HostPortPair>(endpoint));
+  return absl::get<HostPortPair>(endpoint);
+}
+
 }  // namespace
 
 TransportSocketParams::TransportSocketParams(
-    const HostPortPair& host_port_pair,
-    const NetworkIsolationKey& network_isolation_key,
+    Endpoint destination,
+    NetworkIsolationKey network_isolation_key,
     SecureDnsPolicy secure_dns_policy,
-    const OnHostResolutionCallback& host_resolution_callback)
-    : destination_(host_port_pair),
-      network_isolation_key_(network_isolation_key),
+    OnHostResolutionCallback host_resolution_callback)
+    : destination_(std::move(destination)),
+      network_isolation_key_(std::move(network_isolation_key)),
       secure_dns_policy_(secure_dns_policy),
-      host_resolution_callback_(host_resolution_callback) {}
+      host_resolution_callback_(std::move(host_resolution_callback)) {}
 
 TransportSocketParams::~TransportSocketParams() = default;
 
@@ -283,9 +299,9 @@ int TransportConnectJob::DoResolveHost() {
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
   parameters.secure_dns_policy = params_->secure_dns_policy();
-  request_ = host_resolver()->CreateRequest(params_->destination(),
-                                            params_->network_isolation_key(),
-                                            net_log(), parameters);
+  request_ = host_resolver()->CreateRequest(
+      ToLegacyDestinationEndpoint(params_->destination()),
+      params_->network_isolation_key(), net_log(), parameters);
 
   return request_->Start(base::BindOnce(&TransportConnectJob::OnIOComplete,
                                         base::Unretained(this)));
@@ -312,7 +328,8 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
   if (!params_->host_resolution_callback().is_null()) {
     OnHostResolutionCallbackResult callback_result =
         params_->host_resolution_callback().Run(
-            params_->destination(), request_->GetAddressResults().value());
+            ToLegacyDestinationEndpoint(params_->destination()),
+            request_->GetAddressResults().value());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&TransportConnectJob::OnIOComplete,

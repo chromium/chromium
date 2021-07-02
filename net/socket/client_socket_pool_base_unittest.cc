@@ -562,8 +562,7 @@ class TestConnectJobFactory : public ConnectJobFactory {
   // ConnectJobFactory implementation.
 
   std::unique_ptr<ConnectJob> CreateConnectJob(
-      bool using_ssl,
-      const HostPortPair& endpoint,
+      Endpoint endpoint,
       const ProxyServer& proxy_server,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
