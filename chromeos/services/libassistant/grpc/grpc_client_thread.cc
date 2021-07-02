@@ -22,7 +22,7 @@ GrpcClientThread::GrpcClientThread(const std::string& thread_name,
   base::Thread::Options thread_options = {/*type=*/base::MessagePumpType::IO,
                                           /*size=*/0};
   thread_options.priority = priority;
-  thread_.StartWithOptions(thread_options);
+  thread_.StartWithOptions(std::move(thread_options));
   StartCQ();
 }
 
