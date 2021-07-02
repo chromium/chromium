@@ -67,7 +67,8 @@ void StartSmartSelectionActionMenu::InitMenu(
 
   base::RecordAction(base::UserMetricsAction("Arc.SmartTextSelection.Request"));
   instance->RequestTextSelectionActions(
-      converted_text, mojom::ScaleFactor(ui::GetSupportedScaleFactors().back()),
+      converted_text,
+      mojom::ScaleFactor(ui::GetSupportedResourceScaleFactors().back()),
       base::BindOnce(&StartSmartSelectionActionMenu::HandleTextSelectionActions,
                      weak_ptr_factory_.GetWeakPtr()));
 

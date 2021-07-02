@@ -152,7 +152,7 @@ class GuestOsRegistryService : public KeyedService {
 
   // Constructs path to app icon for specific scale factor.
   base::FilePath GetIconPath(const std::string& app_id,
-                             ui::ScaleFactor scale_factor) const;
+                             ui::ResourceScaleFactor scale_factor) const;
 
   // Attempts to load icon in the following order:
   // 1/ Loads from resource if |icon_key->resource_id| is valid (non-zero).
@@ -171,7 +171,7 @@ class GuestOsRegistryService : public KeyedService {
   void LoadIconFromVM(const std::string& app_id,
                       apps::mojom::IconType icon_type,
                       int32_t size_hint_in_dip,
-                      ui::ScaleFactor scale_factor,
+                      ui::ResourceScaleFactor scale_factor,
                       apps::IconEffects icon_effects,
                       int fallback_icon_resource_id,
                       apps::mojom::Publisher::LoadIconCallback callback);
@@ -186,7 +186,7 @@ class GuestOsRegistryService : public KeyedService {
 
   // Fetches icons from container.
   void RequestIcon(const std::string& app_id,
-                   ui::ScaleFactor scale_factor,
+                   ui::ResourceScaleFactor scale_factor,
                    base::OnceCallback<void(std::string)> callback);
 
   // Remove all apps from the named VM and container. If |container_name| is an
@@ -233,10 +233,10 @@ class GuestOsRegistryService : public KeyedService {
   base::FilePath GetAppPath(const std::string& app_id) const;
   // Called to request an icon from the container.
   void RequestContainerAppIcon(const std::string& app_id,
-                               ui::ScaleFactor scale_factor);
+                               ui::ResourceScaleFactor scale_factor);
   // Callback for when we request an icon from the container.
   void OnContainerAppIcon(const std::string& app_id,
-                          ui::ScaleFactor scale_factor,
+                          ui::ResourceScaleFactor scale_factor,
                           bool success,
                           const std::vector<crostini::Icon>& icons);
   // Removes all the icons installed for an application.
@@ -269,7 +269,7 @@ class GuestOsRegistryService : public KeyedService {
   // should attempt again when we get an app list refresh from the container
   // which means there's a good chance the container is online and the request
   // will then succeed.
-  std::map<std::pair<std::string, ui::ScaleFactor>,
+  std::map<std::pair<std::string, ui::ResourceScaleFactor>,
            std::vector<base::OnceCallback<void(std::string)>>>
       active_icon_requests_;
   std::map<std::string, uint32_t> retry_icon_requests_;

@@ -194,7 +194,7 @@ void ArcKioskAppService::RequestNameAndIconUpdate() {
   app_icon_ = std::make_unique<ArcAppIcon>(
       profile_, app_id_,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(), this);
-  app_icon_->image_skia().GetRepresentation(ui::GetSupportedScaleFactor(
+  app_icon_->image_skia().GetRepresentation(ui::GetSupportedResourceScaleFactor(
       display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor()));
   // Apply default image now and in case icon is updated then OnIconUpdated()
   // will be called additionally.

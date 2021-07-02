@@ -696,7 +696,7 @@ base::FilePath GuestOsRegistryService::GetAppPath(
 
 base::FilePath GuestOsRegistryService::GetIconPath(
     const std::string& app_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   const base::FilePath app_path = GetAppPath(app_id);
   switch (scale_factor) {
     case ui::SCALE_FACTOR_100P:
@@ -759,7 +759,7 @@ void GuestOsRegistryService::LoadIconFromVM(
     const std::string& app_id,
     apps::mojom::IconType icon_type,
     int32_t size_hint_in_dip,
-    ui::ScaleFactor scale_factor,
+    ui::ResourceScaleFactor scale_factor,
     apps::IconEffects icon_effects,
     int fallback_icon_resource_id,
     apps::mojom::Publisher::LoadIconCallback callback) {
@@ -797,7 +797,7 @@ void GuestOsRegistryService::OnLoadIconFromVM(
 
 void GuestOsRegistryService::RequestIcon(
     const std::string& app_id,
-    ui::ScaleFactor scale_factor,
+    ui::ResourceScaleFactor scale_factor,
     base::OnceCallback<void(std::string)> callback) {
   if (!GetRegistration(app_id)) {
     // App isn't registered (e.g. a GUI app launched from within Crostini
@@ -957,7 +957,8 @@ void GuestOsRegistryService::UpdateApplicationList(
   // due to the container being offline.
   for (auto retry_iter = retry_icon_requests_.begin();
        retry_iter != retry_icon_requests_.end(); ++retry_iter) {
-    for (ui::ScaleFactor scale_factor : ui::GetSupportedScaleFactors()) {
+    for (ui::ResourceScaleFactor scale_factor :
+         ui::GetSupportedResourceScaleFactors()) {
       if (retry_iter->second & (1 << scale_factor)) {
         RequestContainerAppIcon(retry_iter->first, scale_factor);
       }
@@ -1046,7 +1047,7 @@ std::string GuestOsRegistryService::GenerateAppId(
 
 void GuestOsRegistryService::RequestContainerAppIcon(
     const std::string& app_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   // Ignore requests for app_id that isn't registered.
   absl::optional<GuestOsRegistryService::Registration> registration =
       GetRegistration(app_id);
@@ -1088,7 +1089,7 @@ void GuestOsRegistryService::RequestContainerAppIcon(
 
 void GuestOsRegistryService::OnContainerAppIcon(
     const std::string& app_id,
-    ui::ScaleFactor scale_factor,
+    ui::ResourceScaleFactor scale_factor,
     bool success,
     const std::vector<crostini::Icon>& icons) {
   std::string icon_content;
@@ -1111,7 +1112,8 @@ void GuestOsRegistryService::OnContainerAppIcon(
   }
 
   // Invoke all active icon request callbacks with the icon.
-  auto key = std::pair<std::string, ui::ScaleFactor>(app_id, scale_factor);
+  auto key =
+      std::pair<std::string, ui::ResourceScaleFactor>(app_id, scale_factor);
   auto& callbacks = active_icon_requests_[key];
   VLOG(1) << "Invoking icon callbacks for app: " << app_id
           << ", num callbacks: " << callbacks.size();
