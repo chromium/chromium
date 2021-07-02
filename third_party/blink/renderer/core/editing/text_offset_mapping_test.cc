@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -508,6 +509,30 @@ TEST_P(ParameterizedTextOffsetMappingTest, InlineContentsWithDocumentBoundary) {
       TextOffsetMapping::InlineContents::PreviousOf(inline_contents).IsNull());
   EXPECT_TRUE(
       TextOffsetMapping::InlineContents::NextOf(inline_contents).IsNull());
+}
+
+// https://crbug.com/1224206
+TEST_P(ParameterizedTextOffsetMappingTest, ComputeTextOffsetWithBrokenImage) {
+  SetBodyContent("A<img alt='X'>B<div>C</div>D");
+  Element* img = GetDocument().QuerySelector("img");
+  To<HTMLImageElement>(img)->EnsureCollapsedOrFallbackContent();
+  UpdateAllLifecyclePhasesForTest();
+  ShadowRoot* shadow = img->UserAgentShadowRoot();
+  DCHECK(shadow);
+  const Element* alt_img = shadow->getElementById("alttext-image");
+  DCHECK(alt_img);
+
+  const PositionInFlatTree position = PositionInFlatTree::BeforeNode(*alt_img);
+  for (const TextOffsetMapping::InlineContents& inline_contents :
+       {TextOffsetMapping::FindForwardInlineContents(position),
+        TextOffsetMapping::FindBackwardInlineContents(position)}) {
+    const TextOffsetMapping mapping(inline_contents);
+    const String text = mapping.GetText();
+    const unsigned offset = mapping.ComputeTextOffset(position);
+    EXPECT_LE(offset, text.length());
+    EXPECT_EQ("A,B", text);
+    EXPECT_EQ(2u, offset);
+  }
 }
 
 }  // namespace blink
