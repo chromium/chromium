@@ -32,6 +32,7 @@ namespace remoting {
 class ChromotingHost;
 class ChromotingHostContext;
 class DesktopEnvironmentFactory;
+class FtlSignalingConnector;
 class HostEventLogger;
 class HostStatusLogger;
 class LogToServer;
@@ -53,6 +54,14 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     std::unique_ptr<LogToServer> log_to_server;
     std::unique_ptr<RegisterSupportHostRequest> register_request;
     std::unique_ptr<SignalStrategy> signal_strategy;
+
+    // Since the deferred context only provides an interface* for the signal
+    // strategy, we use this boolean to indicate whether the host process should
+    // own things like reconnecting signaling if there is a transient network
+    // error.
+    // TODO(joedow): Remove this field once delegated signaling has been
+    // deprecated and removed.
+    bool use_ftl_signaling = false;
   };
 
   using CreateDeferredConnectContext =
@@ -174,6 +183,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<ChromotingHostContext> host_context_;
   base::WeakPtr<It2MeHost::Observer> observer_;
   std::unique_ptr<SignalStrategy> signal_strategy_;
+  std::unique_ptr<FtlSignalingConnector> ftl_signaling_connector_;
   std::unique_ptr<LogToServer> log_to_server_;
 
   It2MeHostState state_ = It2MeHostState::kDisconnected;

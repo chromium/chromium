@@ -298,6 +298,7 @@ void It2MeNativeMessagingHost::ProcessConnect(
              ChromotingHostContext* host_context) {
             auto connection_context =
                 std::make_unique<It2MeHost::DeferredConnectContext>();
+            connection_context->use_ftl_signaling = true;
             connection_context->signal_strategy =
                 std::make_unique<FtlSignalStrategy>(
                     std::make_unique<PassthroughOAuthTokenGetter>(username,

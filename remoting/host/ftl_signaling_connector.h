@@ -19,14 +19,13 @@ namespace remoting {
 // not connected it keeps trying to reconnect it until it is
 // connected. It also monitors network state and reconnects signaling whenever
 // connection type changes or IP address changes.
-// TODO(yuweih): Revisit to see if DNS blackhole checking is necessary here.
 class FtlSignalingConnector
     : public SignalStrategy::Listener,
       public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   // |signal_strategy| must outlive |this|.
   // The |auth_failed_callback| is called when authentication fails. The
-  // singaling connector will no longer try to reconnect after this callback is
+  // signaling connector will no longer try to reconnect after this callback is
   // called.
   FtlSignalingConnector(SignalStrategy* signal_strategy,
                         base::OnceClosure auth_failed_callback);

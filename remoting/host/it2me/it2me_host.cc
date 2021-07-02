@@ -23,6 +23,7 @@
 #include "remoting/base/service_urls.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/ftl_signaling_connector.h"
 #include "remoting/host/host_event_logger.h"
 #include "remoting/host/host_secret.h"
 #include "remoting/host/host_status_logger.h"
@@ -144,6 +145,18 @@ void It2MeHost::ConnectOnNetworkThread(
   signal_strategy_ = std::move(connection_context->signal_strategy);
   DCHECK(log_to_server_);
   DCHECK(signal_strategy_);
+
+  if (connection_context->use_ftl_signaling) {
+    // If the host owns the signaling channel then we want to make sure that it
+    // will reconnect that channel if a transient network error occurs.
+    // FtlSignalingConnector takes a callback which will indicate whether an
+    // auth error has occurred (e.g. token expired). For our purposes, there
+    // isn't anything we need to do in this case since a new token will be
+    // generated for the next connection.
+    ftl_signaling_connector_ = std::make_unique<FtlSignalingConnector>(
+        signal_strategy_.get(), base::DoNothing::Once());
+    ftl_signaling_connector_->Start();
+  }
 
   // Check the host domain policy.
   if (!required_host_domain_list_.empty()) {
@@ -536,6 +549,7 @@ void It2MeHost::DisconnectOnNetworkThread() {
   register_request_ = nullptr;
   host_status_logger_ = nullptr;
   log_to_server_ = nullptr;
+  ftl_signaling_connector_ = nullptr;
   signal_strategy_ = nullptr;
   host_event_logger_ = nullptr;
 
