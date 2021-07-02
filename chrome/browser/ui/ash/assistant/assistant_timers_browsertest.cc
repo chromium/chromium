@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/browser/ui/ash/assistant/test_support/test_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -189,7 +190,11 @@ class MockMessageCenterObserver
 
 class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
-  AssistantTimersBrowserTest() = default;
+  AssistantTimersBrowserTest() {
+    // TODO(b/190633242): enable sandbox in browser tests.
+    feature_list_.InitAndDisableFeature(
+        chromeos::assistant::features::kEnableLibAssistantSandbox);
+  }
 
   AssistantTimersBrowserTest(const AssistantTimersBrowserTest&) = delete;
   AssistantTimersBrowserTest& operator=(const AssistantTimersBrowserTest&) =
@@ -205,6 +210,7 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
   AssistantTestMixin* tester() { return &tester_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::ScopedRestoreICUDefaultLocale locale_{"en_US"};
   AssistantTestMixin tester_{&mixin_host_, this, embedded_test_server(), kMode,
                              kVersion};

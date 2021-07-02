@@ -24,16 +24,23 @@ LibassistantProcessPolicy::LibassistantProcessPolicy() = default;
 LibassistantProcessPolicy::~LibassistantProcessPolicy() = default;
 
 ResultExpr LibassistantProcessPolicy::EvaluateSyscall(int sysno) const {
-#if defined(__NR_sched_setscheduler)
-  if (sysno == __NR_sched_setscheduler)
-    return Allow();
+  switch (sysno) {
+#if defined(__NR_getcpu)
+    // Needed by arm devices.
+    case __NR_getcpu:
+      return Allow();
 #endif
+#if defined(__NR_sched_setscheduler)
+    case __NR_sched_setscheduler:
+      return Allow();
+#endif
+    default:
+      auto* sandbox_linux = SandboxLinux::GetInstance();
+      if (sandbox_linux->ShouldBrokerHandleSyscall(sysno))
+        return sandbox_linux->HandleViaBroker();
 
-  auto* sandbox_linux = SandboxLinux::GetInstance();
-  if (sandbox_linux->ShouldBrokerHandleSyscall(sysno))
-    return sandbox_linux->HandleViaBroker();
-
-  return BPFBasePolicy::EvaluateSyscall(sysno);
+      return BPFBasePolicy::EvaluateSyscall(sysno);
+  }
 }
 
 }  // namespace policy
