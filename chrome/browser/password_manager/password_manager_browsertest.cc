@@ -140,7 +140,8 @@ class PasswordManagerBackForwardCacheBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{::features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+           {"ignore_outstanding_network_request_for_testing", "true"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {::features::kBackForwardCacheMemoryControls});
     PasswordManagerBrowserTest::SetUpCommandLine(command_line);
@@ -3951,26 +3952,22 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       profile_metrics::BrowserProfileType::kRegular, 1);
 }
 
-// https://crbug.com/1223445
-// https://crbug.com/1224826
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
-                       DISABLED_SavePasswordOnRestoredPage) {
+                       SavePasswordOnRestoredPage) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
-  content::RenderFrameHost* rfh = WebContents()->GetMainFrame();
-  content::RenderFrameDeletedObserver rfh_deleted_observer(rfh);
+  content::RenderFrameHostWrapper rfh(WebContents()->GetMainFrame());
 
   // Navigate away so that the password form page is stored in the cache.
   EXPECT_TRUE(NavigateToURL(
       WebContents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  EXPECT_FALSE(rfh_deleted_observer.deleted());
   EXPECT_EQ(rfh->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Restore the cached page.
   WebContents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(WebContents()));
-  EXPECT_EQ(rfh, WebContents()->GetMainFrame());
+  EXPECT_EQ(rfh.get(), WebContents()->GetMainFrame());
 
   // Fill out and submit the password form.
   NavigationObserver observer(WebContents());
@@ -4012,12 +4009,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   rfh_deleted_observer.WaitUntilDeleted();
 }
 
-// CredentialsAPIOnlyCalledOnRestoredPage is flaky. http://crbug.com/1220336
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
-                       DISABLED_CredentialsAPIOnlyCalledOnRestoredPage) {
+                       CredentialsAPIOnlyCalledOnRestoredPage) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
-  content::RenderFrameHost* rfh = WebContents()->GetMainFrame();
+  content::RenderFrameHostWrapper rfh(WebContents()->GetMainFrame());
 
   // Navigate away.
   EXPECT_TRUE(NavigateToURL(
@@ -4028,7 +4024,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   // Restore the cached page.
   WebContents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(WebContents()));
-  EXPECT_EQ(rfh, WebContents()->GetMainFrame());
+  EXPECT_EQ(rfh.get(), WebContents()->GetMainFrame());
 
   // Make sure the password manager API works. Since it was never connected, it
   // shouldn't have been affected by the
