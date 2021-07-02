@@ -1325,6 +1325,14 @@ bool PasswordManager::DetectPotentialSubmission(
     PasswordFormManager* form_manager,
     const FieldDataManager& field_data_manager,
     PasswordManagerDriver* driver) {
+  // Do not attempt to detect submission if saving is disabled.
+  if (!client_->IsSavingAndFillingEnabled(form_manager->GetURL())) {
+    RecordProvisionalSaveFailure(
+        PasswordManagerMetricsRecorder::SAVING_DISABLED,
+        form_manager->GetURL());
+    return false;
+  }
+
   // If the manager is not submitted, it still can have autofilled data.
   if (!form_manager->is_submitted()) {
     form_manager->ProvisionallySaveFieldDataManagerInfo(field_data_manager,
