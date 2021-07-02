@@ -279,6 +279,9 @@ source_set("eg_app_support+eg2") {
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/policy_url_blocking",
+    "//ios/chrome/test/app:test_support",
   ]
   frameworks = [ "Foundation.framework" ]
 }

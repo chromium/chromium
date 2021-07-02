@@ -10,6 +10,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
@@ -17,8 +18,11 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/test_platform_policy_provider.h"
+#import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
+#import "ios/chrome/test/app/chrome_test_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -97,6 +101,15 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
 + (void)clearPolicies {
   policy::PolicyMap values;
   GetTestPlatformPolicyProvider()->UpdateChromePolicy(values);
+}
+
++ (BOOL)isURLBlocked:(NSString*)URL {
+  GURL gurl = GURL(base::SysNSStringToUTF8(URL));
+  PolicyBlocklistService* service =
+      PolicyBlocklistServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  return service->GetURLBlocklistState(gurl) ==
+         policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
 }
 
 @end

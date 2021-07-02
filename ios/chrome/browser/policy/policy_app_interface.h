@@ -21,6 +21,10 @@
 // Clear all policy values.
 + (void)clearPolicies;
 
+// Returns YES if the given |URL| is blocked by the URLBlocklist and
+// URLAllowlist policies.
++ (BOOL)isURLBlocked:(NSString*)URL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_APP_INTERFACE_H_
