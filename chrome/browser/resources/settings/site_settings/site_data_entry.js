@@ -17,34 +17,35 @@ import '../site_favicon.js';
 
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 
-Polymer({
-  is: 'site-data-entry',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const SiteDataEntryElementBase =
+    mixinBehaviors([FocusRowBehavior, I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SiteDataEntryElement extends SiteDataEntryElementBase {
+  static get is() {
+    return 'site-data-entry';
+  }
 
-  behaviors: [
-    FocusRowBehavior,
-    I18nBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!LocalDataItem} */
-    model: Object,
-  },
-
-  /** @private {LocalDataBrowserProxy} */
-  browserProxy_: null,
-
-  /** @override */
-  ready() {
-    this.browserProxy_ = LocalDataBrowserProxyImpl.getInstance();
-  },
+  static get properties() {
+    return {
+      /** @type {!LocalDataItem} */
+      model: Object,
+    };
+  }
 
   /**
    * Deletes all site data for this site.
@@ -55,6 +56,8 @@ Polymer({
     e.stopPropagation();
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.SITE_DATA_REMOVE_SITE);
-    this.browserProxy_.removeSite(this.model.site);
-  },
-});
+    LocalDataBrowserProxyImpl.getInstance().removeSite(this.model.site);
+  }
+}
+
+customElements.define(SiteDataEntryElement.is, SiteDataEntryElement);

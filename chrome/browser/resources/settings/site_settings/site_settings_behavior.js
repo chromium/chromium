@@ -195,4 +195,16 @@ export class SiteSettingsBehaviorInterface {
    * @return {boolean}
    */
   computeIsSettingEnabled(setting) {}
+
+  /**
+   * @param {string} origin
+   * @return {string}
+   */
+  originRepresentation(origin) {}
+
+  /**
+   * @param {string} originOrPattern
+   * @return {URL}
+   */
+  toUrl(originOrPattern) {}
 }

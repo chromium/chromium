@@ -184,6 +184,7 @@ js_library("site_data") {
   deps = [
     ":local_data_browser_proxy",
     ":site_settings_behavior",
+    "..:base_mixin",
     "..:global_scroll_target_behavior",
     "..:metrics_browser_proxy",
     "..:route",
@@ -192,7 +193,6 @@ js_library("site_data") {
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:list_property_update_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",

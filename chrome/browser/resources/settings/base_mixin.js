@@ -16,6 +16,12 @@ export class BaseMixinInterface {
    * @return {?HTMLElement}
    */
   $$(query) {}
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   */
+  fire(eventName, detail) {}
 }
 
 /**
@@ -32,6 +38,12 @@ export const BaseMixin = dedupingMixin(superClass => {
     /** @override */
     $$(query) {
       return this.shadowRoot.querySelector(query);
+    }
+
+    /** @override */
+    fire(eventName, detail) {
+      this.dispatchEvent(
+          new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
     }
   }
 

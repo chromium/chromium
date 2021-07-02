@@ -20,9 +20,9 @@ import './all_sites_icons.js';
 import './clear_storage_dialog_css.js';
 import './site_entry.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorImpl} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -31,153 +31,179 @@ import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {ALL_SITES_DIALOG, AllSitesAction2, ContentSetting, ContentSettingsTypes, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 import {SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'all-sites',
+/**
+ * @typedef {!CustomEvent<{
+ *    actionScope: string,
+ *    index: number,
+ *    item: !SiteGroup,
+ *    origin: string,
+ *    path: string,
+ *    target: !HTMLElement}>
+ *  }
+ */
+let OpenMenuEvent;
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SiteSettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const AllSitesElementBase = mixinBehaviors(
+    [
+      I18nBehavior,
+      SiteSettingsBehavior,
+      WebUIListenerBehavior,
+      RouteObserverBehavior,
+      GlobalScrollTargetBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    SiteSettingsBehavior,
-    WebUIListenerBehavior,
-    RouteObserverBehavior,
-    GlobalScrollTargetBehavior,
-  ],
+/** @polymer */
+class AllSitesElement extends AllSitesElementBase {
+  static get is() {
+    return 'all-sites';
+  }
 
-  properties: {
-    // TODO(https://crbug.com/1037809): Refactor siteGroupMap to use an Object
-    // instead of a Map so that it's observable by Polymore more naturally. As
-    // it stands, one cannot use computed properties based off the value of
-    // siteGroupMap nor can one use observable functions to listen to changes
-    // to siteGroupMap.
-    /**
-     * Map containing sites to display in the widget, grouped into their
-     * eTLD+1 names.
-     * @type {!Map<string, !SiteGroup>}
-     */
-    siteGroupMap: {
-      type: Object,
-      value() {
-        return new Map();
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      // TODO(https://crbug.com/1037809): Refactor siteGroupMap to use an Object
+      // instead of a Map so that it's observable by Polymore more naturally. As
+      // it stands, one cannot use computed properties based off the value of
+      // siteGroupMap nor can one use observable functions to listen to changes
+      // to siteGroupMap.
+      /**
+       * Map containing sites to display in the widget, grouped into their
+       * eTLD+1 names.
+       * @type {!Map<string, !SiteGroup>}
+       */
+      siteGroupMap: {
+        type: Object,
+        value() {
+          return new Map();
+        },
       },
-    },
 
-    /**
-     * Filtered site group list.
-     * @type {!Array<SiteGroup>}
-     * @private
-     */
-    filteredList_: {
-      type: Array,
-    },
+      /**
+       * Filtered site group list.
+       * @type {!Array<SiteGroup>}
+       * @private
+       */
+      filteredList_: {
+        type: Array,
+      },
 
-    /**
-     * Needed by GlobalScrollTargetBehavior.
-     * @override
-     */
-    subpageRoute: {
-      type: Object,
-      value: routes.SITE_SETTINGS_ALL,
-      readOnly: true,
-    },
+      /**
+       * Needed by GlobalScrollTargetBehavior.
+       * @override
+       */
+      subpageRoute: {
+        type: Object,
+        value: routes.SITE_SETTINGS_ALL,
+        readOnly: true,
+      },
 
-    /**
-     * The search query entered into the All Sites search textbox. Used to
-     * filter the All Sites list.
-     * @private
-     */
-    filter: {
-      type: String,
-      value: '',
-      observer: 'forceListUpdate_',
-    },
+      /**
+       * The search query entered into the All Sites search textbox. Used to
+       * filter the All Sites list.
+       * @private
+       */
+      filter: {
+        type: String,
+        value: '',
+        observer: 'forceListUpdate_',
+      },
 
-    /**
-     * All possible sort methods.
-     * @type {!{name: string, mostVisited: string, storage: string}}
-     * @private
-     */
-    sortMethods_: {
-      type: Object,
-      value: SortMethod,
-      readOnly: true,
-    },
+      /**
+       * All possible sort methods.
+       * @type {!{name: string, mostVisited: string, storage: string}}
+       * @private
+       */
+      sortMethods_: {
+        type: Object,
+        value: SortMethod,
+        readOnly: true,
+      },
 
-    /**
-     * Stores the last selected item in the All Sites list.
-     * @type {?{item: !SiteGroup, index: number}}
-     * @private
-     */
-    selectedItem_: Object,
+      /**
+       * Stores the last selected item in the All Sites list.
+       * @type {?{item: !SiteGroup, index: number}}
+       * @private
+       */
+      selectedItem_: Object,
 
-    /**
-     * @private
-     * Used to track the last-focused element across rows for the
-     * focusRowBehavior.
-     */
-    lastFocused_: Object,
+      /**
+       * @private
+       * Used to track the last-focused element across rows for the
+       * focusRowBehavior.
+       */
+      lastFocused_: Object,
 
-    /**
-     * @private
-     * Used to track whether the list of row items has been blurred for the
-     * focusRowBehavior.
-     */
-    listBlurred_: Boolean,
+      /**
+       * @private
+       * Used to track whether the list of row items has been blurred for the
+       * focusRowBehavior.
+       */
+      listBlurred_: Boolean,
 
-    /**
-     * @private {?{
-     *   actionScope: string,
-     *   index: number,
-     *   item: !SiteGroup,
-     *   origin: string,
-     *   path: string,
-     *   target: !HTMLElement
-     * }}
-     */
-    actionMenuModel_: Object,
+      /**
+       * @private {?{
+       *   actionScope: string,
+       *   index: number,
+       *   item: !SiteGroup,
+       *   origin: string,
+       *   path: string,
+       *   target: !HTMLElement
+       * }}
+       */
+      actionMenuModel_: Object,
 
-    /**
-     * @private
-     * Used to determine if user is attempting to clear all site data
-     * rather than a single site or origin's data.
-     */
-    clearAllData_: Boolean,
+      /**
+       * @private
+       * Used to determine if user is attempting to clear all site data
+       * rather than a single site or origin's data.
+       */
+      clearAllData_: Boolean,
 
-    /**
-     * The selected sort method.
-     * @type {!SortMethod|undefined}
-     * @private
-     */
-    sortMethod_: String,
+      /**
+       * The selected sort method.
+       * @type {!SortMethod|undefined}
+       * @private
+       */
+      sortMethod_: String,
 
-    /**
-     * The total usage of all sites for this profile.
-     * @type {string}
-     * @private
-     */
-    totalUsage_: {
-      type: String,
-      value: '0 B',
-    },
-  },
-
-  /** @private {?LocalDataBrowserProxy} */
-  localDataBrowserProxy_: null,
+      /**
+       * The total usage of all sites for this profile.
+       * @type {string}
+       * @private
+       */
+      totalUsage_: {
+        type: String,
+        value: '0 B',
+      },
+    };
+  }
 
   /** @override */
-  created() {
-    this.localDataBrowserProxy_ = LocalDataBrowserProxyImpl.getInstance();
-  },
+  constructor() {
+    super();
 
-  listeners: {
-    'open-menu': 'onOpenMenu_',
-  },
+    /** @private {!LocalDataBrowserProxy} */
+    this.localDataBrowserProxy_ = LocalDataBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'onStorageListFetched', this.onStorageListFetched.bind(this));
     this.addEventListener('site-entry-selected', e => {
@@ -186,21 +212,26 @@ Polymer({
       this.selectedItem_ = event.detail;
     });
 
+    this.addEventListener(
+        'open-menu', e => this.onOpenMenu_(/** @type {!OpenMenuEvent} */ (e)));
+
     const sortParam = Router.getInstance().getQueryParameters().get('sort');
     if (Object.values(this.sortMethods_).includes(sortParam)) {
       this.$.sortMethod.value = sortParam;
     }
     this.sortMethod_ = this.$.sortMethod.value;
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // Set scrollOffset so the iron-list scrolling accounts for the space the
     // title takes.
     afterNextRender(this, () => {
       this.$.allSitesList.scrollOffset = this.$.allSitesList.offsetTop;
     });
-  },
+  }
 
   /**
    * Reload the site list when the all sites page is visited.
@@ -214,7 +245,7 @@ Polymer({
     if (currentRoute === routes.SITE_SETTINGS_ALL) {
       this.populateList_();
     }
-  },
+  }
 
   /**
    * Retrieves a list of all known sites with site details.
@@ -232,7 +263,7 @@ Polymer({
       this.updateTotalUsage_();
       this.forceListUpdate_();
     });
-  },
+  }
 
   /**
    * Integrate sites using storage into the existing sites map, as there
@@ -250,7 +281,7 @@ Polymer({
     this.updateTotalUsage_();
     this.forceListUpdate_();
     this.focusOnLastSelectedEntry_();
-  },
+  }
 
   /**
    * Update the total usage by all sites for this profile after updates
@@ -267,7 +298,7 @@ Polymer({
     this.browserProxy.getFormattedBytes(usageSum).then(totalUsage => {
       this.totalUsage_ = totalUsage;
     });
-  },
+  }
 
   /**
    * Filters the all sites list with the given search query text.
@@ -285,7 +316,7 @@ Polymer({
       }
     }
     return this.sortSiteGroupList_(result);
-  },
+  }
 
   /**
    * Sorts the given SiteGroup list with the currently selected sort method.
@@ -307,7 +338,7 @@ Polymer({
       siteGroupList.sort(this.nameComparator_);
     }
     return siteGroupList;
-  },
+  }
 
   /**
    * Comparator used to sort SiteGroups by the amount of engagement the user has
@@ -325,7 +356,7 @@ Polymer({
     const score1 = siteGroup1.origins.reduce(getMaxEngagement, 0);
     const score2 = siteGroup2.origins.reduce(getMaxEngagement, 0);
     return score2 - score1;
-  },
+  }
 
   /**
    * Comparator used to sort SiteGroups by the amount of storage they use. Note
@@ -348,7 +379,7 @@ Polymer({
     // Use the number of cookies as a tie breaker.
     return siteGroup2Size - siteGroup1Size ||
         siteGroup2.numCookies - siteGroup1.numCookies;
-  },
+  }
 
   /**
    * Comparator used to sort SiteGroups by their eTLD+1 name (domain).
@@ -358,7 +389,7 @@ Polymer({
    */
   nameComparator_(siteGroup1, siteGroup2) {
     return siteGroup1.etldPlus1.localeCompare(siteGroup2.etldPlus1);
-  },
+  }
 
   /**
    * Called when the user chooses a different sort method to the default.
@@ -369,7 +400,7 @@ Polymer({
     this.filteredList_ = this.sortSiteGroupList_(this.filteredList_);
     // Force the iron-list to rerender its items, as the order has changed.
     this.$.allSitesList.fire('iron-resize');
-  },
+  }
 
   /**
    * Forces the all sites list to update its list of items, taking into account
@@ -380,7 +411,7 @@ Polymer({
     this.filteredList_ =
         this.filterPopulatedList_(this.siteGroupMap, this.filter);
     this.$.allSitesList.fire('iron-resize');
-  },
+  }
 
   /**
    * Whether the |siteGroupMap| is empty.
@@ -389,7 +420,7 @@ Polymer({
    */
   siteGroupMapEmpty_() {
     return !this.siteGroupMap.size;
-  },
+  }
 
   /**
    * Whether the |filteredList_| is empty due to searching.
@@ -398,7 +429,7 @@ Polymer({
    */
   noSearchResultFound_() {
     return !this.filteredList_.length && !this.siteGroupMapEmpty_();
-  },
+  }
 
   /**
    * Focus on previously selected entry.
@@ -415,16 +446,13 @@ Polymer({
         Math.max(0, Math.min(this.selectedItem_.index, this.siteGroupMap.size));
     this.$.allSitesList.focusItem(index);
     this.selectedItem_ = null;
-  },
+  }
 
   /**
    * Open the overflow menu and ensure that the item is visible in the scroll
    * pane when its menu is opened (it is possible to open off-screen items using
    * keyboard shortcuts).
-   * @param {!CustomEvent<{
-   *    actionScope: string, index: number, item: !SiteGroup, origin: string,
-   *    path: string, target: !HTMLElement
-   *    }>} e
+   * @param {!OpenMenuEvent} e
    * @private
    */
   onOpenMenu_(e) {
@@ -437,7 +465,7 @@ Polymer({
     this.actionMenuModel_ = e.detail;
     const menu = /** @type {CrActionMenuElement} */ (this.$.menu.get());
     menu.showAt(target);
-  },
+  }
 
   /**
    * Confirms the resetting of all content settings for an origin.
@@ -451,7 +479,7 @@ Polymer({
     const scopes = [ALL_SITES_DIALOG.RESET_PERMISSIONS, scope, 'DialogOpened'];
     this.recordUserAction_(scopes);
     this.$.confirmResetSettings.get().showModal();
-  },
+  }
 
   /**
    * Confirms the clearing of all storage data for an etld+1.
@@ -473,7 +501,7 @@ Polymer({
         [ALL_SITES_DIALOG.CLEAR_DATA, scope, installed, 'DialogOpened'];
     this.recordUserAction_(scopes);
     this.$.confirmClearDataNew.get().showModal();
-  },
+  }
 
   /**
    * Confirms the clearing of all storage data for all sites.
@@ -488,7 +516,7 @@ Polymer({
     const installed = anyAppsInstalled ? 'Installed' : '';
     this.recordUserAction_([...scopes, installed, 'DialogOpened']);
     this.$.confirmClearAllData.get().showModal();
-  },
+  }
 
   /** @private */
   onCloseDialog_(e) {
@@ -496,7 +524,7 @@ Polymer({
     e.target.closest('cr-dialog').close();
     this.actionMenuModel_ = null;
     this.$.menu.get().close();
-  },
+  }
 
   /**
    * Get the appropriate label string for the clear data dialog based on whether
@@ -505,7 +533,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getClearDataLabel_: function() {
+  getClearDataLabel_() {
     // actionMenuModel_ will be null when dialog closes
     if (this.actionMenuModel_ === null) {
       return '';
@@ -542,7 +570,7 @@ Polymer({
               this.actionMenuModel_.item.origins[0].origin);
       return loadTimeData.substituteString(this.i18n(messageId), displayName);
     }
-  },
+  }
 
   /**
    * Get the appropriate label for the reset permissions confirmation
@@ -551,7 +579,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getResetPermissionsLabel_: function() {
+  getResetPermissionsLabel_() {
     if (this.actionMenuModel_ === null) {
       return '';
     }
@@ -566,21 +594,21 @@ Polymer({
         this.actionMenuModel_.item.etldPlus1 ||
             this.originRepresentation(
                 this.actionMenuModel_.item.origins[0].origin));
-  },
+  }
   /**
    * Get the appropriate label for the clear all data confirmation
    * dialog, depending on whether or not any apps are installed.
    * @return {string}
    * @private
    */
-  getClearAllDataLabel_: function() {
+  getClearAllDataLabel_() {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
     const messageId = anyAppsInstalled ?
         'siteSettingsClearAllStorageConfirmationInstalled' :
         'siteSettingsClearAllStorageConfirmation';
     return loadTimeData.substituteString(
         this.i18n(messageId), this.totalUsage_);
-  },
+  }
 
   /**
    * Get the appropriate label for the clear data confirmation
@@ -589,30 +617,30 @@ Polymer({
    * @return {string}
    * @private
    */
-  getLogoutLabel_: function() {
+  getLogoutLabel_() {
     return this.actionMenuModel_.actionScope === 'origin' ?
         this.i18n('siteSettingsSiteClearStorageSignOut') :
         this.i18n('siteSettingsSiteGroupDeleteSignOut');
-  },
+  }
 
   /**
    * @param {!Array<string>} scopes
    * @private
    */
-  recordUserAction_: function(scopes) {
+  recordUserAction_(scopes) {
     chrome.metricsPrivate.recordUserAction(
         ['AllSites', ...scopes].filter(Boolean).join('_'));
-  },
+  }
 
   /**
    * Resets all permission settings for a single origin.
    * @param {string} origin
    * @private
    */
-  resetPermissionsForOrigin_: function(origin) {
+  resetPermissionsForOrigin_(origin) {
     this.browserProxy.setOriginPermissions(
         origin, null, ContentSetting.DEFAULT);
-  },
+  }
 
   /**
    * Resets all permissions for a single origin or all origins listed in
@@ -620,7 +648,7 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onResetSettings_: function(e) {
+  onResetSettings_(e) {
     const {actionScope, index, origin} = this.actionMenuModel_;
     const siteGroupToUpdate = this.filteredList_[index];
 
@@ -685,7 +713,7 @@ Polymer({
 
     this.$.allSitesList.fire('iron-resize');
     this.onCloseDialog_(e);
-  },
+  }
 
   /**
    * Helper to remove data and cookies for an etldPlus1.
@@ -693,7 +721,7 @@ Polymer({
    *                        that should be cleared.
    * @private
    */
-  clearDataForSiteGroupIndex_: function(index) {
+  clearDataForSiteGroupIndex_(index) {
     const siteGroupToUpdate = this.filteredList_[index];
     const updatedSiteGroup = {
       etldPlus1: siteGroupToUpdate.etldPlus1,
@@ -713,7 +741,7 @@ Polymer({
       }
     }
     this.updateSiteGroup_(index, updatedSiteGroup);
-  },
+  }
 
   /**
    * Helper to remove data and cookies for an origin.
@@ -723,7 +751,7 @@ Polymer({
    *                         that should be cleared.
    * @private
    */
-  clearDataForOrigin_: function(index, origin) {
+  clearDataForOrigin_(index, origin) {
     this.browserProxy.clearOriginDataAndCookies(this.toUrl(origin).href);
 
     const siteGroupToUpdate = this.filteredList_[index];
@@ -747,7 +775,7 @@ Polymer({
     updatedSiteGroup.hasInstalledPWA =
         updatedSiteGroup.origins.some(o => o.isInstalled);
     this.updateSiteGroup_(index, updatedSiteGroup);
-  },
+  }
 
   /**
    * Updates the UI after permissions have been reset or data/cookies
@@ -757,21 +785,21 @@ Polymer({
    * @param {!SiteGroup} updatedSiteGroup The SiteGroup object that represents
    *                                      the new state.
    */
-  updateSiteGroup_: function(index, updatedSiteGroup) {
+  updateSiteGroup_(index, updatedSiteGroup) {
     if (updatedSiteGroup.origins.length > 0) {
       this.set('filteredList_.' + index, updatedSiteGroup);
     } else {
       this.splice('filteredList_', index, 1);
     }
     this.siteGroupMap.delete(updatedSiteGroup.etldPlus1);
-  },
+  }
 
   /**
    * Clear data and cookies for an etldPlus1.
    * @param {!Event} e
    * @private
    */
-  onClearData_: function(e) {
+  onClearData_(e) {
     const {index, actionScope, origin} = this.actionMenuModel_;
     const scopes = [ALL_SITES_DIALOG.CLEAR_DATA];
 
@@ -802,7 +830,7 @@ Polymer({
     this.$.allSitesList.fire('iron-resize');
     this.updateTotalUsage_();
     this.onCloseDialog_(e);
-  },
+  }
 
   /**
    * Clear data and cookies for all sites.
@@ -823,5 +851,7 @@ Polymer({
     this.$.allSitesList.fire('iron-resize');
     this.totalUsage_ = '0 B';
     this.onCloseDialog_(e);
-  },
-});
+  }
+}
+
+customElements.define(AllSitesElement.is, AllSitesElement);
