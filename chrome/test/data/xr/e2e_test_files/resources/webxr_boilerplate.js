@@ -220,7 +220,7 @@ function onXRFrame(t, frame) {
       break;
     case sessionTypes.AR:
       if (onARFrameCallback) {
-        onARFrameCallback(session, frame);
+        onARFrameCallback(session, frame, t);
       }
       break;
     default:

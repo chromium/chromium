@@ -33,6 +33,13 @@ mojom::XRAnchorsDataPtr ArCoreAnchorManager::GetAnchorsData() const {
            << anchor_id_to_anchor_info_.size()
            << ", updated_anchor_ids_.size()=" << updated_anchor_ids_.size();
 
+#if DCHECK_IS_ON()
+  DCHECK(was_anchor_data_retrieved_in_current_frame_)
+      << "Update() must not be called twice in a row without a call to "
+         "GetAnchorsData() in between";
+  was_anchor_data_retrieved_in_current_frame_ = false;
+#endif
+
   std::vector<uint64_t> all_anchors_ids;
   all_anchors_ids.reserve(anchor_id_to_anchor_info_.size());
   for (const auto& anchor_id_and_object : anchor_id_to_anchor_info_) {
@@ -65,6 +72,10 @@ mojom::XRAnchorsDataPtr ArCoreAnchorManager::GetAnchorsData() const {
           mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), absl::nullopt));
     }
   }
+
+#if DCHECK_IS_ON()
+  was_anchor_data_retrieved_in_current_frame_ = true;
+#endif
 
   return mojom::XRAnchorsData::New(std::move(all_anchors_ids),
                                    std::move(updated_anchors));

@@ -29,8 +29,7 @@ class ArCoreAnchorManager {
   ~ArCoreAnchorManager();
 
   // Updates anchor manager state - it should be called in every frame if the
-  // ARCore session supports anchors. Currently, all ARCore sessions support
-  // anchors.
+  // ARCore session has anchors feature enabled.
   void Update(ArFrame* ar_frame);
 
   mojom::XRAnchorsDataPtr GetAnchorsData() const;
@@ -87,6 +86,17 @@ class ArCoreAnchorManager {
   // Set containing IDs of anchors updated in the last frame. It should be
   // modified only during calls to |Update()|.
   std::set<AnchorId> updated_anchor_ids_;
+
+#if DCHECK_IS_ON()
+  // True if |GetAnchorsData()| was called after |Update()|. It is used to track
+  // if |Update()| was called twice in a row w/o a call to |GetAnchorsData()| in
+  // between. Initially true since we expect the call to |Update()| to happen
+  // next.
+  // TODO(https://crbug.com/1192844): remove the assumption that the calls to
+  // |Update()| will always be followed by at least one call to
+  // |GetAnchorsData()| before the next call to |Update()| happens.
+  mutable bool was_anchor_data_retrieved_in_current_frame_ = true;
+#endif
 };
 
 }  // namespace device

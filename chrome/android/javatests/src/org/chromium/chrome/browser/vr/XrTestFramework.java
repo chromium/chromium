@@ -163,7 +163,10 @@ public abstract class XrTestFramework {
      */
     public static boolean pollJavaScriptBoolean(
             final String boolExpression, int timeoutMs, final WebContents webContents) {
-        if (DEBUG_LOGS) Log.i(TAG, "pollJavaScriptBoolean " + boolExpression);
+        if (DEBUG_LOGS) {
+            Log.i(TAG, "pollJavaScriptBoolean " + boolExpression + ", timeoutMs=" + timeoutMs);
+        }
+
         try {
             CriteriaHelper.pollInstrumentationThread(() -> {
                 String result = "false";
@@ -288,7 +291,7 @@ public abstract class XrTestFramework {
      * @param timeoutMs Timeout (in milliseconds) to wait for the JavaScript step.
      */
     public static void waitOnJavaScriptStep(WebContents webContents, int timeoutMs) {
-        if (DEBUG_LOGS) Log.i(TAG, "waitOnJavaScriptStep");
+        if (DEBUG_LOGS) Log.i(TAG, "waitOnJavaScriptStep, timeoutMs=" + timeoutMs);
         // Make sure we aren't trying to wait on a JavaScript test step without the code to do so.
         Assert.assertTrue("Attempted to wait on a JavaScript step without the code to do so. You "
                         + "either forgot to import webxr_e2e.js or are incorrectly using a "
