@@ -39,6 +39,7 @@ extern const base::Feature kPasswordScriptsFetching;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
 extern const base::Feature kReparseServerPredictionsFollowingFormChange;
 extern const base::Feature kSecondaryServerFieldPredictions;
+extern const base::Feature kSupportForAddPasswordsInSettings;
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUseNewHeaderForLegacySavePasswordBubble;

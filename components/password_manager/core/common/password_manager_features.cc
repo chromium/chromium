@@ -139,6 +139,11 @@ const base::Feature kReparseServerPredictionsFollowingFormChange = {
 const base::Feature kSecondaryServerFieldPredictions = {
     "SecondaryServerFieldPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the addition of passwords in Chrome Settings.
+// TODO(crbug/1226008): Remove once it's launched.
+const base::Feature kSupportForAddPasswordsInSettings = {
+    "SupportForAddPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Treat heuritistics to find new password fields as reliable. This enables
 // password generation on more forms, but could lead to false positives.
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
