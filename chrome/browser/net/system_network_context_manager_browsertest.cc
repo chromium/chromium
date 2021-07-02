@@ -192,8 +192,14 @@ void RunStubResolverConfigTests(bool async_dns_feature_enabled) {
 
 using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
 
+// TODO(crbug.com/1226023): Test is flaky.
+#if defined(OS_WIN)
+#define MAYBE_StubResolverDefaultConfig DISABLED_StubResolverDefaultConfig
+#else
+#define MAYBE_StubResolverDefaultConfig StubResolverDefaultConfig
+#endif
 IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest,
-                       StubResolverDefaultConfig) {
+                       MAYBE_StubResolverDefaultConfig) {
   RunStubResolverConfigTests(base::FeatureList::IsEnabled(features::kAsyncDns));
 }
 
