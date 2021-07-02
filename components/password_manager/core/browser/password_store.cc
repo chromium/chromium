@@ -567,16 +567,6 @@ void PasswordStore::OnInitCompleted(bool success) {
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.PasswordStoreInitResult", success);
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "passwords", "PasswordStore::InitOnBackgroundSequence", this);
-
-  // TODO(crbug.com/450621): Remove this when enough number of clients switch
-  // to the new version of Chrome.
-  if (!success || shutdown_called_)
-    return;
-  if (prefs_ && !prefs_->GetBoolean(prefs::kWereOldGoogleLoginsRemoved)) {
-    background_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&PasswordStore::RemoveOldGoogleLogins, this),
-        base::BindOnce(&PasswordStore::MarkOldGoogleLoginsRemoved, this));
-  }
 }
 
 void PasswordStore::PostLoginsTaskAndReplyToConsumerWithResult(
@@ -1013,44 +1003,6 @@ PasswordStore::GetSyncControllerDelegateOnBackgroundSequence() {
 void PasswordStore::DestroyOnBackgroundSequence() {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   sync_bridge_.reset();
-}
-
-bool PasswordStore::RemoveOldGoogleLogins() {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
-  std::vector<std::unique_ptr<PasswordForm>> obtained_forms;
-  if (FillAutofillableLogins(&obtained_forms)) {
-    base::Time cutoff;  // the null time
-    static const base::Time::Exploded exploded_cutoff = {
-        2012, 1, 0, 1, 0, 0, 0, 0};  // 00:00 Jan 1 2012
-    bool conversion_success =
-        base::Time::FromUTCExploded(exploded_cutoff, &cutoff);
-    DCHECK(conversion_success);
-
-    auto IsOldGoogleForm =
-        [&cutoff](const std::unique_ptr<PasswordForm>& form) {
-          return (form->scheme == PasswordForm::Scheme::kHtml &&
-                  (form->signon_realm == "http://www.google.com" ||
-                   form->signon_realm == "http://www.google.com/" ||
-                   form->signon_realm == "https://www.google.com" ||
-                   form->signon_realm == "https://www.google.com/")) &&
-                 form->date_created < cutoff;
-        };
-
-    for (const auto& form : obtained_forms) {
-      if (IsOldGoogleForm(form)) {
-        RemoveLoginInternal(*form);
-      }
-    }
-    return true;
-  }
-  return false;
-}
-
-void PasswordStore::MarkOldGoogleLoginsRemoved(bool success) {
-  if (success && prefs_ && !shutdown_called_) {
-    prefs_->SetBoolean(prefs::kWereOldGoogleLoginsRemoved, true);
-  }
 }
 
 }  // namespace password_manager

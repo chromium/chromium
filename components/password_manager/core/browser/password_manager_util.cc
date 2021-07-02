@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/credentials_cleaner.h"
 #include "components/password_manager/core/browser/credentials_cleaner_runner.h"
 #include "components/password_manager/core/browser/http_credentials_cleaner.h"
+#include "components/password_manager/core/browser/old_google_credentials_cleaner.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
@@ -184,6 +185,12 @@ void RemoveUselessCredentials(
             store, network_context_getter, prefs));
   }
 #endif  // !defined(OS_IOS)
+
+  // TODO(crbug.com/450621): Remove this when enough number of clients switch
+  // to the new version of Chrome.
+  cleaning_tasks_runner->MaybeAddCleaningTask(
+      std::make_unique<password_manager::OldGoogleCredentialCleaner>(store,
+                                                                     prefs));
 
   if (cleaning_tasks_runner->HasPendingTasks()) {
     // The runner will delete itself once the clearing tasks are done, thus we

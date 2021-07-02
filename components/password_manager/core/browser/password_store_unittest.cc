@@ -177,10 +177,6 @@ class PasswordStoreWithMockedMetadataStore : public PasswordStoreImpl {
   MockMetadataStore metadata_store_;
 };
 
-PasswordStoreChangeList AddChangeForForm(const PasswordForm& form) {
-  return {PasswordStoreChange(PasswordStoreChange::ADD, form)};
-}
-
 PasswordForm MakePasswordForm(const std::string& signon_realm) {
   PasswordForm form;
   form.url = GURL("http://www.origin.com");
@@ -1550,94 +1546,6 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnPasswordUpdate) {
 
   test_form->password_value = u"new_password_2";
   store->UpdateLogin(*test_form);
-  WaitForPasswordStore();
-
-  store->ShutdownOnUIThread();
-}
-
-// Tests that all old google.com accounts are deleted.
-TEST_F(PasswordStoreTest, TestOldGooglePasswordsAreDeleted) {
-  {
-    auto db = std::make_unique<LoginDatabase>(
-        test_login_db_file_path(), password_manager::IsAccountStore(false));
-    db->Init();
-
-    std::vector<std::string> google_realms = {
-        "http://www.google.com",
-        "http://www.google.com/",
-        "https://www.google.com",
-        "https://www.google.com/",
-    };
-
-    for (const auto& realm : google_realms) {
-      const PasswordForm form = MakePasswordForm(realm);
-      ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
-    }
-    std::vector<std::unique_ptr<PasswordForm>> forms;
-    ASSERT_TRUE(db->GetAutofillableLogins(&forms));
-    ASSERT_EQ(google_realms.size(), forms.size());
-  }
-  // The LoginDatabase gets destroyed here, later it will be initialized with
-  // data.
-  WaitForPasswordStore();
-
-  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
-  store->Init(pref_service());
-  WaitForPasswordStore();
-
-  // Verify that all the passwords were deleted.
-  MockPasswordStoreConsumer mock_consumer;
-  EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef(IsEmpty()));
-  store->GetAllLogins(&mock_consumer);
-  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kWereOldGoogleLoginsRemoved));
-  WaitForPasswordStore();
-
-  store->ShutdownOnUIThread();
-}
-
-// Tests that only old google.com accounts are deleted.
-TEST_F(PasswordStoreTest, TestNewerGooglePasswordsAreNotDeleted) {
-  PasswordForm old_form = MakePasswordForm("http://www.google.com");
-  old_form.in_store = PasswordForm::Store::kProfileStore;
-  // Form created after cutoff.
-  PasswordForm new_form = MakePasswordForm("https://www.google.com");
-  new_form.in_store = PasswordForm::Store::kProfileStore;
-  const base::Time::Exploded time = {2012, 1, 0, 1,
-                                     0,    0, 0, 1};  // 00:01 Jan 1 2012
-  ASSERT_TRUE(base::Time::FromUTCExploded(time, &new_form.date_created));
-
-  PasswordForm different_form = MakePasswordForm(kTestWebRealm1);
-  different_form.in_store = PasswordForm::Store::kProfileStore;
-
-  {
-    auto db = std::make_unique<LoginDatabase>(
-        test_login_db_file_path(), password_manager::IsAccountStore(false));
-    db->Init();
-
-    ASSERT_EQ(AddChangeForForm(old_form), db->AddLogin(old_form, nullptr));
-    ASSERT_EQ(AddChangeForForm(new_form), db->AddLogin(new_form, nullptr));
-    ASSERT_EQ(AddChangeForForm(different_form),
-              db->AddLogin(different_form, nullptr));
-  }
-  // The LoginDatabase gets destroyed here, later it will be initialized with
-  // data.
-  WaitForPasswordStore();
-
-  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
-  store->Init(pref_service());
-  WaitForPasswordStore();
-
-  // Verify that only old www.google passwords were deleted.
-  MockPasswordStoreConsumer mock_consumer;
-
-  std::vector<std::unique_ptr<PasswordForm>> expected;
-  expected.push_back(std::make_unique<PasswordForm>(new_form));
-  expected.push_back(std::make_unique<PasswordForm>(different_form));
-
-  EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef(
-                                 UnorderedPasswordFormElementsAre(&expected)));
-  store->GetAllLogins(&mock_consumer);
-  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kWereOldGoogleLoginsRemoved));
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
