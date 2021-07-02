@@ -389,6 +389,7 @@ source_set("unit_tests") {
     "negotiating_authenticator_unittest.cc",
     "pairing_registry_unittest.cc",
     "port_range_unittest.cc",
+    "ppapi_module_stub.cc",
     "pseudotcp_adapter_unittest.cc",
     "remoting_ice_config_request_unittest.cc",
     "sdp_message_unittest.cc",
