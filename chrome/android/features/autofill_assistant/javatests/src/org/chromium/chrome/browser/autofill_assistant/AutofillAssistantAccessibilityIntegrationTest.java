@@ -84,7 +84,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
     private void runScript(AutofillAssistantTestScript script) {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(script),
-                        (ClientSettingsProto) ClientSettingsProto.newBuilder()
+                        ClientSettingsProto.newBuilder()
                                 .setIntegrationTestSettings(
                                         IntegrationTestSettings.newBuilder()
                                                 .setDisableHeaderAnimations(true)
@@ -124,19 +124,19 @@ public class AutofillAssistantAccessibilityIntegrationTest {
 
         // Show an element on top that should not be covered by the bottom sheet.
         SelectorProto element =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
                         .build();
         ElementAreaProto elementArea =
-                (ElementAreaProto) ElementAreaProto.newBuilder()
+                ElementAreaProto.newBuilder()
                         .addTouchable(Rectangle.newBuilder().addElements(element))
                         .addTouchable(Rectangle.newBuilder().addElements(
                                 SelectorProto.newBuilder().addFilters(
                                         SelectorProto.Filter.newBuilder().setCssSelector(
                                                 "#touch_area_four"))))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setShowCast(ShowCastProto.newBuilder()
                                               .setElementToPresent(element)
                                               .setTouchableElementArea(elementArea))
@@ -146,7 +146,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
         List<UserFormSectionProto> additionalSections = new ArrayList<>();
         for (int i = 1; i <= 20; ++i) {
             additionalSections.add(
-                    (UserFormSectionProto) UserFormSectionProto.newBuilder()
+                    UserFormSectionProto.newBuilder()
                             .setTextInputSection(TextInputSectionProto.newBuilder().addInputFields(
                                     TextInputProto.newBuilder()
                                             .setHint("Text input " + i)
@@ -155,7 +155,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                             .setTitle("Title " + i)
                             .build());
         }
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(
                                  CollectUserDataProto.newBuilder()
                                          .addAllAdditionalAppendedSections(additionalSections)
@@ -163,7 +163,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("autofill_assistant_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Autostart")))
@@ -201,19 +201,19 @@ public class AutofillAssistantAccessibilityIntegrationTest {
 
         // Show an element on top that may or may not be covered by the bottom sheet.
         SelectorProto element =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector("#touch_area_one"))
                         .build();
         ElementAreaProto elementArea =
-                (ElementAreaProto) ElementAreaProto.newBuilder()
+                ElementAreaProto.newBuilder()
                         .addTouchable(Rectangle.newBuilder().addElements(element))
                         .addTouchable(Rectangle.newBuilder().addElements(
                                 SelectorProto.newBuilder().addFilters(
                                         SelectorProto.Filter.newBuilder().setCssSelector(
                                                 "#touch_area_four"))))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setShowCast(ShowCastProto.newBuilder()
                                               .setElementToPresent(element)
                                               .setTouchableElementArea(elementArea))
@@ -223,7 +223,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
         List<UserFormSectionProto> additionalSections = new ArrayList<>();
         for (int i = 1; i <= 20; ++i) {
             additionalSections.add(
-                    (UserFormSectionProto) UserFormSectionProto.newBuilder()
+                    UserFormSectionProto.newBuilder()
                             .setTextInputSection(TextInputSectionProto.newBuilder().addInputFields(
                                     TextInputProto.newBuilder()
                                             .setHint("Text input " + i)
@@ -232,7 +232,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                             .setTitle("Title " + i)
                             .build());
         }
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(
                                  CollectUserDataProto.newBuilder()
                                          .addAllAdditionalAppendedSections(additionalSections)
@@ -240,7 +240,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("autofill_assistant_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Autostart")))

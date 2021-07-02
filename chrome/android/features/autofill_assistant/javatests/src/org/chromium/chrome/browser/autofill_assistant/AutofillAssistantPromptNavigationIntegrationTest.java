@@ -69,19 +69,19 @@ public class AutofillAssistantPromptNavigationIntegrationTest {
     @DisableIf.Build(sdk_is_less_than = 21)
     public void reloadEndsPrompt() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setEndOnNavigation(true).addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Prompt 1"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Prompt 2"))))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))

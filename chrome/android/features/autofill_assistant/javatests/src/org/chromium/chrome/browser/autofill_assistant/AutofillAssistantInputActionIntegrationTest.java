@@ -108,17 +108,17 @@ public class AutofillAssistantInputActionIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input1"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_set_value)
                                          .addValue(KeyPress.newBuilder().setText("Value"))
                                          .setFillStrategy(KeyboardValueFillStrategy.SET_VALUE))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set value")
                                             .addChoices(Choice.newBuilder()))
@@ -140,10 +140,10 @@ public class AutofillAssistantInputActionIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input1"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_set_value)
@@ -151,7 +151,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setFillStrategy(
                                                  KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set value")
                                             .addChoices(Choice.newBuilder()))
@@ -173,10 +173,10 @@ public class AutofillAssistantInputActionIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input1"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_set_value)
@@ -184,7 +184,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setFillStrategy(KeyboardValueFillStrategy
                                                                   .SIMULATE_KEY_PRESSES_FOCUS))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set value")
                                             .addChoices(Choice.newBuilder()))
@@ -358,10 +358,10 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void selectOptionFromDropdown() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element = (SelectorProto) SelectorProto.newBuilder()
+        SelectorProto element = SelectorProto.newBuilder()
                                         .addFilters(Filter.newBuilder().setCssSelector("#select"))
                                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSelectOption(
                                  SelectOptionProto.newBuilder()
                                          .setElement(element)
@@ -369,7 +369,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setOptionComparisonAttribute(
                                                  SelectOptionProto.OptionComparisonAttribute.VALUE))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Value Match")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -378,7 +378,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setText("Continue"))))
                          .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setSelectOption(
                                 SelectOptionProto.newBuilder()
                                         .setElement(element)
@@ -386,7 +386,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                         .setOptionComparisonAttribute(
                                                 SelectOptionProto.OptionComparisonAttribute.LABEL))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Label Match")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -394,7 +394,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Continue"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSelectOption(
                                  SelectOptionProto.newBuilder()
                                          .setElement(element)
@@ -403,7 +403,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setOptionComparisonAttribute(
                                                  SelectOptionProto.OptionComparisonAttribute.LABEL))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Label Starts With")
                                             .addChoices(Choice.newBuilder()))

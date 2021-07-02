@@ -106,7 +106,7 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         // Sets username
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .addValue(SetFormFieldValueProto.KeyPress.newBuilder()
@@ -116,7 +116,7 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
                                                          "#username"))))
                          .build());
         // Generates new password
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setGeneratePasswordForFormField(
                                  GeneratePasswordForFormFieldProto.newBuilder()
                                          .setMemoryKey("memory-key")
@@ -126,14 +126,14 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
                          .build());
 
         // Presaves generated password
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPresaveGeneratedPassword(
                                  PresaveGeneratedPasswordProto.newBuilder().setMemoryKey(
                                          "memory-key"))
                          .build());
 
         // Sets new password
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .addValue(SetFormFieldValueProto.KeyPress.newBuilder()
@@ -144,7 +144,7 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
                          .build());
 
         // Sets password confirmation
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .addValue(SetFormFieldValueProto.KeyPress.newBuilder()
@@ -155,13 +155,13 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
                          .build());
 
         // Saves generated password
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSaveGeneratedPassword(
                                  SaveGeneratedPasswordProto.newBuilder().setMemoryKey("memory-key"))
                          .build());
 
         // Fills login password field with saved password
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .addValue(SetFormFieldValueProto.KeyPress.newBuilder()
@@ -172,13 +172,13 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
                          .build());
 
         // Shows prompt
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Password generation")))

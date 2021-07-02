@@ -172,7 +172,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
         GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
+                GetTriggerScriptsResponseProto.newBuilder()
                         .addTriggerScripts(firstTimeTriggerScript)
                         .addTriggerScripts(returningUserTriggerScript)
                         .build();
@@ -200,10 +200,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .setUserInterface(createDefaultTriggerScriptUI("Hello world",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
         setupTriggerScripts(triggerScripts);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
@@ -248,7 +247,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
         GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
+                GetTriggerScriptsResponseProto.newBuilder()
                         .addTriggerScripts(buttonVisibleTriggerScript)
                         .addTriggerScripts(buttonInvisibleTriggerScript)
                         .build();
@@ -282,10 +281,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                   .setRegularScriptLoadingStatusMessage(
                                                           "Loading regular script"));
 
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
         setupTriggerScripts(triggerScripts);
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         SharedPreferencesManager.getInstance().writeBoolean(
@@ -295,13 +293,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Done"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -336,10 +334,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                   .setRegularScriptLoadingStatusMessage(
                                                           "Loading regular script"));
 
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
         setupTriggerScripts(triggerScripts);
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         SharedPreferencesManager.getInstance().writeBoolean(
@@ -349,13 +346,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Done"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -385,10 +382,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .setUserInterface(createDefaultTriggerScriptUI("Trigger script",
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
         byte[] triggerScriptsResponse = triggerScripts.toByteArray();
         String base64Response = Base64.encodeToString(triggerScriptsResponse, /* offset = */ 0,
                 triggerScriptsResponse.length, Base64.URL_SAFE | Base64.NO_WRAP);
@@ -413,10 +409,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                   .setRegularScriptLoadingStatusMessage(
                                                           "Loading regular script"));
 
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
         setupTriggerScripts(triggerScripts);
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         SharedPreferencesManager.getInstance().writeBoolean(
@@ -430,13 +425,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, true);
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Done"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -465,10 +460,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                 /* withProgressBar = */ false)
                                                   .setRegularScriptLoadingStatusMessage(
                                                           "Loading regular script"));
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
 
         setupTriggerScripts(triggerScripts);
         AutofillAssistantPreferencesUtil.setInitialPreferences(false);
@@ -477,13 +471,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Done"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -511,10 +505,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                 /* bubbleMessage = */ "",
                                 /* withProgressBar = */ false));
 
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
         AutofillAssistantTestServiceRequestSender testServiceRequestSender =
                 setupTriggerScripts(triggerScripts);
         startAutofillAssistantOnTab(TEST_PAGE_A);
@@ -625,10 +618,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                   .setRegularScriptLoadingStatusMessage(
                                                           "Loading regular script"));
 
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
         setupTriggerScripts(triggerScripts);
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         SharedPreferencesManager.getInstance().writeBoolean(
@@ -638,13 +630,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Done"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -689,10 +681,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                                                   .setRegularScriptLoadingStatusMessage(
                                                           "Loading regular script"));
 
-        GetTriggerScriptsResponseProto triggerScripts =
-                (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
-                        .addTriggerScripts(triggerScript)
-                        .build();
+        GetTriggerScriptsResponseProto triggerScripts = GetTriggerScriptsResponseProto.newBuilder()
+                                                                .addTriggerScripts(triggerScript)
+                                                                .build();
         setupTriggerScripts(triggerScripts);
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
         SharedPreferencesManager.getInstance().writeBoolean(
@@ -702,13 +693,13 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         waitUntilViewMatchesCondition(withText("Trigger script"), isCompletelyDisplayed());
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  PromptProto.Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Done"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))

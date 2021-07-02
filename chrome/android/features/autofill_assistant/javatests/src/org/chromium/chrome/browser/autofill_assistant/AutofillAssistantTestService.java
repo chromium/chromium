@@ -56,7 +56,7 @@ public class AutofillAssistantTestService
     AutofillAssistantTestService(
             List<AutofillAssistantTestScript> scripts, ScriptsReturnMode scriptsReturnMode) {
         this(scripts,
-                (ClientSettingsProto) ClientSettingsProto.newBuilder()
+                ClientSettingsProto.newBuilder()
                         .setIntegrationTestSettings(
                                 ClientSettingsProto.IntegrationTestSettings.newBuilder()
                                         .setDisableHeaderAnimations(true)
@@ -149,7 +149,7 @@ public class AutofillAssistantTestService
         mProcessedActions = processedActions;
         mNextActionsCounter++;
         ActionsResponseProto responseProto =
-                (ActionsResponseProto) ActionsResponseProto.newBuilder()
+                ActionsResponseProto.newBuilder()
                         .addAllActions(mNextActions)
                         .setGlobalPayload(ByteString.copyFrom(globalPayload))
                         .setScriptPayload(ByteString.copyFrom(scriptPayload))

@@ -115,7 +115,7 @@ public class AutofillAssistantBottomsheetTest {
     private AutofillAssistantTestScript makeScriptWithActionArray(
             ArrayList<ActionProto> actionsList) {
         return new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Bottomsheet behaviour")))
@@ -127,7 +127,7 @@ public class AutofillAssistantBottomsheetTest {
             ViewportResizing resizing, PeekMode peekMode, boolean withDetails) {
         ArrayList<ActionProto> list = new ArrayList<>();
         // Prompt.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Hello world!")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -136,13 +136,13 @@ public class AutofillAssistantBottomsheetTest {
                                                             .setText("Focus element"))))
                          .build());
         // Set viewport resizing and peek mode.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setConfigureBottomSheet(ConfigureBottomSheetProto.newBuilder()
                                                           .setViewportResizing(resizing)
                                                           .setPeekMode(peekMode))
                          .build());
         // Focus on the bottom element.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setShowCast(ShowCastProto.newBuilder().setElementToPresent(
                                  SelectorProto.newBuilder().addFilters(
                                          SelectorProto.Filter.newBuilder().setCssSelector(
@@ -150,7 +150,7 @@ public class AutofillAssistantBottomsheetTest {
                          .build());
         if (withDetails) {
             // ShowDetails.
-            list.add((ActionProto) ActionProto.newBuilder()
+            list.add(ActionProto.newBuilder()
                              .setShowDetails(ShowDetailsProto.newBuilder().setDetails(
                                      DetailsProto.newBuilder()
                                              .setTitle("Details title")
@@ -161,7 +161,7 @@ public class AutofillAssistantBottomsheetTest {
                              .build());
         }
         // Add "Done" button.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  Choice.newBuilder().setChip(ChipProto.newBuilder()
                                                                      .setType(ChipType.DONE_ACTION)
@@ -297,7 +297,7 @@ public class AutofillAssistantBottomsheetTest {
         List<UserFormSectionProto> additionalSections = new ArrayList<>();
         for (int i = 0; i < 20; ++i) {
             additionalSections.add(
-                    (UserFormSectionProto) UserFormSectionProto.newBuilder()
+                    UserFormSectionProto.newBuilder()
                             .setTextInputSection(TextInputSectionProto.newBuilder().addInputFields(
                                     TextInputProto.newBuilder()
                                             .setHint("Text input " + i)
@@ -308,14 +308,14 @@ public class AutofillAssistantBottomsheetTest {
         }
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(
                                  CollectUserDataProto.newBuilder()
                                          .addAllAdditionalAppendedSections(additionalSections)
                                          .setRequestTermsAndConditions(false))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Autostart")))
@@ -355,7 +355,7 @@ public class AutofillAssistantBottomsheetTest {
     @MediumTest
     public void testCancelSnackbarUndo() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(Choice.newBuilder().setChip(
                                  ChipProto.newBuilder()
                                          .setType(ChipType.CANCEL_ACTION)
@@ -363,7 +363,7 @@ public class AutofillAssistantBottomsheetTest {
                                          .setText("Cancel"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Autostart")))
@@ -385,11 +385,10 @@ public class AutofillAssistantBottomsheetTest {
     @Test
     @MediumTest
     public void testCancelSnackbarTimeout() {
-        ClientSettingsProto clientSettings = (ClientSettingsProto) ClientSettingsProto.newBuilder()
-                                                     .setCancelDelayMs(2000)
-                                                     .build();
+        ClientSettingsProto clientSettings =
+                ClientSettingsProto.newBuilder().setCancelDelayMs(2000).build();
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(Choice.newBuilder().setChip(
                                  ChipProto.newBuilder()
                                          .setType(ChipType.CANCEL_ACTION)
@@ -397,7 +396,7 @@ public class AutofillAssistantBottomsheetTest {
                                          .setText("Cancel"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Autostart")))
@@ -422,7 +421,7 @@ public class AutofillAssistantBottomsheetTest {
     public void testBottomSheetAutoCollapseAndExpand() {
         ArrayList<ActionProto> list = new ArrayList<>();
         // Prompt.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Hello world!")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -431,21 +430,21 @@ public class AutofillAssistantBottomsheetTest {
                                                             .setText("Focus element"))))
                          .build());
         // Focus on the bottom element.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setShowCast(ShowCastProto.newBuilder().setElementToPresent(
                                  SelectorProto.newBuilder().addFilters(
                                          SelectorProto.Filter.newBuilder().setCssSelector(
                                                  "p.bottom"))))
                          .build());
         // Set handle and header peek mode and auto collapse to that state.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setConfigureBottomSheet(ConfigureBottomSheetProto.newBuilder()
                                                           .setViewportResizing(NO_RESIZE)
                                                           .setPeekMode(HANDLE_HEADER)
                                                           .setCollapse(true))
                          .build());
         // Add sticky "Next" button. Disable auto expanding the sheet for prompt actions.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .addChoices(Choice.newBuilder().setChip(
                                                     ChipProto.newBuilder()
@@ -455,13 +454,13 @@ public class AutofillAssistantBottomsheetTest {
                                             .setDisableForceExpandSheet(true))
                          .build());
         // Expand the sheet.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setConfigureBottomSheet(ConfigureBottomSheetProto.newBuilder()
                                                           .setViewportResizing(NO_RESIZE)
                                                           .setExpand(true))
                          .build());
         // Add "Done" button.
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().addChoices(
                                  Choice.newBuilder().setChip(ChipProto.newBuilder()
                                                                      .setType(ChipType.DONE_ACTION)

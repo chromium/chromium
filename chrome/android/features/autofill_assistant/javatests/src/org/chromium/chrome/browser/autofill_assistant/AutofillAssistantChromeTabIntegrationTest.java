@@ -118,7 +118,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void newTabButtonHidesAndRecoversAutofillAssistant() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Prompt")
                                             .setDisableForceExpandSheet(true)
@@ -126,7 +126,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -153,13 +153,13 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @MediumTest
     public void switchingTabHidesAutofillAssistant() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -187,13 +187,13 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @MediumTest
     public void closingTabResurfacesAutofillAssistant() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -216,14 +216,14 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @MediumTest
     public void startingNewAutofillAssistantChangeTabResumeRunOnPreviousTab() {
         ArrayList<ActionProto> listA = new ArrayList<>();
-        listA.add((ActionProto) ActionProto.newBuilder()
+        listA.add(ActionProto.newBuilder()
                           .setPrompt(PromptProto.newBuilder()
                                              .setMessage("Prompt A")
                                              .addChoices(PromptProto.Choice.newBuilder()))
                           .build());
 
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -231,14 +231,14 @@ public class AutofillAssistantChromeTabIntegrationTest {
                 listA);
 
         ArrayList<ActionProto> listB = new ArrayList<>();
-        listB.add((ActionProto) ActionProto.newBuilder()
+        listB.add(ActionProto.newBuilder()
                           .setPrompt(PromptProto.newBuilder()
                                              .setMessage("Prompt B")
                                              .addChoices(PromptProto.Choice.newBuilder()))
                           .build());
 
         AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -270,7 +270,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @MediumTest
     public void switchingTabsRestoresBottomSheetState() {
         ArrayList<ActionProto> listA = new ArrayList<>();
-        listA.add((ActionProto) ActionProto.newBuilder()
+        listA.add(ActionProto.newBuilder()
                           .setConfigureBottomSheet(
                                   org.chromium.chrome.browser.autofill_assistant.proto
                                           .ConfigureBottomSheetProto.newBuilder()
@@ -280,7 +280,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
                                           .setResizeTimeoutMs(1000))
                           .setActionDelayMs(500)
                           .build());
-        listA.add((ActionProto) ActionProto.newBuilder()
+        listA.add(ActionProto.newBuilder()
                           .setPrompt(PromptProto.newBuilder()
                                              .setMessage("Prompt A")
                                              .setBrowseMode(true)
@@ -288,14 +288,14 @@ public class AutofillAssistantChromeTabIntegrationTest {
                           .build());
 
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
                         .build(),
                 listA);
         ArrayList<ActionProto> listB = new ArrayList<>();
-        listB.add((ActionProto) ActionProto.newBuilder()
+        listB.add(ActionProto.newBuilder()
                           .setPrompt(PromptProto.newBuilder()
                                              .setMessage("Prompt B")
                                              .setBrowseMode(true)
@@ -303,7 +303,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
                           .build());
 
         AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -339,7 +339,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @DisabledTest(message = "Flaky - https://crbug.com/1123958")
     public void switchTabBetweenDifferentPeekModes() {
         ArrayList<ActionProto> listA = new ArrayList<>();
-        listA.add((ActionProto) ActionProto.newBuilder()
+        listA.add(ActionProto.newBuilder()
                           .setConfigureBottomSheet(
                                   org.chromium.chrome.browser.autofill_assistant.proto
                                           .ConfigureBottomSheetProto.newBuilder()
@@ -349,7 +349,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
                                           .setResizeTimeoutMs(1000))
                           .setActionDelayMs(500)
                           .build());
-        listA.add((ActionProto) ActionProto.newBuilder()
+        listA.add(ActionProto.newBuilder()
                           .setPrompt(PromptProto.newBuilder()
                                              .setMessage("Prompt message")
                                              .addChoices(PromptProto.Choice.newBuilder().setChip(
@@ -366,14 +366,14 @@ public class AutofillAssistantChromeTabIntegrationTest {
                           .build());
 
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
                         .build(),
                 listA);
         ArrayList<ActionProto> listB = new ArrayList<>();
-        listB.add((ActionProto) ActionProto.newBuilder()
+        listB.add(ActionProto.newBuilder()
                           .setPrompt(PromptProto.newBuilder()
                                              .setMessage("Prompt B")
                                              .setBrowseMode(true)
@@ -381,7 +381,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
                           .build());
 
         AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -433,14 +433,14 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @DisabledTest(message = "Flaky - https://crbug.com/1115681")
     public void startingNewAutofillAssistantCloseTabResumesRunOnPreviousTab() {
         ArrayList<ActionProto> listA = new ArrayList<>();
-        listA.add((ActionProto) ActionProto.newBuilder()
+        listA.add(ActionProto.newBuilder()
                           .setPrompt(PromptProto.newBuilder()
                                              .setMessage("Prompt A")
                                              .addChoices(PromptProto.Choice.newBuilder()))
                           .build());
 
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -448,14 +448,14 @@ public class AutofillAssistantChromeTabIntegrationTest {
                 listA);
 
         ArrayList<ActionProto> listB = new ArrayList<>();
-        listB.add((ActionProto) ActionProto.newBuilder()
+        listB.add(ActionProto.newBuilder()
                           .setPrompt(PromptProto.newBuilder()
                                              .setMessage("Prompt B")
                                              .addChoices(PromptProto.Choice.newBuilder()))
                           .build());
 
         AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -482,13 +482,13 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @MediumTest
     public void interactingWithLocationBarHidesAutofillAssistant() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -525,7 +525,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @DisabledTest(message = "Flaky - https://crbug.com/1157506")
     public void interactingWithLocationBarDoesNotShowHiddenScrim() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Browse")
                                             .setBrowseMode(true)
@@ -534,13 +534,13 @@ public class AutofillAssistantChromeTabIntegrationTest {
                                                             .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Continue"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
@@ -574,13 +574,13 @@ public class AutofillAssistantChromeTabIntegrationTest {
     @MediumTest
     public void switchingBackToTabWithStoppedAutofillAssistantShowsErrorMessage() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setTell(TellProto.newBuilder().setMessage("Shutdown"))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder().setStop(StopProto.newBuilder()).build());
+        list.add(ActionProto.newBuilder().setStop(StopProto.newBuilder()).build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
                         .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
                                 ChipProto.newBuilder().setText("Done")))
