@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
-#include "base/trace_event/trace_event.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 
 namespace chromeos {
@@ -76,21 +75,11 @@ ComponentExtensionIMEManager::~ComponentExtensionIMEManager() = default;
 
 bool ComponentExtensionIMEManager::LoadComponentExtensionIME(
     Profile* profile,
-    const std::string& input_method_id,
-    std::set<std::string>* extension_loaded) {
-  TRACE_EVENT0("ime",
-               "ComponentExtensionIMEManager::LoadComponentExtensionIME");
+    const std::string& input_method_id) {
   ComponentExtensionIME ime;
   if (FindEngineEntry(input_method_id, &ime)) {
-    bool will_load = extension_loaded == nullptr;
-    if (!will_load &&
-        extension_loaded->find(ime.id) == extension_loaded->end()) {
-      extension_loaded->insert(ime.id);
-      will_load = true;
-    }
-    if (will_load)
-      delegate_->Load(profile, ime.id, ime.manifest, ime.path);
-    return will_load;
+    delegate_->Load(profile, ime.id, ime.manifest, ime.path);
+    return true;
   }
   return false;
 }
