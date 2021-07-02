@@ -9,9 +9,12 @@
 #include "base/bind.h"
 #include "base/win/windows_types.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
+#include "gpu/command_buffer/service/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image_backing_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -37,6 +40,10 @@ std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrent(
   }
   return scoped_make_current;
 }
+
+using InitializeGLTextureParams =
+    SharedImageBackingGLCommon::InitializeGLTextureParams;
+using UnpackStateAttribs = SharedImageBackingGLCommon::UnpackStateAttribs;
 
 }  // namespace
 
@@ -144,8 +151,27 @@ gpu::Mailbox DCOMPTexture::CreateSharedImage() {
   auto scoped_make_current = MakeCurrent(context_state_.get());
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
 
-  // TODO(crbug.com/999747): Create a `SharedImageBackingDCOMPTexture` with the
-  // mailbox.
+  // Use SharedImageBackingGLImage as the backing to hold GLImageDCOMPSurface
+  // and be able to retrieve it later via ProduceOverlay.
+  // Use some reasonable defaults for params to create SharedImageBackingGLImage
+  // since params are only used when the backing is accessed for GL.
+  // Note: this backing shouldn't be accessed via GL at all.
+  InitializeGLTextureParams params;
+  params.target = GL_TEXTURE_2D;
+  params.internal_format = GL_RGBA;
+  params.format = GL_RGBA;
+  params.is_cleared = true;
+  params.is_rgb_emulation = false;
+  params.framebuffer_attachment_angle = false;
+  UnpackStateAttribs attribs;
+  auto shared_image = std::make_unique<SharedImageBackingGLImage>(
+      this, mailbox, viz::BGRA_8888, GetSize(), gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      /*usage=*/SHARED_IMAGE_USAGE_DISPLAY, params, attribs,
+      /*use_passthrough=*/false);
+
+  channel_->shared_image_stub()->factory()->RegisterBacking(
+      std::move(shared_image), /*allow_legacy_mailbox=*/false);
 
   return mailbox;
 }
