@@ -24,8 +24,12 @@
 <script type=module src=/gen/third_party/webgpu-cts/src/common/runtime/wpt.js></script>
 
 <!-- Manually-selected tests to run on worker: -->
-<meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map:*'>
-<meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map_detach:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map:mapAsync,write:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map:mapAsync,read:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map:mapAsync,read,typedArrayAccess:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map:mappedAtCreation:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map:remapped_for_write:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map_detach:while_mapped:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,basic:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,copyBufferToBuffer:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,compute,basic:*'>

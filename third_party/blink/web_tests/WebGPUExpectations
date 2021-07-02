@@ -25,7 +25,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,compute,basic:large_dispatch
 crbug.com/dawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:buffersWithVaryingStepMode:* [ Crash Failure ]
 crbug.com/dawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:nonZeroArrayStride_and_attributeOffset:* [ Crash Failure ]
 crbug.com/dawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:setVertexBufferOffset_and_attributeOffset:* [ Crash Failure ]
-crbug.com/sawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertexFormat_to_shaderFormat_conversion:* [ Crash Timeout ]
+crbug.com/dawn/956 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,correctness:vertexFormat_to_shaderFormat_conversion:* [ Crash Timeout Failure ]
 
 ###
 ### Untriaged failures
@@ -195,6 +195,10 @@ crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,m
 
 crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mapAsync:* [ Failure Crash ]
 
+# Also crashes on Linux crbug.com/dawn/969
+crbug.com/dawn/773 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map:remapped_for_write:* [ Failure Crash ]
+crbug.com/dawn/773 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,buffers,map:remapped_for_write:* [ Failure Crash ]
+
 crbug.com/dawn/746 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:valid=false;unicode=true [ Failure ]
 
 crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="1d";* [ Failure ]
@@ -314,7 +318,6 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 
 # Nvidia only, worker only, very flaky
 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,render_pass,storeop2:* [ Failure ]
-
 
 ###
 ### Windows (D3D12) specific
