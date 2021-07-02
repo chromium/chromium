@@ -54,22 +54,26 @@
 
   #consentCard,
   .cart-item {
-    border: 1px solid var(--ntp-border-color);
-    display: inline-flex;
-    flex-direction: column;
     margin: 0 4px;
   }
 
   .cart-item {
-    border-radius: 4px;
     cursor: pointer;
-    height: 140px;
+    display: flex;
+    flex-direction: row;
+    height: 83px;
+    position: relative;
+    text-decoration: none;
+    width: 329px;
   }
 
   #consentCard {
     align-items: center;
+    border: 1px solid var(--ntp-border-color);
     border-radius: 8px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
     height: 116px;
     width: 329px;
   }
@@ -94,25 +98,18 @@
 
   .discount-chip {
     background: var(--discount-chip-background);
-    border-radius: 4px;
+    border-radius: 30px;
     color: var(--discount-chip-text-color);
+    display: flex;
     font-size: 12px;
-    height: 24px;
-    left: 50%;
-    line-height: 24px;
-    position: absolute;
-    text-align: center;
-    top: -18px;
-    transform: translateX(-50%);
-    width: 102px;
-    z-index: 1;
-  }
-
-  .cart-item {
-    outline: none;
-    position: relative;
-    text-decoration: none;
-    width: 118px;
+    justify-content: center;
+    line-height: 20px;
+    margin-top: 2px;
+    padding-bottom: 2px;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
+    padding-top: 2px;
+    width: max-content;
   }
 
   :host-context(.focus-outline-visible) .cart-item:focus {
@@ -122,16 +119,24 @@
   .cart-title {
     color: var(--cr-primary-text-color);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     font-size: 13px;
-    height: 20px;
-    justify-content: center;
-    margin: 4px 8px 0 8px;
-    text-align: center;
+    width: 99px;
+  }
+
+  .merchant-container {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 91px;
   }
 
   .cart-title .merchant {
+    display: inline-block;
+    font-size: 18px;
     font-weight: 400;
+    height: 24px;
+    max-width: 75px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-shadow: var(--ntp-theme-text-shadow);
@@ -142,46 +147,72 @@
     color: var(--cr-secondary-text-color);
   }
 
-  .favicon-image {
-    border-radius: 2px;
-    display: block;
-    height: 24px;
-    margin-inline-end: auto;
-    margin-inline-start: auto;
-    margin-top: 16px;
-    width: 24px;
+  .item-count {
+    font-size: 10px;
+    line-height: 16px;
   }
 
   .thumbnail-container {
-    margin-top: 4px;
+    align-items: center;
+    display: flex;
+    height: 83px;
+    overflow-x: hidden;
     text-align: center;
-    width: auto;
   }
 
   .thumbnail-container ul {
+    display: flex;
+    height: 83px;
     list-style-type: none;
-    margin-inline-end: 24px;
+    margin-block-end: 0;
+    margin-block-start: 0;
+    overflow: hidden;
     padding: 0;
   }
 
   .thumbnail-container li {
     display: inline;
-    margin-inline-end: -24px;
+    margin-inline-start: 24px;
+  }
+
+  .image-background {
+    /* Mixes to Google Grey 100 underneath .image-container. */
+    background-color: rgb(115, 135, 145);
+    border-radius: 50%;
+    height: 83px;
+    width: 83px;
+  }
+
+  .image-container {
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0.2px white;
+    height: 100%;
+    opacity: 90%;
   }
 
   .thumbnail-img {
-    border: 2px solid var(--ntp-background-override-color);
     border-radius: 50%;
-    height: 44px;
+    height: 83px;
     object-fit: cover;
-    width: 44px;
+    width: 83px;
+  }
+
+  .fallback-background {
+    align-items: center;
+    background-color: var(--google-grey-refresh-100);
+    border-radius: 50%;
+    display: flex;
+    height: 83px;
+    justify-content: center;
+    margin-inline-start: 24px;
+    position: relative;
+    width: 83px;
   }
 
   .thumbnail-fallback {
-    height: 48px;
-    margin-top: 8px;
-    position: relative;
-    width: 102px;
+    height: 40px;
+    width: 40px;
   }
 
   :host-context([dir=rtl]) cr-icon-button {
@@ -192,29 +223,8 @@
   .cart-item cr-icon-button {
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 24px;
-    margin: 4px 4px;
+    margin-inline-start: 8px;
     position: absolute;
-    right: 0;
-    top: 2px;
-  }
-
-  .side-scroll-shadow {
-    background-color: var(--ntp-background-override-color);
-    display: flex;
-    height: 160px;
-    opacity: 0.38;
-    pointer-events: none;
-    position: absolute;
-    width: 24px;
-    z-index: 1;
-  }
-
-  #leftScrollShadow {
-    left: 0;
-  }
-
-  #rightScrollShadow {
-    right: 0;
   }
 
   #moduleFooter {
@@ -222,6 +232,14 @@
     justify-content: flex-end;
     margin-bottom: 16px;
     margin-inline-end: 16px;
+  }
+
+  .icon-more-vert {
+    visibility: hidden;
+  }
+
+  .cart-item:hover .icon-more-vert {
+    visibility: visible;
   }
 
   .side-scroll-button {
@@ -298,20 +316,21 @@
           <a class="cart-item" title="[[item.merchant]]"
               href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
               on-auxclick="onCartItemClick_">
-            <template is="dom-if" if="[[item.discountText]]">
-              <div class="discount-chip">[[item.discountText]]</div>
-            </template>
-            <cr-icon-button class="icon-more-vert"
-                title="[[i18n('moreActions')]]" on-click="onCartMenuButtonClick_">
-            </cr-icon-button>
-            <img class="favicon-image" is="cr-auto-img"
-                auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
             <div class="cart-title">
-              <span class="merchant">[[item.merchant]]</span>
+              <div class="merchant-container">
+                <span class="merchant">[[item.merchant]]</span>
+                <cr-icon-button class="icon-more-vert"
+                    title="[[i18n('moreActions')]]"
+                    on-click="onCartMenuButtonClick_">
+                </cr-icon-button>
+              </div>
               <template is="dom-if" if="[[item.productImageUrls.length]]">
                 <span class="item-count">
                   &nbsp•&nbsp[[item.productImageUrls.length]]
                 </span>
+              </template>
+              <template is="dom-if" if="[[item.discountText]]">
+                <div class="discount-chip">[[item.discountText]]</div>
               </template>
             </div>
             <div class="thumbnail-container">
@@ -321,16 +340,22 @@
                   <template is="dom-repeat"
                       items="[[getImagesToShow_(item.productImageUrls)]]">
                     <li>
-                      <img class="thumbnail-img" is="cr-auto-img"
-                          auto-src="[[item.url]]"></img>
+                      <div class="image-background">
+                        <div class="image-container">
+                          <img class="thumbnail-img" is="cr-auto-img"
+                              auto-src="[[item.url]]"></img>
+                        </div>
+                      </div>
                     </li>
                   </template>
                 </ul>
               </template>
               <template id="thumbnailFallback" is="dom-if"
                   if="[[!item.productImageUrls.length]]">
-                <img class="thumbnail-fallback"
-                    src="modules/cart/icons/cart_fallback.svg">
+                <div class="fallback-background">
+                  <img class="thumbnail-fallback"
+                      src="modules/cart/icons/cart_fallback.svg">
+                </div>
               </template>
             </div>
           </a>
