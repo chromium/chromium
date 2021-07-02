@@ -6,7 +6,7 @@
 
 namespace blink {
 
-void PartObject::Trace(Visitor* visitor) const {
+void PartObjectWithTrace::Trace(Visitor* visitor) const {
   visitor->Trace(m_obj2);
   visitor->Trace(m_obj3);
   visitor->Trace(m_obj4);
