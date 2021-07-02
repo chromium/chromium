@@ -2601,6 +2601,9 @@ extern const char kEcheSWAResizingDescription[];
 extern const char kEnableNetworkingInDiagnosticsAppName[];
 extern const char kEnableNetworkingInDiagnosticsAppDescription[];
 
+extern const char kEnableOAuthIppName[];
+extern const char kEnableOAuthIppDescription[];
+
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 

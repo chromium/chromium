@@ -168,6 +168,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableLocalSearchService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableNetworkingInDiagnosticsApp;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableOAuthIpp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableOobeChromeVoxHint;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnablePciguardUi;
@@ -464,6 +465,7 @@ bool IsNotificationExperimentalShortTimeoutsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationScrollBarEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsInContextMenuEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsRefreshEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOAuthIppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeChromeVoxHintEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPciguardUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPerDeskShelfEnabled();

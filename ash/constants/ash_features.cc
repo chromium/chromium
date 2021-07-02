@@ -418,6 +418,10 @@ const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
 const base::Feature kEnableNetworkingInDiagnosticsApp{
     "EnableNetworkingInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables OAuth support when printing via the IPP protocol.
+const base::Feature kEnableOAuthIpp{"EnableOAuthIpp",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the OOBE ChromeVox hint dialog and announcement feature.
 const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1287,6 +1291,10 @@ bool IsMinorModeRestrictionEnabled() {
 bool IsNetworkingInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableNetworkingInDiagnosticsApp) &&
          base::FeatureList::IsEnabled(kDiagnosticsAppNavigation);
+}
+
+bool IsOAuthIppEnabled() {
+  return base::FeatureList::IsEnabled(kEnableOAuthIpp);
 }
 
 bool IsNewOobeLayoutEnabled() {

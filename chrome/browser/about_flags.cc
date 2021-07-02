@@ -5554,6 +5554,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNetworkingInDiagnosticsAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEnableNetworkingInDiagnosticsApp)},
 
+    {"enable-oauth-ipp", flag_descriptions::kEnableOAuthIppName,
+     flag_descriptions::kEnableOAuthIppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableOAuthIpp)},
+
     {"enable-shortcut-customization-app",
      flag_descriptions::kEnableShortcutCustomizationAppName,
      flag_descriptions::kEnableShortcutCustomizationAppDescription, kOsCrOS,

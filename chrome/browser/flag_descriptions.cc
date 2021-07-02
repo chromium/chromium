@@ -4526,6 +4526,11 @@ const char kEnableNetworkingInDiagnosticsAppName[] =
 const char kEnableNetworkingInDiagnosticsAppDescription[] =
     "Enable networking cards in the Diagnostics App";
 
+const char kEnableOAuthIppName[] =
+    "Enable OAuth when printing via the IPP protocol";
+const char kEnableOAuthIppDescription[] =
+    "Enable OAuth when printing via the IPP protocol";
+
 const char kEnableSuggestedFilesName[] = "Enable Suggested Files";
 const char kEnableSuggestedFilesDescription[] =
     "Enable Suggested Files feature in Launcher, which will show file "

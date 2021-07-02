@@ -46395,6 +46395,7 @@ from previous Chrome versions.
   <int value="-1778993296" label="ContextualSearchMlTapSuppression:disabled"/>
   <int value="-1778202807" label="DelayAsyncScriptExecution:enabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
+  <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
   <int value="-1772942854" label="LongPressBackForHistory:enabled"/>
   <int value="-1772905637"
@@ -47221,6 +47222,7 @@ from previous Chrome versions.
   <int value="-1134412904" label="PrivacySandboxSettings:disabled"/>
   <int value="-1134307340" label="stop-loading-in-background:enabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
+  <int value="-1128981647" label="EnableOAuthIpp:enabled"/>
   <int value="-1128912963" label="MediaControlsExpandGesture:disabled"/>
   <int value="-1128221789"
       label="AutofillEnableSurfacingServerCardNickname:enabled"/>
