@@ -2155,8 +2155,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   auto learn_more_button = std::make_unique<SystemLabelButton>(
       base::BindRepeating(&LockContentsView::LearnMoreButtonPressed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
-      SystemLabelButton::DisplayType::DEFAULT, /*multiline*/ true);
+      l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE), /*multiline=*/true);
 
   auto container = std::make_unique<NonAccessibleView>(kAuthErrorContainerName);
   auto* container_layout =

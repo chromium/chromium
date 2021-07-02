@@ -2595,6 +2595,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_LOGIN_MULTI_PROFILES_OWNER_PRIMARY_ONLY_MSG" desc="Text that is shown on the bubble shown for owner user pod which is not allowed in multi-profiles session because it has to be primary user in the session.">
         This owner account has to be the first signed-in account in a multiple sign-in session.
       </message>
+      <message name="IDS_ASH_LOGIN_ONLINE_SIGN_IN_MESSAGE" desc="Message shown in the login screen when online sign-in is required.">
+        Sign in
+      </message>
       <message name="IDS_ASH_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO" desc="Text shown in the warning dialog after user clicks on the learn more link, notifying the user of potential security and privacy implications of using the device">
         The admin of this device has the ability to:
       </message>
@@ -2652,8 +2655,8 @@ This file contains the strings for ash.
       <message name="IDS_ASH_LOGIN_SECURITY_TOKEN_REQUEST_DIALOG_DESCRIPTION" desc="Message in the PIN dialog to unlock the device with a smart card, asking the user to enter their PIN.">
         To unlock the device, enter your PIN.
       </message>
-      <message name="IDS_ASH_LOGIN_SIGN_IN_REQUIRED_MESSAGE" desc="Message shown in the login screen when online sign-in is required.">
-        Sign in required
+      <message name="IDS_ASH_LOGIN_SIGN_IN_REQUIRED_DIALOG_TITLE" desc="Title of the disabled auth dialog on the secondary login screen when online sign-in is required.">
+        Online sign in required
       </message>
       <message name="IDS_ASH_LOGIN_SIGN_IN_REQUIRED_SECONDARY_LOGIN_MESSAGE" desc="Message shown in the secondary login screen when online sign-in is required.">
         To use <ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph> you need to sign out of all accounts first. To sign out, select Cancel to go back. Then select the time to open the status area and select Sign out. Then sign in to <ph name="USER_EMAIL_ADDRESS_2">$2<ex>john.doe@example.com</ex></ph> again.

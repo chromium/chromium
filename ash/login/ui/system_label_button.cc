@@ -48,9 +48,8 @@ SkPath GetSystemButtonHighlightPath(const views::View* view) {
 
 SystemLabelButton::SystemLabelButton(PressedCallback callback,
                                      const std::u16string& text,
-                                     DisplayType display_type,
                                      bool multiline)
-    : LabelButton(std::move(callback), text), display_type_(display_type) {
+    : LabelButton(std::move(callback), text) {
   SetImageLabelSpacing(kSystemButtonImageLabelSpacing);
   if (multiline) {
     label()->SetMultiLine(true);
@@ -86,29 +85,14 @@ gfx::Insets SystemLabelButton::GetInsets() const {
 
 void SystemLabelButton::OnThemeChanged() {
   views::LabelButton::OnThemeChanged();
-  if (display_type_ == DisplayType::ALERT_WITH_ICON) {
-    SetImage(
-        views::Button::STATE_NORMAL,
-        CreateVectorIcon(
-            kLockScreenAlertIcon,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kButtonIconColorPrimary)));
-  }
-  bool is_alert = display_type_ == DisplayType::ALERT_WITH_ICON ||
-                  display_type_ == DisplayType::ALERT_NO_ICON;
-  SetAlertMode(is_alert);
+  SetBackgroundAndFont(alert_mode_);
 }
 
-void SystemLabelButton::SetDisplayType(DisplayType display_type) {
-  // We only support transitions from a non-icon display type to another.
-  DCHECK(display_type_ != DisplayType::ALERT_WITH_ICON);
-  DCHECK(display_type != DisplayType::ALERT_WITH_ICON);
-  display_type_ = display_type;
-  bool alert_mode = display_type == DisplayType::ALERT_NO_ICON;
-  SetAlertMode(alert_mode);
-}
+void SystemLabelButton::SetBackgroundAndFont(bool alert_mode) {
+  // Do not check if alert mode has already been set since the variable might
+  // have been initialized by default while the colors have not been set yet.
+  alert_mode_ = alert_mode;
 
-void SystemLabelButton::SetAlertMode(bool alert_mode) {
   background_color_ = AshColorProvider::Get()->GetControlsLayerColor(
       alert_mode
           ? AshColorProvider::ControlsLayerType::kControlBackgroundColorAlert

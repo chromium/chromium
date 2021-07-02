@@ -1056,8 +1056,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       toggle_container->AddChildView(std::make_unique<SystemLabelButton>(
           base::BindRepeating(&LoginAuthUserView::OnSwitchButtonClicked,
                               base::Unretained(this)),
-          GetPinPasswordToggleText(), SystemLabelButton::DisplayType::DEFAULT,
-          /*multiline*/ false));
+          GetPinPasswordToggleText()));
   pin_password_toggle_->SetMaxSize(
       gfx::Size(/*ignored*/ 0, kPinPasswordToggleButtonHeight));
 
@@ -1081,7 +1080,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   padding_below_user_view_ = padding_below_user_view.get();
 
   std::u16string button_message =
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SIGN_IN_REQUIRED_MESSAGE);
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ONLINE_SIGN_IN_MESSAGE);
   if (user.is_signed_in) {
     button_message =
         l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_VERIFY_ACCOUNT_MESSAGE);
@@ -1090,8 +1089,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   auto online_sign_in_button = std::make_unique<SystemLabelButton>(
       base::BindRepeating(&LoginAuthUserView::OnOnlineSignInMessageTap,
                           base::Unretained(this)),
-      button_message, SystemLabelButton::DisplayType::ALERT_WITH_ICON,
-      /*multiline*/ false);
+      button_message);
   online_sign_in_button_ = online_sign_in_button.get();
 
   auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>();
@@ -1246,7 +1244,7 @@ void LoginAuthUserView::SetAuthMethods(
     online_sign_in_button_->SetVisible(false);
     disabled_auth_message_->SetVisible(true);
     disabled_auth_message_->SetAuthDisabledMessage(
-        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SIGN_IN_REQUIRED_MESSAGE),
+        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SIGN_IN_REQUIRED_DIALOG_TITLE),
         l10n_util::GetStringFUTF16(
             IDS_ASH_LOGIN_SIGN_IN_REQUIRED_SECONDARY_LOGIN_MESSAGE,
             user_display_email, user_display_email));
@@ -1509,7 +1507,7 @@ void LoginAuthUserView::UpdateForUser(const LoginUserInfo& user) {
         user.show_display_password_button);
   }
   online_sign_in_button_->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SIGN_IN_REQUIRED_MESSAGE));
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ONLINE_SIGN_IN_MESSAGE));
 }
 
 void LoginAuthUserView::SetFingerprintState(FingerprintState state) {

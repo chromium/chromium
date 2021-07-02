@@ -72,15 +72,14 @@ class TrappedFocusSearch : public views::FocusSearch {
 
 }  // namespace
 
-// A button that holds a child view.
+// A system label button that dismisses its bubble dialog parent on key event.
 class RemoveUserButton : public SystemLabelButton {
  public:
   RemoveUserButton(PressedCallback callback, LoginRemoveAccountDialog* bubble)
       : SystemLabelButton(std::move(callback),
                           l10n_util::GetStringUTF16(
                               IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME),
-                          SystemLabelButton::DisplayType::DEFAULT,
-                          /*multiline*/ true),
+                          /*multiline=*/true),
         bubble_(bubble) {}
 
   RemoveUserButton(const RemoveUserButton&) = delete;
@@ -239,8 +238,7 @@ void LoginRemoveAccountDialog::ResetState() {
     managed_user_data_->SetVisible(true);
   if (remove_user_confirm_data_) {
     remove_user_confirm_data_->SetVisible(false);
-    remove_user_button_->SetDisplayType(
-        SystemLabelButton::DisplayType::DEFAULT);
+    remove_user_button_->SetBackgroundAndFont(/*alert_mode=*/false);
     // Reset button's description to none.
     remove_user_button_->GetViewAccessibility().OverrideDescription(
         std::u16string());
@@ -327,8 +325,7 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
     remove_user_confirm_data_->SetVisible(true);
     if (managed_user_data_)
       managed_user_data_->SetVisible(false);
-    remove_user_button_->SetDisplayType(
-        SystemLabelButton::DisplayType::ALERT_NO_ICON);
+    remove_user_button_->SetBackgroundAndFont(/*alert_mode=*/true);
 
     Layout();
 

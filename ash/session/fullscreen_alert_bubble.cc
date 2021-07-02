@@ -88,15 +88,14 @@ class FullscreenAlertBubbleView : public views::View {
     auto* dismiss =
         button_container->AddChildView(std::make_unique<SystemLabelButton>(
             views::Button::PressedCallback(),
-            l10n_util::GetStringUTF16(IDS_DISMISS_BUTTON),
-            SystemLabelButton::DisplayType::DEFAULT));
+            l10n_util::GetStringUTF16(IDS_DISMISS_BUTTON)));
     dismiss->SetCallback(on_dismiss);
 
     auto* exit_fullscreen =
         button_container->AddChildView(std::make_unique<SystemLabelButton>(
             views::Button::PressedCallback(),
-            l10n_util::GetStringUTF16(IDS_EXIT_FULLSCREEN_BUTTON),
-            SystemLabelButton::DisplayType::ALERT_NO_ICON));
+            l10n_util::GetStringUTF16(IDS_EXIT_FULLSCREEN_BUTTON)));
+    exit_fullscreen->SetBackgroundAndFont(/*alert_mode=*/true);
     exit_fullscreen->SetCallback(on_exit_fullscreen);
   }
 
