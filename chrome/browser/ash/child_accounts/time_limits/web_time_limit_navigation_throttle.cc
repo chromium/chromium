@@ -8,6 +8,8 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
@@ -20,10 +22,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -202,11 +202,13 @@ WebTimeLimitNavigationThrottle::WillStartOrRedirectRequest() {
     return PROCEED;
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::Get(profile);
-  const web_app::AppRegistrar& registrar = web_app_provider->registrar();
-  const std::string& app_name =
-      registrar.GetAppShortName(web_app_helper->GetAppId());
+  std::string app_name;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(web_app_helper->GetAppId(),
+                 [&app_name](const apps::AppUpdate& update) {
+                   app_name = update.ShortName();
+                 });
   return NavigationThrottle::ThrottleCheckResult(
       CANCEL, net::ERR_BLOCKED_BY_CLIENT,
       GetWebTimeLimitAppErrorPage(time_limit, app_locale, app_name));
