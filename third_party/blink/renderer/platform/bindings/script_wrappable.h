@@ -195,24 +195,6 @@ inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
  private:                                                      \
   static const WrapperTypeInfo& wrapper_type_info_
 
-// Declares |GetWrapperTypeInfo| method without definition.
-//
-// This macro is used for template classes. e.g. DOMTypedArray<>.
-// To export such a template class X, we need to instantiate X with EXPORT_API,
-// i.e. "extern template class EXPORT_API X;"
-// However, once we instantiate X, we cannot specialize X after
-// the instantiation. i.e. we will see "error: explicit specialization of ...
-// after instantiation". So we cannot define X's s_wrapper_type_info in
-// generated code by using specialization. Instead, we need to implement
-// wrapper_type_info in X's cpp code, and instantiate X, i.e. "template class
-// X;".
-#define DECLARE_WRAPPERTYPEINFO()                             \
- public:                                                      \
-  const WrapperTypeInfo* GetWrapperTypeInfo() const override; \
-                                                              \
- private:                                                     \
-  typedef void end_of_declare_wrappertypeinfo_t
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_

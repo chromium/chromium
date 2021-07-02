@@ -81,6 +81,7 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
     kIdlInterface,
     kIdlNamespace,
     kIdlCallbackInterface,
+    kIdlBufferSourceType,
     kCustomWrappableKind,
   };
 
@@ -155,7 +156,7 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
   unsigned wrapper_class_id : 2;        // WrapperClassId
   unsigned                              // ActiveScriptWrappableInheritance
       active_script_wrappable_inheritance : 1;
-  unsigned idl_definition_kind : 2;  // IdlDefinitionKind
+  unsigned idl_definition_kind : 3;  // IdlDefinitionKind
 };
 
 template <typename T, int offset>

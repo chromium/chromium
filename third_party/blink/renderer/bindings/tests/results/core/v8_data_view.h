@@ -40,8 +40,8 @@ class V8DataView {
   CORE_EXPORT static TestDataView* ToImpl(v8::Local<v8::Object> object);
   CORE_EXPORT static TestDataView* ToImplWithTypeCheck(v8::Isolate*, v8::Local<v8::Value>);
 
-  CORE_EXPORT static constexpr const WrapperTypeInfo* GetWrapperTypeInfo() {
-    return &v8_data_view_wrapper_type_info;
+  CORE_EXPORT static const WrapperTypeInfo* GetWrapperTypeInfo() {
+    return TestDataView::GetStaticWrapperTypeInfo();
   }
 
   static constexpr int kInternalFieldCount = kV8DefaultWrapperInternalFieldCount;

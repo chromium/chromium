@@ -58,12 +58,18 @@ class {{v8_class}} {
   {% endif %}
   {{exported}}static {{cpp_class}}* ToImplWithTypeCheck(v8::Isolate*, v8::Local<v8::Value>);
 
-  {% if has_partial_interface %}
+  {% if is_array_buffer_or_view %}
+  {{exported}}static const WrapperTypeInfo* GetWrapperTypeInfo() {
+  {% elif has_partial_interface %}
   {{exported}}static constexpr WrapperTypeInfo* GetWrapperTypeInfo() {
   {% else %}
   {{exported}}static constexpr const WrapperTypeInfo* GetWrapperTypeInfo() {
   {% endif %}
+  {% if is_array_buffer_or_view %}
+    return {{cpp_class}}::GetStaticWrapperTypeInfo();
+  {% else %}
     return &{{snake_case_v8_class}}_wrapper_type_info;
+  {% endif %}
   }
 
   {% for method in methods %}

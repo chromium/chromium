@@ -20,6 +20,7 @@ namespace blink {
 
 {% set wrapper_type_info_const = '' if has_partial_interface else 'const ' %}
 {% if not is_partial %}
+{% if not is_array_buffer_or_view %}
 // Suppress warning: global constructors, because struct WrapperTypeInfo is trivial
 // and does not depend on another global objects.
 #if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
@@ -46,6 +47,7 @@ namespace blink {
 // platform/bindings/ScriptWrappable.h.
 const WrapperTypeInfo& {{cpp_class}}::wrapper_type_info_ = {{snake_case_v8_class}}_wrapper_type_info;
 {% endif %}
+{% endif %}{# not is_array_buffer_or_view #}
 
 {% if active_scriptwrappable %}
 // [ActiveScriptWrappable]

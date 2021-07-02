@@ -40,8 +40,8 @@ class V8Uint8ClampedArray {
   CORE_EXPORT static TestUint8ClampedArray* ToImpl(v8::Local<v8::Object> object);
   CORE_EXPORT static TestUint8ClampedArray* ToImplWithTypeCheck(v8::Isolate*, v8::Local<v8::Value>);
 
-  CORE_EXPORT static constexpr const WrapperTypeInfo* GetWrapperTypeInfo() {
-    return &v8_uint8_clamped_array_wrapper_type_info;
+  CORE_EXPORT static const WrapperTypeInfo* GetWrapperTypeInfo() {
+    return TestUint8ClampedArray::GetStaticWrapperTypeInfo();
   }
 
   static constexpr int kInternalFieldCount = kV8DefaultWrapperInternalFieldCount;

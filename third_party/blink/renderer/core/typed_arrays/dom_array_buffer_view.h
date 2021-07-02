@@ -14,6 +14,7 @@ namespace blink {
 
 class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
+  static const WrapperTypeInfo wrapper_type_info_body_;
 
  public:
   enum ViewType {

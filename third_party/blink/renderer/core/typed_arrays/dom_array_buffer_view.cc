@@ -1,10 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
-
-#include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 
 namespace blink {
 
@@ -18,11 +16,11 @@ namespace blink {
 #pragma clang diagnostic ignored "-Wglobal-constructors"
 #endif
 
-const WrapperTypeInfo DOMSharedArrayBuffer::wrapper_type_info_body_{
+const WrapperTypeInfo DOMArrayBufferView::wrapper_type_info_body_{
     gin::kEmbedderBlink,
     nullptr,
     nullptr,
-    "SharedArrayBuffer",
+    "ArrayBufferView",
     nullptr,
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
@@ -30,26 +28,11 @@ const WrapperTypeInfo DOMSharedArrayBuffer::wrapper_type_info_body_{
     WrapperTypeInfo::kIdlBufferSourceType,
 };
 
-const WrapperTypeInfo& DOMSharedArrayBuffer::wrapper_type_info_ =
-    DOMSharedArrayBuffer::wrapper_type_info_body_;
+const WrapperTypeInfo& DOMArrayBufferView::wrapper_type_info_ =
+    DOMArrayBufferView::wrapper_type_info_body_;
 
 #if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-
-v8::MaybeLocal<v8::Value> DOMSharedArrayBuffer::Wrap(
-    ScriptState* script_state) {
-  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
-
-  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
-  v8::Local<v8::SharedArrayBuffer> wrapper;
-  {
-    v8::Context::Scope context_scope(script_state->GetContext());
-    wrapper = v8::SharedArrayBuffer::New(script_state->GetIsolate(),
-                                         Content()->BackingStore());
-  }
-  return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
-                              wrapper);
-}
 
 }  // namespace blink

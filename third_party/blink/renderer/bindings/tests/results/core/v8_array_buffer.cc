@@ -28,31 +28,6 @@
 
 namespace blink {
 
-// Suppress warning: global constructors, because struct WrapperTypeInfo is trivial
-// and does not depend on another global objects.
-#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#endif
-const WrapperTypeInfo v8_array_buffer_wrapper_type_info = {
-    gin::kEmbedderBlink,
-    nullptr,
-    nullptr,
-    "ArrayBuffer",
-    nullptr,
-    WrapperTypeInfo::kWrapperTypeObjectPrototype,
-    WrapperTypeInfo::kObjectClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-};
-#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-
-// This static member must be declared by DEFINE_WRAPPERTYPEINFO in TestArrayBuffer.h.
-// For details, see the comment of DEFINE_WRAPPERTYPEINFO in
-// platform/bindings/ScriptWrappable.h.
-const WrapperTypeInfo& TestArrayBuffer::wrapper_type_info_ = v8_array_buffer_wrapper_type_info;
-
 // not [ActiveScriptWrappable]
 static_assert(
     !std::is_base_of<ActiveScriptWrappableBase, TestArrayBuffer>::value,

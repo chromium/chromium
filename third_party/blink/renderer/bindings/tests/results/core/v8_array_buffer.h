@@ -37,8 +37,8 @@ class V8ArrayBuffer {
   CORE_EXPORT static TestArrayBuffer* ToImpl(v8::Local<v8::Object> object);
   CORE_EXPORT static TestArrayBuffer* ToImplWithTypeCheck(v8::Isolate*, v8::Local<v8::Value>);
 
-  CORE_EXPORT static constexpr const WrapperTypeInfo* GetWrapperTypeInfo() {
-    return &v8_array_buffer_wrapper_type_info;
+  CORE_EXPORT static const WrapperTypeInfo* GetWrapperTypeInfo() {
+    return TestArrayBuffer::GetStaticWrapperTypeInfo();
   }
 
   static constexpr int kInternalFieldCount = kV8DefaultWrapperInternalFieldCount;

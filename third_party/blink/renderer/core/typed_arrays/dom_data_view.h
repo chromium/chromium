@@ -12,6 +12,7 @@ namespace blink {
 
 class CORE_EXPORT DOMDataView final : public DOMArrayBufferView {
   DEFINE_WRAPPERTYPEINFO();
+  static const WrapperTypeInfo wrapper_type_info_body_;
 
  public:
   typedef char ValueType;
