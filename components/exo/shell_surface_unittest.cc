@@ -829,6 +829,45 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   EXPECT_TRUE(is_resizing);
 }
 
+TEST_F(ShellSurfaceTest, CreateMinimizedWindow) {
+  // Must be before shell_surface so it outlives it, for shell_surface's
+  // destructor calls Configure() referencing these 4 variables.
+  gfx::Size suggested_size;
+  chromeos::WindowStateType has_state_type = chromeos::WindowStateType::kNormal;
+  bool is_resizing = false;
+  bool is_active = false;
+
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &Configure, base::Unretained(&suggested_size),
+      base::Unretained(&has_state_type), base::Unretained(&is_resizing),
+      base::Unretained(&is_active)));
+
+  gfx::Rect geometry(0, 0, 1, 1);
+  shell_surface->SetGeometry(geometry);
+
+  // Commit without contents should result in a configure callback with empty
+  // suggested size as a mechanims to ask the client size itself.
+  surface->Commit();
+  EXPECT_TRUE(suggested_size.IsEmpty());
+
+  // Geometry should not be committed until surface has contents.
+  EXPECT_TRUE(shell_surface->CalculatePreferredSize().IsEmpty());
+
+  shell_surface->Minimize();
+  shell_surface->AcknowledgeConfigure(0);
+  // Commit without contents should result in a configure callback with empty
+  // suggested size as a mechanims to ask the client size itself.
+  surface->Commit();
+
+  EXPECT_TRUE(shell_surface->GetWidget());
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
+  EXPECT_TRUE(suggested_size.IsEmpty());
+  EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+}
+
 TEST_F(ShellSurfaceTest, ToggleFullscreen) {
   gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(

@@ -359,9 +359,18 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
-  if (pending_bounds_dip_ ==
-          gfx::ScaleToRoundedRect(GetBounds(), 1.f / window_scale()) &&
+  if (pending_bounds_dip_.IsEmpty() &&
+      state_ == PlatformWindowState::kMinimized &&
       pending_configures_.empty()) {
+    // In exo, widget creation is deferred until the surface has contents and
+    // |initial_show_state_| for a widget is ignored. Exo sends a configure
+    // callback with empty bounds expecting client to suggest a size.
+    shell_toplevel()->SetWindowGeometry(gfx::Rect(0, 0, 1, 1));
+    shell_toplevel()->AckConfigure(serial);
+    root_surface()->Commit();
+  } else if (pending_bounds_dip_ ==
+                 gfx::ScaleToRoundedRect(GetBounds(), 1.f / window_scale()) &&
+             pending_configures_.empty()) {
     // If |pending_bounds_dip_| matches GetBounds(), and |pending_configures_|
     // is empty, implying that the window is already rendering at
     // |pending_bounds_dip_|, then a frame matching |pending_bounds_dip_| may

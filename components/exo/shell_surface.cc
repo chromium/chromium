@@ -478,7 +478,10 @@ bool ShellSurface::OnPreWidgetCommit() {
     if (host_window()->bounds().IsEmpty() &&
         root_surface()->surface_hierarchy_content_bounds().IsEmpty()) {
       Configure();
-      return false;
+      // Widget should be created when |initial_show_state_| is minimize and
+      // surface doesn not have a contents. TODO(https://crbug.com/1220680)
+      if (initial_show_state_ != ui::SHOW_STATE_MINIMIZED)
+        return false;
     }
 
     CreateShellSurfaceWidget(initial_show_state_);
