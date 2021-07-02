@@ -12,6 +12,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "content/public/browser/navigation_type.h"
+#include "content/public/common/child_process_host.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -9,6 +9,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 
 namespace content {

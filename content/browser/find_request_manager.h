@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/stop_find_action.h"

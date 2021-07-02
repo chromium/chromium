@@ -8,6 +8,7 @@
 #include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 const char* kDigitalAssetLinkRecordType = "lookalikes/allowlist";

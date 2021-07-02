@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_request_id.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
@@ -25,8 +24,8 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/referrer.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -36,10 +35,12 @@
 #include "url/origin.h"
 
 namespace base {
-
 class RefCountedString;
-
 }  // namespace base
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace content {
 
@@ -48,6 +49,7 @@ class BrowserContext;
 class NavigationEntry;
 class RenderFrameHost;
 class WebContents;
+class NavigationHandle;
 struct OpenURLParams;
 
 // A NavigationController maintains the back-forward list for a WebContents and
