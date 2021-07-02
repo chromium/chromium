@@ -17,14 +17,14 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kKstaledRatioFile[] = "/sys/kernel/mm/kstaled/ratio";
+constexpr char kMGLRUEnableFile[] = "/sys/kernel/mm/lru_gen/enabled";
 
-// KernelSupportsKstaled will check if the kernel supports kstaled this is as
-// easy as checking for the kstaled sysfs node.
+// KernelSupportsKstaled will check if the kernel supports mg lru, this is as
+// easy as looking for the presences of the enable file.
 bool KernelSupportsKstaled() {
-  static const bool supported =
-      base::PathExists(base::FilePath(kKstaledRatioFile));
-  return supported;
+  static const bool supported_mglru =
+      base::PathExists(base::FilePath(kMGLRUEnableFile));
+  return supported_mglru;
 }
 
 void OnRatioSet(bool success) {
@@ -40,7 +40,7 @@ void OnRatioSet(bool success) {
 
 const base::Feature kKstaled{"KstaledSwap", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", 4};
+const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", -1};
 
 // InitializeKstaled will attempt to configure kstaled with the experimental
 // parameters for this user.
@@ -60,9 +60,8 @@ void InitializeKstaled() {
   }
 
   int feature_ratio = kKstaledRatio.Get();
-  if (feature_ratio <= 0 || feature_ratio > 255) {
-    LOG(ERROR) << "Configuring kstaled with a ratio of 0 disables the "
-                  "feature, the valid range is 1-255.";
+  if (feature_ratio < 0 || feature_ratio > 1) {
+    LOG(ERROR) << "Invalid value set for feature ratio, it can be 0 or 1 only";
     return;
   }
 
