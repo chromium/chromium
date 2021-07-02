@@ -64,8 +64,6 @@ bool IsIntensiveWakeUpThrottlingEnabled() {
 // use the base::FeatureParams.
 
 base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod() {
-  DCHECK(IsIntensiveWakeUpThrottlingEnabled());
-
   // Controls the time that elapses after a page is backgrounded before the
   // throttling policy takes effect.
   static const base::FeatureParam<int>

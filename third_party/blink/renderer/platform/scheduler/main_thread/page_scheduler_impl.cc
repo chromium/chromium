@@ -725,10 +725,8 @@ void PageSchedulerImpl::MaybeInitializeWakeUpBudgetPools(
   for (WakeUpBudgetPool* pool : AllWakeUpBudgetPools())
     pool->SetWakeUpDuration(kThrottledWakeUpDuration);
 
-  if (IsIntensiveWakeUpThrottlingEnabled()) {
-    same_origin_intensive_wake_up_budget_pool_
-        ->AllowLowerAlignmentIfNoRecentWakeUp(kDefaultThrottledWakeUpInterval);
-  }
+  same_origin_intensive_wake_up_budget_pool_
+      ->AllowLowerAlignmentIfNoRecentWakeUp(kDefaultThrottledWakeUpInterval);
 
   UpdateWakeUpBudgetPools(lazy_now);
 }
@@ -772,11 +770,9 @@ void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
           FROM_HERE, do_throttle_cpu_time_callback_.GetCallback(),
           kThrottlingDelayAfterBackgrounding);
     }
-    if (IsIntensiveWakeUpThrottlingEnabled()) {
-      main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
-          FROM_HERE, do_intensively_throttle_wake_ups_callback_.GetCallback(),
-          GetIntensiveWakeUpThrottlingGracePeriod());
-    }
+    main_thread_scheduler_->ControlTaskRunner()->PostDelayedTask(
+        FROM_HERE, do_intensively_throttle_wake_ups_callback_.GetCallback(),
+        GetIntensiveWakeUpThrottlingGracePeriod());
   }
   if (notification_policy == NotificationPolicy::kNotifyFrames)
     NotifyFrames();
@@ -793,8 +789,6 @@ void PageSchedulerImpl::DoThrottleCPUTime() {
 }
 
 void PageSchedulerImpl::DoIntensivelyThrottleWakeUps() {
-  DCHECK(IsIntensiveWakeUpThrottlingEnabled());
-
   do_intensively_throttle_wake_ups_callback_.Cancel();
   are_wake_ups_intensively_throttled_ = true;
 

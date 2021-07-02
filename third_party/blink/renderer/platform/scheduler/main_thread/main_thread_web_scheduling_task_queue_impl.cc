@@ -10,16 +10,59 @@
 namespace blink {
 namespace scheduler {
 
+MainThreadWebSchedulingTaskQueueImpl::WebSchedulingTaskRunner::
+    WebSchedulingTaskRunner(
+        scoped_refptr<base::SingleThreadTaskRunner> immediate_task_runner,
+        scoped_refptr<base::SingleThreadTaskRunner> delayed_task_runner)
+    : immediate_task_runner_(std::move(immediate_task_runner)),
+      delayed_task_runner_(std::move(delayed_task_runner)) {}
+
+bool MainThreadWebSchedulingTaskQueueImpl::WebSchedulingTaskRunner::
+    PostDelayedTask(const base::Location& location,
+                    base::OnceClosure task,
+                    base::TimeDelta delay) {
+  return GetTaskRunnerForDelay(delay)->PostDelayedTask(location,
+                                                       std::move(task), delay);
+}
+
+bool MainThreadWebSchedulingTaskQueueImpl::WebSchedulingTaskRunner::
+    PostNonNestableDelayedTask(const base::Location& location,
+                               base::OnceClosure task,
+                               base::TimeDelta delay) {
+  return GetTaskRunnerForDelay(delay)->PostNonNestableDelayedTask(
+      location, std::move(task), delay);
+}
+
+bool MainThreadWebSchedulingTaskQueueImpl::WebSchedulingTaskRunner::
+    RunsTasksInCurrentSequence() const {
+  DCHECK_EQ(immediate_task_runner_->RunsTasksInCurrentSequence(),
+            delayed_task_runner_->RunsTasksInCurrentSequence());
+  return immediate_task_runner_->RunsTasksInCurrentSequence();
+}
+
+base::SingleThreadTaskRunner* MainThreadWebSchedulingTaskQueueImpl::
+    WebSchedulingTaskRunner::GetTaskRunnerForDelay(base::TimeDelta delay) {
+  return delay > base::TimeDelta() ? delayed_task_runner_.get()
+                                   : immediate_task_runner_.get();
+}
+
 MainThreadWebSchedulingTaskQueueImpl::MainThreadWebSchedulingTaskQueueImpl(
-    base::WeakPtr<MainThreadTaskQueue> task_queue)
-    : task_runner_(
-          task_queue->CreateTaskRunner(TaskType::kExperimentalWebScheduling)),
-      task_queue_(std::move(task_queue)) {}
+    base::WeakPtr<MainThreadTaskQueue> immediate_task_queue,
+    base::WeakPtr<MainThreadTaskQueue> delayed_task_queue)
+    : task_runner_(base::MakeRefCounted<WebSchedulingTaskRunner>(
+          immediate_task_queue->CreateTaskRunner(
+              TaskType::kExperimentalWebScheduling),
+          delayed_task_queue->CreateTaskRunner(
+              TaskType::kExperimentalWebScheduling))),
+      immediate_task_queue_(std::move(immediate_task_queue)),
+      delayed_task_queue_(std::move(delayed_task_queue)) {}
 
 void MainThreadWebSchedulingTaskQueueImpl::SetPriority(
     WebSchedulingPriority priority) {
-  if (task_queue_)
-    task_queue_->SetWebSchedulingPriority(priority);
+  if (immediate_task_queue_)
+    immediate_task_queue_->SetWebSchedulingPriority(priority);
+  if (delayed_task_queue_)
+    delayed_task_queue_->SetWebSchedulingPriority(priority);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

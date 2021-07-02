@@ -1370,13 +1370,17 @@ FrameSchedulerImpl::GetDocumentBoundWeakPtr() {
 std::unique_ptr<WebSchedulingTaskQueue>
 FrameSchedulerImpl::CreateWebSchedulingTaskQueue(
     WebSchedulingPriority priority) {
-  // Use QueueTraits here that are the same as postMessage, which is one current
-  // method for scheduling script.
-  scoped_refptr<MainThreadTaskQueue> task_queue =
+  scoped_refptr<MainThreadTaskQueue> immediate_task_queue =
       frame_task_queue_controller_->NewWebSchedulingTaskQueue(
-          PausableTaskQueueTraits(), priority);
+          DeferrableTaskQueueTraits(), priority);
+  scoped_refptr<MainThreadTaskQueue> delayed_task_queue =
+      frame_task_queue_controller_->NewWebSchedulingTaskQueue(
+          DeferrableTaskQueueTraits()
+              .SetCanBeThrottled(true)
+              .SetCanBeIntensivelyThrottled(true),
+          priority);
   return std::make_unique<MainThreadWebSchedulingTaskQueueImpl>(
-      task_queue->AsWeakPtr());
+      immediate_task_queue->AsWeakPtr(), delayed_task_queue->AsWeakPtr());
 }
 
 void FrameSchedulerImpl::OnWebSchedulingTaskQueuePriorityChanged(
