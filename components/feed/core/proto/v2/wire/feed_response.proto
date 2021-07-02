@@ -7,6 +7,7 @@ syntax = "proto2";
 package feedwire;
 
 import "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.proto";
+import "components/feed/core/proto/v2/wire/content_lifetime.proto";
 import "components/feed/core/proto/v2/wire/data_operation.proto";
 import "components/feed/core/proto/v2/wire/eventid.proto";
 import "components/feed/core/proto/v2/wire/server_experiment_data.proto";
@@ -22,5 +23,6 @@ message FeedResponseMetadata {
   optional EventIdMessage event_id = 2;
   optional bool pinned_content_fulfilled = 4;
   optional ServerExperimentData server_experiment_data = 5;
+  optional ContentLifetime content_lifetime = 6;
   optional ChromeFeedResponseMetadata chrome_feed_response_metadata = 326233599;
 }
