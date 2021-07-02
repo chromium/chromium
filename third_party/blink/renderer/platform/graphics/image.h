@@ -79,7 +79,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   static scoped_refptr<Image> LoadPlatformResource(
       int resource_id,
-      ui::ScaleFactor scale_factor = ui::SCALE_FACTOR_100P);
+      ui::ResourceScaleFactor scale_factor = ui::SCALE_FACTOR_100P);
 
   static PaintImage ResizeAndOrientImage(
       const PaintImage&,

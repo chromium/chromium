@@ -109,8 +109,9 @@ WebString TestingPlatformSupport::DefaultLocale() {
   return WebString::FromUTF8("en-US");
 }
 
-WebData TestingPlatformSupport::GetDataResource(int resource_id,
-                                                ui::ScaleFactor scale_factor) {
+WebData TestingPlatformSupport::GetDataResource(
+    int resource_id,
+    ui::ResourceScaleFactor scale_factor) {
   return old_platform_
              ? old_platform_->GetDataResource(resource_id, scale_factor)
              : WebData();

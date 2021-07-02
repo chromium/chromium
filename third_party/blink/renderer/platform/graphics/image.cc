@@ -95,8 +95,9 @@ cc::ImageDecodeCache& Image::SharedCCDecodeCache(SkColorType color_type) {
   return image_decode_cache;
 }
 
-scoped_refptr<Image> Image::LoadPlatformResource(int resource_id,
-                                                 ui::ScaleFactor scale_factor) {
+scoped_refptr<Image> Image::LoadPlatformResource(
+    int resource_id,
+    ui::ResourceScaleFactor scale_factor) {
   const WebData& resource =
       Platform::Current()->GetDataResource(resource_id, scale_factor);
   if (resource.IsEmpty())

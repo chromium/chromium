@@ -69,7 +69,7 @@ namespace {
 struct DataResource {
   const char* name;
   int id;
-  ui::ScaleFactor scale_factor;
+  ui::ResourceScaleFactor scale_factor;
 };
 
 class NestedMessageLoopRunnerImpl
@@ -150,8 +150,9 @@ void BlinkPlatformImpl::RecordAction(const blink::UserMetricsAction& name) {
     child_thread->RecordComputedAction(name.Action());
 }
 
-WebData BlinkPlatformImpl::GetDataResource(int resource_id,
-                                           ui::ScaleFactor scale_factor) {
+WebData BlinkPlatformImpl::GetDataResource(
+    int resource_id,
+    ui::ResourceScaleFactor scale_factor) {
   base::StringPiece resource =
       GetContentClient()->GetDataResource(resource_id, scale_factor);
   return WebData(resource.data(), resource.size());

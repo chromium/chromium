@@ -441,7 +441,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // used for resources which have compress="gzip" in *.grd.
   virtual WebData GetDataResource(
       int resource_id,
-      ui::ScaleFactor scale_factor = ui::SCALE_FACTOR_NONE) {
+      ui::ResourceScaleFactor scale_factor = ui::SCALE_FACTOR_NONE) {
     return WebData();
   }
 
