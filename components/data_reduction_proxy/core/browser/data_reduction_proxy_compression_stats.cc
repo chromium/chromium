@@ -395,8 +395,7 @@ void DataReductionProxyCompressionStats::InitInt64Pref(const char* pref) {
 
 void DataReductionProxyCompressionStats::InitListPref(const char* pref) {
   std::unique_ptr<base::ListValue> pref_value =
-      std::unique_ptr<base::ListValue>(
-          pref_service_->GetList(pref)->DeepCopy());
+      pref_service_->GetList(pref)->CreateDeepCopy();
   list_pref_map_[pref] = std::move(pref_value);
 }
 
