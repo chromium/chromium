@@ -554,6 +554,21 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
 ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
     Node* node,
     const HitTestLocation& location,
+    const FloatQuad& quad) {
+  bool should_check_containment;
+  ListBasedHitTestBehavior behavior;
+  std::tie(should_check_containment, behavior) =
+      AddNodeToListBasedTestResultInternal(node, location);
+  if (!should_check_containment)
+    return behavior;
+  return quad.ContainsQuad(FloatRect(location.BoundingBox()))
+             ? kStopHitTesting
+             : kContinueHitTesting;
+}
+
+ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
+    Node* node,
+    const HitTestLocation& location,
     const Region& region) {
   bool should_check_containment;
   ListBasedHitTestBehavior behavior;

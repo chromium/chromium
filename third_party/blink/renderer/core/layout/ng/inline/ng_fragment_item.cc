@@ -346,6 +346,27 @@ FloatRect NGFragmentItem::ObjectBoundingBox() const {
   return item_rect;
 }
 
+FloatQuad NGFragmentItem::SvgUnscaledQuad() const {
+  DCHECK_EQ(Type(), kSvgText);
+  FloatQuad quad =
+      BuildSvgTransformForBoundingBox().MapQuad(SvgFragmentData()->rect);
+  const float scaling_factor = SvgScalingFactor();
+  quad.Scale(1 / scaling_factor, 1 / scaling_factor);
+  return quad;
+}
+
+PhysicalOffset NGFragmentItem::MapPointInContainer(
+    const PhysicalOffset& point) const {
+  if (Type() != kSvgText || !HasSvgTransformForBoundingBox())
+    return point;
+  const float scaling_factor = SvgScalingFactor();
+  return PhysicalOffset::FromFloatPointRound(
+      BuildSvgTransformForBoundingBox()
+          .Inverse()
+          .MapPoint(FloatPoint(point).ScaledBy(scaling_factor))
+          .ScaledBy(1 / scaling_factor));
+}
+
 bool NGFragmentItem::Contains(const FloatPoint& position) const {
   if (Type() != kSvgText)
     return FloatRect(rect_).Contains(position);

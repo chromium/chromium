@@ -1760,10 +1760,11 @@ BoxPainterBase::FillLayerInfo NGBoxFragmentPainter::GetFillLayerInfo(
       is_painting_scrolling_background);
 }
 
+template <typename T>
 bool NGBoxFragmentPainter::HitTestContext::AddNodeToResult(
     Node* node,
     const NGPhysicalBoxFragment* box_fragment,
-    const PhysicalRect& bounds_rect,
+    const T& bounds_rect,
     const PhysicalOffset& offset) const {
   if (node && !result->InnerNode())
     result->SetNodeAndPosition(node, box_fragment, location.Point() - offset);
@@ -1771,10 +1772,11 @@ bool NGBoxFragmentPainter::HitTestContext::AddNodeToResult(
          kStopHitTesting;
 }
 
+template <typename T>
 bool NGBoxFragmentPainter::HitTestContext::AddNodeToResultWithContentOffset(
     Node* node,
     const NGPhysicalBoxFragment& container,
-    const PhysicalRect& bounds_rect,
+    const T& bounds_rect,
     PhysicalOffset offset) const {
   if (container.IsScrollContainer())
     offset += PhysicalOffset(container.PixelSnappedScrolledContentOffset());
@@ -1967,6 +1969,16 @@ bool NGBoxFragmentPainter::HitTestTextItem(
   if (!IsVisibleToHitTest(text_item, hit_test.result->GetHitTestRequest()))
     return false;
 
+  if (text_item.Type() == NGFragmentItem::kSvgText &&
+      text_item.HasSvgTransformForBoundingBox()) {
+    const FloatQuad quad = text_item.SvgUnscaledQuad();
+    if (!hit_test.location.Intersects(quad))
+      return false;
+    return hit_test.AddNodeToResultWithContentOffset(
+        text_item.NodeForHitTest(), cursor.ContainerFragment(), quad,
+        hit_test.inline_root_offset);
+  }
+
   // TODO(layout-dev): Clip to line-top/bottom.
   const PhysicalRect rect =
       UNLIKELY(hit_test.text_combine)
@@ -1975,7 +1987,6 @@ bool NGBoxFragmentPainter::HitTestTextItem(
           : text_item.ComputeTextBoundsRectForHitTest(
                 hit_test.inline_root_offset,
                 hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow());
-  // TODO(crbug.com/1179585): Apply per-character transform.
   if (!hit_test.location.Intersects(rect))
     return false;
 
@@ -2016,6 +2027,9 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
       !hit_test.location.Intersects(
           RoundedBorderGeometry::PixelSnappedRoundedBorder(containing_box_style,
                                                            bounds_rect)))
+    return false;
+
+  if (cursor.ContainerFragment().IsSvgText())
     return false;
 
   // Now hit test ourselves.
@@ -2107,6 +2121,10 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
     if (HitTestItemsChildren(hit_test, container, descendants))
       return true;
   }
+
+  if (cursor.ContainerFragment().IsSvgText() &&
+      item.Style().PointerEvents() != EPointerEvents::kBoundingBox)
+    return false;
 
   // Now hit test ourselves.
   if (hit_test.action == kHitTestForeground &&

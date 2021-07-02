@@ -182,6 +182,9 @@ class CORE_EXPORT HitTestResult {
       const PhysicalRect& = PhysicalRect());
   ListBasedHitTestBehavior AddNodeToListBasedTestResult(Node*,
                                                         const HitTestLocation&,
+                                                        const FloatQuad& quad);
+  ListBasedHitTestBehavior AddNodeToListBasedTestResult(Node*,
+                                                        const HitTestLocation&,
                                                         const Region&);
 
   void Append(const HitTestResult&);

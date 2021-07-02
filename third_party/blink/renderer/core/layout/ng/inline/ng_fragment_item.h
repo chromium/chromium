@@ -187,6 +187,11 @@ class CORE_EXPORT NGFragmentItem {
   // RectInContainerFragment() for other types.
   FloatRect ObjectBoundingBox() const;
 
+  // Returns a point transformed by the inverse of
+  // BuildSvgTransformForBoundingBox(). The return value can be compared with
+  // untransformed RectInContainerFragment().
+  PhysicalOffset MapPointInContainer(const PhysicalOffset& point) const;
+
   // Returns true if |position|, which is a point in the IFC's coordinate
   // system, is in the transformed rectangle of this item.
   // This works only for kSvgText type.
@@ -441,6 +446,10 @@ class CORE_EXPORT NGFragmentItem {
   // FloatRectInContainerFragment() already takes into account of
   // lengthAdjust=spacingAndGlyphs.
   AffineTransform BuildSvgTransformForBoundingBox() const;
+
+  // Returns a transformed text cell in the unscaled coordination system.
+  // This works only with kSvgText type.
+  FloatQuad SvgUnscaledQuad() const;
 
   // Returns a font scaling factor for SVG <text>.
   // This returns 1 for an NGFragmentItem not for LayoutSVGInlineText.
