@@ -21,6 +21,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceProgress {
   HoldingSpaceProgress(const absl::optional<int64_t>& current_bytes,
                        const absl::optional<int64_t>& total_bytes);
 
+  // Creates an instance for the specified `current_bytes` and `total_bytes`
+  // which is explicitly `complete` or incomplete. If absent, completion will be
+  // calculated based on `current_bytes` and `total_bytes`. If `true`, then it
+  // must also be true that `current_bytes.value()` == `total_bytes.value()`.
+  HoldingSpaceProgress(const absl::optional<int64_t>& current_bytes,
+                       const absl::optional<int64_t>& total_bytes,
+                       const absl::optional<bool>& complete);
+
   HoldingSpaceProgress(const HoldingSpaceProgress&);
   HoldingSpaceProgress& operator=(const HoldingSpaceProgress&);
   ~HoldingSpaceProgress();
@@ -44,6 +52,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceProgress {
  private:
   absl::optional<int64_t> current_bytes_;
   absl::optional<int64_t> total_bytes_;
+  bool complete_;
 };
 
 }  // namespace ash

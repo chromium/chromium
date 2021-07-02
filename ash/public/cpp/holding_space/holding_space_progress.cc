@@ -4,9 +4,24 @@
 
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 
+#include <limits>
+
 #include "base/check_op.h"
 
 namespace ash {
+namespace {
+
+// Helpers ---------------------------------------------------------------------
+
+// Returns whether or not the specified byte counts indicate completion.
+bool CalculateComplete(const absl::optional<int64_t>& current_bytes,
+                       const absl::optional<int64_t>& total_bytes) {
+  return current_bytes.has_value() && current_bytes == total_bytes;
+}
+
+}  // namespace
+
+// HoldingSpaceProgress --------------------------------------------------------
 
 HoldingSpaceProgress::HoldingSpaceProgress()
     : HoldingSpaceProgress(/*current_bytes=*/0,
@@ -15,11 +30,32 @@ HoldingSpaceProgress::HoldingSpaceProgress()
 HoldingSpaceProgress::HoldingSpaceProgress(
     const absl::optional<int64_t>& current_bytes,
     const absl::optional<int64_t>& total_bytes)
-    : current_bytes_(current_bytes), total_bytes_(total_bytes) {
+    : HoldingSpaceProgress(current_bytes,
+                           total_bytes,
+                           /*complete=*/absl::nullopt) {}
+
+HoldingSpaceProgress::HoldingSpaceProgress(
+    const absl::optional<int64_t>& current_bytes,
+    const absl::optional<int64_t>& total_bytes,
+    const absl::optional<bool>& complete)
+    : current_bytes_(current_bytes),
+      total_bytes_(total_bytes),
+      complete_(
+          complete.value_or(CalculateComplete(current_bytes_, total_bytes_))) {
   DCHECK_GE(current_bytes_.value_or(0), 0);
   DCHECK_GE(total_bytes_.value_or(0), 0);
-  if (current_bytes_.has_value() && total_bytes_.has_value())
-    DCHECK_LE(current_bytes_.value(), total_bytes_.value());
+
+  if (!current_bytes_.has_value() || !total_bytes_.has_value()) {
+    DCHECK(!complete_);
+    return;
+  }
+
+  if (complete_) {
+    DCHECK_EQ(current_bytes_.value(), total_bytes_.value());
+    return;
+  }
+
+  DCHECK_LE(current_bytes_.value(), total_bytes_.value());
 }
 
 HoldingSpaceProgress::HoldingSpaceProgress(const HoldingSpaceProgress&) =
@@ -31,8 +67,8 @@ HoldingSpaceProgress& HoldingSpaceProgress::operator=(
 HoldingSpaceProgress::~HoldingSpaceProgress() = default;
 
 bool HoldingSpaceProgress::operator==(const HoldingSpaceProgress& rhs) const {
-  return std::tie(current_bytes_, total_bytes_) ==
-         std::tie(rhs.current_bytes_, rhs.total_bytes_);
+  return std::tie(current_bytes_, total_bytes_, complete_) ==
+         std::tie(rhs.current_bytes_, rhs.total_bytes_, complete_);
 }
 
 HoldingSpaceProgress& HoldingSpaceProgress::operator+=(
@@ -42,17 +78,16 @@ HoldingSpaceProgress& HoldingSpaceProgress::operator+=(
 
   current_bytes_ = temp.current_bytes_;
   total_bytes_ = temp.total_bytes_;
+  complete_ = temp.complete_;
 
   return *this;
 }
 
 HoldingSpaceProgress HoldingSpaceProgress::operator+(
     const HoldingSpaceProgress& rhs) const {
-  absl::optional<int64_t> current_bytes(current_bytes_);
-  absl::optional<int64_t> total_bytes(total_bytes_);
-
   // The number of `current_bytes` should only be present if present for both
   // the lhs and `rhs` instances. Otherwise `current_bytes` is indeterminate.
+  absl::optional<int64_t> current_bytes(current_bytes_);
   if (current_bytes.has_value()) {
     current_bytes = rhs.current_bytes_.has_value()
                         ? absl::make_optional(current_bytes.value() +
@@ -62,6 +97,7 @@ HoldingSpaceProgress HoldingSpaceProgress::operator+(
 
   // The number of `total_bytes` should only be present if present for both the
   // lhs and `rhs` instances. Otherwise `total_bytes` is indeterminate.
+  absl::optional<int64_t> total_bytes(total_bytes_);
   if (total_bytes.has_value()) {
     total_bytes = rhs.total_bytes_.has_value()
                       ? absl::make_optional(total_bytes.value() +
@@ -69,20 +105,31 @@ HoldingSpaceProgress HoldingSpaceProgress::operator+(
                       : absl::nullopt;
   }
 
-  return HoldingSpaceProgress(current_bytes, total_bytes);
+  // The result of summing lhs and `rhs` instances is `complete` if and only if
+  // both the lhs and `rhs` are themselves complete.
+  const bool complete = complete_ && rhs.complete_;
+
+  return HoldingSpaceProgress(current_bytes, total_bytes, complete);
 }
 
 absl::optional<float> HoldingSpaceProgress::GetValue() const {
   if (IsComplete())
     return 1.f;
+
   if (IsIndeterminate())
     return absl::nullopt;
+
+  // If `current_bytes_` == `total_bytes_` but progress is not complete,
+  // return a value that is extremely close but not equal to `1.f`.
+  if (current_bytes_.value() == total_bytes_.value())
+    return 1.f - std::numeric_limits<float>::epsilon();
+
   return static_cast<double>(current_bytes_.value()) /
          static_cast<double>(total_bytes_.value());
 }
 
 bool HoldingSpaceProgress::IsComplete() const {
-  return !IsIndeterminate() && current_bytes_ == total_bytes_;
+  return complete_;
 }
 
 bool HoldingSpaceProgress::IsIndeterminate() const {
