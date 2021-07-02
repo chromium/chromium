@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from './chrome_util.js';
-import {closeWhenUnload} from './mojo/util.js';
+import {wrapEndpoint} from './mojo/util.js';
 
 /**
  * @typedef {function(!Array<!chromeosCamera.mojom.WindowStateType>): void}
@@ -45,9 +45,8 @@ export class WindowController {
   async bind(remoteController) {
     this.windowStateController_ = remoteController;
 
-    const windowMonitorCallbackRouter =
-        new chromeosCamera.mojom.WindowStateMonitorCallbackRouter();
-    closeWhenUnload(windowMonitorCallbackRouter);
+    const windowMonitorCallbackRouter = wrapEndpoint(
+        new chromeosCamera.mojom.WindowStateMonitorCallbackRouter());
     windowMonitorCallbackRouter.onWindowStateChanged.addListener((states) => {
       this.windowStates_ = states;
       this.listeners_.forEach((listener) => listener(states));

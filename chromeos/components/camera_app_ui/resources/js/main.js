@@ -30,6 +30,7 @@ import {preloadImagesList} from './preload_images.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
 import {ErrorLevel, ErrorType, Mode, PerfEvent, ViewName} from './type.js';
+import {addUnloadCallback} from './unload.js';
 import * as util from './util.js';
 import {Camera} from './views/camera.js';
 import {CameraIntent} from './views/camera_intent.js';
@@ -393,7 +394,7 @@ let instance = null;
 
   state.set(state.State.INTENT, intent !== null);
 
-  window.addEventListener('unload', () => {
+  addUnloadCallback(() => {
     // For SWA, we don't cancel the unhandled intent here since there is no
     // guarantee that asynchronous calls in unload listener can be executed
     // properly. Therefore, we moved the logic for canceling unhandled intent to

@@ -16,7 +16,7 @@ import {
 import {WaitableEvent} from '../waitable_event.js';
 
 import {MockDocumentScanner} from './mock_document_scanner.js';
-import {closeWhenUnload} from './util.js';
+import {wrapEndpoint} from './util.js';
 
 /**
  * Parse the entry data according to its type.
@@ -113,7 +113,8 @@ export class DeviceOperator {
      * @type {!cros.mojom.CameraAppDeviceProviderRemote}
      * @private
      */
-    this.deviceProvider_ = cros.mojom.CameraAppDeviceProvider.getRemote();
+    this.deviceProvider_ =
+        wrapEndpoint(cros.mojom.CameraAppDeviceProvider.getRemote());
 
     /**
      * Flag that indicates if the direct communication between camera app and
@@ -121,10 +122,10 @@ export class DeviceOperator {
      * @type {!Promise<boolean>}
      * @private
      */
-    this.isSupported_ =
-        this.deviceProvider_.isSupported().then(({isSupported}) => {
-          return isSupported;
-        });
+    this.isSupported_ = (async () => {
+      const {isSupported} = await this.deviceProvider_.isSupported();
+      return isSupported;
+    })();
 
     /**
      * Map which maps from device id to the remote of devices. We want to have
@@ -134,8 +135,6 @@ export class DeviceOperator {
      * @private
      */
     this.devices_ = new Map();
-
-    closeWhenUnload(this.deviceProvider_);
   }
 
   /**
@@ -162,8 +161,9 @@ export class DeviceOperator {
     device.onConnectionError.addListener(() => {
       this.dropConnection(deviceId);
     });
-    this.devices_.set(deviceId, device);
-    return device;
+    const deviceProxy = wrapEndpoint(device);
+    this.devices_.set(deviceId, deviceProxy);
+    return deviceProxy;
   }
 
   /**
@@ -477,14 +477,13 @@ export class DeviceOperator {
    *     handles the metadata.
    * @param {!cros.mojom.StreamType} streamType Stream type which the observer
    *     gets the metadata from.
-   * @return {!Promise<number>} id for the added observer. Can be used later
-   *     to identify and remove the inserted observer.
+   * @return {!Promise<number>} id for the added observer. Can be used later to
+   *     identify and remove the inserted observer.
    * @throws {!Error} if fails to construct device connection.
    */
   async addMetadataObserver(deviceId, callback, streamType) {
     const observerCallbackRouter =
-        new cros.mojom.ResultMetadataObserverCallbackRouter();
-    closeWhenUnload(observerCallbackRouter);
+        wrapEndpoint(new cros.mojom.ResultMetadataObserverCallbackRouter());
     observerCallbackRouter.onMetadataAvailable.addListener(callback);
 
     const device = await this.getDevice_(deviceId);
@@ -522,8 +521,7 @@ export class DeviceOperator {
    */
   async addShutterObserver(deviceId, callback) {
     const observerCallbackRouter =
-        new cros.mojom.CameraEventObserverCallbackRouter();
-    closeWhenUnload(observerCallbackRouter);
+        wrapEndpoint(new cros.mojom.CameraEventObserverCallbackRouter());
     observerCallbackRouter.onShutterDone.addListener(callback);
 
     const device = await this.getDevice_(deviceId);
@@ -552,8 +550,8 @@ export class DeviceOperator {
    *     which could be retrieved from MediaDeviceInfo.deviceId.
    * @param {!cros.mojom.Effect} effect The target reprocess option (effect)
    *     that would be applied on the result.
-   * @return {!Promise<!media.mojom.Blob>} The captured
-   *     result with given effect.
+   * @return {!Promise<!media.mojom.Blob>} The captured result with given
+   *     effect.
    * @throws {!Error} Thrown when the reprocess is failed or the device
    *     operation is not supported.
    */

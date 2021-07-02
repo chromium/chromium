@@ -12,7 +12,7 @@ import {
 import {windowController} from '../window_controller.js';
 
 import {MockDocumentScanner} from './mock_document_scanner.js';
-import {closeWhenUnload} from './util.js';
+import {wrapEndpoint} from './util.js';
 
 /**
  * The singleton instance of ChromeHelper. Initialized by the first
@@ -44,9 +44,8 @@ export class ChromeHelper {
      * An interface remote that is used to communicate with Chrome.
      * @type {!chromeosCamera.mojom.CameraAppHelperRemote}
      */
-    this.remote_ = chromeosCamera.mojom.CameraAppHelper.getRemote();
-
-    closeWhenUnload(this.remote_);
+    this.remote_ =
+        wrapEndpoint(chromeosCamera.mojom.CameraAppHelper.getRemote());
   }
 
   /**
@@ -58,14 +57,13 @@ export class ChromeHelper {
    *     is in tablet mode.
    */
   async initTabletModeMonitor(onChange) {
-    const monitorCallbackRouter =
-        new chromeosCamera.mojom.TabletModeMonitorCallbackRouter();
-    closeWhenUnload(monitorCallbackRouter);
+    const monitorCallbackRouter = wrapEndpoint(
+        new chromeosCamera.mojom.TabletModeMonitorCallbackRouter());
     monitorCallbackRouter.update.addListener(onChange);
 
-    return (await this.remote_.setTabletMonitor(
-                monitorCallbackRouter.$.bindNewPipeAndPassRemote()))
-        .isTabletMode;
+    const {isTabletMode} = await this.remote_.setTabletMonitor(
+        monitorCallbackRouter.$.bindNewPipeAndPassRemote());
+    return isTabletMode;
   }
 
   /**
@@ -77,14 +75,13 @@ export class ChromeHelper {
    *     system screen state.
    */
   async initScreenStateMonitor(onChange) {
-    const monitorCallbackRouter =
-        new chromeosCamera.mojom.ScreenStateMonitorCallbackRouter();
-    closeWhenUnload(monitorCallbackRouter);
+    const monitorCallbackRouter = wrapEndpoint(
+        new chromeosCamera.mojom.ScreenStateMonitorCallbackRouter());
     monitorCallbackRouter.update.addListener(onChange);
 
-    return (await this.remote_.setScreenStateMonitor(
-                monitorCallbackRouter.$.bindNewPipeAndPassRemote()))
-        .initialState;
+    const {initialState} = await this.remote_.setScreenStateMonitor(
+        monitorCallbackRouter.$.bindNewPipeAndPassRemote());
+    return initialState;
   }
 
   /**
@@ -94,14 +91,13 @@ export class ChromeHelper {
    * @return {!Promise<boolean>} Resolved to the initial state.
    */
   async initExternalScreenMonitor(onChange) {
-    const monitorCallbackRouter =
-        new chromeosCamera.mojom.ExternalScreenMonitorCallbackRouter();
-    closeWhenUnload(monitorCallbackRouter);
+    const monitorCallbackRouter = wrapEndpoint(
+        new chromeosCamera.mojom.ExternalScreenMonitorCallbackRouter());
     monitorCallbackRouter.update.addListener(onChange);
 
-    return (await this.remote_.setExternalScreenMonitor(
-                monitorCallbackRouter.$.bindNewPipeAndPassRemote()))
-        .hasExternalScreen;
+    const {hasExternalScreen} = await this.remote_.setExternalScreenMonitor(
+        monitorCallbackRouter.$.bindNewPipeAndPassRemote());
+    return hasExternalScreen;
   }
 
   /**
@@ -120,9 +116,8 @@ export class ChromeHelper {
    * @return {!Promise}
    */
   async initCameraUsageMonitor(exploitUsage, releaseUsage) {
-    const usageCallbackRouter =
-        new chromeosCamera.mojom.CameraUsageOwnershipMonitorCallbackRouter();
-    closeWhenUnload(usageCallbackRouter);
+    const usageCallbackRouter = wrapEndpoint(
+        new chromeosCamera.mojom.CameraUsageOwnershipMonitorCallbackRouter());
 
     usageCallbackRouter.onCameraUsageOwnershipChanged.addListener(
         async (hasUsage) => {
@@ -136,7 +131,8 @@ export class ChromeHelper {
     await this.remote_.setCameraUsageMonitor(
         usageCallbackRouter.$.bindNewPipeAndPassRemote());
 
-    const {controller} = await this.remote_.getWindowStateController();
+    let {controller} = await this.remote_.getWindowStateController();
+    controller = wrapEndpoint(controller);
     await windowController.bind(controller);
   }
 
@@ -176,18 +172,12 @@ export class ChromeHelper {
   /**
    * Checks return value from |handleCameraResult|.
    * @param {string} caller Caller identifier.
-   * @param {!Promise<{isSuccess: boolean}>|null} value
+   * @param {!Promise<{isSuccess: boolean}>} value
    * @return {!Promise}
    */
   async checkReturn_(caller, value) {
-    const ret = await value;
-    if (ret === null) {
-      reportError(
-          ErrorType.HANDLE_CAMERA_RESULT_FAILURE, ErrorLevel.ERROR,
-          new Error(`Return null from calling intent ${caller}.`));
-      return;
-    }
-    if (!ret.isSuccess) {
+    const {isSuccess} = await value;
+    if (!isSuccess) {
       reportError(
           ErrorType.HANDLE_CAMERA_RESULT_FAILURE, ErrorLevel.ERROR,
           new Error(`Return not isSuccess from calling intent ${caller}.`));
