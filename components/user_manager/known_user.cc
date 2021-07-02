@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
@@ -76,7 +77,8 @@ const char kIsEphemeral[] = "is_ephemeral";
 const char kChallengeResponseKeys[] = "challenge_response_keys";
 
 const char kLastOnlineSignin[] = "last_online_singin";
-const char kOfflineSigninLimit[] = "offline_signin_limit";
+const char kOfflineSigninLimitDeprecated[] = "offline_signin_limit";
+const char kOfflineSigninLimit[] = "offline_signin_limit2";
 
 // Key of the boolean flag telling if user is enterprise managed.
 const char kIsEnterpriseManaged[] = "is_enterprise_managed";
@@ -784,6 +786,48 @@ void CleanEphemeralUsers() {
     base::Optional<bool> is_ephemeral = value.FindBoolKey(kIsEphemeral);
     return is_ephemeral && *is_ephemeral;
   });
+}
+
+void CleanObsoletePrefs() {
+  PrefService* local_state = GetLocalState();
+  // Local State may not be initialized in tests.
+  if (!local_state)
+    return;
+
+  ListPrefUpdate update(local_state, kKnownUsers);
+  for (base::Value& user_entry : update.Get()->GetList()) {
+    if (!user_entry.is_dict())
+      continue;
+
+    // Migrate Offline signin limit to the new logic. Old logic stored 0
+    // the limit was not set. New logic does not store anything when the limit
+    // is not set because 0 is a legit value.
+    const base::Value* value =
+        user_entry.FindKey(kOfflineSigninLimitDeprecated);
+    base::Optional<base::TimeDelta> new_value = util::ValueToTimeDelta(value);
+    user_entry.RemoveKey(kOfflineSigninLimitDeprecated);
+    if (new_value.has_value() && !new_value->is_zero()) {
+      user_entry.SetKey(kOfflineSigninLimit,
+                        util::TimeDeltaToValue(*new_value));
+    }
+
+    if (new_value.has_value() && new_value->is_zero()) {
+      // The old logic wrongfully treated 0 as a legit value and forced the user
+      // to sign-in online in the case that the value is set to 0. This would be
+      // cached in the "UserForceOnlineSignin" pref. Reset it once during the
+      // one-time migration to the new logic, if the value was 0.
+      // TODO(https://crbug.com/1224318) Remove this around M95.
+      const std::string* email = user_entry.FindStringKey(kCanonicalEmail);
+      if (email) {
+        // This is the same kUserForceOnlineSignin from user_manager_base.cc and
+        // it's duplicated here as a temporary workaround.
+        const char kUserForceOnlineSignin[] = "UserForceOnlineSignin";
+        DictionaryPrefUpdate force_online_update(local_state,
+                                                 kUserForceOnlineSignin);
+        force_online_update->SetKey(*email, base::Value(false));
+      }
+    }
+  }
 }
 
 void RegisterPrefs(PrefRegistrySimple* registry) {

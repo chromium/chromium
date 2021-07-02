@@ -1046,8 +1046,10 @@ void UserManagerBase::NotifyActiveUserHashChanged(const std::string& hash) {
 
 void UserManagerBase::Initialize() {
   UserManager::Initialize();
-  if (!HasBrowserRestarted())
+  if (!HasBrowserRestarted()) {
     known_user::CleanEphemeralUsers();
+    known_user::CleanObsoletePrefs();
+  }
   CallUpdateLoginState();
 }
 
