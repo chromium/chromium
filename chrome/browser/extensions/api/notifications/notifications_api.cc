@@ -220,8 +220,8 @@ bool NotificationsApiFunction::CreateNotification(
 
   NotificationBitmapSizes bitmap_sizes = GetNotificationBitmapSizes();
 
-  float image_scale =
-      ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactors().back());
+  float image_scale = ui::GetScaleForResourceScaleFactor(
+      ui::GetSupportedResourceScaleFactors().back());
 
   // Extract required fields: type, title, message, and icon.
   message_center::NotificationType type =
@@ -373,8 +373,8 @@ bool NotificationsApiFunction::UpdateNotification(
 #endif
 
   NotificationBitmapSizes bitmap_sizes = GetNotificationBitmapSizes();
-  float image_scale =
-      ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactors().back());
+  float image_scale = ui::GetScaleForResourceScaleFactor(
+      ui::GetSupportedResourceScaleFactors().back());
 
   // Update optional fields if provided.
   if (options->type != api::notifications::TEMPLATE_TYPE_NONE)

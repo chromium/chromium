@@ -217,7 +217,7 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
   ASSERT_TRUE(extension);
 
   constexpr int kMaxIconSizeInManifest = 32;
-  std::vector<std::vector<ui::ScaleFactor>> supported_scales = {
+  std::vector<std::vector<ui::ResourceScaleFactor>> supported_scales = {
       // Base case.
       {ui::SCALE_FACTOR_100P},
       // Two scale factors.
@@ -235,8 +235,9 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
     // the logic in this test work, we need to set the scale factor to one of
     // the "supported" scales.
     ScopedSetDeviceScaleFactor scoped_dsf(
-        ui::GetScaleForScaleFactor(supported_scales[i][0]));
-    ui::test::ScopedSetSupportedScaleFactors scoped(supported_scales[i]);
+        ui::GetScaleForResourceScaleFactor(supported_scales[i][0]));
+    ui::test::ScopedSetSupportedResourceScaleFactors scoped(
+        supported_scales[i]);
     ExtensionIconManager icon_manager;
     icon_manager.set_observer(this);
 
@@ -248,7 +249,8 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
     // icon.
     bool should_fall_back_to_default = true;
     for (auto supported_scale : supported_scales[i]) {
-      if (gfx::kFaviconSize * ui::GetScaleForScaleFactor(supported_scale) <=
+      if (gfx::kFaviconSize *
+              ui::GetScaleForResourceScaleFactor(supported_scale) <=
           kMaxIconSizeInManifest) {
         should_fall_back_to_default = false;
         break;
@@ -263,8 +265,9 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
 
     for (int scale_factor_iter = ui::SCALE_FACTOR_NONE + 1;
          scale_factor_iter < ui::NUM_SCALE_FACTORS; ++scale_factor_iter) {
-      auto scale_factor = static_cast<ui::ScaleFactor>(scale_factor_iter);
-      float scale = ui::GetScaleForScaleFactor(scale_factor);
+      auto scale_factor =
+          static_cast<ui::ResourceScaleFactor>(scale_factor_iter);
+      float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
       SCOPED_TRACE(testing::Message() << "Scale: " << scale);
 
       const bool has_representation = image_skia.HasRepresentation(scale);

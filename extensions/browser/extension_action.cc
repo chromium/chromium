@@ -61,7 +61,7 @@ struct IconRepresentationInfo {
   // SetIcon function arguments.
   const char* size_string;
   // Scale factor for which the represantion should be used.
-  ui::ScaleFactor scale;
+  ui::ResourceScaleFactor scale;
 };
 
 template <class T>

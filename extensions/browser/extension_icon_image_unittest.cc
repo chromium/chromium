@@ -29,9 +29,10 @@ using extensions::mojom::ManifestLocation;
 namespace extensions {
 namespace {
 
-SkBitmap CreateBlankBitmapForScale(int size_dip, ui::ScaleFactor scale_factor) {
+SkBitmap CreateBlankBitmapForScale(int size_dip,
+                                   ui::ResourceScaleFactor scale_factor) {
   SkBitmap bitmap;
-  const float scale = ui::GetScaleForScaleFactor(scale_factor);
+  const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
   bitmap.allocN32Pixels(static_cast<int>(size_dip * scale),
                         static_cast<int>(size_dip * scale));
   bitmap.eraseColor(SkColorSetARGB(0, 0, 0, 0));
@@ -134,10 +135,11 @@ class ExtensionIconImageTest : public ExtensionsTest,
 }  // namespace
 
 TEST_F(ExtensionIconImageTest, Basic) {
-  std::vector<ui::ScaleFactor> supported_factors;
+  std::vector<ui::ResourceScaleFactor> supported_factors;
   supported_factors.push_back(ui::SCALE_FACTOR_100P);
   supported_factors.push_back(ui::SCALE_FACTOR_200P);
-  ui::test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
   scoped_refptr<Extension> extension(CreateExtension(
       "extension_icon_image", ManifestLocation::kInvalidLocation));
   ASSERT_TRUE(extension.get() != nullptr);
@@ -208,10 +210,11 @@ TEST_F(ExtensionIconImageTest, Basic) {
 // There is no resource with either exact or bigger size, but there is a smaller
 // resource.
 TEST_F(ExtensionIconImageTest, FallbackToSmallerWhenNoBigger) {
-  std::vector<ui::ScaleFactor> supported_factors;
+  std::vector<ui::ResourceScaleFactor> supported_factors;
   supported_factors.push_back(ui::SCALE_FACTOR_100P);
   supported_factors.push_back(ui::SCALE_FACTOR_200P);
-  ui::test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
   scoped_refptr<Extension> extension(CreateExtension(
       "extension_icon_image", ManifestLocation::kInvalidLocation));
   ASSERT_TRUE(extension.get() != nullptr);

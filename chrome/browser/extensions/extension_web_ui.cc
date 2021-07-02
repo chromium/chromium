@@ -592,7 +592,8 @@ void ExtensionWebUI::GetFaviconForURL(
                                                pixel_size,
                                                ExtensionIconSet::MATCH_BIGGER);
 
-    ui::ScaleFactor resource_scale_factor = ui::GetSupportedScaleFactor(scale);
+    ui::ResourceScaleFactor resource_scale_factor =
+        ui::GetSupportedResourceScaleFactor(scale);
     if (!icon_resource.empty()) {
       info_list.push_back(extensions::ImageLoader::ImageRepresentation(
           icon_resource,
@@ -609,10 +610,11 @@ void ExtensionWebUI::GetFaviconForURL(
     gfx::ImageSkia placeholder_skia(placeholder_image.AsImageSkia());
     // Ensure the ImageSkia has representation at all scales we would use for
     // favicons.
-    std::vector<ui::ScaleFactor> scale_factors = ui::GetSupportedScaleFactors();
+    std::vector<ui::ResourceScaleFactor> scale_factors =
+        ui::GetSupportedResourceScaleFactors();
     for (const auto& scale_factor : scale_factors) {
       placeholder_skia.GetRepresentation(
-          ui::GetScaleForScaleFactor(scale_factor));
+          ui::GetScaleForResourceScaleFactor(scale_factor));
     }
     RunFaviconCallbackAsync(std::move(callback), gfx::Image(placeholder_skia));
   } else {
