@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -156,6 +157,8 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
     speaker_id_enrollment_mode_ = mode;
   }
 
+  void set_setting_zippy_size(int size) { setting_zippy_size_ = size; }
+
   const std::set<OptIn>& collected_optins() const { return collected_optins_; }
 
   // Advances speaker ID enrollment to the next state.
@@ -225,23 +228,11 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
         "No, thank you");
 
     if (!(consent_ui_flags_ & CONSENT_UI_FLAG_SKIP_ACTIVITY_CONTROL)) {
-      auto* activity_control_ui =
-          consent_flow_ui->mutable_consent_ui()->mutable_activity_control_ui();
-      activity_control_ui->set_consent_token(kAssistantConsentToken);
-      activity_control_ui->set_ui_audit_key(kAssistantUiAuditKey);
-      activity_control_ui->set_title("Title");
-      activity_control_ui->set_identity(kTestUser);
-      activity_control_ui->add_intro_text_paragraph();
-      activity_control_ui->set_intro_text_paragraph(0, "Here's an intro");
-      activity_control_ui->add_footer_paragraph();
-      activity_control_ui->set_footer_paragraph(0, "A footer");
-      auto* setting = activity_control_ui->add_setting_zippy();
-      setting->set_title("Cool feature");
-      setting->add_description_paragraph();
-      setting->set_description_paragraph(0, "But needs consent");
-      setting->add_additional_info_paragraph();
-      setting->set_additional_info_paragraph(0, "And it's really cool");
-      setting->set_icon_uri("assistant_icon");
+      PopulateActivityControlData(consent_flow_ui->mutable_consent_ui());
+      for (int i = 0; i < setting_zippy_size_; i++) {
+        auto* multi_consent_ui = consent_flow_ui->add_multi_consent_ui();
+        PopulateActivityControlData(multi_consent_ui);
+      }
     }
 
     if (!(consent_ui_flags_ & CONSENT_UI_FLAG_SKIP_THIRD_PARTY_DISCLOSURE)) {
@@ -272,6 +263,26 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
     std::string message;
     EXPECT_TRUE(settings_ui.SerializeToString(&message));
     std::move(callback).Run(message);
+  }
+
+  void PopulateActivityControlData(
+      chromeos::assistant::ConsentFlowUi_ConsentUi* consent_ui) {
+    auto* activity_control_ui = consent_ui->mutable_activity_control_ui();
+    activity_control_ui->set_consent_token(kAssistantConsentToken);
+    activity_control_ui->set_ui_audit_key(kAssistantUiAuditKey);
+    activity_control_ui->set_title("Title");
+    activity_control_ui->set_identity(kTestUser);
+    activity_control_ui->add_intro_text_paragraph();
+    activity_control_ui->set_intro_text_paragraph(0, "Here's an intro");
+    activity_control_ui->add_footer_paragraph();
+    activity_control_ui->set_footer_paragraph(0, "A footer");
+    auto* setting = activity_control_ui->add_setting_zippy();
+    setting->set_title("Cool feature");
+    setting->add_description_paragraph();
+    setting->set_description_paragraph(0, "But needs consent");
+    setting->add_additional_info_paragraph();
+    setting->set_additional_info_paragraph(0, "And it's really cool");
+    setting->set_icon_uri("assistant_icon");
   }
 
   void UpdateSettings(const std::string& update,
@@ -353,6 +364,8 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
 
   // Set of opt ins given by the user.
   std::set<OptIn> collected_optins_;
+
+  int setting_zippy_size_ = 1;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedAssistantSettings);
 };
@@ -1092,6 +1105,164 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantSkippedNoLib) {
   histogram_tester_.ExpectTotalCount(kAssistantOptInScreenExitReason, 0);
   histogram_tester_.ExpectTotalCount(kAssistantOptInScreenStepCompletionTime,
                                      0);
+}
+
+class AssistantOptInFlowMinorModeTest : public AssistantOptInFlowTest {
+ public:
+  AssistantOptInFlowMinorModeTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(features::kMinorModeRestriction);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
+                       AcceptMultipleValuePropConsentsForMinors) {
+  auto force_lib_assistant_enabled =
+      AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
+  assistant_settings_->set_setting_zippy_size(2);
+  AssistantState::Get()->NotifyStatusChanged(
+      chromeos::assistant::AssistantStatus::READY);
+
+  SetUpAssistantScreensForTest();
+  ShowAssistantOptInFlowScreen();
+
+  OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
+  screen_waiter.set_assert_next_screen();
+  screen_waiter.Wait();
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
+  TapWhenEnabled(kValuePropNextButton);
+  TapWhenEnabled(kValuePropNextButton);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
+  TapWhenEnabled(kVoiceMatchAgreeButton);
+
+  WaitForScreenExit();
+
+  ExpectCollectedOptIns({ScopedAssistantSettings::OptIn::ACTIVITY_CONTROL});
+  PrefService* const prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_EQ(assistant::prefs::ConsentStatus::kActivityControlAccepted,
+            prefs->GetInteger(assistant::prefs::kAssistantConsentStatus));
+  EXPECT_TRUE(prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled));
+  EXPECT_TRUE(prefs->GetBoolean(assistant::prefs::kAssistantContextEnabled));
+  EXPECT_EQ(screen_result_.value(), AssistantOptInFlowScreen::Result::NEXT);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenExitReason, 1);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenStepCompletionTime,
+                                     1);
+}
+
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
+                       DeclineMultipleValuePropConsentsForMinors) {
+  auto force_lib_assistant_enabled =
+      AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
+  assistant_settings_->set_setting_zippy_size(2);
+  AssistantState::Get()->NotifyStatusChanged(
+      chromeos::assistant::AssistantStatus::READY);
+
+  SetUpAssistantScreensForTest();
+  ShowAssistantOptInFlowScreen();
+
+  OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
+  screen_waiter.set_assert_next_screen();
+  screen_waiter.Wait();
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
+  TapWhenEnabled(kValuePropSkipButton);
+  TapWhenEnabled(kValuePropSkipButton);
+
+  WaitForScreenExit();
+
+  ExpectCollectedOptIns({});
+  PrefService* const prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_EQ(assistant::prefs::ConsentStatus::kUnknown,
+            prefs->GetInteger(assistant::prefs::kAssistantConsentStatus));
+  EXPECT_FALSE(prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled));
+  EXPECT_FALSE(prefs->GetBoolean(assistant::prefs::kAssistantContextEnabled));
+  EXPECT_EQ(screen_result_.value(), AssistantOptInFlowScreen::Result::NEXT);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenExitReason, 1);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenStepCompletionTime,
+                                     1);
+}
+
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
+                       AcceptFirstAndDeclineSecondValuePropConsentsForMinors) {
+  auto force_lib_assistant_enabled =
+      AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
+  assistant_settings_->set_setting_zippy_size(2);
+  AssistantState::Get()->NotifyStatusChanged(
+      chromeos::assistant::AssistantStatus::READY);
+
+  SetUpAssistantScreensForTest();
+  ShowAssistantOptInFlowScreen();
+
+  OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
+  screen_waiter.set_assert_next_screen();
+  screen_waiter.Wait();
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
+  TapWhenEnabled(kValuePropNextButton);
+  TapWhenEnabled(kValuePropSkipButton);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
+  TapWhenEnabled(kVoiceMatchAgreeButton);
+
+  WaitForScreenExit();
+
+  ExpectCollectedOptIns({ScopedAssistantSettings::OptIn::ACTIVITY_CONTROL});
+  PrefService* const prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_EQ(assistant::prefs::ConsentStatus::kUnknown,
+            prefs->GetInteger(assistant::prefs::kAssistantConsentStatus));
+  EXPECT_TRUE(prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled));
+  EXPECT_TRUE(prefs->GetBoolean(assistant::prefs::kAssistantContextEnabled));
+  EXPECT_EQ(screen_result_.value(), AssistantOptInFlowScreen::Result::NEXT);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenExitReason, 1);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenStepCompletionTime,
+                                     1);
+}
+
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
+                       DeclineFirstAndAcceptSecondValuePropConsentsForMinors) {
+  auto force_lib_assistant_enabled =
+      AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
+  assistant_settings_->set_setting_zippy_size(2);
+  AssistantState::Get()->NotifyStatusChanged(
+      chromeos::assistant::AssistantStatus::READY);
+
+  SetUpAssistantScreensForTest();
+  ShowAssistantOptInFlowScreen();
+
+  OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
+  screen_waiter.set_assert_next_screen();
+  screen_waiter.Wait();
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
+  TapWhenEnabled(kValuePropSkipButton);
+  TapWhenEnabled(kValuePropNextButton);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
+  TapWhenEnabled(kVoiceMatchAgreeButton);
+
+  WaitForScreenExit();
+
+  ExpectCollectedOptIns({ScopedAssistantSettings::OptIn::ACTIVITY_CONTROL});
+  PrefService* const prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_EQ(assistant::prefs::ConsentStatus::kUnknown,
+            prefs->GetInteger(assistant::prefs::kAssistantConsentStatus));
+  EXPECT_TRUE(prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled));
+  EXPECT_TRUE(prefs->GetBoolean(assistant::prefs::kAssistantContextEnabled));
+  EXPECT_EQ(screen_result_.value(), AssistantOptInFlowScreen::Result::NEXT);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenExitReason, 1);
+  histogram_tester_.ExpectTotalCount(kAssistantOptInScreenStepCompletionTime,
+                                     1);
 }
 
 }  // namespace

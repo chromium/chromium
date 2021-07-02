@@ -48,10 +48,10 @@
             disabled="[[buttonsDisabled]]">
           <div id="skip-button-text" slot="text"></div>
         </oobe-text-button>
-        <oobe-next-button id="next-button" on-click="onNextTap_"
-            disabled="[[buttonsDisabled]]">
+        <oobe-text-button id="next-button" inverse="[[!isMinorMode_]]"
+            on-click="onNextTap_" disabled="[[buttonsDisabled]]">
           <div id="next-button-text" slot="text"></div>
-        </oobe-next-button>
+        </oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
 

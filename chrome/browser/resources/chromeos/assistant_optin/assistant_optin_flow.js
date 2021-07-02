@@ -232,6 +232,17 @@ Polymer({
   },
 
   /**
+   * Called to show the next settings when there are multiple unbundled
+   * activity control settings in the Value prop screen.
+   */
+  onValuePropUpdate() {
+    if (this.currentStep !== UIState.VALUE_PROP) {
+      return;
+    }
+    this.$.valueProp.showNextSettingZippy();
+  },
+
+  /**
    * Show the given step.
    *
    * @param {UIState} step The step to be shown.

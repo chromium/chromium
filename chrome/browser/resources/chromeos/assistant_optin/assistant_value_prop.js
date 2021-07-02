@@ -52,6 +52,25 @@ Polymer({
             loadTimeData.getBoolean('newLayoutEnabled');
       }
     },
+
+    /**
+     * Indicates whether user is minor mode user (e.g. under age of 18).
+     */
+    isMinorMode_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isMinorMode') &&
+            loadTimeData.getBoolean('isMinorMode');
+      }
+    },
+
+    /**
+     * Used to determine which activity control settings should be shown.
+     */
+    currentConsentStep_: {
+      type: Number,
+      value: 0,
+    },
   },
 
   setUrlTemplateForTesting(url) {
@@ -202,6 +221,7 @@ Polymer({
     }
 
     this.buttonsDisabled = true;
+    this.currentConsentStep_ = 0;
   },
 
   /**
@@ -298,42 +318,48 @@ Polymer({
       return;
     }
 
+    // `zippy_data` contains a list of lists, where each list contains the
+    // setting zippys that should be shown on the same screen.
     for (var i in zippy_data) {
-      var data = zippy_data[i];
-      var zippy = document.createElement('setting-zippy');
-      zippy.setAttribute(
-          'icon-src',
-          'data:text/html;charset=utf-8,' +
-              encodeURIComponent(
-                  zippy.getWrappedIcon(data['iconUri'], data['title'])));
-      if (!this.newLayoutEnabled_) {
-        zippy.setAttribute('hide-line', true);
+      for (var j in zippy_data[i]) {
+        var data = zippy_data[i][j];
+        var zippy = document.createElement('setting-zippy');
+        zippy.setAttribute(
+            'icon-src',
+            'data:text/html;charset=utf-8,' +
+                encodeURIComponent(
+                    zippy.getWrappedIcon(data['iconUri'], data['title'])));
+        zippy.setAttribute('step', i);
+        if (!this.newLayoutEnabled_) {
+          zippy.setAttribute('hide-line', true);
+        }
+
+        var title = document.createElement('div');
+        title.slot = 'title';
+        title.innerHTML = this.sanitizer_.sanitizeHtml(data['title']);
+        zippy.appendChild(title);
+
+        var description = document.createElement('div');
+        description.slot = 'content';
+        description.innerHTML =
+            this.sanitizer_.sanitizeHtml(data['description']);
+        description.innerHTML += '&ensp;';
+
+        var learnMoreLink = document.createElement('a');
+        learnMoreLink.slot = 'content';
+        learnMoreLink.textContent = data['popupLink'];
+        learnMoreLink.setAttribute('href', 'javascript:void(0)');
+        learnMoreLink.onclick = function(title, additionalInfo, focus) {
+          this.lastFocusedElement = focus;
+          this.showLearnMoreOverlay(title, additionalInfo);
+        }.bind(this, data['title'], data['additionalInfo'], learnMoreLink);
+
+        description.appendChild(learnMoreLink);
+        zippy.appendChild(description);
+        this.$['consents-container'].appendChild(zippy);
       }
-
-      var title = document.createElement('div');
-      title.slot = 'title';
-      title.innerHTML = this.sanitizer_.sanitizeHtml(data['title']);
-      zippy.appendChild(title);
-
-      var description = document.createElement('div');
-      description.slot = 'content';
-      description.innerHTML = this.sanitizer_.sanitizeHtml(data['description']);
-      description.innerHTML += '&ensp;';
-
-      var learnMoreLink = document.createElement('a');
-      learnMoreLink.slot = 'content';
-      learnMoreLink.textContent = data['popupLink'];
-      learnMoreLink.setAttribute('href', 'javascript:void(0)');
-      learnMoreLink.onclick = function(title, additionalInfo, focus) {
-        this.lastFocusedElement = focus;
-        this.showLearnMoreOverlay(title, additionalInfo);
-      }.bind(this, data['title'], data['additionalInfo'], learnMoreLink);
-
-      description.appendChild(learnMoreLink);
-      zippy.appendChild(description);
-
-      this.$['consents-container'].appendChild(zippy);
     }
+    this.showSettingZippyForStep_(this.currentConsentStep_);
 
     this.settingZippyLoaded_ = true;
     if (this.consentStringLoaded_) {
@@ -375,6 +401,26 @@ Polymer({
       this.initializeWebview_(this.valuePropView_);
       this.reloadPage();
       this.initialized_ = true;
+    }
+  },
+
+  /**
+   * Update the screen to show the next setting zippy. This is called only for
+   * minor users as settings are unbundled.
+   */
+  showNextSettingZippy() {
+    this.currentConsentStep_ += 1;
+    this.showSettingZippyForStep_(this.currentConsentStep_);
+    this.buttonsDisabled = false;
+  },
+
+  /**
+   * Update visibility of setting zippys for a given step.
+   * @param {number} step
+   */
+  showSettingZippyForStep_(step) {
+    for (let zippy of this.$['consents-container'].children) {
+      zippy.hidden = zippy.getAttribute('step') != step;
     }
   },
 

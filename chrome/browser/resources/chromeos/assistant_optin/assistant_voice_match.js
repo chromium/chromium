@@ -28,6 +28,19 @@ Polymer({
 
   behaviors: [OobeI18nBehavior, MultiStepBehavior],
 
+  properties: {
+    /**
+     * Indicates whether user is minor mode user (e.g. under age of 18).
+     */
+    isMinorMode_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isMinorMode') &&
+            loadTimeData.getBoolean('isMinorMode');
+      }
+    },
+  },
+
   /**
    * Whether voice match is the first screen of the flow.
    * @type {boolean}

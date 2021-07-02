@@ -59,6 +59,14 @@ cr.define('login.AssistantOptInFlowScreen', function() {
     },
 
     /**
+     * Called to show the next settings when there are multiple unbundled
+     * activity control settings in the Value prop screen.
+     */
+    onValuePropUpdate() {
+      $('assistant-optin-flow-card').onValuePropUpdate();
+    },
+
+    /**
      * Called when the flow finished and close the dialog.
      */
     closeDialog() {

@@ -18,6 +18,7 @@ Polymer({
     'addSettingZippy',
     'showNextScreen',
     'onVoiceMatchUpdate',
+    'onValuePropUpdate',
   ],
 
   ready() {
@@ -82,5 +83,13 @@ Polymer({
    */
   onVoiceMatchUpdate(state) {
     this.$.card.onVoiceMatchUpdate(state);
+  },
+
+  /**
+   * Called to show the next settings when there are multiple unbundled
+   * activity control settings in the Value prop screen.
+   */
+  onValuePropUpdate() {
+    this.$.card.onValuePropUpdate();
   },
 });

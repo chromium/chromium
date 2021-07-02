@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -87,7 +88,7 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
   builder->Add("assistantScreenContextDesc", IDS_ASSISTANT_SCREEN_CONTEXT_DESC);
   builder->Add("assistantVoiceMatchTitle", IDS_ASSISTANT_VOICE_MATCH_TITLE);
   builder->Add("assistantVoiceMatchMessage",
-               chromeos::IsHotwordDspAvailable() && !DeviceHasBattery()
+               chromeos::IsHotwordDspAvailable() || !DeviceHasBattery()
                    ? IDS_ASSISTANT_VOICE_MATCH_MESSAGE
                    : IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE);
   builder->Add("assistantVoiceMatchRecording",
@@ -168,6 +169,9 @@ void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
                    chromeos::assistant::features::IsVoiceMatchDisabled());
   dict->SetBoolean("betterAssistantEnabled",
                    chromeos::assistant::features::IsBetterAssistantEnabled());
+  // TODO(https://crbug.com/1224850): read actual minor mode signal from account
+  // capability or get this info from consent server.
+  dict->SetBoolean("isMinorMode", features::IsMinorModeRestrictionEnabled());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
@@ -255,19 +259,36 @@ void AssistantOptInFlowScreenHandler::ShowNextScreen() {
 void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
     bool opted_in) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  RecordActivityControlConsent(profile, ui_audit_key_, opted_in);
+  auto data = pending_consent_data_.front();
+  pending_consent_data_.pop_front();
+  // TODO(https://crbug.com/1223797): record activity control setting type.
+  RecordActivityControlConsent(profile, data.ui_audit_key, opted_in);
   if (opted_in) {
+    has_opted_in_any_consent_ = true;
+    // TODO(https://crbug.com/1224850): differentiate which activity control is
+    // accepted.
     RecordAssistantOptInStatus(ACTIVITY_CONTROL_ACCEPTED);
     assistant::AssistantSettings::Get()->UpdateSettings(
-        GetSettingsUiUpdate(consent_token_).SerializeAsString(),
+        GetSettingsUiUpdate(data.consent_token).SerializeAsString(),
         base::BindOnce(
             &AssistantOptInFlowScreenHandler::OnUpdateSettingsResponse,
             weak_factory_.GetWeakPtr()));
   } else {
+    has_opted_out_any_consent_ = true;
+    // TODO(https://crbug.com/1224850): differentiate which activity control is
+    // skipped.
     RecordAssistantOptInStatus(ACTIVITY_CONTROL_SKIPPED);
     profile->GetPrefs()->SetInteger(assistant::prefs::kAssistantConsentStatus,
                                     assistant::prefs::ConsentStatus::kUnknown);
-    HandleFlowFinished();
+    if (pending_consent_data_.empty()) {
+      if (has_opted_in_any_consent_) {
+        ShowNextScreen();
+      } else {
+        HandleFlowFinished();
+      }
+    } else {
+      UpdateValuePropScreen();
+    }
   }
 }
 
@@ -351,6 +372,10 @@ void AssistantOptInFlowScreenHandler::AddSettingZippy(const std::string& type,
   CallJS("login.AssistantOptInFlowScreen.addSettingZippy", type, data);
 }
 
+void AssistantOptInFlowScreenHandler::UpdateValuePropScreen() {
+  CallJS("login.AssistantOptInFlowScreen.onValuePropUpdate");
+}
+
 void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
     const std::string& settings) {
   const base::TimeDelta time_since_request_sent =
@@ -397,14 +422,38 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
 
   RecordAssistantOptInStatus(FLOW_STARTED);
   auto consent_ui = settings_ui.consent_flow_ui().consent_ui();
-  auto activity_control_ui = consent_ui.activity_control_ui();
   auto third_party_disclosure_ui = consent_ui.third_party_disclosure_ui();
 
-  consent_token_ = activity_control_ui.consent_token();
-  ui_audit_key_ = activity_control_ui.ui_audit_key();
+  base::Value zippy_data(base::Value::Type::LIST);
+  bool skip_activity_control = true;
+  pending_consent_data_.clear();
+  if (features::IsMinorModeRestrictionEnabled() &&
+      settings_ui.consent_flow_ui().multi_consent_ui().size()) {
+    auto multi_consent_ui = settings_ui.consent_flow_ui().multi_consent_ui();
+    for (auto consent_ui : multi_consent_ui) {
+      auto activity_control_ui = consent_ui.activity_control_ui();
+      if (activity_control_ui.setting_zippy().size()) {
+        skip_activity_control = false;
+        auto data = ConsentData();
+        data.consent_token = activity_control_ui.consent_token();
+        data.ui_audit_key = activity_control_ui.ui_audit_key();
+        pending_consent_data_.push_back(data);
+        zippy_data.Append(CreateZippyData(activity_control_ui.setting_zippy()));
+      }
+    }
+  } else {
+    auto activity_control_ui = consent_ui.activity_control_ui();
+    if (activity_control_ui.setting_zippy().size()) {
+      skip_activity_control = false;
+      auto data = ConsentData();
+      data.consent_token = activity_control_ui.consent_token();
+      data.ui_audit_key = activity_control_ui.ui_audit_key();
+      pending_consent_data_.push_back(data);
+      zippy_data.Append(CreateZippyData(activity_control_ui.setting_zippy()));
+    }
+  }
 
   // Process activity control data.
-  bool skip_activity_control = !activity_control_ui.setting_zippy().size();
   if (skip_activity_control) {
     // No need to consent. Move to the next screen.
     activity_control_needed_ = false;
@@ -421,8 +470,7 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
         consented ? assistant::prefs::ConsentStatus::kActivityControlAccepted
                   : assistant::prefs::ConsentStatus::kUnknown);
   } else {
-    AddSettingZippy("settings",
-                    CreateZippyData(activity_control_ui.setting_zippy()));
+    AddSettingZippy("settings", zippy_data);
   }
 
   // Process third party disclosure data.
@@ -492,7 +540,8 @@ void AssistantOptInFlowScreenHandler::OnUpdateSettingsResponse(
         assistant::ConsentFlowUiUpdateResult::SUCCESS) {
       // TODO(updowndta): Handle consent update failure.
       LOG(ERROR) << "Consent update error.";
-    } else if (activity_control_needed_) {
+    } else if (activity_control_needed_ && pending_consent_data_.empty() &&
+               !has_opted_out_any_consent_) {
       activity_control_needed_ = false;
       PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
       prefs->SetInteger(
@@ -510,7 +559,11 @@ void AssistantOptInFlowScreenHandler::OnUpdateSettingsResponse(
     return;
   }
 
-  ShowNextScreen();
+  if (pending_consent_data_.empty()) {
+    ShowNextScreen();
+  } else {
+    UpdateValuePropScreen();
+  }
 }
 
 void AssistantOptInFlowScreenHandler::HandleValuePropScreenUserAction(

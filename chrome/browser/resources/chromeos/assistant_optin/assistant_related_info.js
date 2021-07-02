@@ -45,6 +45,17 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Indicates whether user is minor mode user (e.g. under age of 18).
+     */
+    isMinorMode_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isMinorMode') &&
+            loadTimeData.getBoolean('isMinorMode');
+      }
+    },
   },
 
   setUrlTemplateForTesting(url) {

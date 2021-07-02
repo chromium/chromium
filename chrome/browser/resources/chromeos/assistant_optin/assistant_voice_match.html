@@ -47,9 +47,10 @@
             disabled="[[buttonsDisabled]]"
             text-key="assistantOptinNoThanksButton">
         </oobe-text-button>
-        <oobe-next-button id="agree-button" on-click="onAgreeTap_"
-            disabled="[[buttonsDisabled]]" text-key="assistantOptinAgreeButton">
-        </oobe-next-button>
+        <oobe-text-button id="agree-button" inverse="[[!isMinorMode_]]"
+            on-click="onAgreeTap_" disabled="[[buttonsDisabled]]"
+            text-key="assistantOptinAgreeButton">
+        </oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
 
