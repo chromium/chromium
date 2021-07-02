@@ -64,6 +64,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -106,6 +107,7 @@ public class AutofillAssistantPersonalDataManagerTest {
             + "form_target_website.html";
 
     private AutofillAssistantCollectUserDataTestHelper mHelper;
+    private AutofillTestHelper mAutofillHelper;
 
     private WebContents getWebContents() {
         return mTestRule.getWebContents();
@@ -119,6 +121,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 mTestRule.getTestServer().getURL(TEST_PAGE)));
         mScreenOrientationHelper.setPortraitOrientation();
         mHelper = new AutofillAssistantCollectUserDataTestHelper();
+        mAutofillHelper = new AutofillTestHelper();
     }
 
     @After
@@ -452,7 +455,9 @@ public class AutofillAssistantPersonalDataManagerTest {
     @MediumTest
     public void testExternalDeleteProfile() throws Exception {
         String profileIdA = mHelper.addDummyProfile("Adam Doe", "adamdoe@google.com");
+        mAutofillHelper.setProfileUseStatsForTesting(profileIdA, /* count= */ 1, /* date= */ 1000);
         String profileIdB = mHelper.addDummyProfile("Berta Doe", "bertadoe@google.com");
+        mAutofillHelper.setProfileUseStatsForTesting(profileIdB, /* count= */ 1, /* date= */ 0);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
@@ -496,8 +501,10 @@ public class AutofillAssistantPersonalDataManagerTest {
     @DisableIf.Build(message = "https://crbug.com/1225378", supported_abis_includes = "x86",
         sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void testEditOfSelectedProfile() throws Exception {
-        mHelper.addDummyProfile("Adam West", "adamwest@google.com");
-        mHelper.addDummyProfile("John Doe", "johndoe@google.com");
+        String profileIdA = mHelper.addDummyProfile("Adam West", "adamwest@google.com");
+        mAutofillHelper.setProfileUseStatsForTesting(profileIdA, /* count= */ 1, /* date= */ 1000);
+        String profileIdB = mHelper.addDummyProfile("John Doe", "johndoe@google.com");
+        mAutofillHelper.setProfileUseStatsForTesting(profileIdB, /* count= */ 1, /* date= */ 0);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
@@ -818,13 +825,13 @@ public class AutofillAssistantPersonalDataManagerTest {
     @Test
     @MediumTest
     public void testExternalDeleteCreditCard() throws Exception {
-        String profileId;
+        String profileIdA = mHelper.addDummyProfile("Adam Doe", "adamdoe@google.com");
+        String cardIdA = mHelper.addDummyCreditCard(profileIdA, "4111111111111111");
+        mAutofillHelper.setCreditCardUseStatsForTesting(cardIdA, /* count= */ 1, /* date= */ 1000);
 
-        profileId = mHelper.addDummyProfile("Adam Doe", "adamdoe@google.com");
-        String cardIdA = mHelper.addDummyCreditCard(profileId, "4111111111111111");
-
-        profileId = mHelper.addDummyProfile("Berta Doe", "bertadoe@google.com");
-        String cardIdB = mHelper.addDummyCreditCard(profileId, "5555555555554444");
+        String profileIdB = mHelper.addDummyProfile("Berta Doe", "bertadoe@google.com");
+        String cardIdB = mHelper.addDummyCreditCard(profileIdB, "5555555555554444");
+        mAutofillHelper.setCreditCardUseStatsForTesting(cardIdB, /* count= */ 1, /* date= */ 0);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()

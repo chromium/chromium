@@ -9,8 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill_assistant {
 
@@ -28,6 +31,9 @@ class MockPersonalDataManager : public autofill::PersonalDataManager {
   MOCK_CONST_METHOD0(IsAutofillProfileEnabled, bool());
   MOCK_CONST_METHOD0(IsAutofillCreditCardEnabled, bool());
   MOCK_CONST_METHOD0(ShouldSuggestServerCards, bool());
+  MOCK_METHOD1(RecordUseOf,
+               void(absl::variant<const autofill::AutofillProfile*,
+                                  const autofill::CreditCard*>));
 };
 
 }  // namespace autofill_assistant

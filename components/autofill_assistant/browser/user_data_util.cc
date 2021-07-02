@@ -27,13 +27,6 @@ namespace {
 
 constexpr char kDefaultLocale[] = "en-US";
 
-std::u16string GetProfileFullName(const autofill::AutofillProfile& profile) {
-  return autofill::data_util::JoinNameParts(
-      profile.GetRawInfo(autofill::NAME_FIRST),
-      profile.GetRawInfo(autofill::NAME_MIDDLE),
-      profile.GetRawInfo(autofill::NAME_LAST));
-}
-
 ClientStatus ExtractProfileAndFormatAutofillValue(
     const AutofillProfile& profile,
     const ValueExpression& value_expression,
@@ -113,7 +106,7 @@ std::vector<std::string> GetValidationErrors(
 
 // Helper function that compares instances of AutofillProfile by completeness
 // in regards to the current options. Full profiles should be ordered before
-// empty ones and fall back to compare the profile's name in case of equality.
+// empty ones and fall back to compare the profile's last usage.
 bool CompletenessCompareContacts(const CollectUserDataOptions& options,
                                  const autofill::AutofillProfile& a,
                                  const autofill::AutofillProfile& b) {
@@ -131,8 +124,7 @@ bool CompletenessCompareContacts(const CollectUserDataOptions& options,
     return incomplete_fields_a <= incomplete_fields_b;
   }
 
-  return base::i18n::ToLower(GetProfileFullName(a))
-             .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
+  return a.use_date() > b.use_date();
 }
 
 int GetAddressEditorCompletenessRating(
@@ -184,8 +176,7 @@ bool CompletenessCompareShippingAddresses(const CollectUserDataOptions& options,
     return address_compare > 0;
   }
 
-  return base::i18n::ToLower(GetProfileFullName(a))
-             .compare(base::i18n::ToLower(GetProfileFullName(b))) < 0;
+  return a.use_date() > b.use_date();
 }
 
 // Helper function that compares instances of PaymentInstrument by completeness
@@ -246,10 +237,7 @@ bool CompletenessComparePaymentInstruments(
     }
   }
 
-  return base::i18n::ToLower(
-             a.card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
-             .compare(base::i18n::ToLower(
-                 b.card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))) < 0;
+  return a.card->use_date() > b.card->use_date();
 }
 
 }  // namespace
@@ -274,11 +262,11 @@ std::vector<int> SortContactsByCompleteness(
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
   std::vector<int> profile_indices(profiles.size());
   std::iota(std::begin(profile_indices), std::end(profile_indices), 0);
-  std::sort(profile_indices.begin(), profile_indices.end(),
-            [&collect_user_data_options, &profiles](int i, int j) {
-              return CompletenessCompareContacts(collect_user_data_options,
-                                                 *profiles[i], *profiles[j]);
-            });
+  std::stable_sort(profile_indices.begin(), profile_indices.end(),
+                   [&collect_user_data_options, &profiles](int i, int j) {
+                     return CompletenessCompareContacts(
+                         collect_user_data_options, *profiles[i], *profiles[j]);
+                   });
   return profile_indices;
 }
 
@@ -336,11 +324,11 @@ std::vector<int> SortShippingAddressesByCompleteness(
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
   std::vector<int> profile_indices(profiles.size());
   std::iota(std::begin(profile_indices), std::end(profile_indices), 0);
-  std::sort(profile_indices.begin(), profile_indices.end(),
-            [&collect_user_data_options, &profiles](int i, int j) {
-              return CompletenessCompareShippingAddresses(
-                  collect_user_data_options, *profiles[i], *profiles[j]);
-            });
+  std::stable_sort(profile_indices.begin(), profile_indices.end(),
+                   [&collect_user_data_options, &profiles](int i, int j) {
+                     return CompletenessCompareShippingAddresses(
+                         collect_user_data_options, *profiles[i], *profiles[j]);
+                   });
   return profile_indices;
 }
 
@@ -416,13 +404,13 @@ std::vector<int> SortPaymentInstrumentsByCompleteness(
   std::vector<int> payment_instrument_indices(payment_instruments.size());
   std::iota(std::begin(payment_instrument_indices),
             std::end(payment_instrument_indices), 0);
-  std::sort(payment_instrument_indices.begin(),
-            payment_instrument_indices.end(),
-            [&collect_user_data_options, &payment_instruments](int a, int b) {
-              return CompletenessComparePaymentInstruments(
-                  collect_user_data_options, *payment_instruments[a],
-                  *payment_instruments[b]);
-            });
+  std::stable_sort(
+      payment_instrument_indices.begin(), payment_instrument_indices.end(),
+      [&collect_user_data_options, &payment_instruments](int a, int b) {
+        return CompletenessComparePaymentInstruments(collect_user_data_options,
+                                                     *payment_instruments[a],
+                                                     *payment_instruments[b]);
+      });
   return payment_instrument_indices;
 }
 

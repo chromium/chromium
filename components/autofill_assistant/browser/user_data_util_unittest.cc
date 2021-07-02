@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -50,29 +51,52 @@ RequiredDataPiece MakeRequiredDataPiece(autofill::ServerFieldType field) {
   return required_data_piece;
 }
 
-TEST(UserDataUtilTest, SortsCompleteContactsAlphabetically) {
-  auto profile_a = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_a.get(), "Adam", "", "West",
+TEST(UserDataUtilTest, KeepsOrderForIdenticalContacts) {
+  base::Time current = base::Time::Now();
+
+  auto profile_first = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_first.get(), "Adam", "", "West",
                                  "adam.west@gmail.com", "", "", "", "", "", "",
                                  "", "");
+  profile_first->set_use_date(current);
 
-  auto profile_b = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_b.get(), "Berta", "", "West",
-                                 "berta.west@gmail.com", "", "", "", "", "", "",
+  auto profile_second = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_second.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
                                  "", "");
+  profile_second->set_use_date(current);
 
-  auto profile_unicode = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_unicode.get(),
-                                 "\xC3\x85"
-                                 "dam",
-                                 "", "West", "adam.west@gmail.com", "", "", "",
-                                 "", "", "", "", "");
+  std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
+  profiles.emplace_back(std::move(profile_first));
+  profiles.emplace_back(std::move(profile_second));
+
+  CollectUserDataOptions options;
+
+  std::vector<int> profile_indices =
+      SortContactsByCompleteness(options, profiles);
+  EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
+  EXPECT_THAT(profile_indices, ElementsAre(0, 1));
+}
+
+TEST(UserDataUtilTest, SortsCompleteContactsByUseDate) {
+  base::Time current = base::Time::Now();
+
+  auto profile_old = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_old.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+  profile_old->set_use_date(current - base::TimeDelta::FromDays(2));
+
+  auto profile_new = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_new.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+  profile_new->set_use_date(current);
 
   // Specify profiles in reverse order to force sorting.
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
-  profiles.emplace_back(std::move(profile_unicode));
-  profiles.emplace_back(std::move(profile_b));
-  profiles.emplace_back(std::move(profile_a));
+  profiles.emplace_back(std::move(profile_old));
+  profiles.emplace_back(std::move(profile_new));
 
   CollectUserDataOptions options;
   options.required_contact_data_pieces.push_back(
@@ -83,20 +107,20 @@ TEST(UserDataUtilTest, SortsCompleteContactsAlphabetically) {
   std::vector<int> profile_indices =
       SortContactsByCompleteness(options, profiles);
   EXPECT_THAT(profile_indices, SizeIs(profiles.size()));
-  EXPECT_THAT(profile_indices, ElementsAre(2, 1, 0));
+  EXPECT_THAT(profile_indices, ElementsAre(1, 0));
 }
 
 TEST(UserDataUtilTest, SortsContactsByCompleteness) {
   auto profile_complete = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(
-      profile_complete.get(), "Charlie", "", "West", "charlie.west@gmail.com",
-      "", "Baker Street 221b", "", "London", "", "WC2N 5DU", "UK", "+44");
+  autofill::test::SetProfileInfo(profile_complete.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "London", "", "WC2N 5DU", "UK", "+44");
 
   auto profile_no_phone = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_no_phone.get(), "Berta", "", "West",
-                                 "berta.west@gmail.com", "",
-                                 "Baker Street 221b", "", "London", "",
-                                 "WC2N 5DU", "UK", /* phone_number= */ "");
+  autofill::test::SetProfileInfo(profile_no_phone.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "London", "", "WC2N 5DU", "UK",
+                                 /* phone_number= */ "");
 
   auto profile_incomplete = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_incomplete.get(), "Adam", "", "West",
@@ -130,22 +154,25 @@ TEST(UserDataUtilTest, GetDefaultContactSelectionForEmptyProfiles) {
   EXPECT_THAT(GetDefaultContactProfile(options, profiles), -1);
 }
 
-TEST(UserDataUtilTest,
-     GetDefaultContactSelectionForCompleteProfilesAlphabetically) {
-  auto profile_b = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_b.get(), "Berta", "", "West",
-                                 "berta.west@gmail.com", "", "", "", "", "", "",
-                                 "", "");
+TEST(UserDataUtilTest, GetDefaultContactSelectionForCompleteProfiles) {
+  base::Time current = base::Time::Now();
 
-  auto profile_a = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_a.get(), "Adam", "", "West",
+  auto profile_old = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_old.get(), "Adam", "", "West",
                                  "adam.west@gmail.com", "", "", "", "", "", "",
                                  "", "");
+  profile_old->set_use_date(current - base::TimeDelta::FromDays(2));
+
+  auto profile_new = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_new.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+  profile_new->set_use_date(current);
 
   // Specify profiles in reverse order to force sorting.
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
-  profiles.emplace_back(std::move(profile_b));
-  profiles.emplace_back(std::move(profile_a));
+  profiles.emplace_back(std::move(profile_old));
+  profiles.emplace_back(std::move(profile_new));
 
   CollectUserDataOptions options;
   options.required_contact_data_pieces.push_back(
@@ -192,21 +219,25 @@ TEST(UserDataUtilTest, GetDefaultSelectionForDefaultEmail) {
   EXPECT_THAT(GetDefaultContactProfile(options, profiles), 2);
 }
 
-TEST(UserDataUtilTest, SortsCompleteAddressesAlphabetically) {
-  auto profile_b = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_b.get(), "Berta", "", "West", "", "",
-                                 "Brandschenkestrasse 110", "", "Zurich", "",
-                                 "8002", "CH", "");
+TEST(UserDataUtilTest, SortsCompleteAddressesByUseDate) {
+  base::Time current = base::Time::Now();
 
-  auto profile_a = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_a.get(), "Adam", "", "West", "", "",
+  auto profile_old = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_old.get(), "Adam", "", "West", "", "",
                                  "Brandschenkestrasse 110", "", "Zurich", "",
                                  "8002", "CH", "");
+  profile_old->set_use_date(current - base::TimeDelta::FromDays(2));
+
+  auto profile_new = std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(profile_new.get(), "Adam", "", "West", "", "",
+                                 "Brandschenkestrasse 110", "", "Zurich", "",
+                                 "8002", "CH", "");
+  profile_new->set_use_date(current);
 
   // Specify profiles in reverse order to force sorting.
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
-  profiles.emplace_back(std::move(profile_b));
-  profiles.emplace_back(std::move(profile_a));
+  profiles.emplace_back(std::move(profile_old));
+  profiles.emplace_back(std::move(profile_new));
 
   CollectUserDataOptions options;
 
@@ -225,9 +256,9 @@ TEST(UserDataUtilTest, SortsAddressesByEditorCompleteness) {
                                  "", "8002", "CH", "+41");
 
   auto profile_complete = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_complete.get(), "Berta", "", "West",
-                                 "", "", "Brandschenkestrasse 110", "",
-                                 "Zurich", "", "8002", "CH", "");
+  autofill::test::SetProfileInfo(profile_complete.get(), "Adam", "", "West", "",
+                                 "", "Brandschenkestrasse 110", "", "Zurich",
+                                 "", "8002", "CH", "");
 
   // Specify profiles in reverse order to force sorting.
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
@@ -250,7 +281,7 @@ TEST(UserDataUtilTest, SortsAddressesByAssistantCompleteness) {
 
   auto profile_complete = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(
-      profile_complete.get(), "Berta", "", "West", "berta.west@gmail.com", "",
+      profile_complete.get(), "Adam", "", "West", "adam.west@gmail.com", "",
       "Brandschenkestrasse 110", "", "Zurich", "", "8002", "CH", "");
 
   // Specify profiles in reverse order to force sorting.
@@ -276,19 +307,24 @@ TEST(UserDataUtilTest, GetDefaultAddressSelectionForEmptyProfiles) {
 }
 
 TEST(UserDataUtilTest, GetDefaultAddressSelectionForCompleteProfiles) {
+  base::Time current = base::Time::Now();
+
   // Adding email address and phone number to demonstrate that they are not
   // checked for completeness.
   auto profile_with_irrelevant_details =
       std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(profile_with_irrelevant_details.get(), "Berta",
-                                 "berta.west@gmail.com", "West", "", "",
+  autofill::test::SetProfileInfo(profile_with_irrelevant_details.get(), "Adam",
+                                 "adam.west@gmail.com", "West", "", "",
                                  "Brandschenkestrasse 110", "", "Zurich", "",
                                  "8002", "CH", "+41");
+  profile_with_irrelevant_details->set_use_date(current -
+                                                base::TimeDelta::FromDays(2));
 
   auto profile_complete = std::make_unique<autofill::AutofillProfile>();
   autofill::test::SetProfileInfo(profile_complete.get(), "Adam", "", "West", "",
                                  "", "Brandschenkestrasse 110", "", "Zurich",
                                  "", "8002", "CH", "");
+  profile_complete->set_use_date(current);
 
   // Specify profiles in reverse order to force sorting.
   std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
@@ -302,7 +338,7 @@ TEST(UserDataUtilTest, GetDefaultAddressSelectionForCompleteProfiles) {
 
 TEST(UserDataUtilTest, SortsCreditCardsByCompleteness) {
   auto complete_card = std::make_unique<autofill::CreditCard>();
-  autofill::test::SetCreditCardInfo(complete_card.get(), "Berta West",
+  autofill::test::SetCreditCardInfo(complete_card.get(), "Adam West",
                                     "4111111111111111", "1", "2050",
                                     /* billing_address_id= */ "");
   auto complete_instrument =
@@ -332,25 +368,29 @@ TEST(UserDataUtilTest, SortsCreditCardsByCompleteness) {
   EXPECT_THAT(sorted_indices, ElementsAre(1, 0));
 }
 
-TEST(UserDataUtilTest, SortsEquallyValidCardsByName) {
-  auto a_card = std::make_unique<autofill::CreditCard>();
-  autofill::test::SetCreditCardInfo(a_card.get(), "Adam West",
-                                    "4111111111111111", "1", "2050",
-                                    /* billing_address_id= */ "");
-  auto a_instrument =
-      std::make_unique<PaymentInstrument>(std::move(a_card), nullptr);
+TEST(UserDataUtilTest, SortsEquallyValidCardsByCardUseDate) {
+  base::Time current = base::Time::Now();
 
-  auto b_card = std::make_unique<autofill::CreditCard>();
-  autofill::test::SetCreditCardInfo(b_card.get(), "Berta West",
+  auto old_card = std::make_unique<autofill::CreditCard>();
+  autofill::test::SetCreditCardInfo(old_card.get(), "Adam West",
                                     "4111111111111111", "1", "2050",
                                     /* billing_address_id= */ "");
-  auto b_instrument =
-      std::make_unique<PaymentInstrument>(std::move(b_card), nullptr);
+  old_card->set_use_date(current - base::TimeDelta::FromDays(2));
+  auto old_instrument =
+      std::make_unique<PaymentInstrument>(std::move(old_card), nullptr);
+
+  auto new_card = std::make_unique<autofill::CreditCard>();
+  autofill::test::SetCreditCardInfo(new_card.get(), "Adam West",
+                                    "4111111111111111", "1", "2050",
+                                    /* billing_address_id= */ "");
+  new_card->set_use_date(current);
+  auto new_instrument =
+      std::make_unique<PaymentInstrument>(std::move(new_card), nullptr);
 
   // Specify payment instruments in reverse order to force sorting.
   std::vector<std::unique_ptr<PaymentInstrument>> payment_instruments;
-  payment_instruments.emplace_back(std::move(b_instrument));
-  payment_instruments.emplace_back(std::move(a_instrument));
+  payment_instruments.emplace_back(std::move(old_instrument));
+  payment_instruments.emplace_back(std::move(new_instrument));
 
   CollectUserDataOptions options;
 
@@ -397,7 +437,7 @@ TEST(UserDataUtilTest, SortsEquallyCompleteCardsByNumberValidity) {
       std::make_unique<PaymentInstrument>(std::move(invalid_card), nullptr);
 
   auto valid_card = std::make_unique<autofill::CreditCard>();
-  autofill::test::SetCreditCardInfo(valid_card.get(), "Berta West",
+  autofill::test::SetCreditCardInfo(valid_card.get(), "Adam West",
                                     "4111111111111111", "1", "2050",
                                     /* billing_address_id= */ "");
   auto valid_instrument =
@@ -419,27 +459,26 @@ TEST(UserDataUtilTest, SortsEquallyCompleteCardsByNumberValidity) {
 TEST(UserDataUtilTest, SortsCreditCardsByAddressCompleteness) {
   auto card_with_complete_address = std::make_unique<autofill::CreditCard>();
   autofill::test::SetCreditCardInfo(card_with_complete_address.get(),
-                                    "Charlie West", "4111111111111111", "1",
+                                    "Adam West", "4111111111111111", "1",
                                     "2050",
                                     /* billing_address_id= */ "address-1");
   auto billing_address_with_zip = std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(billing_address_with_zip.get(), "Charlie", "",
-                                 "West", "charlie.west@gmail.com", "",
-                                 "Baker Street 221b", "", "London", "",
-                                 "WC2N 5DU", "UK", "+44");
+  autofill::test::SetProfileInfo(
+      billing_address_with_zip.get(), "Adam", "", "West", "adam.west@gmail.com",
+      "", "Baker Street 221b", "", "London", "", "WC2N 5DU", "UK", "+44");
   auto instrument_with_complete_address =
       std::make_unique<PaymentInstrument>(std::move(card_with_complete_address),
                                           std::move(billing_address_with_zip));
 
   auto card_with_incomplete_address = std::make_unique<autofill::CreditCard>();
   autofill::test::SetCreditCardInfo(card_with_incomplete_address.get(),
-                                    "Berta West", "4111111111111111", "1",
+                                    "Adam West", "4111111111111111", "1",
                                     "2050",
                                     /* billing_address_id= */ "address-1");
   auto billing_address_without_zip =
       std::make_unique<autofill::AutofillProfile>();
-  autofill::test::SetProfileInfo(billing_address_without_zip.get(), "Berta", "",
-                                 "West", "berta.west@gmail.com", "",
+  autofill::test::SetProfileInfo(billing_address_without_zip.get(), "Adam", "",
+                                 "West", "adam.west@gmail.com", "",
                                  "Baker Street 221b", "", "London", "", "",
                                  "UK", "+44");
   auto instrument_with_incomplete_address = std::make_unique<PaymentInstrument>(
@@ -478,24 +517,28 @@ TEST(UserDataUtilTest, GetDefaultSelectionForEmptyPaymentInstruments) {
 }
 
 TEST(UserDataUtilTest, GetDefaultSelectionForCompletePaymentInstruments) {
-  auto b_card = std::make_unique<autofill::CreditCard>();
-  autofill::test::SetCreditCardInfo(b_card.get(), "Berta West",
-                                    "4111111111111111", "1", "2050",
-                                    /* billing_address_id= */ "");
-  auto b_instrument =
-      std::make_unique<PaymentInstrument>(std::move(b_card), nullptr);
+  base::Time current = base::Time::Now();
 
-  auto a_card = std::make_unique<autofill::CreditCard>();
-  autofill::test::SetCreditCardInfo(a_card.get(), "Adam West",
+  auto old_card = std::make_unique<autofill::CreditCard>();
+  autofill::test::SetCreditCardInfo(old_card.get(), "Adam West",
                                     "4111111111111111", "1", "2050",
                                     /* billing_address_id= */ "");
-  auto a_instrument =
-      std::make_unique<PaymentInstrument>(std::move(a_card), nullptr);
+  old_card->set_use_date(current - base::TimeDelta::FromDays(2));
+  auto old_instrument =
+      std::make_unique<PaymentInstrument>(std::move(old_card), nullptr);
+
+  auto new_card = std::make_unique<autofill::CreditCard>();
+  autofill::test::SetCreditCardInfo(new_card.get(), "Adam West",
+                                    "4111111111111111", "1", "2050",
+                                    /* billing_address_id= */ "");
+  new_card->set_use_date(current);
+  auto new_instrument =
+      std::make_unique<PaymentInstrument>(std::move(new_card), nullptr);
 
   // Specify payment instruments in reverse order to force sorting.
   std::vector<std::unique_ptr<PaymentInstrument>> payment_instruments;
-  payment_instruments.emplace_back(std::move(b_instrument));
-  payment_instruments.emplace_back(std::move(a_instrument));
+  payment_instruments.emplace_back(std::move(old_instrument));
+  payment_instruments.emplace_back(std::move(new_instrument));
 
   CollectUserDataOptions options;
 

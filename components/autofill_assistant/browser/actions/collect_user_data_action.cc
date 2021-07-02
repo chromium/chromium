@@ -1149,6 +1149,7 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
         ->set_card_issuer_network(card_issuer_network);
   }
 
+  std::set<const autofill::AutofillProfile*> profiles_used;
   if (proto().collect_user_data().has_contact_details()) {
     auto contact_details_proto = proto().collect_user_data().contact_details();
     auto* selected_profile = user_data->selected_address(
@@ -1170,6 +1171,8 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
             ->set_payer_email(base::UTF16ToUTF8(
                 selected_profile->GetRawInfo(autofill::EMAIL_ADDRESS)));
       }
+
+      profiles_used.emplace(selected_profile);
     }
   }
   if (!proto().collect_user_data().shipping_address_name().empty()) {
@@ -1180,6 +1183,8 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
           selected_shipping_address,
           processed_action_proto_->mutable_collect_user_data_result()
               ->mutable_non_empty_shipping_address_field());
+
+      profiles_used.emplace(selected_shipping_address);
     }
   }
   if (!proto().collect_user_data().billing_address_name().empty()) {
@@ -1190,7 +1195,18 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
           selected_billing_address,
           processed_action_proto_->mutable_collect_user_data_result()
               ->mutable_non_empty_billing_address_field());
+
+      profiles_used.emplace(selected_billing_address);
     }
+  }
+  if (proto().collect_user_data().request_payment_method()) {
+    auto* selected_card = user_data->selected_card();
+    if (selected_card != nullptr) {
+      delegate_->GetPersonalDataManager()->RecordUseOf(selected_card);
+    }
+  }
+  for (const auto* profile : profiles_used) {
+    delegate_->GetPersonalDataManager()->RecordUseOf(profile);
   }
 
   if (proto().collect_user_data().has_login_details()) {
