@@ -266,7 +266,13 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_Register) {
   EXPECT_TRUE(policy_manager()->core()->client()->is_registered());
 }
 
-IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFails) {
+// https://crbug.com/1224925
+#if defined(OS_WIN)
+#define MAYBE_RegisterFails DISABLED_RegisterFails
+#else
+#define MAYBE_RegisterFails RegisterFails
+#endif
+IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_RegisterFails) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         test_url_loader_factory_->AddResponse(request.url.spec(), std::string(),
