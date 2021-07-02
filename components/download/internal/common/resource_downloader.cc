@@ -180,7 +180,8 @@ void ResourceDownloader::Start(
   url_loader_factory_->CreateLoaderAndStart(
       url_loader_.BindNewPipeAndPassReceiver(),
       0,  // request_id
-      network::mojom::kURLLoadOptionSendSSLInfoWithResponse,
+      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
+          network::mojom::kURLLoadOptionSniffMimeType,
       *(resource_request_.get()), std::move(url_loader_client_remote),
       net::MutableNetworkTrafficAnnotationTag(
           download_url_parameters->GetNetworkTrafficAnnotation()));

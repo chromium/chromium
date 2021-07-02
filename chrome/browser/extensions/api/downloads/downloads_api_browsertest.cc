@@ -2421,7 +2421,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                          "  \"incognito\": false,"
                          "  \"bytesReceived\": 0.0,"
                          "  \"fileSize\": 0.0,"
-                         "  \"mime\": \"\","
+                         "  \"mime\": \"text/plain\","
                          "  \"paused\": false,"
                          "  \"url\": \"%s\"}]",
                          download_url.c_str())));
@@ -2560,7 +2560,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       item, download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT,
       base::StringPrintf("[{\"danger\": \"safe\","
                          "  \"incognito\": false,"
-                         "  \"mime\": \"\","
+                         "  \"mime\": \"text/plain\","
                          "  \"paused\": false,"
                          "  \"id\": %d,"
                          "  \"url\": \"%s\"}]",
@@ -2601,7 +2601,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       item, download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT,
       base::StringPrintf("[{\"danger\": \"safe\","
                          "  \"incognito\": false,"
-                         "  \"mime\": \"\","
+                         "  \"mime\": \"text/plain\","
                          "  \"paused\": false,"
                          "  \"id\": %d,"
                          "  \"url\": \"%s\"}]",

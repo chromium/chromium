@@ -4148,6 +4148,26 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, SniffedMimeType) {
   EXPECT_TRUE(item->GetOriginalMimeType().empty());
 }
 
+// Verify that for download that is not triggered by navigation, MIME sniffing
+// is working.
+IN_PROC_BROWSER_TEST_F(DownloadContentTest, SniffedMimeTypeForDownloadURL) {
+  GURL download_url =
+      embedded_test_server()->GetURL("/download/gzip-content.gz");
+  std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
+  auto download_parameters = std::make_unique<download::DownloadUrlParameters>(
+      download_url, TRAFFIC_ANNOTATION_FOR_TESTS);
+  // Download URL without navigation.
+  DownloadManagerForShell(shell())->DownloadUrl(std::move(download_parameters));
+  observer->WaitForFinished();
+
+  // Verify download failed.
+  std::vector<download::DownloadItem*> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  EXPECT_EQ(1u, downloads.size());
+  EXPECT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
+  EXPECT_STREQ("application/x-gzip", downloads[0]->GetMimeType().c_str());
+}
+
 IN_PROC_BROWSER_TEST_F(DownloadContentTest, DuplicateContentDisposition) {
   // double-content-disposition.txt is served with two Content-Disposition
   // headers, both of which are identical.
