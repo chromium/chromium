@@ -132,7 +132,7 @@ def _QueryForAllGnTargets(output_dir):
       '--nested', '--build', '--output-directory', output_dir
   ]
   logging.info('Running: %r', cmd)
-  return subprocess.check_output(cmd).splitlines()
+  return subprocess.check_output(cmd, encoding='UTF-8').splitlines()
 
 
 class _ProjectEntry(object):
