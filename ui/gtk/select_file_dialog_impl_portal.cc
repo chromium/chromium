@@ -607,8 +607,7 @@ void SelectFileDialogImplPortal::CompleteOpen(
   info->main_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogImplPortal::CompleteOpenOnMainThread,
-                     base::Unretained(this), std::move(info),
-                     std::move(paths)));
+                     base::Unretained(this), info, std::move(paths)));
 }
 
 void SelectFileDialogImplPortal::CancelOpen(scoped_refptr<DialogInfo> info) {
@@ -616,7 +615,7 @@ void SelectFileDialogImplPortal::CancelOpen(scoped_refptr<DialogInfo> info) {
   info->main_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogImplPortal::CancelOpenOnMainThread,
-                     base::Unretained(this), std::move(info)));
+                     base::Unretained(this), info));
 }
 
 void SelectFileDialogImplPortal::CompleteOpenOnMainThread(
