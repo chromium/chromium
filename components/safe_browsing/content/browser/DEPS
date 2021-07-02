@@ -1,7 +1,9 @@
 include_rules = [
   "+components/back_forward_cache",
   "+components/history/core/browser",
-  "+components/safe_browsing/core/common/proto/csd.pb.h",
+  "+components/safe_browsing/core/browser",
+  "+components/safe_browsing/core/common",
+  "+components/security_interstitials/content",
   "+components/sessions/core/session_id.h",
   "+content/public/browser",
   "+crypto/sha2.h",
@@ -14,6 +16,7 @@ include_rules = [
   "+services/network/network_context.h",
   "+services/network/public",
   "+services/service_manager/public/cpp",
+  "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+third_party/blink/public/mojom/loader",
 ]
 

@@ -1,5 +1,4 @@
 include_rules = [
-  # TODO(crbug.com/1216341): Eliminate the need for this.
-  "+content/public/browser",
-  "+content/public/test",
+  "+components/safe_browsing/core/common",
+  "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
 ]

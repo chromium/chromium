@@ -1,6 +1,4 @@
 include_rules = [
-  "+components/safe_browsing/core/common/safe_browsing_prefs.h",
-  "+components/safe_browsing/core/common/features.h",
   "+components/version_info",
   "+crypto",
   "+google_apis/google_api_keys.h",
