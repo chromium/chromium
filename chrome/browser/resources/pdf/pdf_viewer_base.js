@@ -160,10 +160,10 @@ export class PDFViewerBaseElement extends PolymerElement {
    * @private
    */
   createPlugin_(isPrintPreview) {
-    // Create the plugin object dynamically so we can set its src. The plugin
-    // element is sized to fill the entire window and is set to be fixed
-    // positioning, acting as a viewport. The plugin renders into this viewport
-    // according to the scroll position of the window.
+    // Create the plugin object dynamically. The plugin element is sized to
+    // fill the entire window and is set to be fixed positioning, acting as a
+    // viewport. The plugin renders into this viewport according to the scroll
+    // position of the window.
     const plugin =
         /** @type {!HTMLEmbedElement} */ (document.createElement('embed'));
 
@@ -174,9 +174,8 @@ export class PDFViewerBaseElement extends PolymerElement {
     plugin.id = 'plugin';
     plugin.type = 'application/x-google-chrome-pdf';
 
-    plugin.setAttribute('src', this.originalUrl);
-    plugin.setAttribute(
-        'stream-url', this.browserApi.getStreamInfo().streamUrl);
+    plugin.setAttribute('original-url', this.originalUrl);
+    plugin.setAttribute('src', this.browserApi.getStreamInfo().streamUrl);
     let headers = '';
     for (const header in this.browserApi.getStreamInfo().responseHeaders) {
       headers += header + ': ' +

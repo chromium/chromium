@@ -32,7 +32,7 @@ const tests = [
     chrome.test.assertEq('embed', plugin.localName);
 
     chrome.test.assertTrue(
-        plugin.getAttribute('src').indexOf('/pdf/test.pdf') !== -1);
+        plugin.getAttribute('original-url').indexOf('/pdf/test.pdf') !== -1);
     chrome.test.succeed();
   },
 

@@ -464,15 +464,15 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   PDFiumFormFiller::ScriptOption script_option =
       PDFiumFormFiller::DefaultScriptOption();
   bool has_edits = false;
-  const char* stream_url = nullptr;
+  const char* src_url = nullptr;
   const char* original_url = nullptr;
   const char* top_level_url = nullptr;
   const char* headers = nullptr;
   for (uint32_t i = 0; i < argc; ++i) {
-    if (strcmp(argn[i], "src") == 0) {
+    if (strcmp(argn[i], "original-url") == 0) {
       original_url = argv[i];
-    } else if (strcmp(argn[i], "stream-url") == 0) {
-      stream_url = argv[i];
+    } else if (strcmp(argn[i], "src") == 0) {
+      src_url = argv[i];
     } else if (strcmp(argn[i], "top-level-url") == 0) {
       top_level_url = argv[i];
     } else if (strcmp(argn[i], "headers") == 0) {
@@ -492,11 +492,11 @@ bool OutOfProcessInstance::Init(uint32_t argc,
     }
   }
 
-  if (!original_url)
+  if (!src_url)
     return false;
 
-  if (!stream_url)
-    stream_url = original_url;
+  if (!original_url)
+    original_url = src_url;
 
   InitializeEngine(std::make_unique<PDFiumEngine>(this, script_option));
 
@@ -507,7 +507,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   if (IsPrintPreview())
     return true;
 
-  LoadUrl(stream_url, /*is_print_preview=*/false);
+  LoadUrl(src_url, /*is_print_preview=*/false);
   set_url(original_url);
 
   // Not all edits go through the PDF plugin's form filler. The plugin instance

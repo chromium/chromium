@@ -1041,9 +1041,20 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           break;
         }
 
-#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
         if (info.name ==
             ASCIIToUTF16(ChromeContentClient::kPDFInternalPluginName)) {
+          // For a PDF plugin, `params.url` holds the plugin's stream url. If
+          // `params` contains an 'original-url' attribute, reset `params.url`
+          // with its original URL value so that it can be used to determine
+          // the plugin's origin.
+          for (size_t i = 0; i < params.attribute_names.size(); ++i) {
+            if (params.attribute_names[i] == "original-url") {
+              params.url = GURL(params.attribute_values[i].Utf16());
+              break;
+            }
+          }
+
+#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
           // Create unseasoned PDF plugin directly, for development purposes.
           // TODO(crbug.com/1123621): Implement a more permanent solution once
           // the new PDF viewer process model is approved and in place.
@@ -1054,12 +1065,11 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
 #if BUILDFLAG(ENABLE_PRINTING)
           print_client =
               std::make_unique<ChromePdfViewWebPluginPrintClient>(render_frame);
-#endif
+#endif  // BUILDFLAG(ENABLE_PRINTING)
           return new chrome_pdf::PdfViewWebPlugin(
               std::move(pdf_service_remote), std::move(print_client), params);
-        }
 #endif  // BUILDFLAG(ENABLE_PDF_UNSEASONED)
-
+        }
         return render_frame->CreatePlugin(info, params);
       }
       case chrome::mojom::PluginStatus::kDisabled: {

@@ -16,8 +16,8 @@ function createPluginForUrl(streamUrl, url, headers, progressCallback) {
     }
   }, false);
 
-  plugin.setAttribute('src', url);
-  plugin.setAttribute('stream-url', streamUrl);
+  plugin.setAttribute('original-url', url);
+  plugin.setAttribute('src', streamUrl);
   plugin.setAttribute('full-frame', '');
   plugin.setAttribute('headers', headers);
   document.body.appendChild(plugin);

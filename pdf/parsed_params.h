@@ -21,11 +21,11 @@ struct ParsedParams {
   ParsedParams(const ParsedParams& other);
   ~ParsedParams();
 
-  // Document URL. Must not be empty.
+  // The document original URL. Must not be empty.
   std::string original_url;
 
-  // Document stream URL. Must not be empty.
-  std::string stream_url;
+  // The plugin source URL. Must not be empty.
+  std::string src_url;
 
   // The background color for the PDF viewer.
   absl::optional<SkColor> background_color;

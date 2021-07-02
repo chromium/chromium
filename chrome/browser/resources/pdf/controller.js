@@ -466,7 +466,7 @@ export class PluginController {
   async load(fileName, data) {
     const url = URL.createObjectURL(new Blob([data]));
     this.plugin_.removeAttribute('headers');
-    this.plugin_.setAttribute('stream-url', url);
+    this.plugin_.setAttribute('src', url);
     this.plugin_.setAttribute('has-edits', '');
     this.plugin_.style.display = 'block';
     try {

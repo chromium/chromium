@@ -22,10 +22,10 @@ absl::optional<ParsedParams> ParseWebPluginParams(
     const blink::WebPluginParams& params) {
   ParsedParams result;
   for (size_t i = 0; i < params.attribute_names.size(); ++i) {
-    if (params.attribute_names[i] == "src") {
+    if (params.attribute_names[i] == "original-url") {
       result.original_url = params.attribute_values[i].Utf8();
-    } else if (params.attribute_names[i] == "stream-url") {
-      result.stream_url = params.attribute_values[i].Utf8();
+    } else if (params.attribute_names[i] == "src") {
+      result.src_url = params.attribute_values[i].Utf8();
     } else if (params.attribute_names[i] == "full-frame") {
       result.full_frame = true;
     } else if (params.attribute_names[i] == "background-color") {
@@ -38,11 +38,12 @@ absl::optional<ParsedParams> ParseWebPluginParams(
     }
   }
 
-  if (result.original_url.empty())
+  if (result.src_url.empty())
     return absl::nullopt;
 
-  if (result.stream_url.empty())
-    result.stream_url = result.original_url;
+  if (result.original_url.empty()) {
+    result.original_url = result.src_url;
+  }
 
   return result;
 }
