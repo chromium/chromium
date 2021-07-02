@@ -338,8 +338,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   void OnVideoOpacityChange(bool opaque) override;
   void OnVideoFrameRateChange(absl::optional<int> fps) override;
   void OnVideoAverageKeyframeDistanceUpdate() override;
-  void OnAudioDecoderChange(const AudioDecoderInfo& info) override;
-  void OnVideoDecoderChange(const VideoDecoderInfo& info) override;
+  void OnAudioPipelineInfoChange(const AudioPipelineInfo& info) override;
+  void OnVideoPipelineInfoChange(const VideoPipelineInfo& info) override;
 
   // Simplified watch time reporting.
   void OnSimpleWatchTimerTick();

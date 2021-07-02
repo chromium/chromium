@@ -162,8 +162,8 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void OnVideoNaturalSizeChange(const gfx::Size& size);
   void OnVideoOpacityChange(bool opaque);
   void OnVideoAverageKeyframeDistanceUpdate();
-  void OnAudioDecoderChange(const AudioDecoderInfo& info);
-  void OnVideoDecoderChange(const VideoDecoderInfo& info);
+  void OnAudioPipelineInfoChange(const AudioPipelineInfo& info);
+  void OnVideoPipelineInfoChange(const VideoPipelineInfo& info);
   void OnRemotePlayStateChange(MediaStatus::State state);
   void OnVideoFrameRateChange(absl::optional<int> fps);
 

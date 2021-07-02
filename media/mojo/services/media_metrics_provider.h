@@ -91,8 +91,8 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
     bool video_decoder_changed = false;
     AudioCodec audio_codec;
     VideoCodec video_codec;
-    VideoDecoderInfo video_pipeline_info;
-    AudioDecoderInfo audio_pipeline_info;
+    VideoPipelineInfo video_pipeline_info;
+    AudioPipelineInfo audio_pipeline_info;
     PipelineStatus last_pipeline_status = PIPELINE_OK;
   };
 
@@ -101,7 +101,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
                   mojom::MediaURLScheme url_scheme,
                   mojom::MediaStreamType media_stream_type) override;
   void OnError(PipelineStatus status) override;
-  void SetAudioPipelineInfo(const AudioDecoderInfo& info) override;
+  void SetAudioPipelineInfo(const AudioPipelineInfo& info) override;
   void SetContainerName(
       container_names::MediaContainerName container_name) override;
   void SetRendererType(RendererType renderer_type) override;
@@ -115,7 +115,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetTimeToMetadata(base::TimeDelta elapsed) override;
   void SetTimeToFirstFrame(base::TimeDelta elapsed) override;
   void SetTimeToPlayReady(base::TimeDelta elapsed) override;
-  void SetVideoPipelineInfo(const VideoDecoderInfo& info) override;
+  void SetVideoPipelineInfo(const VideoPipelineInfo& info) override;
 
   void AcquireWatchTimeRecorder(
       mojom::PlaybackPropertiesPtr properties,

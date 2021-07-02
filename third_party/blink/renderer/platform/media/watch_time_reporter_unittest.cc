@@ -280,8 +280,8 @@ class WatchTimeReporterTest
     void SetHaveEnough() override {}
     void SetHasAudio(AudioCodec audio_codec) override {}
     void SetHasVideo(VideoCodec video_codec) override {}
-    void SetVideoPipelineInfo(const VideoDecoderInfo& info) override {}
-    void SetAudioPipelineInfo(const AudioDecoderInfo& info) override {}
+    void SetVideoPipelineInfo(const VideoPipelineInfo& info) override {}
+    void SetAudioPipelineInfo(const AudioPipelineInfo& info) override {}
 
    private:
     WatchTimeReporterTest* parent_;

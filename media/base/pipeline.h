@@ -79,8 +79,8 @@ class MEDIA_EXPORT Pipeline {
 
     // Executed whenever the underlying AudioDecoder or VideoDecoder changes
     // during playback.
-    virtual void OnAudioDecoderChange(const AudioDecoderInfo& info) = 0;
-    virtual void OnVideoDecoderChange(const VideoDecoderInfo& info) = 0;
+    virtual void OnAudioPipelineInfoChange(const AudioPipelineInfo& info) = 0;
+    virtual void OnVideoPipelineInfoChange(const VideoPipelineInfo& info) = 0;
 
     // Executed whenever the video frame rate changes.  |fps| will be unset if
     // the frame rate is unstable.  The duration used for the frame rate is

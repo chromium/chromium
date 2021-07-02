@@ -91,6 +91,6 @@ interface MediaMetricsProvider {
   // Can be called multiple times to set properties about a playback.
   SetHasAudio(AudioCodec codec);
   SetHasVideo(VideoCodec codec);
-  SetVideoPipelineInfo(VideoDecoderInfo info);
-  SetAudioPipelineInfo(AudioDecoderInfo info);
+  SetVideoPipelineInfo(VideoPipelineInfo info);
+  SetAudioPipelineInfo(AudioPipelineInfo info);
 };

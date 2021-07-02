@@ -83,40 +83,36 @@ MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, PipelineStatus status);
 using PipelineStatusCB = base::RepeatingCallback<void(PipelineStatus)>;
 using PipelineStatusCallback = base::OnceCallback<void(PipelineStatus)>;
 
-template <typename DecoderTypeId>
-struct PipelineDecoderInfo {
+template <typename DecoderType>
+struct PipelineInfo {
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;
-  DecoderTypeId decoder_type = DecoderTypeId::kUnknown;
+  DecoderType decoder_type = DecoderType::kUnknown;
 };
 
-using AudioDecoderInfo = PipelineDecoderInfo<AudioDecoderType>;
-using VideoDecoderInfo = PipelineDecoderInfo<VideoDecoderType>;
+using AudioPipelineInfo = PipelineInfo<AudioDecoderType>;
+using VideoPipelineInfo = PipelineInfo<VideoDecoderType>;
 
-template <typename DecoderTypeId>
-MEDIA_EXPORT inline bool operator==(
-    const PipelineDecoderInfo<DecoderTypeId>& first,
-    const PipelineDecoderInfo<DecoderTypeId>& second) {
+template <typename DecoderType>
+MEDIA_EXPORT inline bool operator==(const PipelineInfo<DecoderType>& first,
+                                    const PipelineInfo<DecoderType>& second) {
   return first.decoder_type == second.decoder_type &&
          first.is_platform_decoder == second.is_platform_decoder &&
          first.has_decrypting_demuxer_stream ==
              second.has_decrypting_demuxer_stream;
 }
 
-template <typename DecoderTypeId>
-MEDIA_EXPORT inline bool operator!=(
-    const PipelineDecoderInfo<DecoderTypeId>& first,
-    const PipelineDecoderInfo<DecoderTypeId>& second) {
+template <typename DecoderType>
+MEDIA_EXPORT inline bool operator!=(const PipelineInfo<DecoderType>& first,
+                                    const PipelineInfo<DecoderType>& second) {
   return !(first == second);
 }
 
-template <typename DecoderTypeId>
+template <typename DecoderType>
 MEDIA_EXPORT inline std::ostream& operator<<(
     std::ostream& out,
-    const PipelineDecoderInfo<DecoderTypeId>& info) {
-  // TODO(IN THIS CL DON'T FORGET) make a converter to print name.
-  return out << "{decoder_type:" << static_cast<int64_t>(info.decoder_type)
-             << ","
+    const PipelineInfo<DecoderType>& info) {
+  return out << "{decoder_type:" << GetDecoderName(info.decoder_type) << ","
              << "is_platform_decoder:" << info.is_platform_decoder << ","
              << "has_decrypting_demuxer_stream:"
              << info.has_decrypting_demuxer_stream << "}";
@@ -143,8 +139,8 @@ struct MEDIA_EXPORT PipelineStatistics {
 
   // Note: Keep these fields at the end of the structure, if you move them you
   // need to also update the test ProtoUtilsTest::PipelineStatisticsConversion.
-  AudioDecoderInfo audio_decoder_info;
-  VideoDecoderInfo video_decoder_info;
+  AudioPipelineInfo audio_pipeline_info;
+  VideoPipelineInfo video_pipeline_info;
 
   // NOTE: always update operator== implementation in pipeline_status.cc when
   // adding a field to this struct. Leave this comment at the end.

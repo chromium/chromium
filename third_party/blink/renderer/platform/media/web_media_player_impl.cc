@@ -2418,7 +2418,8 @@ void WebMediaPlayerImpl::OnVideoAverageKeyframeDistanceUpdate() {
   UpdateBackgroundVideoOptimizationState();
 }
 
-void WebMediaPlayerImpl::OnAudioDecoderChange(const AudioDecoderInfo& info) {
+void WebMediaPlayerImpl::OnAudioPipelineInfoChange(
+    const AudioPipelineInfo& info) {
   media_metrics_provider_->SetAudioPipelineInfo(info);
   if (info.decoder_type == audio_decoder_type_)
     return;
@@ -2432,7 +2433,8 @@ void WebMediaPlayerImpl::OnAudioDecoderChange(const AudioDecoderInfo& info) {
   UpdateSecondaryProperties();
 }
 
-void WebMediaPlayerImpl::OnVideoDecoderChange(const VideoDecoderInfo& info) {
+void WebMediaPlayerImpl::OnVideoPipelineInfoChange(
+    const VideoPipelineInfo& info) {
   media_metrics_provider_->SetVideoPipelineInfo(info);
   if (info.decoder_type == video_decoder_type_)
     return;

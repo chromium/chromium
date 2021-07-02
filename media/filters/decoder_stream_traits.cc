@@ -38,12 +38,12 @@ DecoderStreamTraits<DemuxerStream::AUDIO>::CreateEOSOutput() {
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::SetIsPlatformDecoder(
     bool is_platform_decoder) {
-  stats_.audio_decoder_info.is_platform_decoder = is_platform_decoder;
+  stats_.audio_pipeline_info.is_platform_decoder = is_platform_decoder;
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::SetIsDecryptingDemuxerStream(
     bool is_dds) {
-  stats_.audio_decoder_info.has_decrypting_demuxer_stream = is_dds;
+  stats_.audio_pipeline_info.has_decrypting_demuxer_stream = is_dds;
 }
 
 DecoderStreamTraits<DemuxerStream::AUDIO>::DecoderStreamTraits(
@@ -83,7 +83,7 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::InitializeDecoder(
     OnConfigChanged(config);
   config_ = config;
 
-  stats_.audio_decoder_info.decoder_type = AudioDecoderType::kUnknown;
+  stats_.audio_pipeline_info.decoder_type = AudioDecoderType::kUnknown;
   // Both |this| and |decoder| are owned by a DecoderSelector and will stay
   // alive at least until |init_cb| is finished executing.
   decoder->Initialize(
@@ -99,7 +99,7 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::OnDecoderInitialized(
     InitCB cb,
     Status result) {
   if (result.is_ok())
-    stats_.audio_decoder_info.decoder_type = decoder->GetDecoderType();
+    stats_.audio_pipeline_info.decoder_type = decoder->GetDecoderType();
   std::move(cb).Run(result);
 }
 
@@ -155,12 +155,12 @@ DecoderStreamTraits<DemuxerStream::VIDEO>::CreateEOSOutput() {
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::SetIsPlatformDecoder(
     bool is_platform_decoder) {
-  stats_.video_decoder_info.is_platform_decoder = is_platform_decoder;
+  stats_.video_pipeline_info.is_platform_decoder = is_platform_decoder;
 }
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::SetIsDecryptingDemuxerStream(
     bool is_dds) {
-  stats_.video_decoder_info.has_decrypting_demuxer_stream = is_dds;
+  stats_.video_pipeline_info.has_decrypting_demuxer_stream = is_dds;
 }
 
 DecoderStreamTraits<DemuxerStream::VIDEO>::DecoderStreamTraits(
@@ -202,7 +202,7 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::InitializeDecoder(
     const OutputCB& output_cb,
     const WaitingCB& waiting_cb) {
   DCHECK(config.IsValidConfig());
-  stats_.video_decoder_info.decoder_type = VideoDecoderType::kUnknown;
+  stats_.video_pipeline_info.decoder_type = VideoDecoderType::kUnknown;
   transform_ = config.video_transformation();
   // |decoder| is owned by a DecoderSelector and will stay
   // alive at least until |init_cb| is finished executing.
@@ -219,8 +219,8 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecoderInitialized(
     InitCB cb,
     Status result) {
   if (result.is_ok()) {
-    stats_.video_decoder_info.decoder_type = decoder->GetDecoderType();
-    DVLOG(2) << stats_.video_decoder_info.decoder_type;
+    stats_.video_pipeline_info.decoder_type = decoder->GetDecoderType();
+    DVLOG(2) << stats_.video_pipeline_info.decoder_type;
   } else {
     DVLOG(2) << "Decoder initialization failed.";
   }

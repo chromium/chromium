@@ -287,12 +287,12 @@ mojom("mojom") {
           cpp = "::media::PipelineStatistics"
         },
         {
-          mojom = "media.mojom.AudioDecoderInfo"
-          cpp = "::media::AudioDecoderInfo"
+          mojom = "media.mojom.AudioPipelineInfo"
+          cpp = "::media::AudioPipelineInfo"
         },
         {
-          mojom = "media.mojom.VideoDecoderInfo"
-          cpp = "::media::VideoDecoderInfo"
+          mojom = "media.mojom.VideoPipelineInfo"
+          cpp = "::media::VideoPipelineInfo"
         },
         {
           mojom = "media.mojom.AudioDecoderType"

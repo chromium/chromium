@@ -723,16 +723,17 @@ TEST_F(PipelineImplTest, OnStatisticsUpdate) {
   StartPipelineAndExpect(PIPELINE_OK);
 
   PipelineStatistics stats;
-  stats.audio_decoder_info.decoder_type = AudioDecoderType::kMojo;
-  stats.audio_decoder_info.is_platform_decoder = false;
-  EXPECT_CALL(callbacks_, OnAudioDecoderChange(_));
+  stats.audio_pipeline_info.decoder_type = AudioDecoderType::kMojo;
+  stats.audio_pipeline_info.is_platform_decoder = false;
+  EXPECT_CALL(callbacks_, OnAudioPipelineInfoChange(_));
   renderer_client_->OnStatisticsUpdate(stats);
   base::RunLoop().RunUntilIdle();
 
-  // VideoDecoderInfo changed and we expect OnVideoDecoderChange() to be called.
-  stats.video_decoder_info.decoder_type = VideoDecoderType::kMojo;
-  stats.video_decoder_info.is_platform_decoder = true;
-  EXPECT_CALL(callbacks_, OnVideoDecoderChange(_));
+  // VideoPipelineInfo changed and we expect OnVideoPipelineInfoChange() to be
+  // called.
+  stats.video_pipeline_info.decoder_type = VideoDecoderType::kMojo;
+  stats.video_pipeline_info.is_platform_decoder = true;
+  EXPECT_CALL(callbacks_, OnVideoPipelineInfoChange(_));
   renderer_client_->OnStatisticsUpdate(stats);
   base::RunLoop().RunUntilIdle();
 
@@ -741,17 +742,18 @@ TEST_F(PipelineImplTest, OnStatisticsUpdate) {
   renderer_client_->OnStatisticsUpdate(stats);
   base::RunLoop().RunUntilIdle();
 
-  // AudioDecoderInfo changed and we expect OnAudioDecoderChange() to be called.
-  stats.audio_decoder_info.is_platform_decoder = true;
-  EXPECT_CALL(callbacks_, OnAudioDecoderChange(_));
+  // AudioPipelineInfo changed and we expect OnAudioPipelineInfoChange() to be
+  // called.
+  stats.audio_pipeline_info.is_platform_decoder = true;
+  EXPECT_CALL(callbacks_, OnAudioPipelineInfoChange(_));
   renderer_client_->OnStatisticsUpdate(stats);
   base::RunLoop().RunUntilIdle();
 
   // Both info changed.
-  stats.audio_decoder_info.decoder_type = AudioDecoderType::kFFmpeg;
-  stats.video_decoder_info.has_decrypting_demuxer_stream = true;
-  EXPECT_CALL(callbacks_, OnAudioDecoderChange(_));
-  EXPECT_CALL(callbacks_, OnVideoDecoderChange(_));
+  stats.audio_pipeline_info.decoder_type = AudioDecoderType::kFFmpeg;
+  stats.video_pipeline_info.has_decrypting_demuxer_stream = true;
+  EXPECT_CALL(callbacks_, OnAudioPipelineInfoChange(_));
+  EXPECT_CALL(callbacks_, OnVideoPipelineInfoChange(_));
   renderer_client_->OnStatisticsUpdate(stats);
   base::RunLoop().RunUntilIdle();
 }

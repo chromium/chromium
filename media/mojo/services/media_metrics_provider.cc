@@ -202,7 +202,7 @@ void MediaMetricsProvider::SetHaveEnough() {
   uma_info_.has_reached_have_enough = true;
 }
 
-void MediaMetricsProvider::SetVideoPipelineInfo(const VideoDecoderInfo& info) {
+void MediaMetricsProvider::SetVideoPipelineInfo(const VideoPipelineInfo& info) {
   auto old_decoder = uma_info_.video_pipeline_info.decoder_type;
   if (old_decoder != VideoDecoderType::kUnknown &&
       old_decoder != info.decoder_type)
@@ -210,7 +210,7 @@ void MediaMetricsProvider::SetVideoPipelineInfo(const VideoDecoderInfo& info) {
   uma_info_.video_pipeline_info = info;
 }
 
-void MediaMetricsProvider::SetAudioPipelineInfo(const AudioDecoderInfo& info) {
+void MediaMetricsProvider::SetAudioPipelineInfo(const AudioPipelineInfo& info) {
   uma_info_.audio_pipeline_info = info;
 }
 

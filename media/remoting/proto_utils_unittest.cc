@@ -126,10 +126,10 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
   original.video_memory_usage = 43;
   original.video_keyframe_distance_average = base::TimeDelta::Max();
   original.video_frame_duration_average = base::TimeDelta::Max();
-  original.audio_decoder_info = {false, false,
-                                 media::AudioDecoderType::kUnknown};
-  original.video_decoder_info = {false, false,
-                                 media::VideoDecoderType::kUnknown};
+  original.audio_pipeline_info = {false, false,
+                                  media::AudioDecoderType::kUnknown};
+  original.video_pipeline_info = {false, false,
+                                  media::VideoDecoderType::kUnknown};
 
   // There is no convert-to-proto function, so just do that here.
   openscreen::cast::PipelineStatistics pb_stats;
@@ -147,25 +147,25 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
       original.video_frame_duration_average.InMicroseconds());
 
   pb_video_info->set_decoder_type(
-      static_cast<int64_t>(original.video_decoder_info.decoder_type));
+      static_cast<int64_t>(original.video_pipeline_info.decoder_type));
   pb_video_info->set_is_platform_decoder(
-      original.video_decoder_info.is_platform_decoder);
+      original.video_pipeline_info.is_platform_decoder);
 
   pb_audio_info->set_decoder_type(
-      static_cast<int64_t>(original.audio_decoder_info.decoder_type));
+      static_cast<int64_t>(original.audio_pipeline_info.decoder_type));
   pb_audio_info->set_is_platform_decoder(
-      original.audio_decoder_info.is_platform_decoder);
+      original.audio_pipeline_info.is_platform_decoder);
 
   PipelineStatistics converted;
 
   // NOTE: fields will all be initialized with 0xcd. Forcing the conversion to
   // properly assigned them. Since nested structs have strings, memsetting must
   // be done infividually for them.
-  memset(
-      &converted, 0xcd,
-      sizeof(converted) - sizeof(AudioDecoderInfo) - sizeof(VideoDecoderInfo));
-  memset(&converted.audio_decoder_info, 0xcd, sizeof(AudioDecoderInfo));
-  memset(&converted.video_decoder_info, 0xcd, sizeof(VideoDecoderInfo));
+  memset(&converted, 0xcd,
+         sizeof(converted) - sizeof(AudioPipelineInfo) -
+             sizeof(VideoPipelineInfo));
+  memset(&converted.audio_pipeline_info, 0xcd, sizeof(AudioPipelineInfo));
+  memset(&converted.video_pipeline_info, 0xcd, sizeof(VideoPipelineInfo));
 
   ConvertProtoToPipelineStatistics(pb_stats, &converted);
 

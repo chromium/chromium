@@ -158,8 +158,8 @@ bool operator==(const PipelineStatistics& first,
              second.video_keyframe_distance_average &&
          first.video_frame_duration_average ==
              second.video_frame_duration_average &&
-         first.video_decoder_info == second.video_decoder_info &&
-         first.audio_decoder_info == second.audio_decoder_info;
+         first.video_pipeline_info == second.video_pipeline_info &&
+         first.audio_pipeline_info == second.audio_pipeline_info;
 }
 
 bool operator!=(const PipelineStatistics& first,

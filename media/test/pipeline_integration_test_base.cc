@@ -277,8 +277,8 @@ PipelineStatus PipelineIntegrationTestBase::StartInternal(
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
   EXPECT_CALL(*this, OnVideoOpacityChange(_)).WillRepeatedly(Return());
   EXPECT_CALL(*this, OnVideoFrameRateChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnAudioDecoderChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoDecoderChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnAudioPipelineInfoChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoPipelineInfoChange(_)).Times(AnyNumber());
   CreateDemuxer(std::move(data_source));
 
   if (cdm_context) {
@@ -627,8 +627,8 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
   EXPECT_CALL(*this, OnVideoOpacityChange(_)).Times(AtMost(1));
   EXPECT_CALL(*this, OnVideoFrameRateChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnAudioDecoderChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoDecoderChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnAudioPipelineInfoChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoPipelineInfoChange(_)).Times(AnyNumber());
 
   base::RunLoop run_loop;
 

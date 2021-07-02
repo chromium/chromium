@@ -446,14 +446,14 @@ struct PredictionTargets {
 };
 
 // See media/base/pipeline_status.h for descriptions.
-struct AudioDecoderInfo {
+struct AudioPipelineInfo {
   AudioDecoderType decoder_type;
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;
 };
 
 // See media/base/pipeline_status.h for descriptions.
-struct VideoDecoderInfo {
+struct VideoPipelineInfo {
   VideoDecoderType decoder_type;
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;

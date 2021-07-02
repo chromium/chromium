@@ -152,8 +152,8 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   void OnVideoOpacityChange(bool opaque) override {}
   void OnVideoFrameRateChange(absl::optional<int>) override {}
   void OnVideoAverageKeyframeDistanceUpdate() override {}
-  void OnAudioDecoderChange(const AudioDecoderInfo& info) override {}
-  void OnVideoDecoderChange(const VideoDecoderInfo& info) override {}
+  void OnAudioPipelineInfoChange(const AudioPipelineInfo& info) override {}
+  void OnVideoPipelineInfoChange(const VideoPipelineInfo& info) override {}
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
