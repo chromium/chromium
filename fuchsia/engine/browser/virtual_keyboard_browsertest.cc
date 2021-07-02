@@ -30,12 +30,15 @@ namespace {
 const gfx::Point kNoTarget = {999, 999};
 
 constexpr char kInputFieldText[] = "input-text";
-constexpr char kInputFieldTel[] = "input-tel";
-constexpr char kInputFieldNumeric[] = "input-numeric";
-constexpr char kInputFieldUrl[] = "input-url";
-constexpr char kInputFieldEmail[] = "input-email";
-constexpr char kInputFieldDecimal[] = "input-decimal";
-constexpr char kInputFieldSearch[] = "input-search";
+constexpr char kInputFieldModeTel[] = "input-mode-tel";
+constexpr char kInputFieldModeNumeric[] = "input-mode-numeric";
+constexpr char kInputFieldModeUrl[] = "input-mode-url";
+constexpr char kInputFieldModeEmail[] = "input-mode-email";
+constexpr char kInputFieldModeDecimal[] = "input-mode-decimal";
+constexpr char kInputFieldModeSearch[] = "input-mode-search";
+constexpr char kInputFieldTypeTel[] = "input-type-tel";
+constexpr char kInputFieldTypeNumber[] = "input-type-number";
+constexpr char kInputFieldTypePassword[] = "input-type-password";
 
 class MockVirtualKeyboardController : public virtualkeyboard::Controller {
  public:
@@ -247,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
   // Tap on another text field. RequestShow should not be called a second time
   // since the keyboard is already onscreen.
   content::SimulateTapAt(web_contents_,
-                         GetCoordinatesOfInputField(kInputFieldNumeric));
+                         GetCoordinatesOfInputField(kInputFieldModeNumeric));
   click_numeric_run_loop.Run();
 
   // Trigger input blur by clicking outside any input element.
@@ -262,12 +265,15 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, InputModeMappings) {
   // so the array is ordered to produce an update on each entry.
   const std::vector<std::pair<base::StringPiece, virtualkeyboard::TextType>>
       kInputTypeMappings = {
-          {kInputFieldTel, virtualkeyboard::TextType::PHONE},
-          {kInputFieldSearch, virtualkeyboard::TextType::ALPHANUMERIC},
-          {kInputFieldNumeric, virtualkeyboard::TextType::NUMERIC},
-          {kInputFieldUrl, virtualkeyboard::TextType::ALPHANUMERIC},
-          {kInputFieldDecimal, virtualkeyboard::TextType::NUMERIC},
-          {kInputFieldEmail, virtualkeyboard::TextType::ALPHANUMERIC},
+          {kInputFieldModeTel, virtualkeyboard::TextType::PHONE},
+          {kInputFieldModeSearch, virtualkeyboard::TextType::ALPHANUMERIC},
+          {kInputFieldModeNumeric, virtualkeyboard::TextType::NUMERIC},
+          {kInputFieldModeUrl, virtualkeyboard::TextType::ALPHANUMERIC},
+          {kInputFieldModeDecimal, virtualkeyboard::TextType::NUMERIC},
+          {kInputFieldModeEmail, virtualkeyboard::TextType::ALPHANUMERIC},
+          {kInputFieldTypeTel, virtualkeyboard::TextType::PHONE},
+          {kInputFieldTypeNumber, virtualkeyboard::TextType::NUMERIC},
+          {kInputFieldTypePassword, virtualkeyboard::TextType::ALPHANUMERIC},
       };
 
   // GMock expectations must be set upfront, hence the redundant for-each loop.
@@ -318,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, Disconnection) {
 
   // Focus on another text field, then defocus. Nothing should crash.
   content::SimulateTapAt(web_contents_,
-                         GetCoordinatesOfInputField(kInputFieldNumeric));
+                         GetCoordinatesOfInputField(kInputFieldModeNumeric));
   content::SimulateTapAt(web_contents_, kNoTarget);
 }
 
