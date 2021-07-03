@@ -61,6 +61,24 @@ AXRestriction AccessibilityMediaElement::Restriction() const {
   return AXNodeObject::Restriction();
 }
 
+bool AccessibilityMediaElement::HasControls() const {
+  if (IsDetached())
+    return false;
+  if (!IsA<HTMLMediaElement>(GetNode()) || !GetNode()->isConnected()) {
+    NOTREACHED() << "Accessible media element not ready: " << GetNode()
+                 << "  isConnected? " << GetNode()->isConnected();
+    return false;
+  }
+  return To<HTMLMediaElement>(GetNode())->ShouldShowControls();
+}
+
+bool AccessibilityMediaElement::HasEmptySource() const {
+  if (IsDetached())
+    return false;
+  return To<HTMLMediaElement>(GetNode())->getNetworkState() ==
+         HTMLMediaElement::kNetworkEmpty;
+}
+
 bool AccessibilityMediaElement::IsUnplayable() const {
   if (IsDetached())
     return true;

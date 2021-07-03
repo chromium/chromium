@@ -3,123 +3,45 @@ rootWebArea
 ++++genericContainer
 ++++++video name='Unable to play media.' restriction=disabled
 ++++++++genericContainer ignored
-++++++++++genericContainer ignored invisible
 ++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
 ++++++++++++button ignored invisible
-++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++button ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored name='0:00'
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored name='/ 0:00'
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++slider ignored invisible
-++++++++++++++++++button ignored invisible
-++++++++++++++++button ignored invisible
-++++++++++++++++button ignored invisible
-++++++++++++++slider ignored invisible
-++++++++++menu ignored invisible
-++++++++++menu ignored invisible
-++++++++++menu ignored invisible
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Play'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Fullscreen'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Download'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Mute'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Cast'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Captions'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Picture in picture'
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++video name='Unable to play media.' restriction=disabled
 ++++++++genericContainer ignored
-++++++++++genericContainer ignored invisible
 ++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
 ++++++++++++button ignored invisible
-++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++button ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored name='0:00'
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored name='/ 0:00'
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++slider ignored invisible
-++++++++++++++++++button ignored invisible
-++++++++++++++++button ignored invisible
-++++++++++++++++button ignored invisible
-++++++++++++++slider ignored invisible
-++++++++++menu ignored invisible
-++++++++++menu ignored invisible
-++++++++++menu ignored invisible
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Play'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Fullscreen'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Download'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Mute'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Cast'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Captions'
-++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Picture in picture'
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++button ignored invisible
+++++++++++++genericContainer ignored invisible

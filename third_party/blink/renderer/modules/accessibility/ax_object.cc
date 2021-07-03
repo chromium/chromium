@@ -67,7 +67,6 @@
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/html_title_element.h"
-#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -2477,14 +2476,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // with included children.
     if (IsA<HTMLMapElement>(parent_node))
       return true;
-  }
-
-  // The ignored state of media controls can change without a layout update.
-  // Keep them in the tree at all times so that the serializer isn't
-  // accidentally working with unincluded nodes, which is not allowed.
-  if (node->IsInUserAgentShadowRoot() &&
-      IsA<HTMLMediaElement>(node->OwnerShadowHost())) {
-    return true;
   }
 
   Element* element = GetElement();
