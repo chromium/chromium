@@ -299,6 +299,21 @@ TEST_F(BackGestureEventHandlerTest, CancelOnScreenRotation) {
   EXPECT_EQ(0, target_back_release.accelerator_count());
 }
 
+// Tests that there is no crash when destroying the window during drag the
+// back gesture affordance from the left edge.
+TEST_F(BackGestureEventHandlerTest, DestroyWindowDuringDrag) {
+  ui::TestAcceleratorTarget target_back_press, target_back_release;
+  RegisterBackPressAndRelease(&target_back_press, &target_back_release);
+
+  gfx::Point start(0, 100);
+  gfx::Point update_and_end(200, 100);
+  SendTouchEvent(start, ui::ET_TOUCH_PRESSED);
+  SendTouchEvent(update_and_end, ui::ET_TOUCH_MOVED);
+  ResetTopWindow();
+  EXPECT_EQ(0, target_back_press.accelerator_count());
+  EXPECT_EQ(0, target_back_release.accelerator_count());
+}
+
 // Tests back gesture while in split view mode.
 TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
