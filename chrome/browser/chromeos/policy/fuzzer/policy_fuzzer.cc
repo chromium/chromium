@@ -70,12 +70,12 @@ struct Environment {
 struct PerInputEnvironment {
   PerInputEnvironment() {
     policy_handler_list = BuildHandlerList(GetChromeSchema());
-    chromeos::InitializeDBus();
-    chromeos::InitializeFeatureListDependentDBus();
+    ash::InitializeDBus();
+    ash::InitializeFeatureListDependentDBus();
   }
 
   ~PerInputEnvironment() {
-    chromeos::ShutdownDBus();
+    ash::ShutdownDBus();
     chromeos::InstallAttributes::Shutdown();
     ash::DeviceSettingsService::Shutdown();
   }

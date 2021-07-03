@@ -7,12 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/system/sys_info.h"
-#include "base/threading/thread.h"
 #include "chromeos/dbus/anomaly_detector_client.h"
 #include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
@@ -20,7 +17,6 @@
 #include "chromeos/dbus/arc/arc_obb_mounter_client.h"
 #include "chromeos/dbus/cec_service_client.h"
 #include "chromeos/dbus/chunneld_client.h"
-#include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_clients_browser.h"
@@ -42,57 +38,21 @@
 #include "chromeos/dbus/shill/sms_client.h"
 #include "chromeos/dbus/smb_provider_client.h"
 #include "chromeos/dbus/update_engine_client.h"
-#include "dbus/bus.h"
-#include "dbus/dbus_statistics.h"
 
 namespace chromeos {
 
 static DBusThreadManager* g_dbus_thread_manager = nullptr;
 static DBusThreadManagerSetter* g_setter = nullptr;
 
-DBusThreadManager::DBusThreadManager(ClientSet client_set,
-                                     bool use_real_clients)
-    : use_real_clients_(use_real_clients) {
+DBusThreadManager::DBusThreadManager(ClientSet client_set) {
   if (client_set == DBusThreadManager::kAll)
-    clients_browser_ = std::make_unique<DBusClientsBrowser>(use_real_clients);
+    clients_browser_ = std::make_unique<DBusClientsBrowser>(use_real_clients_);
   // NOTE: When there are clients only used by ash, create them here.
-
-  dbus::statistics::Initialize();
-
-  if (use_real_clients) {
-    // Create the D-Bus thread.
-    base::Thread::Options thread_options;
-    thread_options.message_pump_type = base::MessagePumpType::IO;
-    dbus_thread_ = std::make_unique<base::Thread>("D-Bus thread");
-    dbus_thread_->StartWithOptions(std::move(thread_options));
-
-    // Create the connection to the system bus.
-    dbus::Bus::Options system_bus_options;
-    system_bus_options.bus_type = dbus::Bus::SYSTEM;
-    system_bus_options.connection_type = dbus::Bus::PRIVATE;
-    system_bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    system_bus_ = new dbus::Bus(system_bus_options);
-  }
 }
 
 DBusThreadManager::~DBusThreadManager() {
   // Delete all D-Bus clients before shutting down the system bus.
   clients_browser_.reset();
-
-  // Shut down the bus. During the browser shutdown, it's ok to shut down
-  // the bus synchronously.
-  if (system_bus_.get())
-    system_bus_->ShutdownOnDBusThreadAndBlock();
-
-  // Stop the D-Bus thread.
-  if (dbus_thread_)
-    dbus_thread_->Stop();
-
-  dbus::statistics::Shutdown();
-}
-
-dbus::Bus* DBusThreadManager::GetSystemBus() {
-  return system_bus_.get();
 }
 
 // Returns a client that is set via DBusThreadManagerSetter when available.
@@ -249,23 +209,10 @@ void DBusThreadManager::InitializeClients() {
     VLOG(1) << "DBusThreadManager created for testing";
 }
 
-bool DBusThreadManager::IsUsingFakes() {
-  return !use_real_clients_;
-}
-
 // static
 void DBusThreadManager::Initialize(ClientSet client_set) {
   CHECK(!g_dbus_thread_manager);
-#if defined(USE_REAL_DBUS_CLIENTS)
-  bool use_real_clients = true;
-#else
-  // TODO(hashimoto): Always use fakes after adding
-  // use_real_dbus_clients=true to where needed. crbug.com/952745
-  bool use_real_clients = base::SysInfo::IsRunningOnChromeOS() &&
-                          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              chromeos::switches::kDbusStub);
-#endif
-  g_dbus_thread_manager = new DBusThreadManager(client_set, use_real_clients);
+  g_dbus_thread_manager = new DBusThreadManager(client_set);
   g_dbus_thread_manager->InitializeClients();
 }
 

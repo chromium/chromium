@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -30,7 +31,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/federated/federated_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/initialize_dbus_client.h"
+#include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/dbus/kerberos/kerberos_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
@@ -65,6 +66,8 @@
 
 namespace {
 
+// If running on desktop, override paths so that enrollment and cloud policy
+// work correctly, and can be tested.
 void OverrideStubPathsIfNeeded() {
   base::FilePath user_data_dir;
   if (!base::SysInfo::IsRunningOnChromeOS() &&
@@ -76,136 +79,141 @@ void OverrideStubPathsIfNeeded() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 void InitializeDBus() {
+  using chromeos::InitializeDBusClient;
+
   OverrideStubPathsIfNeeded();
 
-  SystemSaltGetter::Initialize();
+  chromeos::SystemSaltGetter::Initialize();
 
   // Initialize DBusThreadManager for the browser.
-  DBusThreadManager::Initialize(DBusThreadManager::kAll);
+  chromeos::DBusThreadManager::Initialize(DBusThreadManager::kAll);
 
   // Initialize Chrome dbus clients.
-  dbus::Bus* bus = DBusThreadManager::Get()->GetSystemBus();
+  dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
 
   // NOTE: base::Feature is not initialized yet, so any non MultiProcessMash
   // dbus client initialization for Ash should be done in Shell::Init.
-  InitializeDBusClient<ArcCameraClient>(bus);
-  InitializeDBusClient<ArcQuotaClient>(bus);
-  InitializeDBusClient<ArcSensorServiceClient>(bus);
-  InitializeDBusClient<AttestationClient>(bus);
-  InitializeDBusClient<AuthPolicyClient>(bus);
-  InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
-  InitializeDBusClient<CdmFactoryDaemonClient>(bus);
-  InitializeDBusClient<CiceroneClient>(bus);
-  InitializeDBusClient<ConciergeClient>(bus);  // depends on CiceroneClient.
-  InitializeDBusClient<CrasAudioClient>(bus);
-  InitializeDBusClient<CrosHealthdClient>(bus);
-  InitializeDBusClient<CryptohomeMiscClient>(bus);
-  InitializeDBusClient<CryptohomePkcs11Client>(bus);
-  InitializeDBusClient<CupsProxyClient>(bus);
-  InitializeDBusClient<DlcserviceClient>(bus);
-  InitializeDBusClient<DlpClient>(bus);
-  InitializeDBusClient<FederatedClient>(bus);
-  hermes_clients::Initialize(bus);
-  InitializeDBusClient<InstallAttributesClient>(bus);
-  InitializeDBusClient<IpPeripheralServiceClient>(bus);
-  InitializeDBusClient<KerberosClient>(bus);
-  InitializeDBusClient<MachineLearningClient>(bus);
-  InitializeDBusClient<MediaAnalyticsClient>(bus);
-  InitializeDBusClient<MissiveClient>(bus);
-  InitializeDBusClient<OsInstallClient>(bus);
-  InitializeDBusClient<PciguardClient>(bus);
-  InitializeDBusClient<PermissionBrokerClient>(bus);
-  InitializeDBusClient<PowerManagerClient>(bus);
-  InitializeDBusClient<ResourcedClient>(bus);
-  InitializeDBusClient<SeneschalClient>(bus);
-  InitializeDBusClient<SessionManagerClient>(bus);
-  InitializeDBusClient<SystemClockClient>(bus);
-  InitializeDBusClient<SystemProxyClient>(bus);
-  InitializeDBusClient<TpmManagerClient>(bus);
-  InitializeDBusClient<TypecdClient>(bus);
-  InitializeDBusClient<U2FClient>(bus);
-  InitializeDBusClient<UserDataAuthClient>(bus);
-  InitializeDBusClient<UpstartClient>(bus);
+  InitializeDBusClient<chromeos::ArcCameraClient>(bus);
+  InitializeDBusClient<chromeos::ArcQuotaClient>(bus);
+  InitializeDBusClient<chromeos::ArcSensorServiceClient>(bus);
+  InitializeDBusClient<chromeos::AttestationClient>(bus);
+  InitializeDBusClient<chromeos::AuthPolicyClient>(bus);
+  InitializeDBusClient<chromeos::BiodClient>(bus);  // For device::Fingerprint.
+  InitializeDBusClient<chromeos::CdmFactoryDaemonClient>(bus);
+  InitializeDBusClient<chromeos::CiceroneClient>(bus);
+  // ConciergeClient depends on CiceroneClient.
+  InitializeDBusClient<chromeos::ConciergeClient>(bus);
+  InitializeDBusClient<chromeos::CrasAudioClient>(bus);
+  InitializeDBusClient<chromeos::CrosHealthdClient>(bus);
+  InitializeDBusClient<chromeos::CryptohomeMiscClient>(bus);
+  InitializeDBusClient<chromeos::CryptohomePkcs11Client>(bus);
+  InitializeDBusClient<chromeos::CupsProxyClient>(bus);
+  InitializeDBusClient<chromeos::DlcserviceClient>(bus);
+  InitializeDBusClient<chromeos::DlpClient>(bus);
+  InitializeDBusClient<chromeos::FederatedClient>(bus);
+  chromeos::hermes_clients::Initialize(bus);
+  InitializeDBusClient<chromeos::InstallAttributesClient>(bus);
+  InitializeDBusClient<chromeos::IpPeripheralServiceClient>(bus);
+  InitializeDBusClient<chromeos::KerberosClient>(bus);
+  InitializeDBusClient<chromeos::MachineLearningClient>(bus);
+  InitializeDBusClient<chromeos::MediaAnalyticsClient>(bus);
+  InitializeDBusClient<chromeos::MissiveClient>(bus);
+  InitializeDBusClient<chromeos::OsInstallClient>(bus);
+  InitializeDBusClient<chromeos::PciguardClient>(bus);
+  InitializeDBusClient<chromeos::PermissionBrokerClient>(bus);
+  InitializeDBusClient<chromeos::PowerManagerClient>(bus);
+  InitializeDBusClient<chromeos::ResourcedClient>(bus);
+  InitializeDBusClient<chromeos::SeneschalClient>(bus);
+  InitializeDBusClient<chromeos::SessionManagerClient>(bus);
+  InitializeDBusClient<chromeos::SystemClockClient>(bus);
+  InitializeDBusClient<chromeos::SystemProxyClient>(bus);
+  InitializeDBusClient<chromeos::TpmManagerClient>(bus);
+  InitializeDBusClient<chromeos::TypecdClient>(bus);
+  InitializeDBusClient<chromeos::U2FClient>(bus);
+  InitializeDBusClient<chromeos::UserDataAuthClient>(bus);
+  InitializeDBusClient<chromeos::UpstartClient>(bus);
 
   // Initialize the device settings service so that we'll take actions per
   // signals sent from the session manager. This needs to happen before
   // g_browser_process initializes BrowserPolicyConnector.
-  DeviceSettingsService::Initialize();
-  InstallAttributes::Initialize();
+  chromeos::DeviceSettingsService::Initialize();
+  chromeos::InstallAttributes::Initialize();
 }
 
 void InitializeFeatureListDependentDBus() {
-  dbus::Bus* bus = DBusThreadManager::Get()->GetSystemBus();
+  using chromeos::InitializeDBusClient;
+
+  dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
   InitializeDBusClient<bluez::BluezDBusManager>(bus);
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
-    InitializeDBusClient<CfmHotlineClient>(bus);
+    InitializeDBusClient<chromeos::CfmHotlineClient>(bus);
   }
 #endif
   if (ash::features::IsShimlessRMAFlowEnabled()) {
-    InitializeDBusClient<RmadClient>(bus);
+    InitializeDBusClient<chromeos::RmadClient>(bus);
   }
-  InitializeDBusClient<WilcoDtcSupportdClient>(bus);
+  InitializeDBusClient<chromeos::WilcoDtcSupportdClient>(bus);
 }
 
 void ShutdownDBus() {
   // Feature list-dependent D-Bus clients are shut down first because we try to
   // shut down in reverse order of initialization (in case of dependencies).
-  WilcoDtcSupportdClient::Shutdown();
+  chromeos::WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
-    CfmHotlineClient::Shutdown();
+    chromeos::CfmHotlineClient::Shutdown();
   }
 #endif
   bluez::BluezDBusManager::Shutdown();
 
   // Other D-Bus clients are shut down, also in reverse order of initialization.
-  UpstartClient::Shutdown();
-  UserDataAuthClient::Shutdown();
-  U2FClient::Shutdown();
-  TypecdClient::Shutdown();
-  TpmManagerClient::Shutdown();
-  SystemProxyClient::Shutdown();
-  SystemClockClient::Shutdown();
-  SessionManagerClient::Shutdown();
-  SeneschalClient::Shutdown();
-  ResourcedClient::Shutdown();
+  chromeos::UpstartClient::Shutdown();
+  chromeos::UserDataAuthClient::Shutdown();
+  chromeos::U2FClient::Shutdown();
+  chromeos::TypecdClient::Shutdown();
+  chromeos::TpmManagerClient::Shutdown();
+  chromeos::SystemProxyClient::Shutdown();
+  chromeos::SystemClockClient::Shutdown();
+  chromeos::SessionManagerClient::Shutdown();
+  chromeos::SeneschalClient::Shutdown();
+  chromeos::ResourcedClient::Shutdown();
   if (ash::features::IsShimlessRMAFlowEnabled()) {
-    RmadClient::Shutdown();
+    chromeos::RmadClient::Shutdown();
   }
-  PowerManagerClient::Shutdown();
-  PermissionBrokerClient::Shutdown();
-  PciguardClient::Shutdown();
-  OsInstallClient::Shutdown();
-  MissiveClient::Shutdown();
-  MediaAnalyticsClient::Shutdown();
-  MachineLearningClient::Shutdown();
-  KerberosClient::Shutdown();
-  IpPeripheralServiceClient::Shutdown();
-  InstallAttributesClient::Shutdown();
-  hermes_clients::Shutdown();
-  FederatedClient::Shutdown();
-  DlcserviceClient::Shutdown();
-  DlpClient::Shutdown();
-  CupsProxyClient::Shutdown();
-  CryptohomePkcs11Client::Shutdown();
-  CryptohomeMiscClient::Shutdown();
-  CrosHealthdClient::Shutdown();
-  CrasAudioClient::Shutdown();
-  ConciergeClient::Shutdown();
-  CiceroneClient::Shutdown();
-  CdmFactoryDaemonClient::Shutdown();
-  BiodClient::Shutdown();
-  AuthPolicyClient::Shutdown();
-  AttestationClient::Shutdown();
-  ArcQuotaClient::Shutdown();
-  ArcCameraClient::Shutdown();
+  chromeos::PowerManagerClient::Shutdown();
+  chromeos::PermissionBrokerClient::Shutdown();
+  chromeos::PciguardClient::Shutdown();
+  chromeos::OsInstallClient::Shutdown();
+  chromeos::MissiveClient::Shutdown();
+  chromeos::MediaAnalyticsClient::Shutdown();
+  chromeos::MachineLearningClient::Shutdown();
+  chromeos::KerberosClient::Shutdown();
+  chromeos::IpPeripheralServiceClient::Shutdown();
+  chromeos::InstallAttributesClient::Shutdown();
+  chromeos::hermes_clients::Shutdown();
+  chromeos::FederatedClient::Shutdown();
+  chromeos::DlcserviceClient::Shutdown();
+  chromeos::DlpClient::Shutdown();
+  chromeos::CupsProxyClient::Shutdown();
+  chromeos::CryptohomePkcs11Client::Shutdown();
+  chromeos::CryptohomeMiscClient::Shutdown();
+  chromeos::CrosHealthdClient::Shutdown();
+  chromeos::CrasAudioClient::Shutdown();
+  chromeos::ConciergeClient::Shutdown();
+  chromeos::CiceroneClient::Shutdown();
+  chromeos::CdmFactoryDaemonClient::Shutdown();
+  chromeos::BiodClient::Shutdown();
+  chromeos::AuthPolicyClient::Shutdown();
+  chromeos::AttestationClient::Shutdown();
+  chromeos::ArcQuotaClient::Shutdown();
+  chromeos::ArcCameraClient::Shutdown();
 
-  DBusThreadManager::Shutdown();
-  SystemSaltGetter::Shutdown();
+  chromeos::DBusThreadManager::Shutdown();
+  chromeos::SystemSaltGetter::Shutdown();
 }
 
-}  // namespace chromeos
+}  // namespace ash

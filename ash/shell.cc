@@ -179,7 +179,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
-#include "chromeos/dbus/initialize_dbus_client.h"
+#include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/usb/usbguard_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"

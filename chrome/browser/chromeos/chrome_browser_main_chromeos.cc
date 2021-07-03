@@ -1405,7 +1405,7 @@ void ChromeBrowserMainPartsChromeos::PostDestroyThreads() {
   // (ComponentUpdaterServiceProvider).
   g_browser_process->platform_part()->ShutdownCrosComponentManager();
 
-  ShutdownDBus();
+  ash::ShutdownDBus();
 
   // Destroy the SystemTokenCertDbStorage global instance which should outlive
   // NetworkCertLoader and |system_token_certdb_initializer_|.

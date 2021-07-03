@@ -5,18 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_ASH_DBUS_HELPER_H_
 #define CHROME_BROWSER_ASH_DBUS_ASH_DBUS_HELPER_H_
 
-namespace chromeos {
+namespace ash {
 
-// Initializes the DBus thread manager and chrome DBus services.
+// Initializes the D-Bus thread manager and Chrome D-Bus services for Ash.
 void InitializeDBus();
 
 // D-Bus clients may depend on feature list. This initializes only those clients
-// and must be called after feature list initialization.
+// in Ash, and must be called after feature list initialization.
 void InitializeFeatureListDependentDBus();
 
-// Shuts down the DBus thread manager and chrome DBus services.
+// Shuts down the D-Bus thread manager and Chrome D-Bus services for Ash.
 void ShutdownDBus();
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_DBUS_ASH_DBUS_HELPER_H_

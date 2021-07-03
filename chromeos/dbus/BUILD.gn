@@ -19,6 +19,7 @@ component("dbus") {
     "//chromeos/dbus/concierge",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/debug_daemon",
+    "//chromeos/dbus/init",
     "//chromeos/dbus/lorgnette_manager",
     "//chromeos/dbus/seneschal",
     "//chromeos/dbus/shill",
@@ -141,7 +142,6 @@ component("common") {
     "blocking_method_caller.h",
     "dbus_client.h",
     "dbus_method_call_status.h",
-    "initialize_dbus_client.h",
     "pipe_reader.cc",
     "pipe_reader.h",
   ]

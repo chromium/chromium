@@ -534,7 +534,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // The feature list depends on BrowserPolicyConnectorChromeOS which depends
   // on DBus, so initialize it here. Some D-Bus clients may depend on feature
   // list, so initialize them separately later at the end of this function.
-  chromeos::InitializeDBus();
+  ash::InitializeDBus();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -570,7 +570,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initialize D-Bus clients that depend on feature list.
-  chromeos::InitializeFeatureListDependentDBus();
+  ash::InitializeFeatureListDependentDBus();
 #endif
 
 #if defined(OS_ANDROID)

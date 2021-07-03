@@ -63,6 +63,7 @@ include_rules = [
   "+chromeos/crosapi/mojom",
   "+chromeos/dbus/initialize_dbus_client.h",
   "+chromeos/dbus/audio",
+  "+chromeos/dbus/init",
   "+chromeos/dbus/hammerd",
   "+chromeos/dbus/hermes",
   "+chromeos/dbus/power",
