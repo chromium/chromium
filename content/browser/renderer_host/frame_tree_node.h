@@ -481,6 +481,20 @@ class CONTENT_EXPORT FrameTreeNode {
   // NavigationRequest.
   bool HasNavigation();
 
+  // Fenced frames (meta-bug crbug.com/1111084):
+  // Returns false if fenced frames are disabled. Returns true if the feature is
+  // enabled and if |this| is a fenced frame. Returns false for
+  // iframes embedded in a fenced frame. To clarify: for the MPArch
+  // implementation this only returns true if |this| is the actual
+  // root node of the inner FrameTree and not the proxy FrameTreeNode in the
+  // outer FrameTree.
+  bool IsFencedFrame() const;
+
+  // Returns false if fenced frames are disabled. Returns true if the
+  // feature is enabled and if |this| or any of its ancestor nodes is a
+  // fenced frame.
+  bool IsInFencedFrameTree() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);

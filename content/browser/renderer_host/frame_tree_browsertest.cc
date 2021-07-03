@@ -808,7 +808,11 @@ class FencedFrameTreeBrowserTest : public FrameTreeBrowserTest {
  public:
   FencedFrameTreeBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kFencedFrames);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames,
+        {{"implementation_type", "shadow_dom"}});
+    // TODO(crbug.com/1123606): Parametrize this class to run for MPArch version
+    // as well, once the supporting code lands.
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -836,10 +840,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
   }
   EXPECT_EQ(1U, root->child_count());
 
-  // Simulate one of the nested frames as fenced frames.
-  // TODO(crbug.com/1123606): Use an actual fenced frame tree based on MPArch
-  // once that code lands.
-  root->child_at(0)->frame_tree()->SetFencedFrameTreeForTesting();
+  EXPECT_TRUE(root->child_at(0)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(0)->IsInFencedFrameTree());
 
   https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
   https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -871,6 +873,49 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
   // not visible via frames[].
   EXPECT_FALSE(ExecJs(root, "window.frames[0].location"));
   EXPECT_EQ(0, EvalJs(root, "window.frames.length"));
+}
+
+// Tests when a frame is considered a fenced frame or being inside a fenced
+// frame tree.
+IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
+  GURL main_url(embedded_test_server()->GetURL("/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_count());
+  EXPECT_TRUE(root->child_at(0)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(0)->IsInFencedFrameTree());
+
+  // Add an iframe.
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('iframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(2U, root->child_count());
+  EXPECT_FALSE(root->child_at(1)->IsFencedFrame());
+  EXPECT_FALSE(root->child_at(1)->IsInFencedFrameTree());
+
+  // Add a nested iframe inside the fenced frame.
+  EXPECT_TRUE(ExecJs(root->child_at(0),
+                     "var f = document.createElement('iframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_at(0)->child_count());
+  EXPECT_FALSE(root->child_at(0)->child_at(0)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(0)->child_at(0)->IsInFencedFrameTree());
+
+  // Add a nested fenced frame.
+  EXPECT_TRUE(ExecJs(root->child_at(0),
+                     "var f = document.createElement('fencedframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(2U, root->child_at(0)->child_count());
+  EXPECT_TRUE(root->child_at(0)->child_at(1)->IsFencedFrame());
+  EXPECT_TRUE(root->child_at(0)->child_at(1)->IsInFencedFrameTree());
 }
 
 class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {

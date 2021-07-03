@@ -34,6 +34,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/download/download_manager_impl.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/cached_navigation_url_loader.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
@@ -1517,14 +1518,10 @@ void NavigationRequest::BeginNavigation() {
 
   // if this is a fenced frame with a urn:uuid then convert it to a url before
   // starting the request.
-  if (blink::features::IsFencedFramesEnabled() &&
-      frame_tree_node_->frame_tree()->IsFencedFrameTree() &&
-      common_params_->url.is_valid() &&
+  if (frame_tree_node_->IsFencedFrame() && common_params_->url.is_valid() &&
       common_params_->url.scheme() == url::kUrnScheme) {
-    // TODO(crbug.com/1123606): Add CHECK for this being the root of the fenced
-    // frame tree once fenced frames are integrated with MPArch. Also make sure
-    // that the mapping is retrieved from the primary root instead of this
-    // tree's root.
+    // TODO(crbug.com/1123606): With MPArch, make sure that the mapping is
+    // retrieved from the primary root instead of this tree's root.
     absl::optional<GURL> mapped_url =
         frame_tree_node_->current_frame_host()
             ->GetPage()

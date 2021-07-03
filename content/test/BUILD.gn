@@ -2039,6 +2039,7 @@ test("content_unittests") {
     "../browser/renderer_host/cursor_manager_unittest.cc",
     "../browser/renderer_host/document_service_base_unittest.cc",
     "../browser/renderer_host/embedded_frame_sink_provider_impl_unittest.cc",
+    "../browser/renderer_host/fenced_frame_tree_node_unittest.cc",
     "../browser/renderer_host/frame_token_message_queue_unittest.cc",
     "../browser/renderer_host/frame_tree_node_blame_context_unittest.cc",
     "../browser/renderer_host/frame_tree_unittest.cc",

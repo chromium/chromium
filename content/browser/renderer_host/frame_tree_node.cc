@@ -828,4 +828,50 @@ bool FrameTreeNode::HasNavigation() {
   return false;
 }
 
+bool FrameTreeNode::IsFencedFrame() const {
+  if (!blink::features::IsFencedFramesEnabled())
+    return false;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch: {
+      // TODO(crbug.com/1123606): Once the MPArch code lands, this can be
+      // simplified to frame_tree()->IsFencedFrameTree() and IsMainFrame()
+      // instead of checking the frame_owner_element_type().
+      if (frame_owner_element_type() ==
+          blink::mojom::FrameOwnerElementType::kFencedframe) {
+        DCHECK(frame_tree()->IsFencedFrameTree());
+        return true;
+      }
+      return false;
+    }
+    case blink::features::FencedFramesImplementationType::kShadowDOM: {
+      return effective_frame_policy().is_fenced;
+    }
+    default:
+      return false;
+  }
+}
+
+bool FrameTreeNode::IsInFencedFrameTree() const {
+  if (!blink::features::IsFencedFramesEnabled())
+    return false;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch:
+      return frame_tree()->IsFencedFrameTree();
+    case blink::features::FencedFramesImplementationType::kShadowDOM: {
+      auto* node = this;
+      while (node) {
+        if (node->effective_frame_policy().is_fenced) {
+          return true;
+        }
+        node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
+      }
+      return false;
+    }
+    default:
+      return false;
+  }
+}
+
 }  // namespace content
