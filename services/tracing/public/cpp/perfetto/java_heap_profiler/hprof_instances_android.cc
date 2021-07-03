@@ -24,8 +24,12 @@ Instance::Instance(const Instance& other) = default;
 
 Instance::~Instance() = default;
 
-void Instance::AddReference(const std::string& name, uint64_t object_id) {
-  references.push_back({name, object_id});
+void Instance::AddReferenceFrom(const std::string& name, uint64_t object_id) {
+  referred_by.push_back({name, object_id});
+}
+
+void Instance::AddReferenceTo(const std::string& name, uint64_t object_id) {
+  referred_to.push_back({name, object_id});
 }
 
 ClassInstance::ClassInstance(uint64_t object_id,

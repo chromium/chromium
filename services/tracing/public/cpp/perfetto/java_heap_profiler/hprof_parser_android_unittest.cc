@@ -245,24 +245,35 @@ TEST(HprofParserTest, BasicResolveClassInstanceReferences) {
   auto parent_it = parser.class_instances_.find(100);
   EXPECT_EQ(parent_it->second->base_instance.size, 40u);
   EXPECT_EQ(parent_it->second->base_instance.type_name, "class_obj_dummy");
+  ASSERT_EQ(parent_it->second->base_instance.referred_to.size(), 2u);
 
   auto sub_it_1 = parser.class_instances_.find(101);
   EXPECT_EQ(sub_it_1->second->base_instance.size, 44u);
-  EXPECT_EQ(sub_it_1->second->base_instance.references.size(), 1u);
-  EXPECT_EQ(sub_it_1->second->base_instance.references.back().referred_by_name,
+  EXPECT_EQ(sub_it_1->second->base_instance.referred_by.size(), 1u);
+  EXPECT_EQ(sub_it_1->second->base_instance.referred_by.back().referred_by_name,
+            "instance_field_1");
+  EXPECT_EQ(sub_it_1->second->base_instance.referred_by.back()
+                .referred_from_object_id,
+            100u);
+  EXPECT_EQ(parent_it->second->base_instance.referred_to[0].referred_by_name,
             "instance_field_1");
   EXPECT_EQ(
-      sub_it_1->second->base_instance.references.back().referred_from_object_id,
-      100u);
+      parent_it->second->base_instance.referred_to[0].referred_from_object_id,
+      101u);
 
   auto sub_it_2 = parser.class_instances_.find(102);
   EXPECT_EQ(sub_it_2->second->base_instance.size, 44u);
-  EXPECT_EQ(sub_it_2->second->base_instance.references.size(), 1u);
-  EXPECT_EQ(sub_it_2->second->base_instance.references.back().referred_by_name,
+  EXPECT_EQ(sub_it_2->second->base_instance.referred_by.size(), 1u);
+  EXPECT_EQ(sub_it_2->second->base_instance.referred_by.back().referred_by_name,
+            "instance_field_2");
+  EXPECT_EQ(sub_it_2->second->base_instance.referred_by.back()
+                .referred_from_object_id,
+            100u);
+  EXPECT_EQ(parent_it->second->base_instance.referred_to[1].referred_by_name,
             "instance_field_2");
   EXPECT_EQ(
-      sub_it_2->second->base_instance.references.back().referred_from_object_id,
-      100u);
+      parent_it->second->base_instance.referred_to[1].referred_from_object_id,
+      102u);
 }
 
 std::unique_ptr<ClassObject> GetClassObjectWith2Fields(int id,
@@ -394,12 +405,12 @@ TEST(HprofParserTest,
 
   auto sub_it_2 = parser.class_instances_.find(102);
   EXPECT_EQ(sub_it_2->second->base_instance.size, 44u);
-  EXPECT_EQ(sub_it_2->second->base_instance.references.size(), 1u);
-  EXPECT_EQ(sub_it_2->second->base_instance.references.back().referred_by_name,
+  EXPECT_EQ(sub_it_2->second->base_instance.referred_by.size(), 1u);
+  EXPECT_EQ(sub_it_2->second->base_instance.referred_by.back().referred_by_name,
             "instance_field_2");
-  EXPECT_EQ(
-      sub_it_2->second->base_instance.references.back().referred_from_object_id,
-      100u);
+  EXPECT_EQ(sub_it_2->second->base_instance.referred_by.back()
+                .referred_from_object_id,
+            100u);
 }
 
 TEST(HprofParserTest, MultipleInstanceFieldsResolveClassInstanceReferences) {
@@ -449,21 +460,21 @@ TEST(HprofParserTest, MultipleInstanceFieldsResolveClassInstanceReferences) {
 
   auto object_sub_it = parser.object_array_instances_.find(101);
   EXPECT_EQ(object_sub_it->second->base_instance.size, 10u);
-  EXPECT_EQ(object_sub_it->second->base_instance.references.size(), 1u);
+  EXPECT_EQ(object_sub_it->second->base_instance.referred_by.size(), 1u);
   EXPECT_EQ(
-      object_sub_it->second->base_instance.references.back().referred_by_name,
+      object_sub_it->second->base_instance.referred_by.back().referred_by_name,
       "object_array_instance");
-  EXPECT_EQ(object_sub_it->second->base_instance.references.back()
+  EXPECT_EQ(object_sub_it->second->base_instance.referred_by.back()
                 .referred_from_object_id,
             100u);
 
   auto prim_sub_it = parser.primitive_array_instances_.find(102);
   EXPECT_EQ(prim_sub_it->second->base_instance.size, 20u);
-  EXPECT_EQ(prim_sub_it->second->base_instance.references.size(), 1u);
+  EXPECT_EQ(prim_sub_it->second->base_instance.referred_by.size(), 1u);
   EXPECT_EQ(
-      prim_sub_it->second->base_instance.references.back().referred_by_name,
+      prim_sub_it->second->base_instance.referred_by.back().referred_by_name,
       "primitive_array_instance");
-  EXPECT_EQ(prim_sub_it->second->base_instance.references.back()
+  EXPECT_EQ(prim_sub_it->second->base_instance.referred_by.back()
                 .referred_from_object_id,
             100u);
 }
@@ -499,15 +510,23 @@ TEST(HprofParserTest, BasicResolveObjectArrayInstanceReferences) {
   EXPECT_EQ(object_arr_parent_int->second->base_instance.size, 4u);
   EXPECT_EQ(object_arr_parent_int->second->base_instance.type_name,
             "java.lang.Object[]");
+  ASSERT_EQ(object_arr_parent_int->second->base_instance.referred_to.size(),
+            1u);
 
   auto object_arr_sub_int = parser.class_instances_.find(201);
-  EXPECT_EQ(object_arr_sub_int->second->base_instance.references.size(), 1u);
-  EXPECT_EQ(object_arr_sub_int->second->base_instance.references.back()
+  ASSERT_EQ(object_arr_sub_int->second->base_instance.referred_by.size(), 1u);
+  EXPECT_EQ(object_arr_sub_int->second->base_instance.referred_by.back()
                 .referred_by_name,
             "java.lang.Object[]$0");
-  EXPECT_EQ(object_arr_sub_int->second->base_instance.references.back()
+  EXPECT_EQ(object_arr_sub_int->second->base_instance.referred_by.back()
                 .referred_from_object_id,
             200u);
+  EXPECT_EQ(object_arr_parent_int->second->base_instance.referred_to.back()
+                .referred_by_name,
+            "java.lang.Object[]$0");
+  EXPECT_EQ(object_arr_parent_int->second->base_instance.referred_to.back()
+                .referred_from_object_id,
+            201u);
 }
 
 TEST(HprofParserTest,
@@ -547,11 +566,11 @@ TEST(HprofParserTest,
             "java.lang.Object[]");
 
   auto object_arr_sub_int = parser.class_instances_.find(202);
-  EXPECT_EQ(object_arr_sub_int->second->base_instance.references.size(), 1u);
-  EXPECT_EQ(object_arr_sub_int->second->base_instance.references.back()
+  EXPECT_EQ(object_arr_sub_int->second->base_instance.referred_by.size(), 1u);
+  EXPECT_EQ(object_arr_sub_int->second->base_instance.referred_by.back()
                 .referred_by_name,
             "java.lang.Object[]$1");
-  EXPECT_EQ(object_arr_sub_int->second->base_instance.references.back()
+  EXPECT_EQ(object_arr_sub_int->second->base_instance.referred_by.back()
                 .referred_from_object_id,
             200u);
 }

@@ -56,15 +56,14 @@ const std::string& HprofParser::StringReference::GetString() {
 
 HprofParser::HprofParser(const std::string& fp) : file_path_(fp) {}
 
-HprofParser::~HprofParser() {}
-
-HprofParser::ParseStats::ParseStats() {}
+HprofParser::~HprofParser() = default;
+HprofParser::ParseStats::ParseStats() = default;
 
 HprofParser::StringReference::StringReference(const char* string_position,
                                               size_t length)
     : string_position(string_position), length(length) {}
 
-HprofParser::StringReference::~StringReference() {}
+HprofParser::StringReference::~StringReference() = default;
 
 HprofParser::ParseResult HprofParser::ParseStringTag(uint32_t record_length_) {
   parse_stats_.num_strings++;
@@ -301,14 +300,16 @@ HprofParser::ParseResult HprofParser::ResolveClassInstanceReferences() {
       }
 
       ObjectId id = hprof_buffer_->GetId();
-      Instance* referrer = FindInstance(id);
+      Instance* referred_instance = FindInstance(id);
 
-      // If referrer is not found, just move on to the next id without adding
-      // any references.
-      if (!referrer)
+      // If |referred_instance| is not found, just move on to the next id
+      // without adding any references.
+      if (!referred_instance)
         continue;
 
-      referrer->AddReference(f.name, class_instance->base_instance.object_id);
+      referred_instance->AddReferenceFrom(
+          f.name, class_instance->base_instance.object_id);
+      class_instance->base_instance.AddReferenceTo(f.name, id);
     }
   }
   return ParseResult::PARSE_SUCCESS;
@@ -354,10 +355,11 @@ HprofParser::ParseResult HprofParser::ResolveObjectArrayInstanceReferences() {
       if (!base_instance)
         continue;
 
-      base_instance->AddReference(
-          GenerateArrayIndexString(
-              object_array_instance->base_instance.type_name, i),
-          object_array_instance->base_instance.object_id);
+      std::string index_str = GenerateArrayIndexString(
+          object_array_instance->base_instance.type_name, i);
+      base_instance->AddReferenceFrom(
+          index_str, object_array_instance->base_instance.object_id);
+      object_array_instance->base_instance.AddReferenceTo(index_str, id);
     }
   }
   return ParseResult::PARSE_SUCCESS;

@@ -31,13 +31,15 @@ struct COMPONENT_EXPORT(TRACING_CPP) Instance {
   Instance(const Instance& other);
   ~Instance();
 
-  void AddReference(const std::string& name, uint64_t object_id);
+  void AddReferenceFrom(const std::string& name, uint64_t object_id);
+  void AddReferenceTo(const std::string& name, uint64_t object_id);
 
   //  Only set in first pass for ClassObject and PrimitiveArrayInstances.
   std::string type_name;
   const uint64_t object_id;  // Always set in first pass.
   uint64_t size = 0;         // Set in first pass except for ClassObject
-  std::vector<Reference> references;  // Always set on second pass.
+  std::vector<Reference> referred_by;  // Always set on second pass.
+  std::vector<Reference> referred_to;
 };
 
 // A single instance of a particular class. There can be multiple class
