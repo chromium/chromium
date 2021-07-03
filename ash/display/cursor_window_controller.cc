@@ -4,6 +4,8 @@
 
 #include "ash/display/cursor_window_controller.h"
 
+#include <utility>
+
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -324,23 +326,16 @@ void CursorWindowController::UpdateCursorImage() {
   if (!is_cursor_compositing_enabled_)
     return;
 
-  // Use the original device scale factor instead of the display's, which
-  // might have been adjusted for the UI scale.
-  const float original_scale = Shell::Get()
-                                   ->display_manager()
-                                   ->GetDisplayInfo(display_.id())
-                                   .device_scale_factor();
-  // And use the nearest resource scale factor.
-  float cursor_scale = ui::GetScaleForResourceScaleFactor(
-      ui::GetSupportedResourceScaleFactor(original_scale));
-
+  // This scale has the UI zoom applied.
+  float ui_scale = display_.device_scale_factor();
+  float cursor_scale = cursor_.image_scale_factor();
   gfx::ImageSkia image;
   gfx::Point hot_point_in_physical_pixels;
   if (cursor_.type() == ui::mojom::CursorType::kCustom) {
     const SkBitmap& bitmap = cursor_.custom_bitmap();
     if (bitmap.isNull())
       return;
-    image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    image = gfx::ImageSkia::CreateFromBitmap(bitmap, cursor_scale);
     hot_point_in_physical_pixels = cursor_.custom_hotspot();
   } else {
     int resource_id;
@@ -352,27 +347,31 @@ void CursorWindowController::UpdateCursorImage() {
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   }
 
-  gfx::ImageSkia resized = image;
-
-  // Rescale cursor size. This is used with the combination of accessibility
-  // large cursor. We don't need to care about the case where cursor
-  // compositing is disabled as we always use cursor compositing if
-  // accessibility large cursor is enabled.
-  if (cursor_size_ == ui::CursorSize::kLarge &&
-      large_cursor_size_in_dip_ != image.size().width()) {
-    float rescale = static_cast<float>(large_cursor_size_in_dip_) /
-                    static_cast<float>(image.size().width());
-    resized = gfx::ImageSkiaOperations::CreateResizedImage(
-        image, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
-        gfx::ScaleToCeiledSize(image.size(), rescale));
-    hot_point_in_physical_pixels =
-        gfx::ScaleToCeiledPoint(hot_point_in_physical_pixels, rescale);
+  // The accessibility large cursor size is specified in dips, with respect to
+  // the original device scale factor.
+  if (cursor_size_ == ui::CursorSize::kLarge) {
+    const float dsf = Shell::Get()
+                          ->display_manager()
+                          ->GetDisplayInfo(display_.id())
+                          .device_scale_factor();
+    cursor_scale = dsf;
+    if (large_cursor_size_in_dip_ != image.size().width()) {
+      const float rescale = static_cast<float>(large_cursor_size_in_dip_) /
+                            static_cast<float>(image.size().width());
+      cursor_scale *= rescale;
+      hot_point_in_physical_pixels =
+          gfx::ScaleToCeiledPoint(hot_point_in_physical_pixels, rescale);
+    }
   }
 
-  const gfx::ImageSkiaRep& image_rep = resized.GetRepresentation(cursor_scale);
-  delegate_->SetCursorImage(resized.size(),
-                            gfx::ImageSkia::CreateFromBitmap(
-                                GetAdjustedBitmap(image_rep), cursor_scale));
+  // Make sure the cursor image isn't scaled by creating an ImageSkia with the
+  // target size for the UI scale.
+  const gfx::Size ui_size =
+      ScaleToRoundedSize(image.size(), cursor_scale / ui_scale);
+  const gfx::ImageSkiaRep& image_rep = image.GetRepresentation(cursor_scale);
+  delegate_->SetCursorImage(
+      ui_size,
+      gfx::ImageSkia::CreateFromBitmap(GetAdjustedBitmap(image_rep), ui_scale));
   // TODO(danakj): Should this be rounded? Or kept as a floating point?
   hot_point_ = gfx::ToFlooredPoint(
       gfx::ConvertPointToDips(hot_point_in_physical_pixels, cursor_scale));
