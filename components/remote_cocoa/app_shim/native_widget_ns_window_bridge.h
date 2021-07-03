@@ -391,6 +391,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // on the first call to SetVisibilityState().
   std::vector<uint8_t> pending_restoration_data_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindow>
       bridge_mojo_receiver_{this};
   DISALLOW_COPY_AND_ASSIGN(NativeWidgetNSWindowBridge);
