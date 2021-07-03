@@ -33,7 +33,7 @@
             <ImageView
                 android:id="@+id/tab_favicon"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/tab_grid_favicon_size"
+                android:layout_height="@dimen/tab_list_card_title_height"
                 android:minWidth="8dp"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no"
@@ -45,7 +45,7 @@
                 android:layout_toEndOf="@id/tab_favicon"
                 android:layout_marginEnd="32dp"
                 android:gravity="center_vertical"
-                android:minHeight="32dp"
+                android:minHeight="@dimen/tab_list_card_title_height"
                 android:requiresFadingEdge="horizontal"
                 android:fadingEdgeLength="24dp"
                 android:ellipsize="none"

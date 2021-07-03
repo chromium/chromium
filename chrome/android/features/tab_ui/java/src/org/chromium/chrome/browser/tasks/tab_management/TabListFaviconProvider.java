@@ -63,7 +63,7 @@ public class TabListFaviconProvider {
     public TabListFaviconProvider(Context context, boolean isTabStrip) {
         mContext = context;
         mDefaultFaviconSize =
-                context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+                context.getResources().getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
         mStripFaviconSize =
                 context.getResources().getDimensionPixelSize(R.dimen.tab_strip_favicon_size);
         mFaviconSize = isTabStrip ? mStripFaviconSize : mDefaultFaviconSize;
