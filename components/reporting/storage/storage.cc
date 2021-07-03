@@ -81,14 +81,22 @@ constexpr base::FilePath::CharType kEncryptionKeyFilePrefix[] =
     FILE_PATH_LITERAL("EncryptionKey.");
 const int32_t kEncryptionKeyMaxFileSize = 256;
 
+// Failed upload retry delay: if an upload fails and there are no more incoming
+// events, collected events will not get uploaded for an indefinite time (see
+// b/192666219).
+constexpr base::TimeDelta kFailedUploadRetryDelay =
+    base::TimeDelta::FromSeconds(1);
+
 // Returns vector of <priority, queue_options> for all expected queues in
 // Storage. Queues are all located under the given root directory.
 std::vector<std::pair<Priority, QueueOptions>> ExpectedQueues(
     const StorageOptions& options) {
   return {
-      std::make_pair(IMMEDIATE, QueueOptions(options)
-                                    .set_subdirectory(kImmediateQueueSubdir)
-                                    .set_file_prefix(kImmediateQueuePrefix)),
+      std::make_pair(IMMEDIATE,
+                     QueueOptions(options)
+                         .set_subdirectory(kImmediateQueueSubdir)
+                         .set_file_prefix(kImmediateQueuePrefix)
+                         .set_upload_retry_delay(kFailedUploadRetryDelay)),
       std::make_pair(FAST_BATCH,
                      QueueOptions(options)
                          .set_subdirectory(kFastBatchQueueSubdir)
@@ -104,10 +112,12 @@ std::vector<std::pair<Priority, QueueOptions>> ExpectedQueues(
                          .set_subdirectory(kBackgroundQueueSubdir)
                          .set_file_prefix(kBackgroundQueuePrefix)
                          .set_upload_period(kBackgroundQueueUploadPeriod)),
-      std::make_pair(MANUAL_BATCH, QueueOptions(options)
-                                       .set_subdirectory(kManualQueueSubdir)
-                                       .set_file_prefix(kManualQueuePrefix)
-                                       .set_upload_period(kManualUploadPeriod)),
+      std::make_pair(MANUAL_BATCH,
+                     QueueOptions(options)
+                         .set_subdirectory(kManualQueueSubdir)
+                         .set_file_prefix(kManualQueuePrefix)
+                         .set_upload_period(kManualUploadPeriod)
+                         .set_upload_retry_delay(kFailedUploadRetryDelay)),
   };
 }
 
@@ -558,8 +568,14 @@ void Storage::Create(
     void OnStart() override {
       CheckOnValidSequence();
 
-      // Locate the latest signed_encryption_key file with matching key
-      // signature after deserialization.
+      // If encryption is not enabled, proceed with the queues.
+      if (!EncryptionModuleInterface::is_enabled()) {
+        InitAllQueues();
+        return;
+      }
+
+      // Encryption is enabled. Locate the latest signed_encryption_key file
+      // with matching key signature after deserialization.
       const auto download_key_result =
           storage_->key_in_storage_->DownloadKeyFile();
       if (!download_key_result.ok()) {
@@ -594,6 +610,11 @@ void Storage::Create(
                "status="
             << status;
       }
+      InitAllQueues();
+    }
+
+    void InitAllQueues() {
+      CheckOnValidSequence();
 
       // Construct all queues.
       count_ = queues_options_.size();

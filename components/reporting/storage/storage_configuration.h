@@ -110,6 +110,10 @@ class QueueOptions {
     upload_period_ = upload_period;
     return *this;
   }
+  QueueOptions& set_upload_retry_delay(base::TimeDelta upload_retry_delay) {
+    upload_retry_delay_ = upload_retry_delay;
+    return *this;
+  }
   const base::FilePath& directory() const { return directory_; }
   const base::FilePath::StringType& file_prefix() const { return file_prefix_; }
   size_t max_record_size() const { return storage_options_.max_record_size(); }
@@ -123,6 +127,7 @@ class QueueOptions {
     return storage_options_.single_file_size();
   }
   base::TimeDelta upload_period() const { return upload_period_; }
+  base::TimeDelta upload_retry_delay() const { return upload_retry_delay_; }
 
  private:
   // Whole storage options, which this queue options are based on.
@@ -138,6 +143,9 @@ class QueueOptions {
   // Can be set to infinity - in that case Flush() is expected to be
   // called from time to time.
   base::TimeDelta upload_period_;
+  // Retry delay for a failed upload. If 0, not retried at all
+  // (should only be set to 0 in periodic queues).
+  base::TimeDelta upload_retry_delay_;
 };
 
 }  // namespace reporting

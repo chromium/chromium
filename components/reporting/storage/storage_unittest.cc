@@ -1331,6 +1331,33 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   }
 }
 
+TEST_P(StorageTest, WriteAndImmediateUploadWithFailure) {
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+
+  // Write a record as Immediate, initiating an upload which fails
+  // and then restarts.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(/*need_encryption_key=*/Eq(false), NotNull()))
+        .WillOnce(WithArg<1>(Invoke([](MockUploadClient* mock_upload_client) {
+          return Status(error::UNAVAILABLE, "Test uploader unavailable");
+        })))
+        .WillOnce(
+            WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+              MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
+                  .Required(0, kData[0]);
+              return Status::StatusOK();
+            })))
+        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+    WriteStringOrDie(IMMEDIATE,
+                     kData[0]);  // Immediately uploads and fails.
+
+    // Let it retry upload and verify.
+    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  }
+}
+
 TEST_P(StorageTest, WriteEncryptFailure) {
   if (!is_encryption_enabled()) {
     return;  // No need to test when encryption is disabled.

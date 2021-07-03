@@ -823,9 +823,21 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void UploadingCompleted(Status status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
     // If uploader was created, notify it about completion.
     if (uploader_) {
       uploader_->Completed(status);
+    }
+    // If upload failed, retry it after a delay (if any).
+    if (!status.ok()) {
+      base::WeakPtr<StorageQueue> storage_queue =
+          storage_queue_weakptr_factory_.GetWeakPtr();
+      if (storage_queue &&
+          !storage_queue->options_.upload_retry_delay().is_zero()) {
+        ScheduleAfter(
+            storage_queue->options_.upload_retry_delay(),
+            base::BindOnce(&StorageQueue::Flush, storage_queue.get()));
+      }
     }
   }
 
