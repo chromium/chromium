@@ -27,6 +27,7 @@
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -38,14 +39,16 @@
 namespace viz {
 namespace {
 
+constexpr int kAnimationSlowDownFactor = 1;
+
 constexpr base::TimeDelta kDefaultAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250);
+    base::TimeDelta::FromMilliseconds(250) * kAnimationSlowDownFactor;
 
 constexpr base::TimeDelta kSharedOpacityAnimationDuration =
-    base::TimeDelta::FromMilliseconds(60);
+    base::TimeDelta::FromMilliseconds(60) * kAnimationSlowDownFactor;
 
 constexpr base::TimeDelta kSharedOpacityAnimationDelay =
-    base::TimeDelta::FromMilliseconds(60);
+    base::TimeDelta::FromMilliseconds(60) * kAnimationSlowDownFactor;
 
 // Scale the overall duration to produce the opacity duration. Opacity
 // transitions which reveal an element (i.e., transition opacity from 0 -> 1)
@@ -272,7 +275,7 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
   saved_textures_.emplace(
       transferable_resource_tracker_.ImportResources(std::move(saved_frame)));
 
-  CreateRootAnimationCurves(saved_textures_->root.draw_data.rect.size());
+  CreateRootAnimationCurves(saved_textures_->root.draw_data.size);
   CreateSharedElementCurves();
   TickAnimations(latest_time_);
   state_ = State::kAnimating;
@@ -497,6 +500,8 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     const CompositorRenderPassId& shared_pass_id = shared_render_pass_ids[i];
     SharedAnimationState& animation = shared_animations_[i];
     auto& draw_data = shared_draw_data[shared_pass_id];
+    const absl::optional<TransferableResourceTracker::PositionedResource>&
+        src_texture = saved_textures_->shared[i];
 
     const bool has_destination_pass =
         draw_data.render_pass && draw_data.draw_quad;
@@ -535,9 +540,20 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     auto* transform_model = animation.driver().GetKeyframeModel(
         SharedAnimationState::kCombinedTransform);
     gfx::TransformOperations target_transform_ops;
-    target_transform_ops.AppendMatrix(
-        has_destination_pass ? draw_data.render_pass->transform_to_root_target
-                             : animation.combined_transform().Apply());
+    gfx::Transform end_transform(gfx::Transform::kSkipInitialization);
+    if (has_destination_pass) {
+      end_transform = draw_data.render_pass->transform_to_root_target;
+      // The mapping from dest pass origin to target buffer is done when drawing
+      // the dest pass to the intermediate transition pass (if used). So we
+      // exclude this translation from the transform here and add it when
+      // drawing the dest pass.
+      auto origin = draw_data.render_pass->output_rect.origin();
+      end_transform.Translate(origin.x(), origin.y());
+    } else {
+      end_transform = animation.combined_transform().Apply();
+    }
+    target_transform_ops.AppendMatrix(end_transform);
+
     if (transform_model) {
       transform_model->Retarget(latest_time_,
                                 SharedAnimationState::kCombinedTransform,
@@ -550,9 +566,6 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
 
     // Now that we have updated the animations, we can append the interpolations
     // to the animation pass.
-    const absl::optional<TransferableResourceTracker::PositionedResource>&
-        src_texture = saved_textures_->shared[i];
-
     const float content_opacity = animation.content_opacity();
     const gfx::Size content_size = gfx::ToFlooredSize(animation.content_size());
     const float combined_opacity = animation.combined_opacity();
@@ -576,9 +589,9 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
       bool y_flipped = !src_texture->resource.is_software;
       gfx::Transform src_transform;
       src_transform.Scale(static_cast<float>(content_size.width()) /
-                              src_texture->draw_data.rect.width(),
+                              src_texture->draw_data.size.width(),
                           static_cast<float>(content_size.height()) /
-                              src_texture->draw_data.rect.height());
+                              src_texture->draw_data.size.height());
       float src_opacity = 1.f - content_opacity;
 
       // Use kPlus mode to add the pixel values from src and destination
@@ -594,9 +607,9 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
         blend_mode = SkBlendMode::kSrcOver;
       }
 
-      CreateAndAppendSrcTextureQuad(pass_for_draw, src_texture->draw_data.rect,
-                                    src_transform, blend_mode, src_opacity,
-                                    y_flipped, src_texture->resource.id);
+      CreateAndAppendSrcTextureQuad(
+          pass_for_draw, gfx::Rect(src_texture->draw_data.size), src_transform,
+          blend_mode, src_opacity, y_flipped, src_texture->resource.id);
       interpolated_frame->resource_list.push_back(src_texture->resource);
     }
 
@@ -611,12 +624,16 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
                                   pass_copy->output_rect.width(),
                               static_cast<float>(content_size.height()) /
                                   pass_copy->output_rect.height());
+    gfx::Point dest_origin = pass_copy->output_rect.origin();
     pass_copy->transform_to_root_target = combined_transform;
     pass_copy->transform_to_root_target.Scale(dest_scale.x(), dest_scale.y());
+    pass_copy->transform_to_root_target.Translate(-dest_origin.x(),
+                                                  -dest_origin.y());
 
     auto* pass_for_draw = transition_pass.get();
     gfx::Transform dest_transform;
     dest_transform.Scale(dest_scale.x(), dest_scale.y());
+    dest_transform.Translate(-dest_origin.x(), -dest_origin.y());
     float dest_opacity = content_opacity;
 
     // Use kSrc mode to clear the intermediate texture used for blending with
@@ -926,9 +943,8 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
     // Interpolation between the 2 textures involves an opacity animation (to
     // cross-fade the content) and a scale animation to transition the content
     // size.
-    auto content_size_curve =
-        CreateSizeCurve(gfx::SizeF(shared->draw_data.rect.size()),
-                        ease_timing->Clone(), &state);
+    auto content_size_curve = CreateSizeCurve(
+        gfx::SizeF(shared->draw_data.size), ease_timing->Clone(), &state);
     state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
         std::move(content_size_curve),
         gfx::KeyframeEffect::GetNextKeyframeModelId(),

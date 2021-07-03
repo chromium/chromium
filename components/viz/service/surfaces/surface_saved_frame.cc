@@ -18,6 +18,7 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace viz {
 
@@ -29,8 +30,7 @@ SurfaceSavedFrame::RenderPassDrawData GetRootRenderPassDrawData(
   const auto& frame = surface->GetActiveFrame();
   DCHECK(!frame.render_pass_list.empty());
   const auto& root_render_pass = frame.render_pass_list.back();
-  return {root_render_pass->output_rect,
-          root_render_pass->transform_to_root_target, 1.f};
+  return {*root_render_pass, 1.f};
 }
 
 }  // namespace
@@ -147,7 +147,7 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
                   original_render_pass_id);
     if (shared_pass_it != shared_pass_ids.end()) {
       RenderPassDrawData draw_data(
-          render_pass->output_rect, render_pass->transform_to_root_target,
+          *render_pass,
           TransitionUtils::ComputeAccumulatedOpacity(
               active_frame.render_pass_list, original_render_pass_id));
       int index = std::distance(shared_pass_ids.begin(), shared_pass_it);
@@ -276,7 +276,7 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   }
 
   DCHECK(slot);
-  DCHECK_EQ(output_copy->size(), data.rect.size());
+  DCHECK_EQ(output_copy->size(), data.size);
   if (output_copy->format() == CopyOutputResult::Format::RGBA_BITMAP) {
     slot->bitmap = output_copy->ScopedAccessSkBitmap().GetOutScopedBitmap();
     slot->is_software = true;
@@ -302,8 +302,7 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
 
   frame_result_.emplace();
   frame_result_->root_result.bitmap = std::move(bitmap);
-  frame_result_->root_result.draw_data.rect =
-      gfx::Rect(kDefaultTextureSizeForTesting);
+  frame_result_->root_result.draw_data.size = kDefaultTextureSizeForTesting;
   frame_result_->root_result.draw_data.target_transform.MakeIdentity();
   frame_result_->root_result.draw_data.opacity = 1.f;
   frame_result_->root_result.is_software = true;
@@ -314,6 +313,20 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
   valid_result_count_ = ExpectedResultCount();
   weak_factory_.InvalidateWeakPtrs();
   DCHECK(IsValid());
+}
+
+SurfaceSavedFrame::RenderPassDrawData::RenderPassDrawData() = default;
+SurfaceSavedFrame::RenderPassDrawData::RenderPassDrawData(
+    const CompositorRenderPass& render_pass,
+    float opacity)
+    : opacity(opacity) {
+  // During copy request, the origin for |render_pass|'s output_rect is mapped
+  // to the origin of the texture in the result. We account for that here.
+  size = render_pass.output_rect.size();
+
+  target_transform = render_pass.transform_to_root_target;
+  target_transform.Translate(render_pass.output_rect.x(),
+                             render_pass.output_rect.y());
 }
 
 SurfaceSavedFrame::OutputCopyResult::OutputCopyResult() = default;
