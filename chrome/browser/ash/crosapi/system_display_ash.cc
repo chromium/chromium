@@ -9,7 +9,6 @@
 #include "ash/public/ash_interfaces.h"
 #include "base/bind.h"
 #include "chrome/browser/extensions/system_display/system_display_serialization.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -91,13 +90,7 @@ void SystemDisplayAsh::OnDisplayConfigChanged() {
 
 void SystemDisplayAsh::StartDisplayChangedEventSources() {
   // Start Source 1.
-  if (!is_observing_screen_) {
-    display::Screen* screen = display::Screen::GetScreen();
-    if (screen) {
-      screen->AddObserver(this);
-      is_observing_screen_ = true;
-    }
-  }
+  display_observer_.emplace(this);
 
   // Start Source 2.
   if (!is_observing_cros_display_config_) {
@@ -124,12 +117,7 @@ void SystemDisplayAsh::StopDisplayChangedEventSources() {
   }
 
   // Stop Source 1.
-  if (is_observing_screen_) {
-    is_observing_screen_ = false;
-    display::Screen* screen = display::Screen::GetScreen();
-    DCHECK(screen);
-    screen->RemoveObserver(this);
-  }
+  display_observer_.reset();
 }
 
 }  // namespace crosapi

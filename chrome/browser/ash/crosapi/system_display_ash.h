@@ -85,7 +85,7 @@ class SystemDisplayAsh : public mojom::SystemDisplay,
   mojo::RemoteSet<mojom::DisplayChangeObserver> observers_;
 
   // Source 1 status and objects.
-  bool is_observing_screen_ = false;
+  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 
   // Source 2 status and objects.
   bool is_observing_cros_display_config_ = false;
