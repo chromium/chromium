@@ -4223,13 +4223,6 @@
 <translation id="6621830999036927230">如果設定這項政策，遠端存取主機會使用這個網址驗證遠端存取用戶端提供的驗證權杖，據此決定是否要接受連線。如果設為空白或不設定，系統會停用這項功能。
 
       注意：這項政策必須與 <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> 搭配使用。</translation>
-<translation id="6621839881150363218">如果將這項政策設為啟用，系統會隔離所有網站 (每個網站將各自以獨立程序執行)。如果將這項政策設為停用，系統不會特地執行網站隔離，並且會停用 IsolateOriginsAndroid 和 SitePerProcessAndroid 的實測。使用者仍可手動啟用這項政策。
-
-      如果未設定這項政策，使用者可變更這項設定。
-
-      如要進行隔離並降低對使用者的影響，請使用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 列出要隔離的網站。
-
-      注意：目前 Android 的網站隔離支援可能會導致效能問題，但日後將會改善。執行 Chrome 的 Android 系統必須運行於 RAM 實際超過 1 GB 的裝置上，才適用這項政策。如要在非 Android 平台上套用這項政策，請使用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
 <translation id="6625136649067113817">布林值標記，表示螢幕小鍵盤是否能提供拼字檢查功能。</translation>
 <translation id="66265932317331474">回報 CPU 資訊</translation>
 <translation id="6628120204569232711">回報儲存空間狀態</translation>
@@ -4596,13 +4589,6 @@
 
       網址格式必須符合 https://www.chromium.org/administrators/url-blocklist-filter-format 的格式規定。不過，判別特定主機名稱的憑證是否有效，與網址配置、連接埠或路徑皆無關，<ph name="PRODUCT_NAME" /> 只會檢視網址的主機名稱部分 (不支援含萬用字元的主機名稱)。</translation>
 <translation id="6972540544240464302">選取工作排程器設定</translation>
-<translation id="6973754855639335783">如果設定這項政策，系統會以獨立程序分別執行逗號分隔清單中指定的每個來源，並隔離以子網域命名的來源。例如指定 https://example.com/ 將會導致 https://foo.example.com/ 遭到隔離，因為後者屬於 https://example.com/ 網站的一部分。
-
-      停用這項政策可防止特定網站遭到隔離，並且會停用 IsolateOriginsAndroid 和 SitePerProcessAndroid 的實場測試。使用者仍可透過指令列旗標來手動啟用 IsolateOrigins。
-
-      如果未設定這項政策，使用者可以自行變更這項設定。
-
-      注意：Android 的網站隔離支援日後將會改善，但目前可能會導致效能問題。執行 Chrome 的 Android 系統必須運行於 RAM 實際超過 1 GB 的裝置上，才能套用這項政策。如要在非 Android 平台上套用這項政策，請使用 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />。</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979739838208297344">如果將這項政策設為 <ph name="BR_ENABLED" />，Android 備份與還原功能的初始狀態是設為啟用。如果將這項政策設為 <ph name="BR_DISABLED" /> 或不設定，系統會在設定期間將備份與還原功能保持停用。
 

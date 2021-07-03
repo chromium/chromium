@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">அமைப்பு</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2751739896257479635">EAP 2ஆம் கட்ட அங்கீகரிப்பு</translation>
+<translation id="2783010256799387990">சரிபார்க்கப்பட்டது</translation>
 <translation id="2789486458103222910">சரி</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2862104018715411648">ஸ்கேன் செய்ய, ஸ்கேனரில் ஆவணத்தை வைத்துவிட்டு ஸ்கேன் செய் என்பதைத் தேர்ந்தெடுக்கவும்</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
 <translation id="4378373042927530923">இயங்கவில்லை</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
@@ -257,6 +259,7 @@
 <translation id="6191293864534840972">பெயர் சேவையகங்கள் தவறானவை</translation>
 <translation id="6223752125779001553">ஸ்கேனர்கள் எதுவுமில்லை</translation>
 <translation id="6232017090690406397">பேட்டரி</translation>
+<translation id="6243280677745499710">தற்போது அமைக்கப்பட்டுள்ளது</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> சோதனை ரத்துசெய்யப்பட்டது</translation>
 <translation id="6325525973963619867">தோல்வி</translation>
 <translation id="636850387210749493">நிறுவனப் பதிவு</translation>
@@ -295,6 +298,7 @@
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
 <translation id="7162487448488904999">கேலரி</translation>
+<translation id="7172721935181587524">1 படம்</translation>
 <translation id="7177485034254901881">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="7216409898977639127">செல்லுலார் வழங்குநர்</translation>
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
@@ -344,6 +348,7 @@
 <translation id="8294431847097064396">மூலம்</translation>
 <translation id="8297006494302853456">வலுவாக இல்லை</translation>
 <translation id="8302368968391049045">HTTPS ஃபயர்வால்</translation>
+<translation id="8318753676953949627">படங்கள் இல்லை</translation>
 <translation id="8347227221149377169">அச்சுப் பணிகள்</translation>
 <translation id="8352772353338965963">பல உள்நுழைவுக்குக் கணக்கைச் சேர்க்கவும். உள்நுழைந்த அனைத்து கணக்குகளையும் கடவுச்சொல் இல்லாமலே அணுகலாம் என்பதால் இந்த அம்சத்தை நம்பகமான கணக்குகளுடன் மட்டுமே பயன்படுத்த வேண்டும்.</translation>
 <translation id="8364946094152050673">பெயர் சேவையகங்கள் காலியாக உள்ளன</translation>

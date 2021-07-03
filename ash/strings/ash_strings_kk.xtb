@@ -137,6 +137,7 @@
 <translation id="1990046457226896323">Автоматты субтитр файлдары жүктеп алынды.</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> қолданбасының ең соңғы жаңартылған нұсқасы туралы толығырақ</translation>
 <translation id="1998100899771863792">Қазіргі жұмыс үстелі</translation>
+<translation id="1999628559811343244">Желі жинағын алу іске қосылды</translation>
 <translation id="2016340657076538683">Хабар мәтінін енгізіңіз</translation>
 <translation id="2018630726571919839">Әзіл айтып бер</translation>
 <translation id="2021864487439853900">Құлыпты ашу үшін басыңыз</translation>
@@ -727,6 +728,7 @@
 <translation id="6751826523481687655">Жұмыс өнімділігін қадағалау функциясы қосылды</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> үстелі өшіріліп, <ph name="RECEIVE_DESK" /> үстелімен біріктірілді.</translation>
 <translation id="6757237461819837179">Ешқандай медиамазмұн ойнатылып жатқан жоқ.</translation>
+<translation id="6773040085467426602">Ағымдағы жинақ алуды тоқтату үшін тоқтату түймесін түртіңіз.</translation>
 <translation id="6777216307882431711">Жалғанған USB-C құрылғыларына қуат берілуде</translation>
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6803622936009808957">Қолдау көрсетілген ажыратымдылықтар табылмағандықтан, дисплейлерді бейнелеу мүмкін емес. Оның орнына кеңейтілген жұмыс үстелі енгізілген.</translation>
@@ -940,6 +942,7 @@
 <translation id="8433977262951327081">Сөредегі енгізу опцияларының қалқымалы анықтамасын шығаратын пернелер тіркесі өзгерді. <ph name="OLD_SHORTCUT" /> орнына <ph name="NEW_SHORTCUT" /> тіркесін қолданыңыз.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> үстелі іске қосылды.</translation>
 <translation id="8452135315243592079">SIM картасы жоқ</translation>
+<translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Select-to-Speak функциясын жабу</translation>
 <translation id="847056008324733326">Дисплей масштабы параметрлері</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ұйымы <ph name="FEATURE_NAME" /> функциясын <ph name="FEATURE_STATE" />.</translation>

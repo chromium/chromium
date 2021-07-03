@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Système</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
+<translation id="2783010256799387990">TEST RÉUSSI</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2862104018715411648">Placez votre document sur le numériseur, puis sélectionnez Numériser pour commencer</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Le mot de passe expire dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Mon disque</translation>
@@ -257,6 +259,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6191293864534840972">Le format des serveurs de nom est incorrect</translation>
 <translation id="6223752125779001553">Aucun numériseur n'a été trouvé</translation>
 <translation id="6232017090690406397">Pile</translation>
+<translation id="6243280677745499710">Fond d'écran actuel</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="6325525973963619867">Échec</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
@@ -295,6 +298,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
+<translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
@@ -344,6 +348,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297006494302853456">Faible</translation>
 <translation id="8302368968391049045">Pare-feu HTTPS</translation>
+<translation id="8318753676953949627">Aucune image</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8352772353338965963">Ajouter un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Le champ des serveurs de nom est vide</translation>

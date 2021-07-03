@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">Xác thực EAP giai đoạn 2</translation>
+<translation id="2783010256799387990">ĐÃ ĐẠT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2862104018715411648">Đặt tài liệu lên máy quét rồi chọn Quét để bắt đầu</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
 <translation id="4378373042927530923">Không chạy</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive của tôi</translation>
@@ -257,6 +259,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6191293864534840972">Máy chủ định danh không hợp lệ</translation>
 <translation id="6223752125779001553">Không có máy quét nào</translation>
 <translation id="6232017090690406397">Pin</translation>
+<translation id="6243280677745499710">Hiện đã được đặt</translation>
 <translation id="6302401976930124515">Đã hủy quá trình kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="6325525973963619867">Lỗi</translation>
 <translation id="636850387210749493">Đăng ký doanh nghiệp</translation>
@@ -295,6 +298,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7144878232160441200">Thử lại</translation>
 <translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>
 <translation id="7162487448488904999">Thư viện</translation>
+<translation id="7172721935181587524">1 hình ảnh</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
@@ -344,6 +348,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8294431847097064396">Nguồn</translation>
 <translation id="8297006494302853456">Yếu</translation>
 <translation id="8302368968391049045">Tường lửa HTTPS</translation>
+<translation id="8318753676953949627">Không có hình ảnh nào</translation>
 <translation id="8347227221149377169">Lệnh in</translation>
 <translation id="8352772353338965963">Thêm một tài khoản để đăng nhập nhiều lần. Tất cả các tài khoản đã đăng nhập đều có thể truy cập được mà không cần mật khẩu, do đó bạn chỉ nên sử dụng tính năng này với các tài khoản đáng tin cậy.</translation>
 <translation id="8364946094152050673">Máy chủ định danh trống</translation>

@@ -4259,13 +4259,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6621830999036927230">Politika ayarlanırsa uzaktan erişim ana makinesi, bağlantıları kabul etmek için uzaktan erişim istemcilerinin kimlik doğrulama jetonlarını doğrulamak üzere bu URL'yi kullanır. Boş bırakılır veya ayarlanmazsa bu özellik devre dışı bırakılır.
 
       Not: Bu politikayı, <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> politikası ile birlikte kullanın.</translation>
-<translation id="6621839881150363218">Politika Etkin değerine ayarlanırsa tüm siteler izole edilir (her site kendi işleminde çalışır). Politika Devre Dışı değerine ayarlanırsa açık site izolasyonu olmaz ve IsolateOriginsAndroid ve SitePerProcessAndroid'in saha denemeleri kapatılır. Kullanıcılar isterlerse politikayı manuel olarak etkinleştirmeye devam edebilir.
-
-      Politika ayarlanmadan bırakılırsa kullanıcılar bu ayarı değiştirebilir.
-
-      Kullanıcılar için izolasyon ve sınırlı etki elde etmek üzere <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> izole etmek istediğiniz sitelerin listesiyle kullanılabilir.
-
-      Not: Android için site izolasyonu desteği iyileştirilecek olsa da şu anda performans sorunlarına yol açabilir. Bu politika yalnızca 1 GB'tan fazla RAM'i olan cihazlarda çalışan Android platformundaki Chrome için geçerlidir. Politikayı Android dışı platformlarda uygulamak için <ph name="SITE_PER_PROCESS_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="6625136649067113817">Dokunmatik klavyede yazım denetimi özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
 <translation id="66265932317331474">CPU bilgisi raporlama</translation>
 <translation id="6628120204569232711">Depolama durumunu bildir</translation>
@@ -4631,13 +4624,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Bir URL kalıbı bu biçimi uygular (https://www.chromium.org/administrators/url-blocklist-filter-format). Bununla birlikte, belirli bir ana makine adı için sertifikaların geçerliliği şema, bağlantı noktası veya yoldan bağımsız olduğundan, <ph name="PRODUCT_NAME" /> yalnızca URL'nin ana makine adı bölümünü dikkate alır. Joker karakter içeren ana makine adları desteklenmez.</translation>
 <translation id="6972540544240464302">Görev planlayıcı yapılandırması seç</translation>
-<translation id="6973754855639335783">Bu politika ayarlanırsa virgülle ayrılmış listede adı verilen her kaynak kendi işleminde çalışır ve alt alan adlarıyla adlandırılan kaynakları izole eder. Örneğin, https://example.com/ sitesinin belirtilmesi, https://example.com/ sitesi kapsamında https://foo.example.com/ sitesinin de izole edilmesine neden olur.
-
-      Bu politika devre dışı bırakılırsa açık site izolasyonunun yapılması engellenir, ayrıca IsolateOriginsAndroid ve SitePerProcessAndroid'in saha denemeleri devre dışı kalır. Kullanıcılar isterlerse komut satırı işaretini kullanarak IsolateOrigins'i manuel olarak etkinleştirebilirler.
-
-      Politika ayarlanmadan bırakılırsa kullanıcılar bu ayarı değiştirebilirler.
-
-      Not: Android için site izolasyonu desteği iyileştirilecek olsa da şu anda performans sorunlarına yol açabilir. Bu politika yalnızca 1 GB'tan fazla RAM'i olan cihazlarda çalışan Android platformundaki Chrome için geçerlidir. Politikayı Android dışı platformlarda uygulamak için <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Politikayı <ph name="BR_ENABLED" /> değerine ayarlamak, Android yedekleme ve geri yükleme özelliğininin başlangıçta açık olacağı anlamına gelir. Politikayı <ph name="BR_DISABLED" /> değerine ayarlamak veya ayarlamadan bırakmak, yedekleme ve geri yükleme özelliğini kurulum sırasında kapalı tutar.
 

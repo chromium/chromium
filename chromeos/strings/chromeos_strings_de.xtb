@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
+<translation id="2783010256799387990">BESTANDEN</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2862104018715411648">Legen Sie das Dokument in den Scanner und wählen Sie „Scannen“ aus</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
@@ -257,6 +259,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
 <translation id="6223752125779001553">Keine Scanner verfügbar</translation>
 <translation id="6232017090690406397">Akku</translation>
+<translation id="6243280677745499710">Derzeit festgelegt</translation>
 <translation id="6302401976930124515">Test „<ph name="TEST_NAME" />“ wurde abgebrochen</translation>
 <translation id="6325525973963619867">Fehlgeschlagen</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
@@ -295,6 +298,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
 <translation id="7162487448488904999">Galerie</translation>
+<translation id="7172721935181587524">1 Bild</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
 <translation id="7271040990581020067">Der Scanner wird derzeit verwendet. Versuchen Sie es später noch einmal.</translation>
@@ -344,6 +348,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8297006494302853456">Schwach</translation>
 <translation id="8302368968391049045">HTTPS-Firewall</translation>
+<translation id="8318753676953949627">Keine Bilder vorhanden</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="8352772353338965963">Fügen Sie ein Konto für die Mehrfachanmeldung hinzu. Sie können auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwenden Sie diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8364946094152050673">Kein Nameserver</translation>

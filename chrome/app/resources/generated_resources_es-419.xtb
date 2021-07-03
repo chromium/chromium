@@ -250,6 +250,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
 <translation id="1272978324304772054">Esta cuenta de usuario no pertenece al dominio en el que se inscribió el dispositivo. Si deseas inscribirte en un dominio diferente, primero tendrás que realizar el proceso de recuperación del dispositivo.</translation>
+<translation id="1273780413309681229">Volver a ejecutar la guía de configuración</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1276994519141842946">No se pudo desinstalar <ph name="APP_NAME" /></translation>
@@ -408,6 +409,7 @@
 <translation id="1442851588227551435">Activar un ticket de Kerberos</translation>
 <translation id="1444628761356461360">Esta configuración es administrada por el propietario del dispositivo: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">No se pudo cargar '<ph name="IMAGE_PATH" />' para el tema.</translation>
+<translation id="1449191289887455076">Vuelve a presionar "<ph name="CURRENTKEY" />" para confirmar la asignación y <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Página web (un único archivo)</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />registros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">Tomar captura de pantalla</translation>
@@ -513,6 +515,7 @@
 <translation id="15662109988763471">La impresora seleccionada no está disponible o no se instaló correctamente. Revisa tu impresora o selecciona otra.</translation>
 <translation id="1567135437923613642">Habilitar los experimentos destacados</translation>
 <translation id="1567387640189251553">Se conectó otro teclado desde la última vez que ingresaste tu contraseña. Es posible que alguien esté intentando determinar qué teclas presionaste.</translation>
+<translation id="156793199942386351">Ya se asignó la tecla "<ph name="CURRENTKEY" />" a la acción "<ph name="ACTION" />". Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir configuración de pantalla</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invitado)</translation>
@@ -777,6 +780,7 @@
 <translation id="1822140782238030981">¿Ya eres usuario de Chrome? Acceder</translation>
 <translation id="18245044880483936">Los datos de la copia de seguridad no inciden en la cuota de almacenamiento en Drive de tu hijo.</translation>
 <translation id="1825565032302550710">El número de puerto debe estar entre 1024 y 65535</translation>
+<translation id="1826192255355608658">Sincroniza los favoritos, las contraseñas, el historial y mucho más de tu navegador Chrome</translation>
 <translation id="1826516787628120939">Comprobando</translation>
 <translation id="1827738518074806965">Galería de arte</translation>
 <translation id="1828378091493947763">Este complemento no es compatible con este dispositivo</translation>
@@ -1296,6 +1300,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2379281330731083556">Imprimir mediante el sistema de diálogo... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381756643783702095">Preguntar antes de enviar (recomendado)</translation>
 <translation id="2382818385048255866">Comprueba las extensiones</translation>
+<translation id="2383270717570379869">Es posible que el <ph name="BEGIN_LINK_SEARCH" />historial de búsqueda<ph name="END_LINK_SEARCH" /> y <ph name="BEGIN_LINK_GOOGLE" />otras formas de actividad<ph name="END_LINK_GOOGLE" /> se guarden en tu Cuenta de Google cuando accedes. Puedes borrar esa información en cualquier momento.</translation>
 <translation id="2387052489799050037">Ve a la página principal</translation>
 <translation id="2390347491606624519">No se puede establecer conexión con el proxy; vuelve a intentarlo</translation>
 <translation id="2390782873446084770">Sincronización Wi-Fi</translation>
@@ -1460,6 +1465,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2553440850688409052">Ocultar este complemento</translation>
 <translation id="2554553592469060349">El archivo seleccionado es demasiado grande (tamaño máximo: 3 MB).</translation>
 <translation id="2558896001721082624">Siempre mostrar opciones de accesibilidad en el menú del sistema</translation>
+<translation id="2564407282561292919">Borra el historial del cuadro de búsqueda. Es posible que tu Cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="2564520396658920462">La ejecución de JavaScript mediante AppleScript está desactivada. Para activarla, en la barra de menú, visita Ver &gt; Desarrollador &gt; Permitir JavaScript para eventos de Apple. Obtener más información en https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Corrector ortográfico mejorado</translation>
 <translation id="2568774940984945469">Contenedor de la barra de información</translation>
@@ -1784,6 +1790,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2907798539022650680">Se produjo un error al conectarse a "<ph name="NAME" />": <ph name="DETAILS" />
     Mensaje del servidor: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">Agregar galería de medios por directorio</translation>
+<translation id="2908358077082926882">Vuelve a presionar "<ph name="CURRENTKEY" />" para quitar la asignación y <ph name="RESPONSE" />.</translation>
 <translation id="2910318910161511225">Conéctate a una red y vuelve a intentarlo</translation>
 <translation id="291056154577034373">NO LEÍDAS</translation>
 <translation id="2910718431259223434">Se produjo un error. Vuelve a intentarlo o comunícate con el administrador o propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
@@ -2280,6 +2287,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3462311546193741693">Saldrás de la mayoría de los sitios, pero permanecerás en tu Cuenta de Google para que puedan borrarse tus datos sincronizados.</translation>
 <translation id="3462413494201477527">¿Cancelar la configuración de la cuenta?</translation>
 <translation id="346298925039590474">Esta red móvil estará disponible para todos los usuarios de este dispositivo</translation>
+<translation id="3463235406897625623">No se puede quitar el único interruptor asignado a Seleccionar. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="3464145797867108663">Agregar un perfil de trabajo</translation>
 <translation id="346431825526753">Esta es una cuenta para niños administrada por <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
@@ -2290,6 +2298,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Las palabras nuevas pueden tener un máximo de 99 letras.</translation>
 <translation id="3475843873335999118">No se puede reconocer tu huella dactilar. Ingresa tu contraseña.</translation>
+<translation id="3475986680293081450">Las teclas no coinciden. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="3476303763173086583">Envía datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />. Es posible que el propietario decida enviar a Google datos de uso y diagnóstico de este dispositivo. Si habilitaste la "Actividad de web y de aplicaciones adicional" en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">El sistema no pudo recuperar la política para tu dispositivo.</translation>
 <translation id="347785443197175480">Continuar permitiendo que <ph name="HOST" /> acceda a la cámara y al micrófono</translation>
@@ -2348,6 +2357,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3541823293333232175">Asignado</translation>
 <translation id="3543393733900874979">Error de actualización (error: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Firma X9.62 ECDSA con SHA-512</translation>
+<translation id="3543651705416471414">Borrar la asignación a todos los interruptores</translation>
 <translation id="3544879808695557954">Nombre de usuario (opcional)</translation>
 <translation id="354602065659584722">Se quitó el software dañino</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
@@ -2575,6 +2585,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3778740492972734840">&amp;Herramientas del desarrollador</translation>
 <translation id="3778868487658107119">Hazle preguntas. Encárgale tareas. Es tu versión personal de Google, está siempre lista para ayudarte.</translation>
 <translation id="3781742599892759500">Acceso al micrófono en Linux</translation>
+<translation id="3782795641773236652">Aún no se asignaron teclas ni interruptores.</translation>
 <translation id="378312418865624974">Leer un identificador único para esta computadora</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
 <translation id="3784472333786002075">Las cookies son archivos que crean los sitios web. Existen dos tipos de cookies. Las propias son aquellas que crea el sitio que visitas. El sitio se muestra en la barra de direcciones. Las cookies de terceros son las que se generan desde otros sitios, a los cuales pertenece parte del contenido que ves en el sitio web que visitas (como anuncios o imágenes).</translation>
@@ -2853,6 +2864,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="406070391919917862">Aplicaciones de fondo</translation>
 <translation id="4061374428807229313">Para compartir, haz clic con el botón derecho en una carpeta de la app de Archivos y, luego, selecciona "Compartir con Parallels Desktop".</translation>
 <translation id="406213378265872299">Comportamientos personalizados</translation>
+<translation id="4062561150282203854">Sincroniza las apps, las opciones de configuración y mucho más de tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4064575710864784237">1×</translation>
 <translation id="4065876735068446555">Es posible que la red que estás usando (<ph name="NETWORK_ID" />) requiera que visites la página de acceso.</translation>
 <translation id="4066207411788646768">Revisa la conexión para ver las impresoras disponibles en tu red</translation>
@@ -2974,6 +2986,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4220648711404560261">Se produjo un error durante la activación.</translation>
 <translation id="4222772810963087151">Detalles de compilación</translation>
+<translation id="4225020013797061859">Presiona una tecla o un interruptor para asignarle la acción "<ph name="ACTION" />"</translation>
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4231095370974836764">Instala apps y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
@@ -3125,6 +3138,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="440653823335387109">PÁGINAS QUE LEÍSTE</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4408599188496843485">A&amp;yuda</translation>
+<translation id="4409271659088619928">Tu motor de búsqueda es <ph name="DSE" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="4409697491990005945">Márgenes</translation>
 <translation id="4410545552906060960">Usa un número (PIN) en lugar de una contraseña para desbloquear el dispositivo. Puedes configurar el PIN más tarde en la configuración.</translation>
 <translation id="4411578466613447185">Firmante del código</translation>
@@ -3194,6 +3208,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4480590691557335796">Chrome puede buscar software dañino en tu computadora y quitarlo</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4481530544597605423">Dispositivos no sincronizados</translation>
+<translation id="4481906837550700306">Si vuelves a ejecutar la guía de configuración, se borrarán los interruptores que hayas asignado. ¿Quieres continuar?</translation>
 <translation id="4482990632723642375">Pestaña cerrada recientemente</translation>
 <translation id="4487489714832036847">En lugar de software tradicional, las Chromebooks utilizan apps. Obtén apps de productividad, entretenimiento y mucho más.</translation>
 <translation id="4488257340342212116">Puede usar la cámara</translation>
@@ -4481,6 +4496,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5938002010494270685">Hay una actualización de seguridad disponible</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="5939719276406088041">No se puede crear el acceso directo.</translation>
+<translation id="594048410531370124">No se reconoce el interruptor. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Agregar persona…</translation>
 <translation id="5941343993301164315">Accede a <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
@@ -4507,6 +4523,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5963117322306686970">Para agrupar pestañas, haz clic con el botón derecho en una</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> máximo)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
+<translation id="5964328685964290415">Cambia todos los accesos a páginas al protocolo HTTPS y muestra una advertencia antes de cargar sitios que no sean compatibles con ese protocolo.</translation>
 <translation id="5965661248935608907">También controla qué página se muestra al hacer clic en el botón de página principal o al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> puede ver archivos en <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Se descartó la notificación de combinaciones de teclas</translation>
@@ -5435,7 +5452,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: Registro de actividad</translation>
 <translation id="6997707937646349884">En tus dispositivos:</translation>
 <translation id="6998793565256476099">Inscribe el dispositivo para realizar videoconferencias</translation>
-<translation id="6999640176621571692">¿Deseas permitir que Google busque descuentos para los productos que agregaste a tus carritos?</translation>
 <translation id="6999956497249459195">Grupo nuevo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, pero debe configurarse</translation>
 <translation id="7000347579424117903">Incluir Ctrl, Alt o el botón de búsqueda</translation>
@@ -5801,6 +5817,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7415454883318062233">Configuración completa</translation>
 <translation id="7416362041876611053">Error de red desconocido</translation>
 <translation id="741906494724992817">Esta aplicación no requiere ningún permiso especial.</translation>
+<translation id="7419565702166471774">Usar siempre conexiones seguras</translation>
 <translation id="7421067045979951561">controladores de protocolos</translation>
 <translation id="742130257665691897">Se quitaron favoritos</translation>
 <translation id="7421925624202799674">&amp;Ver el código fuente de la página</translation>
@@ -5822,6 +5839,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7434969625063495310">No se pudo agregar el servidor de impresión. Revisa la configuración del servidor y vuelve a intentarlo.</translation>
 <translation id="7436921188514130341">Se produjo un error al cambiar el nombre.</translation>
 <translation id="7438495332316988804">Para encontrar el navegador predeterminado, escribe "Chrome" en el Selector.</translation>
+<translation id="7439446972050308922">Tus preferencias guardadas estarán listas en cualquier dispositivo con Chrome OS cuando accedes con tu Cuenta de Google. En la Configuración, podrás elegir los datos que quieras sincronizar.</translation>
 <translation id="7439519621174723623">Agregar un nombre de dispositivo para continuar</translation>
 <translation id="7441736921018636843">A fin de cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /> para quitar la frase de contraseña de sincronización</translation>
 <translation id="7441830548568730290">Otros usuarios</translation>
@@ -5933,6 +5951,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7557194624273628371">Redirección de puertos para Linux</translation>
 <translation id="7557411183415085169">Linux tiene poco espacio de disco</translation>
 <translation id="7559719679815339381">Espera. La aplicación de kiosco se está actualizando. No desconectes el dispositivo USB.</translation>
+<translation id="7560756177962144929">Sincroniza tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="756445078718366910">Abrir la ventana del navegador</translation>
 <translation id="7564847347806291057">Finalizar proceso</translation>
@@ -5969,6 +5988,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="760197030861754408">Accede a <ph name="LANDING_PAGE" /> para conectarte.</translation>
 <translation id="7602079150116086782">No hay pestañas de otros dispositivos.</translation>
 <translation id="7602173054665172958">Administración de impresiones</translation>
+<translation id="7603785829538808504">Los sitios que se mencionan a continuación usan una configuración personalizada.</translation>
 <translation id="7604942372593434070">Se accederá a tu actividad de navegación</translation>
 <translation id="7605594153474022051">La sincronización no funciona</translation>
 <translation id="7606992457248886637">Autoridades</translation>
@@ -6556,6 +6576,8 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Estableciendo conexión con <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Administrar tus aplicaciones, extensiones y temas</translation>
+<translation id="819137301779081601">Presiona un nuevo interruptor para iniciar la asignación.
+Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> desea compartir el contenido de tu pantalla.</translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8198323535106903877">Instalaremos las <ph name="NUMBER_OF_APPS" /> apps por ti</translation>
@@ -6588,6 +6610,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8230446983261649357">No permitir que los sitios muestren imágenes</translation>
 <translation id="8234795456569844941">Ayuda a nuestros ingenieros a corregir este problema. Cuéntanos lo que pasó justo antes de recibir el mensaje de error de perfil:</translation>
 <translation id="8235418492073272647">Página compartida desde <ph name="DEVICE_NAME" /></translation>
+<translation id="8236911020904880539">salir</translation>
 <translation id="8236917170563564587">Compartir esta pestaña en su lugar</translation>
 <translation id="8237647586961940482">Rosa oscuro y rojo</translation>
 <translation id="8239032431519548577">Se completó la inscripción empresarial</translation>
@@ -7122,6 +7145,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8834039744648160717"><ph name="USER_EMAIL" /> controla la configuración de la red.</translation>
 <translation id="8835786707922974220">Asegúrate de que siempre puedas acceder a tus contraseñas guardadas</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de 1 semana. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" /></translation>
+<translation id="8836782447513334597">continuar</translation>
 <translation id="8838601485495657486">Opaco</translation>
 <translation id="8838770651474809439">Hamburguesa</translation>
 <translation id="883911313571074303">Escribir en la imagen</translation>
@@ -7203,6 +7227,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8912810933860534797">Habilitar la búsqueda automática</translation>
 <translation id="8915370057835397490">Cargando sugerencia</translation>
 <translation id="8916476537757519021">Submarco incógnito: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="8917293713468567935"><ph name="BEGIN_LINK_GOOGLE" />Es posible que otras formas de actividad<ph name="END_LINK_GOOGLE" /> se guarden en tu Cuenta de Google cuando accedes. Puedes borrar esa información en cualquier momento.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8922624386829239660">Mover la pantalla cuando el mouse toca los bordes</translation>
 <translation id="8923880975836399332">Verde azulado oscuro</translation>
@@ -7312,6 +7337,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Ya no se admite <ph name="PLUGIN_NAME" /></translation>
 <translation id="9031549947500880805">Crea una copia de seguridad en Google Drive. Restaura tus datos o cambia de dispositivo en cualquier momento con facilidad. Se incluyen datos de apps.</translation>
+<translation id="9031811691986152304">volver a intentarlo</translation>
 <translation id="9033765790910064284">Continuar de todos modos</translation>
 <translation id="9033857511263905942">&amp;Pegar</translation>
 <translation id="9037640663275993951">El dispositivo no está habilitado</translation>
@@ -7338,6 +7364,8 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Se produjo un error de la línea <ph name="ERROR_LINE_START" /> a la <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">No se puede capturar contenido confidencial</translation>
+<translation id="9064039204504614208">Presiona un interruptor para asignarle la acción "<ph name="ACTION" />".
+Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="9064275926664971810">Habilita Autocompletar para llenar formularios con un solo clic</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9066782832737749352">Texto a voz</translation>

@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2751739896257479635">EAP 2-фаза аутентификациясы</translation>
+<translation id="2783010256799387990">ӨТТІ</translation>
 <translation id="2789486458103222910">Жарайды</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2862104018715411648">Құжатты сканерге қойып, "Сканерлеу" опциясын таңдаңыз.</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сурет</translation>
 <translation id="4378373042927530923">Іске қосылмаған</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
@@ -256,6 +258,7 @@
 <translation id="6191293864534840972">Атау серверлері форматы дұрыс емес.</translation>
 <translation id="6223752125779001553">Сканерлер жоқ</translation>
 <translation id="6232017090690406397">Батарея</translation>
+<translation id="6243280677745499710">Орнатылып тұрған</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тексерісінен бас тартылды.</translation>
 <translation id="6325525973963619867">Қате шықты</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
@@ -294,6 +297,7 @@
 <translation id="7144878232160441200">Қайталау</translation>
 <translation id="714876143603641390">LAN қосылу мүмкіндігі</translation>
 <translation id="7162487448488904999">Галерея</translation>
+<translation id="7172721935181587524">1 сурет</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
@@ -343,6 +347,7 @@
 <translation id="8294431847097064396">Дереккөз</translation>
 <translation id="8297006494302853456">Әлсіз</translation>
 <translation id="8302368968391049045">HTTPS брандмауэрі</translation>
+<translation id="8318753676953949627">Кескіндер жоқ.</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8352772353338965963">Бірнеше есептік жазбаға кіру үшін есептік жазба қосыңыз. Барлық кірілген есептік жазбаларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді есептік жазбалар пайдалануы тиіс.</translation>
 <translation id="8364946094152050673">Атау серверлері бос.</translation>

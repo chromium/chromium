@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2751739896257479635">EAP टप्पा 2 ऑथेंटिकेशन</translation>
+<translation id="2783010256799387990">पास झाले</translation>
 <translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2862104018715411648">सुरुवात करण्यासाठी तुमचा दस्तऐवज स्कॅनरवर ठेवा आणि स्कॅन करा निवडा</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515"><ph name="TIME" /> मध्ये पासवर्ड एक्स्पायर होईल</translation>
 <translation id="4238516577297848345">कोणतेही प्रिंट जॉब प्रगतीपथावर नाहीत</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
 <translation id="4382484599443659549">पीडीएफ</translation>
 <translation id="4425149324548788773">माझा ड्राइव्ह</translation>
@@ -257,6 +259,7 @@
 <translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
 <translation id="6223752125779001553">कोणतेही स्कॅनर उपलब्ध नाहीत</translation>
 <translation id="6232017090690406397">बॅटरी</translation>
+<translation id="6243280677745499710">सध्या सेट केला आहे</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
@@ -295,6 +298,7 @@
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="714876143603641390">LAN कनेक्टिव्हिटी</translation>
 <translation id="7162487448488904999">गॅलरी</translation>
+<translation id="7172721935181587524">एक इमेज</translation>
 <translation id="7177485034254901881">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर रिमोट पद्धतीने डिव्हाइस काँफिगर करू शकतात.</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
 <translation id="7271040990581020067">स्कॅनर सध्या वापरात आहे. नंतर पुन्हा प्रयत्न करा.</translation>
@@ -344,6 +348,7 @@
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8302368968391049045">HTTPS फायरवॉल</translation>
+<translation id="8318753676953949627">कोणत्याही इमेज नाहीत</translation>
 <translation id="8347227221149377169">प्रिंट कार्ये</translation>
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>
 <translation id="8364946094152050673">रिकामे नेम सर्व्हर</translation>

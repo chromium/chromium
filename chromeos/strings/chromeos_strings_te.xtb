@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2740531572673183784">సరే</translation>
 <translation id="2751739896257479635">EAP 2వ దశ ప్రమాణీకరణ</translation>
+<translation id="2783010256799387990">ఉత్తీర్ణత సాధించాయి</translation>
 <translation id="2789486458103222910">సరే</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="2862104018715411648">ప్రారంభించడానికి మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టి, స్కాన్ చేయిని ఎంచుకోండి</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515"><ph name="TIME" />లో పాస్‌వర్డ్‌ గడువు ముగుస్తుంది</translation>
 <translation id="4238516577297848345">ప్రింట్ టాస్క్‌లు ఏవీ ప్రోగ్రెస్‌లో లేవు</translation>
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ఇమేజ్‌లు</translation>
 <translation id="4378373042927530923">రన్ కాలేదు</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">నా డిస్క్</translation>
@@ -256,6 +258,7 @@
 <translation id="6191293864534840972">పేరు తప్పుగా ఉన్న సర్వర్లు</translation>
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="6232017090690406397">బ్యాటరీ</translation>
+<translation id="6243280677745499710">ప్రస్తుతం సెట్ చేసినది</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> టెస్ట్ రద్దు చేయబడింది</translation>
 <translation id="6325525973963619867">విఫలమైంది</translation>
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
@@ -294,6 +297,7 @@
 <translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7172721935181587524">1 ఇమేజ్</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
@@ -343,6 +347,7 @@
 <translation id="8294431847097064396">సోర్స్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8302368968391049045">HTTPS ఫైర్‌వాల్</translation>
+<translation id="8318753676953949627">ఇమేజ్‌లు లేవు</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="8352772353338965963">బహుళ సైన్ ఇన్ కోసం ఖాతాను జోడించండి. అన్ని సైన్ ఇన్ చేసిన ఖాతాలను పాస్‌వర్డ్ లేకుండానే యాక్సెస్‌ చేయవచ్చు. కాబ‌ట్టి ఈ ఫీచ‌ర్‌ను విశ్వసనీయ ఖాతాలతో మాత్రమే ఉపయోగించాలి.</translation>
 <translation id="8364946094152050673">ఖాళీ పేరు సర్వర్‌లు</translation>

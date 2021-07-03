@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2751739896257479635">‏EAP مرحلہ 2 توثیق</translation>
+<translation id="2783010256799387990">پاس ہو گیا</translation>
 <translation id="2789486458103222910">ٹھیک ہے</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2862104018715411648">اپنی دستاویز کو اسکینر پر رکھیں اور شروع کرنے کیلئے 'اسکین کریں' کو منتخب کریں</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
 <translation id="4378373042927530923">نہیں چلا</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
@@ -256,6 +258,7 @@
 <translation id="6191293864534840972">نام سرورز غلط ہے</translation>
 <translation id="6223752125779001553">کوئی بھی اسکینر دستیاب نہیں ہے</translation>
 <translation id="6232017090690406397">بیٹری</translation>
+<translation id="6243280677745499710">فی الحال سیٹ ہے</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ٹیسٹ منسوخ کر دیا گیا ہے</translation>
 <translation id="6325525973963619867">ناکام</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
@@ -294,6 +297,7 @@
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
 <translation id="7162487448488904999">گیلری</translation>
+<translation id="7172721935181587524">1 تصویر</translation>
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
 <translation id="7271040990581020067">اسکینر فی الحال زیر استعمال ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
@@ -343,6 +347,7 @@
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8297006494302853456">کمزور</translation>
 <translation id="8302368968391049045">‏HTTPS فائروال</translation>
+<translation id="8318753676953949627">کوئی تصویر نہیں ہے</translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="8352772353338965963">متعدد سائن ان میں ایک اکاؤنٹ شامل کریں۔ سبھی سائن ان کردہ اکاؤنٹس تک پاس ورڈ کے بغیر رسائی کی جا سکتی ہے لہذا یہ خصوصیت صرف بھروسہ مند اکاؤنٹس کے ساتھ استعمال کی جانی چاہیے۔</translation>
 <translation id="8364946094152050673">نام سرورز خالی ہیں</translation>

@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 de EAP</translation>
+<translation id="2783010256799387990">PROBA SUPERADA</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2862104018715411648">Coloca o documento no escáner e selecciona Escanear para comezar</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">O contrasinal caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Non hai ningunha tarefa de impresión en curso</translation>
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imaxes</translation>
 <translation id="4378373042927530923">Non se executou</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
@@ -257,6 +259,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6191293864534840972">Os servidores de nomes teñen un formato incorrecto</translation>
 <translation id="6223752125779001553">Non hai ningún escáner dispoñible</translation>
 <translation id="6232017090690406397">Batería</translation>
+<translation id="6243280677745499710">Establecido actualmente</translation>
 <translation id="6302401976930124515">Cancelouse a proba de <ph name="TEST_NAME" /></translation>
 <translation id="6325525973963619867">Produciuse un erro</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
@@ -295,6 +298,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
+<translation id="7172721935181587524">1 imaxe</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
 <translation id="7216409898977639127">Provedor de rede móbil</translation>
 <translation id="7271040990581020067">Nestes momentos, o escáner está en uso. Téntao de novo máis tarde.</translation>
@@ -344,6 +348,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8294431847097064396">Fonte</translation>
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8318753676953949627">Sen imaxes</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="8352772353338965963">Engade unha conta ao inicio de sesión múltiple. É posible acceder a todas as contas en que iniciaches sesión sen necesidade de inserir un contrasinal, polo que esta función só se debe utilizar coas contas de confianza.</translation>
 <translation id="8364946094152050673">Os servidores de nomes están baleiros</translation>

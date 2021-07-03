@@ -1274,7 +1274,7 @@
 <translation id="2332742915001411729">Відновити масштаб за умовчанням</translation>
 <translation id="2335111415680198280">{0,plural, =1{Закрити # вікно}one{Закрити # вікно}few{Закрити # вікна}many{Закрити # вікон}other{Закрити # вікна}}</translation>
 <translation id="2335122562899522968">Ця сторінка налаштувала файли cookie.</translation>
-<translation id="2336228925368920074">Позначити закладками всі вкладки...</translation>
+<translation id="2336228925368920074">Додати всі вкладки в закладки…</translation>
 <translation id="2336376423977300504">Файли cookie завжди видаляються, коли ви закриваєте вікна</translation>
 <translation id="2336381494582898602">Очищення</translation>
 <translation id="2337236196941929873">Попередньо завантажувати сторінки, які ви, можливо, відвідаєте. Для цього Chrome може використовувати файли cookie (якщо ви дозволили їх) і надсилати сторінки через Google, щоб не повідомляти ваші ідентифікаційні дані сайтам.</translation>
@@ -3216,7 +3216,7 @@
 <translation id="4471354919263203780">Завантажуються файли для розпізнавання мовлення… <ph name="PERCENT" />%</translation>
 <translation id="447252321002412580">Допоможіть покращити функції й ефективність Chrome</translation>
 <translation id="4472575034687746823">Початок роботи</translation>
-<translation id="4474155171896946103">Позначити закладками всі вкладки...</translation>
+<translation id="4474155171896946103">Додати всі вкладки в закладки…</translation>
 <translation id="4475552974751346499">Пошук завантажень</translation>
 <translation id="4475830133618397783">Виберіть паролі, які потрібно перенести. Ви матимете до них доступ на всіх пристроях, де ввійшли в обліковий запис.</translation>
 <translation id="4476590490540813026">Спортсменка</translation>
@@ -3761,7 +3761,7 @@
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> і ще #}few{<ph name="FILE1" />, <ph name="FILE2" /> і ще #}many{<ph name="FILE1" />, <ph name="FILE2" /> і ще #}other{<ph name="FILE1" />, <ph name="FILE2" /> і ще #}}</translation>
 <translation id="5074318175948309511">Щоб нові налаштування почали діяти, можливо, потрібно буде оновити цю сторінку.</translation>
 <translation id="5075910247684008552">Незахищений контент заблоковано за умовчанням на захищених сайтах</translation>
-<translation id="5078638979202084724">Позначити закладками всі вкладки</translation>
+<translation id="5078638979202084724">Додати всі вкладки в закладки</translation>
 <translation id="5078796286268621944">Неправильний PIN-код</translation>
 <translation id="5079950360618752063">Використати запропонований пароль</translation>
 <translation id="508059534790499809">Оновити квиток Kerberos</translation>
@@ -5474,7 +5474,6 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – журнал активності</translation>
 <translation id="6997707937646349884">На ваших пристроях:</translation>
 <translation id="6998793565256476099">Зареєструвати пристрій для відеоконференцій</translation>
-<translation id="6999640176621571692">Дозволити Google шукати знижки на товари, які ви додали в кошики?</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324">Принтер <ph name="PRINTER_NAME" /> під'єднано, але його потрібно налаштувати</translation>
 <translation id="7000347579424117903">Натискайте Ctrl, Alt або клавішу пошуку</translation>

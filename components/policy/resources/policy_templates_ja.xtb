@@ -4156,13 +4156,6 @@
 <translation id="6621830999036927230">このポリシーを設定した場合、リモート アクセス ホストは、この URL を使用してリモート アクセス クライアントからの認証トークンを検証し、接続を受け入れるかどうかを判断します。このポリシーを空白にした場合または設定しない場合、この機能は無効になります。
 
       注: このポリシーは <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> と一緒に使用してください。</translation>
-<translation id="6621839881150363218">このポリシーを有効に設定した場合、すべてのサイトが分離されます（各サイトが独自のプロセスで実行されます）。このポリシーを無効に設定した場合、明示的なサイト分離は行われず、IsolateOriginsAndroid と SitePerProcessAndroid のフィールド テストは無効になります。ユーザーはこのポリシーを手動で有効にできます。
-
-      このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。
-
-      サイト分離を有効にして、ユーザーへの影響をできるだけ抑えるには、<ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> を使用して、分離するサイトのリストを指定します。
-
-      注: Android のサイト分離の機能は今後強化されますが、現時点ではこの機能によりパフォーマンスの問題が発生することもあります。このポリシーは、厳密に 1 GB より大きい RAM を搭載した Android デバイスの Chrome のみに適用されます。Android 以外のプラットフォームにこのポリシーを適用するには、<ph name="SITE_PER_PROCESS_POLICY_NAME" /> を使用してください。</translation>
 <translation id="6625136649067113817">画面キーボードでスペルチェックを有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="66265932317331474">CPU 情報を報告する</translation>
 <translation id="6628120204569232711">ストレージの状態を報告する</translation>
@@ -4508,13 +4501,6 @@
 
       URL のパターンは、https://www.chromium.org/administrators/url-blocklist-filter-format の形式で指定します。ただし、スキーム、ポート、パスに関係なく特定のホスト名に対して証明書が有効になるため、<ph name="PRODUCT_NAME" /> で考慮されるのは URL のホスト名の部分のみです。ワイルドカードを使ったホストの指定はサポートされていません。</translation>
 <translation id="6972540544240464302">タスク スケジューラ設定を選択します</translation>
-<translation id="6973754855639335783">このポリシーを設定した場合、カンマ区切りのリストで指定した発行元が各自のプロセスで実行され、サブドメインによって指定された発行元が分離されます。たとえば、https://example.com/ と指定すると、https://foo.example.com/ が https://example.com/ サイトの一部として分離されます。
-
-      このポリシーを無効に設定した場合、明示的なサイト分離は行われず、IsolateOriginsAndroid と SitePerProcessAndroid のフィールド テストは無効になります。ただしユーザーはコマンドライン フラグを使用して手動で IsolateOrigins を有効にできます。
-
-      このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。
-
-      注: Android 向けのサイト分離のサポートは今後強化されますが、現時点ではこの機能によりパフォーマンスの問題が発生することもあります。このポリシーは、厳密に 1 GB より大きい RAM を搭載した Android デバイスの Chrome のみに適用されます。Android 以外のプラットフォームにこのポリシーを適用するには、<ph name="ISOLATE_ORIGINS_POLICY_NAME" /> を使用してください。</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6979739838208297344">このポリシーを <ph name="BR_ENABLED" /> に設定した場合、Android のバックアップと復元は初期状態でオンになります。このポリシーを <ph name="BR_DISABLED" /> に設定するか未設定のままにした場合、バックアップと復元は設定中オフになります。
 

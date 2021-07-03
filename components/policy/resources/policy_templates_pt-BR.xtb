@@ -4293,13 +4293,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6621830999036927230">Se a política for definida, o host de acesso remoto usará este URL na validação dos tokens de autenticação para aceitar conexões de clientes de acesso remoto. Este recurso será desativado se for deixado vazio ou sem definição.
 
       Observação: use esta política com <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
-<translation id="6621839881150363218">Se a política for definida como "Ativada", todos os sites serão isolados e cada um executará um processo próprio. Se a política for definida como "Desativada", não haverá isolamento explícito de sites e as versões de teste de IsolateOriginsAndroid e SitePerProcessAndroid serão desativadas. Os usuários ainda poderão ativar a política manualmente.
-
-      Se a política não for definida, os usuários poderão mudar essa configuração.
-
-      Para ter o isolamento e um impacto reduzido para os usuários, use a <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> com uma lista dos sites que você quer isolar.
-
-      Observação: a compatibilidade com o isolamento de sites no Android será melhorada, mas pode haver problemas de desempenho por enquanto. Esta política se aplica apenas ao Chrome no Android sendo executado em dispositivos com mais de 1 GB de RAM. Para aplicar a política em outras plataformas que não sejam Android, use <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Uma sinalização booleana indicando se o teclado na tela pode oferecer verificação ortográfica.</translation>
 <translation id="66265932317331474">Enviar informações da CPU</translation>
 <translation id="6628120204569232711">Informa o status de armazenamento</translation>
@@ -4663,13 +4656,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Um padrão de URL segue o formato descrito em https://www.chromium.org/administrators/url-blocklist-filter-format (link em inglês). No entanto, como a validação dos certificados para um certo nome do host independe do esquema, da porta ou do caminho, o <ph name="PRODUCT_NAME" /> só considera a parte de nome do host do URL. Hosts curinga não são compatíveis.</translation>
 <translation id="6972540544240464302">Seleciona a configuração do programador de tarefas</translation>
-<translation id="6973754855639335783">Se a política for definida, cada uma das origens indicadas em uma lista separada por vírgulas será executada no próprio processo. Isso também isolará origens indicadas por subdomínios. Por exemplo, a especificação de https://example.com/ também fará com que https://foo.example.com/ seja isolado como parte do site https://example.com/.
-
-      Se a política for desativada, o isolamento explícito de sites será impedido, e as versões de teste de IsolateOriginsAndroid e SitePerProcessAndroid serão desativadas. Os usuários ainda poderão ativar IsolateOrigins manualmente com a sinalização de linha de comando.
-
-      Se a política não for definida, o usuário poderá mudar essa configuração.
-
-      Observação: a compatibilidade com o isolamento de sites no Android será melhorada, mas pode haver problemas de desempenho por enquanto. Esta política se aplica apenas ao Chrome no Android sendo executado em dispositivos com mais de 1 GB de RAM. Para aplicar a política em outras plataformas que não sejam o Android, use <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Se a política for definida como <ph name="BR_ENABLED" />, o recurso de backup e restauração do Android estará inicialmente ativado. Se ela for definida como <ph name="BR_DISABLED" /> ou não for definida, o recurso de backup e restauração continuará desativado durante a configuração.
 
