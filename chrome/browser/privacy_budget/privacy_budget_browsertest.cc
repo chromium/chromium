@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -324,8 +325,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetDefaultConfigBrowserTest, Variations) {
   EXPECT_TRUE(settings->IsActive());
   EXPECT_TRUE(settings->IsTypeAllowed(
       blink::IdentifiableSurface::Type::kCanvasReadback));
-  EXPECT_FALSE(
-      settings->IsTypeAllowed(blink::IdentifiableSurface::Type::kMediaQuery));
 }
 
 #endif

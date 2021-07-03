@@ -32,11 +32,6 @@
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
-
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -58,32 +53,12 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
 using mojom::blink::HoverType;
 using mojom::blink::PointerType;
-
-namespace {
-
-void RecordMediaQueryResult(Document* doc,
-                            const MediaQueryExp& expr,
-                            bool result) {
-  IdentifiableTokenBuilder input_builder;
-  input_builder.AddToken(IdentifiabilityBenignStringToken(expr.MediaFeature()));
-  input_builder.AddToken(
-      IdentifiabilityBenignStringToken(expr.ExpValue().CssText()));
-  IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kMediaQuery, input_builder.GetToken());
-
-  IdentifiabilityMetricBuilder(doc->UkmSourceID())
-      .Set(surface, result)
-      .Record(doc->UkmRecorder());
-}
-
-}  // namespace
 
 enum MediaFeaturePrefix { kMinPrefix, kMaxPrefix, kNoPrefix };
 
@@ -1044,17 +1019,8 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr) const {
   // Call the media feature evaluation function. Assume no prefix and let
   // trampoline functions override the prefix if prefix is used.
   EvalFunc func = g_function_map->at(expr.MediaFeature().Impl());
-  if (func) {
-    bool result = func(expr.ExpValue(), kNoPrefix, *media_values_);
-    Document* doc = nullptr;
-    if (!skip_ukm_reporting_ && (doc = media_values_->GetDocument()) &&
-        (IdentifiabilityStudySettings::Get()->ShouldSample(
-            IdentifiableSurface::Type::kMediaQuery))) {
-      RecordMediaQueryResult(doc, expr, result);
-    }
-
-    return result;
-  }
+  if (func)
+    return func(expr.ExpValue(), kNoPrefix, *media_values_);
 
   return false;
 }

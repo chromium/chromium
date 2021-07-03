@@ -216,7 +216,7 @@ class IdentifiableSurface {
 
     // Represents a media query being tested. Input is combination of property
     // name and the target value. Output is the result --- true or false.
-    kMediaQuery = 28,
+    kMediaQuery_DEPRECATED = 28,
 
     // Represents loading a font locally. Input is the PostScript name.
     kLocalFontLoadPostScriptName = 29,

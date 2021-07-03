@@ -41,8 +41,6 @@ class TestSettingsProvider : public IdentifiabilityStudySettingsProvider {
   bool IsAnyTypeOrSurfaceBlocked() const override { return false; }
   bool IsSurfaceAllowed(IdentifiableSurface) const override { return true; }
   bool IsTypeAllowed(IdentifiableSurface::Type) const override { return true; }
-  int SampleRate(IdentifiableSurface) const override { return 1; }
-  int SampleRate(IdentifiableSurface::Type) const override { return 1; }
 };
 
 }  // namespace

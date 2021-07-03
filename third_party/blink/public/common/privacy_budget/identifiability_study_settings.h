@@ -63,16 +63,14 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
   // true, it doesn't return false at any point after. The converse is not true.
   bool IsActive() const;
 
-  // Returns true if |surface| is allowed to be sampled. Be sure to check
-  // ShouldSample before actually collecting a sample.
+  // Returns true if |surface| is allowed.
   //
   // Will always return false if IsActive() is false. I.e. If the study is
   // inactive, all surfaces are considered to be blocked. Hence it is sufficient
   // to call this function directly instead of calling IsActive() before it.
   bool IsSurfaceAllowed(IdentifiableSurface surface) const;
 
-  // Returns true if |type| is allowed to be sampled. Be sure to check
-  // ShouldSample before actually collecting a sample.
+  // Returns true if |type| is allowed.
   //
   // Will always return false if IsActive() is false. I.e. If the study is
   // inactive, all surface types are considered to be blocked. Hence it is

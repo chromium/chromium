@@ -11,9 +11,7 @@
 
 namespace test {
 
-ScopedPrivacyBudgetConfig::Parameters::Parameters()
-    : per_type_sampling_rate(
-          {{blink::IdentifiableSurface::Type::kCanvasReadback, 1}}) {}
+ScopedPrivacyBudgetConfig::Parameters::Parameters() = default;
 ScopedPrivacyBudgetConfig::Parameters::Parameters(const Parameters&) = default;
 ScopedPrivacyBudgetConfig::Parameters::Parameters(Parameters&&) = default;
 ScopedPrivacyBudgetConfig::Parameters::~Parameters() = default;
@@ -74,23 +72,13 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
     ftp.insert({features::kIdentifiabilityStudyMaxSurfaces.name,
                 base::NumberToString(parameters.max_surfaces)});
   }
-  if (!parameters.per_surface_selection_rate.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyPerSurfaceSettings.name,
-                EncodeIdentifiabilityFieldTrialParam(
-                    parameters.per_surface_selection_rate)});
-  }
-  if (!parameters.per_type_selection_rate.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyPerTypeSettings.name,
-                EncodeIdentifiabilityFieldTrialParam(
-                    parameters.per_type_selection_rate)});
-  }
   if (!parameters.per_surface_sampling_rate.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyPerSurfaceSampleRates.name,
+    ftp.insert({features::kIdentifiabilityStudyPerSurfaceSettings.name,
                 EncodeIdentifiabilityFieldTrialParam(
                     parameters.per_surface_sampling_rate)});
   }
   if (!parameters.per_type_sampling_rate.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyPerTypeSampleRates.name,
+    ftp.insert({features::kIdentifiabilityStudyPerTypeSettings.name,
                 EncodeIdentifiabilityFieldTrialParam(
                     parameters.per_type_sampling_rate)});
   }
