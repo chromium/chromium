@@ -145,9 +145,10 @@ void AutoPlaceSingleWindow(aura::Window* window, bool animated) {
 // Get the first open (non minimized) window which is on the screen defined.
 aura::Window* GetReferenceWindow(const aura::Window* root_window,
                                  const aura::Window* exclude,
-                                 bool* single_window) {
-  if (single_window)
-    *single_window = true;
+                                 bool on_hide_remove,
+                                 bool* out_single_window) {
+  if (out_single_window)
+    *out_single_window = true;
   // Get the active window.
   aura::Window* active = window_util::GetActiveWindow();
   if (active && active->GetRootWindow() != root_window)
@@ -175,19 +176,22 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
     aura::Window* window = windows[i % windows.size()];
     while (::wm::GetTransientParent(window))
       window = ::wm::GetTransientParent(window);
+    // For hiding, do not auto-position if there are any remaining windows,
+    // even windows that do not have auto-positioning turned on.
     if (window != exclude &&
         window->GetType() == aura::client::WINDOW_TYPE_NORMAL &&
         window->GetRootWindow() == root_window && window->TargetVisibility() &&
-        WindowState::Get(window)->GetWindowPositionManaged()) {
+        (on_hide_remove ||
+         WindowState::Get(window)->GetWindowPositionManaged())) {
       if (found && found != window) {
-        // no need to check !single_window because the function must have
-        // been already returned in the "if (!single_window)" below.
-        *single_window = false;
+        // no need to check !out_single_window because the function must have
+        // been already returned in the "if (!out_single_window)" below.
+        *out_single_window = false;
         return found;
       }
       found = window;
       // If there is no need to check single window, return now.
-      if (!single_window)
+      if (!out_single_window)
         return found;
     }
   }
@@ -203,7 +207,8 @@ void WindowPositioner::GetBoundsAndShowStateForNewWindow(
     gfx::Rect* bounds_in_out,
     ui::WindowShowState* show_state_out) {
   aura::Window* root_window = Shell::GetRootWindowForNewWindows();
-  aura::Window* top_window = GetReferenceWindow(root_window, nullptr, nullptr);
+  aura::Window* top_window = GetReferenceWindow(
+      root_window, nullptr, /*on_hide_remove=*/false, nullptr);
 
   // If there is no valid window we take and adjust the passed coordinates.
   if (!top_window) {
@@ -255,8 +260,9 @@ void WindowPositioner::RearrangeVisibleWindowOnHideOrRemove(
     return;
   // Find a single open browser window.
   bool single_window;
-  aura::Window* other_shown_window = GetReferenceWindow(
-      removed_window->GetRootWindow(), removed_window, &single_window);
+  aura::Window* other_shown_window =
+      GetReferenceWindow(removed_window->GetRootWindow(), removed_window,
+                         /*on_hide_remove=*/true, &single_window);
   if (!other_shown_window || !single_window ||
       !WindowPositionCanBeManaged(other_shown_window))
     return;
@@ -282,8 +288,9 @@ void WindowPositioner::RearrangeVisibleWindowOnShow(
 
   // Find a single open managed window.
   bool single_window;
-  aura::Window* other_shown_window = GetReferenceWindow(
-      added_window->GetRootWindow(), added_window, &single_window);
+  aura::Window* other_shown_window =
+      GetReferenceWindow(added_window->GetRootWindow(), added_window,
+                         /*on_hide_remove=*/false, &single_window);
 
   if (!other_shown_window) {
     // It could be that this window is the first window joining the workspace.
