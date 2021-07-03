@@ -111,9 +111,12 @@ void DecoderBufferTranscryptor::OnBufferTranscrypted(
   // This should never happen w/our decryptor.
   DCHECK_NE(status, Decryptor::kNeedMoreData);
   if (status == Decryptor::kError) {
-    transcrypt_callback_.Run(
-        nullptr, std::move(current_transcrypt_task_->decode_done_cb));
+    // Clear |current_transcrypt_task_| now so when the pipeline invokes Reset
+    // on us we don't try to invoke the move'd callback.
+    absl::optional<TranscryptTask> temp_task =
+        std::move(current_transcrypt_task_);
     current_transcrypt_task_ = absl::nullopt;
+    transcrypt_callback_.Run(nullptr, std::move(temp_task->decode_done_cb));
     return;
   }
 
@@ -131,9 +134,11 @@ void DecoderBufferTranscryptor::OnBufferTranscrypted(
   DCHECK(transcrypted_buffer);
 
   const bool eos_buffer = transcrypted_buffer->end_of_stream();
-  transcrypt_callback_.Run(std::move(transcrypted_buffer),
-                           std::move(current_transcrypt_task_->decode_done_cb));
+  absl::optional<TranscryptTask> temp_task =
+      std::move(current_transcrypt_task_);
   current_transcrypt_task_ = absl::nullopt;
+  transcrypt_callback_.Run(std::move(transcrypted_buffer),
+                           std::move(temp_task->decode_done_cb));
 
   // Do not post this as another task, execute it immediately instead. Otherwise
   // we will not be parallelizing decrypt and decode fully. We want to have the

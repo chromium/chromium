@@ -199,12 +199,12 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
     return;
   }
 #else   // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (config.is_encrypted()) {
+  if (config.is_encrypted() && !allow_encrypted_content_for_testing_) {
     VLOGF(1) << "Encrypted streams are not supported for this VD";
     std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
     return;
   }
-  if (cdm_context) {
+  if (cdm_context && !allow_encrypted_content_for_testing_) {
     VLOGF(1) << "cdm_context is not supported.";
     std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
     return;
@@ -271,13 +271,19 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (decoder_ && decoder_->NeedsTranscryption()) {
-    // We need to enable transcryption for protected content.
-    buffer_transcryptor_ = std::make_unique<DecoderBufferTranscryptor>(
-        cdm_context,
-        base::BindRepeating(&VideoDecoderPipeline::OnBufferTranscrypted,
-                            decoder_weak_this_),
-        base::BindRepeating(&VideoDecoderPipeline::OnDecoderWaiting,
-                            decoder_weak_this_));
+    if (!cdm_context) {
+      VLOGF(1) << "CdmContext required for transcryption";
+      decoder_ = nullptr;
+      status = Status(StatusCode::kDecoderMissingCdmForEncryptedContent);
+    } else {
+      // We need to enable transcryption for protected content.
+      buffer_transcryptor_ = std::make_unique<DecoderBufferTranscryptor>(
+          cdm_context,
+          base::BindRepeating(&VideoDecoderPipeline::OnBufferTranscrypted,
+                              decoder_weak_this_),
+          base::BindRepeating(&VideoDecoderPipeline::OnDecoderWaiting,
+                              decoder_weak_this_));
+    }
   } else {
     // In case this was created on a prior initialization but no longer needed.
     buffer_transcryptor_.reset();

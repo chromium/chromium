@@ -163,6 +163,10 @@ source_set("unit_tests") {
     "platform_video_frame_utils_unittest.cc",
     "video_decoder_pipeline_unittest.cc",
   ]
+  if (is_chromeos_ash) {
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+  }
 }
 
 test("image_processor_test") {

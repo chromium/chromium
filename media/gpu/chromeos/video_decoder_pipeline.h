@@ -282,6 +282,9 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Set to true when any unexpected error occurs.
   bool has_error_ = false;
 
+  // Set to true to bypass checks for encrypted content support for testing.
+  bool allow_encrypted_content_for_testing_ = false;
+
   base::WeakPtr<VideoDecoderPipeline> decoder_weak_this_;
   // The weak pointer of this, bound to |decoder_task_runner_|.
   base::WeakPtrFactory<VideoDecoderPipeline> decoder_weak_this_factory_{this};

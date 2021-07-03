@@ -639,7 +639,9 @@ class MockCdmContext : public CdmContext {
   MOCK_METHOD1(GetMediaFoundationCdmProxy,
                bool(GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb));
 #endif
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MOCK_METHOD0(GetChromeOsCdmContext, chromeos::ChromeOsCdmContext*());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<base::UnguessableToken> GetCdmId() const override;
 
   void set_cdm_id(const base::UnguessableToken& cdm_id);
