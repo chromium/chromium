@@ -59,7 +59,9 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_manager_.CreateGuestProfile();
     profile_manager_.CreateSystemProfile();
+#if BUILDFLAG(ENABLE_PLUGINS)
     content::PluginService::GetInstance()->Init();
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
   }
 
   std::set<std::string> CreateIdleProfiles() {

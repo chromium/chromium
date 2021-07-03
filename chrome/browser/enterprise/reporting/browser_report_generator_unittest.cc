@@ -48,17 +48,18 @@ const char kProfileId[] = "profile_id";
 const char kProfileName[] = "profile_name";
 const char16_t kProfileName16[] = u"profile_name";
 
+#if BUILDFLAG(ENABLE_PLUGINS)
 const char16_t kPluginName16[] = u"plugin_name";
 const char16_t kPluginVersion16[] = u"plugin_version";
 const char16_t kPluginDescription16[] = u"plugin_description";
 const char kPluginFolderPath[] = "plugin_folder_path";
 const char kPluginFileName[] = "plugin_file_name";
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPluginName[] = "plugin_name";
 const char kPluginVersion[] = "plugin_version";
 const char kPluginDescription[] = "plugin_description";
-#endif
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 }  // namespace
 
@@ -72,7 +73,9 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
+#if BUILDFLAG(ENABLE_PLUGINS)
     content::PluginService::GetInstance()->Init();
+#endif
   }
 
   void InitializeUpdate() {
@@ -101,6 +104,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
   }
 
   void InitializePlugin() {
+#if BUILDFLAG(ENABLE_PLUGINS)
     content::WebPluginInfo info;
     info.name = kPluginName16;
     info.version = kPluginVersion16;
@@ -113,6 +117,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
         content::PluginService::GetInstance();
     plugin_service->RegisterInternalPlugin(info, true);
     plugin_service->RefreshPlugins();
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
   }
 
   void InitializeExtensionRequest() {
@@ -171,7 +176,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
               EXPECT_EQ(0, report->plugins_size());
-#else
+#elif BUILDFLAG(ENABLE_PLUGINS)
               EXPECT_LE(1, report->plugins_size());
               em::Plugin plugin = report->plugins(0);
               EXPECT_EQ(kPluginName, plugin.name());
