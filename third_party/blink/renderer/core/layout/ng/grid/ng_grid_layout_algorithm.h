@@ -105,7 +105,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
         const NGGridLayoutAlgorithmTrackCollection& track_collection,
         const NGGridPlacement& grid_placement);
 
-    const NGBlockNode node;
+    NGBlockNode node;
     GridArea resolved_position;
 
     AxisEdge InlineAxisAlignment() const {
@@ -192,10 +192,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
     bool IsEmpty() const;
 
-    // Grid items are appended to |item_data_| in the same order provided by
-    // |NGGridChildIterator|, which iterates over its children in order-modified
-    // document order; we want to keep such order since auto-placement and
-    // painting order rely on it later in the algorithm.
+    // Grid items are appended in document order, but we want to rearrange them
+    // in order-modified document order since auto-placement and painting rely
+    // on it later in the algorithm.
     Vector<GridItemData> item_data;
     Vector<wtf_size_t> reordered_item_indices;
   };

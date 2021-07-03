@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -1278,18 +1277,35 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
 
   const auto& container_style = Style();
   const auto container_writing_mode = ConstraintSpace().GetWritingMode();
+  const int initial_order = ComputedStyleInitialValues::InitialOrder();
+  bool should_sort_grid_items_by_order_property = false;
 
-  NGGridChildIterator iterator(Node());
-  for (NGBlockNode child = iterator.NextChild(); child;
-       child = iterator.NextChild()) {
-    GridItemData grid_item(
-        MeasureGridItem(child, container_style, container_writing_mode));
-    // If |out_of_flow_items| is provided, store out-of-flow items separately,
-    // as they do not contribute to track sizing or auto-placement.
-    if (grid_item.item_type == ItemType::kInGridFlow)
+  for (NGLayoutInputNode child = Node().FirstChild(); child;
+       child = child.NextSibling()) {
+    GridItemData grid_item(MeasureGridItem(
+        To<NGBlockNode>(child), container_style, container_writing_mode));
+
+    // Order all of our in-flow children by their order property. If
+    // |out_of_flow_items| is provided, store out-of-flow items separately, as
+    // they do not contribute to track sizing or auto-placement.
+    if (grid_item.item_type == ItemType::kInGridFlow) {
+      should_sort_grid_items_by_order_property |=
+          child.Style().Order() != initial_order;
       grid_items->Append(grid_item);
-    else if (out_of_flow_items)
+    } else if (out_of_flow_items) {
       out_of_flow_items->emplace_back(grid_item);
+    }
+  }
+
+  // We only need to sort this when we encounter a non-initial order property.
+  auto CompareItemsByOrderProperty = [](const GridItemData& a,
+                                        const GridItemData& b) {
+    return a.node.Style().Order() < b.node.Style().Order();
+  };
+
+  if (should_sort_grid_items_by_order_property) {
+    std::stable_sort(grid_items->item_data.begin(), grid_items->item_data.end(),
+                     CompareItemsByOrderProperty);
   }
 }
 
@@ -1584,7 +1600,7 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
       &item.is_block_axis_overflow_safe);
 
   const auto item_writing_mode =
-      item.node.Style().GetWritingDirection().GetWritingMode();
+      item_style.GetWritingDirection().GetWritingMode();
   item.row_baseline_type = DetermineBaselineType(
       kForRows, container_writing_mode, item_writing_mode);
   item.column_baseline_type = DetermineBaselineType(

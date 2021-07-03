@@ -1366,7 +1366,6 @@ source_set("unit_tests") {
     "layout/ng/flex/ng_flex_layout_algorithm_test.cc",
     "layout/ng/geometry/ng_box_strut_test.cc",
     "layout/ng/geometry/ng_static_position_test.cc",
-    "layout/ng/grid/ng_grid_child_iterator_test.cc",
     "layout/ng/grid/ng_grid_layout_algorithm_test.cc",
     "layout/ng/grid/ng_grid_track_collection_test.cc",
     "layout/ng/inline/layout_ng_text_combine_test.cc",
