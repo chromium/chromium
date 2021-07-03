@@ -21,26 +21,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="PA.PCScan.{Process}.Scanner" units="ms" expires_after="M94">
+<histogram name="PA.PCScan.{Process}.{Actor}" units="ms" expires_after="M94">
   <owner>bikineev@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <summary>
-    Overall duration of a single PCScan cycle in the {Process} process. Reported
-    once per PCScan cycle at the end.
+    Overall duration of a single PCScan cycle in the {Process} process.
+    Performed by {Actor} thread(s). Reported once per PCScan cycle at the end.
   </summary>
   <token key="Process">
     <variant name="Browser"/>
     <variant name="Renderer"/>
   </token>
+  <token key="Actor">
+    <variant name="Mutator"/>
+    <variant name="Scanner"/>
+  </token>
 </histogram>
 
-<histogram name="PA.PCScan.{Process}.Scanner.{Phase}" units="ms"
+<histogram name="PA.PCScan.{Process}.{Actor}.{Phase}" units="ms"
     expires_after="M94">
   <owner>bikineev@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <summary>
-    Duration of the PCScan phase that {Phase} in the {Process} process. Reported
-    once per each PCScan cycle at the end.
+    Duration of the PCScan phase that {Phase} in the {Process} process.
+    Performed by {Actor} thread(s). Reported once per each PCScan cycle at the
+    end.
   </summary>
   <token key="Process">
     <variant name="Browser"/>
@@ -52,9 +57,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
                  for faster lookup"/>
     <variant name="Scan"
         summary="scans the partition alloc heap looking for dangling pointers"/>
+    <variant name="ScanStack" summary="scans the stack for dangling pointers"/>
     <variant name="Sweep"
         summary="performs sweeping (actual freeing) of memory that is no
                  longer reachable"/>
+  </token>
+  <token key="Actor">
+    <variant name="Mutator"/>
+    <variant name="Scanner"/>
   </token>
 </histogram>
 
