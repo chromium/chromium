@@ -33,6 +33,8 @@ class ScreenChangeMonitor : public display::DisplayObserver {
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
+  display::ScopedOptionalDisplayObserver display_observer_{this};
+
   // The callback to run on screen change events.
   base::RepeatingCallback<void(bool)> callback_;
 

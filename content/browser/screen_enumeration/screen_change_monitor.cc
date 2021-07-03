@@ -14,17 +14,12 @@ ScreenChangeMonitor::ScreenChangeMonitor(
     : callback_(callback) {
 // TODO(crbug.com/1071233): Investigate test failures (crashes?) on Fuchsia.
 #if !defined(OS_FUCHSIA)
-  if (display::Screen* screen = display::Screen::GetScreen()) {
+  if (display::Screen* screen = display::Screen::GetScreen())
     cached_displays_ = screen->GetAllDisplays();
-    screen->AddObserver(this);
-  }
 #endif  // !OS_FUCHSIA
 }
 
-ScreenChangeMonitor::~ScreenChangeMonitor() {
-  if (display::Screen* screen = display::Screen::GetScreen())
-    screen->RemoveObserver(this);
-}
+ScreenChangeMonitor::~ScreenChangeMonitor() = default;
 
 void ScreenChangeMonitor::OnScreensChange() {
   if (display::Screen* screen = display::Screen::GetScreen()) {
