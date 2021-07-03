@@ -10,8 +10,8 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

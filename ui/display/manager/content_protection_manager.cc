@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
-#include "base/stl_util.h"
 #include "ui/display/manager/apply_content_protection_task.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/query_content_protection_task.h"

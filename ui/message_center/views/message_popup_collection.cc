@@ -5,7 +5,7 @@
 #include "ui/message_center/views/message_popup_collection.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/linear_animation.h"
