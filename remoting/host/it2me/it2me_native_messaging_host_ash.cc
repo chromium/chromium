@@ -64,6 +64,9 @@ void It2MeNativeMessageHostAsh::Connect(
 
   message.SetStringKey(kUserName, params->user_name);
   message.SetStringKey(kAuthServiceWithToken, params->oauth_access_token);
+  message.SetBoolKey(kSuppressUserDialogs, params->suppress_user_dialogs);
+  message.SetBoolKey(kSuppressNotifications, params->suppress_notifications);
+  message.SetBoolKey(kTerminateUponInput, params->terminate_upon_input);
 
   std::string message_json;
   base::JSONWriter::Write(message, &message_json);
