@@ -1800,13 +1800,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             //                dependencies are ready. This logic was introduced to move asynchronous
             //                observer events from the infra (LayoutManager) into the feature using
             //                it.
-            mControlContainer.post(() -> {
-                // TODO(1201279): This check is synonymous with whether ToolbarManager has been
-                //                destroyed. This would otherwise use the CallbackController, but
-                //                that causes start surface tests to lock up.
-                if (mLayoutStateProvider == null) return;
-                updateForLayout(LayoutType.TAB_SWITCHER, true);
-            });
+            mControlContainer.post(mCallbackController.makeCancelable(
+                    () -> updateForLayout(LayoutType.TAB_SWITCHER, true)));
         }
 
         mAppThemeColorProvider.setLayoutStateProvider(mLayoutStateProvider);

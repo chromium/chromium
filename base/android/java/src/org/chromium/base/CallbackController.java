@@ -10,8 +10,7 @@ import androidx.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -85,7 +84,7 @@ public final class CallbackController {
 
     /** Class wrapping a {@link Callback} interface with a {@link Cancelable} interface. */
     private class CancelableCallback<T> implements Cancelable, Callback<T> {
-        @GuardedBy("mReadWriteLock")
+        @GuardedBy("mReentrantLock")
         private Callback<T> mCallback;
 
         private CancelableCallback(@NonNull Callback<T> callback) {
@@ -93,6 +92,7 @@ public final class CallbackController {
         }
 
         @Override
+        @SuppressWarnings("GuardedBy")
         public void cancel() {
             mCallback = null;
         }
@@ -101,7 +101,7 @@ public final class CallbackController {
         public void onResult(T result) {
             // Guarantees the cancelation is not going to happen, while callback is executed by
             // another thread.
-            try (AutoCloseableLock acl = AutoCloseableLock.lock(mReadWriteLock.readLock())) {
+            try (AutoCloseableLock acl = AutoCloseableLock.lock(mReentrantLock)) {
                 if (mCallback != null) mCallback.onResult(result);
             }
         }
@@ -109,7 +109,7 @@ public final class CallbackController {
 
     /** Class wrapping {@link Runnable} interface with a {@link Cancelable} interface. */
     private class CancelableRunnable implements Cancelable, Runnable {
-        @GuardedBy("mReadWriteLock")
+        @GuardedBy("mReentrantLock")
         private Runnable mRunnable;
 
         private CancelableRunnable(@NonNull Runnable runnable) {
@@ -117,6 +117,7 @@ public final class CallbackController {
         }
 
         @Override
+        @SuppressWarnings("GuardedBy")
         public void cancel() {
             mRunnable = null;
         }
@@ -125,7 +126,7 @@ public final class CallbackController {
         public void run() {
             // Guarantees the cancelation is not going to happen, while runnable is executed by
             // another thread.
-            try (AutoCloseableLock acl = AutoCloseableLock.lock(mReadWriteLock.readLock())) {
+            try (AutoCloseableLock acl = AutoCloseableLock.lock(mReentrantLock)) {
                 if (mRunnable != null) mRunnable.run();
             }
         }
@@ -156,11 +157,11 @@ public final class CallbackController {
 
     /** A list of cancelables created and cancelable by this object. */
     @Nullable
-    @GuardedBy("mReadWriteLock")
+    @GuardedBy("mReentrantLock")
     private ArrayList<WeakReference<Cancelable>> mCancelables = new ArrayList<>();
 
     /** Ensures thread safety of creating cancelables and canceling them. */
-    private final ReadWriteLock mReadWriteLock = new ReentrantReadWriteLock(/*fair=*/true);
+    private final ReentrantLock mReentrantLock = new ReentrantLock(/*fair=*/true);
 
     /**
      * Wraps a provided {@link Callback} with a cancelable object that is tracked by this
@@ -173,7 +174,7 @@ public final class CallbackController {
      * @return A cancelable instance of the callback.
      */
     public <T> Callback<T> makeCancelable(@NonNull Callback<T> callback) {
-        try (AutoCloseableLock acl = AutoCloseableLock.lock(mReadWriteLock.writeLock())) {
+        try (AutoCloseableLock acl = AutoCloseableLock.lock(mReentrantLock)) {
             checkNotCanceled();
             CancelableCallback<T> cancelable = new CancelableCallback<>(callback);
             mCancelables.add(new WeakReference<>(cancelable));
@@ -191,7 +192,7 @@ public final class CallbackController {
      * @return A cancelable instance of the runnable.
      */
     public Runnable makeCancelable(@NonNull Runnable runnable) {
-        try (AutoCloseableLock acl = AutoCloseableLock.lock(mReadWriteLock.writeLock())) {
+        try (AutoCloseableLock acl = AutoCloseableLock.lock(mReentrantLock)) {
             checkNotCanceled();
             CancelableRunnable cancelable = new CancelableRunnable(runnable);
             mCancelables.add(new WeakReference<>(cancelable));
@@ -205,7 +206,15 @@ public final class CallbackController {
      * This method must only be called once and makes the instance unusable afterwards.
      */
     public void destroy() {
-        try (AutoCloseableLock acl = AutoCloseableLock.lock(mReadWriteLock.writeLock())) {
+        // This is likely an invalid state. A callback is currently being run, which means the
+        // owning class using this controller is likely in the middle of a method call. But if
+        // destroy is called on the controller, it is also likely being called on the owning class.
+        // After destroy completes, the owning class will be in invalid state to be used, and the
+        // rest of the method call will be operating with the owning class in an invalid state. If
+        // something has a valid use case for this, remove this assert.
+        assert !mReentrantLock.isHeldByCurrentThread();
+
+        try (AutoCloseableLock acl = AutoCloseableLock.lock(mReentrantLock)) {
             checkNotCanceled();
             for (Cancelable cancelable : CollectionUtil.strengthen(mCancelables)) {
                 cancelable.cancel();
@@ -215,7 +224,7 @@ public final class CallbackController {
     }
 
     /** If the cancelation already happened, throws an {@link IllegalStateException}. */
-    @GuardedBy("mReadWriteLock")
+    @GuardedBy("mReentrantLock")
     private void checkNotCanceled() {
         if (mCancelables == null) {
             throw new IllegalStateException("This CallbackController has already been destroyed.");
