@@ -11,6 +11,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
@@ -283,6 +284,10 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
 
     if (is_primary_display)
       explicit_primary_display_index = displays.size();
+
+    const std::string name(output_info->name.begin(), output_info->name.end());
+    if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS"))
+      display::Display::SetInternalDisplayId(display_id);
 
     auto monitor_iter =
         output_to_monitor.find(static_cast<x11::RandR::Output>(output_id));
