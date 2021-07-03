@@ -124,7 +124,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="6939719207673461467">Erakutsi/Ezkutatu teklatua.</translation>
 <translation id="6963936880795878952">Urruneko ordenagailuarekiko konexioak aldi baterako blokeatu dira, norbait balio ez duen PIN bat erabilita konektatzen saiatu delako. Saiatu berriro geroago.</translation>
 <translation id="6965382102122355670">Ados</translation>
-<translation id="6985691951107243942">Ziur <ph name="HOSTNAME" /> ostalarirako urruneko konexioak desgaitu nahi dituzula? Iritziz aldatzen baduzu, konexioak berriro gaitzeko, ordenagailua erabili beharko duzu.</translation>
+<translation id="6985691951107243942">Ziur <ph name="HOSTNAME" /> ostalarirako urruneko konexioak desgaitu nahi dituzula? Iritziz aldatzen bazara, konexioak berriro gaitzeko, ordenagailua erabili beharko duzu.</translation>
 <translation id="7019153418965365059">Ostalariaren errore ezezaguna: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Urruneko laguntza</translation>
 <translation id="7026930240735156896">Jarraitu ordenagailua urrunetik atzitzeko konfiguratzeko argibideei</translation>
