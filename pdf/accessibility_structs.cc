@@ -6,6 +6,16 @@
 
 namespace chrome_pdf {
 
+bool AccessibilityDocInfo::operator==(const AccessibilityDocInfo& other) const {
+  return page_count == other.page_count &&
+         text_accessible == other.text_accessible &&
+         text_copyable == other.text_copyable;
+}
+
+bool AccessibilityDocInfo::operator!=(const AccessibilityDocInfo& other) const {
+  return !(*this == other);
+}
+
 AccessibilityTextStyleInfo::AccessibilityTextStyleInfo() = default;
 
 AccessibilityTextStyleInfo::AccessibilityTextStyleInfo(

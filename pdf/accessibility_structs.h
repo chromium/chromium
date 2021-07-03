@@ -17,6 +17,9 @@
 namespace chrome_pdf {
 
 struct AccessibilityDocInfo {
+  bool operator==(const AccessibilityDocInfo& other) const;
+  bool operator!=(const AccessibilityDocInfo& other) const;
+
   uint32_t page_count = 0;
   bool text_accessible = false;
   bool text_copyable = false;
