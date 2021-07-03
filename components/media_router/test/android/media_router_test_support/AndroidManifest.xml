@@ -11,7 +11,8 @@
         <service android:name="org.chromium.components.media_router.cast_emulator.TestMediaRouteProviderService"
                 android:label="testMediaRouteProviderService"
                 android:process=":mrp"
-                tools:ignore="ExportedService" >
+                tools:ignore="ExportedService"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.media.MediaRouteProviderService" />
             </intent-filter>
