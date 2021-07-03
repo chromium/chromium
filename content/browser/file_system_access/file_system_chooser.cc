@@ -282,9 +282,6 @@ void FileSystemChooser::CreateAndShow(
     return;
   }
 
-  // TODO(https://crbug.com/878581): Better/more specific options to pass to
-  //     SelectFile.
-
   listener->dialog_->SelectFile(
       options.type(), /*title=*/std::u16string(), options.default_path(),
       &options.file_type_info(), options.default_file_type_index(),
