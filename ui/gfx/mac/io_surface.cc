@@ -240,8 +240,8 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
     for (size_t plane = 0; plane < num_planes; ++plane) {
       const size_t factor =
           gfx::SubsamplingFactorForBufferFormat(format, plane);
-      const size_t plane_width = size.width() / factor;
-      const size_t plane_height = size.height() / factor;
+      const size_t plane_width = (size.width() + factor - 1) / factor;
+      const size_t plane_height = (size.height() + factor - 1) / factor;
       const size_t plane_bytes_per_element = BytesPerElement(format, plane);
       const size_t plane_bytes_per_row = IOSurfaceAlignProperty(
           kIOSurfacePlaneBytesPerRow, plane_width * plane_bytes_per_element);

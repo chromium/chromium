@@ -48,13 +48,15 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
 #if defined(OS_CHROMEOS)
       // Allow odd size for CrOS.
       // TODO(https://crbug.com/1208788, https://crbug.com/1224781): Merge this
-      // with the path that uses gfx::MultiPlanarBufferFormatsAllowOddSizes.
+      // with the path that uses gfx::AllowOddHeightMultiPlanarBuffers.
       return true;
 #else
       // U and V planes are subsampled by a factor of 2.
-      if (gfx::MultiPlanarBufferFormatsAllowOddSizes())
-        return true;
-      return size.width() % 2 == 0 && size.height() % 2 == 0;
+      if (size.width() % 2)
+        return false;
+      if (size.height() % 2 && !gfx::AllowOddHeightMultiPlanarBuffers())
+        return false;
+      return true;
 #endif  // defined(OS_CHROMEOS)
   }
 
