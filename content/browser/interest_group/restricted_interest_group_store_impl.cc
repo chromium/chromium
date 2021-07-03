@@ -4,12 +4,14 @@
 
 #include "content/browser/interest_group/restricted_interest_group_store_impl.h"
 
+#include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
+#include "third_party/blink/public/common/interest_group/validate_interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 
 namespace content {
@@ -17,30 +19,6 @@ namespace content {
 namespace {
 
 constexpr base::TimeDelta kMaxExpiry = base::TimeDelta::FromDays(30);
-
-// Check if `url` can be used as an interest group's ad render URL. Ad URLs can
-// be cross origin, unlike other interest group URLs, but are still restricted
-// to HTTPS with no embedded credentials.
-bool IsUrlAllowedForRenderUrls(const GURL& url) {
-  if (url.scheme() != url::kHttpsScheme)
-    return false;
-
-  return !url.has_username() && !url.has_password();
-}
-
-// Check if `url` can be used with the specified interest group for any of
-// script URL, update URL, or realtime data URL. Ad render URLs should be
-// checked with IsUrlAllowedForRenderUrls(), which doesn't have the same-origin
-// check.
-bool IsUrlAllowed(const GURL& url, const blink::mojom::InterestGroup& group) {
-  if (url::Origin::Create(url) != group.owner)
-    return false;
-
-  // References are allowed in render URLs, since they're loaded in an iframe,
-  // but not in other URLs, which are requested directly. References aren't sent
-  // in HTTP requests.
-  return !url.has_ref() && IsUrlAllowedForRenderUrls(url);
-}
 
 }  // namespace
 
@@ -73,35 +51,10 @@ void RestrictedInterestGroupStoreImpl::JoinInterestGroup(
     return;
   }
 
-  // TODO(crbug.com/1200981): Either also check these renderer-side, or report
-  // to devtools to get a better error debugging experience.
-  if (origin().scheme() != url::kHttpsScheme)
+  if (!blink::ValidateInterestGroup(origin(), *group)) {
+    // TODO(mmenke): Call ReportBadMessage on the receiver pipe here
+    // (DocumentServiceBase currently does not expose it).
     return;
-
-  if (group->owner != origin())
-    return;
-
-  if (group->bidding_url && !IsUrlAllowed(*group->bidding_url, *group))
-    return;
-
-  if (group->update_url && !IsUrlAllowed(*group->update_url, *group))
-    return;
-
-  if (group->trusted_bidding_signals_url) {
-    if (!IsUrlAllowed(*group->trusted_bidding_signals_url, *group))
-      return;
-
-    // `trusted_bidding_signals_url` must not have a query string, since the
-    // query parameter needs to be set as part of running an auction.
-    if (group->trusted_bidding_signals_url->has_query())
-      return;
-  }
-
-  if (group->ads) {
-    for (const auto& ad : group->ads.value()) {
-      if (!IsUrlAllowedForRenderUrls(ad->render_url))
-        return;
-    }
   }
 
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;

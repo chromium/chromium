@@ -198,147 +198,32 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   EXPECT_EQ(0, GetJoinCount(kOriginB, kInterestGroupName));
 }
 
-// Check that `bidding_url`, `update_url`, and `trusted_bidding_signals_url`
-// must be same-origin and HTTPS.
+// Test joining an interest group with a disallowed cross-origin URL. Doesn't
+// exhaustively test all cases, as the validation function has its own unit
+// tests. This is just to make sure those are hooked up.
 //
-// Ad URLs do not have to be same origin, so they're checked in a different
-// test.
-TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupUrlValidation) {
-  // Nested URL schemes, like filesystem URLs, are the only cases where a URL
-  // being same origin with an HTTPS origin does not imply the URL itself is
-  // also HTTPS.
-  const GURL kFileSystemUrl = GURL("filesystem:https://a.test/foo");
-  EXPECT_EQ(kOriginA, url::Origin::Create(kFileSystemUrl));
+// TODO(mmenke): Once ReportBadMessage is called in these cases, make sure Mojo
+// pipe is closed as well.
+TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupCrossSiteUrls) {
+  const GURL kBadUrl = GURL("https://user:pass@a.test/");
 
-  const GURL kRejectedUrls[] = {
-      // HTTP URLs are rejected: They're both the wrong scheme, and
-      // cross-origin.
-      GURL("http://a.test/"),
-      // Cross origin URLs are rejected.
-      GURL("https://b.test/"),
-      // URL with different ports are cross-origin.
-      GURL("https://a.test:1234/"),
-      // URLs with opaque origins are cross-origin.
-      GURL("data://text/html,payload"),
-
-      // filesystem URLs are rejected, even if they're same-origin with the page
-      // origin.
-      kFileSystemUrl,
-
-      // URLs with user/ports are rejected.
-      GURL("https://user:pass@a.test/"),
-      // References also aren't allowed, as they aren't sent over HTTP.
-      GURL("https://a.test/#foopy"),
-  };
-
-  for (const GURL& rejected_url : kRejectedUrls) {
-    SCOPED_TRACE(rejected_url.spec());
-
-    // Test `bidding_url`.
-    blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
-    interest_group->bidding_url = rejected_url;
-    JoinInterestGroupAndFlush(std::move(interest_group));
-    EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
-
-    // Test `update_url`.
-    interest_group = CreateInterestGroup();
-    interest_group->update_url = rejected_url;
-    JoinInterestGroupAndFlush(std::move(interest_group));
-    EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
-
-    // Test `trusted_bidding_signals_url`.
-    interest_group = CreateInterestGroup();
-    interest_group->trusted_bidding_signals_url = rejected_url;
-    JoinInterestGroupAndFlush(std::move(interest_group));
-    EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
-  }
-
-  // `trusted_bidding_signals_url` also can't include query strings.
+  // Test `bidding_url`.
   blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
-  interest_group->trusted_bidding_signals_url = GURL("https://a.test/?query");
+  interest_group->bidding_url = kBadUrl;
   JoinInterestGroupAndFlush(std::move(interest_group));
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 
-  // Test success case for each field.
-
-  // Test `bidding_url`.
-  interest_group = CreateInterestGroup();
-  interest_group->bidding_url = GURL("https://a.test/foo/bar.js?query");
-  JoinInterestGroupAndFlush(std::move(interest_group));
-  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
-
   // Test `update_url`.
   interest_group = CreateInterestGroup();
-  interest_group->update_url = GURL("https://a.test/foo/bar.js?query");
+  interest_group->update_url = kBadUrl;
   JoinInterestGroupAndFlush(std::move(interest_group));
-  EXPECT_EQ(2, GetJoinCount(kOriginA, kInterestGroupName));
+  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Test `trusted_bidding_signals_url`.
   interest_group = CreateInterestGroup();
-  interest_group->trusted_bidding_signals_url =
-      GURL("https://a.test/foo/bar.js");
+  interest_group->trusted_bidding_signals_url = kBadUrl;
   JoinInterestGroupAndFlush(std::move(interest_group));
-  EXPECT_EQ(3, GetJoinCount(kOriginA, kInterestGroupName));
-}
-
-TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestGroupAdUrlValidation) {
-  const struct {
-    bool expect_allowed;
-    GURL url;
-  } kTestCases[] = {
-      // Same origin URLs are allowed.
-      {true, GURL("https://a.test:1234/foo?bar")},
-
-      // Cross origin URLs are allowed, as long as they're HTTPS.
-      {true, GURL("https://b.test/")},
-      {true, GURL("https://a.test:1234/")},
-
-      // URLs with the wrong scheme are rejected.
-      {false, GURL("http://a.test/")},
-      {false, GURL("data://text/html,payload")},
-      {false, GURL("filesystem:https://a.test/foo")},
-
-      // URLs with user/ports are rejected.
-      {false, GURL("https://user:pass@a.test/")},
-
-      // References are allowed for ads, though not other requests, since they
-      // only have an effect when loading a page in a renderer.
-      {true, GURL("https://a.test/#foopy")},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.url.spec());
-
-    // Add an InterestGroup with the test cases's URL as the only ad's URL.
-    int initial_join_count = GetJoinCount(kOriginA, kInterestGroupName);
-    blink::mojom::InterestGroupPtr interest_group = CreateInterestGroup();
-    interest_group->ads.emplace();
-    interest_group->ads->emplace_back(blink::mojom::InterestGroupAd::New(
-        test_case.url, absl::nullopt /* metadata */));
-    JoinInterestGroupAndFlush(std::move(interest_group));
-    if (test_case.expect_allowed) {
-      EXPECT_EQ(initial_join_count + 1,
-                GetJoinCount(kOriginA, kInterestGroupName));
-    } else {
-      EXPECT_EQ(initial_join_count, GetJoinCount(kOriginA, kInterestGroupName));
-    }
-
-    // Add an InterestGroup with the test cases's URL as the second ad's URL.
-    initial_join_count = GetJoinCount(kOriginA, kInterestGroupName);
-    interest_group = CreateInterestGroup();
-    interest_group->ads.emplace();
-    interest_group->ads->emplace_back(blink::mojom::InterestGroupAd::New(
-        GURL("https://a.test/"), absl::nullopt /* metadata */));
-    interest_group->ads->emplace_back(blink::mojom::InterestGroupAd::New(
-        test_case.url, absl::nullopt /* metadata */));
-    JoinInterestGroupAndFlush(std::move(interest_group));
-    if (test_case.expect_allowed) {
-      EXPECT_EQ(initial_join_count + 1,
-                GetJoinCount(kOriginA, kInterestGroupName));
-    } else {
-      EXPECT_EQ(initial_join_count, GetJoinCount(kOriginA, kInterestGroupName));
-    }
-  }
+  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 }
 
 // Check that cross-origin leave interest group operations don't work.

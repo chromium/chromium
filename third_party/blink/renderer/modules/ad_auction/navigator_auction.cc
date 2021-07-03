@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
+#include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 
@@ -396,22 +397,39 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
     return;
   mojo_group->name = group->name();
   if (!CopyBiddingLogicUrlFromIdlToMojo(*context, exception_state, *group,
-                                        *mojo_group))
+                                        *mojo_group)) {
     return;
+  }
   if (!CopyDailyUpdateUrlFromIdlToMojo(*context, exception_state, *group,
-                                       *mojo_group))
+                                       *mojo_group)) {
     return;
+  }
   if (!CopyTrustedBiddingSignalsUrlFromIdlToMojo(*context, exception_state,
-                                                 *group, *mojo_group))
+                                                 *group, *mojo_group)) {
     return;
+  }
   if (!CopyTrustedBiddingSignalsKeysFromIdlToMojo(*group, *mojo_group))
     return;
   if (!CopyUserBiddingSignalsFromIdlToMojo(*script_state, exception_state,
-                                           *group, *mojo_group))
+                                           *group, *mojo_group)) {
     return;
+  }
   if (!CopyAdsFromIdlToMojo(*context, *script_state, exception_state, *group,
-                            *mojo_group))
+                            *mojo_group)) {
     return;
+  }
+
+  String error_field_name;
+  String error_field_value;
+  String error;
+  if (!ValidateBlinkInterestGroup(
+          *ExecutionContext::From(script_state)->GetSecurityOrigin(),
+          *mojo_group, error_field_name, error_field_value, error)) {
+    exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+        *group, error_field_name, error_field_value, error));
+    return;
+  }
+
   interest_group_store_->JoinInterestGroup(std::move(mojo_group));
 }
 

@@ -344,14 +344,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   // This join should succeed and be added to the database.
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(test_origin_a, "cars"));
 
-  // This join should silently fail since a.test is not the same origin as
-  // foo.a.test.
-  EXPECT_TRUE(JoinInterestGroupInJS(
+  // This join should fail and throw an exception since a.test is not the same
+  // origin as foo.a.test.
+  EXPECT_FALSE(JoinInterestGroupInJS(
       url::Origin::Create(GURL("https://foo.a.test")), "cars"));
 
-  // This join should silently fail since a.test is not the same origin as
-  // the bidding_url, bid.a.test
-  EXPECT_TRUE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
+  // This join should fail and throw an exception since a.test is not the same
+  // origin as the bidding_url, bid.a.test.
+  EXPECT_FALSE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
       /* expiry */ base::Time(),
       /* owner= */ test_origin_a,
       /* name = */ "bicycles",
@@ -362,9 +362,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
       /* user_bidding_signals = */ absl::nullopt,
       /* ads = */ absl::nullopt)));
 
-  // This join should silently fail since a.test is not the same origin as
-  // the update_url, update.a.test
-  EXPECT_TRUE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
+  // This join should fail and throw an exception since a.test is not the same
+  // origin as the update_url, update.a.test.
+  EXPECT_FALSE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
       /* expiry */ base::Time(),
       /* owner= */ test_origin_a,
       /* name = */ "tricycles",
@@ -375,9 +375,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
       /* user_bidding_signals = */ absl::nullopt,
       /* ads = */ absl::nullopt)));
 
-  // This join should silently fail since a.test is not the same origin as
-  // the trusted_bidding_signals_url, signals.a.test
-  EXPECT_TRUE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
+  // This join should fail and throw an exception since a.test is not the same
+  // origin as the trusted_bidding_signals_url, signals.a.test.
+  EXPECT_FALSE(JoinInterestGroupInJS(blink::mojom::InterestGroup::New(
       /* expiry */ base::Time(),
       /* owner= */ test_origin_a,
       /* name = */ "four-wheelers",
@@ -388,7 +388,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
       /* user_bidding_signals = */ absl::nullopt,
       /* ads = */ absl::nullopt)));
 
-  // This join should silently fail since d.test is not allowlisted for the API
+  // This join should silently fail since d.test is not allowlisted for the API,
+  // and allowlist checks only happen in the browser process, so don't throw an
+  // exception.
   GURL test_url_d = https_server_->GetURL("d.test", "/echo");
   url::Origin test_origin_d = url::Origin::Create(test_url_d);
   ASSERT_TRUE(NavigateToURL(shell(), test_url_d));
@@ -435,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   // name.
   EXPECT_TRUE(LeaveInterestGroupInJS(test_origin_b, "cars"));
 
-  // This leave should silently fail because it is cross-origin
+  // This leave should silently fail because it is cross-origin.
   ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
   EXPECT_TRUE(LeaveInterestGroupInJS(test_origin_b, "trucks"));
 
@@ -464,34 +466,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionBasic) {
           test_url.GetOrigin().spec(),
           https_server_->GetURL("b.test", "/interest_group/decision_logic.js")
               .spec())));
-}
-
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinInterestGroupFull) {
-  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
-
-  EXPECT_EQ("done", EvalJs(shell(), R"(
-(function() {
-  navigator.joinAdInterestGroup(
-      {
-        name: 'cars',
-        owner: 'https://test.com',
-        biddingLogicUrl: 'https://test.com/bidding_url',
-        dailyUpdateUrl: 'https://test.com/update_url',
-        trustedBiddingSignalsUrl:
-            'https://test.com/trusted_bidding_signals_url',
-        trustedBiddingSignalsKeys: ['key1', 'key2'],
-        userBiddingSignals: {some: 'json', data: {here: [1, 2, 3]}},
-        ads: [{
-          renderUrl: 'https://test.com/ad_url',
-          metadata: {ad: 'metadata', here: [1, 2, 3]}
-        }]
-      },
-      /*joinDurationSec=*/1);
-  return 'done';
-})())"));
-
-  // We just verify that the operation didn't crash and that the JS completes
-  // successfully.
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionFull) {
