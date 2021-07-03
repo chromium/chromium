@@ -42,6 +42,18 @@ namespace gpu {
 
 namespace {
 
+// TODO(magchen@): Remove PFN_D3D12_CREATE_DEVICE_CHROMIUM and use
+// PFN_D3D12_CREATE_DEVICE from d3d12.h directly once the Windows toolchain is
+// updated.
+
+// Declaration for D3D12CreateDevice() with D3D_FEATURE_LEVEL_12_2 support in
+// D3D_FEATURE_LEVEL_CHROMIUM.
+typedef HRESULT(WINAPI* PFN_D3D12_CREATE_DEVICE_CHROMIUM)(
+    _In_opt_ IUnknown*,
+    D3D_FEATURE_LEVEL_CHROMIUM,
+    _In_ REFIID,
+    _COM_Outptr_opt_ void**);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // This should match enum D3D12FeatureLevel in
@@ -52,7 +64,8 @@ enum class D3D12FeatureLevel {
   kD3DFeatureLevel_12_1 = 2,
   kD3DFeatureLevel_11_0 = 3,
   kD3DFeatureLevel_11_1 = 4,
-  kMaxValue = kD3DFeatureLevel_11_1,
+  kD3DFeatureLevel_12_2 = 5,
+  kMaxValue = kD3DFeatureLevel_12_2,
 };
 
 inline D3D12FeatureLevel ConvertToHistogramFeatureLevel(
@@ -60,13 +73,15 @@ inline D3D12FeatureLevel ConvertToHistogramFeatureLevel(
   switch (d3d_feature_level) {
     case 0:
       return D3D12FeatureLevel::kD3DFeatureLevelUnknown;
-    case D3D_FEATURE_LEVEL_12_0:
+    case D3D12_FEATURE_LEVEL_12_0:
       return D3D12FeatureLevel::kD3DFeatureLevel_12_0;
-    case D3D_FEATURE_LEVEL_12_1:
+    case D3D12_FEATURE_LEVEL_12_1:
       return D3D12FeatureLevel::kD3DFeatureLevel_12_1;
-    case D3D_FEATURE_LEVEL_11_0:
+    case D3D12_FEATURE_LEVEL_12_2:
+      return D3D12FeatureLevel::kD3DFeatureLevel_12_2;
+    case D3D12_FEATURE_LEVEL_11_0:
       return D3D12FeatureLevel::kD3DFeatureLevel_11_0;
-    case D3D_FEATURE_LEVEL_11_1:
+    case D3D12_FEATURE_LEVEL_11_1:
       return D3D12FeatureLevel::kD3DFeatureLevel_11_1;
     default:
       NOTREACHED();
@@ -245,12 +260,13 @@ uint32_t GetGpuSupportedD3D12Version() {
     return 0;
 
   // The order of feature levels to attempt to create in D3D CreateDevice
-  const D3D_FEATURE_LEVEL feature_levels[] = {
-      D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1,
-      D3D_FEATURE_LEVEL_11_0};
+  const D3D_FEATURE_LEVEL_CHROMIUM feature_levels[] = {
+      D3D12_FEATURE_LEVEL_12_2, D3D12_FEATURE_LEVEL_12_1,
+      D3D12_FEATURE_LEVEL_12_0, D3D12_FEATURE_LEVEL_11_1,
+      D3D12_FEATURE_LEVEL_11_0};
 
-  PFN_D3D12_CREATE_DEVICE D3D12CreateDevice =
-      reinterpret_cast<PFN_D3D12_CREATE_DEVICE>(
+  PFN_D3D12_CREATE_DEVICE_CHROMIUM D3D12CreateDevice =
+      reinterpret_cast<PFN_D3D12_CREATE_DEVICE_CHROMIUM>(
           d3d12_library.GetFunctionPointer("D3D12CreateDevice"));
   if (D3D12CreateDevice) {
     // For the default adapter only. (*pAdapter == nullptr)
