@@ -653,6 +653,45 @@ class UnitTest(unittest.TestCase):
                files=files,
                ret=0)
 
+  def test_dedup_runtime_deps(self):
+    files = {
+        '/tmp/swarming_targets':
+        'base_unittests\n',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'base_unittests': {"
+         "  'label': '//base:base_unittests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+    }
+
+    mbw = self.fake_mbw(files)
+
+    def fake_call(cmd, env=None, buffer_output=True, stdin=None):
+      del cmd
+      del env
+      del buffer_output
+      del stdin
+      mbw.files['/fake_src/out/Default/base_unittests.runtime_deps'] = (
+          'base_unittests\n'
+          '../../filters/some_filter/\n'
+          '../../filters/some_filter/foo\n'
+          '../../filters/another_filter/hoo\n')
+      return 0, '', ''
+
+    mbw.Call = fake_call
+
+    self.check([
+        'gen', '-c', 'debug_goma', '--swarming-targets-file',
+        '/tmp/swarming_targets', '//out/Default'
+    ],
+               mbw=mbw,
+               ret=0)
+    self.assertIn('/fake_src/out/Default/base_unittests.isolate', mbw.files)
+    files = mbw.files.get('/fake_src/out/Default/base_unittests.isolate')
+    self.assertIn('../../filters/some_filter', files)
+    self.assertNotIn('../../filters/some_filter/foo', files)
+    self.assertIn('../../filters/another_filter/hoo', files)
+
   def test_isolate_dir(self):
     files = {
         '/fake_src/out/Default/toolchain.ninja':

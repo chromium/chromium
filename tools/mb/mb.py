@@ -1185,7 +1185,7 @@ class MetaBuildWrapper(object):
         if self.Exists(path):
           self.RemoveFile(path)
 
-  def _FilterOutUneededSkylabDeps(self, deps):
+  def _FilterOutUnneededSkylabDeps(self, deps):
     """Filter out the runtime dependencies not used by Skylab.
 
     Skylab is CrOS infra facilities for us to run hardware tests. These files
@@ -1204,6 +1204,33 @@ class MetaBuildWrapper(object):
         re.compile(r'^gen/.*'),
     ]
     return [f for f in deps if not any(r.match(f) for r in file_ignore_list)]
+
+  def _DedupDependencies(self, deps):
+    """Remove the deps already contained by other paths."""
+
+    def _add(root, path):
+      cur = path.popleft()
+      # Only continue the recursion if the path has child nodes
+      # AND the current node is not ended by other existing paths.
+      if path and root.get(cur) != {}:
+        return _add(root.setdefault(cur, {}), path)
+      # Cut this path, because child nodes are already included.
+      root[cur] = {}
+      return root
+
+    def _list(root, prefix, res):
+      for k, v in root.items():
+        if v == {}:
+          res.append('%s/%s' % (prefix, k))
+          continue
+        _list(v, '%s/%s' % (prefix, k), res)
+      return res
+
+    root = {}
+    for d in deps:
+      q = collections.deque(d.rstrip('/').split('/'))
+      _add(root, q)
+    return [p.lstrip('/') for p in _list(root, '', [])]
 
   def GenerateIsolates(self, vals, ninja_targets, isolate_map, build_dir):
     """
@@ -1237,8 +1264,9 @@ class MetaBuildWrapper(object):
 
       command, extra_files = self.GetSwarmingCommand(target, vals)
       runtime_deps = self.ReadFile(path_to_use).splitlines()
+      runtime_deps = self._DedupDependencies(runtime_deps)
       if 'is_skylab=true' in vals['gn_args']:
-        runtime_deps = self._FilterOutUneededSkylabDeps(runtime_deps)
+        runtime_deps = self._FilterOutUnneededSkylabDeps(runtime_deps)
 
       # For more info about RTS, please see
       # //docs/testing/regression-test-selection.md
