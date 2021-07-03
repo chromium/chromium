@@ -207,9 +207,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   // Used for recording UMA metrics for the number of sinks available.
   WiredDisplayDeviceCountMetrics device_count_metrics_;
 
-  // Keeps track of whether |this| is registered with display::Screen as a
-  // DisplayObserver.
-  bool is_observing_displays_ = false;
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(WiredDisplayMediaRouteProvider);
 };
