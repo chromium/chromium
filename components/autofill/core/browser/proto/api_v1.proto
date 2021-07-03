@@ -70,6 +70,8 @@ message AutofillQueryResponse {
       // Prediction made on a field.
       message FieldPrediction {
         // The predicted field type.
+        // See components/autofill/core/browser/field_types.h for defined types.
+        // It is not guaranteed that the value of |type| is known to the enum.
         optional int32 type = 1;
         // Indicates if the prediction is an override.
         optional bool override = 2 [default = false];
@@ -77,7 +79,8 @@ message AutofillQueryResponse {
       // Signature identifying the field that is the same as in the request.
       optional fixed32 field_signature = 1;
       reserved 2;  // optional int32 primary_type_prediction
-      // Detailed list of all possible predictions.
+      // Detailed list of all possible predictions. Contains an autofill and/or
+      // a password manager prediction.
       repeated FieldPrediction predictions = 3;
       // Whether the server-side classification believes that the field
       // may be pre-filled with a placeholder in the value attribute.
