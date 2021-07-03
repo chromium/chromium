@@ -163,7 +163,6 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     copy_dst.buffer = readback_buffer;
     copy_dst.layout.offset = 0;
     copy_dst.layout.bytesPerRow = 256;
-    copy_dst.layout.rowsPerImage = 0;
 
     wgpu::Extent3D copy_size = {1, 1, 1};
 
