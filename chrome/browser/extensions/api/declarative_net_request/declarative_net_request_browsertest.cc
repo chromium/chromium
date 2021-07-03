@@ -6226,7 +6226,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
   bfcache_rfh_delete_observer->WaitUntilDeleted();
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC)
 // https://crbug.com/1223379
 #define MAYBE_BackForwardCacheClearedOnUpdatingSessionRules \
   DISABLED_BackForwardCacheClearedOnUpdatingSessionRules
