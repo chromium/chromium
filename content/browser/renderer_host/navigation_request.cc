@@ -6480,9 +6480,16 @@ bool NavigationRequest::ShouldRenderFallbackContentForResponse(
 
 // https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents:hh-replace
 bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
-  // Not a same-url navigation.
+  // Not a same-url navigation. Note that this is comparing against the last
+  // history URL since this is what was used in the renderer check that was
+  // moved here. This means for error pages we will compare against the URL
+  // that failed to load, and for documents loaded with loadDataWithBaseURL,
+  // we'll compare against the history URL.
+  // TODO(https://crbug.com/1223398): Once we confirm we don't need history URLs
+  // for other uses anymore, use document URL (for non-error pages) &
+  // committed URL (for error pages) instead.
   if (common_params_->url !=
-      frame_tree_node_->current_frame_host()->last_url_in_renderer()) {
+      frame_tree_node_->current_frame_host()->last_history_url_in_renderer()) {
     return false;
   }
   // Never replace if there is no NavigationEntry to replace.

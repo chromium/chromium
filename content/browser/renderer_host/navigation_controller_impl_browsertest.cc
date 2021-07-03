@@ -320,6 +320,107 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
   bool base_url_empty() { return std::get<2>(GetParam()); }
   bool history_url_empty() { return std::get<3>(GetParam()); }
 
+  // Helper struct to combine all URLs involved for LoadDataWithBaseURL
+  // navigations.
+  struct URLsForLoadDataWithBaseURL {
+    GURL supplied_base_url;
+    GURL commit_url;
+    GURL virtual_url;
+    GURL history_url_for_data_url;
+    GURL document_url;
+    GURL renderer_history_url;
+  };
+
+  // A simplified version of NavigationRequest's
+  // IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer(). Some checks
+  // removed as all tests that call this are done on the main frame, uses data:
+  // URL, and won't commit an error page.
+  bool IsTreatedAsALoadDataWithBaseURLNavigation(
+      const GURL& base_url,
+      bool use_load_data_as_string_with_base_url) {
+    // To be treated as a loadDataWithBaseURL navigation, the base URL must be
+    // non-empty, or the data_url_as_string must be non-empty (which is always
+    // the case when `use_load_data_as_string_with_base_url` is true).
+    return !base_url.is_empty() || use_load_data_as_string_with_base_url;
+  }
+
+  void CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+      NavigationEntryImpl* entry,
+      RenderFrameHostImpl* rfh,
+      URLsForLoadDataWithBaseURL& urls,
+      bool is_renderer_initiated_same_document_navigation = false) {
+    EXPECT_EQ(urls.document_url, rfh->last_document_url_in_renderer());
+    EXPECT_EQ(urls.renderer_history_url, rfh->last_history_url_in_renderer());
+    // The URL in the session history entry will use the commit URL.
+    EXPECT_EQ(urls.commit_url, entry->GetURL());
+    // Regardless of whether the supplied base URL and history URL are actually
+    // used in the renderer or not, they will be saved in the entry.
+    EXPECT_EQ(urls.supplied_base_url, entry->GetBaseURLForDataURL());
+    EXPECT_EQ(urls.history_url_for_data_url, entry->GetHistoryURLForDataURL());
+    EXPECT_EQ(urls.virtual_url, entry->GetVirtualURL());
+    // We should use `commit_url` instead of `supplied_base_url` as the original
+    // url of this navigation entry, because `supplied_base_url` is only used
+    // for resolving relative paths in the data, or enforcing same origin policy
+    // (not to actually load the initial contents of the page).
+    EXPECT_EQ(urls.commit_url, entry->GetOriginalRequestURL());
+
+    // For cross-document or browser-initiated navigations, the redirect chain
+    // contains the document URL.
+    // TODO(https://crbug.com/1171237): Should we use the commit URL instead?
+    if (!is_renderer_initiated_same_document_navigation) {
+      EXPECT_EQ(1u, entry->GetRedirectChain().size());
+      EXPECT_EQ(urls.document_url, entry->GetRedirectChain()[0]);
+    }
+  }
+
+  URLsForLoadDataWithBaseURL GetURLsForLoadDataWithBaseURL(
+      const GURL& commit_url,
+      const GURL& supplied_base_url,
+      const GURL& supplied_history_url,
+      bool is_treated_as_load_data_with_base_url) {
+    URLsForLoadDataWithBaseURL result;
+    result.supplied_base_url = supplied_base_url;
+    // The "commit URL" will always be set to the URL used for commit (the data
+    // URL/header).
+    result.commit_url = commit_url;
+    // The virtual URL (the URL shown in the address bar) will be the supplied
+    // history url (*not* the renderer history URL), unless it's empty, in which
+    // case we'll fall back to the entry URL (see
+    // NavigationEntry::GetVirtualURL()).
+    result.virtual_url = supplied_history_url.is_empty() ? result.commit_url
+                                                         : supplied_history_url;
+    // The "history URL for data URL" in the NavigationEntry will always be set
+    // to the virtual URL, unless the base URL is empty, in which case it
+    // returns an empty url(see NavigationEntry::GetHistoryURLForDataURL())
+    result.history_url_for_data_url =
+        supplied_base_url.is_empty() ? GURL() : result.virtual_url;
+
+    // The "document URL" will be set to the base URL, unless the navigation is
+    // not treated as a loadDataWithBaseURL navigation or the base URL is empty,
+    // in which case it will use the commit URL.
+    result.document_url =
+        (is_treated_as_load_data_with_base_url && !supplied_base_url.is_empty())
+            ? supplied_base_url
+            : result.commit_url;
+    // The "renderer history URL" will be set to the supplied history URL,
+    // except in some cases (see how `history_url_for_data_url` is set in
+    // NavigationRequest::CreateNavigationRequestFromLoadParams()).
+    if (is_treated_as_load_data_with_base_url &&
+        !supplied_base_url.is_empty()) {
+      // If the navigation is treated as a loadDataWithBaseURL navigation, the
+      // renderer will try to use the supplied history URL, unless it's empty.
+      result.renderer_history_url = supplied_history_url.is_empty()
+                                        ? result.commit_url
+                                        : supplied_history_url;
+    } else {
+      // If the navigation is not treated as a loadDataWithBaseURL navigation,
+      // or the base URL is empty, the "unreachable URL" will be empty, so the
+      // history URL will be the same as the document URL.
+      result.renderer_history_url = result.document_url;
+    }
+    return result;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
 };
@@ -349,11 +450,18 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
     return;
 
   const std::string data_header = "data:text/html;charset=utf-8,";
-  const std::string data = "<html><body>foo</body></html>";
+  const std::string title = "foo";
+  const std::string data = base::StringPrintf(
+      "<html><head><title>%s</title></head><body>foo</body></html>",
+      title.c_str());
   const GURL data_url = GURL(data_header + data);
-  const GURL base_url = base_url_empty() ? GURL() : GURL("http://baseurl");
-  const GURL history_url =
+  // `base_url_for_data_url` in CommonNavigationParams.
+  const GURL supplied_base_url =
+      base_url_empty() ? GURL() : GURL("http://baseurl");
+  // `history_url_for_data_url` in CommonNavigationParams.
+  const GURL supplied_history_url =
       history_url_empty() ? GURL() : GURL("http://historyurl");
+  // `url` in CommonNavigationParams.
   const GURL commit_url =
       use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
@@ -363,87 +471,327 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
   if (use_load_data_as_string_with_base_url()) {
 #if defined(OS_ANDROID)
-    shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
+    shell()->LoadDataAsStringWithBaseURL(supplied_history_url, data,
+                                         supplied_base_url);
 #else
     NOTREACHED();
 #endif
   } else {
-    shell()->LoadDataWithBaseURL(history_url, data, base_url);
+    shell()->LoadDataWithBaseURL(supplied_history_url, data, supplied_base_url);
   }
 
   // Verify the pending NavigationEntry.
   NavigationEntryImpl* pending_entry = controller.GetPendingEntry();
+  URLsForLoadDataWithBaseURL urls = GetURLsForLoadDataWithBaseURL(
+      commit_url, supplied_base_url, supplied_history_url,
+      IsTreatedAsALoadDataWithBaseURLNavigation(
+          supplied_base_url, use_load_data_as_string_with_base_url()));
+
   // The URL of the entry will always be set to the URL used for commit.
-  EXPECT_EQ(commit_url, pending_entry->GetURL());
-  // base_url_for_data_url_ will always be set to |base_url|.
-  // The virtual URL will be |history_url|, unless it's empty, in which case
-  // we'll fall back to the URL used for the commit.
-  GURL virtual_url = history_url_empty() ? commit_url : history_url;
-  EXPECT_EQ(virtual_url, pending_entry->GetVirtualURL());
-  // The history URL in the NavigationEntry will always be set to the virtual
-  // URL, unless the base URL is empty.
-  GURL history_url_for_data_url = base_url_empty() ? GURL() : virtual_url;
-  EXPECT_EQ(history_url_for_data_url, pending_entry->GetHistoryURLForDataURL());
+  EXPECT_EQ(urls.commit_url, pending_entry->GetURL());
+  EXPECT_EQ(urls.supplied_base_url, pending_entry->GetBaseURLForDataURL());
+  EXPECT_EQ(urls.virtual_url, pending_entry->GetVirtualURL());
+  EXPECT_EQ(urls.history_url_for_data_url,
+            pending_entry->GetHistoryURLForDataURL());
 
   // 2) Let the navigation commit.
   same_tab_observer.Wait();
 
   // Verify the last committed NavigationEntry has correct HTTP status code
   // and URLs.
+  EXPECT_EQ(1, controller.GetEntryCount());
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
-  EXPECT_EQ(commit_url, entry->GetURL());
-  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(virtual_url, entry->GetVirtualURL());
-  EXPECT_EQ(history_url_for_data_url, entry->GetHistoryURLForDataURL());
-  // We should use commit_url instead of the base_url as the original url of
-  // this navigation entry, because base_url is only used for resolving relative
-  // paths in the data, or enforcing same origin policy.
-  EXPECT_EQ(commit_url, entry->GetOriginalRequestURL());
+  RenderFrameHostImpl* current_rfh =
+      static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame());
+
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 2.");
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(entry, current_rfh, urls);
+  }
+
   // data: URL loads always have HTTP status code 200.
-  EXPECT_EQ(200, contents()->GetMainFrame()->last_http_status_code());
+  EXPECT_EQ(200, current_rfh->last_http_status_code());
 
   // Verify that the page is not classified as an error page.
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry->GetPageType());
-  EXPECT_FALSE(contents()->GetMainFrame()->is_error_page());
-
-  // The redirect chain contains the base URL instead of the commit URL or
-  // the history URL, because it's the URL used by the DocumentLoader (unless
-  // the base URL is empty).
-  // TODO(https://crbug.com/1171237): Should we use the commit/history URL
-  // instead?
-  EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
-  GURL url_in_redirect_chain = base_url_empty() ? commit_url : base_url;
-  EXPECT_EQ(entry->GetRedirectChain()[0], url_in_redirect_chain);
+  EXPECT_FALSE(current_rfh->is_error_page());
 
   // The original request URL for loadDataWithBaseURL navigations will be the
   // URL used for commit (the data URL/header).
-  EXPECT_EQ(entry->GetOriginalRequestURL(), commit_url);
+  EXPECT_EQ(entry->GetOriginalRequestURL(), urls.commit_url);
 
   // No referrer since this is a browser-initiated navigation.
   ExpectReferrerWithDefaultPolicy(entry, GURL());
 
   // 3) Now reload and make sure the renderer isn't killed.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
-  EXPECT_TRUE(shell()->web_contents()->GetMainFrame()->IsRenderFrameLive());
+  current_rfh = static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame());
+  EXPECT_TRUE(current_rfh->IsRenderFrameLive());
 
-  // Verify the last committed NavigationEntry hasn't changed.
+  // Verify the last committed NavigationEntry and all the URLs hasn't changed.
+  EXPECT_EQ(1, controller.GetEntryCount());
   NavigationEntryImpl* reload_entry = controller.GetLastCommittedEntry();
-  EXPECT_EQ(entry, reload_entry);
-  EXPECT_EQ(commit_url, reload_entry->GetURL());
-  EXPECT_EQ(base_url, reload_entry->GetBaseURLForDataURL());
-  EXPECT_EQ(virtual_url, reload_entry->GetVirtualURL());
-  EXPECT_EQ(history_url_for_data_url, reload_entry->GetHistoryURLForDataURL());
-  EXPECT_EQ(commit_url, reload_entry->GetOriginalRequestURL());
+  EXPECT_EQ(reload_entry, entry);
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 3.");
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(reload_entry, current_rfh,
+                                                     urls);
+  }
 
-  EXPECT_EQ(reload_entry->GetRedirectChain().size(), 1u);
-  EXPECT_EQ(reload_entry->GetRedirectChain()[0], url_in_redirect_chain);
+  // 4) Now do a same-URL navigation, where all the URLs are the exact same as
+  // before. This will be turned into a reload by
+  // ShouldTreatNavigationAsReload() in navigation_controller_impl.cc.
+  LoadDataWithBaseURL(supplied_base_url, data, supplied_history_url, title,
+                      use_load_data_as_string_with_base_url());
 
-  // The original request URL for loadDataWithBaseURL navigations will be the
-  // URL used for commit (the data URL/header).
-  EXPECT_EQ(reload_entry->GetOriginalRequestURL(), commit_url);
+  // Verify the last committed NavigationEntry and all the URLs hasn't changed.
+  EXPECT_EQ(1, controller.GetEntryCount());
+  NavigationEntryImpl* same_url_entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(reload_entry, same_url_entry);
 
-  // No referrer since this is a browser-initiated navigation.
-  ExpectReferrerWithDefaultPolicy(entry, GURL());
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 4.");
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+        same_url_entry,
+        static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
+  }
+}
+
+// Similar to LoadDataWithBaseURLThenReload but tests renderer-initiated
+// same-document navigations after LoadDataWithBaseURL instead.
+IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
+                       LoadDataWithBaseURLThenRendererInitiatedSameDocument) {
+#if !defined(OS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url())
+    return;
+#endif
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting())
+    return;
+  // Renderer-initiated navigations to data: URL on a main frame will be
+  // blocked. If the base URL is empty, the renderer will use the data: URL as
+  // the base & document URL, and same-document navigations initiated by the
+  // renderer will try to do a main frame navigation to a data: URL, which will
+  // be blocked. So, return early instead.
+  if (base_url_empty())
+    return;
+
+  const std::string data_header = "data:text/html;charset=utf-8,";
+  const std::string title = "foo";
+  const std::string data = base::StringPrintf(
+      "<html><head><title>%s</title></head><body>foo</body></html>",
+      title.c_str());
+  const GURL data_url = GURL(data_header + data);
+  // `base_url_for_data_url` in CommonNavigationParams.
+  const GURL supplied_base_url =
+      base_url_empty() ? GURL() : GURL("http://baseurl");
+  // `history_url_for_data_url` in CommonNavigationParams.
+  const GURL supplied_history_url =
+      history_url_empty() ? GURL() : GURL("http://historyurl");
+  // `url` in CommonNavigationParams.
+  const GURL commit_url =
+      use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  LoadDataWithBaseURL(supplied_base_url, data, supplied_history_url, title,
+                      use_load_data_as_string_with_base_url());
+
+  URLsForLoadDataWithBaseURL urls = GetURLsForLoadDataWithBaseURL(
+      commit_url, supplied_base_url, supplied_history_url,
+      IsTreatedAsALoadDataWithBaseURLNavigation(
+          supplied_base_url, use_load_data_as_string_with_base_url()));
+
+  CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+      controller.GetLastCommittedEntry(),
+      static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
+
+  // 2) Make a same-document navigation by navigating to the document URL but
+  // adding a fragment in the end. No URLs change on the browser side (actually
+  // the base/document URL should have changed, but the browser has no way of
+  // knowing that).
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 2.");
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    GURL document_url_with_fragment = GURL(urls.document_url.spec() + "#foo");
+    EXPECT_TRUE(ExecJs(
+        shell(), JsReplace("location.href = $1;", document_url_with_fragment)));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+        controller.GetLastCommittedEntry(),
+        static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls,
+        true /* is_renderer_initiated_same_document_navigation */);
+  }
+
+  // 3) Do a same-document navigation via pushState. The URLs will stay the
+  // same (actually the base/document URL should have changed, but the browser
+  // has no way of knowing that).
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 3.");
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(ExecJs(shell(), "history.pushState({},'foo', 'bar')"));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+        controller.GetLastCommittedEntry(),
+        static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls,
+        true /* is_renderer_initiated_same_document_navigation */);
+  }
+}
+
+// Similar to LoadDataWithBaseURLThenReload but tests browser-initiated
+// same-document navigations after LoadDataWithBaseURL instead.
+IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
+                       LoadDataWithBaseURLThenBrowserInitiatedSameDocument) {
+#if !defined(OS_ANDROID)
+  // LoadDataAsStringWithBaseURL is only supported on Android.
+  if (use_load_data_as_string_with_base_url())
+    return;
+#endif
+  // LoadDataWithBaseURL is never subject to --site-per-process policy today
+  // (this API is only used by Android WebView [where OOPIFs have not shipped
+  // yet] and GuestView cases [which always hosts guests inside a renderer
+  // without an origin lock]).  Therefore, skip the test in --site-per-process
+  // mode to avoid renderer kills which won't happen in practice as described
+  // above.
+  //
+  // TODO(https://crbug.com/962643): Consider enabling this test once Android
+  // Webview or WebView guests support OOPIFs and/or origin locks.
+  if (AreAllSitesIsolatedForTesting())
+    return;
+
+  const std::string data_header = "data:text/html;charset=utf-8,";
+  const std::string title = "foo";
+  const std::string data = base::StringPrintf(
+      "<html><head><title>%s</title></head><body>foo</body></html>",
+      title.c_str());
+  const GURL data_url = GURL(data_header + data);
+  // `base_url_for_data_url` in CommonNavigationParams.
+  const GURL supplied_base_url =
+      base_url_empty() ? GURL()
+                       : embedded_test_server()->GetURL("/title1.html");
+  // `history_url_for_data_url` in CommonNavigationParams.
+  const GURL supplied_history_url =
+      history_url_empty() ? GURL()
+                          : embedded_test_server()->GetURL("/title2.html");
+  // `url` in CommonNavigationParams.
+  const GURL commit_url =
+      use_load_data_as_string_with_base_url() ? GURL(data_header) : data_url;
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Do a LoadDataWithBaseURL navigation.
+  LoadDataWithBaseURL(supplied_base_url, data, supplied_history_url, title,
+                      use_load_data_as_string_with_base_url());
+
+  URLsForLoadDataWithBaseURL urls = GetURLsForLoadDataWithBaseURL(
+      commit_url, supplied_base_url, supplied_history_url,
+      IsTreatedAsALoadDataWithBaseURLNavigation(
+          supplied_base_url, use_load_data_as_string_with_base_url()));
+  CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+      controller.GetLastCommittedEntry(),
+      static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
+
+  // 1) Try to make a same-document navigation from the browser after
+  // LoadDataWithBaseURL by navigating to the commit URL + "#foo". This will
+  // start out as same-document but might be restarted as cross-document if it
+  // doesn't match the document URL. All cases will just end up being a regular
+  // data: URL commit (either same-document or cross-document).
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 1. ");
+
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    GURL commit_url_with_fragment = GURL(commit_url.spec() + "#foo");
+    NavigationController::LoadURLParams params(commit_url_with_fragment);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    contents()->GetController().LoadURLWithParams(params);
+    capturer.Wait();
+    EXPECT_EQ(urls.document_url == urls.commit_url,
+              capturer.is_same_document());
+
+    // Update the URL expectations for the regular data: URL commit.
+    urls.commit_url = commit_url_with_fragment;
+    urls.document_url = commit_url_with_fragment;
+    urls.renderer_history_url = commit_url_with_fragment;
+    urls.history_url_for_data_url = GURL();
+    urls.supplied_base_url = GURL();
+    // If the navigation is classified as a same document, it might use the
+    // previous history URL as the virtual URL, probably unintentionally copied
+    // from the previous NavigationEntry.
+    urls.virtual_url = (capturer.is_same_document() && !history_url_empty())
+                           ? supplied_history_url
+                           : commit_url_with_fragment;
+
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+        controller.GetLastCommittedEntry(),
+        static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
+  }
+
+  // Do another LoadDataWithBaseURL navigation.
+  LoadDataWithBaseURL(supplied_base_url, data, supplied_history_url, title,
+                      use_load_data_as_string_with_base_url());
+  urls = GetURLsForLoadDataWithBaseURL(
+      commit_url, supplied_base_url, supplied_history_url,
+      IsTreatedAsALoadDataWithBaseURLNavigation(
+          supplied_base_url, use_load_data_as_string_with_base_url()));
+  CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+      controller.GetLastCommittedEntry(),
+      static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
+
+  // 2) Try to make a same-document navigation from the browser after
+  // LoadDataWithBaseURL by navigating to the document URL + "#foo". This will
+  // not be classified as same-document by the browser (unless the document URL
+  // is the same as the commit URL, e.g. if the base URL is empty) because the
+  // browser only compares against the document URL when deciding whether a
+  // navigation is same-document or not.
+  {
+    SCOPED_TRACE(testing::Message() << " Testing case 2. ");
+
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    GURL document_url_with_fragment = GURL(urls.document_url.spec() + "#foo");
+    NavigationController::LoadURLParams params(document_url_with_fragment);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    contents()->GetController().LoadURLWithParams(params);
+    capturer.Wait();
+    EXPECT_EQ(urls.document_url == urls.commit_url,
+              capturer.is_same_document());
+
+    // Update the URL expectations for the regular commit.
+    urls.commit_url = document_url_with_fragment;
+    urls.document_url = document_url_with_fragment;
+    urls.renderer_history_url = document_url_with_fragment;
+    urls.history_url_for_data_url = GURL();
+    urls.supplied_base_url = GURL();
+    // If the navigation is classified as a same document, it might use the
+    // previous history URL as the virtual URL, probably unintentionally copied
+    // from the previous NavigationEntry.
+    urls.virtual_url = (capturer.is_same_document() && !history_url_empty())
+                           ? supplied_history_url
+                           : document_url_with_fragment;
+
+    CheckURLsMatchExpectationsForLoadDataWithBaseURL(
+        controller.GetLastCommittedEntry(),
+        static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
+  }
 }
 
 // Verify which page loads when going back to a LoadDataWithBaseURL entry.
@@ -1645,12 +1993,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   RenderFrameHostImpl* child0 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child1 = root->child_at(1)->current_frame_host();
-  // The value of "last committed URL" in child0 is not updated, but "last URL
-  // in renderer" is updated correctly to be the same as the child1's URL.
+  // The value of "last committed URL" in child0 is not updated, but "last
+  // document URL" is updated correctly to be the same as the child1's URL.
   EXPECT_EQ(first_frame_url, child0->GetLastCommittedURL());
-  EXPECT_EQ(second_frame_url, child0->last_url_in_renderer());
+  EXPECT_EQ(second_frame_url, child0->last_document_url_in_renderer());
   EXPECT_EQ(second_frame_url, child1->GetLastCommittedURL());
-  EXPECT_EQ(second_frame_url, child1->last_url_in_renderer());
+  EXPECT_EQ(second_frame_url, child1->last_document_url_in_renderer());
 }
 
 // Test that a frame's url is correctly updated after a document.open() from
@@ -1694,12 +2042,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(2U, root->child_count());
   RenderFrameHostImpl* child0 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child1 = root->child_at(1)->current_frame_host();
-  // The value of "last committed URL" in child0 is not updated, but "last URL
-  // in renderer" is updated correctly to "about:blank".
+  // The value of "last committed URL" in child0 is not updated, but "last
+  // document URL" is updated correctly to "about:blank".
   EXPECT_EQ(frame_url, child0->GetLastCommittedURL());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), child0->last_url_in_renderer());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), child0->last_document_url_in_renderer());
   EXPECT_EQ(GURL(url::kAboutBlankURL), child1->GetLastCommittedURL());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), child1->last_url_in_renderer());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), child1->last_document_url_in_renderer());
 }
 
 // Test that a frame's url is partially updated after a document.open() from
@@ -1732,12 +2080,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(2U, root->child_count());
   RenderFrameHostImpl* child0 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child1 = root->child_at(1)->current_frame_host();
-  // The value of "last committed URL" in child0 is not updated, but "last URL
-  // in renderer" is updated correctly to "about:srdoc".
+  // The value of "last committed URL" in child0 is not updated, but "last
+  // document URL" is updated correctly to "about:srdoc".
   EXPECT_EQ(frame_url, child0->GetLastCommittedURL());
-  EXPECT_EQ(GURL("about:srcdoc"), child0->last_url_in_renderer());
+  EXPECT_EQ(GURL("about:srcdoc"), child0->last_document_url_in_renderer());
   EXPECT_EQ(GURL("about:srcdoc"), child1->GetLastCommittedURL());
-  EXPECT_EQ(GURL("about:srcdoc"), child1->last_url_in_renderer());
+  EXPECT_EQ(GURL("about:srcdoc"), child1->last_document_url_in_renderer());
 }
 
 // Test that a frame's url is partially updated after a document.open() from
@@ -1772,13 +2120,92 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(2U, root->child_count());
   RenderFrameHostImpl* child0 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child1 = root->child_at(1)->current_frame_host();
-  // The value of "last committed URL" in child0 is not updated, but "last URL
-  // in renderer" is updated correctly to the blob URL.
+  // The value of "last committed URL" in child0 is not updated, but "last
+  // document URL" is updated correctly to the blob URL.
   EXPECT_EQ(frame_url, child0->GetLastCommittedURL());
-  EXPECT_TRUE(child0->last_url_in_renderer().SchemeIsBlob());
+  EXPECT_TRUE(child0->last_document_url_in_renderer().SchemeIsBlob());
   EXPECT_TRUE(child1->GetLastCommittedURL().SchemeIsBlob());
-  EXPECT_TRUE(child1->last_url_in_renderer().SchemeIsBlob());
-  EXPECT_EQ(child0->last_url_in_renderer(), child1->last_url_in_renderer());
+  EXPECT_TRUE(child1->last_document_url_in_renderer().SchemeIsBlob());
+  EXPECT_EQ(child0->last_document_url_in_renderer(),
+            child1->last_document_url_in_renderer());
+}
+
+// Test the last committed, document, and history URLs in various cases.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html"));
+  GURL iframe_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  // 1) Navigate to `url1`. All three URLs in the main frame should be set to
+  // `url_1`, and `frame_url` in the iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+  EXPECT_EQ(url1, root->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url1, root->current_frame_host()->last_document_url_in_renderer());
+  EXPECT_EQ(url1, root->current_frame_host()->last_history_url_in_renderer());
+  FrameTreeNode* iframe = root->child_at(0);
+  EXPECT_EQ(iframe_url, iframe->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(iframe_url,
+            iframe->current_frame_host()->last_document_url_in_renderer());
+  EXPECT_EQ(iframe_url,
+            iframe->current_frame_host()->last_history_url_in_renderer());
+
+  // 2) Do a document.open() on the iframe from the main frame.
+  EXPECT_TRUE(ExecJs(
+      root, "document.getElementById(\"frame\").contentDocument.open();"));
+  // Run script in both the main frame and the iframe to ensure that the URL
+  // update is already sent to the browser before continuing.
+  EXPECT_TRUE(ExecJs(root, "true"));
+  EXPECT_TRUE(ExecJs(iframe, "true"));
+  // THe iframe's document & history URL is updated to `url1`.
+  EXPECT_EQ(iframe_url, iframe->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url1,
+            iframe->current_frame_host()->last_document_url_in_renderer());
+  EXPECT_EQ(url1, iframe->current_frame_host()->last_history_url_in_renderer());
+
+  // 3) Do a same-document navigation to `url_1_fragment` on the iframe (Note
+  // that this is a same-document navigation because the iframe's document URL
+  // is now `url1`).
+  GURL url_1_fragment(url1.spec() + "#foo");
+  {
+    FrameNavigateParamsCapturer capturer(iframe);
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(
+        ExecJs(iframe, JsReplace("location.href = '#foo';", url_1_fragment)));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+  }
+  // All three URLs in the iframe should be updated to `url1_fragment`.
+  EXPECT_EQ(url_1_fragment,
+            iframe->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url_1_fragment,
+            iframe->current_frame_host()->last_document_url_in_renderer());
+  EXPECT_EQ(url_1_fragment,
+            iframe->current_frame_host()->last_history_url_in_renderer());
+
+  // 4) Do a navigation to `url404`, which wil result in an error page.
+  // The document URL will be set to the kUnreachableWebDataURL.
+  GURL url404(embedded_test_server()->GetURL("/empty404.html"));
+  EXPECT_FALSE(NavigateToURL(shell(), url404));
+  EXPECT_EQ(url404, root->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            root->current_frame_host()->last_document_url_in_renderer());
+  EXPECT_EQ(url404, root->current_frame_host()->last_history_url_in_renderer());
+
+  // 5) Do a same-document pushState on an error page without changing the URL
+  // (otherwise it will result in an origin mismatch error). The URLs will stay
+  // the same.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(ExecJs(shell(), "history.pushState('', '')"));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+  }
+  EXPECT_EQ(url404, root->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            root->current_frame_host()->last_document_url_in_renderer());
+  EXPECT_EQ(url404, root->current_frame_host()->last_history_url_in_renderer());
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ErrorPageReplacement) {
@@ -3261,7 +3688,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
                                        ->GetLastCommittedURL());
     EXPECT_EQ(url_1, root->child_at(subframe_index)
                          ->current_frame_host()
-                         ->last_url_in_renderer());
+                         ->last_document_url_in_renderer());
     // The frame lost its "initial empty document" status, but
     // `has_committed_real_load` is still false because the last committed URL
     // stays the same.
@@ -3476,7 +3903,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(GURL("about:blank"),
               new_contents->GetMainFrame()->GetLastCommittedURL());
     EXPECT_EQ(main_window_url,
-              new_contents->GetMainFrame()->last_url_in_renderer());
+              new_contents->GetMainFrame()->last_document_url_in_renderer());
 
     // The window lost its "initial empty document" status, but
     // `has_committed_real_load` is still false because the last committed URL
