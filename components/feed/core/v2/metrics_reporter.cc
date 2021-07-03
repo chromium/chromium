@@ -15,6 +15,7 @@
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/stream_type.h"
 
 namespace feed {
 namespace {
@@ -115,6 +116,10 @@ base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
     case NetworkRequestType::kQueryNextPage:
       return "QueryNextPage";
   }
+}
+
+base::StringPiece HistogramReplacement(const StreamType& stream_type) {
+  return stream_type.IsWebFeed() ? "Feed.WebFeed." : "Feed.";
 }
 
 }  // namespace
@@ -243,7 +248,8 @@ void MetricsReporter::StreamScrolled(const StreamType& stream_type,
 }
 
 void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
-                                         int index_in_stream) {
+                                         int index_in_stream,
+                                         int stream_slice_count) {
   if (stream_type.IsForYou()) {
     base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Shown",
                                   index_in_stream, kMaxSuggestionsTotal);
@@ -251,6 +257,13 @@ void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
     DCHECK(stream_type.IsWebFeed());
     base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Shown",
                                   index_in_stream, kMaxSuggestionsTotal);
+  }
+
+  if (index_in_stream == stream_slice_count - 1) {
+    base::UmaHistogramExactLinear(
+        base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                      "ReachedEndOfFeed"}),
+        stream_slice_count, kMaxSuggestionsTotal);
   }
 }
 
@@ -527,19 +540,25 @@ void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
 }
 
 void MetricsReporter::OnLoadStream(
+    const StreamType& stream_type,
     LoadStreamStatus load_from_store_status,
     LoadStreamStatus final_status,
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
+    int content_count,
     std::unique_ptr<LoadLatencyTimes> load_latencies) {
   DVLOG(1) << "OnLoadStream load_from_store_status=" << load_from_store_status
            << " final_status=" << final_status;
   load_latencies_ = std::move(load_latencies);
+
   base::UmaHistogramEnumeration(
-      "ContentSuggestions.Feed.LoadStreamStatus.Initial", final_status);
+      base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                    "LoadStreamStatus.Initial"}),
+      final_status);
   if (load_from_store_status != LoadStreamStatus::kNoStatus) {
     base::UmaHistogramEnumeration(
-        "ContentSuggestions.Feed.LoadStreamStatus.InitialFromStore",
+        base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                      "LoadStreamStatus.InitialFromStore"}),
         load_from_store_status);
   }
 
@@ -562,11 +581,20 @@ void MetricsReporter::OnLoadStream(
           /*buckets=*/50);
     }
   }
+
+  if (IsLoadingSuccessfulAndFresh(final_status)) {
+    base::UmaHistogramSparse(
+        base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                      "LoadedCardCount"}),
+        content_count);
+  }
 }
 
-void MetricsReporter::OnBackgroundRefresh(LoadStreamStatus final_status) {
+void MetricsReporter::OnBackgroundRefresh(const StreamType& stream_type,
+                                          LoadStreamStatus final_status) {
   base::UmaHistogramEnumeration(
-      "ContentSuggestions.Feed.LoadStreamStatus.BackgroundRefresh",
+      base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                    "LoadStreamStatus.BackgroundRefresh"}),
       final_status);
 }
 
@@ -674,33 +702,52 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
 }
 
 void MetricsReporter::OnFollowAttempt(
+    bool followed_with_id,
     const WebFeedSubscriptions::FollowWebFeedResult& result) {
   DVLOG(1) << "OnFollowAttempt web_feed_id="
            << result.web_feed_metadata.web_feed_id
            << " status=" << result.request_status;
-  // TODO(crbug/1152592): Add UMA.
+
+  if (followed_with_id) {
+    base::UmaHistogramEnumeration(
+        "ContentSuggestions.Feed.WebFeed.FollowByIdResult",
+        result.request_status);
+  } else {
+    base::UmaHistogramEnumeration(
+        "ContentSuggestions.Feed.WebFeed.FollowUriResult",
+        result.request_status);
+  }
 }
 
 void MetricsReporter::OnUnfollowAttempt(
     const WebFeedSubscriptions::UnfollowWebFeedResult& result) {
   DVLOG(1) << "OnUnfollowAttempt status=" << result.request_status;
-  // TODO(crbug/1152592): Add UMA.
+  base::UmaHistogramEnumeration(
+      "ContentSuggestions.Feed.WebFeed.UnfollowResult", result.request_status);
 }
 
 void MetricsReporter::RefreshRecommendedWebFeedsAttempted(
     WebFeedRefreshStatus status,
     int recommended_web_feed_count) {
-  // TODO(crbug/1152592): Add UMA.
   DVLOG(1) << "RefreshRecommendedWebFeedsAttempted status=" << status
            << " count=" << recommended_web_feed_count;
+  base::UmaHistogramEnumeration(
+      "ContentSuggestions.Feed.WebFeed.RefreshRecommendedFeeds", status);
 }
 
 void MetricsReporter::RefreshSubscribedWebFeedsAttempted(
+    bool subscriptions_were_stale,
     WebFeedRefreshStatus status,
     int subscribed_web_feed_count) {
-  // TODO(crbug/1152592): Add UMA.
   DVLOG(1) << "RefreshSubscribedWebFeedsAttempted status=" << status
            << " count=" << subscribed_web_feed_count;
+  if (subscriptions_were_stale) {
+    base::UmaHistogramEnumeration(
+        "ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.Stale", status);
+  } else {
+    base::UmaHistogramEnumeration(
+        "ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.Force", status);
+  }
 }
 
 }  // namespace feed

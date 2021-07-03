@@ -366,16 +366,20 @@ class TestMetricsReporter : public MetricsReporter {
 
   // MetricsReporter.
   void ContentSliceViewed(const StreamType& stream_type,
-                          int index_in_stream) override;
-  void OnLoadStream(LoadStreamStatus load_from_store_status,
+                          int index_in_stream,
+                          int stream_slice_count) override;
+  void OnLoadStream(const StreamType& stream_type,
+                    LoadStreamStatus load_from_store_status,
                     LoadStreamStatus final_status,
                     bool loaded_new_content_from_network,
                     base::TimeDelta stored_content_age,
+                    int content_count,
                     std::unique_ptr<LoadLatencyTimes> latencies) override;
   void OnLoadMoreBegin(const StreamType& stream_type,
                        SurfaceId surface_id) override;
   void OnLoadMore(LoadStreamStatus final_status) override;
-  void OnBackgroundRefresh(LoadStreamStatus final_status) override;
+  void OnBackgroundRefresh(const StreamType& stream_type,
+                           LoadStreamStatus final_status) override;
   void OnClearAll(base::TimeDelta time_since_last_clear) override;
   void OnUploadActions(UploadActionsStatus status) override;
 

@@ -128,6 +128,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   void FollowWebFeedComplete(
       base::OnceCallback<void(FollowWebFeedResult)> callback,
+      bool followed_with_id,
       SubscribeToWebFeedTask::Result result);
 
   void UnfollowWebFeedStart(
@@ -181,6 +182,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       on_refresh_subscriptions_;
   bool fetching_recommended_web_feeds_ = false;
   bool fetching_subscribed_web_feeds_ = false;
+  bool fetching_subscribed_web_feeds_because_stale_ = false;
 
   base::WeakPtrFactory<WebFeedSubscriptionCoordinator> weak_ptr_factory_{this};
 };

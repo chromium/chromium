@@ -155,6 +155,9 @@ struct WebFeedMetadata {
 };
 std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value);
 
+// This must be kept in sync with WebFeedSubscriptionRequestStatus in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
 enum class WebFeedSubscriptionRequestStatus {
   kUnknown = 0,
@@ -163,6 +166,7 @@ enum class WebFeedSubscriptionRequestStatus {
   kFailedTooManySubscriptions = 3,
   kFailedUnknownError = 4,
   kAbortWebFeedSubscriptionPendingClearAll = 5,
+  kMaxValue = kAbortWebFeedSubscriptionPendingClearAll,
 };
 std::ostream& operator<<(std::ostream& out,
                          WebFeedSubscriptionRequestStatus value);

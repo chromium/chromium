@@ -250,10 +250,14 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   if (result.request_schedule)
     SetRequestSchedule(stream.type, *result.request_schedule);
 
+  int content_count = 0;
+  if (stream.model) {
+    content_count = stream.model->GetContentList().size();
+  }
   metrics_reporter_->OnLoadStream(
-      result.load_from_store_status, result.final_status,
+      stream.type, result.load_from_store_status, result.final_status,
       result.loaded_new_content_from_network, result.stored_content_age,
-      std::move(result.latencies));
+      content_count, std::move(result.latencies));
 
   UpdateIsActivityLoggingEnabled(result.stream_type);
   stream.model_loading_in_progress = false;
@@ -911,7 +915,8 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
 }
 
 void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
-  metrics_reporter_->OnBackgroundRefresh(result.final_status);
+  metrics_reporter_->OnBackgroundRefresh(result.stream_type,
+                                         result.final_status);
 
   LoadTaskComplete(result);
 
@@ -1121,7 +1126,9 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
                                             stream.model->GetContentIds()))) {
       MaybeNotifyHasUnreadContent(stream_type);
     }
-    metrics_reporter_->ContentSliceViewed(stream_type, index);
+
+    metrics_reporter_->ContentSliceViewed(
+        stream_type, index, stream.model->GetContentList().size());
   }
   if (stream.model) {
     notice_card_tracker_.OnCardViewed(

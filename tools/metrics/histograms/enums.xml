@@ -85158,6 +85158,27 @@ others/histograms.xml -->
   <int value="3" label="Transferred WebContents"/>
 </enum>
 
+<enum name="WebFeedRefreshStatus">
+  <int value="0" label="Unknown status"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failed due to a network error"/>
+  <int value="3" label="Failed because the request was throttled client-side"/>
+  <int value="4" label="Failed because there is a pending ClearAll operation"/>
+</enum>
+
+<enum name="WebFeedSubscriptionRequestStatus">
+  <int value="0" label="Unknown status"/>
+  <int value="1"
+      label="Success. The follow/unfollow succeeded. Also reported when
+             following an already-followed web feed, or unfollowing a web
+             feed which is not followed."/>
+  <int value="2" label="Failed because the device is offline"/>
+  <int value="3"
+      label="Failed because the user has reached the subscription limit"/>
+  <int value="4" label="Failed for an unknown reason"/>
+  <int value="5" label="Failed due to pending ClearAll action"/>
+</enum>
+
 <enum name="WebFontCacheHit">
   <int value="0" label="Miss"/>
   <int value="1" label="Hit disk cache"/>

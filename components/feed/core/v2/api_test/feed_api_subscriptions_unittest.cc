@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
-
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
@@ -134,7 +135,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
     metadata.set_consistency_token("token");
     stream_->SetMetadata(metadata);
   }
-
+  base::HistogramTester histograms;
   network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
 
@@ -156,9 +157,16 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       PrintToString(callback.RunAndGetResult().web_feed_metadata));
   EXPECT_EQ("follow-ct", stream_->GetMetadata().consistency_token());
   EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  ASSERT_THAT(
+      network_.GetApiRequestSent<FollowWebFeedDiscoverApi>()->page_rss_uris(),
+      testing::ElementsAre("http://rss1/", "http://rss2/"));
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowUriResult",
+      WebFeedSubscriptionRequestStatus::kSuccess, 1);
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
+  base::HistogramTester histograms;
   WriteRecommendedFeeds(*store_, {MakeWebFeedInfo("catfood")});
   CreateStream();
   network_.InjectResponse(SuccessfulFollowResponse("catfood"));
@@ -168,6 +176,9 @@ TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
       "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kSubscribed }",
       PrintToString(callback.RunAndGetResult().web_feed_metadata));
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowByIdResult",
+      WebFeedSubscriptionRequestStatus::kSuccess, 1);
 }
 
 // Make two Follow attempts for the same page. Both appear successful, but only
@@ -270,6 +281,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
 
 // Follow and then unfollow a web feed successfully.
 TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
+  base::HistogramTester histograms;
   network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
@@ -295,6 +307,9 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
   EXPECT_EQ("unfollow-ct", stream_->GetMetadata().consistency_token());
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
   EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.UnfollowResult",
+      WebFeedSubscriptionRequestStatus::kSuccess, 1);
 }
 
 TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeedTwiceAtOnce) {
@@ -741,6 +756,7 @@ TEST_F(FeedApiSubscriptionsTest,
     task_environment_.FastForwardBy(
         GetFeedConfig().recommended_feeds_staleness_threshold);
     InjectRecommendedWebFeedsResponse({MakeWireWebFeed("catsv2")});
+    base::HistogramTester histograms;
     CreateStream();
 
     task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
@@ -751,6 +767,9 @@ TEST_F(FeedApiSubscriptionsTest,
         "{ WebFeedMetadata{ id=id_catsv2 is_recommended title=Title catsv2 "
         "publisher_url=https://catsv2.com/ status=kNotSubscribed } }",
         PrintToString(CheckRecommendedFeeds()));
+    histograms.ExpectUniqueSample(
+        "ContentSuggestions.Feed.WebFeed.RefreshRecommendedFeeds",
+        WebFeedRefreshStatus::kSuccess, 1);
   }
 }
 
@@ -902,7 +921,7 @@ TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsSuccess) {
     metadata.set_consistency_token("token");
     stream_->SetMetadata(metadata);
   }
-
+  base::HistogramTester histograms;
   CallbackReceiver<WebFeedSubscriptions::RefreshResult> result;
   InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 
@@ -918,6 +937,9 @@ TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsSuccess) {
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       PrintToString(CheckAllSubscriptions()));
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.Force",
+      WebFeedRefreshStatus::kSuccess, 1);
 }
 
 TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsFail) {

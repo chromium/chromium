@@ -882,40 +882,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.LoadStreamStatus.BackgroundRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Status of loading new feed data in the background. Feed v2 only.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.LoadStreamStatus.Initial"
-    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Status of loading the initial Feed stream, which happens when a feed surface
-    is shown. Feed v2 only.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.LoadStreamStatus.InitialFromStore"
-    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    This is the store-specific status for the initial load of the Feed stream.
-    This is provided along with ContentSuggestions.Feed.LoadStreamStatus.Initial
-    because store errors can be shadowed by fallback to network fetch. Feed v2
-    only.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
     enum="FeedLoadStreamStatus" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
@@ -1504,6 +1470,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.FollowByIdResult"
+    units="index" expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The result of following a WebFeed when the Web Feed ID is known.
+    Reported when the follow is attempted, once per request. Triggered by a
+    user's request to follow a Web Feed.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.WebFeed.FollowUriResult"
+    enum="WebFeedSubscriptionRequestStatus" expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The result of following a WebFeed when the Web Feed ID is NOT
+    known. Reported when the follow is attempted, once per request. Triggered by
+    a user's request to follow a Web Feed.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.Opened" units="index"
     expires_after="never">
 <!-- expires-never: key feature metric.  We will need the Opened
@@ -1522,6 +1510,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.RefreshRecommendedFeeds"
+    enum="WebFeedRefreshStatus" expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports the status of attempting to refresh the list of recommended
+    Web Feeds from the server. The refresh occurrs periodically when the
+    information is stale.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.{Kind}"
+    enum="WebFeedRefreshStatus" expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports the status of attempting to refresh the list of subscribed
+    Web Feeds from the server. {Kind}
+  </summary>
+  <token key="Kind">
+    <variant name="Force"
+        summary="Refresh is forced to fetch the most up to date list."/>
+    <variant name="Stale"
+        summary="Refresh is triggered because stored subscriptions are stale."/>
+  </token>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.Shown" units="index"
     expires_after="never">
 <!-- expires-never: key feature metric.  We will need the Shown
@@ -1538,6 +1553,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This tracked position can be different from the position observed by the
     user, e.g. when the user dismissed some suggestions from the list or
     requested more that got inserted in the middle of the feed.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.WebFeed.UnfollowResult"
+    enum="WebFeedSubscriptionRequestStatus" expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The result of attempting to unfollow a WebFeed. Reported when the
+    unfollow is attempted, once per request. Triggered by a user's request to
+    unfollow a Web Feed.
   </summary>
 </histogram>
 
@@ -1652,6 +1678,91 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     opening a feed article into its own tab. SCROLLED and INTERACTED are
     reported for every occurrence, thus we could end up with more scrolled and
     interected than ENGAGED or ENGAGED_SIMPLE samples.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.LoadedCardCount" units="index"
+    expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports the total number of cards when the {FeedType} data is
+    successfully loaded to be presented to the user. Reported after an initial
+    load. Not reported after a NextPage request. When loading data from local
+    storage, previously fetched NextPage cards are counted though.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSuggestions.{FeedType}.LoadStreamStatus.BackgroundRefresh"
+    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Status of loading new {FeedType} data in the background. Reported
+    any time Chrome attempts to fetch fresh Feed content in the background. This
+    is either due to a background fetch schedule, or when fetching the Web-Feed
+    while the For-You feed is active.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.LoadStreamStatus.Initial"
+    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Status of loading the initial {FeedType} stream, which happens when
+    the {FeedType} surface is shown. Feed v2 only.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSuggestions.{FeedType}.LoadStreamStatus.InitialFromStore"
+    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The status of loading the Feed from the local store. Reported when
+    loading the Feed for display. Recorded at the same time as
+    ContentSuggestions.{FeedType}.LoadStreamStatus.Initial to differentiate
+    between store errors and network fetch results.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.ReachedEndOfFeed" units="index"
+    expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports the number of cards in the {FeedType}. Reported when the
+    last card of the {FeedType} is shown. Note that this is reported even if the
+    Feed is attempting to load additional content (LoadMore), as long as the
+    last card is 2/3rds shown before additional content loads. In this case,
+    this histogram can be reported multiple times without leaving the Feed
+    surface.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>

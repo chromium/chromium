@@ -663,23 +663,28 @@ TestMetricsReporter::TestMetricsReporter(PrefService* prefs)
     : MetricsReporter(prefs) {}
 TestMetricsReporter::~TestMetricsReporter() = default;
 void TestMetricsReporter::ContentSliceViewed(const StreamType& stream_type,
-                                             int index_in_stream) {
+                                             int index_in_stream,
+                                             int stream_slice_count) {
   slice_viewed_index = index_in_stream;
-  MetricsReporter::ContentSliceViewed(stream_type, index_in_stream);
+  MetricsReporter::ContentSliceViewed(stream_type, index_in_stream,
+                                      stream_slice_count);
 }
 void TestMetricsReporter::OnLoadStream(
+    const StreamType& stream_type,
     LoadStreamStatus load_from_store_status,
     LoadStreamStatus final_status,
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
+    int content_count,
     std::unique_ptr<LoadLatencyTimes> latencies) {
   load_stream_from_store_status = load_from_store_status;
   load_stream_status = final_status;
   LOG(INFO) << "OnLoadStream: " << final_status
             << " (store status: " << load_from_store_status << ")";
-  MetricsReporter::OnLoadStream(load_from_store_status, final_status,
-                                loaded_new_content_from_network,
-                                stored_content_age, std::move(latencies));
+  MetricsReporter::OnLoadStream(stream_type, load_from_store_status,
+                                final_status, loaded_new_content_from_network,
+                                stored_content_age, content_count,
+                                std::move(latencies));
 }
 void TestMetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
                                           SurfaceId surface_id) {
@@ -690,9 +695,10 @@ void TestMetricsReporter::OnLoadMore(LoadStreamStatus final_status) {
   load_more_status = final_status;
   MetricsReporter::OnLoadMore(final_status);
 }
-void TestMetricsReporter::OnBackgroundRefresh(LoadStreamStatus final_status) {
+void TestMetricsReporter::OnBackgroundRefresh(const StreamType& stream_type,
+                                              LoadStreamStatus final_status) {
   background_refresh_status = final_status;
-  MetricsReporter::OnBackgroundRefresh(final_status);
+  MetricsReporter::OnBackgroundRefresh(stream_type, final_status);
 }
 void TestMetricsReporter::OnClearAll(base::TimeDelta time_since_last_clear) {
   this->time_since_last_clear = time_since_last_clear;

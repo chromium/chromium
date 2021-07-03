@@ -37,7 +37,8 @@ class MetricsReporter {
   // User interactions. See |FeedApi| for definitions.
 
   virtual void ContentSliceViewed(const StreamType& stream_type,
-                                  int index_in_stream);
+                                  int index_in_stream,
+                                  int stream_slice_count);
   void FeedViewed(SurfaceId surface_id);
   void OpenAction(const StreamType& stream_type, int index_in_stream);
   void OpenVisitComplete(base::TimeDelta visit_time);
@@ -63,12 +64,15 @@ class MetricsReporter {
 
   // Stream events.
 
-  virtual void OnLoadStream(LoadStreamStatus load_from_store_status,
+  virtual void OnLoadStream(const StreamType& stream_type,
+                            LoadStreamStatus load_from_store_status,
                             LoadStreamStatus final_status,
                             bool loaded_new_content_from_network,
                             base::TimeDelta stored_content_age,
+                            int content_count,
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
-  virtual void OnBackgroundRefresh(LoadStreamStatus final_status);
+  virtual void OnBackgroundRefresh(const StreamType& stream_type,
+                                   LoadStreamStatus final_status);
   virtual void OnLoadMoreBegin(const StreamType& stream_type,
                                SurfaceId surface_id);
   virtual void OnLoadMore(LoadStreamStatus final_status);
@@ -89,12 +93,14 @@ class MetricsReporter {
   static void NoticeCardFulfilledObsolete(bool response_has_notice_card);
 
   // Web Feed events.
-  void OnFollowAttempt(const WebFeedSubscriptions::FollowWebFeedResult& result);
+  void OnFollowAttempt(bool followed_with_id,
+                       const WebFeedSubscriptions::FollowWebFeedResult& result);
   void OnUnfollowAttempt(
       const WebFeedSubscriptions::UnfollowWebFeedResult& status);
   void RefreshRecommendedWebFeedsAttempted(WebFeedRefreshStatus status,
                                            int recommended_web_feed_count);
-  void RefreshSubscribedWebFeedsAttempted(WebFeedRefreshStatus status,
+  void RefreshSubscribedWebFeedsAttempted(bool subscriptions_were_stale,
+                                          WebFeedRefreshStatus status,
                                           int subscribed_web_feed_count);
 
  private:

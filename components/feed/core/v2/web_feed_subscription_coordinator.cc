@@ -259,7 +259,8 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart(
   feed_stream_->GetTaskQueue().AddTask(std::make_unique<SubscribeToWebFeedTask>(
       feed_stream_, std::move(request),
       base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedComplete,
-                     base::Unretained(this), std::move(callback))));
+                     base::Unretained(this), std::move(callback),
+                     /*followed_with_id=*/false)));
 }
 
 void WebFeedSubscriptionCoordinator::FollowWebFeed(
@@ -285,11 +286,13 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedFromIdStart(
   feed_stream_->GetTaskQueue().AddTask(std::make_unique<SubscribeToWebFeedTask>(
       feed_stream_, std::move(request),
       base::BindOnce(&WebFeedSubscriptionCoordinator::FollowWebFeedComplete,
-                     base::Unretained(this), std::move(callback))));
+                     base::Unretained(this), std::move(callback),
+                     /*followed_with_id=*/true)));
 }
 
 void WebFeedSubscriptionCoordinator::FollowWebFeedComplete(
     base::OnceCallback<void(FollowWebFeedResult)> callback,
+    bool followed_with_id,
     SubscribeToWebFeedTask::Result result) {
   DCHECK(model_);
   DequeueInflightChange();
@@ -305,7 +308,8 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedComplete(
   callback_result.web_feed_metadata.is_recommended =
       index_.IsRecommended(result.followed_web_feed_id);
   callback_result.request_status = result.request_status;
-  feed_stream_->GetMetricsReporter().OnFollowAttempt(callback_result);
+  feed_stream_->GetMetricsReporter().OnFollowAttempt(followed_with_id,
+                                                     callback_result);
   std::move(callback).Run(std::move(callback_result));
 }
 
@@ -648,6 +652,7 @@ void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsIfStale() {
       base::Time::Now() - index_.GetSubscribedFeedsUpdateTime();
   if (staleness > GetFeedConfig().subscribed_feeds_staleness_threshold ||
       staleness < -base::TimeDelta::FromHours(1)) {
+    fetching_subscribed_web_feeds_because_stale_ = true;
     WithModel(base::BindOnce(
         &WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsStart,
         base::Unretained(this)));
@@ -674,9 +679,11 @@ void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsStart() {
 void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsComplete(
     FetchSubscribedWebFeedsTask::Result result) {
   DCHECK(model_);
-  fetching_subscribed_web_feeds_ = false;
   feed_stream_->GetMetricsReporter().RefreshSubscribedWebFeedsAttempted(
-      result.status, result.subscribed_web_feeds.size());
+      fetching_subscribed_web_feeds_because_stale_, result.status,
+      result.subscribed_web_feeds.size());
+  fetching_subscribed_web_feeds_because_stale_ = false;
+  fetching_subscribed_web_feeds_ = false;
   if (result.status == WebFeedRefreshStatus::kSuccess)
     model_->UpdateSubscribedFeeds(std::move(result.subscribed_web_feeds));
 
