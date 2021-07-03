@@ -304,20 +304,23 @@ void FamilyInfoFetcher::FamilyProfileFetched(const std::string& response) {
     return;
   }
   FamilyProfile family;
-  if (!family_dict->GetStringWithoutPathExpansion(kIdFamilyId, &family.id)) {
+  const std::string* id = family_dict->FindStringKey(kIdFamilyId);
+  if (!id) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
+  family.id = *id;
   const base::DictionaryValue* profile_dict = NULL;
   if (!family_dict->GetDictionary(kIdProfile, &profile_dict)) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
-  if (!profile_dict->GetStringWithoutPathExpansion(kIdFamilyName,
-                                                   &family.name)) {
+  const std::string* name = profile_dict->FindStringKey(kIdFamilyName);
+  if (!name) {
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
+  family.name = *name;
   consumer_->OnGetFamilyProfileSuccess(family);
 }
 

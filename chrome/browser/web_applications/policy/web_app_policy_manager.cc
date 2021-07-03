@@ -388,14 +388,13 @@ WebAppPolicyManager::WebAppSetting::WebAppSetting() {
 bool WebAppPolicyManager::WebAppSetting::Parse(
     const base::DictionaryValue* dict,
     bool for_default_settings) {
-  std::string run_on_os_login_str;
-  if (dict->GetStringWithoutPathExpansion(kRunOnOsLogin,
-                                          &run_on_os_login_str)) {
-    if (run_on_os_login_str == kAllowed) {
+  const std::string* run_on_os_login_str = dict->FindStringKey(kRunOnOsLogin);
+  if (run_on_os_login_str) {
+    if (*run_on_os_login_str == kAllowed) {
       run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
-    } else if (run_on_os_login_str == kBlocked) {
+    } else if (*run_on_os_login_str == kBlocked) {
       run_on_os_login_policy = RunOnOsLoginPolicy::kBlocked;
-    } else if (!for_default_settings && run_on_os_login_str == kRunWindowed) {
+    } else if (!for_default_settings && *run_on_os_login_str == kRunWindowed) {
       run_on_os_login_policy = RunOnOsLoginPolicy::kRunWindowed;
     } else {
       SYSLOG(WARNING) << "Malformed web app run on os login preference.";

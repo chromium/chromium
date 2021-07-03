@@ -45,7 +45,10 @@ const char kLastModifiedPath[] = "last_modified";
 // Will return base::Time() if no timestamp exists.
 base::Time GetTimeStamp(const base::DictionaryValue* dictionary) {
   std::string timestamp_str;
-  dictionary->GetStringWithoutPathExpansion(kLastModifiedPath, &timestamp_str);
+  const std::string* timestamp_str_ptr =
+      dictionary->FindStringKey(kLastModifiedPath);
+  if (timestamp_str_ptr)
+    timestamp_str = *timestamp_str_ptr;
   int64_t timestamp = 0;
   base::StringToInt64(timestamp_str, &timestamp);
   base::Time last_modified = base::Time::FromInternalValue(timestamp);

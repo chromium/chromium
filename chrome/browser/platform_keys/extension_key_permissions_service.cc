@@ -344,7 +344,10 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
       new_entry.sign_once = true;
       state_store_entries_.push_back(new_entry);
     } else if (entry.GetAsDictionary(&dict_entry)) {
-      dict_entry->GetStringWithoutPathExpansion(kStateStoreSPKI, &spki_b64);
+      const std::string* spki_b64_str =
+          dict_entry->FindStringKey(kStateStoreSPKI);
+      if (spki_b64_str)
+        spki_b64 = *spki_b64_str;
       KeyEntry new_entry(spki_b64);
       new_entry.sign_once = dict_entry->FindBoolKey(kStateStoreSignOnce)
                                 .value_or(new_entry.sign_once);

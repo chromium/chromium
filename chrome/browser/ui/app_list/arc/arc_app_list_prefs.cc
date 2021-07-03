@@ -222,16 +222,16 @@ bool GetInt64FromPref(const base::DictionaryValue* dict,
                       const std::string& key,
                       int64_t* value) {
   DCHECK(dict);
-  std::string value_str;
-  if (!dict->GetStringWithoutPathExpansion(key, &value_str)) {
+  const std::string* value_str = dict->FindStringKey(key);
+  if (!value_str) {
     VLOG(2) << "Can't find key in local pref dictionary. Invalid key: " << key
             << ".";
     return false;
   }
 
-  if (!base::StringToInt64(value_str, value)) {
+  if (!base::StringToInt64(*value_str, value)) {
     VLOG(2) << "Can't change string to int64_t. Invalid string value: "
-            << value_str << ".";
+            << *value_str << ".";
     return false;
   }
 

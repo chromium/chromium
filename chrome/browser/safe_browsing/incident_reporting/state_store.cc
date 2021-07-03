@@ -151,12 +151,13 @@ bool StateStore::HasBeenReported(IncidentType type,
                                  const std::string& key,
                                  IncidentDigest digest) {
   const base::DictionaryValue* type_dict = nullptr;
-  std::string digest_string;
-  return (incidents_sent_ &&
-          incidents_sent_->GetDictionaryWithoutPathExpansion(
-              base::NumberToString(static_cast<int>(type)), &type_dict) &&
-          type_dict->GetStringWithoutPathExpansion(key, &digest_string) &&
-          digest_string == base::NumberToString(digest));
+  if (!incidents_sent_ ||
+      !incidents_sent_->GetDictionaryWithoutPathExpansion(
+          base::NumberToString(static_cast<int>(type)), &type_dict)) {
+    return false;
+  }
+  const std::string* digest_string = type_dict->FindStringKey(key);
+  return (digest_string && *digest_string == base::NumberToString(digest));
 }
 
 void StateStore::CleanLegacyValues(Transaction* transaction) {
