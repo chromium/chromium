@@ -1,4 +1,4 @@
-@import "basic.css";
-#test2 {
+@import "atImported.css";
+#test3 {
     background-color:#00FF00;
 }
