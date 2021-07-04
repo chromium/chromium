@@ -213,7 +213,7 @@ Refer to README.md for content description and update process.
  <item id="ocsp_start_url_request" added_in_milestone="62" hash_code="60921996" type="0" deprecated="2020-04-28" content_hash_code="6288676" file_path=""/>
  <item id="offline_prefetch" added_in_milestone="62" hash_code="19185953" type="0" content_hash_code="112039446" os_list="linux,windows" file_path="components/offline_pages/core/prefetch/prefetch_request_fetcher.cc"/>
  <item id="omnibox_documentsuggest" added_in_milestone="69" hash_code="6055066" type="0" content_hash_code="126973249" os_list="linux,windows" file_path="components/omnibox/browser/document_suggestions_service.cc"/>
- <item id="omnibox_navigation_observer" added_in_milestone="62" hash_code="61684939" type="0" content_hash_code="70941231" os_list="linux,windows" file_path="chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc"/>
+ <item id="omnibox_navigation_observer" added_in_milestone="62" hash_code="61684939" type="0" content_hash_code="2642036" os_list="linux,windows" file_path="chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc"/>
  <item id="omnibox_result_change" added_in_milestone="62" hash_code="73107389" type="0" content_hash_code="24802647" os_list="linux,windows" file_path="chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc"/>
  <item id="omnibox_suggest" added_in_milestone="62" hash_code="47815025" type="0" content_hash_code="86297726" os_list="linux,windows" file_path="components/omnibox/browser/search_provider.cc"/>
  <item id="omnibox_suggest_deletion" added_in_milestone="62" hash_code="84212388" type="0" content_hash_code="24981550" os_list="linux,windows" file_path="components/omnibox/browser/base_search_provider.cc"/>

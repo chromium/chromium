@@ -314,8 +314,7 @@ void ChromeOmniboxNavigationObserver::CreateLoader(
           destination: WEBSITE
         }
         policy {
-          cookies_allowed: YES
-          cookies_store: "user"
+          cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
           policy_exception_justification:
             "By disabling DefaultSearchProviderEnabled, one can disable "
@@ -326,7 +325,12 @@ void ChromeOmniboxNavigationObserver::CreateLoader(
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = destination_url;
   request->method = "HEAD";
-  request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+  // Perform a credential-less fetch. This prevents bearer tokens, like cookies
+  // or password hashes from HTTP auth from being leaked to attackers, and
+  // reduces the chance of sending TLS client certs in the clear.
+  // See https://crbug.com/693991 for discussion.
+  request->credentials_mode =
+      network::mojom::CredentialsMode::kOmitBug_775438_Workaround;
   loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader_->SetAllowHttpErrorResults(true);
