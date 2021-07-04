@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 105 tests; 63 PASS, 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 109 tests; 67 PASS, 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS encodeInto() into ArrayBuffer with Hi and destination length 0, offset 0, filler 0
 FAIL encodeInto() into SharedArrayBuffer with Hi and destination length 0, offset 0, filler 0 Failed to execute 'encodeInto' on 'TextEncoder': The provided Uint8Array value must not be shared.
 PASS encodeInto() into ArrayBuffer with Hi and destination length 0, offset 4, filler 0
@@ -98,6 +98,10 @@ PASS Invalid encodeInto() destination: Uint32Array, backed by: ArrayBuffer
 PASS Invalid encodeInto() destination: Uint32Array, backed by: SharedArrayBuffer
 PASS Invalid encodeInto() destination: Uint8ClampedArray, backed by: ArrayBuffer
 PASS Invalid encodeInto() destination: Uint8ClampedArray, backed by: SharedArrayBuffer
+PASS Invalid encodeInto() destination: BigInt64Array, backed by: ArrayBuffer
+PASS Invalid encodeInto() destination: BigInt64Array, backed by: SharedArrayBuffer
+PASS Invalid encodeInto() destination: BigUint64Array, backed by: ArrayBuffer
+PASS Invalid encodeInto() destination: BigUint64Array, backed by: SharedArrayBuffer
 PASS Invalid encodeInto() destination: Float32Array, backed by: ArrayBuffer
 PASS Invalid encodeInto() destination: Float32Array, backed by: SharedArrayBuffer
 PASS Invalid encodeInto() destination: Float64Array, backed by: ArrayBuffer
