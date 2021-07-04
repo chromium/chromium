@@ -649,7 +649,6 @@ void ExtensionManagement::UpdateForcedExtensions(
   if (!extension_dict)
     return;
 
-  std::string update_url;
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);
   for (base::DictionaryValue::Iterator it(*extension_dict); !it.IsAtEnd();
@@ -660,21 +659,26 @@ void ExtensionManagement::UpdateForcedExtensions(
       continue;
     }
     const base::DictionaryValue* dict_value = nullptr;
-    if (it.value().GetAsDictionary(&dict_value) &&
-        dict_value->GetStringWithoutPathExpansion(
-            ExternalProviderImpl::kExternalUpdateUrl, &update_url)) {
-      internal::IndividualSettings* by_id = AccessById(it.key());
-      by_id->installation_mode = INSTALLATION_FORCED;
-      by_id->update_url = update_url;
-      install_stage_tracker->ReportInstallationStage(
-          it.key(), InstallStageTracker::Stage::CREATED);
-      install_stage_tracker->ReportInstallCreationStage(
-          it.key(),
-          InstallStageTracker::InstallCreationStage::CREATION_INITIATED);
-    } else {
+    if (!it.value().GetAsDictionary(&dict_value)) {
       install_stage_tracker->ReportFailure(
           it.key(), InstallStageTracker::FailureReason::NO_UPDATE_URL);
+      continue;
     }
+    const std::string* update_url =
+        dict_value->FindStringKey(ExternalProviderImpl::kExternalUpdateUrl);
+    if (!update_url) {
+      install_stage_tracker->ReportFailure(
+          it.key(), InstallStageTracker::FailureReason::NO_UPDATE_URL);
+      continue;
+    }
+    internal::IndividualSettings* by_id = AccessById(it.key());
+    by_id->installation_mode = INSTALLATION_FORCED;
+    by_id->update_url = *update_url;
+    install_stage_tracker->ReportInstallationStage(
+        it.key(), InstallStageTracker::Stage::CREATED);
+    install_stage_tracker->ReportInstallCreationStage(
+        it.key(),
+        InstallStageTracker::InstallCreationStage::CREATION_INITIATED);
   }
 }
 

@@ -199,9 +199,9 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
       other_field->web_request = std::make_unique<std::string>(
           ActivityLogPolicy::Util::Serialize(web_request));
     }
-    std::string extra;
-    if (other()->GetStringWithoutPathExpansion(constants::kActionExtra, &extra))
-      other_field->extra = std::make_unique<std::string>(extra);
+    const std::string* extra = other()->FindStringKey(constants::kActionExtra);
+    if (extra)
+      other_field->extra = std::make_unique<std::string>(*extra);
     if (absl::optional<int> dom_verb =
             other()->FindIntKey(constants::kActionDomVerb)) {
       switch (static_cast<DomActionType::Type>(dom_verb.value())) {

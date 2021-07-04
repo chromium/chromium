@@ -198,41 +198,44 @@ scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
     return nullptr;
   }
 
-  std::u16string serial_number;
-  if (!entry->GetStringWithoutPathExpansion(kDeviceSerialNumber,
-                                            &serial_number)) {
+  const std::string* serial_number_ptr =
+      entry->FindStringKey(kDeviceSerialNumber);
+  if (!serial_number_ptr)
     return nullptr;
-  }
-
+  std::u16string serial_number = base::UTF8ToUTF16(*serial_number_ptr);
   std::u16string manufacturer_string;
   // Ignore failure as this string is optional.
-  entry->GetStringWithoutPathExpansion(kDeviceManufacturerString,
-                                       &manufacturer_string);
+  const std::string* manufacturer_ptr =
+      entry->FindStringKey(kDeviceManufacturerString);
+  if (manufacturer_ptr) {
+    manufacturer_string = base::UTF8ToUTF16(*manufacturer_ptr);
+  }
 
   std::u16string product_string;
   // Ignore failure as this string is optional.
-  entry->GetStringWithoutPathExpansion(kDeviceProductString, &product_string);
+  const std::string* product_ptr = entry->FindStringKey(kDeviceProductString);
+  if (product_ptr) {
+    product_string = base::UTF8ToUTF16(*product_ptr);
+  }
 
   // If a last used time is not stored in ExtensionPrefs last_used.is_null()
   // will be true.
-  std::string last_used_str;
+  const std::string* last_used_ptr = entry->FindStringKey(kDeviceLastUsed);
   int64_t last_used_i64 = 0;
   base::Time last_used;
-  if (entry->GetStringWithoutPathExpansion(kDeviceLastUsed, &last_used_str) &&
-      base::StringToInt64(last_used_str, &last_used_i64)) {
+  if (last_used_ptr && base::StringToInt64(*last_used_ptr, &last_used_i64)) {
     last_used = base::Time::FromInternalValue(last_used_i64);
   }
 
-  std::string type;
-  if (!entry->GetStringWithoutPathExpansion(kDeviceType, &type)) {
+  const std::string* device_type_ptr = entry->FindStringKey(kDeviceType);
+  if (!device_type_ptr)
     return nullptr;
-  }
 
-  if (type == kDeviceTypeUsb) {
+  if (*device_type_ptr == kDeviceTypeUsb) {
     return base::MakeRefCounted<DevicePermissionEntry>(
         DevicePermissionEntry::Type::USB, vendor_id.value(), product_id.value(),
         serial_number, manufacturer_string, product_string, last_used);
-  } else if (type == kDeviceTypeHid) {
+  } else if (*device_type_ptr == kDeviceTypeHid) {
     return base::MakeRefCounted<DevicePermissionEntry>(
         DevicePermissionEntry::Type::HID, vendor_id.value(), product_id.value(),
         serial_number, std::u16string(), product_string, last_used);
