@@ -4,7 +4,7 @@
 
 #include "remoting/signaling/message_tracker.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 
 namespace remoting {
 

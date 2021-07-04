@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 
 namespace chromeos {

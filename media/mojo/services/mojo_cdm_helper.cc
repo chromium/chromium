@@ -4,8 +4,8 @@
 
 #include "media/mojo/services/mojo_cdm_helper.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/mojo/services/mojo_cdm_allocator.h"

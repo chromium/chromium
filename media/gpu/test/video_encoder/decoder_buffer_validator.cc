@@ -4,8 +4,8 @@
 
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/gpu/h264_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"

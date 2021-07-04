@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <syscall.h>
 #include <unistd.h>
+#include "base/containers/cxx20_erase.h"
 #include "link.h"
 
 #include <algorithm>
@@ -20,7 +21,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/profiler/stack_buffer.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/cfi_backtrace_android.h"
 

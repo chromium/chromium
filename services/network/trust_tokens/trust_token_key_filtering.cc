@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <tuple>
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/time/time.h"
 
 namespace network {

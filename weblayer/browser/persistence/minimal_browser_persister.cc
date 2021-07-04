@@ -5,7 +5,7 @@
 #include "weblayer/browser/persistence/minimal_browser_persister.h"
 
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_command.h"

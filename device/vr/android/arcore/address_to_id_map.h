@@ -5,11 +5,12 @@
 #ifndef DEVICE_VR_ANDROID_ARCORE_ADDRESS_TO_ID_MAP_H_
 #define DEVICE_VR_ANDROID_ARCORE_ADDRESS_TO_ID_MAP_H_
 
-#include "base/check.h"
-#include "base/stl_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
+#include <limits>
 #include <unordered_map>
+
+#include "base/check.h"
+#include "base/containers/cxx20_erase_unordered_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

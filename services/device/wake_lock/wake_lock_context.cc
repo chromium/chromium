@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/wake_lock/wake_lock.h"
 

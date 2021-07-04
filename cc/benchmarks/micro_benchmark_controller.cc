@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "cc/benchmarks/invalidation_benchmark.h"

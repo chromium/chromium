@@ -16,9 +16,9 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/cxx20_erase_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 
 // OVERVIEW:
 //

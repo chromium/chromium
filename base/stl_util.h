@@ -15,21 +15,11 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase_deque.h"
-#include "base/containers/cxx20_erase_forward_list.h"
-#include "base/containers/cxx20_erase_list.h"
-#include "base/containers/cxx20_erase_map.h"
-#include "base/containers/cxx20_erase_set.h"
-#include "base/containers/cxx20_erase_string.h"
-#include "base/containers/cxx20_erase_unordered_map.h"
-#include "base/containers/cxx20_erase_unordered_set.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/1210983): Remove base/cxx17_backports.h above.
-// TODO(crbug.com/1211125): Remove various cxx20 includes above.
 
 namespace base {
 

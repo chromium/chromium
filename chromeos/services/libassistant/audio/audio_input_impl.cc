@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"

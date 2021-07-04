@@ -4,9 +4,9 @@
 
 #include "net/http/http_auth_cache.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 
 namespace {
