@@ -103,6 +103,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1307966114820526988">Deprecated features</translation>
 <translation id="131405271941274527"><ph name="URL" /> wants to send and receive info when you tap your phone on an NFC device</translation>
 <translation id="1314509827145471431">Bind right</translation>
+<translation id="1319245136674974084">Don’t ask again for this app</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">Search for clipboard image</translation>
 <translation id="1323433172918577554">Show More</translation>
@@ -743,6 +744,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3655670868607891010">If you're seeing this frequently, try these <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3664782872746246217">Keywords:</translation>
+<translation id="3671540257457995106">Allow resizing?</translation>
 <translation id="3676592649209844519">Device ID:</translation>
 <translation id="3677008721441257057">Did you mean &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Request could not be signed</translation>
@@ -1103,6 +1105,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4953689047182316270">Respond to Accessibility Events</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Expand list</translation>
+<translation id="4968522289500246572">This app is designed for mobile and may not resize well. The app may experience issues or restart.</translation>
 <translation id="4973922308112707173">Dual punch top</translation>
 <translation id="4974590756084640048">Re-enable warnings</translation>
 <translation id="4984088539114770594">Use microphone?</translation>
@@ -1151,6 +1154,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verify your card</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> may not resize well. Use preset window sizes to prevent the app from experiencing issues.</translation>
 <translation id="5135404736266831032">Manage addresses...</translation>
 <translation id="5138014172396933048">Virtual card is not available at the moment; please contact your bank</translation>
 <translation id="5138227688689900538">Show less</translation>
@@ -1517,6 +1521,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="647261751007945333">Device policies</translation>
 <translation id="6476284679642588870">Manage payment methods</translation>
 <translation id="6489534406876378309">Start uploading crashes</translation>
+<translation id="6493924760403974580">This app supports only this size.</translation>
 <translation id="6499038740797743453">Reset password?</translation>
 <translation id="6502991525169604759">Without your changes</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
@@ -2170,6 +2175,7 @@ Additional details:
 <translation id="8975263830901772334">Names of files that you print</translation>
 <translation id="8978053250194585037">Google Safe Browsing recently <ph name="BEGIN_LINK" />detected phishing<ph name="END_LINK" /> on <ph name="SITE" />. Phishing sites pretend to be other websites to trick you.</translation>
 <translation id="8983003182662520383">Payment methods and addresses using Google Pay</translation>
+<translation id="8983369100812962543">You can now resize the app</translation>
 <translation id="8987927404178983737">Month</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> wants to know when you're actively using this device</translation>
