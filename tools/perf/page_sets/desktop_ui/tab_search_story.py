@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
+import py_utils
+
 from page_sets.desktop_ui.custom_metric_utils import SetMetricNames
 from page_sets.desktop_ui.js_utils import MEASURE_JS_MEMORY
 from page_sets.desktop_ui.multitab_story import MultiTabStory
@@ -120,6 +123,56 @@ class TabSearchStory(MultiTabStory):
   def WillStartTracing(self, chrome_trace_config):
     super(TabSearchStory, self).WillStartTracing(chrome_trace_config)
     chrome_trace_config.EnableUMAHistograms(*TAB_SEARCH_BENCHMARK_UMA)
+
+
+class TabSearchRecentlyClosedStory(TabSearchStory):
+  """Base class for tab search recently closed stories"""
+
+  def RunNavigateSteps(self, action_runner):
+    url_list = self.URL_LIST
+    tabs = action_runner.tab.browser.tabs
+    if len(url_list) > 0:
+      tabs[0].Navigate(url_list[0])
+    for url in url_list[1:]:
+      new_tab = tabs.New()
+      new_tab.Navigate(url)
+      if self.WAIT_FOR_NETWORK_QUIESCENCE:
+        try:
+          new_tab.action_runner.WaitForNetworkQuiescence()
+        except py_utils.TimeoutException:
+          logging.warning('WaitForNetworkQuiescence() timeout: %s' % (url))
+      new_tab.Close()
+    self._devtools = action_runner.tab.browser.GetUIDevtools()
+
+  def InteractWithPage(self, action_runner):
+    self.SearchTabs(action_runner)
+    self.ScrollTabs(action_runner)
+
+  def SearchTabs(self, action_runner):
+    action_runner.Wait(1)
+    action_runner.EnterText('o')
+    action_runner.Wait(2)
+
+
+class TabSearchStoryRecentlyClosed10(TabSearchRecentlyClosedStory):
+  NAME = 'tab_search:10_recently_closed'
+  URL_LIST = ['chrome://version?q={}'.format(i) for i in range(10)]
+  URL = URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+
+class TabSearchStoryRecentlyClosed50(TabSearchRecentlyClosedStory):
+  NAME = 'tab_search:50_recently_closed'
+  URL_LIST = ['chrome://version?q={}'.format(i) for i in range(50)]
+  URL = URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+
+class TabSearchStoryRecentlyClosed100(TabSearchRecentlyClosedStory):
+  NAME = 'tab_search:100_recently_closed'
+  URL_LIST = ['chrome://version?q={}'.format(i) for i in range(100)]
+  URL = URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
 
 
 class TabSearchStoryTop10(TabSearchStory):
