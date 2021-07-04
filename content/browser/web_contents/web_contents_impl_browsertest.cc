@@ -1607,7 +1607,9 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
 
   void WillWaitForDialog() { waiting_for_ = kDialog; }
   void WillWaitForNewContents() { waiting_for_ = kNewContents; }
+  void WillWaitForFullscreenEnter() { waiting_for_ = kFullscreenEnter; }
   void WillWaitForFullscreenExit() { waiting_for_ = kFullscreenExit; }
+  void WillWaitForFullscreenOption() { waiting_for_ = kFullscreenOptions; }
 
   void Wait() {
     run_loop_->Run();
@@ -1630,12 +1632,22 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
       const blink::mojom::FullscreenOptions& options) override {
     is_fullscreen_ = true;
     options_ = options;
+
+    if (waiting_for_ == kFullscreenEnter) {
+      waiting_for_ = kNothing;
+      run_loop_->Quit();
+    }
   }
 
   void FullscreenStateChangedForTab(
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override {
     options_ = options;
+
+    if (waiting_for_ == kFullscreenOptions) {
+      waiting_for_ = kNothing;
+      run_loop_->Quit();
+    }
   }
 
   void ExitFullscreenModeForTab(WebContents*) override {
@@ -1718,7 +1730,9 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
     kNothing,
     kDialog,
     kNewContents,
-    kFullscreenExit
+    kFullscreenEnter,
+    kFullscreenExit,
+    kFullscreenOptions,
   } waiting_for_ = kNothing;
 
   std::string last_message_;
@@ -3456,9 +3470,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(main_frame, web_contents->current_fullscreen_frame_);
 }
 
-// Disabled due to flakiness: https://crbug.com/1154612.
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       DISABLED_PropagateFullscreenOptions) {
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, PropagateFullscreenOptions) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -3473,11 +3485,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Make the top page fullscreen with system navigation ui.
   {
+    test_delegate.WillWaitForFullscreenEnter();
     TitleWatcher title_watcher(web_contents, u"main_fullscreen_fulfilled");
     EXPECT_TRUE(ExecJs(
         main_frame,
         "document.body.requestFullscreen({ navigationUI: 'show' }).then(() => "
         "{document.title = 'main_fullscreen_fulfilled'});"));
+    test_delegate.Wait();
 
     std::u16string title = title_watcher.WaitAndGetTitle();
     ASSERT_EQ(title, u"main_fullscreen_fulfilled");
@@ -3489,11 +3503,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
   // Make the child frame fullscreen without system navigation ui.
   {
+    test_delegate.WillWaitForFullscreenOption();
     TitleWatcher title_watcher(web_contents, u"child_fullscreen_fulfilled");
     EXPECT_TRUE(ExecJs(
         child_frame,
         "document.body.requestFullscreen({ navigationUI: 'hide' }).then(() => "
         "{parent.document.title = 'child_fullscreen_fulfilled'});"));
+    test_delegate.Wait();
 
     std::u16string title = title_watcher.WaitAndGetTitle();
     ASSERT_EQ(title, u"child_fullscreen_fulfilled");
@@ -3504,12 +3520,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Exit fullscreen on the child frame and restore system navigation ui for the
   // top page.
   {
+    test_delegate.WillWaitForFullscreenOption();
     EXPECT_TRUE(ExecJs(
         main_frame,
         "document.body.onfullscreenchange = "
         "function (event) { document.title = 'main_in_fullscreen_again' };"));
     TitleWatcher title_watcher(web_contents, u"main_in_fullscreen_again");
     EXPECT_TRUE(ExecJs(child_frame, "document.exitFullscreen();"));
+    test_delegate.Wait();
+
     std::u16string title = title_watcher.WaitAndGetTitle();
     ASSERT_EQ(title, u"main_in_fullscreen_again");
   }
