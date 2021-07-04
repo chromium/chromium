@@ -252,7 +252,12 @@ int QuicHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
   // Store the response info.
   response_info_ = response;
 
-  int rv;
+  // Put the peer's IP address and port into the response.
+  IPEndPoint address;
+  int rv = quic_session()->GetPeerAddress(&address);
+  if (rv != OK)
+    return rv;
+  response_info_->remote_endpoint = address;
 
   if (!found_promise_) {
     next_state_ = STATE_SET_REQUEST_PRIORITY;
@@ -707,13 +712,6 @@ int QuicHttpStream::ProcessResponseHeaders(
     return OK;
   }
 
-  // Put the peer's IP address and port into the response.
-  IPEndPoint address;
-  int rv = quic_session()->GetPeerAddress(&address);
-  if (rv != OK)
-    return rv;
-
-  response_info_->remote_endpoint = address;
   response_info_->connection_info =
       ConnectionInfoFromQuicVersion(quic_session()->GetQuicVersion());
   response_info_->vary_data.Init(*request_info_,
