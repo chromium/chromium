@@ -7445,10 +7445,12 @@ void Document::CancelAnimationFrame(int id) {
 
 void Document::ServiceScriptedAnimations(
     base::TimeTicks monotonic_animation_start_time) {
+  recordreplay::Assert("Document::ServiceScriptedAnimations Start");
   auto start_time = base::TimeTicks::Now();
   scripted_animation_controller_->ServiceScriptedAnimations(
       monotonic_animation_start_time);
   if (GetFrame()) {
+    recordreplay::Assert("Document::ServiceScriptedAnimations #1");
     GetFrame()->GetFrameScheduler()->AddTaskTime(base::TimeTicks::Now() -
                                                  start_time);
   }

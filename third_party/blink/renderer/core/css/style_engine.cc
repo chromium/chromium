@@ -2126,11 +2126,14 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
   // tree properly.
   DCHECK(!NeedsLayoutTreeRebuild());
 
+  recordreplay::Assert("StyleEngine::UpdateStyleAndLayoutTree");
+
   UpdateViewportStyle();
 
   if (Element* document_element = GetDocument().documentElement()) {
     NthIndexCache nth_index_cache(GetDocument());
     if (NeedsStyleRecalc()) {
+      recordreplay::Assert("StyleEngine::UpdateStyleAndLayoutTree #1");
       TRACE_EVENT0("blink,blink_style", "Document::recalcStyle");
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Style.RecalcTime");
       Element* viewport_defining = GetDocument().ViewportDefiningElement();
@@ -2140,6 +2143,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
     }
     MarkForWhitespaceReattachment();
     if (NeedsLayoutTreeRebuild()) {
+      recordreplay::Assert("StyleEngine::UpdateStyleAndLayoutTree #2");
       TRACE_EVENT0("blink,blink_style", "Document::rebuildLayoutTree");
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Style.RebuildLayoutTreeTime");
       RebuildLayoutTree();
