@@ -1138,7 +1138,7 @@ Unknown properties are collapsed to zero. -->
 
 <enum name="AccuracyTipStatus">
   <int value="0" label="kNone"/>
-  <int value="1" label="kMisinformation"/>
+  <int value="1" label="kShowAccuracyTip"/>
 </enum>
 
 <enum name="ActionAfterDoubleTap">

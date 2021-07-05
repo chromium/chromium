@@ -90,7 +90,7 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
                              PageInfoBubbleViewBase::BUBBLE_ACCURACY_TIP,
                              web_contents),
       close_callback_(std::move(close_callback)) {
-  DCHECK(status == accuracy_tips::AccuracyTipStatus::kMisinformation);
+  DCHECK(status == accuracy_tips::AccuracyTipStatus::kShowAccuracyTip);
 
   views::BubbleDialogDelegateView::CreateBubble(this);
 

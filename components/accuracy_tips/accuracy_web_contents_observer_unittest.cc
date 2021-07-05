@@ -11,6 +11,7 @@
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/accuracy_tips/features.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,13 +30,13 @@ void ReturnNone(const GURL&, AccuracyCheckCallback callback) {
   std::move(callback).Run(AccuracyTipStatus::kNone);
 }
 void ReturnIsMisinformation(const GURL&, AccuracyCheckCallback callback) {
-  std::move(callback).Run(AccuracyTipStatus::kMisinformation);
+  std::move(callback).Run(AccuracyTipStatus::kShowAccuracyTip);
 }
 }  // namespace
 
 class MockAccuracyService : public AccuracyService {
  public:
-  MockAccuracyService() : AccuracyService(nullptr) {}
+  MockAccuracyService() : AccuracyService(nullptr, nullptr, nullptr, nullptr) {}
   MOCK_METHOD2(CheckAccuracyStatus, void(const GURL&, AccuracyCheckCallback));
   MOCK_METHOD1(MaybeShowAccuracyTip, void(content::WebContents*));
 };
@@ -93,7 +94,7 @@ TEST_F(AccuracyWebContentsObserverTest, CheckServiceAndNavigationBeforeResult) {
 
   // Verify that there is no call to MaybeShowAccuracyTip if callback is invoked
   // after navigation to a different site.
-  std::move(callback).Run(AccuracyTipStatus::kMisinformation);
+  std::move(callback).Run(AccuracyTipStatus::kShowAccuracyTip);
   Mock::VerifyAndClearExpectations(service());
 }
 
@@ -109,7 +110,7 @@ TEST_F(AccuracyWebContentsObserverTest, CheckServiceAndDestroyBeforeResult) {
 
   // Invoke callback after webcontents is destroyed.
   DeleteContents();
-  std::move(callback).Run(AccuracyTipStatus::kMisinformation);
+  std::move(callback).Run(AccuracyTipStatus::kShowAccuracyTip);
 }
 
 }  // namespace accuracy_tips

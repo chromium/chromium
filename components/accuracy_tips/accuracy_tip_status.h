@@ -13,10 +13,10 @@ namespace accuracy_tips {
 enum class AccuracyTipStatus {
   // No accuracy information for the site.
   kNone = 0,
-  // Site classified as being misleading.
-  kMisinformation = 1,
+  // Site is eligible for showing an accuracy tip.
+  kShowAccuracyTip = 1,
 
-  kMaxValue = kMisinformation,
+  kMaxValue = kShowAccuracyTip,
 };
 
 }  // namespace accuracy_tips

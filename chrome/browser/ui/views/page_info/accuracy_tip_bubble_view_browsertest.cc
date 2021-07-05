@@ -81,8 +81,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnBadUrl) {
   ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
   EXPECT_TRUE(IsUIShowing());
 
-  histogram_tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
-                                         AccuracyTipStatus::kMisinformation, 1);
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.PageStatus", AccuracyTipStatus::kShowAccuracyTip, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
@@ -141,7 +141,7 @@ class AccuracyTipBubbleViewDialogBrowserTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     ShowAccuracyTipDialog(browser()->tab_strip_model()->GetActiveWebContents(),
-                          accuracy_tips::AccuracyTipStatus::kMisinformation,
+                          accuracy_tips::AccuracyTipStatus::kShowAccuracyTip,
                           base::DoNothing());
   }
 };

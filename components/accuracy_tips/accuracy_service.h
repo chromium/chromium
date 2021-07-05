@@ -16,13 +16,23 @@ namespace content {
 class WebContents;
 }
 
+namespace safe_browsing {
+class SafeBrowsingDatabaseManager;
+}
+
 namespace accuracy_tips {
+
+class AccuracyTipSafeBrowsingClient;
 
 // Checks accuracy information on URLs for AccuracyTips.
 // Handles rate-limiting and feature checks.
 class AccuracyService : public KeyedService {
  public:
-  explicit AccuracyService(std::unique_ptr<AccuracyTipUI> ui);
+  AccuracyService(
+      std::unique_ptr<AccuracyTipUI> ui,
+      scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> sb_database,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   ~AccuracyService() override;
 
   AccuracyService(const AccuracyService&) = delete;
@@ -31,20 +41,27 @@ class AccuracyService : public KeyedService {
   // Callback for accuracy check result.
   using AccuracyCheckCallback = base::OnceCallback<void(AccuracyTipStatus)>;
 
-  // Returns the accuracy status for |url|.
+  // Returns the accuracy status for |url|. Virtual for testing purposes.
   virtual void CheckAccuracyStatus(const GURL& url,
                                    AccuracyCheckCallback callback);
 
   // Shows an accuracy tip UI for web_contents after checking rate limits.
+  // Virtual for testing purposes.
   virtual void MaybeShowAccuracyTip(content::WebContents* web_contents);
 
   void SetSampleUrlForTesting(const GURL& url);
+
+  // KeyedService:
+  void Shutdown() override;
 
  private:
   void OnAccuracyTipClosed(base::TimeTicks time_opened,
                            AccuracyTipUI::Interaction interaction);
 
   std::unique_ptr<AccuracyTipUI> ui_;
+  scoped_refptr<AccuracyTipSafeBrowsingClient> sb_client_;
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   GURL sample_url_;
 
   base::WeakPtrFactory<AccuracyService> weak_factory_{this};
