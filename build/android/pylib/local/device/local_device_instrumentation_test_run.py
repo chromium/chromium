@@ -130,22 +130,20 @@ def _LogTestEndpoints(device, test_name):
         ['log', '-p', 'i', '-t', _TAG, 'END %s' % test_name],
         check_return=True)
 
-# TODO(jbudorick): Make this private once the instrumentation test_runner
-# is deprecated.
-def DidPackageCrashOnDevice(package_name, device):
+
+def DismissCrashDialogs(device):
   # Dismiss any error dialogs. Limit the number in case we have an error
   # loop or we are failing to dismiss.
+  packages = set()
   try:
     for _ in range(10):
       package = device.DismissCrashDialogIfNeeded(timeout=10, retries=1)
       if not package:
-        return False
-      # Assume test package convention of ".test" suffix
-      if package in package_name:
-        return True
+        break
+      packages.add(package)
   except device_errors.CommandFailedError:
     logging.exception('Error while attempting to dismiss crash dialog.')
-  return False
+  return packages
 
 
 _CURRENT_FOCUS_CRASH_RE = re.compile(
@@ -796,10 +794,17 @@ class LocalDeviceInstrumentationTestRun(
 
     # Update the result type if we detect a crash.
     try:
-      if DidPackageCrashOnDevice(self._test_instance.test_package, device):
+      crashed_packages = DismissCrashDialogs(device)
+      # Assume test package convention of ".test" suffix
+      if any(p in self._test_instance.test_package for p in crashed_packages):
         for r in results:
           if r.GetType() == base_test_result.ResultType.UNKNOWN:
             r.SetType(base_test_result.ResultType.CRASH)
+      if (crashed_packages and len(results) == 1
+          and results[0].GetType() != base_test_result.ResultType.PASS):
+        _AppendToLogForResult(
+            results[0], 'OS displayed error dialogs for {}'.format(
+                ', '.join(crashed_packages)))
     except device_errors.CommandTimeoutError:
       logging.warning('timed out when detecting/dismissing error dialogs')
       # Attach screenshot to the test to help with debugging the dialog boxes.
@@ -1427,7 +1432,11 @@ def _AppendToLog(results, full_test_name, line):
   for result in results:
     if found_matching_test and result.GetName() != full_test_name:
       continue
-    result.SetLog(result.GetLog() + '\n' + line)
+    _AppendToLogForResult(result, line)
+
+
+def _AppendToLogForResult(result, line):
+  result.SetLog(result.GetLog() + '\n' + line)
 
 
 def _SetLinkOnResults(results, full_test_name, link_name, link):
