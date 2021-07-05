@@ -30,7 +30,6 @@ namespace blink {
 class DatagramDuplexStream;
 class ExceptionState;
 class ReadableStream;
-class ReadableStreamDefaultControllerWithScriptScope;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
@@ -135,8 +134,7 @@ class MODULES_EXPORT WebTransport final
   Member<DatagramDuplexStream> datagrams_;
 
   Member<ReadableStream> received_datagrams_;
-  Member<ReadableStreamDefaultControllerWithScriptScope>
-      received_datagrams_controller_;
+  Member<DatagramUnderlyingSource> datagram_underlying_source_;
 
   // This corresponds to the [[SentDatagrams]] internal slot in the standard.
   Member<WritableStream> outgoing_datagrams_;

@@ -9,8 +9,11 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -22,6 +25,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -40,6 +44,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -48,6 +53,11 @@
 namespace blink {
 
 namespace {
+
+// The incoming max age to to be used when datagrams.incomingMaxAge is set to
+// null.
+constexpr base::TimeDelta kDefaultIncomingMaxAge =
+    base::TimeDelta::FromSeconds(60);
 
 // Creates a mojo DataPipe with the options we use for our stream data pipes. On
 // success, returns true. On failure, throws an exception and returns false.
@@ -178,41 +188,264 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
   HeapDeque<Member<ScriptPromiseResolver>> pending_datagrams_;
 };
 
-// Captures a pointer to the ReadableStreamDefaultControllerWithScriptScope in
-// the Start() method, and then does nothing else. Queuing of received datagrams
-// is done inside the implementation of WebTransport.
+// Passes incoming datagrams to the datagrams.readable stream. It maintains its
+// own internal queue of datagrams so that stale datagrams won't remain in
+// ReadableStream's queue.
 class WebTransport::DatagramUnderlyingSource final
     : public UnderlyingSourceBase {
  public:
   DatagramUnderlyingSource(ScriptState* script_state,
-                           WebTransport* web_transport)
-      : UnderlyingSourceBase(script_state), web_transport_(web_transport) {}
+                           DatagramDuplexStream* datagram_duplex_stream)
+      : UnderlyingSourceBase(script_state),
+        datagram_duplex_stream_(datagram_duplex_stream),
+        expiry_timer_(ExecutionContext::From(script_state)
+                          ->GetTaskRunner(TaskType::kNetworking),
+                      this,
+                      &DatagramUnderlyingSource::ExpiryTimerFired) {}
 
-  ScriptPromise Start(ScriptState* script_state) override {
-    web_transport_->received_datagrams_controller_ = Controller();
-    return ScriptPromise::CastUndefined(script_state);
-  }
-
+  // Implementation of UnderlyingSourceBase.
   ScriptPromise pull(ScriptState* script_state) override {
+    DVLOG(1) << "DatagramUnderlyingSource::pull()";
+    // If high water mark is reset to 0 and then read() is called, it should
+    // block waiting for a new datagram. So we may need to discard datagrams
+    // here.
+    DiscardExcessDatagrams();
+
+    MaybeExpireDatagrams();
+
+    if (queue_.empty()) {
+      if (close_when_queue_empty_) {
+        Controller()->Close();
+        return ScriptPromise::CastUndefined(script_state);
+      }
+
+      DCHECK(!waiting_for_datagrams_);
+      waiting_for_datagrams_ = true;
+      return ScriptPromise::CastUndefined(script_state);
+    }
+
+    const QueueEntry* entry = queue_.front();
+    queue_.pop_front();
+
+    if (queue_.empty()) {
+      expiry_timer_.Stop();
+    }
+
+    // This has to go after any mutations as it may run JavaScript, leading to
+    // re-entry.
+    Controller()->Enqueue(entry->datagram);
+
+    // JavaScript could have called some other method at this point.
+    // However, this is safe, because |close_when_queue_empty_| only ever
+    // changes from false to true, and once it is true no more datagrams will
+    // be added to |queue_|.
+    if (close_when_queue_empty_ && queue_.empty()) {
+      Controller()->Close();
+    }
+
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
-    // Stop Enqueue() from being called again.
+  ScriptPromise Cancel(ScriptState* script_state, ScriptValue) override {
+    DVLOG(1) << "DatagramUnderlyingSource::Cancel()";
+    waiting_for_datagrams_ = false;
+    canceled_ = true;
+    DiscardQueue();
+    Controller()->NoteHasBeenCanceled();
 
-    web_transport_->received_datagrams_controller_->NoteHasBeenCanceled();
-    web_transport_->received_datagrams_controller_ = nullptr;
-    web_transport_ = nullptr;
     return ScriptPromise::CastUndefined(script_state);
+  }
+
+  // Interface for use by WebTransport.
+  void Close() {
+    DVLOG(1) << "DatagramUnderlyingSource::Close()";
+
+    if (queue_.empty()) {
+      Controller()->Close();
+    } else {
+      close_when_queue_empty_ = true;
+    }
+  }
+
+  void Error(v8::Local<v8::Value> error) {
+    DVLOG(1) << "DatagramUnderlyingSource::Error()";
+
+    waiting_for_datagrams_ = false;
+    DiscardQueue();
+    Controller()->Error(error);
+  }
+
+  void OnDatagramReceived(base::span<const uint8_t> data) {
+    DVLOG(1) << "DatagramUnderlyingSource::OnDatagramReceived() size="
+             << data.size();
+
+    // We should not receive any datagrams after Close() was called.
+    DCHECK(!close_when_queue_empty_);
+
+    if (canceled_) {
+      return;
+    }
+
+    auto* datagram = DOMUint8Array::Create(data.data(), data.size());
+
+    // This fast path is expected to be hit frequently. Avoid the queue.
+    if (waiting_for_datagrams_) {
+      DCHECK(queue_.empty());
+      waiting_for_datagrams_ = false;
+      // This may run JavaScript, so it has to be called immediately before
+      // returning to avoid confusion caused by re-entrant usage.
+      Controller()->Enqueue(datagram);
+      return;
+    }
+
+    DiscardExcessDatagrams();
+
+    auto high_water_mark = HighWaterMark();
+
+    // A high water mark of 0 has the semantics that all datagrams are discarded
+    // unless there is read pending. This might be useful to someone, so support
+    // it.
+    if (high_water_mark == 0) {
+      DCHECK(queue_.empty());
+      return;
+    }
+
+    if (queue_.size() == high_water_mark) {
+      // Need to get rid of an entry for the new one to replace.
+      queue_.pop_front();
+    }
+
+    auto now = base::TimeTicks::Now();
+    queue_.push_back(MakeGarbageCollected<QueueEntry>(datagram, now));
+    MaybeExpireDatagrams(now);
   }
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(web_transport_);
+    visitor->Trace(queue_);
+    visitor->Trace(datagram_duplex_stream_);
+    visitor->Trace(expiry_timer_);
     UnderlyingSourceBase::Trace(visitor);
   }
 
  private:
-  Member<WebTransport> web_transport_;
+  struct QueueEntry : GarbageCollected<QueueEntry> {
+    QueueEntry(DOMUint8Array* datagram, base::TimeTicks received_time)
+        : datagram(datagram), received_time(received_time) {}
+
+    const Member<DOMUint8Array> datagram;
+    const base::TimeTicks received_time;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(datagram); }
+  };
+
+  void DiscardExcessDatagrams() {
+    DVLOG(1)
+        << "DatagramUnderlyingSource::DiscardExcessDatagrams() queue_.size="
+        << queue_.size();
+
+    wtf_size_t high_water_mark = HighWaterMark();
+
+    // The high water mark may have been set to a lower value, so the size can
+    // be greater.
+    while (queue_.size() > high_water_mark) {
+      // TODO(ricea): Maybe free the memory associated with the array
+      // buffer?
+      queue_.pop_front();
+    }
+
+    if (queue_.empty()) {
+      DVLOG(1) << "DiscardExcessDatagrams: queue size now zero";
+      expiry_timer_.Stop();
+    }
+  }
+
+  void DiscardQueue() {
+    queue_.clear();
+    expiry_timer_.Stop();
+  }
+
+  void ExpiryTimerFired(TimerBase*) {
+    DVLOG(1) << "DatagramUnderlyingSource::ExpiryTimerFired()";
+
+    MaybeExpireDatagrams();
+  }
+
+  void MaybeExpireDatagrams() { MaybeExpireDatagrams(base::TimeTicks::Now()); }
+
+  void MaybeExpireDatagrams(base::TimeTicks now) {
+    DVLOG(1) << "DatagramUnderlyingSource::MaybeExpireDatagrams() now=" << now
+             << " queue_.size=" << queue_.size();
+
+    absl::optional<double> optional_max_age =
+        datagram_duplex_stream_->incomingMaxAge();
+    bool max_age_is_default = false;
+    base::TimeDelta max_age;
+    if (optional_max_age.has_value()) {
+      max_age = base::TimeDelta::FromMillisecondsD(optional_max_age.value());
+    } else {
+      max_age_is_default = true;
+      max_age = kDefaultIncomingMaxAge;
+    }
+
+    DCHECK_GT(now, base::TimeTicks());
+
+    // base::TimeTicks can take negative values, so this subtraction won't
+    // underflow even if MaxAge() is huge.
+    base::TimeTicks older_than = now - max_age;
+
+    bool discarded = false;
+    while (!queue_.empty() && queue_.front()->received_time < older_than) {
+      discarded = true;
+      queue_.pop_front();
+    }
+
+    if (discarded && max_age_is_default) {
+      if (auto* execution_context = GetExecutionContext()) {
+        execution_context->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kNetwork,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                "Incoming datagram was discarded by WebTransport due to "
+                "reaching default incomingMaxAge"),
+            true);
+      }
+    }
+
+    if (queue_.empty()) {
+      DVLOG(1) << "MaybeExpireDatagrams queue is now empty";
+      expiry_timer_.Stop();
+      return;
+    }
+
+    base::TimeDelta age = now - queue_.front()->received_time;
+    DCHECK_GE(max_age, age);
+    base::TimeDelta time_until_next_expiry = max_age - age;
+
+    // To reduce the number of wakeups, don't try to expire any more datagrams
+    // for at least a second.
+    if (time_until_next_expiry < base::TimeDelta::FromSeconds(1)) {
+      time_until_next_expiry = base::TimeDelta::FromSeconds(1);
+    }
+
+    if (expiry_timer_.IsActive() &&
+        expiry_timer_.NextFireInterval() <= time_until_next_expiry) {
+      return;
+    }
+
+    expiry_timer_.StartOneShot(time_until_next_expiry, FROM_HERE);
+  }
+
+  wtf_size_t HighWaterMark() const {
+    return base::checked_cast<wtf_size_t>(
+        datagram_duplex_stream_->incomingHighWaterMark());
+  }
+
+  HeapDeque<Member<const QueueEntry>> queue_;
+  const Member<DatagramDuplexStream> datagram_duplex_stream_;
+  HeapTaskRunnerTimer<DatagramUnderlyingSource> expiry_timer_;
+  bool waiting_for_datagrams_ = false;
+  bool canceled_ = false;
+  bool close_when_queue_empty_ = false;
 };
 
 class WebTransport::StreamVendingUnderlyingSource final
@@ -529,10 +762,7 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
   }
   cleanly_closed_ = true;
 
-  if (received_datagrams_controller_) {
-    received_datagrams_controller_->Close();
-    received_datagrams_controller_ = nullptr;
-  }
+  datagram_underlying_source_->Close();
 
   received_streams_underlying_source_->Close();
   received_bidirectional_streams_underlying_source_->Close();
@@ -603,24 +833,7 @@ void WebTransport::OnHandshakeFailed(
 }
 
 void WebTransport::OnDatagramReceived(base::span<const uint8_t> data) {
-  ReadableStreamDefaultControllerWithScriptScope* controller =
-      received_datagrams_controller_;
-
-  // Discard datagrams if the readable has been cancelled.
-  if (!controller)
-    return;
-
-  // The spec says we should discard older datagrams first, but that's not what
-  // ReadableStream does, so instead we might need to maintain a separate queue
-  // with the desired semantics. But for now we'll just use a small queue in
-  // ReadableStream.
-  // TODO(ricea): Figure out how to get nice semantics here.
-
-  if (controller->DesiredSize() > 0) {
-    auto* array = DOMUint8Array::Create(
-        data.data(), base::checked_cast<wtf_size_t>(data.size()));
-    controller->Enqueue(array);
-  }
+  datagram_underlying_source_->OnDatagramReceived(data);
 }
 
 void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
@@ -666,7 +879,7 @@ void WebTransport::ForgetStream(uint32_t stream_id) {
 void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(datagrams_);
   visitor->Trace(received_datagrams_);
-  visitor->Trace(received_datagrams_controller_);
+  visitor->Trace(datagram_underlying_source_);
   visitor->Trace(outgoing_datagrams_);
   visitor->Trace(script_state_);
   visitor->Trace(create_stream_resolvers_);
@@ -771,13 +984,10 @@ void WebTransport::Init(const String& url,
   datagrams_ = MakeGarbageCollected<DatagramDuplexStream>(
       this, outgoing_datagrams_high_water_mark);
 
-  // The choice of 1 for the ReadableStream means that it will queue one
-  // datagram even when read() is not being called. Unfortunately, that datagram
-  // may become arbitrarily stale.
-  // TODO(ricea): Consider having a datagram queue inside this class instead.
+  datagram_underlying_source_ =
+      MakeGarbageCollected<DatagramUnderlyingSource>(script_state_, datagrams_);
   received_datagrams_ = ReadableStream::CreateWithCountQueueingStrategy(
-      script_state_,
-      MakeGarbageCollected<DatagramUnderlyingSource>(script_state_, this), 1);
+      script_state_, datagram_underlying_source_, 0);
 
   // We create a WritableStream with high water mark 1 and try to mimic the
   // given high water mark in the Sink, from two reasons:
@@ -836,10 +1046,7 @@ void WebTransport::OnConnectionError() {
   if (!cleanly_closed_) {
     v8::Local<v8::Value> reason = V8ThrowException::CreateTypeError(
         script_state_->GetIsolate(), "Connection lost.");
-    if (received_datagrams_controller_) {
-      received_datagrams_controller_->Error(reason);
-      received_datagrams_controller_ = nullptr;
-    }
+    datagram_underlying_source_->Error(reason);
     received_streams_underlying_source_->Error(reason);
     received_bidirectional_streams_underlying_source_->Error(reason);
     WritableStreamDefaultController::ErrorIfNeeded(
