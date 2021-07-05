@@ -263,7 +263,7 @@ class EnumSet {
   // can safely remove the constepxr qualifiers from this file, at the cost of
   // some minor optimizations.
   explicit constexpr EnumSet(EnumBitSet enums) : enums_(enums) {
-    static_assert(kValueCount < 64,
+    static_assert(kValueCount <= 64,
                   "Max number of enum values is 64 for constexpr ");
   }
 

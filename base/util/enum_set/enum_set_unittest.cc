@@ -25,6 +25,17 @@ enum class TestEnum {
 
 using TestEnumSet = EnumSet<TestEnum, TestEnum::TEST_MIN, TestEnum::TEST_MAX>;
 
+enum class TestEnumExtreme {
+  TEST_0 = 0,
+  TEST_MIN = TEST_0,
+  TEST_63 = 63,
+  TEST_MAX = TEST_63,
+  TEST_64_OUT_OF_BOUNDS,
+};
+using TestEnumExtremeSet = EnumSet<TestEnumExtreme,
+                                   TestEnumExtreme::TEST_MIN,
+                                   TestEnumExtreme::TEST_MAX>;
+
 class EnumSetTest : public ::testing::Test {};
 
 TEST_F(EnumSetTest, ClassConstants) {
@@ -66,6 +77,11 @@ TEST_F(EnumSetTest, OneArgConstructor) {
   EXPECT_FALSE(enums.Has(TestEnum::TEST_2));
   EXPECT_TRUE(enums.Has(TestEnum::TEST_3));
   EXPECT_FALSE(enums.Has(TestEnum::TEST_4));
+}
+
+TEST_F(EnumSetTest, OneArgConstructorSize) {
+  TestEnumExtremeSet enums(TestEnumExtreme::TEST_0);
+  EXPECT_TRUE(enums.Has(TestEnumExtreme::TEST_0));
 }
 
 TEST_F(EnumSetTest, TwoArgConstructor) {
