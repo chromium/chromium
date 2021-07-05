@@ -452,7 +452,7 @@ source_set("testing") {
   public_deps = [ "//testing/gmock:gmock" ]
 }
 
-# core_bindings_generated ------------------------------------------------------
+# generate_event_interfaces ----------------------------------------------------
 
 generate_event_interfaces("core_event_interfaces") {
   sources = [
@@ -1137,16 +1137,13 @@ target(core_generated_target_type, "core_generated") {
     ":prerequisites",
     "//gin",
     "//skia",
+    "//third_party/blink/renderer/platform:make_platform_generated",
+    "//third_party/blink/renderer/platform/wtf",
     "//third_party/iccjpeg",
     "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/libxml",
     "//third_party/libxslt",
-
-    # FIXME: don't depend on bindings/modules http://crbug.com/358074
-    "//third_party/blink/renderer/bindings/modules:bindings_modules_generated",
-    "//third_party/blink/renderer/platform:make_platform_generated",
-    "//third_party/blink/renderer/platform/wtf",
     "//url",
     "//v8",
   ]
