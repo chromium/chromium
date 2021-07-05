@@ -15,6 +15,7 @@
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sync_message_filter.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -29,7 +30,6 @@ class RenderThread;
 }
 
 class GURL;
-struct ExtensionMsg_DispatchEvent_Params;
 struct ExtensionMsg_TabConnectionInfo;
 struct ExtensionMsg_ExternalConnectionInfo;
 
@@ -162,7 +162,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                         bool succeeded,
                         const base::ListValue& response,
                         const std::string& error);
-  void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
+  void OnDispatchEvent(const mojom::DispatchEventParams& params,
                        const base::ListValue& event_args);
   void OnValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnDispatchOnConnect(int worker_thread_id,

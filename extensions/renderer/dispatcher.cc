@@ -1250,9 +1250,8 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
       NULL);  // All render frames.
 }
 
-void Dispatcher::OnDispatchEvent(
-    const ExtensionMsg_DispatchEvent_Params& params,
-    const base::ListValue& event_args) {
+void Dispatcher::OnDispatchEvent(const mojom::DispatchEventParams& params,
+                                 const base::ListValue& event_args) {
   content::RenderFrame* background_frame =
       ExtensionFrameHelper::GetBackgroundPageFrame(params.extension_id);
 

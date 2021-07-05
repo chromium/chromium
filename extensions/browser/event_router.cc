@@ -142,7 +142,7 @@ void EventRouter::DispatchExtensionMessage(
     UserGestureState user_gesture,
     const EventFilteringInfo& info) {
   NotifyEventDispatched(browser_context, extension_id, event_name, *event_args);
-  ExtensionMsg_DispatchEvent_Params params;
+  mojom::DispatchEventParams params;
   params.worker_thread_id = worker_thread_id;
   params.extension_id = extension_id;
   params.event_name = event_name;

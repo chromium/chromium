@@ -352,7 +352,7 @@ void WorkerThreadDispatcher::OnResponseWorker(int worker_thread_id,
 }
 
 void WorkerThreadDispatcher::OnDispatchEvent(
-    const ExtensionMsg_DispatchEvent_Params& params,
+    const mojom::DispatchEventParams& params,
     const base::ListValue& event_args) {
   ServiceWorkerData* data = g_data_tls.Pointer()->Get();
   DCHECK(data);

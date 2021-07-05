@@ -24,6 +24,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
@@ -40,7 +41,6 @@
 class ChromeRenderViewTest;
 class GURL;
 class ModuleSystem;
-struct ExtensionMsg_DispatchEvent_Params;
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabConnectionInfo;
 
@@ -272,7 +272,7 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
-  void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
+  void OnDispatchEvent(const mojom::DispatchEventParams& params,
                        const base::ListValue& event_args);
 
   // UserScriptSetManager::Observer implementation.

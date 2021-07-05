@@ -1,0 +1,48 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "url/mojom/url.mojom";
+
+// Typemapped to extensions::EventFilteringInfo.
+// TODO(yochio): Convert extensions::EventFilteringInfo usage to
+// extensions::mojom::EventFilteringInfo (https://crbug.com/1222550)
+struct EventFilteringInfo {
+  url.mojom.Url? url;
+
+  string? service_type;
+
+  // TODO(yoichio): Use nullable when https://crbug.com/657632 is fixed.
+  bool has_instance_id;
+  int32 instance_id;
+
+  string? window_type;
+
+  // TODO(yoichio): Use nullable when https://crbug.com/657632 is fixed.
+  bool has_window_exposed_by_default;
+  bool window_exposed_by_default;
+};
+
+struct DispatchEventParams {
+  // If this event is for a service worker, then this is the worker thread
+  // id. Otherwise, this is 0.
+  int32 worker_thread_id;
+
+  // The id of the extension to dispatch the event to.
+  string extension_id;
+
+  // The name of the event to dispatch.
+  string event_name;
+
+  // The id of the event for use in the EventAck response message.
+  int32 event_id;
+
+  // Whether or not the event is part of a user gesture.
+  bool is_user_gesture;
+
+  // Additional filtering info for the event.
+  EventFilteringInfo filtering_info;
+};

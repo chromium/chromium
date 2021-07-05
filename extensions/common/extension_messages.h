@@ -34,6 +34,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -134,26 +135,26 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::mojom::RequestParams)
   IPC_STRUCT_TRAITS_MEMBER(service_worker_version_id)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_BEGIN(ExtensionMsg_DispatchEvent_Params)
+IPC_STRUCT_TRAITS_BEGIN(extensions::mojom::DispatchEventParams)
   // If this event is for a service worker, then this is the worker thread
   // id. Otherwise, this is 0.
-  IPC_STRUCT_MEMBER(int, worker_thread_id)
+  IPC_STRUCT_TRAITS_MEMBER(worker_thread_id)
 
   // The id of the extension to dispatch the event to.
-  IPC_STRUCT_MEMBER(std::string, extension_id)
+  IPC_STRUCT_TRAITS_MEMBER(extension_id)
 
   // The name of the event to dispatch.
-  IPC_STRUCT_MEMBER(std::string, event_name)
+  IPC_STRUCT_TRAITS_MEMBER(event_name)
 
   // The id of the event for use in the EventAck response message.
-  IPC_STRUCT_MEMBER(int, event_id)
+  IPC_STRUCT_TRAITS_MEMBER(event_id)
 
   // Whether or not the event is part of a user gesture.
-  IPC_STRUCT_MEMBER(bool, is_user_gesture)
+  IPC_STRUCT_TRAITS_MEMBER(is_user_gesture)
 
   // Additional filtering info for the event.
-  IPC_STRUCT_MEMBER(extensions::EventFilteringInfo, filtering_info)
-IPC_STRUCT_END()
+  IPC_STRUCT_TRAITS_MEMBER(filtering_info)
+IPC_STRUCT_TRAITS_END()
 
 // Struct containing information about the sender of connect() calls that
 // originate from a tab.
@@ -302,7 +303,7 @@ IPC_STRUCT_TRAITS_END()
 // Note: |event_args| is separate from the params to avoid having the message
 // take ownership.
 IPC_MESSAGE_CONTROL2(ExtensionMsg_DispatchEvent,
-                     ExtensionMsg_DispatchEvent_Params /* params */,
+                     extensions::mojom::DispatchEventParams /* params */,
                      base::ListValue /* event_args */)
 
 // Tell the render view which browser window it's being attached to.

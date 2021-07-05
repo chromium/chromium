@@ -45,6 +45,7 @@ if (enable_extensions) {
       "mojom/channel.mojom",
       "mojom/code_injection.mojom",
       "mojom/css_origin.mojom",
+      "mojom/event_dispatcher.mojom",
       "mojom/event_router.mojom",
       "mojom/feature_session_type.mojom",
       "mojom/frame.mojom",
@@ -140,6 +141,18 @@ if (enable_extensions) {
             [ "//extensions/common/mojom/activation_sequence_mojom_traits.h" ]
         traits_sources =
             [ "//extensions/common/mojom/activation_sequence_mojom_traits.cc" ]
+      },
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.EventFilteringInfo"
+            cpp = "::extensions::EventFilteringInfo"
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/event_dispatcher_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/event_dispatcher_mojom_traits.cc" ]
       },
     ]
     overridden_deps = [ "//content/public/common:interfaces" ]
