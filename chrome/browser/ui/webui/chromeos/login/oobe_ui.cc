@@ -211,9 +211,6 @@ constexpr char kProgressListItemJS[] = "components/progress_list_item/progress_l
 constexpr char kThrobberNoticeHTML[] = "components/throbber_notice/throbber_notice.html";
 constexpr char kThrobberNoticeJS[] = "components/throbber_notice/throbber_notice.js";
 
-constexpr char kOsInstallHTML[] = "os_install/os_install.html";
-constexpr char kOsInstallJS[] = "os_install/os_install.js";
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
 constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
@@ -334,13 +331,17 @@ void AddTestAPIResources(content::WebUIDataSource* source) {
 void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
   if (switches::IsOsInstallAllowed()) {
     source->SetDefaultResource(IDR_OS_INSTALL_OOBE_HTML);
+    source->AddResourcePath(kCustomElementsHTMLPath,
+                            IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_HTML);
+    source->AddResourcePath(kCustomElementsJSPath,
+                            IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_JS);
   } else {
     source->SetDefaultResource(IDR_OOBE_HTML);
+    source->AddResourcePath(kCustomElementsHTMLPath,
+                            IDR_CUSTOM_ELEMENTS_OOBE_HTML);
+    source->AddResourcePath(kCustomElementsJSPath, IDR_CUSTOM_ELEMENTS_OOBE_JS);
   }
   source->AddResourcePath(kOobeJSPath, IDR_OOBE_JS);
-  source->AddResourcePath(kCustomElementsHTMLPath,
-                          IDR_CUSTOM_ELEMENTS_OOBE_HTML);
-  source->AddResourcePath(kCustomElementsJSPath, IDR_CUSTOM_ELEMENTS_OOBE_JS);
 }
 
 // Default and non-shared resource definition for kLoginDisplay display type.
@@ -348,14 +349,19 @@ void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
 void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
   if (switches::IsOsInstallAllowed()) {
     source->SetDefaultResource(IDR_OS_INSTALL_LOGIN_HTML);
+    source->AddResourcePath(kCustomElementsHTMLPath,
+                            IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_HTML);
+    source->AddResourcePath(kCustomElementsJSPath,
+                            IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_JS);
   } else {
     source->SetDefaultResource(IDR_MD_LOGIN_HTML);
+    source->AddResourcePath(kCustomElementsHTMLPath,
+                            IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
+    source->AddResourcePath(kCustomElementsJSPath,
+                            IDR_CUSTOM_ELEMENTS_LOGIN_JS);
   }
 
   source->AddResourcePath(kLoginJSPath, IDR_OOBE_JS);
-  source->AddResourcePath(kCustomElementsHTMLPath,
-                          IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
-  source->AddResourcePath(kCustomElementsJSPath, IDR_CUSTOM_ELEMENTS_LOGIN_JS);
 }
 
 // Creates a WebUIDataSource for chrome://oobe
@@ -834,12 +840,6 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_THROBBER_NOTICE_HTML);
   source->AddResourcePath(kThrobberNoticeJS,
                           IDR_OOBE_COMPONENTS_THROBBER_NOTICE_JS);
-
-  if (switches::IsOsInstallAllowed()) {
-    source->AddResourcePath(kOsInstallHTML,
-                            IDR_OOBE_COMPONENTS_OS_INSTALL_HTML);
-    source->AddResourcePath(kOsInstallJS, IDR_OOBE_COMPONENTS_OS_INSTALL_JS);
-  }
 }
 
 CoreOobeView* OobeUI::GetCoreOobeView() {
