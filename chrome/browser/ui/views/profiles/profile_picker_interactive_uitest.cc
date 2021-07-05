@@ -76,21 +76,13 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
     bool control = false;
     bool shift = false;
     bool command = true;
-    // Mac needs the widget to get focused (once again) for
-    // SendKeyPressToWindowSync to work. A test-only particularity, pressing the
-    // keybinding manually right in the run of the test actually replaces the
-    // need of this call.
-    ASSERT_TRUE(
-        ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));
 #else
     // Use Ctrl-Shift-W on other platforms.
     bool control = true;
     bool shift = true;
     bool command = false;
 #endif
-    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        widget()->GetNativeWindow(), ui::VKEY_W, control, shift, /*alt=*/false,
-        command));
+    SendKeyPress(ui::VKEY_W, control, shift, /*alt=*/false, command);
   }
 
   void SendBackKeyboardCommand() {
@@ -100,21 +92,30 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
     bool alt = false;
     bool command = true;
     ui::KeyboardCode key = ui::VKEY_OEM_4;
-    // Mac needs the widget to get focused (once again) for
-    // SendKeyPressToWindowSync to work. A test-only particularity, pressing the
-    // keybinding manually right in the run of the test actually replaces the
-    // need of this call.
-    ASSERT_TRUE(
-        ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));
 #else
     // Use Ctrl-left on other platforms.
     bool alt = true;
     bool command = false;
     ui::KeyboardCode key = ui::VKEY_LEFT;
 #endif
+    SendKeyPress(key, /*control=*/false, /*shift=*/false, alt, command);
+  }
+
+  void SendKeyPress(ui::KeyboardCode key,
+                    bool control,
+                    bool shift,
+                    bool alt,
+                    bool command) {
+#if defined(OS_MAC)
+    // Mac needs the widget to get focused (once again) for
+    // SendKeyPressToWindowSync to work. A test-only particularity, pressing the
+    // keybinding manually right in the run of the test actually replaces the
+    // need of this call.
+    ASSERT_TRUE(
+        ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));
+#endif
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        widget()->GetNativeWindow(), key, /*control=*/false,
-        /*shift=*/false, alt, command));
+        widget()->GetNativeWindow(), key, control, shift, alt, command));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -145,9 +146,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
       chrome::NOTIFICATION_APP_TERMINATING,
       content::NotificationService::AllSources());
   // Send Cmd-Q.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-      widget()->GetNativeWindow(), ui::VKEY_Q, /*control=*/false,
-      /*shift=*/false, /*alt=*/false, /*command=*/true));
+  SendKeyPress(ui::VKEY_Q, /*control=*/false, /*shift=*/false, /*alt=*/false,
+               /*command=*/true);
   // Check that Chrome is quitting.
   terminate_observer.Wait();
   WaitForPickerClosed();
@@ -155,15 +155,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
 }
 #endif
 
-// Flaky on Mac, see https://crbug.com/1216134
-#if defined(OS_MAC)
-#define MAYBE_FullscreenWithKeyboard DISABLED_FullscreenWithKeyboard
-#else
-#define MAYBE_FullscreenWithKeyboard FullscreenWithKeyboard
-#endif
 // Checks that the main picker view can switch to full screen.
-IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       MAYBE_FullscreenWithKeyboard) {
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
   // Open a new picker.
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
@@ -183,9 +176,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   bool command = false;
   ui::KeyboardCode key_code = ui::VKEY_F11;
 #endif
-  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-      widget()->GetNativeWindow(), key_code, control, /*shift=*/false,
-      /*alt=*/false, command));
+  SendKeyPress(key_code, control, /*shift=*/false, /*alt=*/false, command);
   // Fullscreen causes the bounds of the widget to change.
   bounds_waiter.Wait();
   EXPECT_TRUE(widget()->IsFullscreen());
