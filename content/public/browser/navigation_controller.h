@@ -7,12 +7,10 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_request_id.h"
@@ -52,11 +50,25 @@ class WebContents;
 class NavigationHandle;
 struct OpenURLParams;
 
-// A NavigationController maintains the back-forward list for a WebContents and
-// manages all navigation within that list.
+// A NavigationController manages session history, i.e., a back-forward list
+// of navigation entries.
 //
-// Each NavigationController belongs to one WebContents; each WebContents has
-// exactly one NavigationController.
+// FOR CONTENT EMBEDDERS: You can think of each WebContents as having one
+// NavigationController. Technically, this is the NavigationController for
+// the primary frame tree of the WebContents. See the comments for
+// WebContents::GetPrimaryPage() for more about primary vs non-primary frame
+// trees. This NavigationController is retrievable by
+// WebContents::GetController(). It is the only one that affects the actual
+// user-exposed session history list (e.g., via back/forward buttons). It is
+// not intended to expose other NavigationControllers to the content/public
+// API.
+//
+// FOR CONTENT INTERNALS: Be aware that NavigationControllerImpl is 1:1 with a
+// FrameTree. With MPArch there can be multiple FrameTrees associated with a
+// WebContents, so there can be multiple NavigationControllers associated with
+// a WebContents. However only the primary one, and the
+// NavigationEntries/events originating from it, is exposed to //content
+// embedders.
 class NavigationController {
  public:
   using DeletionPredicate =

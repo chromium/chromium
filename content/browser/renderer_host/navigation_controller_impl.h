@@ -46,6 +46,8 @@ class RenderFrameHostImpl;
 class SiteInstance;
 struct LoadCommittedDetails;
 
+// NavigationControllerImpl is 1:1 with FrameTree. See comments on the base
+// class.
 class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
  public:
   // This tracks one NavigationRequest navigating to a pending NavigationEntry.

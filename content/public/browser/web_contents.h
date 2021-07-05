@@ -292,7 +292,8 @@ class WebContents : public PageNavigator,
   virtual WebContentsDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebContentsDelegate* delegate) = 0;
 
-  // Gets the controller for this WebContents.
+  // Gets the NavigationController for primary frame tree of this WebContents.
+  // See comments on NavigationController for more details.
   virtual NavigationController& GetController() = 0;
 
   // Returns the user browser context associated with this WebContents (via the
