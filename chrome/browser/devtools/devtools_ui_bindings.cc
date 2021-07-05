@@ -1452,15 +1452,15 @@ void DevToolsUIBindings::FilePathsChanged(
     int budget = kMaxPathsPerMessage;
     base::ListValue changed, added, removed;
     while (budget > 0 && changed_index < changed_paths.size()) {
-      changed.AppendString(changed_paths[changed_index++]);
+      changed.Append(changed_paths[changed_index++]);
       --budget;
     }
     while (budget > 0 && added_index < added_paths.size()) {
-      added.AppendString(added_paths[added_index++]);
+      added.Append(added_paths[added_index++]);
       --budget;
     }
     while (budget > 0 && removed_index < removed_paths.size()) {
-      removed.AppendString(removed_paths[removed_index++]);
+      removed.Append(removed_paths[removed_index++]);
       --budget;
     }
     CallClientMethod("DevToolsAPI", "fileSystemFilesChangedAddedRemoved",
@@ -1501,7 +1501,7 @@ void DevToolsUIBindings::SearchCompleted(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::ListValue file_paths_value;
   for (auto const& file_path : file_paths)
-    file_paths_value.AppendString(file_path);
+    file_paths_value.Append(file_path);
   CallClientMethod("DevToolsAPI", "searchCompleted", base::Value(request_id),
                    base::Value(file_system_path), std::move(file_paths_value));
 }
