@@ -22,7 +22,7 @@ std::u16string GetTaskTitle(content::RenderFrameHost* render_frame_host,
   const bool is_incognito =
       site_instance->GetBrowserContext()->IsOffTheRecord();
 
-  // TODO(crbug.com/992861): Display the page title instead of the site URL for
+  // TODO(crbug.com/1225508): Display the page title instead of the site URL for
   // main frames.
   const GURL& site_url = site_instance->GetSiteURL();
   const std::u16string name = base::UTF8ToUTF16(site_url.spec());
@@ -50,7 +50,7 @@ BackForwardCacheTask::BackForwardCacheTask(
     RendererTask* parent_task)
     : RendererTask(
           GetTaskTitle(render_frame_host, parent_task),
-          nullptr,  // TODO(crbug.com/992861): Set Favicon for main frames.
+          nullptr,  // TODO(crbug.com/1225508): Set Favicon for main frames.
           render_frame_host),
       parent_task_(parent_task) {}
 
