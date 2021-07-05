@@ -16,6 +16,7 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestDetailsUpdate;
+import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
 
 import java.util.List;
@@ -329,5 +330,16 @@ public abstract class PaymentApp extends EditableOption {
      */
     public boolean isPreferred() {
         return false;
+    }
+
+    /**
+     * Updates the response IPC structure with the fields that are unique to this type of payment
+     * app. Used when JSON serialization of payment method specific data is not being used. The
+     * payment apps who need to set the fields should override this method.
+     * @param response The PaymentResponse to whom the fields are set.
+     * @return The PaymentResponse whose fields has been set.
+     */
+    public PaymentResponse setAppSpecificResponseFields(PaymentResponse response) {
+        return response;
     }
 }

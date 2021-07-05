@@ -18,6 +18,7 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestDetailsUpdate;
+import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
 
 import java.nio.ByteBuffer;
@@ -230,6 +231,13 @@ public class JniPaymentApp extends PaymentApp {
         return mPaymentAppType;
     }
 
+    @Override
+    public PaymentResponse setAppSpecificResponseFields(PaymentResponse response) {
+        byte[] byteResult = JniPaymentAppJni.get().setAppSpecificResponseFields(
+                mNativeObject, response.serialize());
+        return PaymentResponse.deserialize(ByteBuffer.wrap(byteResult));
+    }
+
     @NativeMethods
     interface Natives {
         String[] getInstrumentMethodNames(long nativeJniPaymentApp);
@@ -256,5 +264,6 @@ public class JniPaymentApp extends PaymentApp {
         long getUkmSourceId(long nativeJniPaymentApp);
         void setPaymentHandlerHost(long nativeJniPaymentApp, PaymentHandlerHost paymentHandlerHost);
         void freeNativeObject(long nativeJniPaymentApp);
+        byte[] setAppSpecificResponseFields(long nativeJniPaymentApp, ByteBuffer paymentResponse);
     }
 }

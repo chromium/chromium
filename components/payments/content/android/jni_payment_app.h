@@ -80,6 +80,10 @@ class JniPaymentApp : public PaymentApp::Delegate {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jpayment_handler_host);
 
+  base::android::ScopedJavaLocalRef<jbyteArray> SetAppSpecificResponseFields(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jpayment_response);
+
   void FreeNativeObject(JNIEnv* env);
 
  private:

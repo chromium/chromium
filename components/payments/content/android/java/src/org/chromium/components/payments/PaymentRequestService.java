@@ -690,6 +690,10 @@ public class PaymentRequestService
                     ErrorStrings.PAYMENT_APP_INVALID_RESPONSE, PaymentErrorReason.NOT_SUPPORTED);
             // Intentionally do not early-return.
         }
+        if (response.methodName.equals(MethodStrings.SECURE_PAYMENT_CONFIRMATION)) {
+            assert mInvokedPaymentApp.getInstrumentMethodNames().contains(response.methodName);
+            mInvokedPaymentApp.setAppSpecificResponseFields(response);
+        }
         if (mClient != null) {
             mClient.onPaymentResponse(response);
         }
