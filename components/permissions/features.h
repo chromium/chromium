@@ -5,29 +5,57 @@
 #ifndef COMPONENTS_PERMISSIONS_FEATURES_H_
 #define COMPONENTS_PERMISSIONS_FEATURES_H_
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace permissions {
 namespace features {
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kBlockPromptsIfDismissedOften;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kBlockPromptsIfIgnoredOften;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kBlockRepeatedNotificationPermissionPrompts;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kOneTimeGeolocationPermission;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionChip;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionChipAutoDismiss;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<int> kPermissionChipAutoDismissDelay;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionChipGestureSensitive;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionChipRequestTypeSensitive;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionPredictionServiceUseUrlOverride;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::Feature kRevisedOriginHandling;
 
 }  // namespace features
 namespace feature_params {
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<bool> kOkButtonBehavesAsAllowAlways;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
     kPermissionPredictionServiceUrlOverride;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<bool> kPermissionPredictionServiceUseJson;
 
 }  // namespace feature_params

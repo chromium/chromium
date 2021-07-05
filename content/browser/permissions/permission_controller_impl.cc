@@ -7,6 +7,7 @@
 
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "base/bind.h"
+#include "content/browser/permissions/permission_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -406,7 +407,7 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
     subscription->embedding_origin =
-        web_contents->GetLastCommittedURL().GetOrigin();
+        PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
     subscription->render_frame_id = render_frame_host->GetRoutingID();
     subscription->render_process_id = render_frame_host->GetProcess()->GetID();
   } else {

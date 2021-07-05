@@ -2,13 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("permissions_common") {
+# TODO(698985): Make `permissions_common` source_set.
+component("permissions_common") {
   sources = [
     "features.cc",
     "features.h",
     "permission_request_enums.h",
     "request_type.h",
   ]
+  defines = [ "IS_PERMISSIONS_COMMON_IMPL" ]
   deps = [
     "//base",
     "//build:chromeos_buildflags",
@@ -111,6 +113,7 @@ source_set("permissions") {
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
     "//services/device/public/cpp/geolocation",
+    "//services/device/public/mojom",
     "//services/metrics/public/cpp:ukm_builders",
     "//sql",
     "//third_party/blink/public/common",

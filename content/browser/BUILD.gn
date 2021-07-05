@@ -77,6 +77,8 @@ source_set("browser") {
     "//components/payments/core",
     "//components/payments/core:error_strings",
     "//components/payments/mojom",
+    # TODO(698985): Remove `permissions_common`.
+    "//components/permissions:permissions_common",
     "//components/power_scheduler",
     "//components/services/filesystem:lib",
     "//components/services/quarantine:quarantine",
@@ -1270,6 +1272,9 @@ source_set("browser") {
     "permissions/permission_service_context.h",
     "permissions/permission_service_impl.cc",
     "permissions/permission_service_impl.h",
+    # TODO(698985): Remove `permission_util.*`.
+    "permissions/permission_util.cc",
+    "permissions/permission_util.h",
     "picture_in_picture/picture_in_picture_service_impl.cc",
     "picture_in_picture/picture_in_picture_service_impl.h",
     "picture_in_picture/picture_in_picture_session.cc",

@@ -11,6 +11,7 @@ include_rules = [
   "+components/download/database",
   "+components/download/public/common",
   "+components/filename_generation",
+  "+components/permissions/features.h",
   "+components/services/font",
   "+components/services/filesystem",
   "+components/services/font/ppapi_fontconfig_matching.h",

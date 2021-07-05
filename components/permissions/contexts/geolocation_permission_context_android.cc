@@ -103,14 +103,17 @@ void GeolocationPermissionContextAndroid::RequestPermission(
     BrowserPermissionCallback callback) {
   if (!IsLocationAccessPossible(web_contents, requesting_frame_origin,
                                 user_gesture)) {
-    NotifyPermissionSet(id, requesting_frame_origin,
-                        web_contents->GetLastCommittedURL().GetOrigin(),
-                        std::move(callback), /*persist=*/false,
-                        CONTENT_SETTING_BLOCK, /*is_one_time=*/false);
+    NotifyPermissionSet(
+        id, requesting_frame_origin,
+        PermissionUtil::GetLastCommittedOriginAsURL(web_contents),
+        std::move(callback), /*persist=*/false, CONTENT_SETTING_BLOCK,
+        /*is_one_time=*/false);
     return;
   }
 
-  GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
+  GURL embedding_origin =
+      PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+
   ContentSetting content_setting =
       GeolocationPermissionContext::GetPermissionStatus(
           nullptr /* render_frame_host */, requesting_frame_origin,

@@ -14,6 +14,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -41,7 +42,8 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
         base::BindOnce(
             &permissions::GeolocationPermissionContext::NotifyPermissionSet,
             context->GetWeakPtr(), id, requesting_origin,
-            web_contents->GetLastCommittedURL().GetOrigin(),
+            permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+                web_contents),
             std::move(*callback), false /* persist */);
     InstalledWebappBridge::DecidePermission(requesting_origin,
                                             std::move(permission_callback));
