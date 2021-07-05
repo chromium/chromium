@@ -130,6 +130,7 @@ int Scrollbar::Maximum() const {
 
 void Scrollbar::OffsetDidChange(mojom::blink::ScrollType scroll_type) {
   DCHECK(scrollable_area_);
+  pending_injected_delta_ = ScrollOffset();
 
   float position = ScrollableAreaCurrentPos();
   if (position == current_pos_)
@@ -606,7 +607,8 @@ void Scrollbar::InjectGestureScrollUpdateForThumbMove(
   // Convert the target offset to the delta that will be injected as part of a
   // GestureScrollUpdate event.
   ScrollOffset current_offset =
-      scrollable_area_->GetScrollAnimator().CurrentOffset();
+      scrollable_area_->GetScrollAnimator().CurrentOffset() +
+      pending_injected_delta_;
   float desired_x = orientation_ == kHorizontalScrollbar
                         ? single_axis_target_offset
                         : current_offset.Width();
@@ -657,6 +659,7 @@ void Scrollbar::InjectScrollGesture(WebInputEvent::Type gesture_type,
                         granularity);
   }
 
+  pending_injected_delta_ += delta;
   scrollable_area_->InjectGestureScrollEvent(WebGestureDevice::kScrollbar,
                                              delta, granularity, gesture_type);
 

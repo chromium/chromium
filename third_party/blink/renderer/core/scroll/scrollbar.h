@@ -263,6 +263,13 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   IntRect frame_rect_;
   Member<Element> style_source_;
+
+  // Tracks scroll delta that has been injected into the compositor thread as a
+  // GestureScrollUpdate but hasn't yet updated the scroll position on main.
+  // Scrollbar::MouseMoved needs this to calculate deltas during thumb drags.
+  // In particular we often process two mousemoves in the same frame thanks to
+  // MouseEventManager::RecomputeMouseHoverState sending fake ones.
+  ScrollOffset pending_injected_delta_;
 };
 
 }  // namespace blink
