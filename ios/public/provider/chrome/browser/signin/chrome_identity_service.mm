@@ -4,6 +4,7 @@
 
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -212,9 +213,13 @@ void ChromeIdentityService::CanOfferExtendedSyncPromos(
     CapabilitiesCallback completion) {
   NSString* canOfferExtendedChromeSyncPromos = [NSString
       stringWithUTF8String:kCanOfferExtendedChromeSyncPromosCapabilityName];
+  base::TimeTicks fetch_start = base::TimeTicks::Now();
   FetchCapabilities(
       @[ canOfferExtendedChromeSyncPromos ], identity,
       ^(NSDictionary<NSString*, NSNumber*>* capabilities, NSError* error) {
+        base::UmaHistogramTimes(
+            "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
+            base::TimeTicks::Now() - fetch_start);
         if (!completion) {
           return;
         }

@@ -83,10 +83,15 @@ source_set("constants") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "chrome_trusted_vault_service_unittest.mm" ]
+  sources = [
+    "chrome_identity_service_unittest.mm",
+    "chrome_trusted_vault_service_unittest.mm",
+  ]
   deps = [
+    ":fake_chrome_identity",
     ":signin",
     "//base",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
