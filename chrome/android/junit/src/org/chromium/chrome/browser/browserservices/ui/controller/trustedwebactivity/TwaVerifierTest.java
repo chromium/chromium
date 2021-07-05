@@ -82,7 +82,7 @@ public class TwaVerifierTest {
         when(mIntentDataProvider.getTrustedWebActivityAdditionalOrigins())
                 .thenReturn(Collections.singletonList(ADDITIONAL_ORIGIN));
 
-        when(mOriginVerifierFactory.create(anyString(), anyInt(), any(), any(), any()))
+        when(mOriginVerifierFactory.create(anyString(), anyInt(), any(), any()))
                 .thenReturn(mOriginVerifier);
 
         when(mClientPackageNameProvider.get()).thenReturn("some.package.name");

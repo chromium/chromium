@@ -2,37 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices;
+package org.chromium.chrome.browser.browserservices.metrics;
 
 import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 
 /**
  * Class to contain metrics recording constants and behaviour for Browser Services.
  */
-public class BrowserServicesMetrics {
-    /** Implementation of {@link OriginVerifier.MetricsListener}. */
-    public static class OriginVerifierMetricsListener implements OriginVerifier.MetricsListener {
-        @Override
-        public void recordVerificationResult(@OriginVerifier.VerificationResult int result) {
-            RecordHistogram.recordEnumeratedHistogram("BrowserServices.VerificationResult", result,
-                    OriginVerifier.VerificationResult.NUM_ENTRIES);
-        }
-
-        @Override
-        public void recordVerificationTime(long duration, boolean online) {
-            if (online) {
-                RecordHistogram.recordTimesHistogram(
-                        "BrowserServices.VerificationTime.Online", duration);
-            } else {
-                RecordHistogram.recordTimesHistogram(
-                        "BrowserServices.VerificationTime.Offline", duration);
-            }
-        }
-    }
-
+public class BrowserServicesTimingMetrics {
     /**
      * Returns a {@link TimingMetric} that records the amount of time spent querying the Android
      * system for ResolveInfos that will deal with a given URL when launching from a background
@@ -81,5 +60,5 @@ public class BrowserServicesMetrics {
     }
 
     // Don't let anyone instantiate.
-    private BrowserServicesMetrics() {}
+    private BrowserServicesTimingMetrics() {}
 }

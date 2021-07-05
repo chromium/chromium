@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.Promise;
-import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
@@ -64,9 +63,8 @@ public class TwaVerifier implements Verifier, DestroyObserver {
         // TODO(peconn): See if we can get rid of the dependency on Web Contents.
         WebContents webContents =
                 tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;
-        mOriginVerifier = originVerifierFactory.create(clientPackageNameProvider.get(),
-                RELATIONSHIP, webContents, externalAuthUtils,
-                new BrowserServicesMetrics.OriginVerifierMetricsListener());
+        mOriginVerifier = originVerifierFactory.create(
+                clientPackageNameProvider.get(), RELATIONSHIP, webContents, externalAuthUtils);
 
         lifecycleDispatcher.register(this);
     }

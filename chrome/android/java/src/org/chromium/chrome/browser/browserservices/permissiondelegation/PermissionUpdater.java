@@ -10,7 +10,7 @@ import android.net.Uri;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
-import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
+import org.chromium.chrome.browser.browserservices.metrics.BrowserServicesTimingMetrics;
 import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
@@ -73,8 +73,8 @@ public class PermissionUpdater {
         browsableIntent.setAction(Intent.ACTION_VIEW);
         browsableIntent.addCategory(Intent.CATEGORY_BROWSABLE);
 
-        try (BrowserServicesMetrics.TimingMetric unused =
-                        BrowserServicesMetrics.getBrowsableIntentResolutionTimingContext()) {
+        try (BrowserServicesTimingMetrics.TimingMetric unused =
+                        BrowserServicesTimingMetrics.getBrowsableIntentResolutionTimingContext()) {
             return PackageManagerUtils.resolveActivity(browsableIntent, 0) != null;
         }
     }

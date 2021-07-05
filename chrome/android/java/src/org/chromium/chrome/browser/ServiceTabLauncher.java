@@ -14,9 +14,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.browserservices.metrics.BrowserServicesTimingMetrics;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -97,8 +97,8 @@ public class ServiceTabLauncher {
         Context context = ContextUtils.getApplicationContext();
 
         List<ResolveInfo> resolveInfos;
-        try (BrowserServicesMetrics.TimingMetric t =
-                     BrowserServicesMetrics.getServiceTabResolveInfoTimingContext()) {
+        try (BrowserServicesTimingMetrics.TimingMetric t =
+                        BrowserServicesTimingMetrics.getServiceTabResolveInfoTimingContext()) {
             resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
         }
         String webApkPackageName = WebApkValidator.findFirstWebApkPackage(context, resolveInfos);

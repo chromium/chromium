@@ -19,10 +19,5 @@ import org.chromium.content_public.browser.WebContents;
 public interface OriginVerifierFactory {
     /** Creates an {@link OriginVerifier}. */
     OriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
-            @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils,
-            OriginVerifier.MetricsListener metricsListener);
-
-    /** Same as above, but provides a no-op metrics listener. */
-    OriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
             @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils);
 }

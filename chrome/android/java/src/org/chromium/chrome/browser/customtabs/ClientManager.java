@@ -30,7 +30,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
@@ -483,8 +482,7 @@ class ClientManager {
         };
 
         params.originVerifier = mOriginVerifierFactory.create(params.getPackageName(), relation,
-                /* webContents= */ null, /* externalAuthUtils= */ null,
-                new BrowserServicesMetrics.OriginVerifierMetricsListener());
+                /* webContents= */ null, /* externalAuthUtils= */ null);
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 () -> { params.originVerifier.start(listener, origin); });
