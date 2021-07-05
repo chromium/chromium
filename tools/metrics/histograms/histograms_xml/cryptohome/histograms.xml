@@ -574,6 +574,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.UserSubdirHasCorrectGroup" enum="BooleanCorrect"
+    expires_after="2022-02-01">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Records whether the user's profile directory (/home/chronos/u-{hash}) is
+    owned by group chronos-access. This is recorded once per log-in.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.WrappingKeyDerivation.Create"
     enum="WrappingKeyDerivation" expires_after="2022-05-01">
   <owner>tnagel@chromium.org</owner>
