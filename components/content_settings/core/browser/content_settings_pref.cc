@@ -53,11 +53,16 @@ bool IsValueAllowedForType(const base::Value* value, ContentSettingsType type) {
   return value->type() == base::Value::Type::DICTIONARY;
 }
 
+std::string GetString(const base::Value& dict, const char* key) {
+  DCHECK(dict.is_dict());
+  const std::string* value = dict.FindStringKey(key);
+  return value ? *value : std::string();
+}
+
 // Extract a timestamp from |dictionary[kLastModifiedPath]|.
 // Will return base::Time() if no timestamp exists.
 base::Time GetTimeStamp(const base::DictionaryValue* dictionary) {
-  std::string timestamp_str;
-  dictionary->GetStringWithoutPathExpansion(kLastModifiedPath, &timestamp_str);
+  std::string timestamp_str = GetString(*dictionary, kLastModifiedPath);
   int64_t timestamp = 0;
   base::StringToInt64(timestamp_str, &timestamp);
   base::Time last_modified = base::Time::FromDeltaSinceWindowsEpoch(
@@ -68,9 +73,8 @@ base::Time GetTimeStamp(const base::DictionaryValue* dictionary) {
 // Extract a timestamp from |dictionary[kExpirationPath]|. Will return
 // base::Time() if no timestamp exists.
 base::Time GetExpiration(const base::DictionaryValue* dictionary) {
-  std::string expiration_timestamp_str;
-  dictionary->GetStringWithoutPathExpansion(kExpirationPath,
-                                            &expiration_timestamp_str);
+  std::string expiration_timestamp_str =
+      GetString(*dictionary, kExpirationPath);
   int64_t expiration_timestamp = 0;
   base::StringToInt64(expiration_timestamp_str, &expiration_timestamp);
   base::Time expiration = base::Time::FromDeltaSinceWindowsEpoch(

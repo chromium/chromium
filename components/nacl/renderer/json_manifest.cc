@@ -378,8 +378,9 @@ void GrabUrlAndPnaclOptions(const base::DictionaryValue& url_spec,
                             std::string* url,
                             PP_PNaClOptions* pnacl_options) {
   // url_spec should have been validated as a first pass.
-  bool get_url_success = url_spec.GetStringWithoutPathExpansion(kUrlKey, url);
-  DCHECK(get_url_success);
+  const std::string* url_str = url_spec.FindStringKey(kUrlKey);
+  DCHECK(url_str);
+  *url = *url_str;
   pnacl_options->translate = PP_TRUE;
   if (url_spec.HasKey(kOptLevelKey)) {
     absl::optional<int32_t> opt_raw = url_spec.FindIntKey(kOptLevelKey);
@@ -686,12 +687,14 @@ bool JsonManifest::GetURLFromISADictionary(
     GrabUrlAndPnaclOptions(*pnacl_dict, url, pnacl_options);
   } else {
     // The native NaCl case.
-    if (!isa_spec->GetStringWithoutPathExpansion(kUrlKey, url)) {
+    const std::string* url_str = isa_spec->FindStringKey(kUrlKey);
+    if (!url_str) {
       error_info->error = PP_NACL_ERROR_MANIFEST_RESOLVE_URL;
       error_info->string = std::string("GetURLFromISADictionary failed: ") +
                            kUrlKey + "'s value is not a string.";
       return false;
     }
+    *url = *url_str;
     pnacl_options->translate = PP_FALSE;
   }
 

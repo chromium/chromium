@@ -824,22 +824,22 @@ void UserManagerBase::EnsureUsersLoaded() {
 
   for (auto* user : users_) {
     auto& account_id = user->GetAccountId();
-    std::u16string display_name;
-    if (prefs_display_names->GetStringWithoutPathExpansion(
-            account_id.GetUserEmail(), &display_name)) {
-      user->set_display_name(display_name);
+    const std::string* display_name =
+        prefs_display_names->FindStringKey(account_id.GetUserEmail());
+    if (display_name) {
+      user->set_display_name(base::UTF8ToUTF16(*display_name));
     }
 
-    std::u16string given_name;
-    if (prefs_given_names->GetStringWithoutPathExpansion(
-            account_id.GetUserEmail(), &given_name)) {
-      user->set_given_name(given_name);
+    const std::string* given_name =
+        prefs_given_names->FindStringKey(account_id.GetUserEmail());
+    if (given_name) {
+      user->set_given_name(base::UTF8ToUTF16(*given_name));
     }
 
-    std::string display_email;
-    if (prefs_display_emails->GetStringWithoutPathExpansion(
-            account_id.GetUserEmail(), &display_email)) {
-      user->set_display_email(display_email);
+    const std::string* display_email =
+        prefs_display_emails->FindStringKey(account_id.GetUserEmail());
+    if (display_email) {
+      user->set_display_email(*display_email);
     }
   }
   user_loading_stage_ = STAGE_LOADED;
