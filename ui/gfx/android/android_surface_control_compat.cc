@@ -72,6 +72,18 @@ using pASurfaceTransaction_setGeometry =
              const ARect& src,
              const ARect& dst,
              int32_t transform);
+using pASurfaceTransaction_setPosition =
+    void (*)(ASurfaceTransaction* transaction,
+             ASurfaceControl* surface,
+             int32_t x,
+             int32_t y);
+using pASurfaceTransaction_setScale = void (*)(ASurfaceTransaction* transaction,
+                                               ASurfaceControl* surface,
+                                               float x_scale,
+                                               float y_scale);
+using pASurfaceTransaction_setCrop = void (*)(ASurfaceTransaction* transaction,
+                                              ASurfaceControl* surface,
+                                              const ARect& src);
 using pASurfaceTransaction_setBufferTransparency =
     void (*)(ASurfaceTransaction* transaction,
              ASurfaceControl* surface,
@@ -158,6 +170,9 @@ struct SurfaceControlMethods {
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setZOrder);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBuffer);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setGeometry);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setPosition);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setScale);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setCrop);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBufferTransparency);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setDamageRegion);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBufferDataSpace);
@@ -191,6 +206,9 @@ struct SurfaceControlMethods {
   pASurfaceTransaction_setZOrder ASurfaceTransaction_setZOrderFn;
   pASurfaceTransaction_setBuffer ASurfaceTransaction_setBufferFn;
   pASurfaceTransaction_setGeometry ASurfaceTransaction_setGeometryFn;
+  pASurfaceTransaction_setPosition ASurfaceTransaction_setPositionFn;
+  pASurfaceTransaction_setScale ASurfaceTransaction_setScaleFn;
+  pASurfaceTransaction_setCrop ASurfaceTransaction_setCropFn;
   pASurfaceTransaction_setBufferTransparency
       ASurfaceTransaction_setBufferTransparencyFn;
   pASurfaceTransaction_setDamageRegion ASurfaceTransaction_setDamageRegionFn;
@@ -485,6 +503,28 @@ void SurfaceControl::Transaction::SetGeometry(const Surface& surface,
   SurfaceControlMethods::Get().ASurfaceTransaction_setGeometryFn(
       transaction_, surface.surface(), RectToARect(src), RectToARect(dst),
       OverlayTransformToWindowTransform(transform));
+}
+
+void SurfaceControl::Transaction::SetPosition(const Surface& surface,
+                                              const gfx::Point& position) {
+  CHECK(SurfaceControlMethods::Get().ASurfaceTransaction_setPositionFn);
+  SurfaceControlMethods::Get().ASurfaceTransaction_setPositionFn(
+      transaction_, surface.surface(), position.x(), position.y());
+}
+
+void SurfaceControl::Transaction::SetScale(const Surface& surface,
+                                           const float sx,
+                                           float sy) {
+  CHECK(SurfaceControlMethods::Get().ASurfaceTransaction_setScaleFn);
+  SurfaceControlMethods::Get().ASurfaceTransaction_setScaleFn(
+      transaction_, surface.surface(), sx, sy);
+}
+
+void SurfaceControl::Transaction::SetCrop(const Surface& surface,
+                                          const gfx::Rect& rect) {
+  CHECK(SurfaceControlMethods::Get().ASurfaceTransaction_setCropFn);
+  SurfaceControlMethods::Get().ASurfaceTransaction_setCropFn(
+      transaction_, surface.surface(), RectToARect(rect));
 }
 
 void SurfaceControl::Transaction::SetOpaque(const Surface& surface,

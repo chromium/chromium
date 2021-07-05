@@ -116,6 +116,12 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // marked as being backed by a SurfaceTexture or not.  If so, it's not really
   // promotable to an overlay.
   bool is_backed_by_surface_texture = false;
+  // Crop within the buffer to be placed inside |display_rect| before
+  // |clip_rect| was applied. Valid only for surface control.
+  gfx::RectF unclipped_uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
+  // |display_rect| before |clip_rect| was applied. Valid only for surface
+  // control.
+  gfx::RectF unclipped_display_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
 #endif
 
   // Stacking order of the overlay plane relative to the main surface,

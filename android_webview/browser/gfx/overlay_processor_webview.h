@@ -86,6 +86,10 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
       gpu::SequenceId sequence_id,
       base::WaitableEvent* event);
 
+  void UpdateOverlayResource(viz::FrameSinkId frame_sink_id,
+                             viz::ResourceId new_resource_id,
+                             const gfx::RectF& uv_rect);
+
   using OverlayResourceLock =
       viz::DisplayResourceProviderSkia::ScopedExclusiveReadLockSharedImage;
 

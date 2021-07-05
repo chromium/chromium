@@ -84,6 +84,9 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
     display_inverse.TransformRect(&orig_display_rect);
     display_inverse.TransformRect(&display_rect);
 
+    candidate.unclipped_display_rect = orig_display_rect;
+    candidate.unclipped_uv_rect = candidate.uv_rect;
+
     candidate.display_rect = gfx::RectF(gfx::ToEnclosingRect(display_rect));
     candidate.uv_rect = cc::MathUtil::ScaleRectProportional(
         candidate.uv_rect, orig_display_rect, candidate.display_rect);

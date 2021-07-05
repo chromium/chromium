@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
+#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
@@ -50,6 +51,7 @@ class OverlayProcessorWebView::Manager
     Resource(gpu::SharedImageManager* shared_image_manager,
              gpu::MemoryTypeTracker* memory_tracker,
              const gpu::Mailbox& mailbox,
+             const gfx::RectF& uv_rect,
              base::ScopedClosureRunner return_resource)
         : return_resource(std::move(return_resource)) {
       representation_ =
@@ -65,6 +67,12 @@ class OverlayProcessorWebView::Manager
         begin_read_fence_ = std::move(
             acquire_fences.front().GetGpuFenceHandle().Clone().owned_fd);
       }
+
+      AHardwareBuffer_Desc desc;
+      base::AndroidHardwareBufferCompat::GetInstance().Describe(
+          GetAHardwareBuffer(), &desc);
+      gfx::RectF scaled_rect = gfx::ScaleRect(uv_rect, desc.width, desc.height);
+      crop_rect_ = gfx::ToEnclosedRect(scaled_rect);
     }
 
     ~Resource() {
@@ -102,7 +110,10 @@ class OverlayProcessorWebView::Manager
       return read_access_->GetAHardwareBuffer();
     }
 
+    const gfx::Rect& crop_rect() { return crop_rect_; }
+
    private:
+    gfx::Rect crop_rect_;
     base::ScopedClosureRunner return_resource;
     std::unique_ptr<gpu::SharedImageRepresentationOverlay> representation_;
     std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
@@ -142,7 +153,8 @@ class OverlayProcessorWebView::Manager
 
     auto& transaction = GetHWUITransaction();
     std::unique_ptr<Resource> resource =
-        CreateResource(candidate.mailbox, std::move(return_resource));
+        CreateResource(candidate.mailbox, candidate.unclipped_uv_rect,
+                       std::move(return_resource));
 
     {
       base::AutoLock lock(lock_);
@@ -154,9 +166,9 @@ class OverlayProcessorWebView::Manager
       DCHECK(inserted);
       auto& overlay_surface = it->second;
 
-      UpdateGeometryInTransaction(transaction, *overlay_surface.surface,
+      UpdateGeometryInTransaction(transaction, *overlay_surface.bounds_surface,
                                   candidate);
-      UpdateBufferInTransaction(transaction, *overlay_surface.surface,
+      UpdateBufferInTransaction(transaction, *overlay_surface.buffer_surface,
                                 resource.get());
       overlay_surface.buffer_update_pending = true;
     }
@@ -180,7 +192,7 @@ class OverlayProcessorWebView::Manager
     base::AutoLock lock(lock_);
     auto& overlay_surface = GetOverlaySurfaceLocked(overlay_id);
 
-    UpdateGeometryInTransaction(transaction, *overlay_surface.surface,
+    UpdateGeometryInTransaction(transaction, *overlay_surface.bounds_surface,
                                 candidate);
   }
 
@@ -188,6 +200,7 @@ class OverlayProcessorWebView::Manager
   // Thread.
   void UpdateOverlayBuffer(uint64_t overlay_id,
                            gpu::Mailbox mailbox,
+                           const gfx::RectF& uv_rect,
                            base::ScopedClosureRunner return_resource) {
     DCHECK_CALLED_ON_VALID_THREAD(gpu_thread_checker_);
     TRACE_EVENT1("gpu,benchmark,android_webview",
@@ -205,7 +218,7 @@ class OverlayProcessorWebView::Manager
     }
 
     std::unique_ptr<Resource> resource =
-        CreateResource(mailbox, std::move(return_resource));
+        CreateResource(mailbox, uv_rect, std::move(return_resource));
 
     // If there is already transaction with buffer update in-flight, store this
     // one. This will return any previous stored resource if any.
@@ -233,7 +246,7 @@ class OverlayProcessorWebView::Manager
     {
       base::AutoLock lock(lock_);
       auto& overlay_surface = GetOverlaySurfaceLocked(overlay_id);
-      transaction.SetParent(*overlay_surface.surface, nullptr);
+      transaction.SetParent(*overlay_surface.bounds_surface, nullptr);
     }
 
     pending_removals_.insert(overlay_id);
@@ -256,7 +269,7 @@ class OverlayProcessorWebView::Manager
       base::AutoLock lock(lock_);
       for (auto overlay_id : overlay_ids) {
         auto& overlay = GetOverlaySurfaceLocked(overlay_id);
-        transaction.SetParent(*overlay.surface, nullptr);
+        transaction.SetParent(*overlay.bounds_surface, nullptr);
       }
     }
 
@@ -278,7 +291,7 @@ class OverlayProcessorWebView::Manager
 
     DCHECK_EQ(transaction_stats.surface_stats.size(), 1u);
     DCHECK_EQ(transaction_stats.surface_stats.front().surface,
-              overlay_surface.surface->surface());
+              overlay_surface.buffer_surface->surface());
 
     bool empty_buffer = !resource;
     overlay_surface.SetResource(
@@ -295,7 +308,7 @@ class OverlayProcessorWebView::Manager
     if (overlay_surface.pending_remove) {
       // If there is no resource, we can free our surface.
       if (empty_buffer) {
-        overlay_surface.surface.reset();
+        overlay_surface.Reset();
         overlay_surfaces_.erase(overlay_id);
       } else {
         // This means there was buffer transaction in flight when surface was
@@ -321,7 +334,7 @@ class OverlayProcessorWebView::Manager
 
       base::ScopedFD fence;
       for (auto& stat : transaction_stats.surface_stats) {
-        if (stat.surface == overlay_surface.surface->surface()) {
+        if (stat.surface == overlay_surface.buffer_surface->surface()) {
           DCHECK(!fence.is_valid());
           fence = std::move(stat.fence);
         }
@@ -375,13 +388,17 @@ class OverlayProcessorWebView::Manager
   class OverlaySurface {
    public:
     OverlaySurface(const gfx::SurfaceControl::Surface& parent)
-        : surface(base::MakeRefCounted<gfx::SurfaceControl::Surface>(
+        : bounds_surface(base::MakeRefCounted<gfx::SurfaceControl::Surface>(
               parent,
-              "webview_overlay")) {}
+              "webview_overlay_bounds")),
+          buffer_surface(base::MakeRefCounted<gfx::SurfaceControl::Surface>(
+              *bounds_surface,
+              "webview_overlay_content")) {}
     OverlaySurface(OverlaySurface&& other) = default;
     OverlaySurface& operator=(OverlaySurface&& other) = default;
     ~OverlaySurface() {
-      DCHECK(!surface);
+      DCHECK(!bounds_surface);
+      DCHECK(!buffer_surface);
       DCHECK(!current_resource);
     }
 
@@ -404,6 +421,13 @@ class OverlayProcessorWebView::Manager
       pending_resource = std::move(resource);
     }
 
+    void Reset() {
+      DCHECK(!pending_resource);
+      DCHECK(!current_resource);
+      bounds_surface.reset();
+      buffer_surface.reset();
+    }
+
     // Set when we're in process of removing this overlay.
     bool pending_remove = false;
 
@@ -419,7 +443,8 @@ class OverlayProcessorWebView::Manager
     std::unique_ptr<Resource> pending_resource;
 
     // SurfaceControl for this overlay.
-    scoped_refptr<gfx::SurfaceControl::Surface> surface;
+    scoped_refptr<gfx::SurfaceControl::Surface> bounds_surface;
+    scoped_refptr<gfx::SurfaceControl::Surface> buffer_surface;
   };
 
   ~Manager() {
@@ -454,22 +479,50 @@ class OverlayProcessorWebView::Manager
 
   std::unique_ptr<Resource> CreateResource(
       const gpu::Mailbox& mailbox,
+      const gfx::RectF uv_rect,
       base::ScopedClosureRunner return_resource) {
     if (mailbox.IsZero())
       return nullptr;
     return std::make_unique<Resource>(shared_image_manager_,
-                                      memory_tracker_.get(), mailbox,
+                                      memory_tracker_.get(), mailbox, uv_rect,
                                       std::move(return_resource));
   }
+
+  // Because we update different parts of geometry on different threads we use
+  // two surfaces to avoid races. The Bounds surface is setup the way it assumes
+  // that its content size is kBoundsSurfaceContentSize. The Buffer surface is
+  // setup to scale itself to kBoundsSurfaceContentSize. Note, that from scaling
+  // perspective this number doesn't matter as scales of two surfaces will be
+  // just multiplied inside SurfaceFlinger, but because positions and crop rects
+  // are integers we need the content size to be large enough to avoid rounding
+  // errors. To avoid floating point errors we also use power of two.
+  static constexpr float kBoundsSurfaceContentSize = 8192.0f;
 
   static void UpdateGeometryInTransaction(
       gfx::SurfaceControl::Transaction& transaction,
       gfx::SurfaceControl::Surface& surface,
       const viz::OverlayCandidate& candidate) {
-    gfx::Rect src = gfx::Rect(candidate.resource_size_in_pixels);
-    gfx::Rect dst = gfx::ToEnclosedRect(candidate.display_rect);
+    DCHECK_EQ(candidate.transform, gfx::OVERLAY_TRANSFORM_NONE);
+    gfx::Rect dst = gfx::ToEnclosingRect(candidate.unclipped_display_rect);
 
-    transaction.SetGeometry(surface, src, dst, candidate.transform);
+    transaction.SetPosition(surface, dst.origin());
+    // Setup scale so the contents of size kBoundsSurfaceContentSize would fit
+    // into display_rect. The buffer surface will make sure to scale its content
+    // to kBoundsSurfaceContentSize.
+    float scale_x = dst.width() / kBoundsSurfaceContentSize;
+    float scale_y = dst.height() / kBoundsSurfaceContentSize;
+    transaction.SetScale(surface, scale_x, scale_y);
+    if (candidate.clip_rect) {
+      // Make |crop_rect| relative to |display_rect|.
+      auto crop_rect = dst;
+      crop_rect.Intersect(*candidate.clip_rect);
+      crop_rect.Offset(-dst.x(), -dst.y());
+
+      // Crop rect is in content space, so we need to scale it.
+      auto scaled_clip = gfx::ToEnclosingRect(gfx::ScaleRect(
+          gfx::RectF(crop_rect), 1.0f / scale_x, 1.0f / scale_y));
+      transaction.SetCrop(surface, scaled_clip);
+    }
   }
 
   static void UpdateBufferInTransaction(
@@ -480,8 +533,24 @@ class OverlayProcessorWebView::Manager
                  "OverlayProcessorWebview::Manager::UpdateBufferInTransaction",
                  "has_resource", !!resource);
     if (resource) {
-      transaction.SetBuffer(surface, resource->GetAHardwareBuffer(),
-                            resource->TakeBeginReadFence());
+      auto* buffer = resource->GetAHardwareBuffer();
+      auto crop_rect = resource->crop_rect();
+
+      // Crop rect defines the valid portion of the buffer, so we use its as a
+      // surface size. This calculates scale from our size to bounds surface
+      // content size, see comment at kBoundsSurfaceContentSize.
+      float scale_x = kBoundsSurfaceContentSize / crop_rect.width();
+      float scale_y = kBoundsSurfaceContentSize / crop_rect.height();
+
+      // Crop rect is defined in buffer space, so we need to translate our
+      // surface to make sure crop rect origin matches bounds surface (0, 0).
+      // Position is defined in parent space, so we need to scale it.
+      transaction.SetPosition(surface,
+                              gfx::Point(-ceil(crop_rect.x() * scale_x),
+                                         -ceil(crop_rect.y() * scale_y)));
+      transaction.SetScale(surface, scale_x, scale_y);
+      transaction.SetCrop(surface, crop_rect);
+      transaction.SetBuffer(surface, buffer, resource->TakeBeginReadFence());
     } else {
       transaction.SetBuffer(surface, nullptr, base::ScopedFD());
     }
@@ -496,7 +565,7 @@ class OverlayProcessorWebView::Manager
     overlay_surface.buffer_update_pending = true;
 
     gfx::SurfaceControl::Transaction transaction;
-    UpdateBufferInTransaction(transaction, *overlay_surface.surface,
+    UpdateBufferInTransaction(transaction, *overlay_surface.buffer_surface,
                               resource.get());
 
     auto cb = base::BindOnce(&Manager::OnUpdateBufferTransactionAck, this,
@@ -658,15 +727,8 @@ void OverlayProcessorWebView::ScheduleOverlays(
           std::vector<gpu::SyncToken>());
 
       // TODO(vasilyt): This needs to be when we process compositor frame.
-      if (candidate.resource_id != overlay->second.resource_id) {
-        overlay->second.resource_id = candidate.resource_id;
-        auto result = LockResource(overlay->second);
-        gpu_thread_sequence_->ScheduleTask(
-            base::BindOnce(&Manager::UpdateOverlayBuffer, manager_.get(),
-                           overlay->second.id, result.mailbox,
-                           std::move(result.unlock_cb)),
-            {result.sync_token, overlay->second.create_sync_token});
-      }
+      UpdateOverlayResource(sink_id, candidate.resource_id,
+                            candidate.unclipped_uv_rect);
     } else {
       overlay =
           overlays_
@@ -726,6 +788,28 @@ OverlayProcessorWebView::LockResult OverlayProcessorWebView::LockResource(
 
   result.unlock_cb = base::ScopedClosureRunner(std::move(return_cb_on_thread));
   return result;
+}
+
+void OverlayProcessorWebView::UpdateOverlayResource(
+    viz::FrameSinkId frame_sink_id,
+    viz::ResourceId new_resource_id,
+    const gfx::RectF& uv_rect) {
+  DCHECK(resource_provider_);
+  auto overlay = overlays_.find(frame_sink_id);
+  DCHECK(overlay != overlays_.end());
+
+  DCHECK(resource_provider_->IsOverlayCandidate(new_resource_id));
+
+  if (new_resource_id != overlay->second.resource_id) {
+    overlay->second.resource_id = new_resource_id;
+    auto result = LockResource(overlay->second);
+
+    gpu_thread_sequence_->ScheduleTask(
+        base::BindOnce(&Manager::UpdateOverlayBuffer,
+                       base::Unretained(manager_.get()), overlay->second.id,
+                       result.mailbox, uv_rect, std::move(result.unlock_cb)),
+        {result.sync_token, overlay->second.create_sync_token});
+  }
 }
 
 void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id) {
