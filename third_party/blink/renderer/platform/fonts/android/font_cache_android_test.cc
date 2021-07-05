@@ -10,17 +10,12 @@
 
 namespace blink {
 
-// TODO(crbug.com/850794): Reenable this.
-#if defined(OS_ANDROID)
-#define MAYBE_fallbackFontForCharacter DISABLED_fallbackFontForCharacter
-#else
-#define MAYBE_fallbackFontForCharacter fallbackFontForCharacter
-#endif
-TEST(FontCacheAndroid, MAYBE_fallbackFontForCharacter) {
+TEST(FontCacheAndroid, FallbackFontForCharacter) {
   // A Latin character in the common locale system font, but not in the
   // Chinese locale-preferred font.
   const UChar32 kTestChar = 228;
 
+  FontCachePurgePreventer purge_preventer;
   FontDescription font_description;
   font_description.SetLocale(LayoutLocale::Get("zh"));
   ASSERT_EQ(USCRIPT_SIMPLIFIED_HAN, font_description.GetScript());
