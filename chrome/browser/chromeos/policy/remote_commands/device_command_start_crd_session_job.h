@@ -52,6 +52,14 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   // Delegate that will start a session with the CRD native host.
   class Delegate {
    public:
+    // Session parameters used to start the CRD host.
+    struct SessionParameters {
+      std::string oauth_token = "";
+      std::string user_name = "";
+      bool terminate_upon_input = false;
+      bool show_confirmation_dialog = false;
+    };
+
     virtual ~Delegate() = default;
 
     // Check if there exists an active CRD session.
@@ -61,9 +69,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
     virtual void TerminateSession(base::OnceClosure callback) = 0;
 
     // Attempts to start CRD host and get Auth Code.
-    virtual void StartCRDHostAndGetCode(const std::string& oauth_token,
-                                        const std::string& user_name,
-                                        bool terminate_upon_input,
+    virtual void StartCRDHostAndGetCode(const SessionParameters& parameters,
                                         AccessCodeCallback success_callback,
                                         ErrorCallback error_callback) = 0;
   };
@@ -118,6 +124,8 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   void OnAccessCodeReceived(const std::string& access_code);
 
   std::string GetRobotAccountUserName() const;
+
+  bool ShouldShowConfirmationDialog() const;
 
   DeviceOAuth2TokenService* oauth_service() const;
 

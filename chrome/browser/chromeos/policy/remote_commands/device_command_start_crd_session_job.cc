@@ -400,8 +400,13 @@ void DeviceCommandStartCRDSessionJob::RunImpl(
 void DeviceCommandStartCRDSessionJob::OnOAuthTokenReceived(
     const std::string& token) {
   CRD_DVLOG(1) << "Received OAuth token, now retrieving CRD access code";
+  Delegate::SessionParameters parameters{
+      /*oauth_token=*/token,
+      /*user_name=*/GetRobotAccountUserName(),
+      /*terminate_upon_input=*/terminate_upon_input_,
+      /*show_confirmation_dialog=*/ShouldShowConfirmationDialog()};
   delegate_->StartCRDHostAndGetCode(
-      token, GetRobotAccountUserName(), terminate_upon_input_,
+      parameters,
       base::BindOnce(&DeviceCommandStartCRDSessionJob::OnAccessCodeReceived,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&DeviceCommandStartCRDSessionJob::FinishWithError,
@@ -426,6 +431,21 @@ std::string DeviceCommandStartCRDSessionJob::GetRobotAccountUserName() const {
   // TODO(msarda): This conversion will not be correct once account id is
   // migrated to be the Gaia ID on ChromeOS. Fix it.
   return account_id.ToString();
+}
+
+bool DeviceCommandStartCRDSessionJob::ShouldShowConfirmationDialog() const {
+  switch (GetUserType()) {
+    case UserType::kAffiliatedUser:
+    case UserType::kManagedGuestSession:
+      return true;
+    case UserType::kAutoLaunchedKiosk:
+    case UserType::kNoUser:
+    case UserType::kNonAutoLaunchedKiosk:
+    case UserType::kOther:
+      return false;
+  }
+  NOTREACHED();
+  return false;
 }
 
 DeviceOAuth2TokenService* DeviceCommandStartCRDSessionJob::oauth_service()

@@ -77,9 +77,7 @@ void CRDHostDelegate::TerminateSession(base::OnceClosure callback) {
 }
 
 void CRDHostDelegate::StartCRDHostAndGetCode(
-    const std::string& oauth_token,
-    const std::string& user_name,
-    bool terminate_upon_input,
+    const SessionParameters& parameters,
     DeviceCommandStartCRDSessionJob::AccessCodeCallback success_callback,
     DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) {
   DCHECK(!host_);
@@ -89,13 +87,18 @@ void CRDHostDelegate::StartCRDHostAndGetCode(
   // Store all parameters for future connect call.
   base::Value connect_params(base::Value::Type::DICTIONARY);
 
-  connect_params.SetKey(remoting::kUserName, base::Value(user_name));
-  connect_params.SetKey(remoting::kAuthServiceWithToken,
-                        base::Value("oauth2:" + oauth_token));
-  connect_params.SetKey(remoting::kSuppressUserDialogs, base::Value(true));
-  connect_params.SetKey(remoting::kSuppressNotifications, base::Value(true));
-  connect_params.SetKey(remoting::kTerminateUponInput,
-                        base::Value(terminate_upon_input));
+  connect_params.SetStringKey(remoting::kUserName, parameters.user_name);
+  connect_params.SetStringKey(remoting::kAuthServiceWithToken,
+                              "oauth2:" + parameters.oauth_token);
+  connect_params.SetBoolKey(remoting::kTerminateUponInput,
+                            parameters.terminate_upon_input);
+  // Note both |kSuppressUserDialogs| and |kSuppressNotifications| are
+  // controlled by |show_confirmation_dialog|.
+  connect_params.SetBoolKey(remoting::kSuppressUserDialogs,
+                            !parameters.show_confirmation_dialog);
+  connect_params.SetBoolKey(remoting::kSuppressNotifications,
+                            !parameters.show_confirmation_dialog);
+
   connect_params_ = std::move(connect_params);
 
   remote_connected_ = false;

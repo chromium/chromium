@@ -24,6 +24,7 @@ namespace policy {
 namespace {
 
 using ::testing::HasSubstr;
+using SessionParameters = CRDHostDelegate::SessionParameters;
 
 std::string FindStringKey(const base::Value& dictionary,
                           const std::string& key) {
@@ -34,15 +35,19 @@ std::string FindStringKey(const base::Value& dictionary,
   return base::StringPrintf("Key '%s' not found", key.c_str());
 }
 
-#define EXPECT_STRING_KEY(dictionary, key, value)  \
-  EXPECT_EQ(FindStringKey(dictionary, key), value) \
-      << "Wrong value for key '" << key << "'";
+#define EXPECT_STRING_KEY(dictionary, key, value)    \
+  ({                                                 \
+    EXPECT_EQ(FindStringKey(dictionary, key), value) \
+        << "Wrong value for key '" << key << "'";    \
+  })
 
-#define EXPECT_BOOL_KEY(dictionary, key, value)                          \
-  absl::optional<bool> value_maybe = dictionary.FindBoolKey(key);        \
-  EXPECT_TRUE(value_maybe.has_value()) << "Missing key '" << key << "'"; \
-  EXPECT_EQ(value_maybe.value_or(false), value)                          \
-      << "Wrong value for key '" << key << "'";
+#define EXPECT_BOOL_KEY(dictionary, key, value)                            \
+  ({                                                                       \
+    absl::optional<bool> value_maybe = dictionary.FindBoolKey(key);        \
+    EXPECT_TRUE(value_maybe.has_value()) << "Missing key '" << key << "'"; \
+    EXPECT_EQ(value_maybe.value_or(false), value)                          \
+        << "Wrong value for key '" << key << "'";                          \
+  })
 
 #define EXPECT_TYPE(dictionary, value) \
   EXPECT_STRING_KEY(dictionary, remoting::kMessageType, value)
@@ -283,11 +288,11 @@ class CRDHostDelegateTest : public ::testing::Test {
   CRDHostDelegateTest& operator=(const CRDHostDelegateTest&) = delete;
   ~CRDHostDelegateTest() override = default;
 
-  void StartCRDHostAndGetCode(const std::string& auth_token = "auth-token",
-                              bool terminate_upon_input = false) {
-    delegate().StartCRDHostAndGetCode(
-        auth_token, "robot-account-user-name", terminate_upon_input,
-        response_.GetSuccessCallback(), response_.GetErrorCallback());
+  void StartCRDHostAndGetCode(
+      const SessionParameters& parameters = SessionParameters()) {
+    delegate().StartCRDHostAndGetCode(parameters,
+                                      response_.GetSuccessCallback(),
+                                      response_.GetErrorCallback());
   }
 
   // Helper object representing the response, which is either the access code
@@ -357,15 +362,88 @@ TEST_F(CRDHostDelegateTest, ShouldErrorOutIfNativeHostResponseHasNoType) {
 }
 
 TEST_F(CRDHostDelegateTest, ShouldSendConnectMessageOnHelloResponse) {
-  StartCRDHostAndGetCode(/*auth_token=*/"the-auth-token",
-                         /*terminate_upon_input=*/true);
+  StartCRDHostAndGetCode();
+  host().WaitForHello();
+  host().PostMessageOfType("helloResponse");
+
+  host().WaitForMessageOfType(remoting::kConnectMessage);
+}
+
+TEST_F(CRDHostDelegateTest, ShouldSendAuthTokenInConnectMessage) {
+  SessionParameters parameters;
+  parameters.oauth_token = "the-oauth-token";
+  StartCRDHostAndGetCode(parameters);
+
   host().WaitForHello();
   host().PostMessageOfType("helloResponse");
 
   base::Value response = host().WaitForMessageOfType(remoting::kConnectMessage);
   EXPECT_STRING_KEY(response, remoting::kAuthServiceWithToken,
-                    "oauth2:the-auth-token");
+                    "oauth2:the-oauth-token");
+}
+
+TEST_F(CRDHostDelegateTest, ShouldSendUserNameInConnectMessage) {
+  SessionParameters parameters;
+  parameters.user_name = "the-user-name";
+  StartCRDHostAndGetCode(parameters);
+
+  host().WaitForHello();
+  host().PostMessageOfType("helloResponse");
+
+  base::Value response = host().WaitForMessageOfType(remoting::kConnectMessage);
+  EXPECT_STRING_KEY(response, remoting::kUserName, "the-user-name");
+}
+
+TEST_F(CRDHostDelegateTest, ShouldSendTerminateUponInputTrueInConnectMessage) {
+  SessionParameters parameters;
+  parameters.terminate_upon_input = true;
+  StartCRDHostAndGetCode(parameters);
+
+  host().WaitForHello();
+  host().PostMessageOfType("helloResponse");
+
+  base::Value response = host().WaitForMessageOfType(remoting::kConnectMessage);
   EXPECT_BOOL_KEY(response, remoting::kTerminateUponInput, true);
+}
+
+TEST_F(CRDHostDelegateTest, ShouldSendTerminateUponInputFalseInConnectMessage) {
+  SessionParameters parameters;
+  parameters.terminate_upon_input = false;
+  StartCRDHostAndGetCode(parameters);
+
+  host().WaitForHello();
+  host().PostMessageOfType("helloResponse");
+
+  base::Value response = host().WaitForMessageOfType(remoting::kConnectMessage);
+  EXPECT_BOOL_KEY(response, remoting::kTerminateUponInput, false);
+}
+
+TEST_F(CRDHostDelegateTest,
+       ShouldSendShowConfirmationDialogTrueInConnectMessage) {
+  SessionParameters parameters;
+  parameters.show_confirmation_dialog = true;
+  StartCRDHostAndGetCode(parameters);
+
+  host().WaitForHello();
+  host().PostMessageOfType("helloResponse");
+
+  base::Value response = host().WaitForMessageOfType(remoting::kConnectMessage);
+  EXPECT_BOOL_KEY(response, remoting::kSuppressNotifications, false);
+  EXPECT_BOOL_KEY(response, remoting::kSuppressUserDialogs, false);
+}
+
+TEST_F(CRDHostDelegateTest,
+       ShouldSendShowConfirmationDialogFalseInConnectMessage) {
+  SessionParameters parameters;
+  parameters.show_confirmation_dialog = false;
+  StartCRDHostAndGetCode(parameters);
+
+  host().WaitForHello();
+  host().PostMessageOfType("helloResponse");
+
+  base::Value response = host().WaitForMessageOfType(remoting::kConnectMessage);
+  EXPECT_BOOL_KEY(response, remoting::kSuppressNotifications, true);
+  EXPECT_BOOL_KEY(response, remoting::kSuppressUserDialogs, true);
 }
 
 TEST_F(CRDHostDelegateTest, ShouldSendAccessCodeToCallback) {

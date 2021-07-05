@@ -39,9 +39,7 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   bool HasActiveSession() const override;
   void TerminateSession(base::OnceClosure callback) override;
   void StartCRDHostAndGetCode(
-      const std::string& oauth_token,
-      const std::string& user_name,
-      bool terminate_upon_input,
+      const SessionParameters& parameters,
       DeviceCommandStartCRDSessionJob::AccessCodeCallback success_callback,
       DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) override;
 
