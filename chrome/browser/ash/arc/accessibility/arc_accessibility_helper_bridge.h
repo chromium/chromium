@@ -122,6 +122,7 @@ class ArcAccessibilityHelperBridge
       const absl::optional<gfx::Rect>& result_rect) const;
 
   absl::optional<gfx::Rect> OnGetTextLocationDataResultInternal(
+      const ui::AXTreeID& ax_tree_id,
       const absl::optional<gfx::Rect>& result_rect) const;
 
   void OnAccessibilityStatusChanged(

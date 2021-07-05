@@ -1910,10 +1910,9 @@ AutomationRootNodeImpl.prototype = {
       } catch (e) {
         logging.WARNING('Error with onGetTextLocationResult callback:' + e);
       }
-      delete AutomationNodeImpl.actionRequestIDToCallback[requestID];
+      delete AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
     }
   },
-
 
   onActionResult: function(requestID, result) {
     if (requestID in AutomationRootNodeImpl.actionRequestIDToCallback) {

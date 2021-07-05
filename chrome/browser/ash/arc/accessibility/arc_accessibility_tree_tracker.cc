@@ -522,11 +522,9 @@ void ArcAccessibilityTreeTracker::OnSetNativeChromeVoxArcSupportProcessed(
 }
 
 AXTreeSourceArc* ArcAccessibilityTreeTracker::GetFromTreeId(
-    ui::AXTreeID tree_id) const {
+    const ui::AXTreeID& tree_id) const {
   for (auto it = trees_.begin(); it != trees_.end(); ++it) {
-    ui::AXTreeData tree_data;
-    it->second->GetTreeData(&tree_data);
-    if (tree_data.tree_id == tree_id)
+    if (it->second->ax_tree_id() == tree_id)
       return it->second.get();
   }
   return nullptr;

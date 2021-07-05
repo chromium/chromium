@@ -443,22 +443,24 @@ void ArcAccessibilityHelperBridge::OnGetTextLocationDataResult(
     return;
 
   tree_source->NotifyGetTextLocationDataResult(
-      data, OnGetTextLocationDataResultInternal(result_rect));
+      data,
+      OnGetTextLocationDataResultInternal(data.target_tree_id, result_rect));
 }
 
 absl::optional<gfx::Rect>
 ArcAccessibilityHelperBridge::OnGetTextLocationDataResultInternal(
+    const ui::AXTreeID& ax_tree_id,
     const absl::optional<gfx::Rect>& result_rect) const {
   if (!result_rect)
     return absl::nullopt;
 
-  DCHECK(exo::WMHelper::HasInstance());
-  aura::Window* focused_window = GetFocusedArcWindow();
-  if (!focused_window)
+  aura::Window* window = FindWindowFromChildAXTreeId(ax_tree_id);
+  if (!window)
     return absl::nullopt;
 
   const gfx::RectF& rect_f =
-      ScaleAndroidPxToChromePx(result_rect.value(), focused_window);
+      ScaleAndroidPxToChromePx(result_rect.value(), window);
+
   return gfx::ToEnclosingRect(rect_f);
 }
 
