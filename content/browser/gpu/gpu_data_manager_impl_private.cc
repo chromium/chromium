@@ -506,11 +506,6 @@ GpuDataManagerImplPrivate::~GpuDataManagerImplPrivate() {
 #if defined(OS_MAC)
   CGDisplayRemoveReconfigurationCallback(DisplayReconfigCallback, owner_);
 #endif
-
-#if defined(OS_WIN)
-  if (display::Screen::GetScreen())
-    display::Screen::GetScreen()->RemoveObserver(owner_);
-#endif
 }
 
 void GpuDataManagerImplPrivate::StartUmaTimer() {
@@ -1080,8 +1075,7 @@ void GpuDataManagerImplPrivate::PostCreateThreads() {
         GpuDataManagerImpl::kGpuInfoRequestDx12, /*delayed=*/true);
   }
   // Observer for display change.
-  if (display::Screen::GetScreen())
-    display::Screen::GetScreen()->AddObserver(owner_);
+  display_observer_.emplace(owner_);
 
   // Initialization for HDR status update.
   HDRProxy::Initialize();

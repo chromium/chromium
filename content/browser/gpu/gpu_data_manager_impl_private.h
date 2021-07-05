@@ -253,6 +253,8 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   // Order of gpu process fallback states, used as a stack.
   std::vector<gpu::GpuMode> fallback_modes_;
 
+  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+
   // Used to tell if the gpu was disabled by an explicit call to
   // DisableHardwareAcceleration(), rather than by fallback.
   bool hardware_disabled_explicitly_ = false;
