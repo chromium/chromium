@@ -27,7 +27,7 @@
         android:importantForAccessibility="no"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerInside"/>
 
     <!-- "Verify your purchase" label. -->
     <TextView
