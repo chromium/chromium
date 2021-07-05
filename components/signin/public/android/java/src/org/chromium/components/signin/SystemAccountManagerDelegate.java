@@ -34,7 +34,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
@@ -87,7 +86,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
             long startTime = SystemClock.elapsedRealtime();
             Account[] accounts =
                     mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-            recordElapsedTimeHistogram("Signin.AndroidGetAccountsTime_AccountManager",
+            RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountsTime_AccountManager",
                     SystemClock.elapsedRealtime() - startTime);
             return accounts;
         }
@@ -149,19 +148,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     @Override
     public @CapabilityResponse int hasCapability(Account account, String capability) {
         return CapabilityResponse.EXCEPTION;
-    }
-
-    /**
-     * Records a histogram value for how long time an action has taken using
-     * {@link RecordHistogram#recordTimesHistogram(String, long))} if the browser
-     * process has been initialized.
-     *
-     * @param histogramName the name of the histogram.
-     * @param elapsedMs the elapsed time in milliseconds.
-     */
-    protected static void recordElapsedTimeHistogram(String histogramName, long elapsedMs) {
-        if (!LibraryLoader.getInstance().isInitialized()) return;
-        RecordHistogram.recordTimesHistogram(histogramName, elapsedMs);
     }
 
     // No permission is needed on 23+ and Chrome always has MANAGE_ACCOUNTS permission on lower APIs
