@@ -48,6 +48,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // (PIP).
   virtual void SetPip() = 0;
 
+  // Whether or not the underlying platform supports native pointer locking.
+  virtual bool SupportsPointerLock() = 0;
+  virtual void LockPointer(bool enabled) = 0;
+
  protected:
   virtual ~WaylandExtension();
 

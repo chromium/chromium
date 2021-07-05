@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
+#include "ui/ozone/platform/wayland/host/wayland_zwp_relative_pointer_manager.h"
 
 struct wl_display;
 
@@ -48,7 +49,8 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandKeyboard::Delegate,
                            public WaylandPointer::Delegate,
                            public WaylandTouch::Delegate,
-                           public WaylandZwpPointerGestures::Delegate {
+                           public WaylandZwpPointerGestures::Delegate,
+                           public WaylandZwpRelativePointerManager::Delegate {
  public:
   WaylandEventSource(wl_display* display,
                      wl_event_queue* event_queue,
@@ -128,6 +130,10 @@ class WaylandEventSource : public PlatformEventSource,
                     int device_id,
                     absl::optional<float> scale) override;
 
+  // WaylandZwpRelativePointerManager::Delegate:
+  void SetRelativePointerMotionEnabled(bool enabled) override;
+  void OnRelativePointerMotion(const gfx::Vector2dF& delta) override;
+
  private:
   struct PointerFrame {
     PointerFrame();
@@ -177,6 +183,9 @@ class WaylandEventSource : public PlatformEventSource,
 
   // Last known pointer location.
   gfx::PointF pointer_location_;
+
+  // Last known relative pointer location (used for pointer lock).
+  absl::optional<gfx::PointF> relative_pointer_location_;
 
   // Current frame
   PointerFrame current_pointer_frame_;

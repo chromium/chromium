@@ -22,6 +22,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
+#include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -552,6 +553,18 @@ void WaylandToplevelWindow::SetPip() {
                            ZAURA_SURFACE_SET_PIP_SINCE_VERSION) {
     zaura_surface_set_pip(aura_surface_.get());
   }
+}
+
+bool WaylandToplevelWindow::SupportsPointerLock() {
+  return !!connection()->wayland_zwp_pointer_constraints() &&
+         !!connection()->wayland_zwp_relative_pointer_manager();
+}
+void WaylandToplevelWindow::LockPointer(bool enabled) {
+  auto* pointer_constraints = connection()->wayland_zwp_pointer_constraints();
+  if (enabled)
+    pointer_constraints->LockPointer(root_surface());
+  else
+    pointer_constraints->UnlockPointer();
 }
 
 void WaylandToplevelWindow::TriggerStateChanges() {

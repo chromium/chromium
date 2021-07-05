@@ -92,6 +92,32 @@ bool BrowserDesktopWindowTreeHostLinux::UsesNativeSystemMenu() const {
   return false;
 }
 
+bool BrowserDesktopWindowTreeHostLinux::SupportsMouseLock() {
+  auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+  if (!wayland_extension)
+    return false;
+
+  return wayland_extension->SupportsPointerLock();
+}
+
+void BrowserDesktopWindowTreeHostLinux::LockMouse(aura::Window* window) {
+  DesktopWindowTreeHostLinux::LockMouse(window);
+
+  if (SupportsMouseLock()) {
+    auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+    wayland_extension->LockPointer(true /*enabled*/);
+  }
+}
+
+void BrowserDesktopWindowTreeHostLinux::UnlockMouse(aura::Window* window) {
+  DesktopWindowTreeHostLinux::UnlockMouse(window);
+
+  if (SupportsMouseLock()) {
+    auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
+    wayland_extension->LockPointer(false /*enabled*/);
+  }
+}
+
 void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
     TabDragKind tab_drag_kind) {
   // If there's no tabs left, the browser window is about to close, so don't

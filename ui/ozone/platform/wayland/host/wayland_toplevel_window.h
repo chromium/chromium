@@ -102,6 +102,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   void CommitSnap(WaylandWindowSnapDirection snap) override;
   void SetCanGoBack(bool value) override;
   void SetPip() override;
+  bool SupportsPointerLock() override;
+  void LockPointer(bool enabled) override;
 
   void TriggerStateChanges();
   void SetWindowState(PlatformWindowState state);

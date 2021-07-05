@@ -7,6 +7,10 @@
 
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
+namespace gfx {
+class Vector2dF;
+}  // namespace gfx
+
 namespace ui {
 
 class WaylandConnection;
@@ -14,6 +18,8 @@ class WaylandConnection;
 // Wraps the zwp_relative_pointer_manager_v1 object.
 class WaylandZwpRelativePointerManager {
  public:
+  class Delegate;
+
   WaylandZwpRelativePointerManager(
       zwp_relative_pointer_manager_v1* relative_pointer_manager,
       WaylandConnection* connection);
@@ -41,6 +47,13 @@ class WaylandZwpRelativePointerManager {
   wl::Object<zwp_relative_pointer_manager_v1> obj_;
   wl::Object<zwp_relative_pointer_v1> relative_pointer_;
   WaylandConnection* const connection_;
+  Delegate* const delegate_;
+};
+
+class WaylandZwpRelativePointerManager::Delegate {
+ public:
+  virtual void SetRelativePointerMotionEnabled(bool enabled) = 0;
+  virtual void OnRelativePointerMotion(const gfx::Vector2dF& delta) = 0;
 };
 
 }  // namespace ui

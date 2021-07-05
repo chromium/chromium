@@ -365,6 +365,20 @@ void WaylandEventSource::OnPinchEvent(EventType event_type,
   DispatchEvent(&event);
 }
 
+void WaylandEventSource::SetRelativePointerMotionEnabled(bool enabled) {
+  if (enabled)
+    relative_pointer_location_ = pointer_location_;
+  else
+    relative_pointer_location_.reset();
+}
+
+void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta) {
+  DCHECK(relative_pointer_location_.has_value());
+
+  relative_pointer_location_ = *relative_pointer_location_ + delta;
+  OnPointerMotionEvent(*relative_pointer_location_);
+}
+
 bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
   DCHECK(HasAnyPointerButtonFlag(button));
   return pointer_flags_ & button;

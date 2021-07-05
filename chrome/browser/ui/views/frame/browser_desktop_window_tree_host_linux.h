@@ -56,6 +56,9 @@ class BrowserDesktopWindowTreeHostLinux
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
   void CloseNow() override;
+  bool SupportsMouseLock() override;
+  void LockMouse(aura::Window* window) override;
+  void UnlockMouse(aura::Window* window) override;
 
   // ui::X11ExtensionDelegate:
   bool IsOverrideRedirect(bool is_tiling_wm) const override;

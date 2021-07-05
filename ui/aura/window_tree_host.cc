@@ -343,6 +343,10 @@ WindowTreeHost::RequestUnadjustedMovement() {
   return nullptr;
 }
 
+bool WindowTreeHost::SupportsMouseLock() {
+  return false;
+}
+
 void WindowTreeHost::LockMouse(Window* window) {
   Window* root_window = window->GetRootWindow();
   DCHECK(root_window);

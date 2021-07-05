@@ -327,7 +327,7 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   // breaks drop-down lists which means something is incorrectly setting
   // event->handled to true (http://crbug.com/577983).
 
-  if (mouse_locked_) {
+  if (mouse_locked_ && !window_->GetHost()->SupportsMouseLock()) {
     HandleMouseEventWhileLocked(event);
     return;
   }
@@ -808,6 +808,8 @@ void RenderWidgetHostViewEventHandler::ModifyEventMovementAndCoords(
 
 void RenderWidgetHostViewEventHandler::MoveCursorToCenter(
     ui::MouseEvent* event) {
+  DCHECK(!window_->GetHost()->SupportsMouseLock());
+
   gfx::Point center(gfx::Rect(window_->bounds().size()).CenterPoint());
   gfx::Point center_in_screen(window_->GetBoundsInScreen().CenterPoint());
   window_->MoveCursorTo(center);
@@ -876,6 +878,9 @@ bool RenderWidgetHostViewEventHandler::ShouldMoveToCenter(
   if (mouse_locked_unadjusted_movement_)
     return false;
 #endif
+
+  if (window_->GetHost()->SupportsMouseLock())
+    return false;
 
   gfx::Rect rect = window_->bounds();
   rect = delegate_->ConvertRectToScreen(rect);

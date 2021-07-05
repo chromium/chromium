@@ -9,6 +9,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_zwp_relative_pointer_manager.h"
 
 namespace ui {
 
@@ -36,22 +37,25 @@ void WaylandZwpPointerConstraints::LockPointer(WaylandSurface* surface) {
 }
 
 void WaylandZwpPointerConstraints::UnlockPointer() {
-  NOTIMPLEMENTED();
   locked_pointer_.reset();
+  connection_->wayland_zwp_relative_pointer_manager()->DisableRelativePointer();
 }
 
 // static
 void WaylandZwpPointerConstraints::OnLock(
     void* data,
     struct zwp_locked_pointer_v1* zwp_locked_pointer_v1) {
-  NOTIMPLEMENTED();
+  auto* pointer_constraints = static_cast<WaylandZwpPointerConstraints*>(data);
+  pointer_constraints->connection_->wayland_zwp_relative_pointer_manager()
+      ->EnableRelativePointer();
 }
 
 // static
 void WaylandZwpPointerConstraints::OnUnlock(
     void* data,
     struct zwp_locked_pointer_v1* zwp_locked_pointer_v1) {
-  NOTIMPLEMENTED();
+  auto* pointer_constraints = static_cast<WaylandZwpPointerConstraints*>(data);
+  pointer_constraints->UnlockPointer();
 }
 
 }  // namespace ui
