@@ -19,7 +19,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasHost;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -150,7 +150,7 @@ public class PasswordSettingsExportTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         Assert.assertNotNull(mTestHelper.getHandler().getExportTargetPath());
@@ -179,7 +179,7 @@ public class PasswordSettingsExportTest {
 
         // Check that the warning dialog is displayed.
         onView(withText(R.string.settings_passwords_export_description))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
     }
 
     /**
@@ -214,7 +214,7 @@ public class PasswordSettingsExportTest {
         // completed in the test.
         ReauthenticationManager.setSkipSystemReauth(true);
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Now Chrome thinks it triggered the challenge and is waiting to be resumed. Once resumed
@@ -254,11 +254,11 @@ public class PasswordSettingsExportTest {
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
         onView(withText(R.string.password_export_set_lock_screen))
                 .inRoot(withDecorView(not(is(mainDecorView))))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
     }
 
     /**
@@ -282,7 +282,7 @@ public class PasswordSettingsExportTest {
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Check that for re-triggering, the export menu item is enabled.
@@ -309,7 +309,7 @@ public class PasswordSettingsExportTest {
         openActionBarOverflowOrOptionsMenu(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
         // The reauthentication dialog is skipped and the last reauthentication timestamp is not
         // reset. This looks like a failed reauthentication to PasswordSettings' onResume.
@@ -347,7 +347,7 @@ public class PasswordSettingsExportTest {
         // completed in the test.
         ReauthenticationManager.setSkipSystemReauth(true);
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Check that Chrome indeed issued an (ignored) request to reauthenticate the user rather
@@ -388,7 +388,7 @@ public class PasswordSettingsExportTest {
 
         // Confirm the export warning to fire the sharing intent.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         intended(allOf(hasAction(equalTo(Intent.ACTION_CHOOSER)),
@@ -438,7 +438,7 @@ public class PasswordSettingsExportTest {
 
         // Confirm the export warning to fire the sharing intent.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         intended(allOf(hasAction(equalTo(Intent.ACTION_CHOOSER)),
@@ -541,7 +541,7 @@ public class PasswordSettingsExportTest {
                 ReauthenticationManager.ReauthScope.BULK);
 
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Call onResume to simulate that the user put Chrome into background by opening "recent
@@ -581,7 +581,7 @@ public class PasswordSettingsExportTest {
         // Verify that the warning dialog is shown and then dismiss it through pressing back (as
         // opposed to the cancel button).
         onView(withText(R.string.password_settings_export_action_title))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
         Espresso.pressBack();
 
         // Check that the cancellation succeeded by checking that the export menu is available and
@@ -620,13 +620,13 @@ public class PasswordSettingsExportTest {
 
         // Confirm the export warning to fire the sharing intent.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Before simulating the serialized passwords being received, check that the progress bar is
         // shown.
         onView(withText(R.string.settings_passwords_preparing_export))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
 
         File tempFile = createFakeExportedPasswordsFile();
         // Now pretend that passwords have been serialized.
@@ -635,7 +635,7 @@ public class PasswordSettingsExportTest {
         // Check that the progress bar is still shown, though, because the timer has not gone off
         // yet.
         onView(withText(R.string.settings_passwords_preparing_export))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
 
         // Now mark the timer as gone off and check that the progress bar is hidden.
         allowProgressBarToBeHidden();
@@ -680,13 +680,13 @@ public class PasswordSettingsExportTest {
 
         // Confirm the export warning to fire the sharing intent.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Before simulating the serialized passwords being received, check that the progress bar is
         // shown.
         onView(withText(R.string.settings_passwords_preparing_export))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
 
         File tempFile = createFakeExportedPasswordsFile();
 
@@ -728,7 +728,7 @@ public class PasswordSettingsExportTest {
 
         // Confirm the export warning to fire the sharing intent.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Simulate the minimal time for showing the progress bar to have passed, to ensure that it
@@ -737,7 +737,7 @@ public class PasswordSettingsExportTest {
 
         // Check that the progress bar is shown.
         onView(withText(R.string.settings_passwords_preparing_export))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
 
         // Hit the Cancel button.
         onView(withText(R.string.cancel)).perform(click());
@@ -768,7 +768,7 @@ public class PasswordSettingsExportTest {
 
         // Confirm the export warning.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Show an arbitrary error. This should replace the progress bar if that has been shown in
@@ -778,7 +778,7 @@ public class PasswordSettingsExportTest {
 
         // Check that the error prompt is showing.
         onView(withText(R.string.password_settings_export_error_title))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
 
         // Hit the negative button on the error prompt.
         onView(withText(R.string.close)).perform(click());
@@ -810,7 +810,7 @@ public class PasswordSettingsExportTest {
 
         // Confirm the export warning.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Show an arbitrary error but ensure that the positive button label is the one for "try
@@ -823,7 +823,7 @@ public class PasswordSettingsExportTest {
 
         // Check that there is again the export warning.
         onView(withText(R.string.password_settings_export_action_title))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
     }
 
     /**
@@ -849,7 +849,7 @@ public class PasswordSettingsExportTest {
 
         // Confirm the export warning.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Show an arbitrary error but ensure that the positive button label is the one for the
@@ -899,14 +899,14 @@ public class PasswordSettingsExportTest {
 
         // Check that the confirmation dialog is showing and dismiss it.
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Check that now the error is displayed, instead of the progress bar.
         allowProgressBarToBeHidden();
         onView(withText(R.string.settings_passwords_preparing_export)).check(doesNotExist());
         onView(withText(R.string.password_settings_export_error_title))
-                .check(matches(isDisplayed()));
+                .check(matches(isCompletelyDisplayed()));
 
         // Close the error dialog and abort the export.
         onView(withText(R.string.close)).perform(click());
@@ -929,7 +929,7 @@ public class PasswordSettingsExportTest {
         // completed in the test.
         ReauthenticationManager.setSkipSystemReauth(true);
         onViewWaiting(
-                allOf(withText(R.string.password_settings_export_action_title), isDisplayed()))
+                allOf(withText(R.string.password_settings_export_action_title), isCompletelyDisplayed()))
                 .perform(click());
 
         // Now Chrome thinks it triggered the challenge and is waiting to be resumed. Once resumed
