@@ -191,8 +191,8 @@ constexpr char kScrollableBehaviorHTML[] =
     "components/behaviors/oobe_scrollable_behavior.html";
 constexpr char kScrollableBehaviorJS[] =
     "components/behaviors/oobe_scrollable_behavior.js";
-constexpr char kHDIronIconHTML[] = "components/hd_iron_icon/hd_iron_icon.html";
-constexpr char kHDIronIconJS[] = "components/hd_iron_icon/hd_iron_icon.js";
+constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
+constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
 constexpr char kOobeAdaptiveDialogHTML[] =
     "components/oobe_adaptive_dialog.html";
 constexpr char kOobeAdaptvieDialogJS[] = "components/oobe_adaptive_dialog.js";

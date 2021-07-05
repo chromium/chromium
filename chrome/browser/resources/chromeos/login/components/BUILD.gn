@@ -11,7 +11,6 @@ group("closure_compile") {
   deps = [
     ":closure_compile_local",
     "buttons:closure_compile",
-    "hd_iron_icon:closure_compile",
     "oobe_adaptive_dialog:closure_compile",
     "oobe_carousel:closure_compile",
     "oobe_content_dialog:closure_compile",
@@ -26,6 +25,7 @@ js_type_check("closure_compile_local") {
   uses_legacy_modules = true
   deps = [
     ":fake_oobe",
+    ":hd_iron_icon",
     ":html-echo",
     ":network_select_login",
     ":oobe_i18n_dropdown",
@@ -37,11 +37,14 @@ js_type_check("closure_compile_local") {
 
 group("closure_compile_module") {
   deps = [
-    ":oobe_icons.m",
     "behaviors:closure_compile_module",
     "buttons:closure_compile_module",
     "common_styles:closure_compile_module",
     "oobe_vars:closure_compile_module",
+
+    # Local targets
+    ":hd_iron_icon.m",
+    ":oobe_icons.m",
   ]
 }
 
@@ -53,6 +56,7 @@ group("polymer3_elements") {
     "oobe_vars:polymer3_elements",
 
     # Local targets
+    ":hd_iron_icon_module",
     ":oobe_icons_module"
   ]
 }
@@ -115,12 +119,29 @@ js_library("oobe_select") {
 js_library("html-echo") {
 }
 
+js_library("hd_iron_icon") {
+}
+
 #### Polymer3 / JS Modules
+
+js_library("hd_iron_icon.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/hd_iron_icon.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":hd_iron_icon_module" ]
+}
 
 js_library("oobe_icons.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_icons.m.js" ]
   deps = []
   extra_deps = [ ":oobe_icons_module" ]
+}
+
+polymer_modulizer("hd_iron_icon") {
+  js_file = "hd_iron_icon.js"
+  html_file = "hd_iron_icon.html"
+  html_type = "dom-module"
 }
 
 polymer_modulizer("oobe_icons") {
