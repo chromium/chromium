@@ -66,6 +66,12 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                             gfx::OverlayTransform display_transform,
                             const gfx::Rect& target_damage = gfx::Rect(),
                             int64_t display_trace_id = -1);
+
+  // Returns latest frame data after previous Aggregate() call. This only valid
+  // until next CompositorFrame is processed, so should be called directly after
+  // Aggregate() to make sure no CompositorFrame did arrive between the calls.
+  const ResolvedFrameData* GetLatestFrameData(const SurfaceId& surface_id);
+
   void ReleaseResources(const SurfaceId& surface_id);
   const SurfaceIndexMap& previous_contained_surfaces() const {
     return previous_contained_surfaces_;
@@ -109,7 +115,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // CompositorFrame.
   const ResolvedFrameData* GetResolvedFrame(const SurfaceRange& range);
   const ResolvedFrameData* GetResolvedFrame(const SurfaceId& surface_id);
-  const ResolvedFrameData* GetResolvedFrame(Surface* surface);
+  const ResolvedFrameData* GetResolvedFrame(Surface* surface,
+                                            bool inside_aggregation);
 
   void HandleSurfaceQuad(const SurfaceDrawQuad* surface_quad,
                          float parent_device_scale_factor,

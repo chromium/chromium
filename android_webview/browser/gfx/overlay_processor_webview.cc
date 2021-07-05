@@ -13,7 +13,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
+#include "components/viz/service/display/resolved_frame_data.h"
+#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "components/viz/service/surfaces/surface.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -603,10 +606,12 @@ class OverlayProcessorWebView::Manager
 };
 
 OverlayProcessorWebView::OverlayProcessorWebView(
-    viz::DisplayCompositorMemoryAndTaskController* display_controller)
+    viz::DisplayCompositorMemoryAndTaskController* display_controller,
+    viz::FrameSinkManagerImpl* frame_sink_manager)
     : command_buffer_id_(gpu::DisplayCompositorMemoryAndTaskControllerOnGpu::
                              NextCommandBufferId()),
-      render_thread_sequence_(display_controller->gpu_task_scheduler()) {
+      render_thread_sequence_(display_controller->gpu_task_scheduler()),
+      frame_sink_manager_(frame_sink_manager) {
   base::WaitableEvent event;
   render_thread_sequence_->ScheduleGpuTask(
       base::BindOnce(
@@ -725,10 +730,14 @@ void OverlayProcessorWebView::ScheduleOverlays(
                          base::Unretained(manager_.get()), overlay->second.id,
                          candidate),
           std::vector<gpu::SyncToken>());
-
-      // TODO(vasilyt): This needs to be when we process compositor frame.
-      UpdateOverlayResource(sink_id, candidate.resource_id,
-                            candidate.unclipped_uv_rect);
+      // If renderer embedded new surface (i.e video player size changed) we
+      // need to update buffer here. For all other cases it's updated in
+      // ProcessForFrameSinkId().
+      if (overlay->second.surface_id != surface_id) {
+        overlay->second.surface_id = surface_id;
+        UpdateOverlayResource(sink_id, candidate.resource_id,
+                              candidate.unclipped_uv_rect);
+      }
     } else {
       overlay =
           overlays_
@@ -823,6 +832,45 @@ void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id) {
   auto it = locked_resources_.find(resource_id);
   DCHECK(it != locked_resources_.end());
   locked_resources_.erase(it);
+}
+
+void OverlayProcessorWebView::ProcessForFrameSinkId(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::ResolvedFrameData* frame_data) {
+  auto it = overlays_.find(frame_sink_id);
+  DCHECK(it != overlays_.end());
+  auto& overlay = it->second;
+
+  auto& pass = frame_data->GetRootRenderPassData();
+  if (!pass.draw_quads.empty()) {
+    DCHECK_EQ(pass.draw_quads.size(), 1u);
+    auto* surface = frame_sink_manager_->surface_manager()->GetSurfaceForId(
+        overlay.surface_id);
+
+    // TODO(vasilyt): We should get this from surface aggregator after
+    // aggregator refactoring will be finished.
+    const auto& frame = surface->GetActiveFrame();
+    auto* quad = viz::StreamVideoDrawQuad::MaterialCast(
+        frame.render_pass_list.back()->quad_list.front());
+    DCHECK(quad);
+
+    auto uv_rect = gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
+
+    UpdateOverlayResource(frame_sink_id,
+                          pass.draw_quads.front().remapped_resources.ids[0],
+                          uv_rect);
+    // TODO(vasilyt): Implement back pressure
+    surface->SendAckToClient();
+  }
+}
+
+viz::SurfaceId OverlayProcessorWebView::GetOverlaySurfaceId(
+    const viz::FrameSinkId& frame_sink_id) {
+  auto it = overlays_.find(frame_sink_id);
+  if (it != overlays_.end()) {
+    return it->second.surface_id;
+  }
+  return viz::SurfaceId();
 }
 
 OverlayProcessorWebView::ScopedSurfaceControlAvailable::

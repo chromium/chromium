@@ -476,6 +476,12 @@ bool SurfaceAggregator::CanPotentiallyMergePass(
          sqs->de_jelly_delta_y == 0;
 }
 
+const ResolvedFrameData* SurfaceAggregator::GetLatestFrameData(
+    const SurfaceId& surface_id) {
+  auto* surface = manager_->GetSurfaceForId(surface_id);
+  return GetResolvedFrame(surface, /*inside_aggregation=*/false);
+}
+
 const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     const SurfaceRange& range) {
   // Find latest in flight surface and cache that result for the duration of
@@ -487,15 +493,18 @@ const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
                .first;
   }
 
-  return GetResolvedFrame(iter->second);
+  return GetResolvedFrame(iter->second, /*inside_aggregation=*/true);
 }
 
 const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     const SurfaceId& surface_id) {
-  return GetResolvedFrame(manager_->GetSurfaceForId(surface_id));
+  return GetResolvedFrame(manager_->GetSurfaceForId(surface_id),
+                          /*inside_aggregation=*/true);
 }
 
-const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(Surface* surface) {
+const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
+    Surface* surface,
+    bool inside_aggregation) {
   if (!surface || !surface->HasActiveFrame()) {
     // If there is no resolved surface or the surface has no active frame there
     // is no resolved frame data to return.
@@ -520,17 +529,18 @@ const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(Surface* surface) {
   // SurfaceObserver signals the surface has been destroyed instead.
   if (resolved_frame.surface_id() != surface->surface_id()) {
     resolved_frames_.erase(iter);
-    return GetResolvedFrame(surface);
+    return GetResolvedFrame(surface, inside_aggregation);
   }
 
   // Mark the frame as used this aggregation so it persists.
-  bool first_use = resolved_frame.MarkAsUsed();
+  bool first_use = inside_aggregation ? resolved_frame.MarkAsUsed() : true;
 
   if (first_use) {
     // If there is a new CompositorFrame for `surface` compute resolved frame
     // data for the new resolved CompositorFrame.
     if (resolved_frame.frame_index() != surface->GetActiveFrameIndex() ||
         surface->HasSurfaceAnimationDamage()) {
+      DCHECK(inside_aggregation);
       base::ElapsedTimer timer;
       ProcessResolvedFrame(resolved_frame);
       stats_->declare_resources_time += timer.Elapsed();
@@ -1833,7 +1843,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   PrewalkResult prewalk_result;
   // Get the resolved frame for the root surface after `prewalk_timer` is
   // started so the work is counted in the same histograms as before.
-  const ResolvedFrameData& resolved_frame = *GetResolvedFrame(surface);
+  const ResolvedFrameData& resolved_frame =
+      *GetResolvedFrame(surface, /*inside_aggregation=*/true);
   gfx::Rect prewalk_damage_rect = PrewalkSurface(
       resolved_frame, /*in_moved_pixel_rp=*/false,
       /*parent_pass=*/AggregatedRenderPassId(),

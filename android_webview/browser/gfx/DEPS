@@ -9,6 +9,7 @@ include_rules = [
   "+components/power_scheduler",
   "+components/viz/service/gl",
   "+components/viz/service/main",
+  "+components/viz/service/surfaces",
   "+ui/latency",
 ]
 

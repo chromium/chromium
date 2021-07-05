@@ -14,6 +14,7 @@
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/overlay_processor_surface_control.h"
+#include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -21,6 +22,11 @@
 namespace gpu {
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
 }
+
+namespace viz {
+class FrameSinkManagerImpl;
+class ResolvedFrameData;
+}  // namespace viz
 
 namespace android_webview {
 class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
@@ -37,12 +43,16 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
   };
 
   OverlayProcessorWebView(
-      viz::DisplayCompositorMemoryAndTaskController* display_controller);
+      viz::DisplayCompositorMemoryAndTaskController* display_controller,
+      viz::FrameSinkManagerImpl* frame_sink_manager);
   ~OverlayProcessorWebView() override;
 
+  void ProcessForFrameSinkId(const viz::FrameSinkId& frame_sink_id,
+                             const viz::ResolvedFrameData* frame_data);
   void SetOverlaysEnabledByHWUI(bool enabled);
   void RemoveOverlays();
   absl::optional<gfx::SurfaceControl::Transaction> TakeSurfaceTransactionOnRT();
+  viz::SurfaceId GetOverlaySurfaceId(const viz::FrameSinkId& frame_sink_id);
 
   // viz::OverlayProcessorSurfaceControl overrides:
   void TakeOverlayCandidates(
@@ -108,6 +118,7 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
   std::unique_ptr<gpu::SingleTaskSequence> gpu_thread_sequence_;
 
   viz::DisplayResourceProvider* resource_provider_ = nullptr;
+  viz::FrameSinkManagerImpl* const frame_sink_manager_;
 
   scoped_refptr<Manager> manager_;
 

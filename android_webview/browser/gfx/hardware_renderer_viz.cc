@@ -12,6 +12,7 @@
 #include "android_webview/browser/gfx/aw_gl_surface.h"
 #include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
+#include "android_webview/browser/gfx/display_webview.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/overlay_processor_webview.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
@@ -35,7 +36,6 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
-#include "components/viz/service/display/display.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
@@ -108,7 +108,7 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
   const viz::FrameSinkId frame_sink_id_;
   viz::LocalSurfaceId root_local_surface_id_;
   std::unique_ptr<viz::BeginFrameSource> stub_begin_frame_source_;
-  std::unique_ptr<viz::Display> display_;
+  std::unique_ptr<DisplayWebView> display_;
 
   std::unique_ptr<viz::HitTestAggregator> hit_test_aggregator_;
   viz::SurfaceId child_surface_id_;
@@ -138,32 +138,13 @@ HardwareRendererViz::OnViz::OnViz(
 
   stub_begin_frame_source_ = std::make_unique<viz::StubBeginFrameSource>();
 
-  std::unique_ptr<viz::OverlayProcessorInterface> overlay_processor;
-
-  if (features::IsAndroidSurfaceControlEnabled()) {
-    auto overlay_processor_webview =
-        std::make_unique<OverlayProcessorWebView>(display_controller.get());
-    overlay_processor_webview_ = overlay_processor_webview.get();
-    overlay_processor = std::move(overlay_processor_webview);
-  } else {
-    overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
-  }
-
-  auto scheduler =
-      std::make_unique<DisplaySchedulerWebView>(without_gpu_.get());
-
-  // Android WebView has no overlay processor, and does not need to share
-  // gpu_task_scheduler, so it is passed in as nullptr.
-  // TODO(weiliangc): Android WebView should support overlays. Change initialize
-  // order to make this happen.
-  display_ = std::make_unique<viz::Display>(
-      nullptr /* shared_bitmap_manager */,
+  display_ = DisplayWebView::Create(
       output_surface_provider->renderer_settings(),
       output_surface_provider->debug_settings(), frame_sink_id_,
       std::move(display_controller), std::move(output_surface),
-      std::move(overlay_processor), std::move(scheduler),
-      nullptr /* current_task_runner */);
+      GetFrameSinkManager(), without_gpu_.get());
   display_->Initialize(this, GetFrameSinkManager()->surface_manager(), true);
+  overlay_processor_webview_ = display_->overlay_processor();
 
   display_->SetVisible(true);
   display_->DisableGPUAccessByDefault();
