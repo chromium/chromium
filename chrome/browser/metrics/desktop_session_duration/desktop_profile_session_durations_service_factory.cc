@@ -47,7 +47,6 @@ DesktopProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
 
   DCHECK(!profile->IsSystemProfile());
   DCHECK(!profile->IsGuestSession());
-  DCHECK(!profile->IsEphemeralGuestProfile());
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
@@ -67,8 +66,7 @@ DesktopProfileSessionDurationsServiceFactory::GetBrowserContextToUse(
   // created when presenting the profile picker (per crbug.com/1150326) and this
   // would skew the metrics.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsSystemProfile() || profile->IsGuestSession() ||
-      profile->IsEphemeralGuestProfile()) {
+  if (profile->IsSystemProfile() || profile->IsGuestSession()) {
     return nullptr;
   }
 
