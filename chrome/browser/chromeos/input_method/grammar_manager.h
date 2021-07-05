@@ -44,7 +44,9 @@ class GrammarManager {
   bool IsOnDeviceGrammarEnabled();
 
   // Indicates a new text field is focused, used to save context ID.
-  void OnFocus(int context_id);
+  // |text_input_flags| are the flags for web input fields. Please refer to
+  // WebTextInputType.
+  void OnFocus(int context_id, int text_input_flags = 0);
 
   // This class intercepts keystrokes when the grammar suggestion pop up is
   // displayed. Returns whether the keypress has been handled.
@@ -86,6 +88,7 @@ class GrammarManager {
   bool suggestion_shown_ = false;
   ui::ime::ButtonId highlighted_button_ = ui::ime::ButtonId::kNone;
   text_utils::Sentence last_sentence_;
+  int text_input_flags_ = 0;
 };
 
 }  // namespace chromeos

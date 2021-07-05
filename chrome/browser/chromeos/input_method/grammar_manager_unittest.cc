@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -119,7 +120,7 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
                          &mock_suggestion_handler);
   base::HistogramTester histogram_tester;
 
-  manager.OnFocus(1);
+  manager.OnFocus(1, /*text_input_flags=*/0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
 
@@ -130,6 +131,24 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
   EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Grammar.Actions",
                                       0 /*GrammarAction::kUnderlined*/, 1);
+}
+
+TEST_F(GrammarManagerTest, DoesNotRunGrammarCheckOnTextFieldWithSpellcheckOff) {
+  MockSuggestionHandler mock_suggestion_handler;
+  GrammarManager manager(profile_.get(),
+                         std::make_unique<TestGrammarServiceClient>(),
+                         &mock_suggestion_handler);
+  base::HistogramTester histogram_tester;
+
+  manager.OnFocus(1, ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF);
+  manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
+
+  auto grammar_fragments =
+      mock_ime_input_context_handler_.get_grammar_fragments();
+  EXPECT_EQ(grammar_fragments.size(), 0);
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Grammar.Actions",
+                                      0 /*GrammarAction::kUnderlined*/, 0);
 }
 
 TEST_F(GrammarManagerTest, ChecksLastSentenceImmediately) {

@@ -539,7 +539,7 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
   }
   autocorrect_manager_->OnFocus(context_id);
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
-    grammar_manager_->OnFocus(context_id);
+    grammar_manager_->OnFocus(context_id, context.flags);
   }
   if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {

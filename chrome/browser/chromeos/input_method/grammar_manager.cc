@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
@@ -64,12 +65,13 @@ bool GrammarManager::IsOnDeviceGrammarEnabled() {
       chromeos::features::kOnDeviceGrammarCheck);
 }
 
-void GrammarManager::OnFocus(int context_id) {
+void GrammarManager::OnFocus(int context_id, int text_input_flags) {
   if (context_id != context_id_) {
     last_text_ = u"";
     last_sentence_ = Sentence();
   }
   context_id_ = context_id;
+  text_input_flags_ = text_input_flags;
 }
 
 bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
@@ -108,6 +110,9 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
 void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
                                               int cursor_pos,
                                               int anchor_pos) {
+  if (text_input_flags_ & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF)
+    return;
+
   if (suggestion_shown_)
     DismissSuggestion();
 
