@@ -370,6 +370,10 @@ void ArcAuthService::ReportAccountCheckStatus(
   UpdateAuthAccountCheckStatus(status, profile_);
 }
 
+void ArcAuthService::ReportAccountReauthReason(mojom::ReauthReason reason) {
+  UpdateAccountReauthReason(reason, profile_);
+}
+
 void ArcAuthService::ReportManagementChangeStatus(
     mojom::ManagementChangeStatus status) {
   UpdateSupervisionTransitionResultUMA(status);

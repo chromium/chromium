@@ -196,6 +196,12 @@ void UpdateAuthCodeFetcherProxyBypassUMA(bool proxy_bypassed,
       proxy_bypassed);
 }
 
+void UpdateAccountReauthReason(mojom::ReauthReason reason,
+                               const Profile* profile) {
+  base::UmaHistogramEnumeration(
+      GetHistogramNameByUserType("Arc.Auth.Reauth.Reason", profile), reason);
+}
+
 void UpdateMainAccountResolutionStatus(
     const Profile* profile,
     mojom::MainAccountResolutionStatus status) {

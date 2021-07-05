@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 27
+// Next MinVersion: 28
 
 module arc.mojom;
 
@@ -219,6 +219,17 @@ enum AccountCheckStatus {
     // corresponding UMA callsite in Chrome arc::UpdateAuthAccountCheckStatus.
 };
 
+// These values describe the reason for reauth.
+[Extensible]
+enum ReauthReason {
+    // Device is provisioned but Android id is not set.
+    [MinVersion=27] ANDROID_ID_MISSING = 0,
+
+    // Main account set in system properties is not found in Android
+    // Account Manager.
+    [MinVersion=27] MAIN_ACCOUNT_UNKNOWN = 1,
+};
+
 [Extensible]
 enum MainAccountResolutionStatus {
     // No hash code was set for the main account. System contains no account of
@@ -370,7 +381,7 @@ struct ArcAccountInfo {
   string gaia_id;
 };
 
-// Next Method ID: 20.
+// Next Method ID: 21.
 interface AuthHost {
   // Notifies Chrome that the authorization flow is completed and provides
   // |result| and |account| that was authorized.
@@ -444,6 +455,9 @@ interface AuthHost {
   // OS Account Manager's re-authentication UI. |account_name| is the Google
   // email id for the account. |account_name| cannot be null or empty.
   [MinVersion=20] HandleUpdateCredentialsRequest@17(string account_name);
+
+  // Reports the reason for doing auth despite device being provisioned earlier.
+  [MinVersion=27] ReportAccountReauthReason@20(ReauthReason reason);
 };
 
 // Next Method ID: 6

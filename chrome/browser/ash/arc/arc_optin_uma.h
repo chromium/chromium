@@ -260,6 +260,8 @@ void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
                                   const Profile* profile);
 void UpdateAuthCodeFetcherProxyBypassUMA(bool proxy_bypassed,
                                          const Profile* profile);
+void UpdateAccountReauthReason(mojom::ReauthReason reason,
+                               const Profile* profile);
 void UpdateMainAccountResolutionStatus(
     const Profile* profile,
     mojom::MainAccountResolutionStatus status);

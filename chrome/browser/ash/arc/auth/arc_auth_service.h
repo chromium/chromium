@@ -79,6 +79,7 @@ class ArcAuthService : public KeyedService,
                              mojom::ArcSignInAccountPtr account) override;
   void ReportMetrics(mojom::MetricsType metrics_type, int32_t value) override;
   void ReportAccountCheckStatus(mojom::AccountCheckStatus status) override;
+  void ReportAccountReauthReason(mojom::ReauthReason reason) override;
   void ReportManagementChangeStatus(
       mojom::ManagementChangeStatus status) override;
   void RequestPrimaryAccountInfo(
