@@ -16,43 +16,47 @@
 
 class Profile;
 
-namespace ash {
-namespace sharesheet {
-class SharesheetBubbleView;
-}  // namespace sharesheet
-}  // namespace ash
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
 
 namespace views {
 class View;
 }  // namespace views
 
-namespace gfx {
-struct VectorIcon;
-}  // namespace gfx
-
 namespace sharesheet {
 
 class SharesheetService;
 
-// The SharesheetServiceDelegate is the middle point between the UI and the
-// business logic in the sharesheet.
-class SharesheetServiceDelegate : public SharesheetController {
+// The SharesheetServiceDelegate is the interface through which the business
+// logic in SharesheetService communicates with the UI.
+class SharesheetServiceDelegate : public ::sharesheet::SharesheetController {
  public:
   SharesheetServiceDelegate(gfx::NativeWindow native_window,
                             SharesheetService* sharesheet_service);
-  ~SharesheetServiceDelegate() override;
+  ~SharesheetServiceDelegate() override = default;
   SharesheetServiceDelegate(const SharesheetServiceDelegate&) = delete;
   SharesheetServiceDelegate& operator=(const SharesheetServiceDelegate&) =
       delete;
 
-  void ShowBubble(std::vector<TargetInfo> targets,
-                  apps::mojom::IntentPtr intent,
-                  sharesheet::DeliveredCallback delivered_callback);
+  gfx::NativeWindow GetNativeWindow();
+
+  // The following are called by the ShareService to communicate with the UI.
+  virtual void ShowBubble(std::vector<TargetInfo> targets,
+                          apps::mojom::IntentPtr intent,
+                          sharesheet::DeliveredCallback delivered_callback);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void ShowNearbyShareBubble(apps::mojom::IntentPtr intent,
-                             sharesheet::DeliveredCallback delivered_callback,
-                             sharesheet::CloseCallback close_callback);
+  virtual void ShowNearbyShareBubble(
+      apps::mojom::IntentPtr intent,
+      sharesheet::DeliveredCallback delivered_callback,
+      sharesheet::CloseCallback close_callback) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Invoked immediately after an action has launched in the event that UI
+  // changes need to occur at this point.
+  virtual void OnActionLaunched();
+
+  // The following are called by the UI to communicate with the ShareService.
   void OnBubbleClosed(const std::u16string& active_action);
   void OnTargetSelected(const std::u16string& target_name,
                         const TargetType type,
@@ -60,25 +64,21 @@ class SharesheetServiceDelegate : public SharesheetController {
                         views::View* share_action_view);
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
                             const std::u16string& active_action);
-  void OnActionLaunched();
   const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
-  gfx::NativeWindow GetNativeWindow();
 
-  // SharesheetController overrides
+  // SharesheetController:
   Profile* GetProfile() override;
-  void SetSharesheetSize(const int& width, const int& height) override;
+  // Default implementation does nothing. Override as needed.
+  void SetSharesheetSize(int width, int height) override;
+  // Default implementation does nothing. Override as needed.
   void CloseSharesheet() override;
 
  private:
-  bool is_bubble_open_ = false;
-
   // Only used for ID purposes. NativeWindow will always outlive the
   // SharesheetServiceDelegate.
   gfx::NativeWindow native_window_;
 
-  std::u16string active_action_;
   // Owned by views.
-  ash::sharesheet::SharesheetBubbleView* sharesheet_bubble_view_;
   SharesheetService* sharesheet_service_;
 };
 

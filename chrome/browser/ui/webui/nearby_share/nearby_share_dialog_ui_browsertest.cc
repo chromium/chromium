@@ -21,7 +21,7 @@ class TestSharesheetController : public sharesheet::SharesheetController {
  public:
   // sharesheet::SharesheetController
   Profile* GetProfile() override { return nullptr; }
-  void SetSharesheetSize(const int& width, const int& height) override {}
+  void SetSharesheetSize(int width, int height) override {}
   void CloseSharesheet() override { close_called = true; }
 
   bool close_called = false;
