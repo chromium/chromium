@@ -176,8 +176,7 @@ TEST(AccountConsistencyModeManagerTest, NewProfile) {
       AccountConsistencyModeManager::IsDiceMigrationCompleted(profile.get()));
 }
 
-TEST(AccountConsistencyModeManagerTest,
-     DiceOnlyForRegularAndEphemeralGuestProfile) {
+TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
   content::BrowserTaskEnvironment task_environment;
 
   {
@@ -216,12 +215,8 @@ TEST(AccountConsistencyModeManagerTest,
         otr_profile));
   }
 
-  // OTR Guest profile.
+  // Guest profile.
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list, false);
-
     TestingProfile::Builder profile_builder;
     profile_builder.SetGuestSession();
     std::unique_ptr<Profile> profile = profile_builder.Build();
@@ -233,25 +228,6 @@ TEST(AccountConsistencyModeManagerTest,
         AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
     EXPECT_FALSE(AccountConsistencyModeManager::ShouldBuildServiceForProfile(
         profile.get()));
-  }
-
-  // Ephemeral Guest profile.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    if (TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list, true)) {
-      TestingProfile::Builder profile_builder;
-      profile_builder.SetGuestSession();
-      std::unique_ptr<Profile> profile = profile_builder.Build();
-      ASSERT_TRUE(profile->IsEphemeralGuestProfile());
-      EXPECT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
-          profile.get()));
-      EXPECT_EQ(
-          signin::AccountConsistencyMethod::kDice,
-          AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
-      EXPECT_TRUE(AccountConsistencyModeManager::ShouldBuildServiceForProfile(
-          profile.get()));
-    }
   }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

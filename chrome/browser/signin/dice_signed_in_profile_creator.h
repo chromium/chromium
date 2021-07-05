@@ -18,25 +18,6 @@ class TokensLoadedCallbackRunner;
 // Extracts an account from an existing profile and moves it to a new profile.
 class DiceSignedInProfileCreator {
  public:
-  // Empty user data, attached to the profile if this is a guest profile and a
-  // signin token was transferred.
-  class GuestSigninTokenTransferredUserData
-      : public base::SupportsUserData::Data {
-   public:
-    GuestSigninTokenTransferredUserData() = default;
-    static void Set(Profile* profile) {
-      profile->SetUserData(
-          kGuestSigninTokenTransferredUserDataKey,
-          std::make_unique<GuestSigninTokenTransferredUserData>());
-    }
-    static bool Get(Profile* profile) {
-      return profile->GetUserData(kGuestSigninTokenTransferredUserDataKey);
-    }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(GuestSigninTokenTransferredUserData);
-  };
-
   // Creates a new profile or uses Guest profile if |use_guest_profile|, and
   // moves the account from source_profile to it.
   // The callback is called with the new profile or nullptr in case of failure.
@@ -64,9 +45,6 @@ class DiceSignedInProfileCreator {
   DiceSignedInProfileCreator(const DiceSignedInProfileCreator&) = delete;
   DiceSignedInProfileCreator& operator=(const DiceSignedInProfileCreator&) =
       delete;
-
-  // Key for GuestSigninTokenTransferredUserDataKey.
-  static const void* const kGuestSigninTokenTransferredUserDataKey;
 
  private:
   // Callback invoked once a profile is created, so we can transfer the

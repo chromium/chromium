@@ -180,8 +180,8 @@ void ChromeSigninClient::PreSignOut(
       signout_source_metric == signin_metrics::SERVER_FORCED_DISABLE ||
       signout_source_metric == signin_metrics::SIGNOUT_PREF_CHANGED;
   if (signin_util::IsForceSigninEnabled() && !profile_->IsSystemProfile() &&
-      !profile_->IsGuestSession() && !profile_->IsEphemeralGuestProfile() &&
-      !profile_->IsSupervised() && !keep_window_opened) {
+      !profile_->IsGuestSession() && !profile_->IsSupervised() &&
+      !keep_window_opened) {
     if (signout_source_metric ==
         signin_metrics::SIGNIN_PREF_CHANGED_DURING_SIGNIN) {
       // SIGNIN_PREF_CHANGED_DURING_SIGNIN will be triggered when

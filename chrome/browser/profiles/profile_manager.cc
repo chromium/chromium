@@ -165,10 +165,6 @@
 #include "chrome/browser/signin/signin_util_win.h"
 #endif  // defined(OS_WIN) && BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/signin/dice_signed_in_profile_creator.h"
-#endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 using base::UserMetricsAction;
 using content::BrowserThread;
 
@@ -447,15 +443,6 @@ bool IsEphemeral(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles) ||
          profile->IsEphemeralGuestProfile();
 }
-
-#if !defined(OS_ANDROID)
-void RecordGuestProfileLifetime(const std::string& histogram_name,
-                                base::TimeDelta duration) {
-  base::UmaHistogramCustomCounts(histogram_name, duration.InMinutes(), 1,
-                                 base::TimeDelta::FromDays(28).InMinutes(),
-                                 100);
-}
-#endif  // !defined(OS_ANDROID)
 
 int GetTotalRefCount(const std::map<ProfileKeepAliveOrigin, int>& keep_alives) {
   return std::accumulate(
@@ -2214,8 +2201,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
 
 void ProfileManager::SetNonPersonalProfilePrefs(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
-  if (!profile->IsEphemeralGuestProfile())
-    prefs->SetBoolean(prefs::kSigninAllowed, false);
+  prefs->SetBoolean(prefs::kSigninAllowed, false);
   prefs->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
   prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, false);
   prefs->ClearPref(DefaultSearchManager::kDefaultSearchProviderDataPrefName);
@@ -2307,23 +2293,11 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
       return;
   }
 
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
+  if (profile->IsGuestSession()) {
     auto duration = base::Time::Now() - profile->GetCreationTime();
-    if (profile->IsEphemeralGuestProfile()) {
-      RecordGuestProfileLifetime("Profile.Guest.Ephemeral.Lifetime", duration);
-    } else {
-      RecordGuestProfileLifetime("Profile.Guest.OTR.Lifetime", duration);
-    }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    if (DiceSignedInProfileCreator::GuestSigninTokenTransferredUserData::Get(
-            profile)) {
-      RecordGuestProfileLifetime("Profile.Guest.SigninTransferred.Lifetime",
-                                 duration);
-    } else {
-      RecordGuestProfileLifetime("Profile.Guest.BlankState.Lifetime", duration);
-    }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+    base::UmaHistogramCustomCounts(
+        "Profile.Guest.OTR.Lifetime", duration.InMinutes(), 1,
+        base::TimeDelta::FromDays(28).InMinutes(), 100);
 
     CleanUpGuestProfile();
   }

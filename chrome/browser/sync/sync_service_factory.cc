@@ -209,8 +209,6 @@ content::BrowserContext* SyncServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord())
     return nullptr;
-  if (Profile::FromBrowserContext(context)->IsEphemeralGuestProfile())
-    return nullptr;
   return context;
 }
 

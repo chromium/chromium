@@ -1003,11 +1003,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, UnderOneMinute) {
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
   close_observer.Wait();
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
-  tester.ExpectTotalCount("Profile.Guest.Ephemeral.Lifetime", 0);
-  tester.ExpectUniqueSample("Profile.Guest.BlankState.Lifetime", 0, 1);
-  tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime", 0);
-  // To reduce boilerplate code, |Profile.Guest.SigninTransferred.Lifetime| is
-  // tested in DiceWebSigninInterceptorBrowserTest::SwitchToGuest.
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
@@ -1020,9 +1015,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
   close_observer.Wait();
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
-  tester.ExpectTotalCount("Profile.Guest.Ephemeral.Lifetime", 0);
-  tester.ExpectUniqueSample("Profile.Guest.BlankState.Lifetime", 60, 1);
-  tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime", 0);
 }
 
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

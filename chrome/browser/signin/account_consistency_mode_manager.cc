@@ -176,7 +176,7 @@ void AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting() {
 // static
 bool AccountConsistencyModeManager::ShouldBuildServiceForProfile(
     Profile* profile) {
-  return profile->IsRegularProfile() || profile->IsEphemeralGuestProfile();
+  return profile->IsRegularProfile();
 }
 
 AccountConsistencyMethod

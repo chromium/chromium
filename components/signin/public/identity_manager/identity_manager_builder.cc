@@ -178,7 +178,6 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
   init_params.signin_client = params->signin_client;
 #endif
 
-  init_params.allow_access_token_fetch = params->allow_access_token_fetch;
   return init_params;
 }
 

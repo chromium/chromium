@@ -249,8 +249,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Profile.Guest.OTR.Lifetime" units="minutes"
+    expires_after="2022-02-02">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    This histogram records the lifetime duration of an off-the-record Guest
+    profile. It is recorded once the profile for the Guest session is closed.
+  </summary>
+</histogram>
+
 <histogram name="Profile.Guest.{Type}.Lifetime" units="minutes"
     expires_after="2022-02-02">
+  <obsolete>
+    Removed on 2021-07.
+  </obsolete>
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -262,7 +275,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
         summary="a Guest profile where the session is initialized in blank
                  state"/>
     <variant name="Ephemeral" summary="an Ephemeral Guest profile"/>
-    <variant name="OTR" summary="an off-the-record Guest profile"/>
     <variant name="SigninTransferred"
         summary="a Guest profile to which a sign-in token has been
                  transferred"/>
