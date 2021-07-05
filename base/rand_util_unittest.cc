@@ -284,4 +284,14 @@ TEST(RandUtilTest, InsecureRandomGeneratorChiSquared) {
   }
 }
 
+TEST(RandUtilTest, InsecureRandomGeneratorRandDouble) {
+  InsecureRandomGenerator gen;
+  gen.Seed();
+
+  for (int i = 0; i < 1000; i++) {
+    volatile double x = gen.RandDouble();
+    EXPECT_GE(x, 0.);
+    EXPECT_LT(x, 1.);
+  }
+}
 }  // namespace base

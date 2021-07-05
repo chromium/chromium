@@ -78,6 +78,12 @@ namespace partition_alloc {
 class RandomGenerator;
 }
 
+namespace sequence_manager {
+namespace internal {
+class SequenceManagerImpl;
+}
+}  // namespace sequence_manager
+
 // Fast, insecure pseudo-random number generator.
 //
 // WARNING: This is not the generator you are looking for. This has significant
@@ -114,6 +120,8 @@ class BASE_EXPORT InsecureRandomGenerator {
 
   uint32_t RandUint32();
   uint64_t RandUint64();
+  // In [0, 1).
+  double RandDouble();
 
  private:
   InsecureRandomGenerator() = default;
@@ -131,10 +139,16 @@ class BASE_EXPORT InsecureRandomGenerator {
   // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
   // free() time.
   friend class partition_alloc::RandomGenerator;
+  // The random number generator is used to sub-sample metrics at each task
+  // execution. Task execution overhead is <1us, and is already showing as a
+  // non-trivial amount of total CPU time in sampling profiling from the wild,
+  // on Desktop and Android.
+  friend class sequence_manager::internal::SequenceManagerImpl;
 
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest,
                            InsecureRandomGeneratorProducesBothValuesOfAllBits);
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorChiSquared);
+  FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorRandDouble);
   FRIEND_TEST_ALL_PREFIXES(RandUtilPerfTest, InsecureRandomRandUint64);
 };
 

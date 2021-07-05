@@ -117,4 +117,11 @@ uint32_t InsecureRandomGenerator::RandUint32() {
   return this->RandUint64() >> 32;
 }
 
+double InsecureRandomGenerator::RandDouble() {
+  uint64_t x = RandUint64();
+  // From https://vigna.di.unimi.it/xorshift/.
+  // 53 bits of mantissa, hence the "hexadecimal exponent" 1p-53.
+  return (x >> 11) * 0x1.0p-53;
+}
+
 }  // namespace base

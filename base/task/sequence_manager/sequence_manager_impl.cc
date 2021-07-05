@@ -267,8 +267,7 @@ SequenceManagerImpl::MainThreadOnly::MainThreadOnly(
     : selector(associated_thread, settings),
       real_time_domain(new internal::RealTimeDomain()) {
   if (settings.randomised_sampling_enabled) {
-    random_generator = std::mt19937_64(RandUint64());
-    uniform_distribution = std::uniform_real_distribution<double>(0.0, 1.0);
+    random_generator.Seed();
   }
 }
 
@@ -1064,8 +1063,7 @@ bool SequenceManagerImpl::ShouldRecordCPUTimeForTask() {
   DCHECK(ThreadTicks::IsSupported() ||
          !metric_recording_settings_.records_cpu_time_for_some_tasks());
   return metric_recording_settings_.records_cpu_time_for_some_tasks() &&
-         main_thread_only().uniform_distribution(
-             main_thread_only().random_generator) <
+         main_thread_only().random_generator.RandDouble() <
              metric_recording_settings_
                  .task_sampling_rate_for_recording_cpu_time;
 }
