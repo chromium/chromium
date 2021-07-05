@@ -92,12 +92,6 @@ class UserSessionStateObserver {
   virtual ~UserSessionStateObserver();
 };
 
-class UserAuthenticatorObserver : public base::CheckedObserver {
- public:
-  // Called when authentication is started.
-  virtual void OnAuthAttemptStarted() {}
-};
-
 // UserSessionManager is responsible for starting user session which includes:
 // * load and initialize Profile (including custom Profile preferences),
 // * mark user as logged in and notify observers,
@@ -281,10 +275,6 @@ class UserSessionManager
 
   void AddSessionStateObserver(ash::UserSessionStateObserver* observer);
   void RemoveSessionStateObserver(ash::UserSessionStateObserver* observer);
-
-  void AddUserAuthenticatorObserver(ash::UserAuthenticatorObserver* observer);
-  void RemoveUserAuthenticatorObserver(
-      ash::UserAuthenticatorObserver* observer);
 
   void ActiveUserChanged(user_manager::User* active_user) override;
 
@@ -597,9 +587,6 @@ class UserSessionManager
 
   base::ObserverList<ash::UserSessionStateObserver>::Unchecked
       session_state_observer_list_;
-
-  base::ObserverList<ash::UserAuthenticatorObserver>
-      authenticator_observer_list_;
 
   // Set of user_id for those users that we should restore authentication
   // session when notified about online state change.

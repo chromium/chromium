@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/status_collector/managed_session_service.h"
+#include "chrome/browser/chromeos/policy/status_collector/affiliated_session_service.h"
 
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -17,9 +17,9 @@
 
 namespace policy {
 
-class ManagedSessionServiceTest
+class AffiliatedSessionServiceTest
     : public ::testing::Test,
-      public policy::ManagedSessionService::Observer {
+      public policy::AffiliatedSessionService::Observer {
  protected:
   using SessionState = session_manager::SessionState;
 
@@ -30,12 +30,12 @@ class ManagedSessionServiceTest
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
 
-    managed_session_service_ =
-        std::make_unique<ManagedSessionService>(&test_clock_);
+    affiliated_session_service_ =
+        std::make_unique<AffiliatedSessionService>(&test_clock_);
   }
 
   void TearDown() override {
-    managed_session_service_.reset();
+    affiliated_session_service_.reset();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -54,8 +54,8 @@ class ManagedSessionServiceTest
     return profile;
   }
 
-  ManagedSessionService* managed_session_service() {
-    return managed_session_service_.get();
+  AffiliatedSessionService* affiliated_session_service() {
+    return affiliated_session_service_.get();
   }
 
   session_manager::SessionManager* session_manager() {
@@ -68,19 +68,14 @@ class ManagedSessionServiceTest
 
   base::SimpleTestClock* test_clock() { return &test_clock_; }
 
-  void OnLoginFailure(const chromeos::AuthFailure& error) override {
-    auth_failure_ = error;
-  }
-  void OnLogin(Profile* profile) override { logged_in_ = profile; }
-  void OnLogout(Profile* profile) override { logged_out_ = profile; }
+  void OnAffiliatedLogin(Profile* profile) override { logged_in_ = profile; }
+  void OnAffiliatedLogout(Profile* profile) override { logged_out_ = profile; }
   void OnLocked() override { locked_ = true; }
   void OnUnlocked() override { unlocked_ = true; }
   void OnResumeActive(base::Time time) override {
     suspend_time_ = std::make_unique<base::Time>(time);
   }
 
-  chromeos::AuthFailure auth_failure_ =
-      chromeos::AuthFailure::AuthFailureNone();
   Profile* logged_in_ = nullptr;
   Profile* logged_out_ = nullptr;
   bool locked_ = false;
@@ -97,11 +92,11 @@ class ManagedSessionServiceTest
 
   base::SimpleTestClock test_clock_;
 
-  std::unique_ptr<ManagedSessionService> managed_session_service_;
+  std::unique_ptr<AffiliatedSessionService> affiliated_session_service_;
 };
 
-TEST_F(ManagedSessionServiceTest, OnSessionStateChanged) {
-  managed_session_service()->AddObserver(this);
+TEST_F(AffiliatedSessionServiceTest, OnSessionStateChanged) {
+  affiliated_session_service()->AddObserver(this);
 
   session_manager()->SetSessionState(SessionState::LOCKED);
   session_manager()->SetSessionState(SessionState::ACTIVE);
@@ -134,49 +129,49 @@ TEST_F(ManagedSessionServiceTest, OnSessionStateChanged) {
   EXPECT_TRUE(unlocked_);
 }
 
-TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedAffiliatedAndPrimary) {
+TEST_F(AffiliatedSessionServiceTest, OnUserProfileLoadedAffiliatedAndPrimary) {
   AccountId affiliated_account_id =
       AccountId::FromUserEmail("user0@managed.com");
   std::unique_ptr<TestingProfile> affiliated_profile = CreateProfile(
       affiliated_account_id, true /* affiliated */, true /* login */);
-  managed_session_service()->AddObserver(this);
+  affiliated_session_service()->AddObserver(this);
 
   session_manager()->NotifyUserProfileLoaded(affiliated_account_id);
 
   EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_in_));
 }
 
-TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedAffiliated) {
+TEST_F(AffiliatedSessionServiceTest, OnUserProfileLoadedAffiliated) {
   AccountId secondary_account_id =
       AccountId::FromUserEmail("user3@managed.com");
   std::unique_ptr<TestingProfile> secondary_profile = CreateProfile(
       secondary_account_id, true /* affiliated */, false /* login */);
-  managed_session_service()->AddObserver(this);
+  affiliated_session_service()->AddObserver(this);
 
   session_manager()->NotifyUserProfileLoaded(secondary_account_id);
 
-  EXPECT_TRUE(secondary_profile->IsSameOrParent(logged_in_));
+  EXPECT_EQ(logged_in_, nullptr);
 }
 
-TEST_F(ManagedSessionServiceTest, OnUserProfileLoadedPrimary) {
+TEST_F(AffiliatedSessionServiceTest, OnUserProfileLoadedPrimary) {
   AccountId unaffiliated_account_id =
       AccountId::FromUserEmail("user2@managed.com");
   std::unique_ptr<TestingProfile> unaffiliated_profile = CreateProfile(
       unaffiliated_account_id, false /* affiliated */, true /* login */);
-  managed_session_service()->AddObserver(this);
+  affiliated_session_service()->AddObserver(this);
 
   session_manager()->NotifyUserProfileLoaded(unaffiliated_account_id);
 
-  EXPECT_TRUE(unaffiliated_profile->IsSameOrParent(logged_in_));
+  EXPECT_EQ(logged_in_, nullptr);
 }
 
-TEST_F(ManagedSessionServiceTest,
+TEST_F(AffiliatedSessionServiceTest,
        OnProfileWillBeDestroyedAffiliatedAndPrimary) {
   AccountId affiliated_account_id =
       AccountId::FromUserEmail("user0@managed.com");
   std::unique_ptr<TestingProfile> affiliated_profile = CreateProfile(
       affiliated_account_id, true /* affiliated */, true /* login */);
-  managed_session_service()->AddObserver(this);
+  affiliated_session_service()->AddObserver(this);
 
   session_manager()->NotifyUserProfileLoaded(affiliated_account_id);
   affiliated_profile->MaybeSendDestroyedNotification();
@@ -184,34 +179,34 @@ TEST_F(ManagedSessionServiceTest,
   EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_out_));
 }
 
-TEST_F(ManagedSessionServiceTest, OnProfileWillBeDestroyedAffiliated) {
+TEST_F(AffiliatedSessionServiceTest, OnProfileWillBeDestroyedAffiliated) {
   AccountId secondary_account_id =
       AccountId::FromUserEmail("user3@managed.com");
   std::unique_ptr<TestingProfile> secondary_profile = CreateProfile(
       secondary_account_id, true /* affiliated */, false /* login */);
-  managed_session_service()->AddObserver(this);
+  affiliated_session_service()->AddObserver(this);
 
   session_manager()->NotifyUserProfileLoaded(secondary_account_id);
   secondary_profile->MaybeSendDestroyedNotification();
 
-  EXPECT_TRUE(secondary_profile->IsSameOrParent(logged_in_));
+  EXPECT_EQ(logged_out_, nullptr);
 }
 
-TEST_F(ManagedSessionServiceTest, OnProfileWillBeDestroyedPrimary) {
+TEST_F(AffiliatedSessionServiceTest, OnProfileWillBeDestroyedPrimary) {
   AccountId unaffiliated_account_id =
       AccountId::FromUserEmail("user2@managed.com");
   std::unique_ptr<TestingProfile> unaffiliated_profile = CreateProfile(
       unaffiliated_account_id, false /* affiliated */, true /* login */);
-  managed_session_service()->AddObserver(this);
+  affiliated_session_service()->AddObserver(this);
 
   session_manager()->NotifyUserProfileLoaded(unaffiliated_account_id);
   unaffiliated_profile->MaybeSendDestroyedNotification();
 
-  EXPECT_TRUE(unaffiliated_profile->IsSameOrParent(logged_in_));
+  EXPECT_EQ(logged_out_, nullptr);
 }
 
-TEST_F(ManagedSessionServiceTest, SuspendDone) {
-  managed_session_service()->AddObserver(this);
+TEST_F(AffiliatedSessionServiceTest, SuspendDone) {
+  affiliated_session_service()->AddObserver(this);
   test_clock()->SetNow(base::Time::Now());
   base::TimeDelta sleep_duration = base::TimeDelta::FromHours(2);
 
@@ -220,13 +215,13 @@ TEST_F(ManagedSessionServiceTest, SuspendDone) {
   EXPECT_EQ(*suspend_time_, test_clock()->Now() - sleep_duration);
 }
 
-TEST_F(ManagedSessionServiceTest, RemoveObserver) {
+TEST_F(AffiliatedSessionServiceTest, RemoveObserver) {
   AccountId account_id = AccountId::FromUserEmail("user0@managed.com");
   std::unique_ptr<TestingProfile> profile =
       CreateProfile(account_id, true /* affiliated */, true /* login */);
-  managed_session_service()->AddObserver(this);
+  affiliated_session_service()->AddObserver(this);
 
-  managed_session_service()->RemoveObserver(this);
+  affiliated_session_service()->RemoveObserver(this);
 
   session_manager()->SetSessionState(SessionState::LOCKED);
   session_manager()->SetSessionState(SessionState::ACTIVE);
@@ -239,16 +234,6 @@ TEST_F(ManagedSessionServiceTest, RemoveObserver) {
 
   profile->MaybeSendDestroyedNotification();
   EXPECT_FALSE(profile->IsSameOrParent(logged_out_));
-}
-
-TEST_F(ManagedSessionServiceTest, LoginFailure) {
-  managed_session_service()->AddObserver(this);
-
-  managed_session_service()->OnAuthFailure(chromeos::AuthFailure(
-      chromeos::AuthFailure::FailureReason::OWNER_REQUIRED));
-
-  EXPECT_EQ(auth_failure_.reason(),
-            chromeos::AuthFailure::FailureReason::OWNER_REQUIRED);
 }
 
 }  // namespace policy

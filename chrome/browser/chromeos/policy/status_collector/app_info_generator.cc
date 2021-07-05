@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/policy/status_collector/app_info_generator.h"
 
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -19,18 +18,6 @@
 namespace em = enterprise_management;
 
 namespace {
-
-bool IsPrimaryAndAffiliated(Profile* profile) {
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  bool is_primary = chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile);
-  bool is_affiliated = user && user->IsAffiliated();
-  if (!is_primary || !is_affiliated) {
-    VLOG(1) << "The profile for the primary user is not associated with an "
-               "affiliated user.";
-  }
-  return is_primary && is_affiliated;
-}
 
 em::AppInfo::Status ExtractStatus(const apps::mojom::Readiness readiness) {
   switch (readiness) {
@@ -90,15 +77,10 @@ AppInfoGenerator::AppInfoProvider::AppInfoProvider(Profile* profile)
 AppInfoGenerator::AppInfoProvider::~AppInfoProvider() = default;
 
 AppInfoGenerator::AppInfoGenerator(
-    ManagedSessionService* managed_session_service,
     base::TimeDelta max_stored_past_activity_interval,
     base::Clock* clock)
     : max_stored_past_activity_interval_(max_stored_past_activity_interval),
-      clock_(*clock) {
-  if (managed_session_service) {
-    managed_session_observation_.Observe(managed_session_service);
-  }
-}
+      clock_(*clock) {}
 
 AppInfoGenerator::AppInstances::AppInstances(const base::Time start_time_)
     : start_time(start_time_) {}
@@ -170,11 +152,7 @@ void AppInfoGenerator::OnWillReport() {
   SetIdleDurationsToOpen();
 }
 
-void AppInfoGenerator::OnLogin(Profile* profile) {
-  if (!IsPrimaryAndAffiliated(profile)) {
-    return;
-  }
-
+void AppInfoGenerator::OnAffiliatedLogin(Profile* profile) {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     VLOG(1) << "No apps available. Will not track usage.";
     return;
@@ -189,11 +167,7 @@ void AppInfoGenerator::OnLogin(Profile* profile) {
   }
 }
 
-void AppInfoGenerator::OnLogout(Profile* profile) {
-  if (!IsPrimaryAndAffiliated(profile)) {
-    return;
-  }
-
+void AppInfoGenerator::OnAffiliatedLogout(Profile* profile) {
   if (provider_) {
     if (should_report_) {
       provider_->app_service_proxy.InstanceRegistry().RemoveObserver(this);
