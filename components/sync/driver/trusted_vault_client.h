@@ -58,9 +58,9 @@ class TrustedVaultClient {
   // second FetchKeys() attempt is worth). During the execution, before |cb| is
   // invoked, the behavior is unspecified if FetchKeys() is invoked, that is,
   // FetchKeys() may or may not treat existing keys as stale (only guaranteed
-  // upon completion of MarkKeysAsStale()).
-  virtual void MarkKeysAsStale(const CoreAccountInfo& account_info,
-                               base::OnceCallback<void(bool)> cb) = 0;
+  // upon completion of MarkLocalKeysAsStale()).
+  virtual void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
+                                    base::OnceCallback<void(bool)> cb) = 0;
 
   // Allows implementations to store encryption keys fetched by other means such
   // as Web interactions. Implementations are free to completely ignore these

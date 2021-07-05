@@ -53,7 +53,18 @@ public class TrustedVaultClient {
          * @return a promise which indicates completion and also represents whether the operation
          * took any effect (false positives acceptable).
          */
-        Promise<Boolean> markKeysAsStale(CoreAccountInfo accountInfo);
+        // TODO(crbug.com/1100279): Switch to non-default method once all implementations are ready.
+        default Promise<Boolean> markLocalKeysAsStale(CoreAccountInfo accountInfo) {
+            return markKeysAsStale(accountInfo);
+        }
+
+        /**
+         * Same as above. Kept around temporarily only until all subclasses rename the method.
+         */
+        // TODO(crbug.com/1100279): Delete once all implementations have migrated off.
+        default Promise<Boolean> markKeysAsStale(CoreAccountInfo accountInfo) {
+            return Promise.fulfilled(false);
+        }
 
         /**
          * Returns whether recoverability of the keys is degraded and user action is required to add
@@ -101,7 +112,7 @@ public class TrustedVaultClient {
         }
 
         @Override
-        public Promise<Boolean> markKeysAsStale(CoreAccountInfo accountInfo) {
+        public Promise<Boolean> markLocalKeysAsStale(CoreAccountInfo accountInfo) {
             return Promise.fulfilled(false);
         }
 
@@ -261,20 +272,20 @@ public class TrustedVaultClient {
     }
 
     /**
-     * Forwards calls to Backend.markKeysAsStale() and upon completion invokes native method
-     * markKeysAsStaleCompleted().
+     * Forwards calls to Backend.markLocalKeysAsStale() and upon completion invokes native method
+     * markLocalKeysAsStaleCompleted().
      */
     @CalledByNative
-    private static void markKeysAsStale(
+    private static void markLocalKeysAsStale(
             long nativeTrustedVaultClientAndroid, int requestId, CoreAccountInfo accountInfo) {
         assert isNativeRegistered(nativeTrustedVaultClientAndroid);
 
-        get().mBackend.markKeysAsStale(accountInfo)
+        get().mBackend.markLocalKeysAsStale(accountInfo)
                 .then(
                         (result)
                                 -> {
                             if (isNativeRegistered(nativeTrustedVaultClientAndroid)) {
-                                TrustedVaultClientJni.get().markKeysAsStaleCompleted(
+                                TrustedVaultClientJni.get().markLocalKeysAsStaleCompleted(
                                         nativeTrustedVaultClientAndroid, requestId, result);
                             }
                         },
@@ -283,7 +294,7 @@ public class TrustedVaultClient {
                                 // There's no certainty about whether the operation made any
                                 // difference so let's return true indicating that it might have,
                                 // since false positives are allowed.
-                                TrustedVaultClientJni.get().markKeysAsStaleCompleted(
+                                TrustedVaultClientJni.get().markLocalKeysAsStaleCompleted(
                                         nativeTrustedVaultClientAndroid, requestId, true);
                             }
                         });
@@ -320,7 +331,7 @@ public class TrustedVaultClient {
     interface Natives {
         void fetchKeysCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, String gaiaId, byte[][] keys);
-        void markKeysAsStaleCompleted(
+        void markLocalKeysAsStaleCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean result);
         void getIsRecoverabilityDegradedCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean result);

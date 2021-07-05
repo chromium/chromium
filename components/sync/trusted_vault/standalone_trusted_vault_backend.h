@@ -83,7 +83,7 @@ class StandaloneTrustedVaultBackend
 
   // Marks vault keys as stale.  Afterwards, the next FetchKeys() call for this
   // |account_info| will trigger a key download attempt.
-  bool MarkKeysAsStale(const CoreAccountInfo& account_info);
+  bool MarkLocalKeysAsStale(const CoreAccountInfo& account_info);
 
   // Sets/resets |primary_account_|.
   void SetPrimaryAccount(

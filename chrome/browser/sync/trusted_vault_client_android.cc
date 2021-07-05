@@ -22,15 +22,15 @@ TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(
 
 TrustedVaultClientAndroid::OngoingFetchKeys::~OngoingFetchKeys() = default;
 
-TrustedVaultClientAndroid::OngoingMarkKeysAsStale::OngoingMarkKeysAsStale(
-    base::OnceCallback<void(bool)> callback)
+TrustedVaultClientAndroid::OngoingMarkLocalKeysAsStale::
+    OngoingMarkLocalKeysAsStale(base::OnceCallback<void(bool)> callback)
     : callback(std::move(callback)) {}
 
-TrustedVaultClientAndroid::OngoingMarkKeysAsStale::OngoingMarkKeysAsStale(
-    OngoingMarkKeysAsStale&&) = default;
+TrustedVaultClientAndroid::OngoingMarkLocalKeysAsStale::
+    OngoingMarkLocalKeysAsStale(OngoingMarkLocalKeysAsStale&&) = default;
 
-TrustedVaultClientAndroid::OngoingMarkKeysAsStale::~OngoingMarkKeysAsStale() =
-    default;
+TrustedVaultClientAndroid::OngoingMarkLocalKeysAsStale::
+    ~OngoingMarkLocalKeysAsStale() = default;
 
 TrustedVaultClientAndroid::OngoingGetIsRecoverabilityDegraded::
     OngoingGetIsRecoverabilityDegraded(base::OnceCallback<void(bool)> callback)
@@ -74,14 +74,14 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
   std::move(ongoing_fetch_keys.callback).Run(converted_keys);
 }
 
-void TrustedVaultClientAndroid::MarkKeysAsStaleCompleted(JNIEnv* env,
-                                                         jint request_id,
-                                                         jboolean result) {
+void TrustedVaultClientAndroid::MarkLocalKeysAsStaleCompleted(JNIEnv* env,
+                                                              jint request_id,
+                                                              jboolean result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
 
-  std::move(absl::get<OngoingMarkKeysAsStale>(ongoing_request).callback)
+  std::move(absl::get<OngoingMarkLocalKeysAsStale>(ongoing_request).callback)
       .Run(!!result);
 }
 
@@ -145,23 +145,25 @@ void TrustedVaultClientAndroid::StoreKeys(
   NOTREACHED();
 }
 
-void TrustedVaultClientAndroid::MarkKeysAsStale(
+void TrustedVaultClientAndroid::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(cb);
 
-  // Store for later completion when Java invokes MarkKeysAsStaleCompleted().
+  // Store for later completion when Java invokes
+  // MarkLocalKeysAsStaleCompleted().
   const RequestId request_id =
-      RegisterNewOngoingRequest(OngoingMarkKeysAsStale(std::move(cb)));
+      RegisterNewOngoingRequest(OngoingMarkLocalKeysAsStale(std::move(cb)));
 
   JNIEnv* const env = base::android::AttachCurrentThread();
   const base::android::ScopedJavaLocalRef<jobject> java_account_info =
       ConvertToJavaCoreAccountInfo(env, account_info);
 
-  // The Java implementation will eventually call MarkKeysAsStaleCompleted().
-  Java_TrustedVaultClient_markKeysAsStale(env, reinterpret_cast<intptr_t>(this),
-                                          request_id, java_account_info);
+  // The Java implementation will eventually call
+  // MarkLocalKeysAsStaleCompleted().
+  Java_TrustedVaultClient_markLocalKeysAsStale(
+      env, reinterpret_cast<intptr_t>(this), request_id, java_account_info);
 }
 
 void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
@@ -179,7 +181,8 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegraded(
   const base::android::ScopedJavaLocalRef<jobject> java_account_info =
       ConvertToJavaCoreAccountInfo(env, account_info);
 
-  // The Java implementation will eventually call MarkKeysAsStaleCompleted().
+  // The Java implementation will eventually call
+  // MarkLocalKeysAsStaleCompleted().
   Java_TrustedVaultClient_getIsRecoverabilityDegraded(
       env, reinterpret_cast<intptr_t>(this), request_id, java_account_info);
 }

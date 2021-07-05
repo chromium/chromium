@@ -62,7 +62,7 @@ void IOSTrustedVaultClient::StoreKeys(
   NOTREACHED();
 }
 
-void IOSTrustedVaultClient::MarkKeysAsStale(
+void IOSTrustedVaultClient::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
   ChromeIdentity* identity =

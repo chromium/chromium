@@ -613,7 +613,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
   std::vector<uint8_t> private_device_key_material =
       StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
                                           kInitialLastKeyVersion, account_info);
-  EXPECT_TRUE(backend()->MarkKeysAsStale(account_info));
+  EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
   backend()->SetPrimaryAccount(account_info);
 
   const std::vector<std::vector<uint8_t>> kNewVaultKeys = {kInitialVaultKey,
@@ -663,7 +663,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   std::vector<uint8_t> private_device_key_material =
       StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
                                           kInitialLastKeyVersion, account_info);
-  EXPECT_TRUE(backend()->MarkKeysAsStale(account_info));
+  EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
   backend()->SetPrimaryAccount(account_info);
 
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
@@ -759,7 +759,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
           });
 
   // FetchKeys() should trigger keys downloading. Note: unlike tests with
-  // following regular key rotation, in this case MarkKeysAsStale() isn't
+  // following regular key rotation, in this case MarkLocalKeysAsStale() isn't
   // called intentionally.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;

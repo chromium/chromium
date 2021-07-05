@@ -129,7 +129,7 @@ class TestTrustedVaultClient : public TrustedVaultClient {
   // Exposes the total number of calls to FetchKeys().
   int fetch_count() const { return fetch_count_; }
 
-  // Exposes the total number of calls to MarkKeysAsStale().
+  // Exposes the total number of calls to MarkLocalKeysAsStale().
   bool keys_marked_as_stale_count() const {
     return keys_marked_as_stale_count_;
   }
@@ -218,8 +218,8 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     }
   }
 
-  void MarkKeysAsStale(const CoreAccountInfo& account_info,
-                       base::OnceCallback<void(bool)> cb) override {
+  void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
+                            base::OnceCallback<void(bool)> cb) override {
     const std::string& gaia_id = account_info.gaia;
 
     ++keys_marked_as_stale_count_;

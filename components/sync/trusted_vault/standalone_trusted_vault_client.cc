@@ -258,15 +258,15 @@ void StandaloneTrustedVaultClient::StoreKeys(
   NotifyTrustedVaultKeysChanged();
 }
 
-void StandaloneTrustedVaultClient::MarkKeysAsStale(
+void StandaloneTrustedVaultClient::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   base::PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::MarkKeysAsStale, backend_,
-                     account_info),
+      base::BindOnce(&StandaloneTrustedVaultBackend::MarkLocalKeysAsStale,
+                     backend_, account_info),
       std::move(cb));
 }
 

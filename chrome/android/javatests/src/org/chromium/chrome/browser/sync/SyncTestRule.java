@@ -137,7 +137,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         }
 
         @Override
-        public Promise<Boolean> markKeysAsStale(CoreAccountInfo accountInfo) {
+        public Promise<Boolean> markLocalKeysAsStale(CoreAccountInfo accountInfo) {
             return Promise.rejected();
         }
 

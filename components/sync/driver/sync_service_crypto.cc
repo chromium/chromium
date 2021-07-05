@@ -55,8 +55,8 @@ class EmptyTrustedVaultClient : public TrustedVaultClient {
     NOTREACHED();
   }
 
-  void MarkKeysAsStale(const CoreAccountInfo& account_info,
-                       base::OnceCallback<void(bool)> cb) override {
+  void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
+                            base::OnceCallback<void(bool)> cb) override {
     std::move(cb).Run(false);
   }
 
@@ -651,7 +651,7 @@ void SyncServiceCrypto::TrustedVaultKeysAdded(bool is_second_fetch_attempt) {
   }
 
   // Let trusted vault client know, that fetched keys were insufficient.
-  trusted_vault_client_->MarkKeysAsStale(
+  trusted_vault_client_->MarkLocalKeysAsStale(
       state_.account_info,
       base::BindOnce(&SyncServiceCrypto::TrustedVaultKeysMarkedAsStale,
                      weak_factory_.GetWeakPtr(), is_second_fetch_attempt));

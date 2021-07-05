@@ -291,7 +291,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
   WriteToDisk(data_, file_path_);
 }
 
-bool StandaloneTrustedVaultBackend::MarkKeysAsStale(
+bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info) {
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);
