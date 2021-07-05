@@ -1057,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
   // handlers (e.g. add to zip file). But those handlers are not installed by
   // default in browser tests.
   EXPECT_EQ(1u, tasks.size());
-  EXPECT_EQ(tasks[0].task_descriptor().app_id, app_id);
+  EXPECT_EQ(tasks[0].task_descriptor.app_id, app_id);
 }
 
 // Ensures correct behavior for files on "special volumes", such as file systems

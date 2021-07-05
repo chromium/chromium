@@ -109,8 +109,8 @@ TEST_F(AppServiceFileTasksTest, FindAppServiceFileTasksText) {
   std::vector<FullTaskDescriptor> tasks;
   FindAppServiceTasks(profile(), entries, file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(kAppIdText, tasks[0].task_descriptor().app_id);
-  EXPECT_EQ(kActivityLabelText, tasks[0].task_title());
+  EXPECT_EQ(kAppIdText, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelText, tasks[0].task_title);
 }
 
 // Test that between an image app and text app, the image app can be
@@ -127,8 +127,8 @@ TEST_F(AppServiceFileTasksTest, FindAppServiceFileTasksImage) {
   std::vector<FullTaskDescriptor> tasks;
   FindAppServiceTasks(profile(), entries, file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(kAppIdImage, tasks[0].task_descriptor().app_id);
-  EXPECT_EQ(kActivityLabelImage, tasks[0].task_title());
+  EXPECT_EQ(kAppIdImage, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelImage, tasks[0].task_title);
 }
 
 // Test that between an image app, text app and an app that can handle every
@@ -148,8 +148,8 @@ TEST_F(AppServiceFileTasksTest, FindAppServiceFileTasksMultiple) {
   std::vector<FullTaskDescriptor> tasks;
   FindAppServiceTasks(profile(), entries, file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(kAppIdAny, tasks[0].task_descriptor().app_id);
-  EXPECT_EQ(kActivityLabelAny, tasks[0].task_title());
+  EXPECT_EQ(kAppIdAny, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelAny, tasks[0].task_title);
 }
 
 }  // namespace file_tasks

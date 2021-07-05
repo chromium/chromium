@@ -491,11 +491,11 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
     ASSERT_LT(0u, result.size());
     EXPECT_EQ(1u, result.size());
     const auto& task = result[0];
-    const auto& descriptor = task.task_descriptor();
+    const auto& descriptor = task.task_descriptor;
 
-    EXPECT_EQ("Gallery", task.task_title());
+    EXPECT_EQ("Gallery", task.task_title);
     EXPECT_EQ(extensions::api::file_manager_private::Verb::VERB_OPEN_WITH,
-              task.task_verb());
+              task.task_verb);
     EXPECT_EQ(descriptor.app_id, *GetManager().GetAppIdForSystemApp(
                                      web_app::SystemAppType::MEDIA));
     EXPECT_EQ(chromeos::kChromeUIMediaAppURL, descriptor.action_id);

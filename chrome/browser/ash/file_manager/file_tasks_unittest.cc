@@ -86,14 +86,14 @@ TEST(FileManagerFileTasksTest, FullTaskDescriptor_WithIconAndDefault) {
       true /* is_default */, false /* is_generic_file_handler */,
       false /* is_file_extension_match */);
 
-  EXPECT_EQ("app-id", full_descriptor.task_descriptor().app_id);
+  EXPECT_EQ("app-id", full_descriptor.task_descriptor.app_id);
   EXPECT_EQ(TaskType::TASK_TYPE_FILE_BROWSER_HANDLER,
-            full_descriptor.task_descriptor().task_type);
-  EXPECT_EQ("action-id", full_descriptor.task_descriptor().action_id);
-  EXPECT_EQ("http://example.com/icon.png", full_descriptor.icon_url().spec());
-  EXPECT_EQ("task title", full_descriptor.task_title());
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, full_descriptor.task_verb());
-  EXPECT_TRUE(full_descriptor.is_default());
+            full_descriptor.task_descriptor.task_type);
+  EXPECT_EQ("action-id", full_descriptor.task_descriptor.action_id);
+  EXPECT_EQ("http://example.com/icon.png", full_descriptor.icon_url.spec());
+  EXPECT_EQ("task title", full_descriptor.task_title);
+  EXPECT_EQ(Verb::VERB_OPEN_WITH, full_descriptor.task_verb);
+  EXPECT_TRUE(full_descriptor.is_default);
 }
 
 TEST(FileManagerFileTasksTest, MakeTaskID) {
@@ -175,8 +175,8 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_MultipleTasks) {
   // None of them should be chosen as default, as nothing is set in the
   // preferences.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_FALSE(tasks[0].is_default());
-  EXPECT_FALSE(tasks[1].is_default());
+  EXPECT_FALSE(tasks[0].is_default);
+  EXPECT_FALSE(tasks[1].is_default);
 
   // Set Text.app as default for "text/plain" in the preferences.
   base::DictionaryValue empty;
@@ -187,17 +187,17 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_MultipleTasks) {
 
   // Text.app should be chosen as default.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_TRUE(tasks[0].is_default());
-  EXPECT_FALSE(tasks[1].is_default());
+  EXPECT_TRUE(tasks[0].is_default);
+  EXPECT_FALSE(tasks[1].is_default);
 
   // Change it back to non-default for testing further.
-  tasks[0].set_is_default(false);
+  tasks[0].is_default = false;
 
   // Clear the preferences and make sure none of them are default.
   UpdateDefaultTaskPreferences(&pref_service, empty, empty);
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_FALSE(tasks[0].is_default());
-  EXPECT_FALSE(tasks[1].is_default());
+  EXPECT_FALSE(tasks[0].is_default);
+  EXPECT_FALSE(tasks[1].is_default);
 
   // Set Nice.app as default for ".txt" in the preferences.
   base::DictionaryValue suffixes;
@@ -206,8 +206,8 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_MultipleTasks) {
 
   // Now Nice.app should be chosen as default.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_FALSE(tasks[0].is_default());
-  EXPECT_TRUE(tasks[1].is_default());
+  EXPECT_FALSE(tasks[0].is_default);
+  EXPECT_TRUE(tasks[1].is_default);
 }
 
 // Test that internal file browser handler of the Files app is chosen as
@@ -232,7 +232,7 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackFileBrowser) {
   // The internal file browser handler should be chosen as default, as it's a
   // fallback file browser handler.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_TRUE(tasks[0].is_default());
+  EXPECT_TRUE(tasks[0].is_default);
 }
 
 // Test that Text.app is chosen as default instead of the Files app
@@ -264,7 +264,7 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackTextApp) {
   // The text editor app should be chosen as default, as it's a fallback file
   // browser handler.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_TRUE(tasks[1].is_default());
+  EXPECT_TRUE(tasks[1].is_default);
 }
 
 // Test that browser is chosen as default for HTML files instead of the Text
@@ -296,7 +296,7 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackHtmlTextApp) {
   // The internal file browser handler should be chosen as default,
   // as it's a fallback file browser handler.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_TRUE(tasks[0].is_default());
+  EXPECT_TRUE(tasks[0].is_default);
 }
 
 // Test that Audio Player is chosen as default even if nothing is set in the
@@ -321,7 +321,7 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackAudioPlayer) {
   // The Audio Player app should be chosen as default, as it's a fallback file
   // browser handler.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_TRUE(tasks[0].is_default());
+  EXPECT_TRUE(tasks[0].is_default);
 }
 
 // Test that Office Editing is chosen as default even if nothing is set in the
@@ -348,7 +348,7 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackOfficeEditing) {
   // The Office Editing app should be chosen as default, as it's a fallback
   // file browser handler.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_TRUE(tasks[0].is_default());
+  EXPECT_TRUE(tasks[0].is_default);
 }
 
 // Test IsFileHandlerEnabled which returns whether a file handler should be
@@ -704,8 +704,8 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTasks) {
   ASSERT_EQ(2U, tasks.size());
   // Sort the app IDs, as the order is not guaranteed.
   std::vector<std::string> app_ids;
-  app_ids.push_back(tasks[0].task_descriptor().app_id);
-  app_ids.push_back(tasks[1].task_descriptor().app_id);
+  app_ids.push_back(tasks[0].task_descriptor.app_id);
+  app_ids.push_back(tasks[1].task_descriptor.app_id);
   std::sort(app_ids.begin(), app_ids.end());
   // Confirm that both Foo.app and Bar.app are found.
   EXPECT_EQ(kFooId, app_ids[0]);
@@ -724,7 +724,7 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTasks) {
   FindFileHandlerTasks(test_profile_.get(), entries, &tasks);
   ASSERT_EQ(1U, tasks.size());
   // Confirm that only Foo.app is found.
-  EXPECT_EQ(kFooId, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(kFooId, tasks[0].task_descriptor.app_id);
 
   // Add an "image/png" file. No tasks should be found.
   entries.emplace_back(base::FilePath::FromUTF8Unsafe("foo.png"), "image/png",
@@ -854,8 +854,8 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileBrowserHandlerTasks) {
   ASSERT_EQ(2U, tasks.size());
   // Sort the app IDs, as the order is not guaranteed.
   std::vector<std::string> app_ids;
-  app_ids.push_back(tasks[0].task_descriptor().app_id);
-  app_ids.push_back(tasks[1].task_descriptor().app_id);
+  app_ids.push_back(tasks[0].task_descriptor.app_id);
+  app_ids.push_back(tasks[1].task_descriptor.app_id);
   std::sort(app_ids.begin(), app_ids.end());
   // Confirm that both Foo.app and Bar.app are found.
   EXPECT_EQ(kFooId, app_ids[0]);
@@ -869,7 +869,7 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileBrowserHandlerTasks) {
   FindFileBrowserHandlerTasks(test_profile_.get(), file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
   // Confirm that only Foo.app is found.
-  EXPECT_EQ(kFooId, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(kFooId, tasks[0].task_descriptor.app_id);
 
   // Add an ".png" file. No tasks should be found.
   file_urls.emplace_back("filesystem:chrome-extension://id/dir/foo.png");
@@ -955,8 +955,8 @@ TEST_F(FileManagerFileTasksComplexTest, FindAllTypesOfTasks) {
 
   // Sort the app IDs, as the order is not guaranteed.
   std::vector<std::string> app_ids;
-  app_ids.push_back(tasks[0].task_descriptor().app_id);
-  app_ids.push_back(tasks[1].task_descriptor().app_id);
+  app_ids.push_back(tasks[0].task_descriptor.app_id);
+  app_ids.push_back(tasks[1].task_descriptor.app_id);
   std::sort(app_ids.begin(), app_ids.end());
   // Confirm that all apps are found.
   EXPECT_EQ(kFooId, app_ids[0]);
@@ -1031,7 +1031,7 @@ TEST_F(FileManagerFileTasksComplexTest, FindAllTypesOfTasks_GoogleDocument) {
   FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
                                                file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(kFileManagerAppId, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(kFileManagerAppId, tasks[0].task_descriptor.app_id);
 }
 
 TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTask_Generic) {
@@ -1174,17 +1174,17 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTask_Generic) {
   FindFileHandlerTasks(test_profile_.get(), txt_entries, &txt_result);
   EXPECT_EQ(4U, txt_result.size());
   // Foo app provides a handler for text/plain.
-  EXPECT_EQ("Foo", txt_result[0].task_title());
-  EXPECT_FALSE(txt_result[0].is_generic_file_handler());
+  EXPECT_EQ("Foo", txt_result[0].task_title);
+  EXPECT_FALSE(txt_result[0].is_generic_file_handler);
   // Bar app provides a handler for .txt.
-  EXPECT_EQ("Bar", txt_result[1].task_title());
-  EXPECT_FALSE(txt_result[1].is_generic_file_handler());
+  EXPECT_EQ("Bar", txt_result[1].task_title);
+  EXPECT_FALSE(txt_result[1].is_generic_file_handler);
   // Baz app provides a handler for all extensions.
-  EXPECT_EQ("Baz", txt_result[2].task_title());
-  EXPECT_TRUE(txt_result[2].is_generic_file_handler());
+  EXPECT_EQ("Baz", txt_result[2].task_title);
+  EXPECT_TRUE(txt_result[2].is_generic_file_handler);
   // Qux app provides a handler for all types.
-  EXPECT_EQ("Qux", txt_result[3].task_title());
-  EXPECT_TRUE(txt_result[3].is_generic_file_handler());
+  EXPECT_EQ("Qux", txt_result[3].task_title);
+  EXPECT_TRUE(txt_result[3].is_generic_file_handler);
 
   // Test case with .jpg file
   std::vector<extensions::EntryInfo> jpg_entries;
@@ -1195,15 +1195,15 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTask_Generic) {
   FindFileHandlerTasks(test_profile_.get(), jpg_entries, &jpg_result);
   EXPECT_EQ(3U, jpg_result.size());
   // Foo app provides a handler for all types.
-  EXPECT_EQ("Foo", jpg_result[0].task_title());
-  EXPECT_TRUE(jpg_result[0].is_generic_file_handler());
+  EXPECT_EQ("Foo", jpg_result[0].task_title);
+  EXPECT_TRUE(jpg_result[0].is_generic_file_handler);
   // Baz app provides a handler for image/*. A partial wildcarded handler is
   // treated as non-generic handler.
-  EXPECT_EQ("Baz", jpg_result[1].task_title());
-  EXPECT_FALSE(jpg_result[1].is_generic_file_handler());
+  EXPECT_EQ("Baz", jpg_result[1].task_title);
+  EXPECT_FALSE(jpg_result[1].is_generic_file_handler);
   // Qux app provides a handler for all types.
-  EXPECT_EQ("Qux", jpg_result[2].task_title());
-  EXPECT_TRUE(jpg_result[2].is_generic_file_handler());
+  EXPECT_EQ("Qux", jpg_result[2].task_title);
+  EXPECT_TRUE(jpg_result[2].is_generic_file_handler);
 
   // Test case with directories.
   std::vector<extensions::EntryInfo> dir_entries;
@@ -1214,8 +1214,8 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTask_Generic) {
   FindFileHandlerTasks(test_profile_.get(), dir_entries, &dir_result);
   ASSERT_EQ(1U, dir_result.size());
   // Confirm that only Bar.app is found and that it is a generic file handler.
-  EXPECT_EQ(kBarId, dir_result[0].task_descriptor().app_id);
-  EXPECT_TRUE(dir_result[0].is_generic_file_handler());
+  EXPECT_EQ(kBarId, dir_result[0].task_descriptor.app_id);
+  EXPECT_TRUE(dir_result[0].is_generic_file_handler);
 }
 
 // The basic logic is similar to a test case for FindFileHandlerTasks above.
@@ -1303,18 +1303,18 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTask_Verbs) {
   FindFileHandlerTasks(test_profile_.get(), entries, &tasks);
 
   ASSERT_EQ(4U, tasks.size());
-  EXPECT_EQ(kFooId, tasks[0].task_descriptor().app_id);
-  EXPECT_EQ("Foo", tasks[0].task_title());
-  EXPECT_EQ(Verb::VERB_ADD_TO, tasks[0].task_verb());
-  EXPECT_EQ(kFooId, tasks[1].task_descriptor().app_id);
-  EXPECT_EQ("Foo", tasks[1].task_title());
-  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[1].task_verb());
-  EXPECT_EQ(kFooId, tasks[2].task_descriptor().app_id);
-  EXPECT_EQ("Foo", tasks[2].task_title());
-  EXPECT_EQ(Verb::VERB_PACK_WITH, tasks[2].task_verb());
-  EXPECT_EQ(kFooId, tasks[3].task_descriptor().app_id);
-  EXPECT_EQ("Foo", tasks[3].task_title());
-  EXPECT_EQ(Verb::VERB_SHARE_WITH, tasks[3].task_verb());
+  EXPECT_EQ(kFooId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[0].task_title);
+  EXPECT_EQ(Verb::VERB_ADD_TO, tasks[0].task_verb);
+  EXPECT_EQ(kFooId, tasks[1].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[1].task_title);
+  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[1].task_verb);
+  EXPECT_EQ(kFooId, tasks[2].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[2].task_title);
+  EXPECT_EQ(Verb::VERB_PACK_WITH, tasks[2].task_verb);
+  EXPECT_EQ(kFooId, tasks[3].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[3].task_title);
+  EXPECT_EQ(Verb::VERB_SHARE_WITH, tasks[3].task_verb);
 
   // Find app with corresponding verbs for a "text/html" file.
   // Foo.app with ADD_TO and PACK_WITH should be found, but only the first
@@ -1328,12 +1328,12 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTask_Verbs) {
   FindFileHandlerTasks(test_profile_.get(), entries, &tasks);
 
   ASSERT_EQ(2U, tasks.size());
-  EXPECT_EQ(kFooId, tasks[0].task_descriptor().app_id);
-  EXPECT_EQ("Foo", tasks[0].task_title());
-  EXPECT_EQ(Verb::VERB_ADD_TO, tasks[0].task_verb());
-  EXPECT_EQ(kFooId, tasks[1].task_descriptor().app_id);
-  EXPECT_EQ("Foo", tasks[1].task_title());
-  EXPECT_EQ(Verb::VERB_PACK_WITH, tasks[1].task_verb());
+  EXPECT_EQ(kFooId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[0].task_title);
+  EXPECT_EQ(Verb::VERB_ADD_TO, tasks[0].task_verb);
+  EXPECT_EQ(kFooId, tasks[1].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[1].task_title);
+  EXPECT_EQ(Verb::VERB_PACK_WITH, tasks[1].task_verb);
 
   // Find app with corresponding verbs for directories.
   // Foo.app with only PACK_WITH should be found.
@@ -1345,9 +1345,9 @@ TEST_F(FileManagerFileTasksComplexTest, FindFileHandlerTask_Verbs) {
   FindFileHandlerTasks(test_profile_.get(), entries, &tasks);
 
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(kFooId, tasks[0].task_descriptor().app_id);
-  EXPECT_EQ("Foo", tasks[0].task_title());
-  EXPECT_EQ(Verb::VERB_PACK_WITH, tasks[0].task_verb());
+  EXPECT_EQ(kFooId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[0].task_title);
+  EXPECT_EQ(Verb::VERB_PACK_WITH, tasks[0].task_verb);
 }
 
 // Test using the test extension system, which needs lots of setup.
@@ -1441,7 +1441,7 @@ TEST_F(FileManagerFileTasksCrostiniTest, BasicFiles) {
   FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
                                                file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(text_app_id_, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(text_app_id_, tasks[0].task_descriptor.app_id);
 
   // Multiple text files
   entries.emplace_back(crostini_folder_.Append("bar.txt"), "text/plain", false);
@@ -1449,7 +1449,7 @@ TEST_F(FileManagerFileTasksCrostiniTest, BasicFiles) {
   FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
                                                file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(text_app_id_, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(text_app_id_, tasks[0].task_descriptor.app_id);
 }
 
 TEST_F(FileManagerFileTasksCrostiniTest, Directories) {
@@ -1482,8 +1482,8 @@ TEST_F(FileManagerFileTasksCrostiniTest, MultipleMatches) {
   // rely on this to keep the test simple.
   EXPECT_LT(gif_app_id_, image_app_id_);
   ASSERT_EQ(2U, tasks.size());
-  EXPECT_EQ(gif_app_id_, tasks[0].task_descriptor().app_id);
-  EXPECT_EQ(image_app_id_, tasks[1].task_descriptor().app_id);
+  EXPECT_EQ(gif_app_id_, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(image_app_id_, tasks[1].task_descriptor.app_id);
 }
 
 TEST_F(FileManagerFileTasksCrostiniTest, MultipleTypes) {
@@ -1497,7 +1497,7 @@ TEST_F(FileManagerFileTasksCrostiniTest, MultipleTypes) {
   FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
                                                file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(image_app_id_, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(image_app_id_, tasks[0].task_descriptor.app_id);
 
   entries.emplace_back(crostini_folder_.Append("qux.mp4"), "video/mp4", false);
   file_urls.emplace_back(PathToURL("dir/qux.mp4"));
@@ -1517,7 +1517,7 @@ TEST_F(FileManagerFileTasksCrostiniTest, AlternateMimeTypes) {
   FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
                                                file_urls, &tasks);
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(alt_mime_app_id_, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(alt_mime_app_id_, tasks[0].task_descriptor.app_id);
 }
 
 }  // namespace file_tasks

@@ -167,8 +167,7 @@ struct TaskDescriptor {
 };
 
 // Describes a task with extra information such as icon URL.
-class FullTaskDescriptor {
- public:
+struct FullTaskDescriptor {
   FullTaskDescriptor(
       const TaskDescriptor& task_descriptor,
       const std::string& task_title,
@@ -178,48 +177,29 @@ class FullTaskDescriptor {
       bool is_generic_file_handler,
       bool is_file_extension_match);
 
-  ~FullTaskDescriptor();
-
   FullTaskDescriptor(const FullTaskDescriptor& other);
-  const TaskDescriptor& task_descriptor() const { return task_descriptor_; }
 
-  // The title of the task.
-  const std::string& task_title() const { return task_title_; }
-  // The verb of the task.
-  extensions::api::file_manager_private::Verb task_verb() const {
-    return task_verb_;
-  }
+  // Unique ID for the task.
+  TaskDescriptor task_descriptor;
+  // The user-visible title/name of the app/extension/thing to be launched.
+  std::string task_title;
+  // Describes different ways the same Task might handle file/s, e.g. open with,
+  // pack with, share with, etc.
+  extensions::api::file_manager_private::Verb task_verb;
   // The icon URL for the task (ex. app icon)
-  const GURL& icon_url() const { return icon_url_; }
-
-  // True if this task is set as default.
-  bool is_default() const { return is_default_; }
-  void set_is_default(bool is_default) { is_default_ = is_default; }
-
+  GURL icon_url;
+  // The default task is stored in user preferences and will be used when the
+  // user doesn't explicitly pick another e.g. double click.
+  bool is_default;
   // True if this task is from generic file handler. Generic file handler is a
   // file handler which handles any type of files (e.g. extensions: ["*"],
   // types: ["*/*"]). Partial wild card (e.g. types: ["image/*"]) is not
   // generic file handler.
-  bool is_generic_file_handler() const { return is_generic_file_handler_; }
-  void set_is_generic_file_handler(bool is_generic_file_handler) {
-    is_generic_file_handler_ = is_generic_file_handler;
-  }
+  bool is_generic_file_handler;
   // True if this task is from a file extension only. e.g. an extension/app
   // that declares no MIME types in its manifest, but matches with the
   // file_handlers "extensions" instead.
-  bool is_file_extension_match() const { return is_file_extension_match_; }
-  void set_is_file_extension_match(bool is_file_extension_match) {
-    is_file_extension_match_ = is_file_extension_match;
-  }
-
- private:
-  TaskDescriptor task_descriptor_;
-  std::string task_title_;
-  extensions::api::file_manager_private::Verb task_verb_;
-  GURL icon_url_;
-  bool is_default_;
-  bool is_generic_file_handler_;
-  bool is_file_extension_match_;
+  bool is_file_extension_match;
 };
 
 // Update the default file handler for the given sets of suffixes and MIME

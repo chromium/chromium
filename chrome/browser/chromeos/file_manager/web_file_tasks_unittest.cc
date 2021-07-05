@@ -134,10 +134,10 @@ TEST_F(WebFileTasksTest, WebAppFileHandlingCanBeDisabledByFlag) {
     FindWebTasks(profile(), entries, &tasks);
     // Graphr should be a valid handler.
     ASSERT_EQ(1u, tasks.size());
-    EXPECT_EQ(kGraphrId, tasks[0].task_descriptor().app_id);
-    EXPECT_EQ(kGraphrAction, tasks[0].task_descriptor().action_id);
+    EXPECT_EQ(kGraphrId, tasks[0].task_descriptor.app_id);
+    EXPECT_EQ(kGraphrAction, tasks[0].task_descriptor.action_id);
     EXPECT_EQ(file_tasks::TaskType::TASK_TYPE_WEB_APP,
-              tasks[0].task_descriptor().task_type);
+              tasks[0].task_descriptor.task_type);
   }
 }
 
@@ -174,7 +174,7 @@ TEST_F(WebFileTasksTest, DisabledFileHandlersAreNotVisible) {
   // Graphr should no longer be found.
   FindWebTasks(profile(), entries, &tasks);
   EXPECT_EQ(1u, tasks.size());
-  EXPECT_EQ(kFooId, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(kFooId, tasks[0].task_descriptor.app_id);
 }
 
 TEST_F(WebFileTasksTest, FindWebFileHandlerTasks) {
@@ -203,8 +203,8 @@ TEST_F(WebFileTasksTest, FindWebFileHandlerTasks) {
 
   // Expect both apps to be found.
   ASSERT_EQ(2U, tasks.size());
-  std::vector<std::string> app_ids = {tasks[0].task_descriptor().app_id,
-                                      tasks[1].task_descriptor().app_id};
+  std::vector<std::string> app_ids = {tasks[0].task_descriptor.app_id,
+                                      tasks[1].task_descriptor.app_id};
   EXPECT_THAT(app_ids, testing::UnorderedElementsAre(kFooId, kBarId));
 
   // Add a "text/html" file. Only Foo should be found.
@@ -215,7 +215,7 @@ TEST_F(WebFileTasksTest, FindWebFileHandlerTasks) {
   FindWebTasks(profile(), entries, &tasks);
   // Confirm only Foo was found.
   ASSERT_EQ(1U, tasks.size());
-  EXPECT_EQ(kFooId, tasks[0].task_descriptor().app_id);
+  EXPECT_EQ(kFooId, tasks[0].task_descriptor.app_id);
 
   // Add an "image/png" file. No tasks should be found.
   entries.emplace_back(
@@ -244,7 +244,7 @@ TEST_F(WebFileTasksTest, FindWebFileHandlerTask_Generic) {
   // Task sorter, to ensure a stable ordering.
   auto task_sorter = [](const FullTaskDescriptor& first,
                         const FullTaskDescriptor& second) -> int {
-    return first.task_descriptor().app_id < second.task_descriptor().app_id;
+    return first.task_descriptor.app_id < second.task_descriptor.app_id;
   };
 
   // Bar provides a file handler for .txt files, and has no generic handler.
@@ -273,17 +273,17 @@ TEST_F(WebFileTasksTest, FindWebFileHandlerTask_Generic) {
   std::sort(tasks.begin(), tasks.end(), task_sorter);
   ASSERT_EQ(4U, tasks.size());
   // Bar provides a handler for ".txt".
-  EXPECT_EQ(kBarId, tasks[0].task_descriptor().app_id);
-  EXPECT_FALSE(tasks[0].is_generic_file_handler());
+  EXPECT_EQ(kBarId, tasks[0].task_descriptor.app_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
   // Baz provides a handler for all extensions.
-  EXPECT_EQ(kBazId, tasks[1].task_descriptor().app_id);
-  EXPECT_TRUE(tasks[1].is_generic_file_handler());
+  EXPECT_EQ(kBazId, tasks[1].task_descriptor.app_id);
+  EXPECT_TRUE(tasks[1].is_generic_file_handler);
   // Foo provides a handler for "text/plain".
-  EXPECT_EQ(kFooId, tasks[2].task_descriptor().app_id);
-  EXPECT_FALSE(tasks[2].is_generic_file_handler());
+  EXPECT_EQ(kFooId, tasks[2].task_descriptor.app_id);
+  EXPECT_FALSE(tasks[2].is_generic_file_handler);
   // Qux provides a handler for all file types.
-  EXPECT_EQ(kQuxId, tasks[3].task_descriptor().app_id);
-  EXPECT_TRUE(tasks[3].is_generic_file_handler());
+  EXPECT_EQ(kQuxId, tasks[3].task_descriptor.app_id);
+  EXPECT_TRUE(tasks[3].is_generic_file_handler);
 
   // Reset entries and tasks.
   entries.clear();
@@ -298,14 +298,14 @@ TEST_F(WebFileTasksTest, FindWebFileHandlerTask_Generic) {
   std::sort(tasks.begin(), tasks.end(), task_sorter);
   ASSERT_EQ(3U, tasks.size());
   // Baz provides a handler for "image/*".
-  EXPECT_EQ(kBazId, tasks[0].task_descriptor().app_id);
-  EXPECT_FALSE(tasks[0].is_generic_file_handler());
+  EXPECT_EQ(kBazId, tasks[0].task_descriptor.app_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
   // Foo provides a handler for all types.
-  EXPECT_EQ(kFooId, tasks[1].task_descriptor().app_id);
-  EXPECT_TRUE(tasks[1].is_generic_file_handler());
+  EXPECT_EQ(kFooId, tasks[1].task_descriptor.app_id);
+  EXPECT_TRUE(tasks[1].is_generic_file_handler);
   // Qux provides a handler for all types.
-  EXPECT_EQ(kQuxId, tasks[2].task_descriptor().app_id);
-  EXPECT_TRUE(tasks[2].is_generic_file_handler());
+  EXPECT_EQ(kQuxId, tasks[2].task_descriptor.app_id);
+  EXPECT_TRUE(tasks[2].is_generic_file_handler);
 }
 
 }  // namespace file_tasks

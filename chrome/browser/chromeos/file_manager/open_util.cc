@@ -88,8 +88,8 @@ void OpenFileMimeTypeAfterTasksListed(
   // the first non-generic file handler.
   const file_tasks::FullTaskDescriptor* chosen_task = nullptr;
   for (const auto& task : *tasks) {
-    if (!task.is_generic_file_handler()) {
-      if (task.is_default()) {
+    if (!task.is_generic_file_handler) {
+      if (task.is_default) {
         chosen_task = &task;
         break;
       }
@@ -100,7 +100,7 @@ void OpenFileMimeTypeAfterTasksListed(
 
   if (chosen_task != nullptr) {
     if (shell_operations_allowed)
-      ExecuteFileTaskForUrl(profile, chosen_task->task_descriptor(), url);
+      ExecuteFileTaskForUrl(profile, chosen_task->task_descriptor, url);
     std::move(callback).Run(platform_util::OPEN_SUCCEEDED);
   } else {
     std::move(callback).Run(

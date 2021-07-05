@@ -108,7 +108,7 @@ bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
 void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
   std::vector<FullTaskDescriptor> filtered;
   for (FullTaskDescriptor& task : *tasks) {
-    if (task.task_descriptor().app_id == kFileManagerAppId)
+    if (task.task_descriptor.app_id == kFileManagerAppId)
       filtered.push_back(task);
   }
   tasks->swap(filtered);
@@ -119,8 +119,8 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
                                       std::vector<FullTaskDescriptor>* tasks) {
   std::vector<FullTaskDescriptor> filtered;
   for (FullTaskDescriptor& task : *tasks) {
-    const auto& action = task.task_descriptor().action_id;
-    if (task.task_descriptor().app_id != kFileManagerAppId) {
+    const auto& action = task.task_descriptor.action_id;
+    if (task.task_descriptor.app_id != kFileManagerAppId) {
       filtered.push_back(task);
     } else if (actions.find(action) == actions.end()) {
       filtered.push_back(task);
@@ -138,7 +138,7 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
                             std::vector<FullTaskDescriptor>* tasks) {
   const auto task_for_app = [&](const std::string& app_id) {
     return std::find_if(tasks->begin(), tasks->end(), [&](const auto& task) {
-      return task.task_descriptor().app_id == app_id;
+      return task.task_descriptor.app_id == app_id;
     });
   };
 
@@ -150,16 +150,16 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   // will be deleted m94.
   DCHECK(task_for_app(kVideoPlayerAppId) == tasks->end());
 
-  // TOOD(crbug/1071289): For a while is_file_extension_match() would always be
+  // TOOD(crbug/1071289): For a while is_file_extension_match would always be
   // false for System Web App manifests, even when specifying extension matches.
   // So this line can be removed once the media app manifest is updated with a
   // full complement of image file extensions.
-  media_app_task->set_is_file_extension_match(true);
+  media_app_task->is_file_extension_match = true;
 
   // The logic in ChooseAndSetDefaultTask() also requires the following to hold.
   // This should only fail if the media app is configured for "*" (e.g. like
   // Zip Archiver). "image/*" does not count as "generic".
-  DCHECK(!media_app_task->is_generic_file_handler());
+  DCHECK(!media_app_task->is_generic_file_handler);
 
   // Otherwise, build a new list with Media App at the front.
   if (media_app_task == tasks->begin())
@@ -177,11 +177,10 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
 // Returns true if the given task is a handler by built-in apps like the Files
 // app itself or QuickOffice etc. They are used as the initial default app.
 bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
-  if ((task.task_descriptor().task_type !=
+  if ((task.task_descriptor.task_type !=
            file_tasks::TASK_TYPE_FILE_BROWSER_HANDLER &&
-       task.task_descriptor().task_type !=
-           file_tasks::TASK_TYPE_FILE_HANDLER) ||
-      task.is_generic_file_handler()) {
+       task.task_descriptor.task_type != file_tasks::TASK_TYPE_FILE_HANDLER) ||
+      task.is_generic_file_handler) {
     return false;
   }
 
@@ -198,7 +197,7 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
       extension_misc::kQuickOfficeInternalExtensionId,
       extension_misc::kQuickOfficeExtensionId};
 
-  return base::Contains(kBuiltInApps, task.task_descriptor().app_id);
+  return base::Contains(kBuiltInApps, task.task_descriptor.app_id);
 }
 
 // Gets the profile in which a file task owned by |extension| should be
@@ -352,22 +351,20 @@ std::string TaskTypeToString(TaskType task_type) {
   return "";
 }
 
-FullTaskDescriptor::FullTaskDescriptor(const TaskDescriptor& task_descriptor,
-                                       const std::string& task_title,
-                                       const Verb task_verb,
-                                       const GURL& icon_url,
-                                       bool is_default,
-                                       bool is_generic_file_handler,
-                                       bool is_file_extension_match)
-    : task_descriptor_(task_descriptor),
-      task_title_(task_title),
-      task_verb_(task_verb),
-      icon_url_(icon_url),
-      is_default_(is_default),
-      is_generic_file_handler_(is_generic_file_handler),
-      is_file_extension_match_(is_file_extension_match) {}
-
-FullTaskDescriptor::~FullTaskDescriptor() = default;
+FullTaskDescriptor::FullTaskDescriptor(const TaskDescriptor& in_task_descriptor,
+                                       const std::string& in_task_title,
+                                       const Verb in_task_verb,
+                                       const GURL& in_icon_url,
+                                       bool in_is_default,
+                                       bool in_is_generic_file_handler,
+                                       bool in_is_file_extension_match)
+    : task_descriptor(in_task_descriptor),
+      task_title(in_task_title),
+      task_verb(in_task_verb),
+      icon_url(in_icon_url),
+      is_default(in_is_default),
+      is_generic_file_handler(in_is_generic_file_handler),
+      is_file_extension_match(in_is_file_extension_match) {}
 
 FullTaskDescriptor::FullTaskDescriptor(const FullTaskDescriptor& other) =
     default;
@@ -835,9 +832,9 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // Go through all the tasks from the beginning and see if there is any
   // default task. If found, pick and set it as default and return.
   for (FullTaskDescriptor& task : *tasks) {
-    DCHECK(!task.is_default());
-    if (base::Contains(default_tasks, task.task_descriptor())) {
-      task.set_is_default(true);
+    DCHECK(!task.is_default);
+    if (base::Contains(default_tasks, task.task_descriptor)) {
+      task.is_default = true;
       return;
     }
   }
@@ -846,9 +843,9 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // MIME match) in the extension manifest and pick that over the fallback
   // handlers below (see crbug.com/803930)
   for (FullTaskDescriptor& task : *tasks) {
-    if (task.is_file_extension_match() && !task.is_generic_file_handler() &&
+    if (task.is_file_extension_match && !task.is_generic_file_handler &&
         !IsFallbackFileHandler(task)) {
-      task.set_is_default(true);
+      task.is_default = true;
       return;
     }
   }
@@ -857,14 +854,14 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // Unless it's HTML which should open in the browser (crbug.com/1121396).
   for (FullTaskDescriptor& task : *tasks) {
     if (IsFallbackFileHandler(task) &&
-        task.task_descriptor().action_id != "view-in-browser") {
+        task.task_descriptor.action_id != "view-in-browser") {
       const extensions::EntryInfo entry = entries[0];
       const base::FilePath& file_path = entry.path;
 
       if (IsHtmlFile(file_path)) {
         break;
       }
-      task.set_is_default(true);
+      task.is_default = true;
       return;
     }
   }
@@ -872,9 +869,9 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // No default tasks found. If there is any fallback file browser handler,
   // make it as default task, so it's selected by default.
   for (FullTaskDescriptor& task : *tasks) {
-    DCHECK(!task.is_default());
+    DCHECK(!task.is_default);
     if (IsFallbackFileHandler(task)) {
-      task.set_is_default(true);
+      task.is_default = true;
       return;
     }
   }

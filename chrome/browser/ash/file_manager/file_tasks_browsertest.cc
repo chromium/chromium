@@ -55,7 +55,7 @@ void VerifyTasks(int* remaining,
 
   auto default_task =
       std::find_if(result->begin(), result->end(),
-                   [](const auto& task) { return task.is_default(); });
+                   [](const auto& task) { return task.is_default; });
 
   // Early exit for the uncommon situation where no default should be set.
   if (!expectation.app_id) {
@@ -65,13 +65,12 @@ void VerifyTasks(int* remaining,
 
   ASSERT_TRUE(default_task != result->end()) << expectation.file_extensions;
 
-  EXPECT_EQ(expectation.app_id, default_task->task_descriptor().app_id)
+  EXPECT_EQ(expectation.app_id, default_task->task_descriptor.app_id)
       << " for extension: " << expectation.file_extensions;
 
   // Verify no other task is set as default.
-  EXPECT_EQ(1,
-            std::count_if(result->begin(), result->end(),
-                          [](const auto& task) { return task.is_default(); }))
+  EXPECT_EQ(1, std::count_if(result->begin(), result->end(),
+                             [](const auto& task) { return task.is_default; }))
       << expectation.file_extensions;
 }
 
