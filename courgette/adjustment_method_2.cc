@@ -378,6 +378,12 @@ class Shingle {
 
   typedef std::set<Shingle, InterningLess> OwningSet;
 
+  // We can't disallow the copy constructor because we use std::set<Shingle> and
+  // VS2005's implementation of std::set<T>::set() requires T to have a copy
+  // constructor.
+  Shingle(const Shingle&) = default;
+  Shingle& operator=(const Shingle&) = delete;  // Disallow assignment only.
+
   static Shingle* Find(const Trace& trace, size_t position,
                        OwningSet* owning_set) {
     std::pair<OwningSet::iterator, bool> pair =
@@ -424,12 +430,6 @@ class Shingle {
   ShinglePattern* pattern_;       // Pattern changes as LabelInfos are assigned.
 
   friend std::string ToString(const Shingle* instance);
-
-  // We can't disallow the copy constructor because we use std::set<Shingle> and
-  // VS2005's implementation of std::set<T>::set() requires T to have a copy
-  // constructor.
-  //   DISALLOW_COPY_AND_ASSIGN(Shingle);
-  void operator=(const Shingle&) = delete;  // Disallow assignment only.
 };
 
 std::string ToString(const Shingle* instance) {
