@@ -105,27 +105,34 @@ public class NoteCreationMediator {
         assert Looper.getMainLooper() == Looper.myLooper();
 
         // Only add a template to the ModelList when a Typeface has successfully been loaded for it.
+        int index = 0;
         for (RequestTuple tuple : requestTuples) {
             TypefaceResponse response = getOrDefault(resultsMap, tuple.typefaceRequest, null);
             if (response == null) {
                 // TODO (crbug.com/1194168): Log this case.
+                ++index;
                 continue;
             }
 
             if (response.isError()) {
                 // TODO (crbug.com/1194168): Log this case.
+                ++index;
                 continue;
             }
 
             ListItem listItem = new ListItem(NoteProperties.NOTE_VIEW_TYPE,
-                    buildModel(mListModel.size() == 0, tuple.template, response.typeface));
+                    buildModel(index == 0, index == (requestTuples.size() - 1), tuple.template,
+                            response.typeface));
             mListModel.add(listItem);
+            ++index;
         }
     }
 
-    private PropertyModel buildModel(boolean isFirst, NoteTemplate template, Typeface typeface) {
+    private PropertyModel buildModel(
+            boolean isFirst, boolean isLast, NoteTemplate template, Typeface typeface) {
         PropertyModel.Builder builder = new PropertyModel.Builder(NoteProperties.ALL_KEYS)
                                                 .with(NoteProperties.IS_FIRST, isFirst)
+                                                .with(NoteProperties.IS_LAST, isLast)
                                                 .with(NoteProperties.TEMPLATE, template)
                                                 .with(NoteProperties.TYPEFACE, typeface);
 

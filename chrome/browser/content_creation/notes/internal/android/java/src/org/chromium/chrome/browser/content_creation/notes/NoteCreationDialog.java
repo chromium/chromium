@@ -35,7 +35,7 @@ import org.chromium.ui.widget.Toast;
  * Dialog for the note creation.
  */
 public class NoteCreationDialog extends DialogFragment {
-    private static final float FIRST_NOTE_PADDING_RATIO = 0.5f;
+    private static final float EXTREMITY_NOTE_PADDING_RATIO = 0.5f;
 
     private View mContentView;
     private String mUrlDomain;
@@ -161,24 +161,38 @@ public class NoteCreationDialog extends DialogFragment {
 
         template.footerStyle.apply(footerLink, footerTitle, footerIcon);
 
-        setLeftPadding(model.get(NoteProperties.IS_FIRST), parent.findViewById(R.id.item));
+        setPadding(model.get(NoteProperties.IS_FIRST), model.get(NoteProperties.IS_LAST),
+                parent.findViewById(R.id.item));
     }
 
-    // Adjust the left padding for carousel items, so that the first item is centered and the
-    // following item is slightlight peaking from the right. For that, set left padding exactly
-    // what is needed to push the first item to the center, but set a smaller padding for the
-    // following items.
-    private void setLeftPadding(boolean isFirst, View itemView) {
+    // Adjust the padding for carousel items so that:
+    // - When the first item is selected, it is centered and the following item is slightly peaking
+    // from the right.
+    // - When the last item is selected, it is cenetered and the previous item is
+    // slightly peaking from the left.
+    // For that, set left padding exactly what is needed to push the first item to the center, but
+    // set a smaller padding for the following items (except the last item which has more padding on
+    // the right).
+    private void setPadding(boolean isFirst, boolean isLast, View itemView) {
         int dialogWidth = mContentView.getWidth();
         int templateWidth = getActivity().getResources().getDimensionPixelSize(R.dimen.note_width);
-        int paddingLeft =
+        int defaultPadding =
                 getActivity().getResources().getDimensionPixelSize(R.dimen.note_side_padding);
+        int paddingLeft = defaultPadding;
         if (isFirst) {
-            paddingLeft = (int) ((dialogWidth - templateWidth) * FIRST_NOTE_PADDING_RATIO + 0.5f);
+            paddingLeft =
+                    (int) ((dialogWidth - templateWidth) * EXTREMITY_NOTE_PADDING_RATIO + 0.5f);
+        }
+
+        int paddingRight = defaultPadding;
+        if (isLast) {
+            paddingRight =
+                    (int) ((dialogWidth - templateWidth) * EXTREMITY_NOTE_PADDING_RATIO + 0.5f);
         }
 
         MarginLayoutParams params = (MarginLayoutParams) itemView.getLayoutParams();
         params.setMarginStart(paddingLeft);
+        params.setMarginEnd(paddingRight);
         itemView.setLayoutParams(params);
         itemView.requestLayout();
     }
