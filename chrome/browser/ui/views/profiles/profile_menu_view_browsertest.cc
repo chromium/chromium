@@ -49,7 +49,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -849,38 +848,9 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_GuestProfile[] =
      // this array triggers the same action as the first one.
      ProfileMenuViewBase::ActionableItem::kExitProfileButton};
 
-// TODO(https://crbug.com/1125474): Revert to using PROFILE_MENU_CLICK_TEST when
-// non-ephemeral Guest profiles are removed.
-class GuestProfileMenuClickTest : public ProfileMenuClickTest {
- public:
-  GuestProfileMenuClickTest() {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, false);
-  }
-
-  ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex(
-      size_t index) override {
-    return kActionableItems_GuestProfile[index];
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestProfileMenuClickTest);
-};
-
-IN_PROC_BROWSER_TEST_P(GuestProfileMenuClickTest,
-                       ProfileMenuClickTest_GuestProfile) {
-  Browser* browser = CreateGuestBrowser();
-  ASSERT_TRUE(browser);
-
-  // Open a second guest browser window, so the ExitProfileButton is shown.
+PROFILE_MENU_CLICK_TEST(kActionableItems_GuestProfile,
+                        ProfileMenuClickTest_GuestProfile) {
   SetTargetBrowser(CreateGuestBrowser());
 
   RunTest();
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    GuestProfileMenuClickTest,
-    ::testing::Range(size_t(0), base::size(kActionableItems_GuestProfile)));

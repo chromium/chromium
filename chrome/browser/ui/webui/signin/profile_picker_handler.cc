@@ -753,7 +753,7 @@ void ProfilePickerHandler::OnSwitchToProfileComplete(
     return;
   }
 
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
+  if (profile->IsGuestSession()) {
     RecordProfilePickerAction(ProfilePickerAction::kLaunchGuestProfile);
   } else {
     RecordProfilePickerAction(

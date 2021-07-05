@@ -93,8 +93,7 @@ void BrowserList::AddBrowser(Browser* browser) {
 
   AddBrowserToActiveList(browser);
 
-  if (browser->profile()->IsGuestSession() ||
-      browser->profile()->IsEphemeralGuestProfile()) {
+  if (browser->profile()->IsGuestSession()) {
     base::UmaHistogramCounts100("Browser.WindowCount.Guest",
                                 GetGuestBrowserCount());
   } else if (browser->profile()->IsIncognitoProfile()) {
@@ -372,9 +371,7 @@ size_t BrowserList::GetIncognitoBrowserCount() {
 size_t BrowserList::GetGuestBrowserCount() {
   BrowserList* list = BrowserList::GetInstance();
   return std::count_if(list->begin(), list->end(), [](Browser* browser) {
-    return (browser->profile()->IsGuestSession() ||
-            browser->profile()->IsEphemeralGuestProfile()) &&
-           !browser->is_type_devtools();
+    return browser->profile()->IsGuestSession() && !browser->is_type_devtools();
   });
 }
 

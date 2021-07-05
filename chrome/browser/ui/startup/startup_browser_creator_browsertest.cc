@@ -77,7 +77,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -3141,26 +3140,19 @@ INSTANTIATE_TEST_SUITE_P(
                            /*session_restore=*/true}));
 
 class GuestStartupBrowserCreatorPickerTest
-    : public StartupBrowserCreatorPickerTestBase,
-      public ::testing::WithParamInterface<bool> {
+    : public StartupBrowserCreatorPickerTestBase {
  public:
-  GuestStartupBrowserCreatorPickerTest() {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, GetParam());
-  }
+  GuestStartupBrowserCreatorPickerTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kGuest);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Create a secondary profile in a separate PRE run because the existence of
 // profiles is checked during startup in the actual test.
-IN_PROC_BROWSER_TEST_P(GuestStartupBrowserCreatorPickerTest,
+IN_PROC_BROWSER_TEST_F(GuestStartupBrowserCreatorPickerTest,
                        PRE_SkipsPickerWithGuest) {
   CreateMultipleProfiles();
   // Need to close the browser window manually so that the real test does not
@@ -3168,20 +3160,12 @@ IN_PROC_BROWSER_TEST_P(GuestStartupBrowserCreatorPickerTest,
   CloseAllBrowsers();
 }
 
-IN_PROC_BROWSER_TEST_P(GuestStartupBrowserCreatorPickerTest,
+IN_PROC_BROWSER_TEST_F(GuestStartupBrowserCreatorPickerTest,
                        SkipsPickerWithGuest) {
   // The picker is skipped which means a browser window is opened on startup.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  if (Profile::IsEphemeralGuestProfileEnabled()) {
-    EXPECT_TRUE(browser()->profile()->IsEphemeralGuestProfile());
-  } else {
-    EXPECT_TRUE(browser()->profile()->IsGuestSession());
-  }
+  EXPECT_TRUE(browser()->profile()->IsGuestSession());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         GuestStartupBrowserCreatorPickerTest,
-                         /*ephemeral_guest_profile_enabled=*/testing::Bool());
 
 class StartupBrowserCreatorPickerNoParamsTest
     : public StartupBrowserCreatorPickerTestBase {};

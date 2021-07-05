@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog_browsertest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -86,22 +85,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, DisableFind) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FIND));
 }
 
-// TODO(https://crbug.com/1125474): Expand to cover ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-class GuestBrowserCommandControllerBrowserTest
-    : public BrowserCommandControllerBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  GuestBrowserCommandControllerBrowserTest() {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(GuestBrowserCommandControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        NewAvatarMenuEnabledInGuestMode) {
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
 
@@ -111,10 +96,6 @@ IN_PROC_BROWSER_TEST_P(GuestBrowserCommandControllerBrowserTest,
   const CommandUpdater* command_updater = browser->command_controller();
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestBrowserCommandControllerBrowserTest,
-                         /*is_ephemeral=*/testing::Bool());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

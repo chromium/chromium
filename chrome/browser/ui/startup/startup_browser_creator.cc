@@ -286,9 +286,6 @@ bool CanOpenProfileOnStartup(Profile* profile) {
 
   // Guest or system profiles are not available unless a separate process
   // already has a window open for the profile.
-  if (profile->IsEphemeralGuestProfile())
-    return chrome::GetBrowserCount(profile->GetOriginalProfile()) > 0;
-
   return (!profile->IsGuestSession() && !profile->IsSystemProfile()) ||
          (chrome::GetBrowserCount(
               profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)) > 0);
@@ -543,8 +540,7 @@ Profile* StartupBrowserCreator::GetPrivateProfileIfRequested(
                                      /* show_warning= */ true)) {
     profile = g_browser_process->profile_manager()->GetProfile(
         ProfileManager::GetGuestProfilePath());
-    if (!profile->IsEphemeralGuestProfile())
-      profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     return profile;
   }
 
@@ -634,14 +630,11 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
   // decision to show the picker should instead be on the previous call to
   // ShouldShowProfilePickerAtProcessLaunch() issued from
   // GetStartupProfilePath().
-  // Ephemeral guest is added here just for symmetry, once we use other ways to
-  // indicate that picker should get opened, we can remove both IsGuestSession()
-  // and IsEphemeralGuestProfile().
+  // Once we use other ways to indicate that picker should get opened, we can
+  // remove IsGuestSession().
   if (ShouldShowProfilePickerAtProcessLaunch(
           g_browser_process->profile_manager(), command_line) &&
-      last_used_profile &&
-      (last_used_profile->IsGuestSession() ||
-       last_used_profile->IsEphemeralGuestProfile())) {
+      last_used_profile && last_used_profile->IsGuestSession()) {
     // The guest session is used to indicate the the profile picker should be
     // displayed on start-up. See GetStartupProfilePath().
     ShowProfilePicker(/*is_process_startup=*/process_startup);
@@ -763,11 +756,8 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
     pref.type = SessionStartupPref::LAST;
   }
 
-  bool is_guest =
-      profile->IsGuestSession() || profile->IsEphemeralGuestProfile();
-
   // A browser starting for a profile being unlocked should always restore.
-  if (!is_guest) {
+  if (!profile->IsGuestSession()) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
@@ -778,7 +768,7 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
   }
 
   if (pref.type == SessionStartupPref::LAST &&
-      (is_guest || profile->IsOffTheRecord())) {
+      (profile->IsGuestSession() || profile->IsOffTheRecord())) {
     // We don't store session information when incognito. If the user has
     // chosen to restore last session and launched incognito, fallback to
     // default launch behavior.
@@ -1173,7 +1163,7 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
 
   // Launch the profiles in the order they became active.
   for (Profile* profile : last_opened_profiles) {
-    DCHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile());
+    DCHECK(!profile->IsGuestSession());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Skip any locked profile.
@@ -1185,10 +1175,8 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
     // when Chrome was closed. In this case, pick a different open profile
     // to be the active one, since the Guest profile is never added to the
     // list of open profiles.
-    if (last_used_profile->IsGuestSession() ||
-        last_used_profile->IsEphemeralGuestProfile()) {
+    if (last_used_profile->IsGuestSession())
       last_used_profile = profile;
-    }
 #endif
 
     // Don't launch additional profiles which would only open a new tab

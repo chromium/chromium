@@ -972,15 +972,14 @@ Browser::DownloadCloseType Browser::OkToCloseWithInProgressDownloads(
   // those downloads would be cancelled by our window (-> profile) close.
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile());
-  bool is_guest =
-      (profile()->IsGuestSession() || profile()->IsEphemeralGuestProfile());
   if ((profile_window_count == 0) &&
       (download_core_service->NonMaliciousDownloadCount() > 0) &&
-      (profile()->IsIncognitoProfile() || is_guest)) {
+      (profile()->IsIncognitoProfile() || profile()->IsGuestSession())) {
     *num_downloads_blocking =
         download_core_service->NonMaliciousDownloadCount();
-    return is_guest ? DownloadCloseType::kLastWindowInGuestSession
-                    : DownloadCloseType::kLastWindowInIncognitoProfile;
+    return profile()->IsGuestSession()
+               ? DownloadCloseType::kLastWindowInGuestSession
+               : DownloadCloseType::kLastWindowInIncognitoProfile;
   }
 
   // Those are the only conditions under which we will block shutdown.
@@ -2674,7 +2673,7 @@ bool Browser::CanCloseWithInProgressDownloads() {
 #if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   // On Mac and ChromeOS, non-incognito and non-Guest downloads can still
   // continue after window is closed.
-  if (!profile_->IsOffTheRecord() && !profile_->IsEphemeralGuestProfile())
+  if (!profile_->IsOffTheRecord())
     return true;
 #endif
 
@@ -2939,7 +2938,7 @@ void Browser::UpdateBookmarkBarState(BookmarkBarStateChangeReason reason) {
 }
 
 bool Browser::ShouldShowBookmarkBar() const {
-  if (profile_->IsGuestSession() || profile()->IsEphemeralGuestProfile())
+  if (profile_->IsGuestSession())
     return false;
 
   if (browser_defaults::bookmarks_enabled &&

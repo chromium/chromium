@@ -132,6 +132,15 @@ class BrowserCloseTest : public testing::Test {
     return otr_profile;
   }
 
+  Profile* CreateGuestProfile(int windows, int downloads) {
+    TestingProfile* profile = profile_manager_.CreateGuestProfile();
+    Profile* otr_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    ConfigureCreatedProfile(otr_profile, windows, downloads);
+
+    return otr_profile;
+  }
+
   Browser* GetProfileBrowser(Profile* profile, int index) {
     CHECK(browsers_.end() != browsers_.find(profile));
     CHECK_GT(browsers_[profile].size(), static_cast<size_t>(index));
@@ -139,9 +148,7 @@ class BrowserCloseTest : public testing::Test {
     return browsers_[profile][index];
   }
 
-  TestingProfileManager* profile_manager() { return &profile_manager_; }
-
- protected:
+ private:
   void ConfigureCreatedProfile(Profile* profile,
                                int num_windows,
                                int num_downloads) {
@@ -173,7 +180,6 @@ class BrowserCloseTest : public testing::Test {
     browsers_[profile] = browsers;
   }
 
- private:
   // Note that the vector elements are all owned by this class and must be
   // cleaned up.
   std::map<Profile*, std::vector<TestBrowserWindow*>> browser_windows_;
@@ -361,34 +367,8 @@ TEST_F(BrowserCloseTest, PluralIncognito) {
   EXPECT_EQ(2, num_downloads_blocking);
 }
 
-class GuestBrowserCloseTest : public BrowserCloseTest,
-                              public testing::WithParamInterface<bool> {
- public:
-  GuestBrowserCloseTest() : is_ephemeral_(GetParam()) {
-    // Change the value if Ephemeral is not supported.
-    is_ephemeral_ &=
-        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_);
-  }
-
-  Profile* CreateGuestProfile(int windows, int downloads) {
-    TestingProfile* profile = profile_manager()->CreateGuestProfile();
-    Profile* guest_profile =
-        is_ephemeral_
-            ? profile
-            : profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-    ConfigureCreatedProfile(guest_profile, windows, downloads);
-
-    return guest_profile;
-  }
-
- private:
-  bool is_ephemeral_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Last window close (guest window) will trigger warning.
-TEST_P(GuestBrowserCloseTest, LastWindowGuest) {
+TEST_F(BrowserCloseTest, LastWindowGuest) {
   Profile* guest_profile = CreateGuestProfile(1, 1);
   Browser* browser = GetProfileBrowser(guest_profile, 0);
 
@@ -399,7 +379,7 @@ TEST_P(GuestBrowserCloseTest, LastWindowGuest) {
 }
 
 // Last guest window close triggers download warning.
-TEST_P(GuestBrowserCloseTest, LastGuest) {
+TEST_F(BrowserCloseTest, LastGuest) {
   CreateProfile(1, 0);
   Profile* profile = CreateGuestProfile(1, 1);
   Browser* browser(GetProfileBrowser(profile, 0));
@@ -413,7 +393,7 @@ TEST_P(GuestBrowserCloseTest, LastGuest) {
 }
 
 // Last guest window close with no downloads => no warning.
-TEST_P(GuestBrowserCloseTest, LastGuestNoDownloads) {
+TEST_F(BrowserCloseTest, LastGuestNoDownloads) {
   Profile* profile = CreateGuestProfile(1, 0);
   Browser* browser = GetProfileBrowser(profile, 0);
 
@@ -423,7 +403,7 @@ TEST_P(GuestBrowserCloseTest, LastGuestNoDownloads) {
 }
 
 // Non-last guest window => no warning.
-TEST_P(GuestBrowserCloseTest, NonLastGuest) {
+TEST_F(BrowserCloseTest, NonLastGuest) {
   Profile* profile = CreateGuestProfile(2, 1);
   Browser* browser = GetProfileBrowser(profile, 0);
 
@@ -431,7 +411,3 @@ TEST_P(GuestBrowserCloseTest, NonLastGuest) {
   EXPECT_EQ(Browser::DownloadCloseType::kOk,
             browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestBrowserCloseTest,
-                         /*is_ephemeral=*/testing::Bool());

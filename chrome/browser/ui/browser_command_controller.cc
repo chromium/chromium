@@ -1049,8 +1049,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SHOW_BETA_FORUM, true);
   command_updater_.UpdateCommandEnabled(
       IDC_BOOKMARKS_MENU,
-      (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
-       !profile()->IsEphemeralGuestProfile()));
+      (!profile()->IsGuestSession() && !profile()->IsSystemProfile()));
   command_updater_.UpdateCommandEnabled(
       IDC_RECENT_TABS_MENU,
       (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
@@ -1173,12 +1172,11 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
   command_updater->UpdateCommandEnabled(
       IDC_NEW_INCOGNITO_WINDOW,
       incognito_availability != IncognitoModePrefs::DISABLED &&
-          !profile->IsGuestSession() && !profile->IsEphemeralGuestProfile());
+          !profile->IsGuestSession());
 
   const bool forced_incognito =
       incognito_availability == IncognitoModePrefs::FORCED;
-  const bool is_guest =
-      profile->IsGuestSession() || profile->IsEphemeralGuestProfile();
+  const bool is_guest = profile->IsGuestSession();
 
   command_updater->UpdateCommandEnabled(
       IDC_SHOW_BOOKMARK_MANAGER,
@@ -1346,7 +1344,6 @@ void BrowserCommandController::UpdateCommandsForBookmarkBar() {
   command_updater_.UpdateCommandEnabled(
       IDC_SHOW_BOOKMARK_BAR, browser_defaults::bookmarks_enabled &&
                                  !profile()->IsGuestSession() &&
-                                 !profile()->IsEphemeralGuestProfile() &&
                                  !profile()->IsSystemProfile() &&
                                  !profile()->GetPrefs()->IsManagedPreference(
                                      bookmarks::prefs::kShowBookmarkBar) &&

@@ -458,9 +458,6 @@ void NewEmptyWindow(Profile* profile) {
     else
       base::RecordAction(UserMetricsAction("NewIncognitoWindow2"));
     OpenEmptyWindow(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  } else if (profile->IsEphemeralGuestProfile()) {
-    base::RecordAction(UserMetricsAction("NewGuestWindow"));
-    OpenEmptyWindow(profile);
   } else {
     base::RecordAction(UserMetricsAction("NewWindow"));
     SessionService* session_service =

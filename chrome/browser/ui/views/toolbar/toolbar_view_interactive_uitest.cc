@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -159,24 +158,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
   EXPECT_NE(nullptr, extensions_container);
 }
 
-class GuestToolbarViewTest : public ToolbarViewTest,
-                             public ::testing::WithParamInterface<bool> {
- public:
-  GuestToolbarViewTest() : is_ephemeral_(GetParam()) {
-    // Update for platforms which don't support ephemeral Guest profiles.
-    if (!TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_)) {
-      is_ephemeral_ = false;
-    }
-  }
-
- protected:
-  bool is_ephemeral_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // TODO(crbug.com/991596): Setup test profiles properly for CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ExtensionsToolbarContainerForGuest \
@@ -185,7 +166,7 @@ class GuestToolbarViewTest : public ToolbarViewTest,
 #define MAYBE_ExtensionsToolbarContainerForGuest \
   ExtensionsToolbarContainerForGuest
 #endif
-IN_PROC_BROWSER_TEST_P(GuestToolbarViewTest,
+IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
                        MAYBE_ExtensionsToolbarContainerForGuest) {
   // Verify guest browser does not have an extensions toolbar container.
   profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
@@ -199,13 +180,5 @@ IN_PROC_BROWSER_TEST_P(GuestToolbarViewTest,
       BrowserView::GetBrowserViewForBrowser(target_browser)
           ->toolbar()
           ->extensions_container();
-  // Ephemeral Guest profiles support extensions and OTR Guest profiles don't.
-  if (is_ephemeral_)
-    EXPECT_NE(nullptr, extensions_container);
-  else
-    EXPECT_EQ(nullptr, extensions_container);
+  EXPECT_EQ(nullptr, extensions_container);
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestProfileTypes,
-                         GuestToolbarViewTest,
-                         /*is_ephemeral=*/testing::Bool());

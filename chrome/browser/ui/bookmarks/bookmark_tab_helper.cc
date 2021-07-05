@@ -62,7 +62,7 @@ bool BookmarkTabHelper::ShouldShowBookmarkBar() const {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+  if (profile->IsGuestSession())
     return false;
 #endif
 

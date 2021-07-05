@@ -200,7 +200,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
 #else
-      profile->IsGuestSession() || profile->IsEphemeralGuestProfile());
+                          profile->IsGuestSession());
 #endif
 
   html_source->AddBoolean("isSupervised", profile->IsSupervised());

@@ -109,8 +109,7 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
       prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory);
   source->AddBoolean("allowDeletingHistory", allow_deleting_history);
 
-  source->AddBoolean("isGuestSession", profile->IsGuestSession() ||
-                                           profile->IsEphemeralGuestProfile());
+  source->AddBoolean("isGuestSession", profile->IsGuestSession());
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
