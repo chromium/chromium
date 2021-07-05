@@ -10,7 +10,7 @@
 
 #include <vector>
 
-#include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
+#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 

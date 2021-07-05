@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
+#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"

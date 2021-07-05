@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
+#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "extensions/browser/extension_function.h"
 
 class Browser;
