@@ -4,5 +4,4 @@
 -TwoClientDictionarySyncTest.Sanity_E2ETest
 
 # TODO(crbug.com/1205316): Flaky.
--All/TwoClientPasswordsSyncTest.SetPassphraseAndAddPassword_E2ETest/0
--All/TwoClientPasswordsSyncTest.SetPassphraseAndAddPassword_E2ETest/1
+-TwoClientPasswordsSyncTest.SetPassphraseAndAddPassword_E2ETest
