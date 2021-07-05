@@ -10,7 +10,7 @@ include_rules = [
   "+components/page_load_metrics/renderer",
   "+components/no_state_prefetch/common",
   "+components/no_state_prefetch/renderer",
-  "+components/safe_browsing",
+  "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/content/common",
   "+components/safe_browsing/content/renderer",
   "+components/safe_browsing/core/common",

@@ -10,7 +10,6 @@ include_rules = [
   "+components/metrics",
   "+components/network_time",
   "+components/prefs",
-  "+components/safe_browsing",
   "+components/signin/public/base",
   "+components/sync",
   "+components/sync_device_info",
