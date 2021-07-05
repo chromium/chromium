@@ -145,7 +145,7 @@ class ContainerArchiveOptions:
     self.analyze_native = not (sub_args.java_only or sub_args.no_native
                                or top_args.java_only or top_args.no_native)
 
-    self.track_string_literals = True
+    self.track_string_literals = sub_args.track_string_literals
 
 
 def _OpenMaybeGzAsText(path):
