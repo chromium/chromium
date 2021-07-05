@@ -9,8 +9,13 @@
     margin: 0;
   }
 </style>
-<script src="/load_time_data.js"></script>
-<script src="/strings.js"></script>
-<script src="/app_bin.js"></script>
-<script src="/help_app_app_scripts.js"></script>
+<script src="/receiver.js" type="module"></script>
+<!--
+  Populates `window.loadTimeData.data`. Needs to be after
+  "receiver.js" which loads "sandboxed_load_time_data.js". But
+  module scripts do not block parsing, so these non-module scripts must be
+  loaded on the defer queue.
+-->
+<script src="/strings.js" defer></script>
+<script src="/app_bin.js" defer></script>
 </html>

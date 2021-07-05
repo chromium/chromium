@@ -97,7 +97,7 @@ group("closure_compile") {
 js2gtest("browser_tests_js") {
   test_type = "mojo_lite_webui"
 
-  sources = [ "test/help_app_ui_browsertest.js" ]
+  sources = [ "test/help_app_ui_gtest_browsertest.js" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -126,6 +126,7 @@ source_set("browser_test_support") {
     "test/driver.js",
     "test/driver_api.js",
     "test/guest_query_receiver.js",
+    "test/help_app_ui_browsertest.js",
     "test/help_app_guest_ui_browsertest.js",
   ]
 }
@@ -148,6 +149,7 @@ js_type_check("closure_compile_browsertests") {
   deps = [
     ":test_help_app_guest_ui_browsertest_js",
     ":test_help_app_ui_browsertest_js",
+    ":test_help_app_ui_gtest_browsertest_js",
   ]
 }
 
@@ -177,11 +179,17 @@ js_library("test_driver_js") {
   ]
 }
 
+js_library("test_help_app_ui_gtest_browsertest_js") {
+  testonly = true
+  sources = [ "test/help_app_ui_gtest_browsertest.js" ]
+  externs_list =
+      [ "//chromeos/components/web_applications/js2gtest_support.externs.js" ]
+  deps = [ ":test_help_app_ui_browsertest_js" ]
+}
+
 js_library("test_help_app_ui_browsertest_js") {
   testonly = true
   sources = [ "test/help_app_ui_browsertest.js" ]
-  externs_list =
-      [ "//chromeos/components/web_applications/js2gtest_support.externs.js" ]
   deps = [
     ":test_driver_js",
     "//chromeos/components/help_app_ui/resources:browser_proxy",

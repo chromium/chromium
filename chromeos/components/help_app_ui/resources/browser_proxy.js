@@ -1,6 +1,15 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './help_app_ui.mojom-lite.js';
+// The order here matters, types must be imported before index and search which
+// rely on it.
+import './types.mojom-lite.js';
+import './index.mojom-lite.js';
+import './search.mojom-lite.js';
+
+import {MessagePipe} from './message_pipe.m.js';
+import {Message} from './message_types.js';
 
 const help_app = {
   handler: new helpAppUi.mojom.PageHandlerRemote()
@@ -12,8 +21,7 @@ helpAppUi.mojom.PageHandlerFactory.getRemote().createPageHandler(
 
 // Set up an index remote to talk to Local Search Service.
 /** @type {!chromeos.localSearchService.mojom.IndexRemote} */
-const indexRemote =
-    chromeos.localSearchService.mojom.Index.getRemote();
+const indexRemote = chromeos.localSearchService.mojom.Index.getRemote();
 
 /**
  * Talks to the search handler. Use for updating the content for launcher
@@ -168,7 +176,7 @@ guestMessagePipe.registerHandler(
         // Id of the best subheading that appears in positions. We consider
         // the subheading containing the most match positions to be the best.
         // "" means no subheading positions found.
-        let bestSubheadingId = "";
+        let bestSubheadingId = '';
         /**
          * Counts how many positions there are for each subheading id.
          * @type {!Object<string, number>}
@@ -187,8 +195,8 @@ guestMessagePipe.registerHandler(
             // best subheading.
             const newCount = (subheadingPosCounts[position.contentId] || 0) + 1;
             subheadingPosCounts[position.contentId] = newCount;
-            if (!bestSubheadingId
-                || newCount > subheadingPosCounts[bestSubheadingId]) {
+            if (!bestSubheadingId ||
+                newCount > subheadingPosCounts[bestSubheadingId]) {
               bestSubheadingId = position.contentId;
             }
           }
@@ -215,12 +223,10 @@ guestMessagePipe.registerHandler(
           id: result.id,
           titlePositions,
           bodyPositions,
-          subheadingIndex: bestSubheadingId
-              ? Number(bestSubheadingId.substring(SUBHEADING_ID.length))
-              : null,
-          subheadingPositions: bestSubheadingId
-              ? subheadingPositions
-              : null,
+          subheadingIndex: bestSubheadingId ?
+              Number(bestSubheadingId.substring(SUBHEADING_ID.length)) :
+              null,
+          subheadingPositions: bestSubheadingId ? subheadingPositions : null,
         };
       });
       return {results};
@@ -237,29 +243,33 @@ guestMessagePipe.registerHandler(Message.CLOSE_BACKGROUND_PAGE, async () => {
 
 guestMessagePipe.registerHandler(
     Message.UPDATE_LAUNCHER_SEARCH_INDEX, async (message) => {
-      if (!(await isLauncherSearchEnabled)) return;
+      if (!(await isLauncherSearchEnabled)) {
+        return;
+      }
 
       const dataFromApp =
           /** @type {!Array<!helpApp.LauncherSearchableItem>} */ (message);
       /** @type {!Array<!chromeos.helpApp.mojom.SearchConcept>} */
-      const dataToSend = dataFromApp.map(searchableItem => ({
-        id: truncate(searchableItem.id),
-        title: toString16(searchableItem.title),
-        mainCategory: toString16(searchableItem.mainCategoryName),
-        tags: searchableItem.tags.map(tag => toString16(tag))
-          .filter(tag => tag.data.length > 0),
-        urlPathWithParameters: truncate(searchableItem.urlPathWithParameters),
-        locale: truncate(searchableItem.locale),
-      }));
+      const dataToSend = dataFromApp.map(
+          searchableItem => ({
+            id: truncate(searchableItem.id),
+            title: toString16(searchableItem.title),
+            mainCategory: toString16(searchableItem.mainCategoryName),
+            tags: searchableItem.tags.map(tag => toString16(tag))
+                      .filter(tag => tag.data.length > 0),
+            urlPathWithParameters:
+                truncate(searchableItem.urlPathWithParameters),
+            locale: truncate(searchableItem.locale),
+          }));
       // Filter out invalid items. No field can be empty except locale.
       const dataFiltered = dataToSend.filter(item => {
-        const valid = item.id && item.title && item.mainCategory
-            && item.tags.length > 0 && item.urlPathWithParameters;
+        const valid = item.id && item.title && item.mainCategory &&
+            item.tags.length > 0 && item.urlPathWithParameters;
         // This is a google-internal histogram. If changing this, also change
         // the corresponding histograms file.
         if (!valid) {
           chrome.metricsPrivate.recordSparseHashable(
-            'Discover.LauncherSearch.InvalidConceptInUpdate', item.id);
+              'Discover.LauncherSearch.InvalidConceptInUpdate', item.id);
         }
         return valid;
       });
@@ -294,7 +304,13 @@ function compareByStart(a, b) {
  * @return {string}
  */
 function truncate(s) {
-  if (typeof s !== 'string') return '';
-  if (s.length <= MAX_STRING_LEN) return s;
+  if (typeof s !== 'string') {
+    return '';
+  }
+  if (s.length <= MAX_STRING_LEN) {
+    return s;
+  }
   return s.substring(0, MAX_STRING_LEN);
 }
+
+export const TEST_ONLY = {guestMessagePipe};

@@ -3,93 +3,41 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Test suite for chrome://help-app.
+ * @fileoverview Test suite for chrome://help-app. The tests are actually
+ * invoked in help_app_ui_gtest_browsertest.js, this file simply packages up
+ * each tests logic into a single object that file can import.
+ *
+ * To add a new test to this file, add the test function to
+ * `HelpAppUIBrowserTest` and then invoke in in gtest_browsertest.js.
  */
+import {runTestInGuest} from './driver.js';
 
-GEN('#include "chromeos/components/help_app_ui/test/help_app_ui_browsertest.h"');
+const GUEST_ORIGIN = 'chrome-untrusted://help-app';
 
-GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "content/public/test/browser_test.h"');
-
-const HOST_ORIGIN = 'chrome://help-app';
-
-var HelpAppUIBrowserTest = class extends testing.Test {
-  /** @override */
-  get browsePreload() {
-    return HOST_ORIGIN;
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return [
-      ...super.extraLibraries,
-      '//chromeos/components/help_app_ui/test/driver.js',
-      '//ui/webui/resources/js/assert.js',
-    ];
-  }
-
-  /** @override */
-  get isAsync() {
-    return true;
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kHelpAppLauncherSearch',
-        'chromeos::features::kHelpAppSearchServiceIntegration',
-      ]
-    };
-  }
-
-  /** @override */
-  get typedefCppFixture() {
-    return 'HelpAppUiBrowserTest';
-  }
-
-  /** @override */
-  get runAccessibilityChecks() {
-    return false;
-  }
+/** @struct */
+const HelpAppUIBrowserTest = {
+  /**
+   * Expose the runTestInGuest function to help_app_ui_gtest_browsertest.js so
+   * it can call it.
+   * @type function(string): !Promise<undefined>
+   */
+  runTestInGuest,
 };
 
+// Expose an old-style export for js2gtest.
+window['HelpAppUIBrowserTest_for_js2gtest'] = HelpAppUIBrowserTest;
+
 // Tests that chrome://help-app goes somewhere instead of 404ing or crashing.
-TEST_F('HelpAppUIBrowserTest', 'HasChromeSchemeURL', () => {
-  const guest = /** @type {!HTMLIFrameElement} */ (
-      document.querySelector('iframe'));
+HelpAppUIBrowserTest.HasChromeSchemeURL = () => {
+  const guest =
+      /** @type {!HTMLIFrameElement} */ (document.querySelector('iframe'));
 
   assertEquals(document.location.origin, HOST_ORIGIN);
   assertEquals(guest.src, GUEST_ORIGIN + '/');
-  testDone();
-});
+};
 
-// Tests that we have localised information in the HTML like title and lang.
-TEST_F('HelpAppUIBrowserTest', 'HasTitleAndLang', () => {
+// Tests that we have localized information in the HTML like title and lang.
+HelpAppUIBrowserTest.HasTitleAndLang = () => {
   assertEquals(document.documentElement.lang, 'en');
   assertEquals(document.title, 'Explore');
-  testDone();
-});
-
-// Test cases injected into the guest context.
-// See implementations in help_app_guest_ui_browsertest.js.
-
-TEST_F('HelpAppUIBrowserTest', 'GuestHasLang', async () => {
-  await runTestInGuest('GuestHasLang');
-  testDone();
-});
-
-TEST_F('HelpAppUIBrowserTest', 'GuestCanSearchWithHeadings', async () => {
-  await runTestInGuest('GuestCanSearchWithHeadings');
-  testDone();
-});
-
-TEST_F('HelpAppUIBrowserTest', 'GuestCanSearchWithCategories', async () => {
-  await runTestInGuest('GuestCanSearchWithCategories');
-  testDone();
-});
-
-TEST_F('HelpAppUIBrowserTest', 'GuestCanClearSearchIndex', async () => {
-  await runTestInGuest('GuestCanClearSearchIndex');
-  testDone();
-});
+};

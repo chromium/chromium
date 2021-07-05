@@ -10,6 +10,9 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 js_library("message_pipe") {
 }
 
+js_library("sandboxed_load_time_data") {
+}
+
 js_library("message_pipe.m") {
   sources = [
     "$root_gen_dir/chromeos/components/system_apps/public/js/message_pipe.m.js",

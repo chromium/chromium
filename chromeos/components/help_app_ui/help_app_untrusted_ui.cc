@@ -5,6 +5,7 @@
 #include "chromeos/components/help_app_ui/help_app_untrusted_ui.h"
 
 #include "chromeos/components/help_app_ui/url_constants.h"
+#include "chromeos/components/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_help_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_help_app_bundle_resources_map.h"
 #include "chromeos/grit/chromeos_help_app_resources.h"
@@ -14,7 +15,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/resources/grit/webui_generated_resources.h"
 
 namespace chromeos {
 
@@ -29,14 +29,14 @@ content::WebUIDataSource* CreateHelpAppUntrustedDataSource(
   // the other paths.
   source->SetDefaultResource(IDR_HELP_APP_APP_HTML);
   source->AddResourcePath("app_bin.js", IDR_HELP_APP_APP_BIN_JS);
-  source->AddResourcePath("load_time_data.js", IDR_WEBUI_JS_LOAD_TIME_DATA_JS);
-  source->AddResourcePath("help_app_app_scripts.js",
-                          IDR_HELP_APP_APP_SCRIPTS_JS);
+  source->AddResourcePath("receiver.js", IDR_HELP_APP_RECEIVER_JS);
   source->DisableTrustedTypesCSP();
 
   // Add all resources from chromeos_help_app_bundle.pak.
   source->AddResourcePaths(base::make_span(
       kChromeosHelpAppBundleResources, kChromeosHelpAppBundleResourcesSize));
+
+  MaybeConfigureTestableDataSource(source);
 
   // Add device and feature flags.
   populate_load_time_data_callback.Run(source);
