@@ -464,7 +464,7 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // currently pull from operating system preferences, although there may be
       // internal UI in the future.
       //
-      // https://tomayac.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
+      // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
       "sec-ch-prefers-color-scheme",
       "sec-ch-ua-bitness",
   };

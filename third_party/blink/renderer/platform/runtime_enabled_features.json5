@@ -1711,7 +1711,7 @@
     },
     {
       name: "PrefersColorSchemeClientHintHeader",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PrefersContrast",
