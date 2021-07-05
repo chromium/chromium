@@ -229,12 +229,13 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
             template_url->GetExtensionId(),
             extensions::ExtensionRegistry::EVERYTHING);
     if (extension) {
-      base::DictionaryValue ext_info;
-      ext_info.SetBoolean("canBeDisabled",
-                          !extensions::ExtensionSystem::Get(profile)
-                               ->management_policy()
-                               ->MustRemainEnabled(extension, nullptr));
-      dict->SetKey("extension", std::move(ext_info));
+      std::unique_ptr<base::DictionaryValue> ext_info =
+          extensions::util::GetExtensionInfo(extension);
+      ext_info->SetBoolean("canBeDisabled",
+                           !extensions::ExtensionSystem::Get(profile)
+                                ->management_policy()
+                                ->MustRemainEnabled(extension, nullptr));
+      dict->Set("extension", std::move(ext_info));
     }
   }
   return dict;
