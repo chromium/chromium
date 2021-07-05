@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 
 class ChromeBrowserMainParts;
@@ -57,9 +58,7 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   // A cached value for the number of displays.
   int display_count_;
 
-  // True iff |this| instance is registered as an observer of the native
-  // screen.
-  bool is_screen_observer_;
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 
 #if defined(USE_OZONE) || defined(USE_X11)
   std::unique_ptr<ui::InputDeviceEventObserver> input_device_event_observer_;

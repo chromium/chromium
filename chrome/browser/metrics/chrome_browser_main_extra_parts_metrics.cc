@@ -520,13 +520,10 @@ void RecordDisplayHDRStatus(const display::Display& display) {
 }  // namespace
 
 ChromeBrowserMainExtraPartsMetrics::ChromeBrowserMainExtraPartsMetrics()
-    : display_count_(0), is_screen_observer_(false) {
-}
+    : display_count_(0) {}
 
-ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() {
-  if (is_screen_observer_)
-    display::Screen::GetScreen()->RemoveObserver(this);
-}
+ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() =
+    default;
 
 void ChromeBrowserMainExtraPartsMetrics::PreProfileInit() {
   RecordMicroArchitectureStats();
@@ -769,9 +766,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 #endif  // defined(OS_WIN)
 
   auto* screen = display::Screen::GetScreen();
-  screen->AddObserver(this);
-  is_screen_observer_ = true;
-
   display_count_ = screen->GetNumDisplays();
   base::UmaHistogramCounts100("Hardware.Display.Count.OnStartup",
                               display_count_);
@@ -779,6 +773,8 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   for (const auto& display : screen->GetAllDisplays()) {
     RecordDisplayHDRStatus(display);
   }
+
+  display_observer_.emplace(this);
 
 #if !defined(OS_ANDROID)
   metrics::BeginFirstWebContentsProfiling();
