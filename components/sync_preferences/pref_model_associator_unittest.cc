@@ -249,12 +249,12 @@ TEST_F(ListPreferenceMergeTest, Equals) {
     local_list_value->AppendString(server_url1_);
   }
 
-  std::unique_ptr<base::Value> original(server_url_list_.DeepCopy());
+  base::Value original = server_url_list_.Clone();
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   std::unique_ptr<base::Value> merged_value(pref_sync_service_->MergePreference(
       pref->name(), *pref->GetValue(), server_url_list_));
-  EXPECT_TRUE(merged_value->Equals(original.get()));
+  EXPECT_TRUE(*merged_value == original);
 }
 
 class DictionaryPreferenceMergeTest : public AbstractPreferenceMergeTest {
