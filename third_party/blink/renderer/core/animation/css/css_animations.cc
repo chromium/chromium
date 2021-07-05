@@ -825,15 +825,12 @@ void CSSAnimations::SnapshotCompositorKeyframes(
 }
 
 void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
-  previous_active_interpolations_for_custom_animations_.clear();
-  previous_active_interpolations_for_standard_animations_.clear();
+  previous_active_interpolations_for_animations_.clear();
   if (pending_update_.IsEmpty())
     return;
 
-  previous_active_interpolations_for_custom_animations_.swap(
-      pending_update_.ActiveInterpolationsForCustomAnimations());
-  previous_active_interpolations_for_standard_animations_.swap(
-      pending_update_.ActiveInterpolationsForStandardAnimations());
+  previous_active_interpolations_for_animations_.swap(
+      pending_update_.ActiveInterpolationsForAnimations());
 
   for (wtf_size_t paused_index :
        pending_update_.AnimationIndicesWithPauseToggled()) {
@@ -997,23 +994,12 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
   // FIXME: We should transition if an !important property changes even when an
   // animation is running, but this is a bit hard to do with the current
   // applyMatchedProperties system.
-  if (property.IsCSSCustomProperty()) {
-    if (state.update.ActiveInterpolationsForCustomAnimations().Contains(
-            property) ||
-        (state.animating_element.GetElementAnimations() &&
-         state.animating_element.GetElementAnimations()
-             ->CssAnimations()
-             .previous_active_interpolations_for_custom_animations_.Contains(
-                 property))) {
-      return;
-    }
-  } else if (state.update.ActiveInterpolationsForStandardAnimations().Contains(
-                 property) ||
-             (state.animating_element.GetElementAnimations() &&
-              state.animating_element.GetElementAnimations()
-                  ->CssAnimations()
-                  .previous_active_interpolations_for_standard_animations_
-                  .Contains(property))) {
+  if (state.update.ActiveInterpolationsForAnimations().Contains(property) ||
+      (state.animating_element.GetElementAnimations() &&
+       state.animating_element.GetElementAnimations()
+           ->CssAnimations()
+           .previous_active_interpolations_for_animations_.Contains(
+               property))) {
     return;
   }
 
@@ -1443,23 +1429,19 @@ bool IsStandardPropertyHandle(const PropertyHandle& property) {
          property.IsPresentationAttribute();
 }
 
+bool IsCSSPropertyHandle(const PropertyHandle& property) {
+  return property.IsCSSProperty() || property.IsPresentationAttribute();
+}
+
 void AdoptActiveAnimationInterpolations(
     EffectStack* effect_stack,
     CSSAnimationUpdate& update,
     const HeapVector<Member<const InertEffect>>* new_animations,
     const HeapHashSet<Member<const Animation>>* suppressed_animations) {
-  ActiveInterpolationsMap custom_interpolations(
-      EffectStack::ActiveInterpolations(
-          effect_stack, new_animations, suppressed_animations,
-          KeyframeEffect::kDefaultPriority, IsCustomPropertyHandle));
-  update.AdoptActiveInterpolationsForCustomAnimations(custom_interpolations);
-
-  ActiveInterpolationsMap standard_interpolations(
-      EffectStack::ActiveInterpolations(
-          effect_stack, new_animations, suppressed_animations,
-          KeyframeEffect::kDefaultPriority, IsStandardPropertyHandle));
-  update.AdoptActiveInterpolationsForStandardAnimations(
-      standard_interpolations);
+  ActiveInterpolationsMap interpolations(EffectStack::ActiveInterpolations(
+      effect_stack, new_animations, suppressed_animations,
+      KeyframeEffect::kDefaultPriority, IsCSSPropertyHandle));
+  update.AdoptActiveInterpolationsForAnimations(interpolations);
 }
 
 }  // namespace
@@ -1541,9 +1523,7 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
   }
 
   const ActiveInterpolationsMap& animations =
-      property_pass == PropertyPass::kCustom
-          ? update.ActiveInterpolationsForCustomAnimations()
-          : update.ActiveInterpolationsForStandardAnimations();
+      update.ActiveInterpolationsForAnimations();
   // Properties being animated by animations don't get values from transitions
   // applied.
   if (!animations.IsEmpty() &&
@@ -1865,8 +1845,7 @@ void CSSAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(transitions_);
   visitor->Trace(pending_update_);
   visitor->Trace(running_animations_);
-  visitor->Trace(previous_active_interpolations_for_standard_animations_);
-  visitor->Trace(previous_active_interpolations_for_custom_animations_);
+  visitor->Trace(previous_active_interpolations_for_animations_);
 }
 
 }  // namespace blink

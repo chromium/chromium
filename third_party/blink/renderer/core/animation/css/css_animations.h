@@ -174,9 +174,7 @@ class CORE_EXPORT CSSAnimations final {
 
   CSSAnimationUpdate pending_update_;
 
-  ActiveInterpolationsMap previous_active_interpolations_for_custom_animations_;
-  ActiveInterpolationsMap
-      previous_active_interpolations_for_standard_animations_;
+  ActiveInterpolationsMap previous_active_interpolations_for_animations_;
 
   struct TransitionUpdateState {
     STACK_ALLOCATED();

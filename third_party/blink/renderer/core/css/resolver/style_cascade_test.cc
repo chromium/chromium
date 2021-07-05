@@ -175,12 +175,8 @@ class TestCascade {
     if (update.IsEmpty())
       return;
 
-    cascade_.AddInterpolations(
-        &update.ActiveInterpolationsForCustomAnimations(),
-        CascadeOrigin::kAnimation);
-    cascade_.AddInterpolations(
-        &update.ActiveInterpolationsForStandardAnimations(),
-        CascadeOrigin::kAnimation);
+    cascade_.AddInterpolations(&update.ActiveInterpolationsForAnimations(),
+                               CascadeOrigin::kAnimation);
 
     cascade_.AddInterpolations(
         &update.ActiveInterpolationsForCustomTransitions(),

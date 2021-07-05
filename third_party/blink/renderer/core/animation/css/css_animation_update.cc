@@ -17,10 +17,8 @@ void CSSAnimationUpdate::Copy(const CSSAnimationUpdate& update) {
   new_animations_ = update.NewAnimations();
   animations_with_updates_ = update.AnimationsWithUpdates();
   new_transitions_ = update.NewTransitions();
-  active_interpolations_for_custom_animations_ =
-      update.ActiveInterpolationsForCustomAnimations();
-  active_interpolations_for_standard_animations_ =
-      update.ActiveInterpolationsForStandardAnimations();
+  active_interpolations_for_animations_ =
+      update.ActiveInterpolationsForAnimations();
   active_interpolations_for_custom_transitions_ =
       update.ActiveInterpolationsForCustomTransitions();
   active_interpolations_for_standard_transitions_ =
@@ -37,8 +35,7 @@ void CSSAnimationUpdate::Clear() {
   new_animations_.clear();
   animations_with_updates_.clear();
   new_transitions_.clear();
-  active_interpolations_for_custom_animations_.clear();
-  active_interpolations_for_standard_animations_.clear();
+  active_interpolations_for_animations_.clear();
   active_interpolations_for_custom_transitions_.clear();
   active_interpolations_for_standard_transitions_.clear();
   cancelled_animation_indices_.clear();

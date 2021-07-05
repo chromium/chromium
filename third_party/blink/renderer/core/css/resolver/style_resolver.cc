@@ -1271,18 +1271,15 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   if (!has_update)
     return false;
 
-  const ActiveInterpolationsMap& standard_animations =
-      state.AnimationUpdate().ActiveInterpolationsForStandardAnimations();
+  const ActiveInterpolationsMap& animations =
+      state.AnimationUpdate().ActiveInterpolationsForAnimations();
   const ActiveInterpolationsMap& standard_transitions =
       state.AnimationUpdate().ActiveInterpolationsForStandardTransitions();
-  const ActiveInterpolationsMap& custom_animations =
-      state.AnimationUpdate().ActiveInterpolationsForCustomAnimations();
   const ActiveInterpolationsMap& custom_transitions =
       state.AnimationUpdate().ActiveInterpolationsForCustomTransitions();
 
-  cascade.AddInterpolations(&standard_animations, CascadeOrigin::kAnimation);
+  cascade.AddInterpolations(&animations, CascadeOrigin::kAnimation);
   cascade.AddInterpolations(&standard_transitions, CascadeOrigin::kTransition);
-  cascade.AddInterpolations(&custom_animations, CascadeOrigin::kAnimation);
   cascade.AddInterpolations(&custom_transitions, CascadeOrigin::kTransition);
 
   CascadeFilter filter;
