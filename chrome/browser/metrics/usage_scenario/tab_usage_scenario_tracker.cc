@@ -36,19 +36,12 @@ TabUsageScenarioTracker::TabUsageScenarioTracker(
   // state. Constructing the object like this starts off the state as empty. If
   // tabs/windows already exist when this object is created they need to be
   // added using the normal functions after creation.
-  auto* screen = display::Screen::GetScreen();
-  // Make sure that this doesn't get created before setting up the global Screen
-  // instance.
-  DCHECK(screen);
-  screen->AddObserver(this);
 }
 
 TabUsageScenarioTracker::~TabUsageScenarioTracker() {
-  auto* screen = display::Screen::GetScreen();
   // Make sure that this doesn't get destroyed after destroying the global
   // screen instance.
-  DCHECK(screen);
-  screen->RemoveObserver(this);
+  DCHECK(display::Screen::GetScreen());
 }
 
 void TabUsageScenarioTracker::OnTabAdded(content::WebContents* web_contents) {
