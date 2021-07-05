@@ -2767,6 +2767,7 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination,
     int32_t previews_state) {
+  recordreplay::Assert("RenderFrameImpl::NotifyResourceResponseReceived");
   if (!blink::IsRequestDestinationFrame(request_destination)) {
     GetFrameHost()->SubresourceResponseStarted(response_url,
                                                response_head->cert_status);

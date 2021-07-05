@@ -345,6 +345,7 @@ WebAssociatedURLLoaderImpl::WebAssociatedURLLoaderImpl(
       observer_(MakeGarbageCollected<Observer>(this, context)) {}
 
 WebAssociatedURLLoaderImpl::~WebAssociatedURLLoaderImpl() {
+  recordreplay::Assert("WebAssociatedURLLoaderImpl::~WebAssociatedURLLoaderImpl");
   Cancel();
 }
 
