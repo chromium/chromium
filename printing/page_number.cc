@@ -24,12 +24,9 @@ PageNumber::PageNumber()
       page_range_index_(kInvalidPageIndex),
       document_page_count_(0) {}
 
-void PageNumber::operator=(const PageNumber& other) {
-  ranges_ = other.ranges_;
-  page_number_ = other.page_number_;
-  page_range_index_ = other.page_range_index_;
-  document_page_count_ = other.document_page_count_;
-}
+PageNumber::PageNumber(const PageNumber& other) = default;
+
+PageNumber& PageNumber::operator=(const PageNumber& other) = default;
 
 void PageNumber::Init(const PrintSettings& settings,
                       uint32_t document_page_count) {

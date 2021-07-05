@@ -22,7 +22,8 @@ class COMPONENT_EXPORT(PRINTING) PageNumber {
 
   PageNumber();
 
-  void operator=(const PageNumber& other);
+  PageNumber(const PageNumber& other);
+  PageNumber& operator=(const PageNumber& other);
 
   // Initializes the page to the first page in the setting's range or 0. It
   // initialize to npos if the range is empty and document_page_count is 0.
