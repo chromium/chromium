@@ -633,18 +633,18 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
   if (local_state->HasPrefPath(prefs::kProfilesLastActive) &&
       local_state->GetList(prefs::kProfilesLastActive)) {
     // Make a copy because the list might change in the calls to GetProfile.
-    std::unique_ptr<base::ListValue> profile_list(
-        local_state->GetList(prefs::kProfilesLastActive)->DeepCopy());
-    for (const auto& entry : profile_list->GetList()) {
-      std::string profile_base_name;
-      if (!entry.GetAsString(&profile_base_name) || profile_base_name.empty() ||
-          profile_base_name ==
+    const base::Value profile_list =
+        local_state->GetList(prefs::kProfilesLastActive)->Clone();
+    for (const auto& entry : profile_list.GetList()) {
+      const std::string* profile_base_name = entry.GetIfString();
+      if (!profile_base_name || profile_base_name->empty() ||
+          *profile_base_name ==
               base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe()) {
         LOG(WARNING) << "Invalid entry in " << prefs::kProfilesLastActive;
         continue;
       }
       Profile* profile = profile_manager->GetProfile(
-          profile_manager->user_data_dir().AppendASCII(profile_base_name));
+          profile_manager->user_data_dir().AppendASCII(*profile_base_name));
       if (profile) {
         // crbug.com/823338 -> CHECK that the profiles aren't guest or
         // incognito, causing a crash during session restore.
