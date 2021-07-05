@@ -32,7 +32,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager.h"
 #include "ui/aura/window.h"
 #endif
 

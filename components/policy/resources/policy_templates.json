@@ -24743,7 +24743,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'DataLeakPreventionReportingEnabled',
-      'owners': ['file://chrome/browser/chromeos/policy/dlp/OWNERS', 'jkopanski@google.com'],
+      'owners': ['file://chrome/browser/ash/policy/dlp/OWNERS', 'jkopanski@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:92-'],
@@ -24775,7 +24775,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
     },
     {
       'name': 'DataLeakPreventionRulesList',
-      'owners': ['file://chrome/browser/chromeos/policy/dlp/OWNERS', 'ayaelattar@chromium.org'],
+      'owners': ['file://chrome/browser/ash/policy/dlp/OWNERS', 'ayaelattar@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',

@@ -30,8 +30,8 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_notification_helper.h"
 #endif
 
 using content::BrowserThread;
