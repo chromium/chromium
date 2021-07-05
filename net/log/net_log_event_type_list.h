@@ -2674,6 +2674,13 @@ EVENT_TYPE(AUTH_GENERATE_TOKEN)
 //                                "different_realm" depending on the outcome of
 //                                the handling the challenge>
 //  }
+//
+// The END phase has the following parameters:
+//  {
+//      "net_error": <The error code.>
+//      "has_handle": <Whether it has an auth handler.>
+//      "has_valid_identity": <Whether it has a valid identity.>
+//  }
 EVENT_TYPE(AUTH_HANDLE_CHALLENGE)
 
 // An attempt was made to load an authentication library.
