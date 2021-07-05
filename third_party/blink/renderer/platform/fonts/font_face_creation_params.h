@@ -81,7 +81,7 @@ class FontFaceCreationParams {
         ttc_index_(ttc_index) {}
 
   FontFaceCreationType CreationType() const { return creation_type_; }
-  AtomicString Family() const {
+  const AtomicString& Family() const {
     DCHECK_EQ(creation_type_, kCreateFontByFamily);
     return family_;
   }
