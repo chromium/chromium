@@ -2369,12 +2369,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(
       RenderFrameHostManagerUnloadBrowserTest,
       PendingDeleteRFHProcessShutdownDoesNotRemoveSubframes);
-  FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
-                           AttemptDuplicateRenderViewHost);
-  FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
-                           AttemptDuplicateRenderWidgetHost);
-  FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
-                           BindToWebUIFromWebViaMojo);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            RenderViewHostIsNotReusedAfterDelayedUnloadACK);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
@@ -2391,6 +2385,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            RenderFrameProxyNotRecreatedDuringProcessShutdown);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            UnloadACKArrivesPriorToProcessShutdownRequest);
+  FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
+                           AttemptDuplicateRenderViewHost);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            FullscreenAfterFrameUnload);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, UnloadHandlerSubframes);
@@ -2417,6 +2413,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessSSLBrowserTest,
                            UnloadHandlersArePowerfulGrandChild);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest, ExpectedMainWorldOrigin);
+  FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
+                           AttemptDuplicateRenderWidgetHost);
   FRIEND_TEST_ALL_PREFIXES(RenderDocumentHostUserDataTest,
                            CheckInPendingDeletionState);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
