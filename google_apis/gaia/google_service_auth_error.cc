@@ -64,6 +64,9 @@ GoogleServiceAuthError::GoogleServiceAuthError(State state,
 GoogleServiceAuthError::GoogleServiceAuthError(
     const GoogleServiceAuthError& other) = default;
 
+GoogleServiceAuthError& GoogleServiceAuthError::operator=(
+    const GoogleServiceAuthError& other) = default;
+
 // static
 GoogleServiceAuthError
     GoogleServiceAuthError::FromConnectionError(int error) {

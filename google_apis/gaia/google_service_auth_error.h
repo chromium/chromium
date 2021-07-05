@@ -112,6 +112,7 @@ class GoogleServiceAuthError {
   GoogleServiceAuthError();
 
   GoogleServiceAuthError(const GoogleServiceAuthError& other);
+  GoogleServiceAuthError& operator=(const GoogleServiceAuthError& other);
 
   // Construct a GoogleServiceAuthError from a network error.
   // It will be created with CONNECTION_FAILED set.
