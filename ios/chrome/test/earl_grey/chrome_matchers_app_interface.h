@@ -585,6 +585,17 @@
 // Returns a matcher for the button to accept the generated password.
 + (id<GREYMatcher>)useSuggestedPasswordMatcher;
 
+#pragma mark - Tab Grid Edit Mode
+
+// Returns a matcher for the button to enter the tab grid tab edit mode.
++ (id<GREYMatcher>)tabGridEditButton;
+
+// Returns a matcher for the button to close the selected tabs.
++ (id<GREYMatcher>)tabGridEditCloseTabsButton;
+
+// Returns a matcher for the button to select all tabs.
++ (id<GREYMatcher>)tabGridEditSelectAllButton;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_APP_INTERFACE_H_

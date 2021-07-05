@@ -20,10 +20,6 @@ NSString* const kTabGridCloseAllButtonIdentifier =
     @"TabGridCloseAllButtonIdentifier";
 NSString* const kTabGridUndoCloseAllButtonIdentifier =
     @"TabGridUndoCloseAllButtonIdentifier";
-NSString* const kTabGridCloseButtonIdentifier =
-    @"TabGridUndoCloseButtonIdentifier";
-NSString* const kTabGridAddToButtonIdentifier = @"TabGridAddToButtonIdentifier";
-NSString* const kTabGridShareButtonIdentifier = @"TabGridShareButtonIdentifier";
 NSString* const kTabGridIncognitoTabsEmptyStateIdentifier =
     @"TabGridIncognitoTabsEmptyStateIdentifier";
 NSString* const kTabGridRegularTabsEmptyStateIdentifier =
@@ -31,6 +27,16 @@ NSString* const kTabGridRegularTabsEmptyStateIdentifier =
 NSString* const kTabGridScrollViewIdentifier = @"kTabGridScrollViewIdentifier";
 NSString* const kRegularTabGridIdentifier = @"kRegularTabGridIdentifier";
 NSString* const kIncognitoTabGridIdentifier = @"kIncognitoTabGridIdentifier";
+
+NSString* const kTabGridEditButtonIdentifier = @"kTabGridEditButtonIdentifier";
+NSString* const kTabGridEditCloseTabsButtonIdentifier =
+    @"kTabGridEditCloseTabsButtonIdentifier";
+NSString* const kTabGridEditSelectAllButtonIdentifier =
+    @"kTabGridEditSelectAllButtonIdentifier";
+NSString* const kTabGridEditAddToButtonIdentifier =
+    @"kTabGridEditAddToButtonIdentifier";
+NSString* const kTabGridEditShareButtonIdentifier =
+    @"kTabGridEditShareButtonIdentifier";
 
 // The color of the text buttons in the toolbars.
 const int kTabGridToolbarTextButtonColor = 0xFFFFFF;

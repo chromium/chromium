@@ -251,10 +251,13 @@ const int kNewTabButtonTrailingSpace = 20;
   _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
   _selectAllButton.title =
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
+  _selectAllButton.accessibilityIdentifier =
+      kTabGridEditSelectAllButtonIdentifier;
 
   _selectTabsButton = [[UIBarButtonItem alloc] init];
   _selectTabsButton.image = [UIImage imageNamed:@"select_tabs_toolbar_button"];
   _selectTabsButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  _selectTabsButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
 
   // The segmented control has an intrinsic size.
   _pageControl = [[TabGridPageControl alloc] init];

@@ -99,6 +99,11 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
     config.features_enabled.push_back(kTabGridContextMenu);
   }
 
+  if ([self isRunningTest:@selector(testTabGridBulkActionCloseTabs)] ||
+      [self isRunningTest:@selector(testTabGridBulkActionSelectAll)]) {
+    config.features_enabled.push_back(kTabsBulkActions);
+  }
+
   config.features_disabled.push_back(kStartSurface);
 
   return config;
@@ -908,6 +913,106 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
+}
+
+#pragma mark - Bulk Actions
+
+// Tests closing a tab in the tab grid edit mode and that edit mode is exited
+// after closing all tabs.
+- (void)testTabGridBulkActionCloseTabs {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Bulk actions are only supported on iOS 14 and later.");
+  }
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      performAction:grey_tap()];
+
+  // Tap tab to select.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditCloseTabsButton()]
+      performAction:grey_tap()];
+
+  NSString* closeTabsButtonText =
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
+          /*number=*/1));
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   closeTabsButtonText)]
+      performAction:grey_tap()];
+
+  // Make sure that the tab is no longer present.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle([NSString
+                                          stringWithUTF8String:kTitle1])]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridRegularTabsEmptyStateView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify edit mode is exited.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests selecting all items in the tab grdi edit mode using the "Select all"
+// button.
+- (void)testTabGridBulkActionSelectAll {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Bulk actions are only supported on iOS 14 and later.");
+  }
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      performAction:grey_tap()];
+
+  // Tap "Select all" and close selected tabs.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditSelectAllButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditCloseTabsButton()]
+      performAction:grey_tap()];
+  NSString* closeTabsButtonText =
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
+          /*number=*/3));
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   closeTabsButtonText)]
+      performAction:grey_tap()];
+
+  // Make sure that the tab grid is empty.
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
+
+  // Verify edit mode is exited.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Helper Methods

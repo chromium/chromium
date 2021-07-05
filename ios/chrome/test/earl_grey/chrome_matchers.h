@@ -593,6 +593,17 @@ id<GREYMatcher> ManualFallbackSuggestPasswordMatcher();
 // Returns a matcher for the button to accept the generated password.
 id<GREYMatcher> UseSuggestedPasswordMatcher();
 
+#pragma mark - Tab Grid Edit Mode
+
+// Returns a matcher for the button to enter the tab grid tab edit mode.
+id<GREYMatcher> TabGridEditButton();
+
+// Returns a matcher for the button to close the selected tabs.
+id<GREYMatcher> TabGridEditCloseTabsButton();
+
+// Returns a matcher for the button to select all tabs.
+id<GREYMatcher> TabGridEditSelectAllButton();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_H_

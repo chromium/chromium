@@ -244,16 +244,17 @@
     _addToButton = [[UIBarButtonItem alloc] init];
     _addToButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
     _addToButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_ADD_TO_BUTTON);
-    _addToButton.accessibilityIdentifier = kTabGridAddToButtonIdentifier;
+    _addToButton.accessibilityIdentifier = kTabGridEditAddToButtonIdentifier;
     _shareButton = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                              target:nil
                              action:nil];
     _shareButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-    _shareButton.accessibilityIdentifier = kTabGridShareButtonIdentifier;
+    _shareButton.accessibilityIdentifier = kTabGridEditShareButtonIdentifier;
     _closeTabsButton = [[UIBarButtonItem alloc] init];
     _closeTabsButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-    _closeTabsButton.accessibilityIdentifier = kTabGridCloseButtonIdentifier;
+    _closeTabsButton.accessibilityIdentifier =
+        kTabGridEditCloseTabsButtonIdentifier;
     [self updateSelectionButtons];
   }
 

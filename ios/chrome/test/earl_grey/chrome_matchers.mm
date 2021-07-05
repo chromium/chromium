@@ -751,4 +751,18 @@ id<GREYMatcher> UseSuggestedPasswordMatcher() {
   return [ChromeMatchersAppInterface useSuggestedPasswordMatcher];
 }
 
+#pragma mark - Tab Grid Edit Mode
+
+id<GREYMatcher> TabGridEditButton() {
+  return [ChromeMatchersAppInterface tabGridEditButton];
+}
+
+id<GREYMatcher> TabGridEditCloseTabsButton() {
+  return [ChromeMatchersAppInterface tabGridEditCloseTabsButton];
+}
+
+id<GREYMatcher> TabGridEditSelectAllButton() {
+  return [ChromeMatchersAppInterface tabGridEditSelectAllButton];
+}
+
 }  // namespace chrome_test_util

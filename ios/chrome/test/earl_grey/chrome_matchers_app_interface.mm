@@ -1134,4 +1134,20 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_interactable(), nullptr);
 }
 
+#pragma mark - Tab Grid Edit Mode
++ (id<GREYMatcher>)tabGridEditButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridEditCloseTabsButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditCloseTabsButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridEditSelectAllButton {
+  return grey_allOf(grey_accessibilityID(kTabGridEditSelectAllButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
 @end
