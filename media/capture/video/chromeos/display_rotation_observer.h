@@ -53,10 +53,14 @@ class ScreenObserverDelegate
   void SendDisplayRotationOnCaptureThread(const display::Display& display);
 
   DisplayRotationObserver* observer_;
+
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   // The task runner where the calls to display::Display must be serialized on.
   const scoped_refptr<base::SingleThreadTaskRunner> display_task_runner_;
   // The task runner on which the ScreenObserverDelegate is created.
   const scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner_;
+
   DISALLOW_IMPLICIT_CONSTRUCTORS(ScreenObserverDelegate);
 };
 

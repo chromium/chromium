@@ -57,17 +57,14 @@ void ScreenObserverDelegate::AddObserverOnDisplayThread() {
   DCHECK(display_task_runner_->BelongsToCurrentThread());
   display::Screen* screen = display::Screen::GetScreen();
   if (screen) {
-    screen->AddObserver(this);
+    display_observer_.emplace(this);
     SendDisplayRotation(screen->GetPrimaryDisplay());
   }
 }
 
 void ScreenObserverDelegate::RemoveObserverOnDisplayThread() {
   DCHECK(display_task_runner_->BelongsToCurrentThread());
-  display::Screen* screen = display::Screen::GetScreen();
-  if (screen) {
-    screen->RemoveObserver(this);
-  }
+  display_observer_.reset();
 }
 
 // Post the screen rotation change from the UI thread to capture thread
