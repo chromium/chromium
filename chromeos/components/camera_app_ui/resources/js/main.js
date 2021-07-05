@@ -34,12 +34,6 @@ import * as util from './util.js';
 import {Camera} from './views/camera.js';
 import {CameraIntent} from './views/camera_intent.js';
 import {Dialog} from './views/dialog.js';
-import {PTZPanel} from './views/ptz_panel.js';
-import {
-  BaseSettings,
-  PrimarySettings,
-  ResolutionSettings,
-} from './views/settings.js';
 import {View} from './views/view.js';
 import {Warning, WarningType} from './views/warning.js';
 import {WaitableEvent} from './waitable_event.js';
@@ -135,20 +129,10 @@ export class App {
     this.setupEffect_();
     focusRing.initialize();
 
-    const resolutionSettings = new ResolutionSettings(
-        this.infoUpdater_, this.photoPreferrer_, this.videoPreferrer_);
 
     // Set up views navigation by their DOM z-order.
     nav.setup([
       this.cameraView_,
-      new PrimarySettings(),
-      new PTZPanel(),
-      new BaseSettings(ViewName.GRID_SETTINGS),
-      new BaseSettings(ViewName.TIMER_SETTINGS),
-      resolutionSettings,
-      resolutionSettings.photoResolutionSettings,
-      resolutionSettings.videoResolutionSettings,
-      new BaseSettings(ViewName.EXPERT_SETTINGS),
       new Warning(),
       new Dialog(ViewName.MESSAGE_DIALOG),
       new View(ViewName.SPLASH),

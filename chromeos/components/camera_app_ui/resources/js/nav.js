@@ -27,12 +27,31 @@ let allViews = [];
  */
 let topmostIndex = -1;
 
+// Disable checking jsdoc generator annotation which is incompatible with
+// closure compiler: JSdoc use @generator and @yields while closure compiler use
+// @return {Generator}.
+/* eslint-disable valid-jsdoc */
+
+/**
+ * Gets view and all recursive subviews.
+ * @param {!View} view
+ * @return {!Generator<!View>}
+ */
+function* getRecursiveViews(view) {
+  yield view;
+  for (const subview of view.getSubViews()) {
+    yield* getRecursiveViews(subview);
+  }
+}
+
+/* eslint-enable valid-jsdoc */
+
 /**
  * Sets up navigation for all views, e.g. camera-view, dialog-view, etc.
  * @param {!Array<!View>} views All views in ascending z-order.
  */
 export function setup(views) {
-  allViews = views;
+  allViews = views.flatMap((v) => [...getRecursiveViews(v)]);
   // Manage all tabindex usages in for navigation.
   document.body.addEventListener('keydown', (event) => {
     const e = assertInstanceof(event, KeyboardEvent);

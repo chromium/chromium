@@ -93,6 +93,14 @@ export class View {
   }
 
   /**
+   * Gets sub-views nested under this view.
+   * @return {!Array<!View>}
+   */
+  getSubViews() {
+    return [];
+  }
+
+  /**
    * Hook of the subclass for handling the key.
    * @param {string} key Key to be handled.
    * @return {boolean} Whether the key has been handled or not.

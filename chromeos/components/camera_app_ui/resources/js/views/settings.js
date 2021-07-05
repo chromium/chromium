@@ -123,9 +123,11 @@ export class BaseSettings extends View {
  */
 export class PrimarySettings extends BaseSettings {
   /**
-   * @public
+   * @param {!DeviceInfoUpdater} infoUpdater
+   * @param {!PhotoConstraintsPreferrer} photoPreferrer
+   * @param {!VideoConstraintsPreferrer} videoPreferrer
    */
-  constructor() {
+  constructor(infoUpdater, photoPreferrer, videoPreferrer) {
     const openHandler = (openerId, viewName) => {
       const opener = dom.get(`#${openerId}`, HTMLElement);
       return {[openerId]: () => this.openSubSettings(opener, viewName)};
@@ -145,6 +147,17 @@ export class PrimarySettings extends BaseSettings {
       },
       'settings-help': () => util.openHelp(),
     });
+
+    /**
+     * @const {!Array<!View>}
+     * @private
+     */
+    this.subViews_ = [
+      new BaseSettings(ViewName.GRID_SETTINGS),
+      new BaseSettings(ViewName.TIMER_SETTINGS),
+      new ResolutionSettings(infoUpdater, photoPreferrer, videoPreferrer),
+      new BaseSettings(ViewName.EXPERT_SETTINGS),
+    ];
 
     /**
      * @type {number}
@@ -185,6 +198,13 @@ export class PrimarySettings extends BaseSettings {
       setExpertMode(true);
       reset();
     }
+  }
+
+  /**
+   * @override
+   */
+  getSubViews() {
+    return this.subViews_;
   }
 }
 
@@ -396,6 +416,16 @@ export class ResolutionSettings extends BaseSettings {
             });
       });
     });
+  }
+
+  /**
+   * @override
+   */
+  getSubViews() {
+    return [
+      this.photoResolutionSettings,
+      this.videoResolutionSettings,
+    ];
   }
 
   /**

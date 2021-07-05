@@ -54,6 +54,8 @@ import {Options} from './camera/options.js';
 import {Preview} from './camera/preview.js';
 import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
+import {PTZPanel} from './ptz_panel.js';
+import {PrimarySettings} from './settings.js';
 import {View} from './view.js';
 import {WarningType} from './warning.js';
 
@@ -106,6 +108,15 @@ export class Camera extends View {
      * @private
      */
     this.perfLogger_ = perfLogger;
+
+    /**
+     * @const {!Array<!View>}
+     * @private
+     */
+    this.subViews_ = [
+      new PrimarySettings(infoUpdater, photoPreferrer, videoPreferrer),
+      new PTZPanel(),
+    ];
 
     /**
      * Layout handler for the camera view.
@@ -464,6 +475,13 @@ export class Camera extends View {
     return this.locked_ || windowController.isMinimized() ||
         state.get(state.State.SUSPEND) || this.screenOff_ ||
         this.isTabletBackground_();
+  }
+
+  /**
+   * @override
+   */
+  getSubViews() {
+    return this.subViews_;
   }
 
   /**
