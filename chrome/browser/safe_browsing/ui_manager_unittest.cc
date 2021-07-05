@@ -344,7 +344,7 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_UICallbackProceed) {
   resource.callback =
       base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
                           base::Unretained(&waiter));
-  resource.callback_thread = content::GetUIThreadTaskRunner({});
+  resource.callback_sequence = content::GetUIThreadTaskRunner({});
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
   SimulateBlockingPageDone(resources, true);
@@ -367,7 +367,7 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_UICallbackDontProceed) {
   resource.callback =
       base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
                           base::Unretained(&waiter));
-  resource.callback_thread = content::GetUIThreadTaskRunner({});
+  resource.callback_sequence = content::GetUIThreadTaskRunner({});
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
   SimulateBlockingPageDone(resources, false);
@@ -390,7 +390,7 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_IOCallbackProceed) {
   resource.callback =
       base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDoneOnIO,
                           base::Unretained(&waiter));
-  resource.callback_thread = content::GetIOThreadTaskRunner({});
+  resource.callback_sequence = content::GetIOThreadTaskRunner({});
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
   SimulateBlockingPageDone(resources, true);
@@ -413,7 +413,7 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_IOCallbackDontProceed) {
   resource.callback =
       base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDoneOnIO,
                           base::Unretained(&waiter));
-  resource.callback_thread = content::GetIOThreadTaskRunner({});
+  resource.callback_sequence = content::GetIOThreadTaskRunner({});
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
   SimulateBlockingPageDone(resources, false);
@@ -537,7 +537,7 @@ TEST_F(SafeBrowsingUIManagerTest,
   resource.callback =
       base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDoneOnIO,
                           base::Unretained(&waiter));
-  resource.callback_thread = content::GetIOThreadTaskRunner({});
+  resource.callback_sequence = content::GetIOThreadTaskRunner({});
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
 
@@ -599,7 +599,7 @@ TEST_F(SafeBrowsingUIManagerTest, NoInterstitialInExtensions) {
   resource.callback =
       base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
                           base::Unretained(&waiter));
-  resource.callback_thread = content::GetUIThreadTaskRunner({});
+  resource.callback_sequence = content::GetUIThreadTaskRunner({});
   SafeBrowsingUIManager::StartDisplayingBlockingPage(ui_manager(), resource);
   waiter.WaitForCallback();
   EXPECT_FALSE(waiter.proceed());

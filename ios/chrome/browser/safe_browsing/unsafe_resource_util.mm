@@ -18,9 +18,9 @@ using security_interstitials::UnsafeResource;
 void RunUnsafeResourceCallback(const UnsafeResource& resource,
                                bool proceed,
                                bool showed_interstitial) {
-  DCHECK(resource.callback_thread);
+  DCHECK(resource.callback_sequence);
   DCHECK(!resource.callback.is_null());
-  resource.callback_thread->PostTask(
+  resource.callback_sequence->PostTask(
       FROM_HERE,
       base::BindOnce(resource.callback, proceed, showed_interstitial));
 }

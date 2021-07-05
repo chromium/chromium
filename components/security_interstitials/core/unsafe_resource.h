@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -49,7 +49,7 @@ struct UnsafeResource {
   // committed.
   bool IsMainPageLoadBlocked() const;
 
-  // Checks if |callback| is not null and posts it to |callback_thread|.
+  // Checks if |callback| is not null and posts it to |callback_sequence|.
   void DispatchCallback(const base::Location& from_here,
                         bool proceed,
                         bool showed_interstitial) const;
@@ -64,8 +64,8 @@ struct UnsafeResource {
   safe_browsing::SBThreatType threat_type;
   safe_browsing::ThreatMetadata threat_metadata;
   network::mojom::RequestDestination request_destination;
-  UrlCheckCallback callback;  // This is called back on |callback_thread|.
-  scoped_refptr<base::SingleThreadTaskRunner> callback_thread;
+  UrlCheckCallback callback;  // This is called back on |callback_sequence|.
+  scoped_refptr<base::SequencedTaskRunner> callback_sequence;
   // TODO(crbug.com/1073315): |web_state_getter| is only used on iOS, and
   // |web_contents_getter| is used on all other platforms.  This struct should
   // be refactored to use only the common functionality can be shared across

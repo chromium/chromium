@@ -210,7 +210,7 @@ SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(const GURL& url,
   resource.callback =
       base::BindRepeating(&SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete,
                           weak_factory_.GetWeakPtr());
-  resource.callback_thread = base::ThreadTaskRunnerHandle::Get();
+  resource.callback_sequence = base::ThreadTaskRunnerHandle::Get();
   resource.web_contents_getter = web_contents_getter_;
   resource.web_state_getter = web_state_getter_;
   resource.threat_source = is_from_real_time_check

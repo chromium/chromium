@@ -181,7 +181,7 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     // In this case we are about to leave an interstitial due to the user
     // clicking proceed on it, we shouldn't call OnSafeBrowsingHit again.
-    resource.callback_thread->PostTask(
+    resource.callback_sequence->PostTask(
         FROM_HERE, base::BindOnce(resource.callback, true /* proceed */,
                                   false /* showed_interstitial */));
     return;
