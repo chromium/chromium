@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -70,11 +74,14 @@ public class AutofillErrorDialogBridge {
      */
     @CalledByNative
     public void show(String title, String description, String buttonLabel, int titleIconId) {
+        View errorDialogContentView =
+                LayoutInflater.from(mContext).inflate(R.layout.autofill_error_dialog, null);
+        ((TextView) errorDialogContentView.findViewById(R.id.error_message)).setText(description);
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                         .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.MESSAGE, description)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, errorDialogContentView)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_DISABLED, true)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, buttonLabel);
         if (titleIconId != 0) {

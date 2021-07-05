@@ -8,8 +8,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
-
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -45,8 +44,6 @@ public class AutofillErrorDialogBridgeTest {
 
     @Mock
     private AutofillErrorDialogBridge.Natives mNativeMock;
-    @Mock
-    private Context mContext;
 
     private AutofillErrorDialogBridge mAutofillErrorDialogBridge;
     private FakeModalDialogManager mModalDialogManager;
@@ -83,8 +80,9 @@ public class AutofillErrorDialogBridgeTest {
     public void setUp() {
         reset(mNativeMock);
         mModalDialogManager = new FakeModalDialogManager();
-        mAutofillErrorDialogBridge = new AutofillErrorDialogBridge(
-                NATIVE_AUTOFILL_ERROR_DIALOG_VIEW, mModalDialogManager, mContext);
+        mAutofillErrorDialogBridge =
+                new AutofillErrorDialogBridge(NATIVE_AUTOFILL_ERROR_DIALOG_VIEW,
+                        mModalDialogManager, ApplicationProvider.getApplicationContext());
         mMocker.mock(AutofillErrorDialogBridgeJni.TEST_HOOKS, mNativeMock);
     }
 

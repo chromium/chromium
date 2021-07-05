@@ -11,6 +11,7 @@ android_library("java") {
   ]
   sources = [ "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java" ]
   deps = [
+    ":java_resources",
     ":jni_headers",
     "//base:base_java",
     "//base:jni_java",
@@ -18,6 +19,7 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
 }
 
 generate_jni("jni_headers") {
@@ -39,9 +41,19 @@ android_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/autofill_error_dialog.xml" ]
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+    "//components/browser_ui/styles/android:java_resources",
+    "//ui/android:ui_java_resources",
   ]
 }
