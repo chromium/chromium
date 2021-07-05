@@ -41,8 +41,6 @@ class ScriptPrecondition {
   ScriptPrecondition(
       const google::protobuf::RepeatedPtrField<std::string>& domain_match,
       std::vector<std::unique_ptr<re2::RE2>> path_pattern,
-      const google::protobuf::RepeatedPtrField<ScriptStatusMatchProto>&
-          status_match,
       const google::protobuf::RepeatedPtrField<ScriptParameterMatchProto>&
           parameter_match,
       const ElementConditionProto& must_match);
@@ -57,15 +55,12 @@ class ScriptPrecondition {
   void Check(const GURL& url,
              BatchElementChecker* batch_checks,
              const TriggerContext& context,
-             const std::map<std::string, ScriptStatusProto>& executed_scripts,
              base::OnceCallback<void(bool)> callback);
 
  private:
   bool MatchDomain(const GURL& url) const;
   bool MatchPath(const GURL& url) const;
   bool MatchParameters(const TriggerContext& context) const;
-  bool MatchScriptStatus(
-      const std::map<std::string, ScriptStatusProto>& executed_scripts) const;
 
   // Domain (exact match) excluding the last '/' character.
   std::set<std::string> domain_match_;
@@ -75,9 +70,6 @@ class ScriptPrecondition {
 
   // Condition on parameters, identified by name, as found in the intent.
   std::vector<ScriptParameterMatchProto> parameter_match_;
-
-  // Conditions regarding the execution status of passed scripts.
-  std::vector<ScriptStatusMatchProto> status_match_;
 
   ElementPrecondition element_precondition_;
 

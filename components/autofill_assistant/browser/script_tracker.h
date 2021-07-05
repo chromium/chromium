@@ -154,7 +154,11 @@ class ScriptTracker : public ScriptExecutor::Listener {
   std::vector<std::unique_ptr<Script>> interrupts_;
 
   // List of scripts that have been executed and their corresponding statuses.
-  std::map<std::string, ScriptStatusProto> scripts_state_;
+  //
+  // TODO(b/192823175): Note that this map's only remaining use is in tests and
+  // can be removed once the testing code has been refactored to no longer
+  // depend on this field.
+  std::map<std::string, ScriptExecutor::ScriptStatus> scripts_state_;
 
   std::unique_ptr<BatchElementChecker> batch_element_checker_;
 

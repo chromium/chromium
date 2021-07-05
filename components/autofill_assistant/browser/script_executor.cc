@@ -70,7 +70,7 @@ ScriptExecutor::ScriptExecutor(
     const std::string& global_payload,
     const std::string& script_payload,
     ScriptExecutor::Listener* listener,
-    std::map<std::string, ScriptStatusProto>* scripts_state,
+    std::map<std::string, ScriptStatus>* scripts_state,
     const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
     ScriptExecutorDelegate* delegate)
     : script_path_(script_path),
@@ -101,7 +101,7 @@ void ScriptExecutor::Run(const UserData* user_data,
 #else
   DVLOG(2) << "Starting script " << script_path_;
 #endif
-  (*scripts_state_)[script_path_] = SCRIPT_STATUS_RUNNING;
+  (*scripts_state_)[script_path_] = ScriptStatus::RUNNING;
 
   DCHECK(user_data);
   user_data_ = user_data;
@@ -932,7 +932,7 @@ void ScriptExecutor::RunCallback(bool success) {
 void ScriptExecutor::RunCallbackWithResult(const Result& result) {
   DCHECK(callback_);
   (*scripts_state_)[script_path_] =
-      result.success ? SCRIPT_STATUS_SUCCESS : SCRIPT_STATUS_FAILURE;
+      result.success ? ScriptStatus::SUCCESS : ScriptStatus::FAILURE;
   std::move(callback_).Run(result);
 }
 
@@ -1213,7 +1213,7 @@ void ScriptExecutor::WaitForDomOperation::RunChecks(
 
       interrupt->precondition->Check(
           delegate_->GetCurrentURL(), batch_element_checker_.get(),
-          *delegate_->GetTriggerContext(), *main_script_->scripts_state_,
+          *delegate_->GetTriggerContext(),
           base::BindOnce(&WaitForDomOperation::OnPreconditionCheckDone,
                          weak_ptr_factory_.GetWeakPtr(),
                          interrupt->handle.path));

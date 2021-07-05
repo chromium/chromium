@@ -100,13 +100,6 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
            ->mutable_element_condition()
            ->mutable_match() = ToSelectorProto(selector);
     }
-    ScriptStatusMatchProto dont_run_twice_precondition;
-    dont_run_twice_precondition.set_script(path);
-    dont_run_twice_precondition.set_comparator(ScriptStatusMatchProto::EQUAL);
-    dont_run_twice_precondition.set_status(SCRIPT_STATUS_NOT_RUN);
-    *script->mutable_presentation()
-         ->mutable_precondition()
-         ->add_script_status_match() = dont_run_twice_precondition;
   }
 
   const std::vector<ScriptHandle>& runnable_scripts() {
@@ -244,32 +237,6 @@ TEST_F(ScriptTrackerTest, NewScriptChangesRunnable) {
                   "exists");
   SetAndCheckScripts();
   EXPECT_EQ(2, runnable_scripts_changed_);
-}
-
-TEST_F(ScriptTrackerTest, CheckScriptsAgainAfterScriptEnd) {
-  InitScriptProto(AddScript(), "script 1", "script1", "exists");
-  InitScriptProto(AddScript(), "script 2", "script2", "exists");
-  SetAndCheckScripts();
-
-  // Both scripts are runnable
-  EXPECT_EQ(1, runnable_scripts_changed_);
-  EXPECT_THAT(runnable_script_paths(),
-              UnorderedElementsAre("script1", "script2"));
-
-  // run 'script 1'
-  base::MockCallback<ScriptExecutor::RunScriptCallback> execute_callback;
-  EXPECT_CALL(execute_callback,
-              Run(Field(&ScriptExecutor::Result::success, true)));
-
-  tracker_.ExecuteScript("script1", &user_data_,
-                         std::make_unique<TriggerContext>(),
-                         execute_callback.Get());
-  tracker_.CheckScripts();
-
-  // The 2nd time the scripts are checked, automatically after the script runs,
-  // 'script1' isn't runnable anymore, because it's already been run.
-  EXPECT_EQ(2, runnable_scripts_changed_);
-  EXPECT_THAT(runnable_script_paths(), ElementsAre("script2"));
 }
 
 TEST_F(ScriptTrackerTest, CheckScriptsAfterDOMChange) {

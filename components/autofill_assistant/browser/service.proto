@@ -377,41 +377,6 @@ message SupportedScriptProto {
   reserved 3;
 }
 
-enum ScriptStatusProto {
-  // Never explicitly set. Reading this value means the enum field is either
-  // not set or set to a value not listed here.
-  UNKNOWN_SCRIPT_STATUS = 0;
-  // The script finished successfully.
-  SCRIPT_STATUS_SUCCESS = 1;
-  // The script failed.
-  SCRIPT_STATUS_FAILURE = 2;
-  // The user cancelled the script.
-  SCRIPT_STATUS_CANCELLED = 3;
-  // The script is currently running.
-  SCRIPT_STATUS_RUNNING = 4;
-  // The script was not run.
-  SCRIPT_STATUS_NOT_RUN = 5;
-}
-
-// Condition on the status of a previous script run.
-message ScriptStatusMatchProto {
-  enum Comparator {
-    UNSPECIFIED = 0;
-    EQUAL = 1;
-    DIFFERENT = 2;
-  }
-
-  // Required. Path of the script whose status should be checked.
-  optional string script = 1;
-
-  // Required. The status the script should have for the condition to hold.
-  optional ScriptStatusProto status = 2;
-
-  // Optional. The comparison performed when checking the status. It will be
-  // interpreted as EQUAL if not set.
-  optional Comparator comparator = 3;
-}
-
 message ScriptPreconditionProto {
   // Pattern of the path parts of the URL, including query and '#''.
   repeated string path_pattern = 5;
@@ -420,12 +385,11 @@ message ScriptPreconditionProto {
 
   // Combined with AND: all matches must be true for precondition to hold.
   repeated ScriptParameterMatchProto script_parameter_match = 7;
-  repeated ScriptStatusMatchProto script_status_match = 8;
 
   // Script can only run if the given condition match.
   optional ElementConditionProto element_condition = 10;
 
-  reserved 3, 9;
+  reserved 3, 8, 9;
 }
 
 message ScriptParameterMatchProto {

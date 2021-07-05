@@ -85,7 +85,6 @@ void ScriptTracker::CheckScripts() {
 
     script->precondition->Check(
         url, batch_element_checker_.get(), *delegate_->GetTriggerContext(),
-        scripts_state_,
         base::BindOnce(&ScriptTracker::OnPreconditionCheck,
                        weak_ptr_factory_.GetWeakPtr(), script->handle.path));
   }
@@ -152,14 +151,6 @@ base::Value ScriptTracker::GetDebugContext() const {
   std::string last_script_payload_js = last_script_payload_;
   base::Base64Encode(last_script_payload_js, &last_script_payload_js);
   dict.SetKey("last-script-payload", base::Value(last_script_payload_js));
-
-  std::vector<base::Value> scripts_state_js;
-  for (const auto& entry : scripts_state_) {
-    base::Value script_js = base::Value(base::Value::Type::DICTIONARY);
-    script_js.SetKey(entry.first, base::Value(entry.second));
-    scripts_state_js.push_back(std::move(script_js));
-  }
-  dict.SetKey("executed-scripts", base::Value(scripts_state_js));
 
   std::vector<base::Value> available_scripts_js;
   for (const std::unique_ptr<Script>& script : available_scripts_)

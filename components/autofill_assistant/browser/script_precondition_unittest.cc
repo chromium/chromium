@@ -83,8 +83,7 @@ class ScriptPreconditionTest : public testing::Test {
 
     DirectCallback callback;
     BatchElementChecker batch_checks;
-    precondition->Check(url_, &batch_checks, *trigger_context_,
-                        executed_scripts_, callback.Get());
+    precondition->Check(url_, &batch_checks, *trigger_context_, callback.Get());
     batch_checks.Run(&mock_web_controller_);
     return callback.GetResultOrDie();
   }
@@ -92,7 +91,6 @@ class ScriptPreconditionTest : public testing::Test {
   GURL url_;
   MockWebController mock_web_controller_;
   std::unique_ptr<TriggerContext> trigger_context_;
-  std::map<std::string, ScriptStatusProto> executed_scripts_;
 };
 
 TEST_F(ScriptPreconditionTest, NoConditions) {
@@ -177,72 +175,6 @@ TEST_F(ScriptPreconditionTest, BadPathPattern) {
   proto.add_path_pattern("invalid[");
 
   EXPECT_EQ(nullptr, ScriptPrecondition::FromProto("unused", proto));
-}
-
-TEST_F(ScriptPreconditionTest, WrongScriptStatusEqualComparator) {
-  ScriptPreconditionProto proto;
-
-  ScriptStatusMatchProto* script_status_match = proto.add_script_status_match();
-  script_status_match->set_script("previous_script_success");
-  script_status_match->set_comparator(ScriptStatusMatchProto::EQUAL);
-  script_status_match->set_status(SCRIPT_STATUS_NOT_RUN);
-  executed_scripts_["previous_script_success"] = SCRIPT_STATUS_SUCCESS;
-
-  EXPECT_FALSE(Check(proto));
-}
-
-TEST_F(ScriptPreconditionTest, WrongScriptStatusDifferentComparator) {
-  ScriptPreconditionProto proto;
-
-  ScriptStatusMatchProto* script_status_match = proto.add_script_status_match();
-  script_status_match->set_script("previous_script_success");
-  script_status_match->set_comparator(ScriptStatusMatchProto::DIFFERENT);
-  script_status_match->set_status(SCRIPT_STATUS_NOT_RUN);
-  executed_scripts_["previous_script_success"] = SCRIPT_STATUS_SUCCESS;
-
-  EXPECT_TRUE(Check(proto));
-}
-
-TEST_F(ScriptPreconditionTest, WrongScriptStatusComparatorNotSet) {
-  ScriptPreconditionProto proto;
-
-  ScriptStatusMatchProto* script_status_match = proto.add_script_status_match();
-  script_status_match->set_script("previous_script_success");
-  script_status_match->set_comparator(ScriptStatusMatchProto::EQUAL);
-  script_status_match->set_status(SCRIPT_STATUS_NOT_RUN);
-  executed_scripts_["previous_script_success"] = SCRIPT_STATUS_SUCCESS;
-
-  EXPECT_FALSE(Check(proto));
-}
-
-TEST_F(ScriptPreconditionTest, WrongScriptStatus) {
-  ScriptPreconditionProto proto;
-
-  ScriptStatusMatchProto* script_status_match = proto.add_script_status_match();
-  script_status_match->set_script("previous_script_success");
-  script_status_match->set_comparator(ScriptStatusMatchProto::EQUAL);
-  script_status_match->set_status(SCRIPT_STATUS_NOT_RUN);
-  executed_scripts_["previous_script_success"] = SCRIPT_STATUS_SUCCESS;
-
-  EXPECT_FALSE(Check(proto));
-}
-
-TEST_F(ScriptPreconditionTest, MultipleScriptStatus) {
-  ScriptPreconditionProto proto;
-
-  ScriptStatusMatchProto* previous1 = proto.add_script_status_match();
-  previous1->set_script("previous1");
-  previous1->set_comparator(ScriptStatusMatchProto::EQUAL);
-  previous1->set_status(SCRIPT_STATUS_SUCCESS);
-
-  ScriptStatusMatchProto* previous2 = proto.add_script_status_match();
-  previous2->set_script("previous2");
-  previous2->set_comparator(ScriptStatusMatchProto::DIFFERENT);
-  previous2->set_status(SCRIPT_STATUS_NOT_RUN);
-
-  executed_scripts_["previous1"] = SCRIPT_STATUS_SUCCESS;
-
-  EXPECT_FALSE(Check(proto));
 }
 
 TEST_F(ScriptPreconditionTest, ParameterMustExist) {

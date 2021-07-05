@@ -163,14 +163,6 @@ class ControllerTest : public testing::Test {
     return script;
   }
 
-  static void RunOnce(SupportedScriptProto* proto) {
-    auto* run_once = proto->mutable_presentation()
-                         ->mutable_precondition()
-                         ->add_script_status_match();
-    run_once->set_script(proto->path());
-    run_once->set_status(SCRIPT_STATUS_NOT_RUN);
-  }
-
   void SetupScripts(SupportsScriptResponseProto scripts) {
     std::string scripts_str;
     scripts.SerializeToString(&scripts_str);
@@ -325,8 +317,7 @@ void ScriptExecutorListener::OnPause(const std::string& message,
 TEST_F(ControllerTest, FetchAndRunScriptsWithChip) {
   SupportsScriptResponseProto script_response;
   AddRunnableScript(&script_response, "script1");
-  auto* script2 = AddRunnableScript(&script_response, "script2");
-  RunOnce(script2);
+  AddRunnableScript(&script_response, "script2");
   SetNextScriptResponse(script_response);
 
   testing::InSequence seq;
@@ -350,11 +341,16 @@ TEST_F(ControllerTest, FetchAndRunScriptsWithChip) {
       .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
   EXPECT_TRUE(controller_->PerformUserAction(1));
 
-  // Offering the remaining choice: script1 as script2 can only run once.
+  // Offering the same scripts again.
   EXPECT_EQ(AutofillAssistantState::PROMPT, controller_->GetState());
-  EXPECT_THAT(controller_->GetUserActions(),
-              ElementsAre(Property(&UserAction::chip,
-                                   Field(&Chip::text, StrEq("script1")))));
+  EXPECT_THAT(
+      controller_->GetUserActions(),
+      UnorderedElementsAre(Property(&UserAction::chip,
+                                    AllOf(Field(&Chip::text, StrEq("script1")),
+                                          Field(&Chip::type, NORMAL_ACTION))),
+                           Property(&UserAction::chip,
+                                    AllOf(Field(&Chip::text, StrEq("script2")),
+                                          Field(&Chip::type, NORMAL_ACTION)))));
 }
 
 TEST_F(ControllerTest, ReportDirectActions) {
@@ -688,8 +684,6 @@ TEST_F(ControllerTest,
   SupportsScriptResponseProto script_response;
   auto* autostart = AddRunnableScript(&script_response, "runnable");
   autostart->mutable_presentation()->set_autostart(true);
-  RunOnce(autostart);
-  SetRepeatedScriptResponse(script_response);
 
   Start("http://a.example.com/path");
   ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
@@ -706,7 +700,6 @@ TEST_F(ControllerTest,
   SupportsScriptResponseProto script_response;
   auto* autostart = AddRunnableScript(&script_response, "runnable");
   autostart->mutable_presentation()->set_autostart(true);
-  RunOnce(autostart);
   SetRepeatedScriptResponse(script_response);
 
   EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(0u)))
@@ -858,47 +851,6 @@ TEST_F(ControllerTest, SetProgressStepFromUnknownIdentifier) {
   EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(_)).Times(0);
   EXPECT_FALSE(controller_->SetProgressActiveStepIdentifier("icon3"));
   EXPECT_FALSE(controller_->GetProgressActiveStep().has_value());
-}
-
-TEST_F(ControllerTest, StateChanges) {
-  EXPECT_EQ(AutofillAssistantState::INACTIVE, GetUiDelegate()->GetState());
-
-  SupportsScriptResponseProto script_response;
-  auto* script1 = AddRunnableScript(&script_response, "script1");
-  RunOnce(script1);
-  auto* script2 = AddRunnableScript(&script_response, "script2");
-  RunOnce(script2);
-  SetNextScriptResponse(script_response);
-
-  Start("http://a.example.com/path");
-  EXPECT_THAT(states_,
-              ElementsAre(AutofillAssistantState::STARTING,
-                          AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT));
-
-  // Run script1: State should become RUNNING, as there's another script, then
-  // go back to prompt to propose that script.
-  states_.clear();
-  ASSERT_THAT(controller_->GetUserActions(), SizeIs(2));
-  EXPECT_TRUE(controller_->PerformUserAction(0));
-
-  EXPECT_EQ(AutofillAssistantState::PROMPT, GetUiDelegate()->GetState());
-  EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::RUNNING,
-                                   AutofillAssistantState::PROMPT));
-
-  // Run script2: State should become STOPPED, as there are no more runnable
-  // scripts.
-  states_.clear();
-  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
-  EXPECT_TRUE(controller_->PerformUserAction(0));
-
-  EXPECT_EQ(AutofillAssistantState::STOPPED, GetUiDelegate()->GetState());
-  EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::RUNNING,
-                                   AutofillAssistantState::PROMPT,
-                                   AutofillAssistantState::STOPPED));
-
-  // The cancel button is removed and the feedback chip is displayed.
-  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
-  EXPECT_EQ(FEEDBACK_ACTION, controller_->GetUserActions().at(0).chip().type);
 }
 
 TEST_F(ControllerTest, AttachUIWhenStarting) {

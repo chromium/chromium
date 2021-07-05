@@ -159,7 +159,7 @@ class ScriptExecutorTest : public testing::Test,
   Script script_;
   StrictMock<MockService> mock_service_;
   NiceMock<MockWebController> mock_web_controller_;
-  std::map<std::string, ScriptStatusProto> scripts_state_;
+  std::map<std::string, ScriptExecutor::ScriptStatus> scripts_state_;
 
   std::vector<std::unique_ptr<Script>> ordered_interrupts_;
   std::string last_global_payload_;
@@ -892,8 +892,9 @@ TEST_F(ScriptExecutorTest, UpdateScriptStateWhileRunning) {
 
   EXPECT_THAT(scripts_state_, IsEmpty());
   executor_->Run(&user_data_, executor_callback_.Get());
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_RUNNING)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::RUNNING)));
 }
 
 TEST_F(ScriptExecutorTest, UpdateScriptStateOnError) {
@@ -903,8 +904,9 @@ TEST_F(ScriptExecutorTest, UpdateScriptStateOnError) {
               Run(Field(&ScriptExecutor::Result::success, false)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_FAILURE)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::FAILURE)));
 }
 
 TEST_F(ScriptExecutorTest, UpdateScriptStateOnSuccess) {
@@ -919,8 +921,9 @@ TEST_F(ScriptExecutorTest, UpdateScriptStateOnSuccess) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
 }
 
 TEST_F(ScriptExecutorTest, ForwardLastPayloadOnSuccess) {
@@ -1020,10 +1023,12 @@ TEST_F(ScriptExecutorTest, RunInterrupt) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair("interrupt", SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 
   // The first script to call OnGetNextActions is the interrupt, which starts
   // with a tell.
@@ -1064,12 +1069,15 @@ TEST_F(ScriptExecutorTest, RunMultipleInterruptInOrder) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair("interrupt1", SCRIPT_STATUS_SUCCESS)));
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair("interrupt2", SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair("interrupt1", ScriptExecutor::ScriptStatus::SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair("interrupt2", ScriptExecutor::ScriptStatus::SUCCESS)));
 }
 
 TEST_F(ScriptExecutorTest, RunSameInterruptMultipleTimes) {
@@ -1177,8 +1185,9 @@ TEST_F(ScriptExecutorTest, DoNotRunInterruptIfPreconditionsDontMatch) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
   EXPECT_THAT(scripts_state_, Not(Contains(Pair(StrEq("interrupt"), _))));
 }
 
@@ -1203,8 +1212,9 @@ TEST_F(ScriptExecutorTest, DoNotRunInterruptIfNotInterruptible) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
   EXPECT_THAT(scripts_state_, Not(Contains(Pair(StrEq("interrupt"), _))));
 }
 
@@ -1233,10 +1243,12 @@ TEST_F(ScriptExecutorTest, InterruptFailsMainScript) {
               Run(Field(&ScriptExecutor::Result::success, false)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_FAILURE)));
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair("interrupt", SCRIPT_STATUS_FAILURE)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::FAILURE)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::FAILURE)));
 }
 
 TEST_F(ScriptExecutorTest, InterruptReturnsShutdown) {
@@ -1265,10 +1277,12 @@ TEST_F(ScriptExecutorTest, InterruptReturnsShutdown) {
                               ScriptExecutor::SHUTDOWN))));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair("interrupt", SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 }
 
 TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
@@ -1309,10 +1323,12 @@ TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair("interrupt", SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 
   // Expected scenario:
   // - show prompt (enter PROMPT state)
@@ -1410,14 +1426,17 @@ TEST_F(ScriptExecutorTest, RunInterruptMultipleTimesDuringPrompt) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
   for (int try_count = 0;
-       try_count < 10 && scripts_state_[kScriptPath] == SCRIPT_STATUS_RUNNING;
+       try_count < 10 &&
+       scripts_state_[kScriptPath] == ScriptExecutor::ScriptStatus::RUNNING;
        try_count++) {
     task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
   }
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair("interrupt", SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 
   EXPECT_THAT(
       delegate_.GetStateHistory(),
@@ -1526,10 +1545,12 @@ TEST_F(ScriptExecutorTest, UpdateScriptListFromInterrupt) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair(kScriptPath, SCRIPT_STATUS_SUCCESS)));
-  EXPECT_THAT(scripts_state_,
-              Contains(Pair("interrupt", SCRIPT_STATUS_SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair(kScriptPath, ScriptExecutor::ScriptStatus::SUCCESS)));
+  EXPECT_THAT(
+      scripts_state_,
+      Contains(Pair("interrupt", ScriptExecutor::ScriptStatus::SUCCESS)));
 
   EXPECT_TRUE(should_update_scripts_);
   EXPECT_THAT(scripts_update_, SizeIs(1));
