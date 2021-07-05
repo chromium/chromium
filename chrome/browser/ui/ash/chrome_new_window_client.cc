@@ -597,17 +597,19 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
   int event_flags = apps::GetEventFlags(
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, /*prefer_container=*/false);
-  if (web_app::WebAppProviderBase::GetProviderBase(profile)
-          ->registrar()
-          .GetAppEffectiveDisplayMode(*app_id) ==
-      blink::mojom::DisplayMode::kBrowser) {
-    event_flags = apps::GetEventFlags(
-        apps::mojom::LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, /*prefer_container=*/false);
-  }
-
   apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
+
+  proxy->AppRegistryCache().ForOneApp(
+      *app_id, [&event_flags](const apps::AppUpdate& update) {
+        if (update.WindowMode() == apps::mojom::WindowMode::kBrowser) {
+          event_flags = apps::GetEventFlags(
+              apps::mojom::LaunchContainer::kLaunchContainerTab,
+              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+              /*prefer_container=*/false);
+        }
+      });
+
   proxy->LaunchAppWithUrl(*app_id, event_flags, url,
                           apps::mojom::LaunchSource::kFromArc);
 
