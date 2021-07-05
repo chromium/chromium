@@ -2032,9 +2032,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   EXPECT_EQ(GURL(kTargetUrl), web_contents->GetVisibleURL());
 }
 
+// TODO(crbug.com/1226532): This test is flaky on Windows 7 debug builds.
+// Fix and reenable it.
+#if defined(OS_WIN) && defined(_DEBUG)
+#define MAYBE_MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl \
+  DISABLED_MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl
+#else
+#define MAYBE_MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl \
+  MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl
+#endif
+
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppUrlHandlingTest,
-    MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl) {
+    MAYBE_MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppUrlHandlerIntentPickerView");
 
