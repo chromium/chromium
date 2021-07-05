@@ -387,6 +387,14 @@ enum InitialBrowserAction {
   [MinVersion=2] kOpenNewTabPageWindow = 4,
 };
 
+// Whether / how mlservice on-device handwriting is supported.
+[Stable, Extensible]
+enum OndeviceHandwritingSupport{
+  kUnsupported = 0,
+  kUseRootfs = 1,
+  kUseDlc = 2,
+};
+
 // BrowserInitParams is a set of parameters for initialization of browsers
 // (such as lacros-chrome), which is passed from ash-chrome to a browser.
 // Since ash-chrome and browsers may have different versions, the browsers must
@@ -404,8 +412,8 @@ enum InitialBrowserAction {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 22
-// Next id: 22
+// Next version: 23
+// Next id: 23
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -542,6 +550,11 @@ struct BrowserInitParams {
   // The set of static device specific data.
   [MinVersion=21]
   DeviceProperties? device_properties@21;
+
+  [MinVersion=22]
+  // Whether (and how) on-device handwriting recognition is supported, depending
+  // ash-chrome's startup switches.
+  OndeviceHandwritingSupport ondevice_handwriting_support@22;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

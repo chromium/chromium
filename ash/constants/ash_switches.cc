@@ -791,6 +791,10 @@ const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 const char kWaitForInitialPolicyFetchForTest[] =
     "wait-for-initial-policy-fetch-for-test";
 
+// Used to determine if and how on-device handwriting recognition is supported
+// (e.g. via rootfs or downloadable content).
+const char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
+
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);

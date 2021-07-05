@@ -258,7 +258,7 @@ source_set("browser") {
     "//v8:v8_version",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
@@ -2256,14 +2256,18 @@ source_set("browser") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "handwriting/handwriting_recognition_service_impl_cros.cc",
       "handwriting/handwriting_recognition_service_impl_cros.h",
       "handwriting/handwriting_recognizer_impl_cros.cc",
       "handwriting/handwriting_recognizer_impl_cros.h",
-      "screenlock_monitor/screenlock_monitor_device_source_chromeos.cc",
     ]
+  }
+
+  if (is_chromeos_ash) {
+    sources +=
+        [ "screenlock_monitor/screenlock_monitor_device_source_chromeos.cc" ]
   }
 
   if (is_linux || is_chromeos_lacros) {

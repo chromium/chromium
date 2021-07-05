@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
@@ -31,7 +32,6 @@ void RecordLoadHandwritingModelResult(const LoadHandwritingModelResult val) {
       LoadHandwritingModelResult::LOAD_MODEL_FILES_ERROR);
 }
 
-constexpr char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
 constexpr char kLibHandwritingDlcId[] = "libhandwriting";
 // A list of supported language code.
 constexpr char kLanguageCodeEn[] = "en";
@@ -41,8 +41,9 @@ constexpr char kLanguageCodeGesture[] = "gesture_in_context";
 // kOndeviceHandwritingSwitch.
 bool HandwritingSwitchHasValue(const std::string& value) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kOndeviceHandwritingSwitch) &&
-         command_line->GetSwitchValueASCII(kOndeviceHandwritingSwitch) == value;
+  return command_line->HasSwitch(ash::switches::kOndeviceHandwritingSwitch) &&
+         command_line->GetSwitchValueASCII(
+             ash::switches::kOndeviceHandwritingSwitch) == value;
 }
 
 // Returns true if switch kOndeviceHandwritingSwitch is set to use_rootfs.

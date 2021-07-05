@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -23,7 +24,6 @@ using ::base::test::ScopedCommandLine;
 using ::base::test::TaskEnvironment;
 using ::chromeos::machine_learning::mojom::LoadHandwritingModelResult;
 
-constexpr char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
 constexpr char kLibHandwritingDlcId[] = "libhandwriting";
 
 class HandwritingModelLoaderTest : public testing::Test {
@@ -77,7 +77,7 @@ class HandwritingModelLoaderTest : public testing::Test {
   // Sets "ondevice_handwriting" value.
   void SetSwitchValue(const std::string& switch_value) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        kOndeviceHandwritingSwitch, switch_value);
+        ash::switches::kOndeviceHandwritingSwitch, switch_value);
   }
 
  private:

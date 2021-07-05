@@ -614,6 +614,26 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->standalone_browser_is_primary = IsLacrosPrimaryBrowser();
   params->device_properties = GetDeviceProperties();
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kOndeviceHandwritingSwitch)) {
+    const auto handwriting_switch =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            ash::switches::kOndeviceHandwritingSwitch);
+
+    // TODO(https://crbug.com/1168978): Query mlservice instead of using
+    // hard-coded values.
+    if (handwriting_switch == "use_rootfs") {
+      params->ondevice_handwriting_support =
+          crosapi::mojom::OndeviceHandwritingSupport::kUseRootfs;
+    } else if (handwriting_switch == "use_dlc") {
+      params->ondevice_handwriting_support =
+          crosapi::mojom::OndeviceHandwritingSupport::kUseDlc;
+    } else {
+      params->ondevice_handwriting_support =
+          crosapi::mojom::OndeviceHandwritingSupport::kUnsupported;
+    }
+  }
+
   return params;
 }
 

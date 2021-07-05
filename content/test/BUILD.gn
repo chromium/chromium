@@ -2583,6 +2583,7 @@ test("content_unittests") {
     sources += [ "../browser/handwriting/handwriting_recognition_service_impl_cros_unittest.cc" ]
     deps += [
       "//ash/components/audio",
+      "//ash/constants:constants",
       "//chromeos/dbus/audio",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",

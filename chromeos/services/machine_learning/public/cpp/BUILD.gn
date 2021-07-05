@@ -24,6 +24,7 @@ source_set("cpp") {
       "../../cpp/ash/service_connection_ash.cc",
     ]
     deps += [
+      "//ash/constants:constants",
       "//chromeos/dbus/dlcservice",
       "//chromeos/dbus/machine_learning",
     ]
@@ -72,6 +73,7 @@ if (is_chromeos_ash) {
     testonly = true
     deps = [
       ":cpp",
+      "//ash/constants:constants",
       "//base/test:test_support",
       "//chromeos/dbus/dlcservice:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",

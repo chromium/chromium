@@ -13,20 +13,36 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace content {
 
 namespace {
-// TODO(https://crbug.com/1168978): mlservice should provide an interface to
-// query this.
-constexpr char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
+
 // Currently, we do not consider that ondevice handwriting recognition may be
 // supported by the CrOS Downloadable Content (DLC) service other than on
 // rootfs.
 bool IsCrOSLibHandwritingRootfsEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1168978): mlservice should provide an interface to
+  // query this.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kOndeviceHandwritingSwitch) &&
-         command_line->GetSwitchValueASCII(kOndeviceHandwritingSwitch) ==
-             "use_rootfs";
+  return command_line->HasSwitch(ash::switches::kOndeviceHandwritingSwitch) &&
+         command_line->GetSwitchValueASCII(
+             ash::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* service = chromeos::LacrosService::Get();
+  return service && service->init_params()->ondevice_handwriting_support ==
+                        crosapi::mojom::OndeviceHandwritingSupport::kUseRootfs;
+#else
+  return false;
+#endif
 }
 }  // namespace
 
