@@ -938,6 +938,21 @@ class BBJSONGenerator(object):
     args = result.get('args', [])
     test_to_run = result.pop('telemetry_test_name', test_name)
 
+    # TODO(skbug.com/12149): Remove this once Gold-based tests no longer clobber
+    # earlier results on retry attempts.
+    is_gold_based_test = False
+    for a in args:
+      if '--git-revision' in a:
+        is_gold_based_test = True
+        break
+    if is_gold_based_test:
+      for a in args:
+        if '--test-filter' in a or '--isolated-script-test-filter' in a:
+          raise RuntimeError(
+              '--test-filter/--isolated-script-test-filter are currently not '
+              'supported for Gold-based GPU tests. See skbug.com/12100 and '
+              'skbug.com/12149 for more details.')
+
     # These tests upload and download results from cloud storage and therefore
     # aren't idempotent yet. https://crbug.com/549140.
     result['swarming']['idempotent'] = False
