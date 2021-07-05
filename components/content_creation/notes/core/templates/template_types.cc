@@ -53,12 +53,16 @@ TextStyle::TextStyle(const std::string& font_name,
                      ARGBColor font_color,
                      uint16_t weight,
                      bool all_caps,
-                     TextAlignment alignment)
+                     TextAlignment alignment,
+                     int min_text_size_sp,
+                     int max_text_size_sp)
     : font_name_(font_name),
       font_color_(font_color),
       weight_(weight),
       all_caps_(all_caps),
       alignment_(alignment),
+      min_text_size_sp_(min_text_size_sp),
+      max_text_size_sp_(max_text_size_sp),
       highlight_color_(0U),
       highlight_style_(HighlightStyle::kNone) {}
 
@@ -67,6 +71,8 @@ TextStyle::TextStyle(const std::string& font_name,
                      uint16_t weight,
                      bool all_caps,
                      TextAlignment alignment,
+                     int min_text_size_sp,
+                     int max_text_size_sp,
                      ARGBColor highlight_color,
                      HighlightStyle highlight_style)
     : font_name_(font_name),
@@ -74,8 +80,21 @@ TextStyle::TextStyle(const std::string& font_name,
       weight_(weight),
       all_caps_(all_caps),
       alignment_(alignment),
+      min_text_size_sp_(min_text_size_sp),
+      max_text_size_sp_(max_text_size_sp),
       highlight_color_(highlight_color),
       highlight_style_(highlight_style) {}
+
+TextStyle::TextStyle(const TextStyle& text_style)
+    : font_name_(text_style.font_name()),
+      font_color_(text_style.font_color()),
+      weight_(text_style.weight()),
+      all_caps_(text_style.all_caps()),
+      alignment_(text_style.alignment()),
+      min_text_size_sp_(text_style.min_text_size_sp()),
+      max_text_size_sp_(text_style.max_text_size_sp()),
+      highlight_color_(text_style.highlight_color()),
+      highlight_style_(text_style.highlight_style()) {}
 
 FooterStyle::FooterStyle(ARGBColor text_color, ARGBColor logo_color)
     : text_color_(text_color), logo_color_(logo_color) {}

@@ -13,6 +13,9 @@ namespace {
 const uint16_t k400Weight = 400;
 const uint16_t k700Weight = 700;
 
+const int kDefaultMinTextSizeSP = 14;
+const int kDefaultMaxTextSizeSP = 26;
+
 const char kBebasNeueFontName[] = "Bebas Neue";
 const char kMansalvaFontName[] = "Mansalva";
 const char kRobotoCondensedFontName[] = "Roboto Condensed";
@@ -65,7 +68,8 @@ NoteTemplate GetClassicTemplate() {
       Background(/*color=*/kGrey900Color),
       TextStyle(kSourceSerifProFontName,
                 /*font_color=*/kWhiteColor, k700Weight,
-                /*all_caps=*/false, TextAlignment::kStart),
+                /*all_caps=*/false, TextAlignment::kStart,
+                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
@@ -78,7 +82,8 @@ NoteTemplate GetFriendlyTemplate() {
                                "templates/FriendlyBackground@2x.png"),
       TextStyle(kRockSaltFontName,
                 /*font_color=*/kGrey900Color, k400Weight,
-                /*all_caps=*/false, TextAlignment::kStart),
+                /*all_caps=*/false, TextAlignment::kStart,
+                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -89,7 +94,8 @@ NoteTemplate GetFreshTemplate() {
       Background(/*color=*/kGreen50Color),
       TextStyle(kSourceSerifProFontName,
                 /*font_color=*/kGreen900Color, k400Weight,
-                /*all_caps=*/false, TextAlignment::kStart),
+                /*all_caps=*/false, TextAlignment::kStart,
+                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -101,7 +107,8 @@ NoteTemplate GetPowerfulTemplate() {
       Background(/*color=*/kYellow400Color),
       TextStyle(kRobotoCondensedFontName,
                 /*font_color=*/kBlackColor, k400Weight,
-                /*all_caps=*/true, TextAlignment::kStart),
+                /*all_caps=*/true, TextAlignment::kStart, kDefaultMinTextSizeSP,
+                kDefaultMaxTextSizeSP),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -114,6 +121,7 @@ NoteTemplate GetImpactfulTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter,
+                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP,
                 /*highlight_color=*/kWhiteColor, HighlightStyle::kHalf),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
@@ -128,7 +136,8 @@ NoteTemplate GetLovelyTemplate() {
       /*content_background=*/Background(/*color=*/kWhiteColor),
       TextStyle(kSourceSerifProFontName,
                 /*font_color=*/kBlackColor, k400Weight,
-                /*all_caps=*/false, TextAlignment::kCenter),
+                /*all_caps=*/false, TextAlignment::kCenter,
+                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -139,7 +148,8 @@ NoteTemplate GetGroovyTemplate() {
       Background(/*color=*/kRed500Color),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kYellow400Color, k400Weight,
-                /*all_caps=*/true, TextAlignment::kStart,
+                /*all_caps=*/true, TextAlignment::kStart, kDefaultMinTextSizeSP,
+                kDefaultMaxTextSizeSP,
                 /*highlight_color=*/kBlue900Color, HighlightStyle::kFull),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
@@ -152,7 +162,8 @@ NoteTemplate GetMonochromeTemplate() {
       Background(/*color=*/kBlackColor),
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kWhiteColor, k400Weight,
-                /*all_caps=*/true, TextAlignment::kCenter),
+                /*all_caps=*/true, TextAlignment::kCenter,
+                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
@@ -164,6 +175,7 @@ NoteTemplate GetBoldTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter,
+                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP,
                 /*highlight_color=*/kLightYellowColor, HighlightStyle::kHalf),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
@@ -176,7 +188,8 @@ NoteTemplate GetDreamyTemplate() {
                  LinearGradientDirection::kTopToBottom),
       TextStyle(kMansalvaFontName,
                 /*font_color=*/kWhiteColor, k400Weight,
-                /*all_caps=*/false, TextAlignment::kStart),
+                /*all_caps=*/false, TextAlignment::kStart,
+                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 

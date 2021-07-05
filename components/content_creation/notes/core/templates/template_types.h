@@ -92,21 +92,29 @@ class TextStyle {
                      ARGBColor font_color,
                      uint16_t weight,
                      bool all_caps,
-                     TextAlignment alignment);
+                     TextAlignment alignment,
+                     int minTextSize,
+                     int maxTextSize);
 
   explicit TextStyle(const std::string& font_name,
                      ARGBColor font_color,
                      uint16_t weight,
                      bool all_caps,
                      TextAlignment alignment,
+                     int minTextSize,
+                     int maxTextSize,
                      ARGBColor highlight_color,
                      HighlightStyle highlight_style);
+
+  explicit TextStyle(const TextStyle& text_style);
 
   const std::string& font_name() const { return font_name_; }
   ARGBColor font_color() const { return font_color_; }
   uint16_t weight() const { return weight_; }
   bool all_caps() const { return all_caps_; }
   TextAlignment alignment() const { return alignment_; }
+  int min_text_size_sp() const { return min_text_size_sp_; }
+  int max_text_size_sp() const { return max_text_size_sp_; }
   ARGBColor highlight_color() const { return highlight_color_; }
   HighlightStyle highlight_style() const { return highlight_style_; }
 
@@ -116,6 +124,8 @@ class TextStyle {
   uint16_t weight_;
   bool all_caps_;
   TextAlignment alignment_;
+  int min_text_size_sp_;
+  int max_text_size_sp_;
   ARGBColor highlight_color_;
   HighlightStyle highlight_style_;
 };

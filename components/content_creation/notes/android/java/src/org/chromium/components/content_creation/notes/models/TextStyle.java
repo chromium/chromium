@@ -7,10 +7,12 @@ package org.chromium.components.content_creation.notes.models;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.core.widget.TextViewCompat;
 
 import org.chromium.components.content_creation.notes.ui.TextHighlightSpan;
 
@@ -27,18 +29,23 @@ public class TextStyle {
     private final @ColorInt int mFontColor;
     private final boolean mAllCaps;
     private final TextAlignment mAlignment;
+    private final int mMinTextSizeSP;
+    private final int mMaxTextSizeSP;
     private final @ColorInt int mHighlightColor;
     private final HighlightStyle mHighlightStyle;
 
     /** Constructor. */
     public TextStyle(String fontName, @ColorInt int fontColor, int weight, boolean allCaps,
-            TextAlignment alignment, @ColorInt int highlightColor, HighlightStyle highlightStyle) {
+            TextAlignment alignment, int minTextSizeSP, int maxTextSizeSP,
+            @ColorInt int highlightColor, HighlightStyle highlightStyle) {
         this.fontName = fontName;
         this.weight = weight;
 
         this.mFontColor = fontColor;
         this.mAllCaps = allCaps;
         this.mAlignment = alignment;
+        this.mMinTextSizeSP = minTextSizeSP;
+        this.mMaxTextSizeSP = maxTextSizeSP;
         this.mHighlightColor = highlightColor;
         this.mHighlightStyle = highlightStyle;
     }
@@ -59,6 +66,9 @@ public class TextStyle {
         textView.setTextColor(this.mFontColor);
         textView.setAllCaps(this.mAllCaps);
         textView.setGravity(TextAlignment.toGravity(this.mAlignment));
+
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(textView, mMinTextSizeSP,
+                mMaxTextSizeSP, /*autoSizeStepGranularity=*/1, TypedValue.COMPLEX_UNIT_SP);
 
         if (this.hasHighlight()) {
             int start = 0;

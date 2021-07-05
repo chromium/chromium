@@ -25,9 +25,6 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/note_background_outline"
-            android:autoSizeTextType="uniform"
-            android:autoSizeMinTextSize="@dimen/min_text_size"
-            android:autoSizeMaxTextSize="@dimen/max_text_size"
             android:ellipsize="end"
             android:importantForAccessibility="no"/>
 

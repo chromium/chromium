@@ -56,9 +56,10 @@ public class NoteTemplateConversionBridge {
 
     @CalledByNative
     private static TextStyle createTextStyle(String fontName, @ColorInt int fontColor, int weight,
-            boolean allCaps, int alignment, @ColorInt int highlightColor, int highlightStyle) {
+            boolean allCaps, int alignment, int minTextSizeSP, int maxTextSizeSP,
+            @ColorInt int highlightColor, int highlightStyle) {
         return new TextStyle(fontName, fontColor, weight, allCaps,
-                TextAlignment.fromInteger(alignment), highlightColor,
+                TextAlignment.fromInteger(alignment), minTextSizeSP, maxTextSizeSP, highlightColor,
                 HighlightStyle.fromInteger(highlightStyle));
     }
 
