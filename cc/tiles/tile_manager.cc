@@ -695,6 +695,8 @@ bool TileManager::TilePriorityViolatesMemoryPolicy(
 }
 
 TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
+  recordreplay::Assert("TileManager::AssignGpuMemoryToTiles Start");
+
   TRACE_EVENT_BEGIN0("cc", "TileManager::AssignGpuMemoryToTiles");
 
   DCHECK(resource_pool_);
@@ -719,6 +721,8 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue;
   PrioritizedWorkToSchedule work_to_schedule;
   for (; !raster_priority_queue->IsEmpty(); raster_priority_queue->Pop()) {
+    recordreplay::Assert("TileManager::AssignGpuMemoryToTiles #1");
+
     const PrioritizedTile& prioritized_tile = raster_priority_queue->Top();
     Tile* tile = prioritized_tile.tile();
     TilePriority priority = prioritized_tile.priority();
@@ -837,6 +841,7 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     } else {
       // Creating the raster task here will acquire resources, but
       // this resource usage has already been accounted for above.
+      recordreplay::Assert("TileManager::AssignGpuMemoryToTiles #10");
       auto raster_task = CreateRasterTask(prioritized_tile, raster_color_space,
                                           sdr_white_level, &work_to_schedule);
       if (!raster_task) {
@@ -850,6 +855,8 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     memory_usage += memory_required_by_tile_to_be_scheduled;
     work_to_schedule.tiles_to_raster.push_back(prioritized_tile);
   }
+
+  recordreplay::Assert("TileManager::AssignGpuMemoryToTiles #11");
 
   // Note that we should try and further reduce memory in case the above loop
   // didn't reduce memory. This ensures that we always release as many resources
@@ -940,6 +947,8 @@ void TileManager::PartitionImagesForCheckering(
     std::vector<PaintImage>* checkered_images,
     const gfx::Rect* invalidated_rect,
     base::flat_map<PaintImage::Id, size_t>* image_to_frame_index) {
+  recordreplay::Assert("TileManager::PartitionImagesForCheckering Start");
+
   Tile* tile = prioritized_tile.tile();
   std::vector<const DrawImage*> images_in_tile;
   gfx::Rect enclosing_rect = tile->enclosing_layer_rect();
@@ -952,6 +961,8 @@ void TileManager::PartitionImagesForCheckering(
   WhichTree tree = tile->tiling()->tree();
 
   for (const auto* original_draw_image : images_in_tile) {
+    recordreplay::Assert("TileManager::PartitionImagesForCheckering #1");
+
     const auto& image = original_draw_image->paint_image();
     size_t frame_index = client_->GetFrameIndexForImage(image, tree);
     if (image_to_frame_index)
@@ -959,11 +970,16 @@ void TileManager::PartitionImagesForCheckering(
 
     DrawImage draw_image(*original_draw_image, tile->raster_transform().scale(),
                          frame_index, raster_color_space, sdr_white_level);
-    if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree))
+    if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree)) {
+      recordreplay::Assert("TileManager::PartitionImagesForCheckering #2");
       checkered_images->push_back(draw_image.paint_image());
-    else
+    } else {
+      recordreplay::Assert("TileManager::PartitionImagesForCheckering #3");
       sync_decoded_images->push_back(std::move(draw_image));
+    }
   }
+
+  recordreplay::Assert("TileManager::PartitionImagesForCheckering Done");
 }
 
 void TileManager::AddCheckeredImagesToDecodeQueue(
@@ -1251,7 +1267,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   bool has_at_raster_images = false;
   bool has_hardware_accelerated_jpeg_candidates = false;
   bool has_hardware_accelerated_webp_candidates = false;
-  recordreplay::Assert("TileManager::CreateRasterTask #5");
+  recordreplay::Assert("TileManager::CreateRasterTask #5 %u", sync_decoded_images.size());
   image_controller_.ConvertImagesToTasks(
       &sync_decoded_images, &decode_tasks, &has_at_raster_images,
       &has_hardware_accelerated_jpeg_candidates,

@@ -626,6 +626,7 @@ void SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit(size_t limit) {
 }
 
 void SoftwareImageDecodeCache::ReduceCacheUsage() {
+  recordreplay::Assert("SoftwareImageDecodeCache::ReduceCacheUsage");
   base::AutoLock lock(lock_);
   ReduceCacheUsageUntilWithinLimit(max_items_in_cache_);
 }
