@@ -88,10 +88,10 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
 
   const CreditCard& card = data->card;
   UserInfo user_info(card.network());
-  // TODO(crbug.com/1196021): Set the display text to be the formatted card
-  // number with spaces.
-  AddSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NUMBER), &user_info,
-                 enabled);
+  std::u16string card_number = card.GetRawInfo(autofill::CREDIT_CARD_NUMBER);
+  user_info.add_field(
+      UserInfo::Field(card.FullDigitsForDisplay(), card_number, card_number,
+                      /*id=*/std::string(), /*is_password=*/false, enabled));
   AddCardDetailsToUserInfo(card, &user_info, data->cvc, enabled);
 
   return user_info;

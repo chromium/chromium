@@ -312,19 +312,26 @@ TEST_F(CreditCardAccessoryControllerTest,
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
+  std::u16string card_number_for_display = card.FullDigitsForDisplay();
+  std::u16string card_number_for_fill =
+      card.GetRawInfo(autofill::CREDIT_CARD_NUMBER);
   EXPECT_EQ(result, controller()->GetSheetData());
   // Verify that the full card number and the cvc fields are added to the
   // accessory sheet data.
-  EXPECT_EQ(
-      result,
-      CreditCardAccessorySheetDataBuilder()
-          .AddUserInfo(kVisaCard)
-          .AppendSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NUMBER))
-          .AppendSimpleField(card.Expiration2DigitMonthAsString())
-          .AppendSimpleField(card.Expiration4DigitYearAsString())
-          .AppendSimpleField(card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
-          .AppendSimpleField(cvc)
-          .Build());
+  EXPECT_EQ(result, CreditCardAccessorySheetDataBuilder()
+                        .AddUserInfo(kVisaCard)
+                        .AppendField(/*display_text=*/card_number_for_display,
+                                     /*text_to_fill=*/card_number_for_fill,
+                                     /*a11y_description=*/card_number_for_fill,
+                                     /*id=*/std::string(),
+                                     /*is_obfuscated=*/false,
+                                     /*selectable=*/true)
+                        .AppendSimpleField(card.Expiration2DigitMonthAsString())
+                        .AppendSimpleField(card.Expiration4DigitYearAsString())
+                        .AppendSimpleField(
+                            card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+                        .AppendSimpleField(cvc)
+                        .Build());
 }
 
 TEST_F(CreditCardAccessoryControllerTest, UnmaskedCacheCardsReorderedToTheTop) {
@@ -347,14 +354,21 @@ TEST_F(CreditCardAccessoryControllerTest, UnmaskedCacheCardsReorderedToTheTop) {
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
+  std::u16string card_number_for_display = unmasked_card.FullDigitsForDisplay();
+  std::u16string card_number_for_fill =
+      unmasked_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER);
   EXPECT_EQ(result, controller()->GetSheetData());
   // Verify that the unmasked card is at the top followed by the masked card.
   EXPECT_EQ(
       result,
       CreditCardAccessorySheetDataBuilder()
           .AddUserInfo(kVisaCard)
-          .AppendSimpleField(
-              unmasked_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER))
+          .AppendField(/*display_text=*/card_number_for_display,
+                       /*text_to_fill=*/card_number_for_fill,
+                       /*a11y_description=*/card_number_for_fill,
+                       /*id=*/std::string(),
+                       /*is_obfuscated=*/false,
+                       /*selectable=*/true)
           .AppendSimpleField(unmasked_card.Expiration2DigitMonthAsString())
           .AppendSimpleField(unmasked_card.Expiration4DigitYearAsString())
           .AppendSimpleField(
@@ -430,6 +444,9 @@ TEST_F(CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards,
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
+  std::u16string card_number_for_display = unmasked_card.FullDigitsForDisplay();
+  std::u16string card_number_for_fill =
+      unmasked_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER);
   EXPECT_EQ(result, controller()->GetSheetData());
   // Verify that the unmasked virtual card is at the top followed by the masked
   // card.
@@ -437,8 +454,12 @@ TEST_F(CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards,
       result,
       CreditCardAccessorySheetDataBuilder()
           .AddUserInfo(kVisaCard)
-          .AppendSimpleField(
-              unmasked_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER))
+          .AppendField(/*display_text=*/card_number_for_display,
+                       /*text_to_fill=*/card_number_for_fill,
+                       /*a11y_description=*/card_number_for_fill,
+                       /*id=*/std::string(),
+                       /*is_obfuscated=*/false,
+                       /*selectable=*/true)
           .AppendSimpleField(unmasked_card.Expiration2DigitMonthAsString())
           .AppendSimpleField(unmasked_card.Expiration4DigitYearAsString())
           .AppendSimpleField(
