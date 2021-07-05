@@ -189,7 +189,9 @@ TEST_F(ProxyResolverV8TracingTest, Simple) {
   EXPECT_TRUE(mock_bindings.GetErrors().empty());
 }
 
-TEST_F(ProxyResolverV8TracingTest, JavascriptError) {
+// TODO(pthier, v8:11365): Update error message and re-enable test once
+// https://crrev.com/c/2979599 is rolled into chromium.
+TEST_F(ProxyResolverV8TracingTest, DISABLED_JavascriptError) {
   MockProxyHostResolver host_resolver;
   MockBindings mock_bindings(&host_resolver);
 

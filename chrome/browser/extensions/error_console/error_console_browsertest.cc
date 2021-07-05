@@ -352,8 +352,10 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
 
 // Load an extension which, upon visiting any page, first sends out a console
 // log, and then crashes with a JS TypeError.
+// TODO(pthier, v8:11365): Update error message and re-enable test once
+// https://crrev.com/c/2979599 is rolled into chromium.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
-                       ContentScriptLogAndRuntimeError) {
+                       DISABLED_ContentScriptLogAndRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "content_script_log_and_runtime_error",
@@ -466,7 +468,10 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
 
 // Test that we catch an error when we try to call an API method without
 // permission.
-IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
+// TODO(pthier, v8:11365): Update error message and re-enable test once
+// https://crrev.com/c/2979599 is rolled into chromium.
+IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
+                       DISABLED_BadAPIPermissionsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "bad_api_permissions_runtime_error", {.ignore_manifest_warnings = false},
