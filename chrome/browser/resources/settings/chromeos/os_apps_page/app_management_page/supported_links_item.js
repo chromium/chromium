@@ -17,6 +17,9 @@ Polymer({
     /** @type {!App} */
     app: Object,
 
+    /**
+     * @private {boolean}
+     */
     appManagementIntentSettingsEnabled_: {
       type: Boolean,
       value: () =>
@@ -40,6 +43,16 @@ Polymer({
    */
   getSelectedRadioButtonName_(app) {
     return app.isPreferredApp ? 'preferred' : 'browser';
+  },
+
+  /**
+   * @private
+   * @param {App} app
+   * @returns {boolean}
+   */
+  shouldShowIntentSettings_(app) {
+    return this.appManagementIntentSettingsEnabled_ &&
+        this.app.supportedLinks.length > 0;
   },
 
   /**

@@ -32,6 +32,7 @@ suite('<app-management-supported-links-item>', () => {
         const pwaOptions = {
           type: apps.mojom.AppType.kWeb,
           isPreferredApp: true,
+          supportedLinks: ['google.com'],
         };
 
         // Add PWA app, and make it the currently selected app.
@@ -70,6 +71,7 @@ suite('<app-management-supported-links-item>', () => {
         const arcOptions = {
           type: apps.mojom.AppType.kArc,
           isPreferredApp: false,
+          supportedLinks: ['google.com', 'gmail.com'],
         };
 
         // Add ARC app, and make it the currently selected app.
@@ -103,4 +105,31 @@ suite('<app-management-supported-links-item>', () => {
         expectEquals(
             supportedLinksItem.$$('cr-radio-group').selected, 'preferred');
       });
+
+  test('No supported links', async function() {
+    const pwaOptions = {
+      type: apps.mojom.AppType.kWeb,
+      isPreferredApp: true,
+      supportedLinks: [],  // Explicitly empty.
+    };
+
+    // Add PWA app, and make it the currently selected app.
+    const app = await fakeHandler.addApp('app1', pwaOptions);
+
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+
+    supportedLinksItem.app = app;
+
+    replaceBody(supportedLinksItem);
+    fakeHandler.flushPipesForTesting();
+    test_util.flushTasks();
+
+    assertFalse(!!supportedLinksItem.$$('app-management-supported-links-item'));
+  });
 });

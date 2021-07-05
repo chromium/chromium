@@ -12,7 +12,7 @@
 <dom-module id="app-management-supported-links-item">
   <template>
     <style include="app-management-shared-css settings-shared"></style>
-    <template is="dom-if" if="[[appManagementIntentSettingsEnabled_]]">
+    <template is="dom-if" if="[[shouldShowIntentSettings_(app)]]">
       <div class="permission-section-header">
         <div class="header-text">
           $i18n{appManagementIntentSharingLabel}

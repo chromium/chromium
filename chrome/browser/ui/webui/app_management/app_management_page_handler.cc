@@ -278,8 +278,34 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
       update.ShowInShelf() == apps::mojom::OptionalBool::kFalse ||
       ShouldHidePinToShelf(app->id);
   app->window_mode = update.WindowMode();
+  app->supported_links = GetSupportedLinksList(app->id);
 
   return app;
+}
+
+std::vector<std::string> AppManagementPageHandler::GetSupportedLinksList(
+    const std::string& app_id) {
+  std::vector<std::string> links;
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&links](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kReady) {
+          std::set<std::string> seen;
+          for (const auto& filter : update.IntentFilters()) {
+            if (apps_util::IsSupportedLink(filter)) {
+              for (const auto& link :
+                   apps_util::AppManagementGetSupportedLinks(filter)) {
+                // Add link to list if it hasn't already been seen.
+                if (seen.find(link) == seen.end()) {
+                  links.emplace_back(link);
+                  seen.insert(link);
+                }
+              }
+            }
+          }
+        }
+      });
+  return links;
 }
 
 void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {

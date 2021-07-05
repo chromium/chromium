@@ -108,6 +108,7 @@ cr.define('app_management', function() {
         windowMode: apps.mojom.WindowMode.kWindow,
         resizeLocked: false,
         hideResizeLocked: true,
+        supportedLinks: [],
       };
 
       if (optConfig) {
