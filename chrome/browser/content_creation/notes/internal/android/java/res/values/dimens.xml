@@ -8,4 +8,6 @@
     <dimen name="note_side_padding">20dp</dimen>
 
     <dimen name="note_corner_radius">12dp</dimen>
+
+    <dimen name="focused_note_elevation">12dp</dimen>
 </resources>

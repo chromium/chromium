@@ -105,11 +105,13 @@ public class NoteCreationDialog extends DialogFragment {
 
                 int first_visible = layoutManager.findFirstCompletelyVisibleItemPosition();
                 int last_visible = layoutManager.findLastCompletelyVisibleItemPosition();
+                unFocus(mSelectedItemIndex);
                 mSelectedItemIndex = (last_visible - first_visible) / 2 + first_visible;
                 ((TextView) mContentView.findViewById(R.id.title))
                         .setText(carouselItems.get(mSelectedItemIndex)
                                          .model.get(NoteProperties.TEMPLATE)
                                          .localizedName);
+                focus(mSelectedItemIndex);
             }
         });
     }
@@ -208,5 +210,16 @@ public class NoteCreationDialog extends DialogFragment {
 
     private float getNoteCornerRadius() {
         return getActivity().getResources().getDimensionPixelSize(R.dimen.note_corner_radius);
+    }
+
+    private void focus(int index) {
+        View noteView = getNoteViewAt(index);
+        noteView.setElevation(
+                getActivity().getResources().getDimension(R.dimen.focused_note_elevation));
+    }
+
+    private void unFocus(int index) {
+        View noteView = getNoteViewAt(index);
+        noteView.setElevation(0);
     }
 }
