@@ -182,6 +182,30 @@ class EnumSet {
 
   // Copy constructor and assignment welcome.
 
+  // Bitmask operations.
+  //
+  // This bitmask is 0-based and the value of the Nth bit depends on whether
+  // the set contains an enum element of integer value N.
+  //
+  // These may only be used if Min >= 0 and Max < 64.
+
+  // Returns an EnumSet constructed from |bitmask|.
+  static constexpr EnumSet FromEnumBitmask(const uint64_t bitmask) {
+    static_assert(GetUnderlyingValue(kMaxValue) < 64,
+                  "The highest enum value must be < 64 for FromEnumBitmask ");
+    static_assert(GetUnderlyingValue(kMinValue) >= 0,
+                  "The lowest enum value must be >= 0 for FromEnumBitmask ");
+    return EnumSet(EnumBitSet(bitmask >> GetUnderlyingValue(kMinValue)));
+  }
+  // Returns a bitmask for the EnumSet.
+  uint64_t ToEnumBitmask() const {
+    static_assert(GetUnderlyingValue(kMaxValue) < 64,
+                  "The highest enum value must be < 64 for ToEnumBitmask ");
+    static_assert(GetUnderlyingValue(kMinValue) >= 0,
+                  "The lowest enum value must be >= 0 for FromEnumBitmask ");
+    return enums_.to_ullong() << GetUnderlyingValue(kMinValue);
+  }
+
   // Set operations.  Put, Retain, and Remove are basically
   // self-mutating versions of Union, Intersection, and Difference
   // (defined below).
