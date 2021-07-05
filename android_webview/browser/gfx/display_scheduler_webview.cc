@@ -6,8 +6,11 @@
 #include "android_webview/browser/gfx/root_frame_sink.h"
 
 namespace android_webview {
-DisplaySchedulerWebView::DisplaySchedulerWebView(RootFrameSink* root_frame_sink)
-    : root_frame_sink_(root_frame_sink) {}
+DisplaySchedulerWebView::DisplaySchedulerWebView(
+    RootFrameSink* root_frame_sink,
+    OverlaysInfoProvider* overlays_info_provider)
+    : root_frame_sink_(root_frame_sink),
+      overlays_info_provider_(overlays_info_provider) {}
 DisplaySchedulerWebView::~DisplaySchedulerWebView() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
@@ -47,13 +50,22 @@ void DisplaySchedulerWebView::OutputSurfaceLost() {
   // WebView can't handle surface lost so this isn't called.
   NOTREACHED();
 }
+
+bool DisplaySchedulerWebView::IsFrameSinkOverlayed(
+    viz::FrameSinkId frame_sink_id) {
+  return overlays_info_provider_ &&
+         overlays_info_provider_->IsFrameSinkOverlayed(frame_sink_id);
+}
+
 void DisplaySchedulerWebView::OnDisplayDamaged(viz::SurfaceId surface_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // We don't need to track damage of root frame sink as we submit frame to it
   // at DrawAndSwap and Root Renderer sink because Android View.Invalidation is
   // handled by SynchronousCompositorHost.
+
   if (surface_id.frame_sink_id() != root_frame_sink_->root_frame_sink_id() &&
-      !root_frame_sink_->IsChildSurface(surface_id.frame_sink_id())) {
+      !root_frame_sink_->IsChildSurface(surface_id.frame_sink_id()) &&
+      !IsFrameSinkOverlayed(surface_id.frame_sink_id())) {
     int count = damaged_frames_[surface_id.frame_sink_id()] + 1;
 
     TRACE_EVENT_INSTANT2(

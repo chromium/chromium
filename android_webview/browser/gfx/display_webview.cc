@@ -32,7 +32,8 @@ std::unique_ptr<DisplayWebView> DisplayWebView::Create(
     overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
   }
 
-  auto scheduler = std::make_unique<DisplaySchedulerWebView>(root_frame_sink);
+  auto scheduler = std::make_unique<DisplaySchedulerWebView>(
+      root_frame_sink, overlay_processor_webview_raw);
 
   return base::WrapUnique(new DisplayWebView(
       settings, debug_settings, frame_sink_id, std::move(gpu_dependency),

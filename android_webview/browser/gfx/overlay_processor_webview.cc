@@ -873,6 +873,11 @@ viz::SurfaceId OverlayProcessorWebView::GetOverlaySurfaceId(
   return viz::SurfaceId();
 }
 
+bool OverlayProcessorWebView::IsFrameSinkOverlayed(
+    viz::FrameSinkId frame_sink_id) {
+  return overlays_.contains(frame_sink_id);
+}
+
 OverlayProcessorWebView::ScopedSurfaceControlAvailable::
     ScopedSurfaceControlAvailable(OverlayProcessorWebView* processor,
                                   GetSurfaceControlFn surface_getter)

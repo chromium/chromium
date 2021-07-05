@@ -29,7 +29,8 @@ class ResolvedFrameData;
 }  // namespace viz
 
 namespace android_webview {
-class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
+class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
+                                public OverlaysInfoProvider {
  public:
   typedef ASurfaceControl* (*GetSurfaceControlFn)();
   class ScopedSurfaceControlAvailable {
@@ -65,6 +66,9 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
       const viz::OverlayProcessorInterface::OutputSurfaceOverlayPlane*
           primary_plane,
       viz::OverlayCandidateList* candidates) override;
+
+  // OverlaysInfoProvider implenentation:
+  bool IsFrameSinkOverlayed(viz::FrameSinkId frame_sink_id) override;
 
  private:
   class Manager;
