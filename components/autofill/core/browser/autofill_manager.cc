@@ -406,10 +406,8 @@ FormStructure* AutofillManager::FindCachedFormByRendererId(
 FormStructure* AutofillManager::ParseForm(const FormData& form,
                                           const FormStructure* cached_form) {
   if (form_structures_.size() >= kAutofillManagerMaxFormCacheSize) {
-    if (log_manager_) {
-      log_manager_->Log() << LoggingScope::kAbortParsing
+    SafeLog(log_manager_) << LoggingScope::kAbortParsing
                           << LogMessage::kAbortParsingTooManyForms << form;
-    }
     return nullptr;
   }
 
