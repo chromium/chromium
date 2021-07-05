@@ -46,7 +46,8 @@ class PermissionServiceContext::PermissionSubscription {
   }
 
   void OnPermissionStatusChanged(blink::mojom::PermissionStatus status) {
-    observer_->OnPermissionStatusChange(status);
+    if (observer_.is_connected())
+      observer_->OnPermissionStatusChange(status);
   }
 
   void set_id(PermissionController::SubscriptionId id) { id_ = id; }
