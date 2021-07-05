@@ -146,6 +146,15 @@ bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
   return true;
 }
 
+void MaybeGetStringFromDictionaryValue(const base::Value& dict,
+                                       const char* key,
+                                       std::string* result) {
+  DCHECK(dict.is_dict());
+  const std::string* value = dict.FindStringKey(key);
+  if (value)
+    *result = *value;
+}
+
 // The CrosDisksClient implementation.
 class CrosDisksClientImpl : public CrosDisksClient {
  public:
@@ -726,23 +735,24 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
                     .value_or(is_virtual_);
   is_auto_mountable_ = properties->FindBoolKey(cros_disks::kIsAutoMountable)
                            .value_or(is_auto_mountable_);
-  properties->GetStringWithoutPathExpansion(cros_disks::kStorageDevicePath,
-                                            &storage_device_path_);
-  properties->GetStringWithoutPathExpansion(
-      cros_disks::kDeviceFile, &file_path_);
-  properties->GetStringWithoutPathExpansion(cros_disks::kVendorId, &vendor_id_);
-  properties->GetStringWithoutPathExpansion(
-      cros_disks::kVendorName, &vendor_name_);
-  properties->GetStringWithoutPathExpansion(
-      cros_disks::kProductId, &product_id_);
-  properties->GetStringWithoutPathExpansion(
-      cros_disks::kProductName, &product_name_);
-  properties->GetStringWithoutPathExpansion(
-      cros_disks::kDriveModel, &drive_model_);
-  properties->GetStringWithoutPathExpansion(cros_disks::kIdLabel, &label_);
-  properties->GetStringWithoutPathExpansion(cros_disks::kIdUuid, &uuid_);
-  properties->GetStringWithoutPathExpansion(cros_disks::kFileSystemType,
-                                            &file_system_type_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kStorageDevicePath,
+                                    &storage_device_path_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kDeviceFile,
+                                    &file_path_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kVendorId,
+                                    &vendor_id_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kVendorName,
+                                    &vendor_name_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kProductId,
+                                    &product_id_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kProductName,
+                                    &product_name_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kDriveModel,
+                                    &drive_model_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kIdLabel, &label_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kIdUuid, &uuid_);
+  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kFileSystemType,
+                                    &file_system_type_);
 
   bus_number_ =
       properties->FindIntKey(cros_disks::kBusNumber).value_or(bus_number_);

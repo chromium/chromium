@@ -225,9 +225,11 @@ bool ParseServerResponse(const GURL& server_url,
   position->timestamp = base::Time::Now();
 
   if (error_object) {
-    if (!error_object->GetStringWithoutPathExpansion(
-            kMessageString, &(position->error_message))) {
+    std::string* error_message = error_object->FindStringKey(kMessageString);
+    if (!error_message) {
       position->error_message = "Server returned error without message.";
+    } else {
+      position->error_message = *error_message;
     }
 
     // Ignore result (code defaults to zero).

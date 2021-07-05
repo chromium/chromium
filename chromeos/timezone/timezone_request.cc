@@ -201,9 +201,9 @@ bool ParseServerResponse(const GURL& server_url,
     return false;
   }
 
-  std::string status;
+  const std::string* status = response_object->FindStringKey(kStatusString);
 
-  if (!response_object->GetStringWithoutPathExpansion(kStatusString, &status)) {
+  if (!status) {
     PrintTimeZoneError(server_url, "Missing status attribute.", timezone);
     RecordUmaEvent(TIMEZONE_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
@@ -211,7 +211,7 @@ bool ParseServerResponse(const GURL& server_url,
 
   bool found = false;
   for (size_t i = 0; i < base::size(statusString2Enum); ++i) {
-    if (status != statusString2Enum[i].string)
+    if (*status != statusString2Enum[i].string)
       continue;
 
     timezone->status = statusString2Enum[i].value;
@@ -221,7 +221,7 @@ bool ParseServerResponse(const GURL& server_url,
 
   if (!found) {
     PrintTimeZoneError(
-        server_url, "Bad status attribute value: '" + status + "'", timezone);
+        server_url, "Bad status attribute value: '" + *status + "'", timezone);
     RecordUmaEvent(TIMEZONE_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }
@@ -248,25 +248,31 @@ bool ParseServerResponse(const GURL& server_url,
     return false;
   }
 
-  if (!response_object->GetStringWithoutPathExpansion(kTimeZoneIdString,
-                                                      &timezone->timeZoneId) &&
-      status_ok) {
+  const std::string* time_zone_id =
+      response_object->FindStringKey(kTimeZoneIdString);
+  if (time_zone_id) {
+    timezone->timeZoneId = *time_zone_id;
+  } else if (status_ok) {
     PrintTimeZoneError(server_url, "Missing timeZoneId attribute.", timezone);
     RecordUmaEvent(TIMEZONE_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }
 
-  if (!response_object->GetStringWithoutPathExpansion(
-          kTimeZoneNameString, &timezone->timeZoneName) &&
-      status_ok) {
+  const std::string* time_zone_name =
+      response_object->FindStringKey(kTimeZoneNameString);
+  if (time_zone_name) {
+    timezone->timeZoneName = *time_zone_name;
+  } else if (status_ok) {
     PrintTimeZoneError(server_url, "Missing timeZoneName attribute.", timezone);
     RecordUmaEvent(TIMEZONE_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }
 
   // "error_message" field is optional. Ignore result.
-  response_object->GetStringWithoutPathExpansion(kErrorMessageString,
-                                                 &timezone->error_message);
+  const std::string* error_message =
+      response_object->FindStringKey(kErrorMessageString);
+  if (error_message)
+    timezone->error_message = *error_message;
 
   return true;
 }
