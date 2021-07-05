@@ -252,6 +252,8 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // The instance is created and managed by Chrome.
   arc::ArcSupportMessageHost* message_host_ = nullptr;
 
+  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+
   // The lifetime of the message_host_ is out of control from ARC.
   // Fields below are UI parameter cache in case the value is set before
   // connection to the ARC support Chrome app is established.

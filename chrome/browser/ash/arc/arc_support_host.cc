@@ -40,7 +40,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/display/screen.h"
 
 using sync_pb::UserConsentTypes;
 
@@ -445,9 +444,7 @@ void ArcSupportHost::SetMessageHost(arc::ArcSupportMessageHost* message_host) {
     DisconnectMessageHost();
   message_host_ = message_host;
   message_host_->SetObserver(this);
-  display::Screen* screen = display::Screen::GetScreen();
-  if (screen)
-    screen->AddObserver(this);
+  display_observer_.emplace(this);
 
   if (!Initialize()) {
     Close();
@@ -484,9 +481,7 @@ void ArcSupportHost::UnsetMessageHost(
 
 void ArcSupportHost::DisconnectMessageHost() {
   DCHECK(message_host_);
-  display::Screen* screen = display::Screen::GetScreen();
-  if (screen)
-    screen->RemoveObserver(this);
+  display_observer_.reset();
   message_host_->SetObserver(nullptr);
   message_host_ = nullptr;
 }
