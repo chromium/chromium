@@ -23,7 +23,6 @@ namespace remote_cocoa {
 RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
     mojom::RenderWidgetHostNSViewHost* host,
     RenderWidgetHostNSViewHostHelper* host_helper) {
-  display::Screen::GetScreen()->AddObserver(this);
 
   cocoa_view_.reset([[RenderWidgetHostViewCocoa alloc]
         initWithHost:host
@@ -46,7 +45,6 @@ RenderWidgetHostNSViewBridge::~RenderWidgetHostNSViewBridge() {
                     withObject:nil
                     afterDelay:0];
   cocoa_view_.autorelease();
-  display::Screen::GetScreen()->RemoveObserver(this);
   popup_window_.reset();
 }
 
