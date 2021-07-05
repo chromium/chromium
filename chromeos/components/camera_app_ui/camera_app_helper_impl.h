@@ -113,6 +113,8 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   std::unique_ptr<chromeos::CameraAppWindowStateController>
       window_state_controller_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(CameraAppHelperImpl);
 };
 

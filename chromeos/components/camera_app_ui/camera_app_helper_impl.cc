@@ -85,13 +85,11 @@ CameraAppHelperImpl::CameraAppHelperImpl(
   window->SetProperty(ash::kCanConsumeSystemKeysKey, true);
   ash::TabletMode::Get()->AddObserver(this);
   ash::ScreenBacklight::Get()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 CameraAppHelperImpl::~CameraAppHelperImpl() {
   ash::TabletMode::Get()->RemoveObserver(this);
   ash::ScreenBacklight::Get()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
 
   if (pending_intent_id_.has_value()) {
     camera_result_callback_.Run(*pending_intent_id_,
