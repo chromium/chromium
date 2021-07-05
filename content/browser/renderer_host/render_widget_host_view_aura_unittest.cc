@@ -3030,8 +3030,6 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateCursorIfOverSelf) {
 
 TEST_F(RenderWidgetHostViewAuraTest, ZeroSizeStillGetsLocalSurfaceId) {
   parent_local_surface_id_allocator_.GenerateId();
-  viz::LocalSurfaceId local_surface_id =
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 
   InitViewForFrame(nullptr);
   ASSERT_EQ(1u, widget_host_->visual_properties().size());
@@ -3064,8 +3062,6 @@ TEST_F(RenderWidgetHostViewAuraTest, ZeroSizeStillGetsLocalSurfaceId) {
 TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorMatchesCompositorFrame) {
   gfx::Size frame_size(100, 100);
   parent_local_surface_id_allocator_.GenerateId();
-  viz::LocalSurfaceId local_surface_id =
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 
   InitViewForFrame(nullptr);
   aura::client::ParentWindowWithContext(
@@ -5662,7 +5658,6 @@ TEST_F(RenderWidgetHostViewAuraTest, DontDropFallbackIfNotResizedWhileHidden) {
       view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
       gfx::Rect());
   view_->Show();
-  viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   // Force fallback being set.
   view_->DidNavigate();
   view_->ResetFallbackToFirstNavigationSurface();

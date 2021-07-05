@@ -11,4 +11,7 @@ NavigationHandleTiming::NavigationHandleTiming() = default;
 NavigationHandleTiming::NavigationHandleTiming(
     const NavigationHandleTiming& timing) = default;
 
+NavigationHandleTiming& NavigationHandleTiming::operator=(
+    const NavigationHandleTiming& timing) = default;
+
 }  // namespace content

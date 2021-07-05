@@ -70,6 +70,7 @@ class CONTENT_EXPORT TextInputManager {
   struct SelectionRegion {
     SelectionRegion();
     SelectionRegion(const SelectionRegion& other);
+    SelectionRegion& operator=(const SelectionRegion& other);
 
     // The begining of the selection region.
     gfx::SelectionBound anchor;

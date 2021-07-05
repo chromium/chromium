@@ -37,6 +37,9 @@ BackgroundSyncParameters::BackgroundSyncParameters()
 BackgroundSyncParameters::BackgroundSyncParameters(
     const BackgroundSyncParameters& other) = default;
 
+BackgroundSyncParameters& BackgroundSyncParameters::operator=(
+    const BackgroundSyncParameters& other) = default;
+
 bool BackgroundSyncParameters::operator==(
     const BackgroundSyncParameters& other) const {
   return disable == other.disable &&

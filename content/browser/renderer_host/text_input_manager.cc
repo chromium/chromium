@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/numerics/clamped_math.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "ui/gfx/geometry/rect.h"
@@ -409,17 +410,20 @@ void TextInputManager::NotifyObserversAboutInputStateUpdate(
     observer.OnUpdateTextInputStateCalled(this, updated_view, did_update_state);
 }
 
-TextInputManager::SelectionRegion::SelectionRegion() {}
+TextInputManager::SelectionRegion::SelectionRegion() = default;
 
 TextInputManager::SelectionRegion::SelectionRegion(
     const SelectionRegion& other) = default;
 
-TextInputManager::CompositionRangeInfo::CompositionRangeInfo() {}
+TextInputManager::SelectionRegion& TextInputManager::SelectionRegion::operator=(
+    const SelectionRegion& other) = default;
+
+TextInputManager::CompositionRangeInfo::CompositionRangeInfo() = default;
 
 TextInputManager::CompositionRangeInfo::CompositionRangeInfo(
     const CompositionRangeInfo& other) = default;
 
-TextInputManager::CompositionRangeInfo::~CompositionRangeInfo() {}
+TextInputManager::CompositionRangeInfo::~CompositionRangeInfo() = default;
 
 TextInputManager::TextSelection::TextSelection()
     : offset_(0), range_(gfx::Range::InvalidRange()) {}
@@ -427,7 +431,7 @@ TextInputManager::TextSelection::TextSelection()
 TextInputManager::TextSelection::TextSelection(const TextSelection& other) =
     default;
 
-TextInputManager::TextSelection::~TextSelection() {}
+TextInputManager::TextSelection::~TextSelection() = default;
 
 void TextInputManager::TextSelection::SetSelection(const std::u16string& text,
                                                    size_t offset,

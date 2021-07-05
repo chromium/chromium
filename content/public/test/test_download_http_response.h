@@ -48,6 +48,7 @@ class TestDownloadHttpResponse {
                      bool is_transient,
                      bool delay_response);
     HttpResponseData(const HttpResponseData& other) = default;
+    HttpResponseData& operator=(const HttpResponseData& other) = default;
 
     // The range for first byte position in range header to use this response.
     int64_t min_offset = -1;

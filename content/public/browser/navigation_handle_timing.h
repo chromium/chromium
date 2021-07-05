@@ -18,6 +18,7 @@ namespace content {
 struct CONTENT_EXPORT NavigationHandleTiming {
   NavigationHandleTiming();
   NavigationHandleTiming(const NavigationHandleTiming& timing);
+  NavigationHandleTiming& operator=(const NavigationHandleTiming& timing);
 
   // The time the first HTTP request was sent. This is filled with
   // net::LoadTimingInfo::send_start during navigation.
