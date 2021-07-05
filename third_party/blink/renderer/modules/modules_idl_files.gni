@@ -1,0 +1,196 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/bindings/bindings.gni")
+import("//third_party/blink/renderer/config.gni")
+
+# The paths in this file are absolute since this file is imported and the
+# file lists must be valid from multiple "current directories".
+
+# IDL files for a module are defined by idls.gni in the module's corresponding
+# directory. idls.gni can define certain variables to add additional IDL files
+# to the build.
+#
+#   modules_idl_files = [
+#     # IDL files that don't fit in one of the below categories. Typically
+#     # (but not required to) defines interfaces.
+#     # Spec reference: https://heycam.github.io/webidl/#idl-interfaces
+#   ]
+#
+#   modules_callback_function_idl_files = [
+#     # IDL files that only define callback functions (note: these are distinct
+#     # from callback interfaces).
+#     # Spec reference: https://heycam.github.io/webidl/#dfn-callback-function).
+#     # TODO(dcheng): Figure out why this is its own category.
+#   ]
+#
+#   modules_dictionary_idl_files = [
+#     # IDL files that define dictionaries and any supporting types (such as
+#     # enums) for the dictionaries.
+#     # Spec reference: https://heycam.github.io/webidl/#idl-dictionaries
+#   ]
+#
+#   modules_dependency_idl_files = [
+#     # IDL files that either define partial interfaces or target (right side
+#     # of) `includes`.
+#     # Spec reference: https://heycam.github.io/webidl/#dfn-partial-interface
+#     # Spec reference: https://heycam.github.io/webidl/#idl-interface-mixins
+#   ]
+#
+#   modules_testing_dependency_idl_files = [
+#     # Similar to |modules_dependency_idl_files| but limited to things that are
+#     # exposed only for testing.
+#   ]
+#
+#   modules_typedefs_enums_only_idl_files = [
+#     # IDL files that only have typedefs/enums.
+#   ]
+_idl_imports = []
+
+# Do not add IDL files directly to these lists. See _idl_imports above instead
+# on how to add IDL files for a module.
+modules_idl_files =
+    get_path_info(
+        [
+          # This variable is effectively no longer used, but it's not easy to
+          # remove this or make this empty.  So, put a dummy entry for the time
+          # being.  The file doesn't make any sense.
+          # TODO(yukishiino): Remove the build settings of the old bindings
+          # generator entirely.
+          "//third_party/blink/renderer/core/dom/common_definitions.idl",
+        ],
+        "abspath")
+modules_callback_function_idl_files = []
+modules_dictionary_idl_files = []
+modules_dependency_idl_files = []
+modules_testing_dependency_idl_files = []
+modules_typedefs_enums_only_idl_files = []
+
+foreach(idl_import, _idl_imports) {
+  # Avoid reassignment error by assigning to empty scope first.
+  _imported = {
+  }
+  _imported = read_file(idl_import, "scope")
+
+  # Paths are potentially relative to the location of the .gni. Rebase them
+  # relative to "." so get_path_info() works as expected.
+  gni_dir = get_path_info(idl_import, "dir")
+
+  if (defined(_imported.modules_idl_files)) {
+    modules_idl_files +=
+        get_path_info(rebase_path(_imported.modules_idl_files, ".", gni_dir),
+                      "abspath")
+  }
+
+  if (defined(_imported.modules_callback_function_idl_files)) {
+    modules_callback_function_idl_files +=
+        get_path_info(rebase_path(_imported.modules_callback_function_idl_files,
+                                  ".",
+                                  gni_dir),
+                      "abspath")
+  }
+
+  if (defined(_imported.modules_dictionary_idl_files)) {
+    modules_dictionary_idl_files +=
+        get_path_info(
+            rebase_path(_imported.modules_dictionary_idl_files, ".", gni_dir),
+            "abspath")
+  }
+
+  if (defined(_imported.modules_dependency_idl_files)) {
+    modules_dependency_idl_files +=
+        get_path_info(
+            rebase_path(_imported.modules_dependency_idl_files, ".", gni_dir),
+            "abspath")
+  }
+
+  if (defined(_imported.modules_testing_dependency_idl_files)) {
+    modules_testing_dependency_idl_files +=
+        get_path_info(
+            rebase_path(_imported.modules_testing_dependency_idl_files,
+                        ".",
+                        gni_dir),
+            "abspath")
+  }
+
+  if (defined(_imported.modules_typedefs_enums_only_idl_files)) {
+    modules_typedefs_enums_only_idl_files +=
+        get_path_info(
+            rebase_path(_imported.modules_typedefs_enums_only_idl_files,
+                        ".",
+                        gni_dir),
+            "abspath")
+  }
+}
+
+bindings_modules_output_dir = "$bindings_output_dir/modules"
+blink_modules_output_dir = "$root_gen_dir/third_party/blink/renderer/modules"
+
+modules_core_global_constructors_original_interfaces = [
+  "AnimationWorkletGlobalScope",
+  "AudioWorkletGlobalScope",
+  "PaintWorkletGlobalScope",
+  "ServiceWorkerGlobalScope",
+]
+
+# The size and the order in the following list must match to the previous one.
+modules_core_global_constructors_original_interface_basenames = [
+  "animation_worklet_global_scope",
+  "audio_worklet_global_scope",
+  "paint_worklet_global_scope",
+  "service_worker_global_scope",
+]
+
+modules_global_constructors_original_interfaces = [
+  "AnimationWorkletGlobalScope",
+  "AudioWorkletGlobalScope",
+  "DedicatedWorkerGlobalScope",
+  "PaintWorkletGlobalScope",
+  "ServiceWorkerGlobalScope",
+  "SharedWorkerGlobalScope",
+  "Window",
+]
+
+# The size and the order in the following list must match to the previous one.
+modules_global_constructors_original_interface_basenames = [
+  "animation_worklet_global_scope",
+  "audio_worklet_global_scope",
+  "dedicated_worker_global_scope",
+  "paint_worklet_global_scope",
+  "service_worker_global_scope",
+  "shared_worker_global_scope",
+  "window",
+]
+
+# The interfaces aren't technically files, but we can treat them as file names
+# to get process_file_template to generate lists of IDL files corresponding
+# to each interface.
+modules_core_global_constructors_generated_idl_files = process_file_template(
+        modules_core_global_constructors_original_interface_basenames,
+        [ "$blink_modules_output_dir/{{source_name_part}}_core_constructors.idl" ])
+modules_global_constructors_generated_idl_files = process_file_template(
+        modules_global_constructors_original_interface_basenames,
+        [ "$blink_modules_output_dir/{{source_name_part}}_modules_constructors.idl" ])
+
+modules_definition_idl_files = modules_dictionary_idl_files + modules_idl_files
+
+# Static IDL files
+modules_static_interface_idl_files =
+    modules_callback_function_idl_files + modules_typedefs_enums_only_idl_files
+
+modules_static_dependency_idl_files =
+    modules_dependency_idl_files + modules_testing_dependency_idl_files
+
+if (use_blink_v8_binding_new_idl_interface) {
+  modules_generated_dependency_idl_files = []
+} else {
+  modules_generated_dependency_idl_files =
+      modules_core_global_constructors_generated_idl_files +
+      modules_global_constructors_generated_idl_files
+}
+
+# 'modules_dependency_idl_files' is already used in Source/modules, so avoid
+# collision
+modules_all_dependency_idl_files =
+    modules_static_dependency_idl_files + modules_generated_dependency_idl_files

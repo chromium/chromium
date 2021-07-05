@@ -9,6 +9,7 @@ import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
 import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
+import("//third_party/blink/renderer/modules/modules_idl_files.gni")
 import("//third_party/webrtc/webrtc.gni")
 
 if (is_android) {

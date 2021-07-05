@@ -12,8 +12,57 @@ import("//third_party/blink/renderer/bindings/idl_in_core.gni")
 import("//third_party/blink/renderer/bindings/idl_in_extensions_chromeos.gni")
 import("//third_party/blink/renderer/bindings/idl_in_modules.gni")
 import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
+import("//third_party/blink/renderer/core/core_idl_files.gni")
+import("//third_party/blink/renderer/modules/modules_idl_files.gni")
 
 visibility = [ "//third_party/blink/renderer/*" ]
+
+action("interfaces_info") {
+  script = "$bindings_scripts_dir/compute_interfaces_info_overall.py"
+
+  inputs = [
+    "$bindings_core_output_dir/interfaces_info_core.pickle",
+    "$bindings_modules_output_dir/interfaces_info_modules.pickle",
+  ]
+  outputs = [ "$bindings_output_dir/interfaces_info.pickle" ]
+
+  args = [
+    "--",
+    rebase_path("$bindings_core_output_dir/interfaces_info_core.pickle",
+                root_build_dir),
+    rebase_path("$bindings_modules_output_dir/interfaces_info_modules.pickle",
+                root_build_dir),
+    rebase_path("$bindings_output_dir/interfaces_info.pickle", root_build_dir),
+  ]
+
+  public_deps = [
+    "//third_party/blink/renderer/bindings/core:interfaces_info_core",
+    "//third_party/blink/renderer/bindings/modules:interfaces_info_modules",
+  ]
+}
+
+if (use_blink_v8_binding_new_idl_interface) {
+  group("global_constructors_idls") {
+  }
+} else {
+  generate_global_constructors("global_constructors_idls") {
+    sources =
+        core_interface_idl_files_core_only +
+        core_interface_idl_files_modules_dependent +
+        core_buffer_source_type_idl_files + core_callback_interface_idl_files
+    global_objects_file =
+        "$bindings_modules_output_dir/global_objects_modules.pickle"
+    interfaces = modules_core_global_constructors_original_interfaces
+    basenames = modules_core_global_constructors_original_interface_basenames
+    component = "core"
+    output_dir = blink_modules_output_dir
+    deps = [
+      "//third_party/blink/renderer/bindings/modules:modules_global_constructors_idls",
+      "//third_party/blink/renderer/bindings/modules:modules_global_objects",
+    ]
+  }
+}
 
 template("collect_idl_files") {
   action_with_pydeps(target_name) {

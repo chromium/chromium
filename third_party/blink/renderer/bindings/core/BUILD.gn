@@ -1,0 +1,49 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
+import("//third_party/blink/renderer/core/core_idl_files.gni")
+
+visibility = [ "//third_party/blink/*" ]
+
+compute_interfaces_info("interfaces_info_core") {
+  sources =
+      core_static_interface_idl_files + core_static_dependency_idl_files +
+      core_generated_interface_idl_files + core_generated_dependency_idl_files
+  interfaces_info_file = "$bindings_core_output_dir/interfaces_info_core.pickle"
+  component_info_file = "$bindings_core_output_dir/component_info_core.pickle"
+  deps = [
+    "//third_party/blink/renderer/bindings/core:core_global_constructors_idls",
+    "//third_party/blink/renderer/core:generated_testing_idls_internal_runtime_flags",
+    "//third_party/blink/renderer/core:generated_testing_idls_settings",
+  ]
+}
+
+compute_global_objects("core_global_objects") {
+  sources =
+      core_interface_idl_files_core_only +
+      core_interface_idl_files_modules_dependent +
+      core_buffer_source_type_idl_files + core_callback_interface_idl_files
+  sources_generated = []
+  output_file = "$bindings_core_output_dir/global_objects_core.pickle"
+  deps = []
+}
+
+if (use_blink_v8_binding_new_idl_interface) {
+  group("core_global_constructors_idls") {
+  }
+} else {
+  generate_global_constructors("core_global_constructors_idls") {
+    sources =
+        core_interface_idl_files_core_only +
+        core_interface_idl_files_modules_dependent +
+        core_buffer_source_type_idl_files + core_callback_interface_idl_files
+    global_objects_file = "$bindings_core_output_dir/global_objects_core.pickle"
+    interfaces = core_global_constructors_original_interfaces
+    basenames = core_global_constructors_original_interface_basenames
+    component = "core"
+    output_dir = blink_core_output_dir
+    deps = [ ":core_global_objects" ]
+  }
+}
