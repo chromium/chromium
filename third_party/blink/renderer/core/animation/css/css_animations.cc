@@ -985,7 +985,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
   ClearPendingUpdate();
 }
 
-void CSSAnimations::CalculateTransitionUpdateForProperty(
+void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     TransitionUpdateState& state,
     const PropertyHandle& property,
     size_t transition_index) {
@@ -1185,19 +1185,37 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
               ->IsAnimationStyleChange());
 }
 
+void CSSAnimations::CalculateTransitionUpdateForProperty(
+    TransitionUpdateState& state,
+    const CSSTransitionData::TransitionProperty& transition_property,
+    size_t transition_index,
+    const ComputedStyle& style) {
+  switch (transition_property.property_type) {
+    case CSSTransitionData::kTransitionUnknownProperty:
+      CalculateTransitionUpdateForCustomProperty(state, transition_property,
+                                                 transition_index);
+      break;
+    case CSSTransitionData::kTransitionKnownProperty:
+      CalculateTransitionUpdateForStandardProperty(state, transition_property,
+                                                   transition_index, style);
+      break;
+    default:
+      break;
+  }
+}
+
 void CSSAnimations::CalculateTransitionUpdateForCustomProperty(
     TransitionUpdateState& state,
     const CSSTransitionData::TransitionProperty& transition_property,
     size_t transition_index) {
-  if (transition_property.property_type !=
-      CSSTransitionData::kTransitionUnknownProperty) {
-    return;
-  }
+  DCHECK_EQ(transition_property.property_type,
+            CSSTransitionData::kTransitionUnknownProperty);
+
   if (!CSSVariableParser::IsValidVariableName(
           transition_property.property_string)) {
     return;
   }
-  CalculateTransitionUpdateForProperty(
+  CalculateTransitionUpdateForPropertyHandle(
       state, PropertyHandle(transition_property.property_string),
       transition_index);
 }
@@ -1207,10 +1225,8 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
     const CSSTransitionData::TransitionProperty& transition_property,
     size_t transition_index,
     const ComputedStyle& style) {
-  if (transition_property.property_type !=
-      CSSTransitionData::kTransitionKnownProperty) {
-    return;
-  }
+  DCHECK_EQ(transition_property.property_type,
+            CSSTransitionData::kTransitionKnownProperty);
 
   CSSPropertyID resolved_id =
       ResolveCSSPropertyID(transition_property.unresolved_property);
@@ -1235,13 +1251,12 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
       continue;
     }
 
-    CalculateTransitionUpdateForProperty(state, property_handle,
-                                         transition_index);
+    CalculateTransitionUpdateForPropertyHandle(state, property_handle,
+                                               transition_index);
   }
 }
 
 void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
-                                              PropertyPass property_pass,
                                               Element& animating_element,
                                               const ComputedStyle& style) {
   if (animating_element.GetDocument().FinishingOrIsPrinting())
@@ -1281,34 +1296,21 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
         if (transition_property.unresolved_property == CSSPropertyID::kAll) {
           any_transition_had_transition_all = true;
         }
-        if (property_pass == PropertyPass::kCustom) {
-          CalculateTransitionUpdateForCustomProperty(state, transition_property,
-                                                     transition_index);
-        } else {
-          DCHECK_EQ(property_pass, PropertyPass::kStandard);
-          CalculateTransitionUpdateForStandardProperty(
-              state, transition_property, transition_index, style);
-        }
+        CalculateTransitionUpdateForProperty(state, transition_property,
+                                             transition_index, style);
       }
     } else if (active_transitions && active_transitions->size()) {
       // !transition_data implies transition: all 0s
       any_transition_had_transition_all = true;
-      if (property_pass == PropertyPass::kStandard) {
         CSSTransitionData::TransitionProperty default_property(
             CSSPropertyID::kAll);
-        CalculateTransitionUpdateForStandardProperty(state, default_property, 0,
-                                                     style);
-      }
+        CalculateTransitionUpdateForProperty(state, default_property, 0, style);
     }
   }
 
   if (active_transitions) {
     for (const auto& entry : *active_transitions) {
       const PropertyHandle& property = entry.key;
-      if (property.IsCSSCustomProperty() !=
-          (property_pass == PropertyPass::kCustom)) {
-        continue;
-      }
       if (!any_transition_had_transition_all && !animation_style_recalc &&
           !listed_properties.Contains(property)) {
         update.CancelTransition(property);
@@ -1318,8 +1320,7 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
     }
   }
 
-  CalculateTransitionActiveInterpolations(update, property_pass,
-                                          animating_element);
+  CalculateTransitionActiveInterpolations(update, animating_element);
 }
 
 scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
@@ -1424,11 +1425,6 @@ bool IsFontAffectingPropertyHandle(const PropertyHandle& property) {
 // the case of effect collisions.
 // Example: Both 'color' and 'svg-color' set the color on ComputedStyle but are
 // considered distinct properties in the ActiveInterpolationsMap.
-bool IsStandardPropertyHandle(const PropertyHandle& property) {
-  return (property.IsCSSProperty() && !property.IsCSSCustomProperty()) ||
-         property.IsPresentationAttribute();
-}
-
 bool IsCSSPropertyHandle(const PropertyHandle& property) {
   return property.IsCSSProperty() || property.IsPresentationAttribute();
 }
@@ -1472,22 +1468,8 @@ void CSSAnimations::CalculateAnimationActiveInterpolations(
                                      &update.SuppressedAnimations());
 }
 
-namespace {
-
-EffectStack::PropertyHandleFilter PropertyFilter(
-    CSSAnimations::PropertyPass property_pass) {
-  if (property_pass == CSSAnimations::PropertyPass::kCustom) {
-    return IsCustomPropertyHandle;
-  }
-  DCHECK_EQ(property_pass, CSSAnimations::PropertyPass::kStandard);
-  return IsStandardPropertyHandle;
-}
-
-}  // namespace
-
 void CSSAnimations::CalculateTransitionActiveInterpolations(
     CSSAnimationUpdate& update,
-    PropertyPass property_pass,
     const Element& animating_element) {
   ElementAnimations* element_animations =
       animating_element.GetElementAnimations();
@@ -1499,7 +1481,7 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
       update.CancelledTransitions().IsEmpty()) {
     active_interpolations_for_transitions = EffectStack::ActiveInterpolations(
         effect_stack, nullptr, nullptr, KeyframeEffect::kTransitionPriority,
-        PropertyFilter(property_pass));
+        IsCSSPropertyHandle);
   } else {
     HeapVector<Member<const InertEffect>> new_transitions;
     for (const auto& entry : update.NewTransitions())
@@ -1519,7 +1501,7 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
 
     active_interpolations_for_transitions = EffectStack::ActiveInterpolations(
         effect_stack, &new_transitions, &cancelled_animations,
-        KeyframeEffect::kTransitionPriority, PropertyFilter(property_pass));
+        KeyframeEffect::kTransitionPriority, IsCSSPropertyHandle);
   }
 
   const ActiveInterpolationsMap& animations =
@@ -1532,14 +1514,8 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
       active_interpolations_for_transitions.erase(entry.key);
   }
 
-  if (property_pass == PropertyPass::kCustom) {
-    update.AdoptActiveInterpolationsForCustomTransitions(
-        active_interpolations_for_transitions);
-  } else {
-    DCHECK_EQ(property_pass, PropertyPass::kStandard);
-    update.AdoptActiveInterpolationsForStandardTransitions(
-        active_interpolations_for_transitions);
-  }
+  update.AdoptActiveInterpolationsForTransitions(
+      active_interpolations_for_transitions);
 }
 
 EventTarget* CSSAnimations::AnimationEventDelegate::GetEventTarget() const {
