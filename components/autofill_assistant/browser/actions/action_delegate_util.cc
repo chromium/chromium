@@ -85,7 +85,6 @@ void SkipIfFail(element_action_util::ElementActionCallback action,
 // Adds a sequence of actions that execute a click.
 void AddClickOrTapSequence(const ActionDelegate* delegate,
                            ClickType click_type,
-                           OptionalStep on_top,
                            element_action_util::ElementActionVector* actions) {
   AddStepIgnoreTiming(
       base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
@@ -107,10 +106,6 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                        delegate->GetSettings().box_model_check_count,
                        delegate->GetSettings().box_model_check_interval),
         actions);
-    AddOptionalStep(on_top,
-                    base::BindOnce(&WebController::CheckOnTop,
-                                   delegate->GetWebController()->GetWeakPtr()),
-                    actions);
     actions->emplace_back(
         base::BindOnce(&WebController::ClickOrTapElement,
                        delegate->GetWebController()->GetWeakPtr(), click_type));
@@ -215,24 +210,22 @@ void FindElementAndPerform(const ActionDelegate* delegate,
 void ClickOrTapElement(const ActionDelegate* delegate,
                        const Selector& selector,
                        ClickType click_type,
-                       OptionalStep on_top,
                        base::OnceCallback<void(const ClientStatus&)> done) {
   FindElementAndPerformImpl(
       delegate, selector,
-      base::BindOnce(&PerformClickOrTapElement, delegate, click_type, on_top),
+      base::BindOnce(&PerformClickOrTapElement, delegate, click_type),
       std::move(done));
 }
 
 void PerformClickOrTapElement(
     const ActionDelegate* delegate,
     ClickType click_type,
-    OptionalStep on_top,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
-  VLOG(3) << __func__ << " click_type=" << click_type << " on_top=" << on_top;
+  VLOG(3) << __func__ << " click_type=" << click_type;
 
   auto actions = std::make_unique<element_action_util::ElementActionVector>();
-  AddClickOrTapSequence(delegate, click_type, on_top, actions.get());
+  AddClickOrTapSequence(delegate, click_type, actions.get());
   element_action_util::PerformAll(std::move(actions), element, std::move(done));
 }
 
@@ -264,8 +257,7 @@ void PerformSendKeyboardInput(
         base::BindOnce(&WebController::FocusField,
                        delegate->GetWebController()->GetWeakPtr()));
   } else {
-    AddClickOrTapSequence(delegate, ClickType::TAP, /* on_top=*/SKIP_STEP,
-                          actions.get());
+    AddClickOrTapSequence(delegate, ClickType::TAP, actions.get());
   }
   actions->emplace_back(base::BindOnce(
       &WebController::SendKeyboardInput,
@@ -316,8 +308,7 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
         actions->emplace_back(base::BindOnce(
             &WebController::SetValueAttribute,
             delegate->GetWebController()->GetWeakPtr(), std::string()));
-        AddClickOrTapSequence(delegate, ClickType::CLICK,
-                              /* on_top= */ SKIP_STEP, actions.get());
+        AddClickOrTapSequence(delegate, ClickType::CLICK, actions.get());
         actions->emplace_back(base::BindOnce(
             &WebController::SendKeyboardInput,
             delegate->GetWebController()->GetWeakPtr(), UTF8ToUnicode(value),
