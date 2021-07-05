@@ -263,8 +263,6 @@ include_rules = [
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/content/browser",
   "+components/safe_browsing/content/common",
-  # TODO(crbug.com/1216341): Determine how best to eliminate this (it's needed for a const value).
-  "!components/safe_browsing/content/renderer/threat_dom_details.h",
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/safe_search_api",

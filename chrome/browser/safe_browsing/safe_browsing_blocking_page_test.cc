@@ -62,7 +62,6 @@
 #include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/content/renderer/threat_dom_details.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -443,8 +442,11 @@ class SafeBrowsingBlockingPageBrowserTest
  public:
   SafeBrowsingBlockingPageBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // NOTE: Value copied from the renderer-side threat_dom_details.cc, as
+    // threat_dom_details.h can't be depended on from this browser-side code.
+    const char kTagAndAttributeParamName[] = "tag_attribute_csv";
     std::map<std::string, std::string> parameters = {
-        {safe_browsing::kTagAndAttributeParamName, "div,foo,div,baz"}};
+        {kTagAndAttributeParamName, "div,foo,div,baz"}};
     base::test::ScopedFeatureList::FeatureAndParams tag_and_attribute(
         safe_browsing::kThreatDomDetailsTagAndAttributeFeature, parameters);
     scoped_feature_list_.InitWithFeaturesAndParameters({tag_and_attribute}, {});
