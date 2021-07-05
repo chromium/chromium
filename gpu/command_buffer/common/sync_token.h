@@ -33,6 +33,7 @@ struct GPU_EXPORT SyncToken {
             uint64_t release_count);
 
   SyncToken(const SyncToken& other);
+  SyncToken& operator=(const SyncToken& other);
 
   void Set(CommandBufferNamespace namespace_id,
            CommandBufferId command_buffer_id,
