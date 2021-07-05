@@ -1295,7 +1295,7 @@
     },
     {
       'name': 'NewTabPageLocation',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'okalitova@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:58-', 'chrome_os:58-'],
