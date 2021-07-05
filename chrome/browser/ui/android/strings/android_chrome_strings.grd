@@ -4474,10 +4474,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Link to highlight
       </message>
 
-      <message name="IDS_SHARING_WEBNOTES_STYLIZED" desc="Label for stylized highlight creation button in the sharing hub.">
-        Stylize highlight
+      <message name="IDS_SHARING_WEBNOTES_CREATE_CARD" desc="Label for the button in sharing hub for creating card for the highlight text.">
+        Create card
       </message>
-
       <message name="IDS_SHARING_COPIED" desc="Text shown in the toast notification when Copy is selected in the sharing hub.">
         Copied
       </message>

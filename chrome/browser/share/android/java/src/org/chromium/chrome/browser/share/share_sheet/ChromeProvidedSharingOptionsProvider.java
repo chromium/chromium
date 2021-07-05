@@ -440,7 +440,7 @@ class ChromeProvidedSharingOptionsProvider {
     private FirstPartyOption createWebNotesStylizeFirstPartyOption() {
         String title = mTabProvider.get().getTitle();
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
-                .setIcon(R.drawable.webnote, R.string.sharing_webnotes_stylized)
+                .setIcon(R.drawable.webnote, R.string.sharing_webnotes_create_card)
                 .setFeatureNameForMetrics("SharingHubAndroid.WebnotesStylize")
                 .setOnClickCallback((view) -> {
                     NoteCreationCoordinator coordinator = NoteCreationCoordinatorFactory.create(
