@@ -197,9 +197,12 @@ class CAPTURE_EXPORT RequestManager final
     int32_t orientation;
   };
 
-  // Puts Jpeg orientation information into the metadata.
+  // Puts JPEG orientation information into the metadata.
   void SetJpegOrientation(cros::mojom::CameraMetadataPtr* settings,
                           int32_t orientation);
+
+  // Puts JPEG thumbnail size information into the metadata.
+  void SetJpegThumbnailSize(cros::mojom::CameraMetadataPtr* settings) const;
 
   // Puts sensor timestamp into the metadata for reprocess request.
   void SetSensorTimestamp(cros::mojom::CameraMetadataPtr* settings,
@@ -369,6 +372,9 @@ class CAPTURE_EXPORT RequestManager final
   // Map for retrieving the last received frame number. It is used to check for
   // duplicate or out of order of frames.
   std::map<StreamType, uint32_t> last_received_frame_number_map_;
+
+  // The JPEG thumbnail size chosen for current stream configuration.
+  gfx::Size jpeg_thumbnail_size_;
 
   base::WeakPtr<CameraAppDeviceImpl> camera_app_device_;
 

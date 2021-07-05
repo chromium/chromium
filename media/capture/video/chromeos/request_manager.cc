@@ -33,6 +33,50 @@ constexpr uint32_t kUndefinedFrameNumber = 0xFFFFFFFF;
 
 constexpr std::initializer_list<StreamType> kYUVReprocessStreams = {
     StreamType::kYUVInput, StreamType::kJpegOutput};
+
+// Choose a JPEG thumbnail size for the JPEG output stream size from the
+// JPEG_AVAILABLE_THUMBNAIL_SIZES static metadata. Note that [0, 0] indicates no
+// thumbnail should be generated, and can be returned by this function if
+// there's no non-zero JPEG thumbnail size available.
+gfx::Size GetJpegThumbnailSize(
+    const cros::mojom::CameraMetadataPtr& static_metadata,
+    const std::vector<cros::mojom::Camera3StreamPtr>& streams) {
+  gfx::Size jpeg_size;
+  for (auto& stream : streams) {
+    const StreamType stream_type = StreamIdToStreamType(stream->id);
+    if (stream_type == StreamType::kJpegOutput)
+      jpeg_size = gfx::Size(base::checked_cast<int>(stream->width),
+                            base::checked_cast<int>(stream->height));
+  }
+  if (jpeg_size.IsEmpty())
+    return gfx::Size();
+
+  const auto available_sizes = GetMetadataEntryAsSpan<int32_t>(
+      static_metadata,
+      cros::mojom::CameraMetadataTag::ANDROID_JPEG_AVAILABLE_THUMBNAIL_SIZES);
+  DCHECK_EQ(available_sizes.size() % 2, 0u);
+
+  // Choose the thumbnail size with the closest aspect ratio to the JPEG size.
+  // If there are multiple options, choose the smallest one.
+  constexpr int kPrecisionFactor = 1000;
+  const int target_aspect_ratio =
+      kPrecisionFactor * jpeg_size.width() / jpeg_size.height();
+  std::vector<std::tuple<int, int, int>> items;
+  for (size_t i = 0; i < available_sizes.size(); i += 2) {
+    const gfx::Size size(base::strict_cast<int>(available_sizes[i]),
+                         base::strict_cast<int>(available_sizes[i + 1]));
+    if (size.IsEmpty())
+      continue;
+    const int aspect_ratio = kPrecisionFactor * size.width() / size.height();
+    items.emplace_back(std::abs(aspect_ratio - target_aspect_ratio),
+                       size.width(), size.height());
+  }
+  const auto iter = std::min_element(items.begin(), items.end());
+  if (iter == items.end())
+    return gfx::Size();
+  return gfx::Size(std::get<1>(*iter), std::get<2>(*iter));
+}
+
 }  // namespace
 
 RequestManager::RequestManager(
@@ -116,6 +160,8 @@ void RequestManager::SetUpStreamsAndBuffers(
     StreamType stream_type = StreamIdToStreamType(stream->id);
     last_received_frame_number_map_[stream_type] = kUndefinedFrameNumber;
   }
+
+  jpeg_thumbnail_size_ = GetJpegThumbnailSize(static_metadata, streams);
 
   stream_buffer_manager_->SetUpStreamsAndBuffers(
       capture_params, static_metadata, std::move(streams));
@@ -245,6 +291,21 @@ void RequestManager::SetJpegOrientation(
     int32_t orientation) {
   auto e = BuildMetadataEntry(
       cros::mojom::CameraMetadataTag::ANDROID_JPEG_ORIENTATION, orientation);
+  AddOrUpdateMetadataEntry(settings, std::move(e));
+}
+
+void RequestManager::SetJpegThumbnailSize(
+    cros::mojom::CameraMetadataPtr* settings) const {
+  std::vector<uint8_t> data(sizeof(int32_t) * 2);
+  auto* data_i32 = reinterpret_cast<int32_t*>(data.data());
+  data_i32[0] = base::checked_cast<int32_t>(jpeg_thumbnail_size_.width());
+  data_i32[1] = base::checked_cast<int32_t>(jpeg_thumbnail_size_.height());
+  cros::mojom::CameraMetadataEntryPtr e =
+      cros::mojom::CameraMetadataEntry::New();
+  e->tag = cros::mojom::CameraMetadataTag::ANDROID_JPEG_THUMBNAIL_SIZE;
+  e->type = cros::mojom::EntryType::TYPE_INT32;
+  e->count = data.size() / sizeof(int32_t);
+  e->data = std::move(data);
   AddOrUpdateMetadataEntry(settings, std::move(e));
 }
 
@@ -415,6 +476,7 @@ bool RequestManager::TryPrepareReprocessRequest(
   *settings = reprocess_job_info->metadata.Clone();
   SetSensorTimestamp(settings, reprocess_job_info->shutter_timestamp);
   SetJpegOrientation(settings, reprocess_job_info->orientation);
+  SetJpegThumbnailSize(settings);
   for (auto& metadata : task.extra_metadata) {
     AddOrUpdateMetadataEntry(settings, std::move(metadata));
   }
@@ -478,6 +540,7 @@ bool RequestManager::TryPrepareOneShotRequest(
 
     *settings = std::move(take_photo_settings_queue_.front());
     SetJpegOrientation(settings, device_context_->GetCameraFrameRotation());
+    SetJpegThumbnailSize(settings);
   }
   SetZeroShutterLag(settings, true);
   take_photo_settings_queue_.pop();
