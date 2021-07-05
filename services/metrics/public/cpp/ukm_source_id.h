@@ -77,10 +77,8 @@ class METRICS_EXPORT SourceIdObj {
   // Default constructor has the invalid value.
   constexpr SourceIdObj() : value_(kInvalidSourceId) {}
 
-  constexpr SourceIdObj& operator=(SourceIdObj other) {
-    value_ = other.value_;
-    return *this;
-  }
+  constexpr SourceIdObj(const SourceIdObj& other) = default;
+  constexpr SourceIdObj& operator=(const SourceIdObj& other) = default;
 
   // Allow identity comparisons.
   constexpr bool operator==(SourceIdObj other) const {
