@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_DISK_MANAGER_H_
 
 #include "base/callback.h"
+#include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
 
 namespace borealis {
 
 class BorealisContext;
+enum class BorealisGetDiskInfoResult;
 
 // Service responsible for managing borealis' disk space.
 class BorealisDiskManager {
@@ -31,7 +33,8 @@ class BorealisDiskManager {
   // Gets information about the borealis disk and the host device, returns
   // information about how the disk could be resized or an error.
   virtual void GetDiskInfo(
-      base::OnceCallback<void(Expected<GetDiskInfoResponse, std::string>)>
+      base::OnceCallback<void(
+          Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
           callback) = 0;
 
   // Attempt to expand the VM disk by the number of bytes specified. Returns the

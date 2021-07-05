@@ -8,6 +8,10 @@
 
 namespace borealis {
 
+const char kBorealisDiskClientGetDiskInfoResultHistogram[] =
+    "Borealis.Disk.Client.GetDiskInfoResult";
+const char kBorealisDiskClientNumRequestsPerSessionHistogram[] =
+    "Borealis.Disk.Client.NumRequestsPerSesssion";
 const char kBorealisInstallNumAttemptsHistogram[] =
     "Borealis.Install.NumAttempts";
 const char kBorealisInstallResultHistogram[] = "Borealis.Install.Result";
@@ -72,6 +76,17 @@ void RecordBorealisShutdownResultHistogram(
     BorealisShutdownResult shutdown_result) {
   base::UmaHistogramEnumeration(kBorealisShutdownResultHistogram,
                                 shutdown_result);
+}
+
+void RecordBorealisDiskClientGetDiskInfoResultHistogram(
+    BorealisGetDiskInfoResult get_disk_info_result) {
+  base::UmaHistogramEnumeration(kBorealisDiskClientGetDiskInfoResultHistogram,
+                                get_disk_info_result);
+}
+
+void RecordBorealisDiskClientNumRequestsPerSessionHistogram(int num_requests) {
+  base::UmaHistogramCounts100(kBorealisDiskClientNumRequestsPerSessionHistogram,
+                              num_requests);
 }
 
 }  // namespace borealis

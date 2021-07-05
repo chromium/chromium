@@ -12,6 +12,10 @@
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
+using ExpectedGetDiskInfoResponse = borealis::Expected<
+    borealis::BorealisDiskManager::GetDiskInfoResponse,
+    borealis::Described<borealis::BorealisGetDiskInfoResult>>;
+
 namespace dbus {
 class MethodCall;
 }  // namespace dbus
@@ -49,11 +53,9 @@ class VmDiskManagementServiceProvider
                     dbus::ExportedObject::ResponseSender response_sender);
 
   // Callbacks for responding to certain D-Bus requests.
-  void OnGetDiskInfo(
-      std::unique_ptr<dbus::Response> response,
-      dbus::ExportedObject::ResponseSender response_sender,
-      borealis::Expected<borealis::BorealisDiskManager::GetDiskInfoResponse,
-                         std::string> response_or_error);
+  void OnGetDiskInfo(std::unique_ptr<dbus::Response> response,
+                     dbus::ExportedObject::ResponseSender response_sender,
+                     ExpectedGetDiskInfoResponse response_or_error);
   void OnRequestSpace(
       std::unique_ptr<dbus::Response> response,
       dbus::ExportedObject::ResponseSender response_sender,

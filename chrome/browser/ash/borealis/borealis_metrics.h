@@ -9,6 +9,8 @@
 
 namespace borealis {
 
+extern const char kBorealisDiskClientGetDiskInfoResultHistogram[];
+extern const char kBorealisDiskClientNumRequestsPerSessionHistogram[];
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
@@ -67,6 +69,17 @@ enum class BorealisStartupResult {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class BorealisGetDiskInfoResult {
+  kSuccess = 0,
+  kAlreadyInProgress = 1,
+  kFailedGettingExpandableSpace = 2,
+  kConciergeFailed = 3,
+  kInvalidRequest = 4,
+  kMaxValue = kInvalidRequest,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class BorealisShutdownResult {
   kSuccess = 0,
   kInProgress = 1,
@@ -86,6 +99,9 @@ void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time);
 void RecordBorealisShutdownNumAttemptsHistogram();
 void RecordBorealisShutdownResultHistogram(
     BorealisShutdownResult shutdown_result);
+void RecordBorealisDiskClientGetDiskInfoResultHistogram(
+    BorealisGetDiskInfoResult get_disk_info_result);
+void RecordBorealisDiskClientNumRequestsPerSessionHistogram(int num_requests);
 
 }  // namespace borealis
 

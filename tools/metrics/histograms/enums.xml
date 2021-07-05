@@ -9772,6 +9772,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Yes"/>
 </enum>
 
+<enum name="BorealisGetDiskInfoResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="A GetDiskInfo request is already in progress"/>
+  <int value="2" label="Failed to get the expandable space of the disk"/>
+  <int value="3" label="Concierge failed"/>
+  <int value="4" label="Request was invalid"/>
+</enum>
+
 <enum name="BorealisInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="User cancelled installation"/>

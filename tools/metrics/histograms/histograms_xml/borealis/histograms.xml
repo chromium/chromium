@@ -21,6 +21,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Borealis.Disk.Client.GetDiskInfoResult"
+    enum="BorealisGetDiskInfoResult" expires_after="2022-04-08">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The results of a &quot;GetDiskInfo&quot; request from a client, which will
+    either be a success or an error. This is recorded each time a client makes a
+    GetDiskInfo request.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.NumRequestsPerSesssion" units="requests"
+    expires_after="2022-04-08">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The number of requests made by a client within a session of Borealis. This
+    counts each time a client makes a disk related request (GetDiskInfo,
+    RequestSpace and ReleaseSpace) and is emitted when Borealis is shutdown.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.EngagementTime.{Variant}" units="ms"
     expires_after="2022-04-08">
   <owner>lqu@google.com</owner>

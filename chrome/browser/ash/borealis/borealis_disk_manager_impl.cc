@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/infra/transition.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -62,6 +63,7 @@ struct BorealisDiskManagerImpl::BorealisDiskInfo {
 
 BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
     : context_(context),
+      request_count_(0),
       free_space_provider_(std::make_unique<FreeSpaceProvider>()),
       weak_factory_(this) {
   borealis::BorealisService::GetForProfile(context_->profile())
@@ -70,13 +72,16 @@ BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
 }
 
 BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
+  RecordBorealisDiskClientNumRequestsPerSessionHistogram(request_count_);
   borealis::BorealisService::GetForProfile(context_->profile())
       ->DiskManagerDispatcher()
       .RemoveDiskManagerDelegate(this);
 }
 
 class BorealisDiskManagerImpl::BuildDiskInfo
-    : public Transition<BorealisDiskInfo, BorealisDiskInfo, std::string> {
+    : public Transition<BorealisDiskInfo,
+                        BorealisDiskInfo,
+                        Described<BorealisGetDiskInfoResult>> {
  public:
   explicit BuildDiskInfo(
       BorealisDiskManagerImpl::FreeSpaceProvider* free_space_provider,
@@ -95,7 +100,9 @@ class BorealisDiskManagerImpl::BuildDiskInfo
  private:
   void HandleFreeSpaceResult(int64_t free_space) {
     if (free_space < 0) {
-      Fail("failed to get the amount of free disk space on the host");
+      Fail(Described<BorealisGetDiskInfoResult>(
+          BorealisGetDiskInfoResult::kFailedGettingExpandableSpace,
+          "failed to get the amount of free disk space on the host"));
       return;
     }
     disk_info_->expandable_space =
@@ -114,12 +121,16 @@ class BorealisDiskManagerImpl::BuildDiskInfo
   void HandleListVmDisksResult(
       absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
     if (!response) {
-      Fail("failed to get response from concierge");
+      Fail(Described<BorealisGetDiskInfoResult>(
+          BorealisGetDiskInfoResult::kConciergeFailed,
+          "failed to get response from concierge"));
       return;
     }
     if (!response->success()) {
-      Fail("concierge failed to list vm disks, returned error: " +
-           response->failure_reason());
+      Fail(Described<BorealisGetDiskInfoResult>(
+          BorealisGetDiskInfoResult::kConciergeFailed,
+          "concierge failed to list vm disks, returned error: " +
+              response->failure_reason()));
       return;
     }
     const std::string& vm_name = context_->vm_name();
@@ -127,7 +138,9 @@ class BorealisDiskManagerImpl::BuildDiskInfo
         std::find_if(response->images().begin(), response->images().end(),
                      [&vm_name](const auto& a) { return a.name() == vm_name; });
     if (image == response->images().end()) {
-      Fail("no VM found with name " + vm_name);
+      Fail(Described<BorealisGetDiskInfoResult>(
+          BorealisGetDiskInfoResult::kConciergeFailed,
+          "no VM found with name " + vm_name));
       return;
     }
 
@@ -204,11 +217,12 @@ class BorealisDiskManagerImpl::ResizeDisk
     }
   }
 
-  void HandleDiskInfo(Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
-                          disk_info_or_error) {
+  void HandleDiskInfo(
+      Expected<std::unique_ptr<BorealisDiskInfo>,
+               Described<BorealisGetDiskInfoResult>> disk_info_or_error) {
     build_disk_info_transition_.reset();
     if (!disk_info_or_error) {
-      Fail("BuildDiskInfo failed: " + disk_info_or_error.Error());
+      Fail("BuildDiskInfo failed: " + disk_info_or_error.Error().description());
       return;
     }
     original_disk_info_ = *disk_info_or_error.Value();
@@ -306,10 +320,12 @@ class BorealisDiskManagerImpl::ResizeDisk
                                              weak_factory_.GetWeakPtr()));
   }
 
-  void HandleUpdatedDiskInfo(Expected<std::unique_ptr<BorealisDiskInfo>,
-                                      std::string> disk_info_or_error) {
+  void HandleUpdatedDiskInfo(
+      Expected<std::unique_ptr<BorealisDiskInfo>,
+               Described<BorealisGetDiskInfoResult>> disk_info_or_error) {
     if (!disk_info_or_error) {
-      Fail("GetUpdatedDiskInfo failed: " + disk_info_or_error.Error());
+      Fail("GetUpdatedDiskInfo failed: " +
+           disk_info_or_error.Error().description());
       return;
     }
     updated_disk_info_ = *disk_info_or_error.Value();
@@ -345,10 +361,11 @@ class BorealisDiskManagerImpl::SyncDisk
   }
 
  private:
-  void HandleDiskInfo(Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
-                          disk_info_or_error) {
+  void HandleDiskInfo(
+      Expected<std::unique_ptr<BorealisDiskInfo>,
+               Described<BorealisGetDiskInfoResult>> disk_info_or_error) {
     if (!disk_info_or_error) {
-      Fail("BuildDiskInfo failed: " + disk_info_or_error.Error());
+      Fail("BuildDiskInfo failed: " + disk_info_or_error.Error().description());
       return;
     }
     if (!disk_info_or_error.Value()->has_fixed_size) {
@@ -409,15 +426,17 @@ class BorealisDiskManagerImpl::SyncDisk
 };
 
 void BorealisDiskManagerImpl::GetDiskInfo(
-    base::OnceCallback<void(Expected<GetDiskInfoResponse, std::string>)>
+    base::OnceCallback<void(
+        Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
         callback) {
   auto disk_info = std::make_unique<BorealisDiskInfo>();
+  request_count_++;
   if (build_disk_info_transition_) {
-    std::string error = "another GetDiskInfo request is in progress";
-    LOG(ERROR) << error;
     std::move(callback).Run(
-        Expected<GetDiskInfoResponse, std::string>::Unexpected(
-            std::move(error)));
+        Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>::
+            Unexpected(Described<BorealisGetDiskInfoResult>(
+                BorealisGetDiskInfoResult::kAlreadyInProgress,
+                "another GetDiskInfo request is in progress")));
     return;
   }
 
@@ -430,17 +449,19 @@ void BorealisDiskManagerImpl::GetDiskInfo(
 }
 
 void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
-    base::OnceCallback<void(Expected<GetDiskInfoResponse, std::string>)>
+    base::OnceCallback<void(
+        Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
         callback,
-    Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
-        disk_info_or_error) {
+    Expected<std::unique_ptr<BorealisDiskInfo>,
+             Described<BorealisGetDiskInfoResult>> disk_info_or_error) {
   build_disk_info_transition_.reset();
   if (!disk_info_or_error) {
-    std::string error = "GetDiskInfo failed: " + disk_info_or_error.Error();
-    LOG(ERROR) << error;
+    RecordBorealisDiskClientGetDiskInfoResultHistogram(
+        disk_info_or_error.Error().error());
     std::move(callback).Run(
-        Expected<GetDiskInfoResponse, std::string>::Unexpected(
-            std::move(error)));
+        Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>::
+            Unexpected(Described<BorealisGetDiskInfoResult>(
+                std::move(disk_info_or_error.Error()))));
     return;
   }
   GetDiskInfoResponse response;
@@ -448,7 +469,11 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
       int64_t(disk_info_or_error.Value()->available_space - kTargetBufferBytes),
       int64_t(0));
   response.expandable_bytes = disk_info_or_error.Value()->expandable_space;
-  std::move(callback).Run(Expected<GetDiskInfoResponse, std::string>(response));
+  RecordBorealisDiskClientGetDiskInfoResultHistogram(
+      BorealisGetDiskInfoResult::kSuccess);
+  std::move(callback).Run(
+      Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>(
+          response));
 }
 
 void BorealisDiskManagerImpl::RequestSpaceDelta(

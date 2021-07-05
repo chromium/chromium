@@ -33,11 +33,12 @@ class DiskManagerMock : public BorealisDiskManager {
  public:
   DiskManagerMock() = default;
   ~DiskManagerMock() override = default;
-  MOCK_METHOD(
-      void,
-      GetDiskInfo,
-      (base::OnceCallback<void(Expected<GetDiskInfoResponse, std::string>)>),
-      ());
+  MOCK_METHOD(void,
+              GetDiskInfo,
+              (base::OnceCallback<
+                  void(Expected<GetDiskInfoResponse,
+                                Described<BorealisGetDiskInfoResult>>)>),
+              ());
   MOCK_METHOD(void,
               RequestSpace,
               (uint64_t,

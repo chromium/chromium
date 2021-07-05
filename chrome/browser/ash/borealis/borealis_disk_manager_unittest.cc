@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -42,7 +43,8 @@ class FreeSpaceProviderMock
 };
 
 using DiskInfoCallbackFactory = StrictCallbackFactory<void(
-    Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>)>;
+    Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+             Described<BorealisGetDiskInfoResult>>)>;
 
 using RequestDeltaCallbackFactory =
     StrictCallbackFactory<void(Expected<uint64_t, std::string>)>;
@@ -51,14 +53,14 @@ using SyncDiskCallbackFactory = NiceCallbackFactory<void(std::string)>;
 
 class BorealisDiskDispatcherMock : public BorealisDiskManagerDispatcher {
  public:
-  MOCK_METHOD(
-      void,
-      GetDiskInfo,
-      (const std::string&,
-       const std::string&,
-       base::OnceCallback<void(
-           Expected<BorealisDiskManager::GetDiskInfoResponse, std::string>)>),
-      ());
+  MOCK_METHOD(void,
+              GetDiskInfo,
+              (const std::string&,
+               const std::string&,
+               base::OnceCallback<
+                   void(Expected<BorealisDiskManager::GetDiskInfoResponse,
+                                 Described<BorealisGetDiskInfoResult>>)>),
+              ());
   MOCK_METHOD(void,
               RequestSpace,
               (const std::string&,
@@ -157,6 +159,7 @@ class BorealisDiskManagerTest : public testing::Test,
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   std::unique_ptr<base::RunLoop> run_loop_;
   content::BrowserTaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnFreeSpaceProviderError) {
@@ -168,10 +171,17 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnFreeSpaceProviderError) {
   DiskInfoCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_FALSE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisGetDiskInfoResult::kFailedGettingExpandableSpace);
+          }));
   disk_manager_->GetDiskInfo(callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientGetDiskInfoResultHistogram,
+      BorealisGetDiskInfoResult::kFailedGettingExpandableSpace, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnNoResponseFromConcierge) {
@@ -187,10 +197,17 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnNoResponseFromConcierge) {
   DiskInfoCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_FALSE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisGetDiskInfoResult::kConciergeFailed);
+          }));
   disk_manager_->GetDiskInfo(callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientGetDiskInfoResultHistogram,
+      BorealisGetDiskInfoResult::kConciergeFailed, 1);
 }
 
 TEST_F(BorealisDiskManagerTest,
@@ -209,8 +226,12 @@ TEST_F(BorealisDiskManagerTest,
   DiskInfoCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_FALSE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisGetDiskInfoResult::kConciergeFailed);
+          }));
   disk_manager_->GetDiskInfo(callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
 }
@@ -230,8 +251,12 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnVmMismatch) {
   DiskInfoCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_FALSE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisGetDiskInfoResult::kConciergeFailed);
+          }));
   disk_manager_->GetDiskInfo(callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
 }
@@ -250,8 +275,8 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
   DiskInfoCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) {
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
             EXPECT_TRUE(response_or_error);
             // 3GB of disk space less 2GB of buffer is 1GB of available space.
             EXPECT_EQ(response_or_error.Value().available_bytes, 1 * kGiB);
@@ -261,6 +286,9 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
           }));
   disk_manager_->GetDiskInfo(callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientGetDiskInfoResultHistogram,
+      BorealisGetDiskInfoResult::kSuccess, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnConcurrentAttempt) {
@@ -278,12 +306,18 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnConcurrentAttempt) {
   DiskInfoCallbackFactory second_callback_factory;
   EXPECT_CALL(first_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_TRUE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_TRUE(response_or_error);
+          }));
   EXPECT_CALL(second_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_FALSE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisGetDiskInfoResult::kAlreadyInProgress);
+          }));
   disk_manager_->GetDiskInfo(first_callback_factory.BindOnce());
   disk_manager_->GetDiskInfo(second_callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
@@ -309,8 +343,10 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
   DiskInfoCallbackFactory first_callback_factory;
   EXPECT_CALL(first_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_TRUE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_TRUE(response_or_error);
+          }));
   disk_manager_->GetDiskInfo(first_callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
 
@@ -325,8 +361,10 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
   DiskInfoCallbackFactory second_callback_factory;
   EXPECT_CALL(second_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_TRUE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_TRUE(response_or_error);
+          }));
   disk_manager_->GetDiskInfo(second_callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
 }
@@ -1164,6 +1202,22 @@ TEST_F(BorealisDiskManagerTest, SyncDiskSizeConcurrentAttemptFails) {
   disk_manager_->SyncDiskSize(callback_factory.BindOnce());
   disk_manager_->SyncDiskSize(second_callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, RequestsRecordedOnDestruction) {
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(testing::Invoke([](base::OnceCallback<void(int64_t)> callback) {
+        std::move(callback).Run(-1);
+      }));
+  DiskInfoCallbackFactory callback_factory;
+  disk_manager_->GetDiskInfo(base::DoNothing());
+  run_loop()->RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientNumRequestsPerSessionHistogram, 1, 0);
+  disk_manager_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientNumRequestsPerSessionHistogram, 1, 1);
 }
 
 }  // namespace

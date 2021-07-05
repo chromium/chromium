@@ -16,11 +16,12 @@ class DiskManagerMock : public BorealisDiskManager {
  public:
   DiskManagerMock() = default;
   ~DiskManagerMock() override = default;
-  MOCK_METHOD(
-      void,
-      GetDiskInfo,
-      (base::OnceCallback<void(Expected<GetDiskInfoResponse, std::string>)>),
-      ());
+  MOCK_METHOD(void,
+              GetDiskInfo,
+              (base::OnceCallback<
+                  void(Expected<GetDiskInfoResponse,
+                                Described<BorealisGetDiskInfoResult>>)>),
+              ());
   MOCK_METHOD(void,
               RequestSpace,
               (uint64_t,
@@ -35,7 +36,8 @@ class DiskManagerMock : public BorealisDiskManager {
 };
 
 using DiskInfoCallbackFactory = NiceCallbackFactory<void(
-    Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>)>;
+    Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+             Described<BorealisGetDiskInfoResult>>)>;
 
 using RequestDeltaCallbackFactory =
     NiceCallbackFactory<void(Expected<uint64_t, std::string>)>;
@@ -47,8 +49,12 @@ TEST(BorealisDiskManagerDispatcherTest, GetDiskInfoFailsIfNamesDontMatch) {
   DiskInfoCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(testing::_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_FALSE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisGetDiskInfoResult::kInvalidRequest);
+          }));
 
   dispatcher.SetDiskManagerDelegate(&disk_mock);
   dispatcher.GetDiskInfo("NOTBOREALIS", "penguin", callback_factory.BindOnce());
@@ -60,8 +66,12 @@ TEST(BorealisDiskManagerDispatcherTest, GetDiskInfoFailsIfDelegateNotSet) {
 
   EXPECT_CALL(callback_factory, Call(testing::_))
       .WillOnce(testing::Invoke(
-          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse, std::string>
-                 response_or_error) { EXPECT_FALSE(response_or_error); }));
+          [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
+                      Described<BorealisGetDiskInfoResult>> response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisGetDiskInfoResult::kInvalidRequest);
+          }));
 
   dispatcher.GetDiskInfo("borealis", "penguin", callback_factory.BindOnce());
 }

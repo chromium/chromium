@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
 
-#include "chrome/browser/ash/borealis/borealis_disk_manager.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
 namespace borealis {
@@ -21,12 +21,15 @@ void BorealisDiskManagerDispatcher::GetDiskInfo(
     const std::string& origin_vm_name,
     const std::string& origin_container_name,
     base::OnceCallback<void(Expected<BorealisDiskManager::GetDiskInfoResponse,
-                                     std::string>)> callback) {
+                                     Described<BorealisGetDiskInfoResult>>)>
+        callback) {
   std::string error = ValidateRequest(origin_vm_name, origin_container_name);
   if (!error.empty()) {
     std::move(callback).Run(
         Expected<BorealisDiskManager::GetDiskInfoResponse,
-                 std::string>::Unexpected(std::move(error)));
+                 Described<BorealisGetDiskInfoResult>>::
+            Unexpected(Described<BorealisGetDiskInfoResult>(
+                BorealisGetDiskInfoResult::kInvalidRequest, std::move(error))));
     return;
   }
   disk_manager_delegate_->GetDiskInfo(std::move(callback));

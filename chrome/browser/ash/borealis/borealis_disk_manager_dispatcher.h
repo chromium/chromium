@@ -24,7 +24,8 @@ class BorealisDiskManagerDispatcher {
       const std::string& origin_vm_name,
       const std::string& origin_container_name,
       base::OnceCallback<void(Expected<BorealisDiskManager::GetDiskInfoResponse,
-                                       std::string>)> callback);
+                                       Described<BorealisGetDiskInfoResult>>)>
+          callback);
 
   virtual void RequestSpace(
       const std::string& origin_vm_name,

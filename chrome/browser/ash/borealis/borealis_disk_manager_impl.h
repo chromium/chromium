@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
-#include "chrome/browser/ash/borealis/infra/expected.h"
 
 namespace borealis {
 // Amount of space, in bytes, that borealis needs to leave free on the host.
@@ -36,7 +35,8 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
   // TODO(174592560): add more explicit error handling when metrics are
   // introduced.
   void GetDiskInfo(
-      base::OnceCallback<void(Expected<GetDiskInfoResponse, std::string>)>
+      base::OnceCallback<void(
+          Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
           callback) override;
   void RequestSpace(uint64_t bytes_requested,
                     base::OnceCallback<void(Expected<uint64_t, std::string>)>
@@ -77,10 +77,11 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
 
   // Handles the results of a GetDiskInfo request.
   void BuildGetDiskInfoResponse(
-      base::OnceCallback<void(Expected<GetDiskInfoResponse, std::string>)>
+      base::OnceCallback<void(
+          Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
           callback,
-      Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
-          disk_info_or_error);
+      Expected<std::unique_ptr<BorealisDiskInfo>,
+               Described<BorealisGetDiskInfoResult>> disk_info_or_error);
 
   // Handles the RequestSpace and ReleaseSpace requests. |bytes_requested| from
   // RequestSpace becomes a positive delta that expands the disk and the
@@ -102,6 +103,7 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
                           disk_info_or_error);
 
   const BorealisContext* const context_;
+  int request_count_;
   std::unique_ptr<BuildDiskInfo> build_disk_info_transition_;
   std::unique_ptr<ResizeDisk> resize_disk_transition_;
   std::unique_ptr<SyncDisk> sync_disk_transition_;
