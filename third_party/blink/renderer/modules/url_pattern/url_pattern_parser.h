@@ -39,7 +39,7 @@ class Parser final {
  public:
   explicit Parser(const String& input);
 
-  // Attempt to parse the the input string used to construct the Parser object.
+  // Attempt to parse the input string used to construct the Parser object.
   // This method may only be called once.  Any errors will be thrown on the
   // give `exception_state`.  Retrieve the parse result by calling
   // `GetResult()`.  A protocol component will also be eagerly compiled for

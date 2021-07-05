@@ -129,8 +129,6 @@ void Parser::Parse(ExceptionState& exception_state) {
 
           // Update the state to expect the start of an absolute URL.
           RewindAndSetState(StringParseState::kProtocol);
-
-          break;
         }
         break;
 
@@ -315,11 +313,9 @@ void Parser::ChangeStateWithoutSettingComponent(StringParseState new_state,
   component_start_ = token_index_ + skip.value();
 
   // Next, move the `token_index_` so that the top of the loop will begin
-  // parsing the new component.  The index will be automatically incremented by
-  // the parse loop, so we move one less than the indicated `skip` amount.  This
-  // means `kNone` and `kOne` are equivalent for setting `token_index_`.  Note,
-  // however, these enums do have a different effect on setting
-  // `component_start_` above.
+  // parsing the new component.  We adjust the `token_increment_` down to
+  // zero as the skip value already takes into account moving to the start
+  // of the next component.
   token_index_ += skip.value();
   token_increment_ = 0;
 }

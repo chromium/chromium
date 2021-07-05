@@ -2058,18 +2058,6 @@
     }
   },
   {
-    "pattern": [ "https://foo{@}example.com" ],
-    "inputs": [ "https://foo@example.com" ],
-    "exactly_empty_components": [ "username", "password", "port", "search",
-                                  "hash" ],
-    "expected_obj": {
-      "protocol": "https",
-      "hostname": "foo%40example.com",
-      "pathname": "/"
-    },
-    "expected_match": null
-  },
-  {
     "pattern": [ "https://foo{\\:}bar@example.com" ],
     "inputs": [ "https://foo:bar@example.com" ],
     "exactly_empty_components": [ "password", "port", "search", "hash" ],
