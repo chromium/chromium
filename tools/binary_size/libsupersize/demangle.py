@@ -101,8 +101,8 @@ def DemangleRemainingSymbols(raw_symbols, tool_prefix):
     to_process[i].full_name = name
 
 
-def DemangleSetsInDicts(key_to_names, tool_prefix):
-  """Demangles values as sets, and returns the result.
+def DemangleSetsInDictsInPlace(key_to_names, tool_prefix):
+  """Demangles values as sets.
 
   |key_to_names| is a dict from key to sets (or lists) of mangled names.
   """
@@ -114,11 +114,9 @@ def DemangleSetsInDicts(key_to_names, tool_prefix):
 
   logging.info('Demangling %d values', len(all_names))
   it = iter(_DemangleNames(all_names, tool_prefix))
-  ret = {}
   for key, names in key_to_names.items():
-    ret[key] = set(next(it) if _CanDemangle(n) else n for n in names)
+    key_to_names[key] = set(next(it) if _CanDemangle(n) else n for n in names)
   assert(next(it, None) is None)
-  return ret
 
 
 def DemangleKeysAndMergeLists(name_to_list, tool_prefix):

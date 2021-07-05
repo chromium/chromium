@@ -127,7 +127,7 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
     names_by_address[address].add(name)
 
   # Demangle all names.
-  names_by_address = demangle.DemangleSetsInDicts(names_by_address, tool_prefix)
+  demangle.DemangleSetsInDictsInPlace(names_by_address, tool_prefix)
 
   # Since this is run in a separate process, minimize data passing by returning
   # only aliased symbols.
