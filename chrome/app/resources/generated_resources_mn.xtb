@@ -466,6 +466,7 @@
 <translation id="1507246803636407672">&amp; Хэрэгсэхгүй орхих</translation>
 <translation id="1508491105858779599">Төхөөрөмжийн түгжээг тайлахдаа хурууны хээ мэдрэгчид хуруугаа байрлуулна уу.</translation>
 <translation id="1508575541972276599">Одоогийн хувилбар нь Debian 9 (Stretch) байна</translation>
+<translation id="1509163368529404530">&amp;Бүлгийг сэргээх</translation>
 <translation id="1509281256533087115">Дурын <ph name="DEVICE_NAME_AND_VENDOR" />-д USB ашиглан нэвтрэх</translation>
 <translation id="1509960214886564027">Олон сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -584,6 +585,7 @@
 <translation id="1627408615528139100">Аль хэдийн татсан</translation>
 <translation id="1628948239858170093">Файлыг нээхээс өмнө скан хийх үү?</translation>
 <translation id="1629314197035607094">Нууц үгний хугацаа хэтэрсэн</translation>
+<translation id="1629451755632656601">Google-д таны сагсанд хувийн болгосон хямдрал олохыг зөвшөөрөх үү?</translation>
 <translation id="1630300831289687074">Та удахгүй Chromebook-ээ ашиглах боломжтой болно.</translation>
 <translation id="163072119192489970">Өгөгдөл илгээж мөн хүлээн авч дуусгахыг зөвшөөрсөн</translation>
 <translation id="1630768113285622200">Дахин эхлүүлээд, үргэлжлүүлэх</translation>
@@ -1301,6 +1303,7 @@
 <translation id="236117173274098341">Оновчлох</translation>
 <translation id="2361340419970998028">Санал хүсэлтийг илгээж байна...</translation>
 <translation id="236141728043665931">Үргэлж микрофоны хандалтыг хаа</translation>
+<translation id="2363744066037724557">&amp;Цонхыг сэргээх</translation>
 <translation id="2364498172489649528">Давсан</translation>
 <translation id="2365507699358342471">Энэ сайт түр санах ойд хуулсан текст, зургийг харах боломжтой.</translation>
 <translation id="2367972762794486313">Аппликейшнүүдийг харуулах</translation>
@@ -2684,6 +2687,7 @@
 <translation id="3857807444929313943">Дээшлүүлээд дахин хүрэх</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" хэрэглэгчийн нэр боломжгүй байна</translation>
 <translation id="3861977424605124250">Гарааны компанид харуулах</translation>
+<translation id="386239283124269513">&amp;Бүлгийг сэргээх</translation>
 <translation id="3862788408946266506">"Kiosk_only" тодорхойлогч файлын шинжтэй аппыг Chrome-н үйлдлийн системийн киоск горимд суулгах шаардлагатай</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
 <translation id="3866249974567520381">Тодорхойлолт</translation>
@@ -5661,6 +5665,7 @@
 <translation id="7225179976675429563">Сүлжээний төрөл алга байна</translation>
 <translation id="7228479291753472782">Гео байршил, микрофон, камер зэрэг онцлог ашиглах боломжтой веб хуудасны тохиргоог тодорхойлдог.</translation>
 <translation id="7228523857728654909">Дэлгэцийн түгжээ болон нэвтрэлт</translation>
+<translation id="7230222852462421043">&amp;Цонхыг сэргээх</translation>
 <translation id="7230787553283372882">Текстийн хэмжээгээ өөрчлөх</translation>
 <translation id="7232750842195536390">Нэрийг өөрчилж чадсангүй</translation>
 <translation id="7234010996000898150">Linux-г сэргээхийг цуцалж байна</translation>
@@ -6269,12 +6274,14 @@
 <translation id="7853747251428735">Бусад хэрэгсэл</translation>
 <translation id="7855678561139483478">Табыг шинэ цонх руу зөөх</translation>
 <translation id="7857093393627376423">Текстийн зөвлөмж</translation>
+<translation id="7857675386615530425">Хуудасны хэсгийг Google Дурангаар хай</translation>
 <translation id="7857949311770343000">Энэ таны хүссэн шинэ хуудас мөн үү?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Үйлчилгээ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Татаж авалтууд</translation>
 <translation id="7861846108263890455">Google Бүртгэлийн хэл</translation>
 <translation id="7864539943188674973">Bluetooth-ийг идэвхгүй болго</translation>
+<translation id="7866230141401327032">Хуудасны хэсгийг Google Дурангаар хай</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Холбосон</translation>
 <translation id="7870730066603611552">Синк хийх сонголтын тохируулгыг хянах</translation>
 <translation id="7870790288828963061">Шинэ хувилбар бүхий ямар ч Киоск апп олдсонгүй. Шинэчлэх ямар ч зүйл алга. USB дискээ салгана уу.</translation>
@@ -6849,6 +6856,7 @@
 <translation id="850875081535031620">Хортой программ олдсонгүй</translation>
 <translation id="8509177919508253835">Аюулгүй байдлын түлхүүрийг шинэчилж, ПИН үүсгэнэ үү</translation>
 <translation id="8509646642152301857">Зөв бичих дүрмийн алдаа шалгах толь бичгийг татаж авч чадсангүй.</translation>
+<translation id="8509967119010808787">Табаа хайхын тулд энд товшино уу</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Сул нууц үг олсонгүй}=1{{COUNT} сул нууц үг оллоо}other{{COUNT} сул нууц үг оллоо}}</translation>
 <translation id="8512476990829870887">Дуусгах явц</translation>
 <translation id="851263357009351303"><ph name="HOST" />-д зургуудыг харуулахыг үргэлж зөвшөөр</translation>

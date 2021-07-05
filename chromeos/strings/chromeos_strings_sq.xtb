@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2751739896257479635">Vërtetimi EAP i fazës 2</translation>
+<translation id="2783010256799387990">KALOI</translation>
 <translation id="2789486458103222910">Në rregull</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2862104018715411648">Vendose dokumentin tënd në skaner dhe zgjidh "Skano" për të filluar</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Disku im</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">Provo sërish</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
 <translation id="7162487448488904999">Galeria</translation>
+<translation id="7172721935181587524">1 imazh</translation>
 <translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">Burimi</translation>
 <translation id="8297006494302853456">I dobët</translation>
 <translation id="8302368968391049045">Mur mbrojtës HTTPS</translation>
+<translation id="8318753676953949627">Nuk ka imazhe</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8352772353338965963">Shto një llogari në identifikimin e shumëfishtë. Të gjitha llogaritë e identifikuara mund të qasen pa fjalëkalim, prandaj ky funksion duhet të përdoret vetëm me llogari të besuara.</translation>
 <translation id="8364946094152050673">Serverët DNS janë bosh</translation>

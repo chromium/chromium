@@ -853,6 +853,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6441734959916820584">Bu nom juda uzun</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# ta rasm}other{# ta rasm}}</translation>
 <translation id="6447558397796644647">Bu bukmark topilmadi. Xatosiz kiritilganini tekshiring yoki yangi bukmark kiriting</translation>
+<translation id="6459045781120991510">Soʻrovnomalar</translation>
 <translation id="6461962085415701688">Fayl ochilmadi</translation>
 <translation id="6464977750820128603">Chromeda ochilgan saytlarni koʻrish va ular uchun taymerlar sozlash mumkin.\n\nGooglega faqat taymer sozlangan saytlar va ular qancha vaqt ochilganligi haqidagi axborot yuboriladi. Bu axborot Raqamli qulaylikni yaxshilashga yordam beradi.</translation>
 <translation id="6475951671322991020">Videoni yuklab olish</translation>
@@ -969,6 +970,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7242755609445462077"><ph name="CURRENT_DATE" /> uslubiy belgilovi</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> sozlamalarida Chrome sinxronizatsiyasi yoniqligini tekshiring</translation>
 <translation id="7252076891734325316">Telefoningizni kompyuterga yaqin tuting</translation>
+<translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> kodi <ph name="ORIGIN" /> saytiga joylansinmi?</translation>
 <translation id="7274013316676448362">Bloklangan sayt</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> almashtirilsinmi?</translation>
 <translation id="7290209999329137901">Qayta nomlash imkonsiz</translation>

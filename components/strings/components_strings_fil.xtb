@@ -103,6 +103,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1307966114820526988">Mga Hindi na Ginagamit na Feature</translation>
 <translation id="131405271941274527">Gusto ng <ph name="URL" /> na magpadala at makatanggap ng impormasyon kapag na-tap mo ang iyong telepono sa isang NFC device</translation>
 <translation id="1314509827145471431">Bind right</translation>
+<translation id="1319245136674974084">Huwag nang magtanong ulit para sa app na ito</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">Maghanap ng larawan sa clipboard</translation>
 <translation id="1323433172918577554">Magpakita Nang Higit Pa</translation>
@@ -744,6 +745,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3655670868607891010">Kung madalas mo itong nakikita, subukan ang mga ito <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Rebisyon</translation>
 <translation id="3664782872746246217">Mga Keyword:</translation>
+<translation id="3671540257457995106">Payagan ang pag-resize?</translation>
 <translation id="3676592649209844519">Device ID:</translation>
 <translation id="3677008721441257057">Ang ibig mo bang sabihin ay &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Hindi malagdaan ang kahilingan</translation>
@@ -1104,6 +1106,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4953689047182316270">Tumugon sa Mga Kaganapan ng Pagiging Accessible</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Palawakin ang listahan</translation>
+<translation id="4968522289500246572">Idinisenyo ang app na ito para sa mobile at posibleng hindi ma-resize nang maayos. Posibleng makaranas ng mga isyu o mag-restart ang app.</translation>
 <translation id="4973922308112707173">Dual punch top</translation>
 <translation id="4974590756084640048">Muling i-enable ang mga babala</translation>
 <translation id="4984088539114770594">Gamitin ang mikropono?</translation>
@@ -1152,6 +1155,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">I-verify ang iyong card</translation>
+<translation id="512670116361803001">Posibleng hindi ma-resize nang maayos ang <ph name="APP_NAME" />. Gamitin ang mga preset na laki ng window para mapigilang makaranas ng mga isyu ang app.</translation>
 <translation id="5135404736266831032">Pamahalaan ang mga address...</translation>
 <translation id="5138014172396933048">Hindi available sa ngayon ang virtual card, makipag-ugnayan sa iyong bangko</translation>
 <translation id="5138227688689900538">Magpakita ng mas kaunti</translation>
@@ -1518,6 +1522,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="647261751007945333">Mga patakaran sa device</translation>
 <translation id="6476284679642588870">Pamahalaan ang mga paraan ng pagbabayad</translation>
 <translation id="6489534406876378309">Simulang mag-upload ng mga pag-crash</translation>
+<translation id="6493924760403974580">Ganitong laki lang ang sinusuportahan ng app na ito.</translation>
 <translation id="6499038740797743453">I-reset ang password?</translation>
 <translation id="6502991525169604759">Hindi kasama ang iyong mga pagbabago</translation>
 <translation id="6508722015517270189">I-restart ang Chrome</translation>
@@ -2172,6 +2177,7 @@ Mga karagdagang detalye:
 <translation id="8975263830901772334">Mga pangalan ng mga file na pini-print mo</translation>
 <translation id="8978053250194585037">May <ph name="BEGIN_LINK" />na-detect na phishing<ph name="END_LINK" /> sa <ph name="SITE" /> kamakailan ang Ligtas na Pag-browse sa Google. Nagpapanggap ang mga phishing site bilang ibang website upang linlangin ka.</translation>
 <translation id="8983003182662520383">Mga Paraan ng Pagbabayad at Address Gamit ang Google Pay</translation>
+<translation id="8983369100812962543">Puwede mo na ngayong i-resize ang app</translation>
 <translation id="8987927404178983737">Buwan</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">Gustong malaman ng <ph name="URL" /> kung kailan mo aktibong ginagamit ang device na ito</translation>

@@ -853,6 +853,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6441734959916820584">Masyadong mahaba ang pangalan</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# Larawan}one{# Larawan}other{# na Larawan}}</translation>
 <translation id="6447558397796644647">Hindi mahanap ang bookmark na iyon. Tingnan ang iyong spelling o magdagdag ng bagong bookmark.</translation>
+<translation id="6459045781120991510">Mga Survey</translation>
 <translation id="6461962085415701688">Hindi mabuksan ang file</translation>
 <translation id="6464977750820128603">Puwede mong makita ang mga site na binibisita mo sa Chrome at puwede kang magtakda ng mga timer para sa mga ito.\n\nKumukuha ng impormasyon ang Google tungkol sa mga site kung saan ka nagtakda ng mga timer at inaalam nito kung gaano mo katagal binisita ang mga ito. Ginagamit ang impormasyong ito para pahusayin ang Digital Wellness.</translation>
 <translation id="6475951671322991020">I-download ang video</translation>
@@ -969,6 +970,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7242755609445462077">May istilong highlight <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Tiyaking naka-on sa <ph name="TARGET_DEVICE_NAME" /> ang pag-sync sa Chrome</translation>
 <translation id="7252076891734325316">Ilapit ang iyong telepono sa computer</translation>
+<translation id="727288900855680735">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Naka-block na site</translation>
 <translation id="7286572596625053347">Palitan ang <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Hindi available ang pag-rename</translation>

@@ -103,6 +103,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1307966114820526988">Eskirgan funksiyalar</translation>
 <translation id="131405271941274527"><ph name="URL" /> sayti NFC orqali axborot almashinishga ruxsat soʻramoqda</translation>
 <translation id="1314509827145471431">Oʻng chekkasini belgilash</translation>
+<translation id="1319245136674974084">Bu ilova uchun boshqa soʻralmasin</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">Klipborddagi rasmni qidirish</translation>
 <translation id="1323433172918577554">Yana</translation>
@@ -739,6 +740,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3655670868607891010">Agar bu muammo tez-tez qaytarilib tursa, yechimini <ph name="HELP_LINK" /> sahifasidan izlang.</translation>
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3664782872746246217">Kalit soʻzlar:</translation>
+<translation id="3671540257457995106">Oʻlchami oʻzgaraversinmi?</translation>
 <translation id="3676592649209844519">Qurilma identifikatori:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; saytini nazarda tutdingizmi?</translation>
 <translation id="3678029195006412963">So‘rovni imzolab bo‘lmadi</translation>
@@ -1099,6 +1101,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4953689047182316270">Maxsus imkoniyatlar ishlatilishi</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Ro‘yxatni yoyish</translation>
+<translation id="4968522289500246572">Bu ilova mobil qurilmalar uchun ishlab chiqilgan va oʻlchami bexato oʻzgarmasligi mumkin. Ishlashida xato chiqishi yoki qaytadan ishga tushishi mumkin.</translation>
 <translation id="4973922308112707173">Yuqoridan 2 ta teshik ochish</translation>
 <translation id="4974590756084640048">Ogohlantirishlarni qaytadan yoqish</translation>
 <translation id="4984088539114770594">Mikrofon ishlatilsinmi?</translation>
@@ -1147,6 +1150,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5123063207673082822">Dam olish kunlari</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Kartangizni tasdiqlang</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> oʻlchami xato oʻzgarishi mumkin. Ilova bexato ishlashi uchun oyna oʻlchami andozalaridan foydalaning.</translation>
 <translation id="5135404736266831032">Manzillar...</translation>
 <translation id="5138014172396933048">Hozirda virtual karta mavjud emas. Bankka murojaat qiling</translation>
 <translation id="5138227688689900538">Kamroq chiqsin</translation>
@@ -1512,6 +1516,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="647261751007945333">Qurilma qoidalari</translation>
 <translation id="6476284679642588870">Toʻlov usullarini boshqarish</translation>
 <translation id="6489534406876378309">Nosozliklar haqidagi ma’lumotlarni yuklashni boshlash</translation>
+<translation id="6493924760403974580">Bu ilova faqat shu oʻlchamda ishlaydi.</translation>
 <translation id="6499038740797743453">Parolni o‘zgartirish</translation>
 <translation id="6502991525169604759">Tahriringiz saqlanmagan</translation>
 <translation id="6508722015517270189">Chrome’ni qaytadan ishga tushiring</translation>
@@ -2166,6 +2171,7 @@ Batafsil axborot:
 <translation id="8975263830901772334">Chop etiladigan fayllar nomlari</translation>
 <translation id="8978053250194585037">Google saytlar xavfsizligini tekshirish xizmati <ph name="SITE" /> saytida fishing harakatlarini aniqladi. Bunday <ph name="BEGIN_LINK" />fishing saytlar<ph name="END_LINK" /> sizga kerakli sahifalarni ko‘rsatib shaxsiy ma’lumotlaringizni o‘girlashi mumkin.</translation>
 <translation id="8983003182662520383">Google Pay xizmatidagi bank kartalari va manzillar</translation>
+<translation id="8983369100812962543">Endi ilova oʻlchamini oʻzgartirish mumkin</translation>
 <translation id="8987927404178983737">Oy</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> qurilmadan foydalanish axborotiga kirmoqchi</translation>

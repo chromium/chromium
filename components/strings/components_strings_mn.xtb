@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">Хуучирсан онцлог</translation>
 <translation id="131405271941274527">Таныг NFC төхөөрөмж дээр утсаараа товших үед <ph name="URL" /> нь мэдээлэл илгээх, хүлээн авах хүсэлтэй байна</translation>
 <translation id="1314509827145471431">Баруун ирмэг дагуу үдэж хавтаслах</translation>
+<translation id="1319245136674974084">Энэ аппад дахин бүү асуу</translation>
 <translation id="1320233736580025032">Prc1 (Дугтуй)</translation>
 <translation id="132301787627749051">Түр санах ойн зургийг хайх</translation>
 <translation id="1323433172918577554">Дэлгэрэнгүй харуулах</translation>
@@ -745,6 +746,7 @@
 <translation id="3655670868607891010">Хэрэв та энэ мессежийг хэт олон удаа харж байга бол <ph name="HELP_LINK" />-ийг үзээрэй.</translation>
 <translation id="3658742229777143148">Засвар хийгдсэн</translation>
 <translation id="3664782872746246217">Түлхүүр үг:</translation>
+<translation id="3671540257457995106">Хэмжээг өөрчлөхийг зөвшөөрөх үү?</translation>
 <translation id="3676592649209844519">Төхөөрөмжийн ID:</translation>
 <translation id="3677008721441257057">Та &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; руу очихыг хүссэн үү?</translation>
 <translation id="3678029195006412963">Хүсэлт тавих боломжгүй байна</translation>
@@ -1105,6 +1107,7 @@
 <translation id="4953689047182316270">Хүртээмжийн үйл ажиллагаанд хариу өгөх</translation>
 <translation id="4955242332710481440">A5-Нэмэлт</translation>
 <translation id="4958444002117714549">Жагсаалтыг өргөжүүлэх</translation>
+<translation id="4968522289500246572">Энэ апп мобайлд зориулагдсан бөгөөд үүний хэмжээ сайн өөрчлөгдөхгүй байж магадгүй. Энэ апп асуудалтай тулгарч эсвэл дахин эхэлж магадгүй.</translation>
 <translation id="4973922308112707173">Дээд буланд хоёр нүх цоолох</translation>
 <translation id="4974590756084640048">Сануулгыг дахин идэвхжүүлэх</translation>
 <translation id="4984088539114770594">Микрофон ашиглах уу?</translation>
@@ -1153,6 +1156,7 @@
 <translation id="5123063207673082822">Амралтын өдөр</translation>
 <translation id="5125394840236832993">B-Нэмэх</translation>
 <translation id="5126510351761255129">Картаа баталгаажуулах</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" />-н хэмжээ сайн өөрчлөгдөхгүй байж магадгүй. Аппыг асуудалтай тулгарахаас сэргийлэхийн тулд урьдчилан тохируулсан цонхны хэмжээг ашиглана уу.</translation>
 <translation id="5135404736266831032">Хаягийг удирдах...</translation>
 <translation id="5138014172396933048">Виртуал карт яг одоо боломжгүй байна. Банктайгаа холбогдоно уу</translation>
 <translation id="5138227688689900538">Хураангуйлж харуулах</translation>
@@ -1518,6 +1522,7 @@
 <translation id="647261751007945333">Төхөөрөмжийн тохиргоонууд</translation>
 <translation id="6476284679642588870">Төлбөрийн хэрэгсэл удирдах</translation>
 <translation id="6489534406876378309">Гэмтлүүдийг ачаалж эхэл</translation>
+<translation id="6493924760403974580">Энэ апп зөвхөн энэ хэмжээг дэмждэг.</translation>
 <translation id="6499038740797743453">Нууц үгийг шинэчлэх үү?</translation>
 <translation id="6502991525169604759">Таны өөрчлөлтгүйгээр</translation>
 <translation id="6508722015517270189">Chrome-г дахин эхлүүлэх</translation>
@@ -2172,6 +2177,7 @@
 <translation id="8975263830901772334">Таны хэвлэх файлуудын нэр</translation>
 <translation id="8978053250194585037">Google-н аюулгүй хайлт саяхан <ph name="SITE" />-с <ph name="BEGIN_LINK" />фишинг олж илрүүллээ<ph name="END_LINK" />. Фишинг сайтууд нь таныг хууран мэхлэх зорилгоор бусад сайт мэт харагдана.</translation>
 <translation id="8983003182662520383">Google Pay-г ашиглаж буй төлбөрийн хэрэгсэл болон хаяг</translation>
+<translation id="8983369100812962543">Та одоо энэ аппын хэмжээг өөрчлөх боломжтой</translation>
 <translation id="8987927404178983737">Сар</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [ <ph name="COUNTRY" /> ]</translation>
 <translation id="899688752321268742"><ph name="URL" /> таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүсэж байна</translation>

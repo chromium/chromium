@@ -467,6 +467,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1507246803636407672">&amp;Itapon</translation>
 <translation id="1508491105858779599">Itapat ang iyong daliri sa sensor para sa fingerprint upang i-unlock ang device.</translation>
 <translation id="1508575541972276599">Debian 9 (Stretch) ang kasalukuyang bersyon</translation>
+<translation id="1509163368529404530">&amp;I-restore ang grupo</translation>
 <translation id="1509281256533087115">I-access ang anumang <ph name="DEVICE_NAME_AND_VENDOR" /> sa pamamagitan ng USB</translation>
 <translation id="1509960214886564027">Posibleng masira ang mga feature sa maraming site</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -589,6 +590,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1627408615528139100">Na-download na</translation>
 <translation id="1628948239858170093">I-scan ang file bago buksan?</translation>
 <translation id="1629314197035607094">Nag-expire ang password</translation>
+<translation id="1629451755632656601">Payagan ang Google na maghanap ng mga naka-personalize na diskwento sa iyong mga cart?</translation>
 <translation id="1630300831289687074">Magagamit mo ang iyong Chromebook sa loob ng ilang sandali.</translation>
 <translation id="163072119192489970">Pinapayagang tapusin ang pagpapadala at pagtanggap ng data</translation>
 <translation id="1630768113285622200">Mag-restart at magpatuloy</translation>
@@ -1306,6 +1308,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="236117173274098341">I-optimize</translation>
 <translation id="2361340419970998028">Ipinapadala ang feedback...</translation>
 <translation id="236141728043665931">Palaging i-block ang pag-access sa mikropono</translation>
+<translation id="2363744066037724557">&amp;I-restore ang window</translation>
 <translation id="2364498172489649528">Nakapasa</translation>
 <translation id="2365507699358342471">Makikita ng site na ito ang text at mga larawang kinopya sa clipboard.</translation>
 <translation id="2367972762794486313">Ipakita ang apps</translation>
@@ -2689,6 +2692,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3857807444929313943">Iangat, pagkatapos ay pindutin muli</translation>
 <translation id="3861638017150647085">Hindi available ang username na "<ph name="USERNAME" />"</translation>
 <translation id="3861977424605124250">Ipakita sa startup</translation>
+<translation id="386239283124269513">&amp;I-restore ang Grupo</translation>
 <translation id="3862788408946266506">Naka-install dapat sa kiosk mode ng Chrome OS ang app na may 'kiosk_only' na manifest attribute</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="3866249974567520381">Paglalarawan</translation>
@@ -5667,6 +5671,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7225179976675429563">Nawawala ang uri ng network</translation>
 <translation id="7228479291753472782">Manipulahin ang mga setting na tumutukoy kung makakagamit ang mga website ng mga feature gaya ng geolocation, mikropono, camera, atbp.</translation>
 <translation id="7228523857728654909">Lock ng screen at pag-sign in</translation>
+<translation id="7230222852462421043">&amp;I-restore ang Window</translation>
 <translation id="7230787553283372882">I-customize ang laki ng iyong text</translation>
 <translation id="7232750842195536390">Hindi napalitan ang pangalan</translation>
 <translation id="7234010996000898150">Kinakansela ang pag-restore ng Linux</translation>
@@ -6276,12 +6281,14 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7853747251428735">Higit Pang Mga Too&amp;l</translation>
 <translation id="7855678561139483478">Ilipat ang tab sa bagong window</translation>
 <translation id="7857093393627376423">Mga suhestyong text</translation>
+<translation id="7857675386615530425">Hanapin ang bahagi ng page gamit ang Google Lens</translation>
 <translation id="7857949311770343000">Ito ba ang page ng bagong tab na inaasahan mo?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Serbisyo: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Mga download</translation>
 <translation id="7861846108263890455">Wika ng Google Account</translation>
 <translation id="7864539943188674973">Huwag Paganahin ang Bluetooth</translation>
+<translation id="7866230141401327032">Hanapin ang Bahagi ng Page gamit ang Google Lens</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Nakapares</translation>
 <translation id="7870730066603611552">Suriin ang mga opsyon sa pag-sync pagkatapos ng pag-set up</translation>
 <translation id="7870790288828963061">Walang nahanap na mga Kiosk app na may mas bagong bersyon. Walang ia-update. Mangyaring alisin ang USB stick.</translation>
@@ -6859,6 +6866,7 @@ Pumindot ng nakatalagang switch para mag-alis ng pagtatalaga</translation>
 <translation id="850875081535031620">Walang nahanap na mapaminsalang software</translation>
 <translation id="8509177919508253835">I-reset ang mga security key at gumawa ng mga PIN</translation>
 <translation id="8509646642152301857">Nabigo ang pag-download ng diksyunaryo ng pang-check ng pagbabaybay.</translation>
+<translation id="8509967119010808787">Para maghanap sa iyong mga tab, mag-click dito</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Walang nakitang mahinang password}=1{Nakakita ng {COUNT} mahinang password}one{Nakakita ng {COUNT} mahihinang password}other{Nakakita ng {COUNT} na mahihinang password}}</translation>
 <translation id="8512476990829870887">Tapusin ang Proseso</translation>
 <translation id="851263357009351303">Palaging hayaan ang <ph name="HOST" /> na magpakita ng mga larawan</translation>

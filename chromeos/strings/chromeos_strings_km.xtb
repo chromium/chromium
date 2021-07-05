@@ -76,6 +76,7 @@
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2751739896257479635">ការផ្ទៀងផ្ទាត់ EAP ដំណាក់កាលទី 2</translation>
+<translation id="2783010256799387990">ជាប់</translation>
 <translation id="2789486458103222910">យល់ព្រម</translation>
 <translation id="2805756323405976993">កម្មវិធី</translation>
 <translation id="2862104018715411648">ដាក់​ឯកសារ​របស់អ្នក​នៅលើ​ម៉ាស៊ីនស្កេន រួច​ជ្រើសរើស "ស្កេន" ដើម្បី​ចាប់ផ្ដើម</translation>
@@ -138,6 +139,7 @@
 <translation id="4227825898293920515">ពាក្យសម្ងាត់ផុតកំណត់​ក្នុងរយៈពេល <ph name="TIME" /></translation>
 <translation id="4238516577297848345">មិនមានកិច្ចការបោះពុម្ពកំពុងដំណើរការទេ</translation>
 <translation id="4297501883039923494">បានឈប់ - មានបញ្ហា​ដែលមិនស្គាល់</translation>
+<translation id="4300073214558989">រូបភាព <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">មិនដំណើរការទេ</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ដ្រាយរបស់ខ្ញុំ</translation>
@@ -295,6 +297,7 @@
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="714876143603641390">ការតភ្ជាប់ Lan</translation>
 <translation id="7162487448488904999">សាល​រូបភាព</translation>
+<translation id="7172721935181587524">រូបភាព 1</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>
 <translation id="7216409898977639127">ក្រុមហ៊ុន​ផ្តល់សេវា​ទូរសព្ទ</translation>
 <translation id="7271040990581020067">បច្ចុប្បន្ននេះ ម៉ាស៊ីនស្កេន​កំពុងស្ថិតក្នុង​ការប្រើប្រាស់។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។</translation>
@@ -344,6 +347,7 @@
 <translation id="8294431847097064396">ប្រភព</translation>
 <translation id="8297006494302853456">ខ្សោយ</translation>
 <translation id="8302368968391049045">ជញ្ជាំងភ្លើង HTTPS</translation>
+<translation id="8318753676953949627">មិនមាន​រូបភាព​ទេ</translation>
 <translation id="8347227221149377169">ការងារ​បោះពុម្ព</translation>
 <translation id="8352772353338965963">បន្ថែមគណនីមួយដើម្បីចូលពីគណនីច្រើន។ គណនីដែលចូលទាំងអស់អាចចូលប្រើដោយគ្មានពាក្យសម្ងាត់ ដូច្នេះលក្ខណពិសេសនេះគួរត្រូវបានប្រើជាមួយគណនីដែលគួរជឿជាក់តែប៉ុណ្ណោះ។</translation>
 <translation id="8364946094152050673">DNS នៅទទេ</translation>

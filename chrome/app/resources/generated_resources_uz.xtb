@@ -464,6 +464,7 @@
 <translation id="1507246803636407672">&amp;Bekor qilish</translation>
 <translation id="1508491105858779599">Qurilma qulfini ochish uchun barmog‘ingizni barmoq izi sensori ustiga qo‘ying.</translation>
 <translation id="1508575541972276599">Joriy versiya: Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">Guruhni tiklash</translation>
 <translation id="1509281256533087115">USB orqali har qanday <ph name="DEVICE_NAME_AND_VENDOR" /> qurilmasiga kirish</translation>
 <translation id="1509960214886564027">Aksariyat saytlardagi funksiyalar ishalamay qolishi mumkin</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
@@ -583,6 +584,7 @@
 <translation id="1627408615528139100">Allaqachon yuklab olingan</translation>
 <translation id="1628948239858170093">Ochishdan oldin fayl tekshirilsinmi?</translation>
 <translation id="1629314197035607094">Parol eskirdi</translation>
+<translation id="1629451755632656601">Google xarid savatlaringiz uchun shaxsiy chegirmalar qidirishiga ruxsat berilsinmi?</translation>
 <translation id="1630300831289687074">Tez orada Chromebook ishlatish imkoniga ega boʻlasiz.</translation>
 <translation id="163072119192489970">Axborot yuborish va qabul qilishni yakunlashga ruxsat berilgan</translation>
 <translation id="1630768113285622200">Oʻchirib yoqish va davom etish</translation>
@@ -1292,6 +1294,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="236117173274098341">Takomillashtirish</translation>
 <translation id="2361340419970998028">Fikr-mulohaza yuborilmoqda…</translation>
 <translation id="236141728043665931">Mikrofonga ruxsat har doim taqiqlansin</translation>
+<translation id="2363744066037724557">Oynani tiklash</translation>
 <translation id="2364498172489649528">Tugadi</translation>
 <translation id="2365507699358342471">Bu saytda klipbordga nusxalangan rasm va matnlar ko‘rinadi.</translation>
 <translation id="2367972762794486313">Ilovalarni ko‘rsatish</translation>
@@ -2675,6 +2678,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3857807444929313943">Barmoqni oling va qaytadan tekkizing</translation>
 <translation id="3861638017150647085">“<ph name="USERNAME" />” nomi band</translation>
 <translation id="3861977424605124250">Boshlanishida koʻrsatilsin</translation>
+<translation id="386239283124269513">Guruhni tiklash</translation>
 <translation id="3862788408946266506">Manifest faylida “kiosk_only” atributi mavjud ilovalarni Chrome OS‘da faqatgina kiosk rejimida o‘rnatish mumkin</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3866249974567520381">Tavsif</translation>
@@ -5654,6 +5658,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7225179976675429563">Tarmoq turi ko‘rsatilmagan</translation>
 <translation id="7228479291753472782">Saytlarning geo-ma’lumotlar, mikrofon, kamera va boshqa funksiyalarga ruxsat boshqaruvi sozlamalarni o‘zgartirish</translation>
 <translation id="7228523857728654909">Ekran qulfi va kirish</translation>
+<translation id="7230222852462421043">Oynani tiklash</translation>
 <translation id="7230787553283372882">Matn hajmini sozlash</translation>
 <translation id="7232750842195536390">Nom o‘zgarmadi</translation>
 <translation id="7234010996000898150">Linux tasvirini tiklash bekor qilinmoqda</translation>
@@ -6262,12 +6267,14 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7853747251428735">Qo‘shimcha &amp;vositalar</translation>
 <translation id="7855678561139483478">Varaqni yangi oynaga olish</translation>
 <translation id="7857093393627376423">Matn takliflari</translation>
+<translation id="7857675386615530425">Sahifa qismidan Google Lens yordamida qidirish</translation>
 <translation id="7857949311770343000">Bu boshqa tezkor havolalar sahifasimi?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Xizmat: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Yuklanishlar</translation>
 <translation id="7861846108263890455">Google hisobi tili</translation>
 <translation id="7864539943188674973">Bluetooth funksiyasini o‘chirish</translation>
+<translation id="7866230141401327032">Sahifa qismidan Google Lens yordamida qidirish</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: ulangan</translation>
 <translation id="7870730066603611552">Sinxronizatsiya sozlamalari seans boshlangandan keyin tekshirilsin</translation>
 <translation id="7870790288828963061">Kiosk-ilovalarining yangi versiyalari mavjud emas. Yangilanish shart emas. USB-xotira qurilmasini chiqarib oling.</translation>
@@ -6843,6 +6850,7 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="850875081535031620">Birorta ham zararli dastur topilmadi</translation>
 <translation id="8509177919508253835">Elektron kalitlarni asliga qaytarish va PIN kodlar yaratish</translation>
 <translation id="8509646642152301857">Imlo lug‘atini yuklab olish amalga oshmadi.</translation>
+<translation id="8509967119010808787">Varaqlardan qidirish uchun bu yerga bosing</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Kuchsiz parollar topilmadi}=1{{COUNT} ta kuchsiz parol topildi}other{{COUNT} ta kuchsiz parol topildi}}</translation>
 <translation id="8512476990829870887">Jarayonni yakunlash</translation>
 <translation id="851263357009351303"><ph name="HOST" /> rasmlarni doim ko‘rsatsin</translation>

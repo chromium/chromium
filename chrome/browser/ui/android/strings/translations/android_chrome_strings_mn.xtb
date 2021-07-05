@@ -852,6 +852,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6441734959916820584">Нэр хэт урт байна</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# Зураг}other{# Зураг}}</translation>
 <translation id="6447558397796644647">Энэ хавчуургыг олох боломжгүй байна. Зөв бичгийн дүрмээ шалгах эсвэл шинэ хавчуурга нэмнэ үү.</translation>
+<translation id="6459045781120991510">Судалгаа</translation>
 <translation id="6461962085415701688">Файлыг нээх боломжгүй байна</translation>
 <translation id="6464977750820128603">Та Chrome-д зочилдог сайтуудаа харах болон тэдгээрт цаг хэмжигч тохируулах боломжтой.\n\nGoogle таны цаг хэмжигч тохируулсан сайтууд болон тэдгээрт хэр удаан зочилдог талаарх мэдээллийг авдаг. Энэ мэдээллийг Дижитал хэрэглээг сайжруулах зорилгоор ашигладаг.</translation>
 <translation id="6475951671322991020">Видео татах</translation>
@@ -968,6 +969,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7242755609445462077">Стильжүүлсэн тодруулга <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> нь Chrome дээр синк хийхийг асаасан эсэхийг шалгана уу</translation>
 <translation id="7252076891734325316">Утсаа компьютертой ойр байрлуулна уу</translation>
+<translation id="727288900855680735"><ph name="ONE_TIME_CODE" />-г <ph name="ORIGIN" />-д илгээх үү?</translation>
 <translation id="7274013316676448362">Блоклосон сайт</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" />-г өөрчлөх үү?</translation>
 <translation id="7290209999329137901">Нэр өөрчлөх боломжгүй байна</translation>
