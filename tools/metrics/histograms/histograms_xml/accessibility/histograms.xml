@@ -377,9 +377,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosLargeCursorSize" units="dip"
-    expires_after="M93">
-  <owner>yawano@chromium.org</owner>
-  <owner>lpalmaro@chromium.org</owner>
+    expires_after="2021-11-21">
+  <owner>sarakato@chromium.org</owner>
+  <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Cursor size of the Chrome OS Large Cursor (logged once 45 secs after
