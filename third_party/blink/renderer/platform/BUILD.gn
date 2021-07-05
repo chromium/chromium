@@ -1669,6 +1669,7 @@ component("platform") {
   deps = [
     "//base:base_static",
     "//base/allocator:buildflags",
+    "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//cc/ipc",
     "//cc/mojo_embedder",
@@ -1686,6 +1687,7 @@ component("platform") {
     "//media",
     "//media/capture:capture_switches",
     "//media/capture/mojom:video_capture",
+    "//media/webrtc:webrtc",
     "//mojo/public/cpp/bindings:wtf_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/mojom:mojom_shared",

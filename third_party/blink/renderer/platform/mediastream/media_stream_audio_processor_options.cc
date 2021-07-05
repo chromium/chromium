@@ -8,15 +8,17 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/webrtc_switches.h"
+#include "third_party/webrtc/api/audio/echo_canceller3_config.h"
+#include "third_party/webrtc/api/audio/echo_canceller3_config_json.h"
+#include "third_party/webrtc/api/audio/echo_canceller3_factory.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
@@ -83,6 +85,80 @@ ClippingPredictor::Mode GetClippingPredictorMode(
     default:
       return ClippingPredictor::Mode::kClippingEventPrediction;
   }
+}
+
+bool Allow48kHzApmProcessing() {
+  return base::FeatureList::IsEnabled(
+      ::features::kWebRtcAllow48kHzProcessingOnArm);
+}
+
+absl::optional<WebRtcHybridAgcParams> GetWebRtcHybridAgcParams() {
+  if (!base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc)) {
+    return absl::nullopt;
+  }
+  return WebRtcHybridAgcParams{
+      .dry_run = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcHybridAgc, "dry_run", false),
+      .vad_reset_period_ms = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcHybridAgc, "vad_reset_period_ms", 1500),
+      .adjacent_speech_frames_threshold =
+          base::GetFieldTrialParamByFeatureAsInt(
+              ::features::kWebRtcHybridAgc, "adjacent_speech_frames_threshold",
+              12),
+      .max_gain_change_db_per_second =
+          static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+              ::features::kWebRtcHybridAgc, "max_gain_change_db_per_second",
+              3)),
+      .max_output_noise_level_dbfs =
+          static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+              ::features::kWebRtcHybridAgc, "max_output_noise_level_dbfs",
+              -50)),
+      .sse2_allowed = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcHybridAgc, "sse2_allowed", true),
+      .avx2_allowed = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcHybridAgc, "avx2_allowed", true),
+      .neon_allowed = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcHybridAgc, "neon_allowed", true)};
+}
+
+absl::optional<WebRtcAnalogAgcClippingControlParams>
+GetWebRtcAnalogAgcClippingControlParams() {
+  if (!base::FeatureList::IsEnabled(
+          ::features::kWebRtcAnalogAgcClippingControl)) {
+    return absl::nullopt;
+  }
+  return WebRtcAnalogAgcClippingControlParams{
+      .mode = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcAnalogAgcClippingControl, "mode", 0),
+      .window_length = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcAnalogAgcClippingControl, "window_length", 5),
+      .reference_window_length = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcAnalogAgcClippingControl,
+          "reference_window_length", 5),
+      .reference_window_delay = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcAnalogAgcClippingControl, "reference_window_delay",
+          5),
+      .clipping_threshold =
+          static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+              ::features::kWebRtcAnalogAgcClippingControl, "clipping_threshold",
+              -1.0)),
+      .crest_factor_margin =
+          static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+              ::features::kWebRtcAnalogAgcClippingControl,
+              "crest_factor_margin", 3.0)),
+      .clipped_level_step = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcAnalogAgcClippingControl, "clipped_level_step",
+          15),
+      .clipped_ratio_threshold =
+          static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
+              ::features::kWebRtcAnalogAgcClippingControl,
+              "clipped_ratio_threshold", 0.1)),
+      .clipped_wait_frames = base::GetFieldTrialParamByFeatureAsInt(
+          ::features::kWebRtcAnalogAgcClippingControl, "clipped_wait_frames",
+          300),
+      .use_predicted_step = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcAnalogAgcClippingControl, "use_predicted_step",
+          true)};
 }
 
 }  // namespace
@@ -343,6 +419,91 @@ void PopulateApmConfig(
     apm_config->echo_canceller.mobile_mode = false;
 #endif
   }
+}
+
+std::unique_ptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
+    const AudioProcessingProperties& properties,
+    bool use_capture_multi_channel_processing,
+    absl::optional<std::string> audio_processing_platform_config_json,
+    absl::optional<int> agc_startup_min_volume) {
+  // Experimental options provided at creation.
+  webrtc::Config config;
+  config.Set<webrtc::ExperimentalNs>(new webrtc::ExperimentalNs(
+      properties.goog_experimental_noise_suppression));
+
+  // TODO(bugs.webrtc.org/7494): Move logic below in ConfigAutomaticGainControl.
+  // Retrieve the Hybrid AGC experiment parameters.
+  // The hybrid AGC setup, that is AGC1 analog and AGC2 adaptive digital,
+  // requires `goog_auto_gain_control` and `goog_experimental_auto_gain_control`
+  // to be both active.
+  absl::optional<WebRtcHybridAgcParams> hybrid_agc_params;
+  absl::optional<WebRtcAnalogAgcClippingControlParams> clipping_control_params;
+  if (properties.goog_auto_gain_control &&
+      properties.goog_experimental_auto_gain_control) {
+    hybrid_agc_params = GetWebRtcHybridAgcParams();
+    clipping_control_params = GetWebRtcAnalogAgcClippingControlParams();
+  }
+  // If the experimental AGC is enabled, check for overridden config params.
+  if (properties.goog_experimental_auto_gain_control) {
+    auto* experimental_agc = new webrtc::ExperimentalAgc(
+        /*enabled=*/true, agc_startup_min_volume.value_or(0));
+    // Disable the AGC1 adaptive digital controller if the hybrid AGC is enabled
+    // and it's not running in dry-run mode.
+    experimental_agc->digital_adaptive_disabled =
+        hybrid_agc_params.has_value() && !hybrid_agc_params->dry_run;
+    config.Set<webrtc::ExperimentalAgc>(experimental_agc);
+#if BUILDFLAG(IS_CHROMECAST)
+  } else {
+    // Do not use the analog controller.
+    config.Set<webrtc::ExperimentalAgc>(
+        new webrtc::ExperimentalAgc(/*enabled=*/false));
+#endif  // BUILDFLAG(IS_CHROMECAST)
+  }
+
+  // Create and configure the webrtc::AudioProcessing.
+  webrtc::AudioProcessingBuilder ap_builder;
+  if (properties.EchoCancellationIsWebRtcProvided()) {
+    webrtc::EchoCanceller3Config aec3_config;
+    if (audio_processing_platform_config_json) {
+      aec3_config = webrtc::Aec3ConfigFromJsonString(
+          *audio_processing_platform_config_json);
+      bool config_parameters_already_valid =
+          webrtc::EchoCanceller3Config::Validate(&aec3_config);
+      RTC_DCHECK(config_parameters_already_valid);
+    }
+
+    ap_builder.SetEchoControlFactory(
+        std::unique_ptr<webrtc::EchoControlFactory>(
+            new webrtc::EchoCanceller3Factory(aec3_config)));
+  }
+  std::unique_ptr<webrtc::AudioProcessing> audio_processing_module(
+      ap_builder.Create(config));
+
+  webrtc::AudioProcessing::Config apm_config =
+      audio_processing_module->GetConfig();
+  apm_config.pipeline.multi_channel_render = true;
+  apm_config.pipeline.multi_channel_capture =
+      use_capture_multi_channel_processing;
+
+  absl::optional<double> gain_control_compression_gain_db;
+  PopulateApmConfig(&apm_config, properties,
+                    audio_processing_platform_config_json,
+                    &gain_control_compression_gain_db);
+
+  // Set up gain control functionalities.
+  ConfigAutomaticGainControl(properties, hybrid_agc_params,
+                             clipping_control_params,
+                             gain_control_compression_gain_db, apm_config);
+
+  // Ensure that 48 kHz APM processing is always active. This overrules the
+  // default setting in WebRTC of 32 kHz for ARM platforms.
+  if (Allow48kHzApmProcessing()) {
+    apm_config.pipeline.maximum_internal_processing_rate = 48000;
+  }
+
+  apm_config.residual_echo_detector.enabled = false;
+  audio_processing_module->ApplyConfig(apm_config);
+  return audio_processing_module;
 }
 
 }  // namespace blink

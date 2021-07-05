@@ -8,24 +8,12 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "media/base/audio_point.h"
 #include "media/base/audio_processing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/webrtc/api/media_stream_interface.h"
-#include "third_party/webrtc/media/base/media_channel.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/rtc_base/task_queue.h"
-
-namespace webrtc {
-
-class TypingDetection;
-
-}
 
 namespace blink {
 
@@ -99,6 +87,18 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   bool goog_highpass_filter = true;
   bool goog_experimental_auto_gain_control = true;
 };
+
+// Creates and configures a webrtc::AudioProcessing audio processing module
+// (APM), based on the provided parameters. The optional parameters
+// |audio_processing_platform_config_json| and |agc_startup_min_volume| contain
+// specific parameter tunings provided by the platform. If possible, it is
+// preferred to instead use field trials for testing new parameter sets.
+PLATFORM_EXPORT std::unique_ptr<AudioProcessing>
+CreateWebRtcAudioProcessingModule(
+    const AudioProcessingProperties& properties,
+    bool use_capture_multi_channel_processing,
+    absl::optional<std::string> audio_processing_platform_config_json,
+    absl::optional<int> agc_startup_min_volume);
 
 // Starts the echo cancellation dump in
 // |audio_processing|. |worker_queue| must be kept alive until either

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <utility>
 
 #include "base/callback_helpers.h"

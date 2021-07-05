@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "media/base/audio_parameters.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -25,12 +26,7 @@
 
 namespace media {
 class AudioBus;
-class AudioParameters;
 }  // namespace media
-
-namespace webrtc {
-class TypingDetection;
-}
 
 namespace blink {
 
