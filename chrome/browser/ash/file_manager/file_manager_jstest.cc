@@ -98,8 +98,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesAppEntryTypes) {
   RunTestURL("common/js/files_app_entry_types_unittest.m_gen.html");
 }
 
-// Test is flaky. See crbug.com/1226141
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DISABLED_FilesDisplayPanel) {
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesDisplayPanel) {
   RunTestURL("foreground/elements/files_xf_elements_unittest.m_gen.html");
 }
 

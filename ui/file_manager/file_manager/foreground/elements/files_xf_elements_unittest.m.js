@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {util} from '../../common/js/util.js';
@@ -218,7 +217,7 @@ export function testFilesDisplayPanelErrorText() {
 
   // Check the default primary text displays a generic error message.
   // Note, the i18n message gets smooshed into 'An error occurred.' in the app.
-  assertEquals('$i18n{FILE_ERROR_GENERIC}', panelItem.primaryText);
+  assertEquals('FILE_ERROR_GENERIC', panelItem.primaryText);
 
   // Check the secondary text is empty.
   assertEquals('', panelItem.secondaryText);

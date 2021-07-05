@@ -178,13 +178,6 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/externs/volume_manager.js",
 
     # Files app Foreground:
-    "file_manager/foreground/elements/files_message.js",
-    "file_manager/foreground/elements/files_password_dialog.js",
-    "file_manager/foreground/elements/files_spinner.js",
-    "file_manager/foreground/elements/xf_button.js",
-    "file_manager/foreground/elements/xf_circular_progress.js",
-    "file_manager/foreground/elements/xf_display_panel.js",
-    "file_manager/foreground/elements/xf_panel_item.js",
     "file_manager/foreground/js/actions_controller.js",
     "file_manager/foreground/js/actions_model.js",
     "file_manager/foreground/js/android_app_list_model.js",
@@ -280,7 +273,6 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/foreground/js/ui/actions_submenu.js",
     "file_manager/foreground/js/ui/autocomplete_list.js",
     "file_manager/foreground/js/ui/banners.js",
-    "file_manager/foreground/js/ui/breadcrumb.js",
     "file_manager/foreground/js/ui/combobutton.js",
     "file_manager/foreground/js/ui/commandbutton.js",
     "file_manager/foreground/js/ui/default_task_dialog.js",
@@ -371,21 +363,30 @@ preprocess_if_expr("preprocess_generated") {
     # Files app Elements:
     "file_manager/foreground/elements/files_format_dialog.js",
     "file_manager/foreground/elements/files_icon_button.js",
+    "file_manager/foreground/elements/files_message.js",
     "file_manager/foreground/elements/files_metadata_box.js",
     "file_manager/foreground/elements/files_metadata_entry.js",
+    "file_manager/foreground/elements/files_password_dialog.js",
     "file_manager/foreground/elements/files_quick_view.js",
     "file_manager/foreground/elements/files_ripple.js",
     "file_manager/foreground/elements/files_safe_media.js",
+    "file_manager/foreground/elements/files_spinner.js",
     "file_manager/foreground/elements/files_toast.js",
     "file_manager/foreground/elements/files_toggle_ripple.js",
     "file_manager/foreground/elements/files_tooltip.js",
     "file_manager/foreground/elements/icons.js",
+    "file_manager/foreground/elements/xf_button.js",
+    "file_manager/foreground/elements/xf_circular_progress.js",
+    "file_manager/foreground/elements/xf_display_panel.js",
+    "file_manager/foreground/elements/xf_panel_item.js",
+    "file_manager/foreground/js/ui/breadcrumb.js",
   ]
 
   deps = [
     "//ui/file_manager/audio_player/elements:web_components",
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
+    "//ui/file_manager/file_manager/foreground/js/ui:web_components",
   ]
 }
 
