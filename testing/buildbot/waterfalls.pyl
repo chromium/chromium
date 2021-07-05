@@ -1905,8 +1905,8 @@
       },
       'ToTWin64': {
         'mixins': [
-          'chrome-tester-service-account',
           'x86-64',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
