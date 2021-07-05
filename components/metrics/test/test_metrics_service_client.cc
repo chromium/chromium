@@ -5,6 +5,7 @@
 #include "components/metrics/test/test_metrics_service_client.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
@@ -16,15 +17,8 @@ namespace metrics {
 // static
 const char TestMetricsServiceClient::kBrandForTesting[] = "brand_for_testing";
 
-TestMetricsServiceClient::TestMetricsServiceClient()
-    : version_string_("5.0.322.0-64-devel"),
-      product_(ChromeUserMetricsExtension::CHROME),
-      reporting_is_managed_(false),
-      is_extended_stable_channel_(false),
-      enable_default_(EnableMetricsDefault::DEFAULT_UNKNOWN),
-      storage_limits_(MetricsServiceClient::GetStorageLimits()) {}
-
-TestMetricsServiceClient::~TestMetricsServiceClient() {}
+TestMetricsServiceClient::TestMetricsServiceClient() = default;
+TestMetricsServiceClient::~TestMetricsServiceClient() = default;
 
 metrics::MetricsService* TestMetricsServiceClient::GetMetricsService() {
   return nullptr;
