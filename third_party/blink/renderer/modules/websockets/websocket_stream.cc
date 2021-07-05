@@ -11,8 +11,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_close_info.h"
@@ -305,8 +303,15 @@ void WebSocketStream::UnderlyingSink::SendAny(ScriptState* script_state,
                                               ExceptionState& exception_state) {
   DVLOG(1) << "WebSocketStream::UnderlyingSink " << this << " SendAny()";
   auto* isolate = script_state->GetIsolate();
+
   if (v8chunk->IsArrayBuffer()) {
-    DOMArrayBuffer* data = V8ArrayBuffer::ToImpl(v8chunk.As<v8::ArrayBuffer>());
+    DOMArrayBuffer* data = NativeValueTraits<DOMArrayBuffer>::NativeValue(
+        isolate, v8chunk, exception_state);
+    if (exception_state.HadException()) {
+      closed_ = true;
+      is_writing_ = false;
+      return;
+    }
     SendArrayBuffer(script_state, data, 0, data->ByteLength(), resolver,
                     std::move(callback));
     return;
@@ -314,8 +319,8 @@ void WebSocketStream::UnderlyingSink::SendAny(ScriptState* script_state,
 
   if (v8chunk->IsArrayBufferView()) {
     NotShared<DOMArrayBufferView> data =
-        ToNotShared<NotShared<DOMArrayBufferView>>(isolate, v8chunk,
-                                                   exception_state);
+        NativeValueTraits<NotShared<DOMArrayBufferView>>::NativeValue(
+            isolate, v8chunk, exception_state);
     if (exception_state.HadException()) {
       closed_ = true;
       is_writing_ = false;

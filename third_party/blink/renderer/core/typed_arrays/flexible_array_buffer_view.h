@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_FLEXIBLE_ARRAY_BUFFER_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_FLEXIBLE_ARRAY_BUFFER_VIEW_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -45,7 +45,11 @@ class CORE_EXPORT FlexibleArrayBufferView {
       small_data_ = small_buffer_;
       small_length_ = size;
     } else {
-      full_ = V8ArrayBufferView::ToImpl(array_buffer_view);
+      NonThrowableExceptionState exception_state;
+      full_ = NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
+                  array_buffer_view->GetIsolate(), array_buffer_view,
+                  exception_state)
+                  .Get();
     }
   }
 

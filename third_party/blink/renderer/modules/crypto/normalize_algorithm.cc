@@ -38,8 +38,6 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
@@ -299,14 +297,23 @@ bool GetOptionalBufferSource(const Dictionary& raw,
   has_property = true;
 
   if (v8_value->IsArrayBufferView()) {
-    bytes = CopyBytes(
-        V8ArrayBufferView::ToImpl(v8::Local<v8::Object>::Cast(v8_value)));
+    DOMArrayBufferView* array_buffer_view =
+        NativeValueTraits<NotShared<DOMArrayBufferView>>::NativeValue(
+            raw.GetIsolate(), v8_value, exception_state)
+            .Get();
+    if (exception_state.HadException())
+      return false;
+    bytes = CopyBytes(array_buffer_view);
     return true;
   }
 
   if (v8_value->IsArrayBuffer()) {
-    bytes =
-        CopyBytes(V8ArrayBuffer::ToImpl(v8::Local<v8::Object>::Cast(v8_value)));
+    DOMArrayBuffer* array_buffer =
+        NativeValueTraits<DOMArrayBuffer>::NativeValue(
+            raw.GetIsolate(), v8_value, exception_state);
+    if (exception_state.HadException())
+      return false;
+    bytes = CopyBytes(array_buffer);
     return true;
   }
 

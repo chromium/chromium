@@ -17,15 +17,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_receive_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
@@ -754,8 +753,9 @@ Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
   }
 
   EXPECT_FALSE(done);
-  auto* array =
-      V8Uint8Array::ToImplWithTypeCheck(script_state->GetIsolate(), value);
+  DummyExceptionStateForTesting exception_state;
+  auto array = NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
+      script_state->GetIsolate(), value, exception_state);
   if (!array) {
     ADD_FAILURE() << "value was not a Uint8Array";
     return {};
@@ -1228,8 +1228,9 @@ TEST_F(WebTransportTest, CreateReceiveStream) {
   ASSERT_TRUE(
       V8UnpackIteratorResult(script_state, read_result.As<v8::Object>(), &done)
           .ToLocal(&value));
-  DOMUint8Array* u8array =
-      V8Uint8Array::ToImplWithTypeCheck(scope.GetIsolate(), value);
+  NotShared<DOMUint8Array> u8array =
+      NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
+          scope.GetIsolate(), value, ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(u8array);
   EXPECT_THAT(base::make_span(static_cast<uint8_t*>(u8array->Data()),
                               u8array->byteLength()),

@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
@@ -266,8 +265,9 @@ WebVector<unsigned char> ConvertCryptoResult<WebVector<unsigned char>>(
     v8::Isolate* isolate,
     const ScriptValue& value) {
   WebVector<unsigned char> vector;
-  if (DOMArrayBuffer* buffer =
-          V8ArrayBuffer::ToImplWithTypeCheck(isolate, value.V8Value())) {
+  DummyExceptionStateForTesting exception_state;
+  if (DOMArrayBuffer* buffer = NativeValueTraits<DOMArrayBuffer>::NativeValue(
+          isolate, value.V8Value(), exception_state)) {
     vector.Assign(reinterpret_cast<const unsigned char*>(buffer->Data()),
                   buffer->ByteLength());
   }

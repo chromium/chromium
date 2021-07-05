@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
 
 #include "base/test/mock_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -71,12 +71,13 @@ class StreamCreator {
   void ClosePipe() { data_pipe_producer_.reset(); }
 
   // Copies the contents of a v8::Value containing a Uint8Array to a Vector.
-  static Vector<uint8_t> ToVector(const V8TestingScope& scope,
+  static Vector<uint8_t> ToVector(V8TestingScope& scope,
                                   v8::Local<v8::Value> v8value) {
     Vector<uint8_t> ret;
 
-    DOMUint8Array* value =
-        V8Uint8Array::ToImplWithTypeCheck(scope.GetIsolate(), v8value);
+    NotShared<DOMUint8Array> value =
+        NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
+            scope.GetIsolate(), v8value, scope.GetExceptionState());
     if (!value) {
       ADD_FAILURE() << "chunk is not an Uint8Array";
       return ret;
@@ -94,8 +95,7 @@ class StreamCreator {
   // Performs a single read from |reader|, converting the output to the
   // Iterator type. Assumes that the readable stream is not errored.
   // static Iterator Read(const V8TestingScope& scope,
-  Iterator Read(const V8TestingScope& scope,
-                ReadableStreamDefaultReader* reader) {
+  Iterator Read(V8TestingScope& scope, ReadableStreamDefaultReader* reader) {
     auto* script_state = scope.GetScriptState();
     ScriptPromise read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION);
@@ -105,7 +105,7 @@ class StreamCreator {
     return IteratorFromReadResult(scope, tester.Value().V8Value());
   }
 
-  static Iterator IteratorFromReadResult(const V8TestingScope& scope,
+  static Iterator IteratorFromReadResult(V8TestingScope& scope,
                                          v8::Local<v8::Value> result) {
     CHECK(result->IsObject());
     Iterator ret;

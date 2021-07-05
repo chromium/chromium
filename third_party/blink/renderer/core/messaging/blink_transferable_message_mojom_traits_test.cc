@@ -9,9 +9,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
@@ -54,7 +54,8 @@ TEST(BlinkTransferableMessageStructTraitsTest,
       original_data[i] = static_cast<uint8_t>(i);
 
     DOMArrayBuffer* array_buffer =
-        V8ArrayBuffer::ToImpl(v8::Local<v8::Object>::Cast(v8_buffer));
+        NativeValueTraits<DOMArrayBuffer>::NativeValue(
+            isolate, v8_buffer, scope.GetExceptionState());
     Transferables transferables;
     transferables.array_buffers.push_back(array_buffer);
     BlinkTransferableMessage msg;
@@ -94,7 +95,8 @@ TEST(BlinkTransferableMessageStructTraitsTest,
     contents[i] = static_cast<uint8_t>(i);
 
   DOMArrayBuffer* original_array_buffer =
-      V8ArrayBuffer::ToImpl(v8::Local<v8::Object>::Cast(v8_buffer));
+      NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, v8_buffer,
+                                                     scope.GetExceptionState());
   Transferables transferables;
   transferables.array_buffers.push_back(original_array_buffer);
   BlinkTransferableMessage msg;

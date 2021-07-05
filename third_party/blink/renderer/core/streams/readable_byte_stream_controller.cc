@@ -6,7 +6,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source_cancel_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source_pull_callback.h"

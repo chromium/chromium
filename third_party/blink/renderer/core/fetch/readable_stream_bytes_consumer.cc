@@ -8,10 +8,11 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
@@ -53,7 +54,11 @@ class ReadableStreamBytesConsumer::OnFulfilled final : public ScriptFunction {
       consumer_->OnRejected();
       return ScriptValue();
     }
-    consumer_->OnRead(V8Uint8Array::ToImpl(value.As<v8::Object>()));
+    NonThrowableExceptionState exception_state;
+    consumer_->OnRead(
+        NativeValueTraits<MaybeShared<DOMUint8Array>>::NativeValue(
+            GetScriptState()->GetIsolate(), value, exception_state)
+            .Get());
     return v;
   }
 

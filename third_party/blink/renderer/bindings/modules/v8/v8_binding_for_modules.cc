@@ -27,15 +27,13 @@
 
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_string_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor_with_value.h"
@@ -189,7 +187,10 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
     return IDBKey::CreateDate(value.As<v8::Date>()->ValueOf());
 
   if (value->IsArrayBuffer()) {
-    DOMArrayBuffer* buffer = V8ArrayBuffer::ToImpl(value.As<v8::Object>());
+    DOMArrayBuffer* buffer = NativeValueTraits<DOMArrayBuffer>::NativeValue(
+        isolate, value, exception_state);
+    if (exception_state.HadException())
+      return IDBKey::CreateInvalid();
     if (buffer->IsDetached()) {
       exception_state.ThrowTypeError("The ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
@@ -201,7 +202,11 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
 
   if (value->IsArrayBufferView()) {
     DOMArrayBufferView* view =
-        V8ArrayBufferView::ToImpl(value.As<v8::Object>());
+        NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
+            isolate, value, exception_state)
+            .Get();
+    if (exception_state.HadException())
+      return IDBKey::CreateInvalid();
     if (view->buffer()->IsDetached()) {
       exception_state.ThrowTypeError("The viewed ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();

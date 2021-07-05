@@ -13,9 +13,8 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
@@ -93,22 +92,23 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
                       WritableStreamDefaultController*,
                       ExceptionState& exception_state) override {
     auto v8chunk = chunk.V8Value();
+    auto* isolate = script_state->GetIsolate();
+
     if (v8chunk->IsArrayBuffer()) {
-      DOMArrayBuffer* data =
-          V8ArrayBuffer::ToImpl(v8chunk.As<v8::ArrayBuffer>());
+      DOMArrayBuffer* data = NativeValueTraits<DOMArrayBuffer>::NativeValue(
+          isolate, v8chunk, exception_state);
+      if (exception_state.HadException())
+        return ScriptPromise();
       return SendDatagram(
           {static_cast<const uint8_t*>(data->Data()), data->ByteLength()});
     }
 
-    auto* isolate = script_state->GetIsolate();
     if (v8chunk->IsArrayBufferView()) {
       NotShared<DOMArrayBufferView> data =
-          ToNotShared<NotShared<DOMArrayBufferView>>(isolate, v8chunk,
-                                                     exception_state);
-      if (exception_state.HadException()) {
+          NativeValueTraits<NotShared<DOMArrayBufferView>>::NativeValue(
+              isolate, v8chunk, exception_state);
+      if (exception_state.HadException())
         return ScriptPromise();
-      }
-
       return SendDatagram({static_cast<const uint8_t*>(data->buffer()->Data()) +
                                data->byteOffset(),
                            data->byteLength()});

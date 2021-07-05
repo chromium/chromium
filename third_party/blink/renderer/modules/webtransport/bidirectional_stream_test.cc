@@ -19,11 +19,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -285,7 +285,7 @@ TEST(BidirectionalStreamTest, CreateRemotelyAndWrite) {
 
 // This test fragment is common to CreateLocallyAndRead and
 // CreateRemotelyAndRead.
-void TestRead(const V8TestingScope& scope,
+void TestRead(V8TestingScope& scope,
               ScopedWebTransport* scoped_web_transport,
               BidirectionalStream* bidirectional_stream) {
   mojo::ScopedDataPipeProducerHandle& input_producer =
@@ -299,8 +299,9 @@ void TestRead(const V8TestingScope& scope,
 
   v8::Local<v8::Value> v8array =
       ReadValueFromStream(scope, bidirectional_stream->readable());
-  DOMUint8Array* u8array =
-      V8Uint8Array::ToImplWithTypeCheck(scope.GetIsolate(), v8array);
+  NotShared<DOMUint8Array> u8array =
+      NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
+          scope.GetIsolate(), v8array, scope.GetExceptionState());
   ASSERT_TRUE(u8array);
 
   ASSERT_EQ(u8array->byteLength(), 1u);

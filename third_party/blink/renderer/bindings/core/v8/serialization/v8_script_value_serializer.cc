@@ -7,8 +7,8 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix.h"
@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_shared_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_transform_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
@@ -44,6 +43,7 @@
 #include "third_party/blink/renderer/core/streams/transform_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
+#include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -111,7 +111,10 @@ bool V8ScriptValueSerializer::ExtractTransferable(
   }
   if (object->IsArrayBuffer()) {
     DOMArrayBuffer* array_buffer =
-        V8ArrayBuffer::ToImpl(v8::Local<v8::Object>::Cast(object));
+        NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, object,
+                                                       exception_state);
+    if (exception_state.HadException())
+      return false;
     if (transferables.array_buffers.Contains(array_buffer)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -124,7 +127,10 @@ bool V8ScriptValueSerializer::ExtractTransferable(
   }
   if (object->IsSharedArrayBuffer()) {
     DOMSharedArrayBuffer* shared_array_buffer =
-        V8SharedArrayBuffer::ToImpl(v8::Local<v8::Object>::Cast(object));
+        NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(isolate, object,
+                                                             exception_state);
+    if (exception_state.HadException())
+      return false;
     if (transferables.array_buffers.Contains(shared_array_buffer)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -851,12 +857,12 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
 v8::Maybe<uint32_t> V8ScriptValueSerializer::GetSharedArrayBufferId(
     v8::Isolate* isolate,
     v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer) {
+  DCHECK(exception_state_);
+  DCHECK_EQ(isolate, script_state_->GetIsolate());
+
+  ExceptionState exception_state(isolate, exception_state_->GetContext());
+
   if (for_storage_) {
-    DCHECK(exception_state_);
-    DCHECK_EQ(isolate, script_state_->GetIsolate());
-    ExceptionState exception_state(isolate, exception_state_->Context(),
-                                   exception_state_->InterfaceName(),
-                                   exception_state_->PropertyName());
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
         "A SharedArrayBuffer can not be serialized for storage.");
@@ -864,7 +870,10 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetSharedArrayBufferId(
   }
 
   DOMSharedArrayBuffer* shared_array_buffer =
-      V8SharedArrayBuffer::ToImpl(v8_shared_array_buffer);
+      NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(
+          isolate, v8_shared_array_buffer, exception_state);
+  if (exception_state.HadException())
+    return v8::Nothing<uint32_t>();
 
   // The index returned from this function will be serialized into the data
   // stream. When deserializing, this will be used to index into the
