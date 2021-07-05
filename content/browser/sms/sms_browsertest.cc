@@ -21,6 +21,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -1267,6 +1268,91 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordOutcomeWithSameOriginFrame) {
   ExpectOutcomeWithCrossOriginUKM(
       blink::WebOTPServiceOutcome::kBackendNotAvailable,
       /* is_cross_origin_frame */ false);
+}
+
+class MockSmsPrerenderingWebContentsDelegate : public WebContentsDelegate {
+ public:
+  MockSmsPrerenderingWebContentsDelegate() = default;
+  ~MockSmsPrerenderingWebContentsDelegate() override = default;
+  MockSmsPrerenderingWebContentsDelegate(
+      const MockSmsPrerenderingWebContentsDelegate&) = delete;
+  MockSmsPrerenderingWebContentsDelegate& operator=(
+      const MockSmsPrerenderingWebContentsDelegate&) = delete;
+
+  MOCK_METHOD5(CreateSmsPrompt,
+               void(RenderFrameHost*,
+                    const std::vector<url::Origin>&,
+                    const std::string&,
+                    base::OnceCallback<void()> on_confirm,
+                    base::OnceCallback<void()> on_cancel));
+  bool IsPrerender2Supported() override { return true; }
+};
+
+class SmsPrerenderingBrowserTest : public SmsBrowserTest {
+ public:
+  SmsPrerenderingBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&SmsPrerenderingBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+  ~SmsPrerenderingBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    SmsBrowserTest::SetUpOnMainThread();
+    web_contents()->SetDelegate(&delegate_);
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  content::WebContents* web_contents() { return shell()->web_contents(); }
+
+  NiceMock<MockSmsPrerenderingWebContentsDelegate>& delegate() {
+    return delegate_;
+  }
+
+ private:
+  NiceMock<MockSmsPrerenderingWebContentsDelegate> delegate_;
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(SmsPrerenderingBrowserTest,
+                       WebOTPWorksAfterPrerenderActivation) {
+  // Load an initial page.
+  GURL url = https_server_.GetURL("/simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Load a page in the prerendering.
+  GURL prerender_url = https_server_.GetURL("/simple_page.html?prerendering");
+  const int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  EXPECT_CALL(delegate(), CreateSmsPrompt(_, _, _, _, _))
+      .WillOnce(Invoke([&](RenderFrameHost*, const OriginList&,
+                           const std::string&, base::OnceClosure on_confirm,
+                           base::OnceClosure on_cancel) {}));
+
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_, _)).WillOnce(Invoke([&]() {
+    mock_provider_ptr->NotifyReceive(OriginList{url::Origin::Create(url)},
+                                     "hello", UserConsent::kNotObtained);
+    run_loop.Quit();
+  }));
+
+  prerender_rfh->ExecuteJavaScriptForTests(
+      u"(async () => {"
+      u" await navigator.credentials.get({otp: {transport: ['sms']}});"
+      u"}) ();",
+      base::NullCallback());
+
+  // Activate the prerendered page.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  run_loop.Run();
 }
 
 }  // namespace content

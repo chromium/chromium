@@ -197,6 +197,9 @@ void TabWebContentsDelegateAndroid::CreateSmsPrompt(
     const std::string& one_time_code,
     base::OnceClosure on_confirm,
     base::OnceClosure on_cancel) {
+  DCHECK_EQ(host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
   auto* web_contents = content::WebContents::FromRenderFrameHost(host);
   sms::SmsInfoBar::Create(
       web_contents,

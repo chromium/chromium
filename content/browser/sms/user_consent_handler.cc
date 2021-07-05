@@ -43,6 +43,9 @@ void PromptBasedUserConsentHandler::RequestUserConsent(
     return;
   }
 
+  DCHECK_EQ(frame_host_->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
   on_complete_ = std::move(on_complete);
   is_prompt_open_ = true;
   web_contents->GetDelegate()->CreateSmsPrompt(
