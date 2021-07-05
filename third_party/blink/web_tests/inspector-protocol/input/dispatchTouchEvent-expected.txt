@@ -1,18 +1,10 @@
 Tests Input.dispatchTouchEvent method.
 
 
-------- Sequence ------
+------- Sequence 1 ------
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            x : 100
-            y : 200
-        }
-    ]
-    type : touchStart
-}
+touchStart with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -25,15 +17,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            x : 200
-            y : 100
-        }
-    ]
-    type : touchMove
-}
+touchMove with 1 touch points
 -----Event-----
 type: touchmove
 ----Touches----
@@ -46,38 +30,15 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchEnd
-}
+touchEnd with 0 touch points
 -----Event-----
 type: touchend
 ----Touches----
 
-------- Sequence ------
+------- Sequence 2 ------
 
 Dispatching event:
-{
-    modifiers : 8
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 20
-            y : 30
-        }
-        [1] : {
-            force : 0
-            id : <number>
-            radiusX : 5
-            radiusY : 6
-            rotationAngle : 1
-            x : 100
-            y : 200
-        }
-    ]
-    type : touchStart
-}
+touchStart with 2 touch points
 -----Event-----
 type: touchstart
 shiftKey
@@ -109,11 +70,7 @@ rotationAngle: 1
 force: 0
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchEnd
-}
+touchEnd with 0 touch points
 -----Event-----
 type: touchend
 shiftKey
@@ -129,19 +86,10 @@ force: 0
 type: touchend
 ----Touches----
 
-------- Sequence ------
+------- Sequence 3 ------
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 20
-            y : 30
-        }
-    ]
-    type : touchStart
-}
+touchStart with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -154,21 +102,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 20
-            y : 30
-        }
-        [1] : {
-            id : <number>
-            x : 100
-            y : 200
-        }
-    ]
-    type : touchMove
-}
+touchMove with 2 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -188,21 +122,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 25
-            y : 36
-        }
-        [1] : {
-            id : <number>
-            x : 101
-            y : 202
-        }
-    ]
-    type : touchMove
-}
+touchMove with 2 touch points
 -----Event-----
 type: touchmove
 ----Touches----
@@ -222,16 +142,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 103
-            y : 203
-        }
-    ]
-    type : touchMove
-}
+touchMove with 1 touch points
 -----Event-----
 type: touchmove
 ----Touches----
@@ -251,11 +162,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchEnd
-}
+touchEnd with 0 touch points
 -----Event-----
 type: touchend
 ----Touches----
@@ -270,54 +177,22 @@ force: 1
 type: touchend
 ----Touches----
 
-------- Sequence ------
+------- Sequence 4 ------
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchEnd
-}
-{
-    error : {
-        code : -32602
-        message : Must send a TouchStart first to start a new touch.
-    }
-    id : <number>
-    sessionId : <string>
-}
+touchEnd with 0 touch points
 
 
-------- Sequence ------
+------- Sequence 5 ------
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchStart
-}
-{
-    error : {
-        code : -32602
-        message : TouchStart and TouchMove must have at least one touch point.
-    }
-    id : <number>
-    sessionId : <string>
-}
+touchStart with 0 touch points
 
 
-------- Sequence ------
+------- Sequence 6 ------
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchStart
-}
+touchStart with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -330,47 +205,19 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchCancel
-}
-{
-    error : {
-        code : -32602
-        message : TouchCancel must not have any touch points.
-    }
-    id : <number>
-    sessionId : <string>
-}
+touchCancel with 1 touch points
 
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchCancel
-}
+touchCancel with 0 touch points
 -----Event-----
 type: touchcancel
 ----Touches----
 
-------- Sequence ------
+------- Sequence 7 ------
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchStart
-}
+touchStart with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -383,52 +230,21 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchMove
-}
-
+touchMove with 1 touch points
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchMove
-}
-
+touchMove with 1 touch points
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchEnd
-}
+touchEnd with 0 touch points
 -----Event-----
 type: touchend
 ----Touches----
 
-------- Sequence ------
+------- Sequence 8 ------
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchStart
-}
+touchStart with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -441,16 +257,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchMove
-}
+touchMove with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -470,28 +277,15 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchCancel
-}
+touchCancel with 0 touch points
 -----Event-----
 type: touchcancel
 ----Touches----
 
-------- Sequence ------
+------- Sequence 9 ------
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchStart
-}
+touchStart with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -504,21 +298,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 100
-            y : 100
-        }
-        [1] : {
-            id : <number>
-            x : 150
-            y : 100
-        }
-    ]
-    type : touchStart
-}
+touchStart with 2 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -538,21 +318,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 100
-            y : 150
-        }
-        [1] : {
-            id : <number>
-            x : 150
-            y : 150
-        }
-    ]
-    type : touchMove
-}
+touchMove with 2 touch points
 -----Event-----
 type: touchmove
 ----Touches----
@@ -572,11 +338,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchEnd
-}
+touchEnd with 0 touch points
 -----Event-----
 type: touchend
 ----Touches----
@@ -591,24 +353,10 @@ force: 1
 type: touchend
 ----Touches----
 
-------- Sequence ------
+------- Sequence 10 ------
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 100
-            y : 100
-        }
-        [1] : {
-            id : <number>
-            x : 150
-            y : 100
-        }
-    ]
-    type : touchStart
-}
+touchStart with 2 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -638,28 +386,15 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchCancel
-}
+touchCancel with 0 touch points
 -----Event-----
 type: touchcancel
 ----Touches----
 
-------- Sequence ------
+------- Sequence 11 ------
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 100
-            y : 100
-        }
-    ]
-    type : touchStart
-}
+touchStart with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -672,16 +407,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 150
-            y : 100
-        }
-    ]
-    type : touchStart
-}
+touchStart with 1 touch points
 -----Event-----
 type: touchstart
 ----Touches----
@@ -701,16 +427,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 100
-            y : 150
-        }
-    ]
-    type : touchMove
-}
+touchMove with 1 touch points
 -----Event-----
 type: touchmove
 ----Touches----
@@ -730,16 +447,7 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-        [0] : {
-            id : <number>
-            x : 150
-            y : 100
-        }
-    ]
-    type : touchEnd
-}
+touchEnd with 1 touch points
 -----Event-----
 type: touchend
 ----Touches----
@@ -752,12 +460,10 @@ rotationAngle: 0
 force: 1
 
 Dispatching event:
-{
-    touchPoints : [
-    ]
-    type : touchEnd
-}
+touchEnd with 0 touch points
 -----Event-----
 type: touchend
 ----Touches----
+
+------- Done ------
 
