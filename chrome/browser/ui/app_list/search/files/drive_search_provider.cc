@@ -131,10 +131,12 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
   const base::FilePath& reparented_path =
       drive_service_->GetMountPointPath().Append(relative_path.value());
 
+  const double relevance =
+      FileResult::CalculateRelevance(last_tokenized_query_, reparented_path);
   return std::make_unique<FileResult>(
       kDriveSearchSchema, reparented_path,
-      ash::AppListSearchResultType::kDriveSearch, last_query_,
-      last_tokenized_query_, type, profile_);
+      ash::AppListSearchResultType::kDriveSearch, last_query_, relevance, type,
+      profile_);
 }
 
 }  // namespace app_list

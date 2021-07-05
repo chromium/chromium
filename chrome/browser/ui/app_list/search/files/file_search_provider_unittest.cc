@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
@@ -21,6 +22,7 @@
 namespace app_list {
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 MATCHER_P(Title, title, "") {
@@ -121,6 +123,41 @@ TEST_F(FileSearchProviderTest, ResultMetadataTest) {
   const auto& result = provider_->results()[0];
   EXPECT_EQ(result->result_type(), ash::AppListSearchResultType::kFileSearch);
   EXPECT_EQ(result->display_type(), ash::SearchResultDisplayType::kList);
+}
+
+TEST_F(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
+  WriteFile("file.txt");
+  WriteFile("file.png");
+  WriteFile("file.pdf");
+
+  // Set the access times of all files to be different.
+  const base::Time time = base::Time::Now();
+  const base::Time earlier_time = time - base::TimeDelta::FromMinutes(5);
+  const base::Time earliest_time = time - base::TimeDelta::FromMinutes(10);
+  TouchFile(Path("file.txt"), time, time);
+  TouchFile(Path("file.png"), earliest_time, time);
+  TouchFile(Path("file.pdf"), earlier_time, time);
+
+  provider_->Start(u"file");
+  Wait();
+
+  ASSERT_TRUE(provider_->results().size() == 3u);
+
+  // Sort the results by descending relevance.
+  std::vector<ChromeSearchResult*> results;
+  for (const auto& result : provider_->results()) {
+    results.push_back(result.get());
+  }
+  std::sort(results.begin(), results.end(),
+            [](const ChromeSearchResult* a, const ChromeSearchResult* b) {
+              return a->relevance() > b->relevance();
+            });
+  ASSERT_TRUE(results[0]->relevance() > results[1]->relevance());
+  ASSERT_TRUE(results[1]->relevance() > results[2]->relevance());
+
+  // Most recently accessed files should be at the front.
+  EXPECT_THAT(results, ElementsAre(Title("file.txt"), Title("file.pdf"),
+                                   Title("file.png")));
 }
 
 }  // namespace app_list

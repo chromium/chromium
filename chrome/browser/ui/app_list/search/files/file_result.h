@@ -32,8 +32,7 @@ class FileResult : public ChromeSearchResult {
              const base::FilePath& filepath,
              ResultType result_type,
              const std::u16string& query,
-             const absl::optional<chromeos::string_matching::TokenizedString>&
-                 tokenized_query,
+             float relevance,
              Type type,
              Profile* profile);
   ~FileResult() override;
@@ -43,6 +42,12 @@ class FileResult : public ChromeSearchResult {
 
   // ChromeSearchResult overrides:
   void Open(int event_flags) override;
+
+  // Calculates file's match relevance score. Will return a default score if the
+  // query is missing or the filename is empty.
+  static double CalculateRelevance(
+      const absl::optional<chromeos::string_matching::TokenizedString>& query,
+      const base::FilePath& filepath);
 
  private:
   FileResult(const std::string& schema,

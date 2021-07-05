@@ -47,26 +47,6 @@ std::string StripHostedFileExtensions(const std::string& filename) {
   return filename;
 }
 
-// Helper function for calculating a file's relevance score. Will return a
-// default relevance score if the query is missing or the filename is empty.
-double CalculateRelevance(const absl::optional<TokenizedString>& query,
-                          const std::u16string& raw_title) {
-  const TokenizedString title(raw_title, TokenizedString::Mode::kWords);
-
-  const bool use_default_relevance =
-      !query || query.value().text().empty() || title.text().empty();
-  UMA_HISTOGRAM_BOOLEAN("Apps.AppList.FileResult.DefaultRelevanceUsed",
-                        use_default_relevance);
-  if (use_default_relevance) {
-    static constexpr double kDefaultRelevance = 0.5;
-    return kDefaultRelevance;
-  }
-
-  TokenizedStringMatch match;
-  match.Calculate(query.value(), title);
-  return match.relevance();
-}
-
 void LogRelevance(ChromeSearchResult::ResultType result_type,
                   const double relevance) {
   // Relevance scores are between 0 and 1, so we scale to 0 to 100 for logging.
@@ -142,7 +122,7 @@ FileResult::FileResult(const std::string& schema,
                        const base::FilePath& filepath,
                        ResultType result_type,
                        DisplayType display_type,
-                       float relevance,
+                       const float relevance,
                        Profile* profile)
     : FileResult(schema,
                  filepath,
@@ -173,22 +153,19 @@ FileResult::FileResult(const std::string& schema,
   }
 }
 
-FileResult::FileResult(
-    const std::string& schema,
-    const base::FilePath& filepath,
-    ResultType result_type,
-    const std::u16string& query,
-    const absl::optional<chromeos::string_matching::TokenizedString>&
-        tokenized_query,
-    Type type,
-    Profile* profile)
+FileResult::FileResult(const std::string& schema,
+                       const base::FilePath& filepath,
+                       ResultType result_type,
+                       const std::u16string& query,
+                       const float relevance,
+                       Type type,
+                       Profile* profile)
     : FileResult(schema,
                  filepath,
                  result_type,
                  DisplayType::kList,
                  type,
                  profile) {
-  const double relevance = CalculateRelevance(tokenized_query, title());
   set_relevance(relevance);
   LogRelevance(result_type, relevance);
 
@@ -227,6 +204,28 @@ void FileResult::Open(int event_flags) {
                               platform_util::OpenOperationCallback());
       break;
   }
+}
+
+// static
+double FileResult::CalculateRelevance(
+    const absl::optional<TokenizedString>& query,
+    const base::FilePath& filepath) {
+  const std::u16string raw_title =
+      base::UTF8ToUTF16(StripHostedFileExtensions(filepath.BaseName().value()));
+  const TokenizedString title(raw_title, TokenizedString::Mode::kWords);
+
+  const bool use_default_relevance =
+      !query || query.value().text().empty() || title.text().empty();
+  UMA_HISTOGRAM_BOOLEAN("Apps.AppList.FileResult.DefaultRelevanceUsed",
+                        use_default_relevance);
+  if (use_default_relevance) {
+    static constexpr double kDefaultRelevance = 0.5;
+    return kDefaultRelevance;
+  }
+
+  TokenizedStringMatch match;
+  match.Calculate(query.value(), title);
+  return match.relevance();
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const FileResult& result) {
