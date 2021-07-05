@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
-Found 71 tests; 64 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 71 tests; 70 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI sanitize function without argument should throw an error.
 PASS SanitizerAPI sanitize function for null.
-FAIL SanitizerAPI with config: plaintext, sanitize from string function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
-FAIL SanitizerAPI with config: xmp, sanitize from string function for xmp assert_equals: expected "" but got "TEXT"
+PASS SanitizerAPI with config: plaintext, sanitize from string function for plaintext
+PASS SanitizerAPI with config: xmp, sanitize from string function for xmp
 PASS SanitizerAPI with config: Template element, sanitize from string function for Template element
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitize from string function for HTMLAnchorElement with javascript protocal
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitize from string function for HTMLAnchorElement with javascript protocal start with space
@@ -25,8 +25,8 @@ PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#84., sanit
 PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#85., sanitize from string function for Regression test for WICG/sanitizer-api#85.
 PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#86., sanitize from string function for Regression test for WICG/sanitizer-api#86.
 PASS SanitizerAPI sanitize function shouldn't load the image.
-FAIL SanitizerAPI with config: plaintext, sanitize from document function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
-FAIL SanitizerAPI with config: xmp, sanitize from document function for xmp assert_equals: expected "" but got "TEXT"
+PASS SanitizerAPI with config: plaintext, sanitize from document function for plaintext
+PASS SanitizerAPI with config: xmp, sanitize from document function for xmp
 PASS SanitizerAPI with config: Template element, sanitize from document function for Template element
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitize from document function for HTMLAnchorElement with javascript protocal
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitize from document function for HTMLAnchorElement with javascript protocal start with space
@@ -47,8 +47,8 @@ FAIL SanitizerAPI with config: malformed HTML, sanitize from document function f
 PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#84., sanitize from document function for Regression test for WICG/sanitizer-api#84.
 PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#85., sanitize from document function for Regression test for WICG/sanitizer-api#85.
 PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#86., sanitize from document function for Regression test for WICG/sanitizer-api#86.
-FAIL SanitizerAPI with config: plaintext, sanitize from document fragment function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
-FAIL SanitizerAPI with config: xmp, sanitize from document fragment function for xmp assert_equals: expected "" but got "TEXT"
+PASS SanitizerAPI with config: plaintext, sanitize from document fragment function for plaintext
+PASS SanitizerAPI with config: xmp, sanitize from document fragment function for xmp
 PASS SanitizerAPI with config: Template element, sanitize from document fragment function for Template element
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitize from document fragment function for HTMLAnchorElement with javascript protocal
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitize from document fragment function for HTMLAnchorElement with javascript protocal start with space

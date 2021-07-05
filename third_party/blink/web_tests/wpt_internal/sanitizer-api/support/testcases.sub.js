@@ -1,6 +1,6 @@
 const testcases = [
-  {config_input: {}, value: "<plaintext><p>text</p>", result: "", message: "plaintext"},
-  {config_input: {}, value: "<xmp>TEXT</xmp>", result: "", message: "xmp"},
+  {config_input: {}, value: "<plaintext><p>text</p>", result: "&lt;p&gt;text&lt;/p&gt;", message: "plaintext"},
+  {config_input: {}, value: "<xmp>TEXT</xmp>", result: "TEXT", message: "xmp"},
   {config_input: {allowElements: ["template", "div"]}, value: "<template><script>test</script><div>hello</div></template>", result: "<template><div>hello</div></template>", message: "Template element"},
   {config_input: {}, value: "<a href='javascript:evil.com'>Click.</a>", result: "<a>Click.</a>", message: "HTMLAnchorElement with javascript protocal"},
   {config_input: {}, value: "<a href='  javascript:evil.com'>Click.</a>", result: "<a>Click.</a>", message: "HTMLAnchorElement with javascript protocal start with space"},

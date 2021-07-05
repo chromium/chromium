@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
-Found 68 tests; 61 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 tests; 67 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI sanitize function without argument should throw an error.
 PASS SanitizerAPI sanitizeToString function for null.
-FAIL SanitizerAPI config: plaintext, sanitizeToString from string function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
-FAIL SanitizerAPI config: xmp, sanitizeToString from string function for xmp assert_equals: expected "" but got "TEXT"
+PASS SanitizerAPI config: plaintext, sanitizeToString from string function for plaintext
+PASS SanitizerAPI config: xmp, sanitizeToString from string function for xmp
 PASS SanitizerAPI config: Template element, sanitizeToString from string function for Template element
 PASS SanitizerAPI config: HTMLAnchorElement with javascript protocal, sanitizeToString from string function for HTMLAnchorElement with javascript protocal
 PASS SanitizerAPI config: HTMLAnchorElement with javascript protocal start with space, sanitizeToString from string function for HTMLAnchorElement with javascript protocal start with space
@@ -24,8 +24,8 @@ PASS SanitizerAPI config: malformed HTML, sanitizeToString from string function 
 PASS SanitizerAPI config: Regression test for WICG/sanitizer-api#84., sanitizeToString from string function for Regression test for WICG/sanitizer-api#84.
 PASS SanitizerAPI config: Regression test for WICG/sanitizer-api#85., sanitizeToString from string function for Regression test for WICG/sanitizer-api#85.
 PASS SanitizerAPI config: Regression test for WICG/sanitizer-api#86., sanitizeToString from string function for Regression test for WICG/sanitizer-api#86.
-FAIL SanitizerAPI with config: plaintext, sanitizeToString from document function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
-FAIL SanitizerAPI with config: xmp, sanitizeToString from document function for xmp assert_equals: expected "" but got "TEXT"
+PASS SanitizerAPI with config: plaintext, sanitizeToString from document function for plaintext
+PASS SanitizerAPI with config: xmp, sanitizeToString from document function for xmp
 PASS SanitizerAPI with config: Template element, sanitizeToString from document function for Template element
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitizeToString from document function for HTMLAnchorElement with javascript protocal
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitizeToString from document function for HTMLAnchorElement with javascript protocal start with space
@@ -46,8 +46,8 @@ FAIL SanitizerAPI with config: malformed HTML, sanitizeToString from document fu
 PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#84., sanitizeToString from document function for Regression test for WICG/sanitizer-api#84.
 PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#85., sanitizeToString from document function for Regression test for WICG/sanitizer-api#85.
 PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#86., sanitizeToString from document function for Regression test for WICG/sanitizer-api#86.
-FAIL SanitizerAPI with config: plaintext, sanitizeToString from document fragment function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
-FAIL SanitizerAPI with config: xmp, sanitizeToString from document fragment function for xmp assert_equals: expected "" but got "TEXT"
+PASS SanitizerAPI with config: plaintext, sanitizeToString from document fragment function for plaintext
+PASS SanitizerAPI with config: xmp, sanitizeToString from document fragment function for xmp
 PASS SanitizerAPI with config: Template element, sanitizeToString from document fragment function for Template element
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal, sanitizeToString from document fragment function for HTMLAnchorElement with javascript protocal
 PASS SanitizerAPI with config: HTMLAnchorElement with javascript protocal start with space, sanitizeToString from document fragment function for HTMLAnchorElement with javascript protocal start with space
