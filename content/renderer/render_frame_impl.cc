@@ -88,7 +88,6 @@
 #include "content/renderer/frame_owner_properties_converter.h"
 #include "content/renderer/gpu_benchmarking_extension.h"
 #include "content/renderer/internal_document_state_data.h"
-#include "content/renderer/loader/navigation_body_loader.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
 #include "content/renderer/mhtml_handle_writer.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
@@ -177,6 +176,7 @@
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
+#include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -2740,12 +2740,13 @@ void RenderFrameImpl::CommitNavigation(
                                             WebString::FromUTF8(mime_type),
                                             WebString::FromUTF8(charset), data);
   } else {
-    NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
+    blink::WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         std::move(common_params), std::move(commit_params), request_id,
         response_head.Clone(), std::move(response_body),
         std::move(url_loader_client_endpoints),
-        GetTaskRunner(blink::TaskType::kInternalLoading), this,
-        !frame_->Parent(), navigation_params.get());
+        GetTaskRunner(blink::TaskType::kInternalLoading),
+        CreateResourceLoadInfoNotifierWrapper(), !frame_->Parent(),
+        navigation_params.get());
   }
 
   FillNavigationParamsOriginPolicy(*response_head, navigation_params.get());

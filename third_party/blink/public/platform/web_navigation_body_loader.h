@@ -8,12 +8,18 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/network/public/mojom/url_loader.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 
 namespace blink {
+
+class ResourceLoadInfoNotifierWrapper;
+struct WebNavigationParams;
 
 // This class is used to load the body of main resource during navigation.
 // It is provided by the client which commits a navigation.
@@ -43,6 +49,21 @@ class BLINK_EXPORT WebNavigationBodyLoader {
         const absl::optional<WebURLError>& error) = 0;
   };
 
+  // This method fills navigation params related to the navigation request,
+  // redirects and response, and also creates a body loader if needed.
+  static void FillNavigationParamsResponseAndBodyLoader(
+      mojom::CommonNavigationParamsPtr common_params,
+      mojom::CommitNavigationParamsPtr commit_params,
+      int request_id,
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle response_body,
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      std::unique_ptr<ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper,
+      bool is_main_frame,
+      WebNavigationParams* navigation_params);
+
   // It should be safe to destroy WebNavigationBodyLoader at any moment,
   // including from inside any client notification.
   virtual ~WebNavigationBodyLoader() {}
@@ -54,9 +75,8 @@ class BLINK_EXPORT WebNavigationBodyLoader {
 
   // Starts loading the body. Client must be non-null, and will receive
   // the body, code cache and final result.
-  virtual void StartLoadingBody(
-      Client*,
-      blink::mojom::CodeCacheHost* code_cache_host) = 0;
+  virtual void StartLoadingBody(Client*,
+                                mojom::CodeCacheHost* code_cache_host) = 0;
 };
 
 }  // namespace blink

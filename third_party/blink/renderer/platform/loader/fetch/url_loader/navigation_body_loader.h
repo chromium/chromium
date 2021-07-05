@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_LOADER_NAVIGATION_BODY_LOADER_H_
-#define CONTENT_RENDERER_LOADER_NAVIGATION_BODY_LOADER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_NAVIGATION_BODY_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_NAVIGATION_BODY_LOADER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,20 +25,15 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
-
-namespace blink {
-class ResourceLoadInfoNotifierWrapper;
-class WebCodeCacheLoader;
-struct WebNavigationParams;
-}  // namespace blink
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace network {
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
-namespace content {
+namespace blink {
 
-class RenderFrameImpl;
+class WebCodeCacheLoader;
 
 // Navigation request is started in the browser process, and all redirects
 // and final response are received there. Then we pass URLLoader and
@@ -48,23 +42,18 @@ class RenderFrameImpl;
 // metadata, and dispatches them to Blink. It also ensures that completion
 // status comes to Blink after the whole body was read and cached code metadata
 // was received.
-class CONTENT_EXPORT NavigationBodyLoader
-    : public blink::WebNavigationBodyLoader,
-      public network::mojom::URLLoaderClient {
+class NavigationBodyLoader : public WebNavigationBodyLoader,
+                             public network::mojom::URLLoaderClient {
  public:
-  // This method fills navigation params related to the navigation request,
-  // redirects and response, and also creates a body loader if needed.
-  static void FillNavigationParamsResponseAndBodyLoader(
-      blink::mojom::CommonNavigationParamsPtr common_params,
-      blink::mojom::CommitNavigationParamsPtr commit_params,
-      int request_id,
+  NavigationBodyLoader(
+      const KURL& original_url,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      RenderFrameImpl* render_frame_impl,
-      bool is_main_frame,
-      blink::WebNavigationParams* navigation_params);
+      std::unique_ptr<ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper,
+      bool is_main_frame);
   ~NavigationBodyLoader() override;
 
  private:
@@ -97,22 +86,12 @@ class CONTENT_EXPORT NavigationBodyLoader
   // (512k for example).
   static constexpr uint32_t kMaxNumConsumedBytesInTask = 64 * 1024;
 
-  NavigationBodyLoader(
-      const GURL& original_url,
-      network::mojom::URLResponseHeadPtr response_head,
-      mojo::ScopedDataPipeConsumerHandle response_body,
-      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper,
-      bool is_main_frame);
-
-  // blink::WebNavigationBodyLoader
-  void SetDefersLoading(blink::WebLoaderFreezeMode mode) override;
+  // WebNavigationBodyLoader implementation.
+  void SetDefersLoading(WebLoaderFreezeMode mode) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client* client,
-                        blink::mojom::CodeCacheHost* code_cache_host) override;
+                        mojom::CodeCacheHost* code_cache_host) override;
 
-  // network::mojom::URLLoaderClient
+  // network::mojom::URLLoaderClient implementation.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
@@ -141,6 +120,9 @@ class CONTENT_EXPORT NavigationBodyLoader
   void NotifyCompletionIfAppropriate();
   void BindURLLoaderAndStartLoadingResponseBodyIfPossible();
 
+  NavigationBodyLoader& operator=(const NavigationBodyLoader&) = delete;
+  NavigationBodyLoader(const NavigationBodyLoader&) = delete;
+
   // Navigation parameters.
   network::mojom::URLResponseHeadPtr response_head_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
@@ -158,10 +140,10 @@ class CONTENT_EXPORT NavigationBodyLoader
   mojo::SimpleWatcher handle_watcher_;
 
   // This loader is live while retrieving the code cache.
-  std::unique_ptr<blink::WebCodeCacheLoader> code_cache_loader_;
+  std::unique_ptr<WebCodeCacheLoader> code_cache_loader_;
 
   // Used to notify the navigation loading stats.
-  std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+  std::unique_ptr<ResourceLoadInfoNotifierWrapper>
       resource_load_info_notifier_wrapper_;
 
   // The final status received from network or cancelation status if aborted.
@@ -176,7 +158,7 @@ class CONTENT_EXPORT NavigationBodyLoader
 
   // Frozen body loader does not send any notifications to the client
   // and tries not to read from the body pipe.
-  blink::WebLoaderFreezeMode freeze_mode_ = blink::WebLoaderFreezeMode::kNone;
+  WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
 
   // This protects against reentrancy into OnReadable,
   // which can happen due to nested message loop triggered
@@ -184,15 +166,13 @@ class CONTENT_EXPORT NavigationBodyLoader
   bool is_in_on_readable_ = false;
 
   // The original navigation url to start with.
-  const GURL original_url_;
+  const KURL original_url_;
 
   const bool is_main_frame_;
 
   base::WeakPtrFactory<NavigationBodyLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationBodyLoader);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_LOADER_NAVIGATION_BODY_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_NAVIGATION_BODY_LOADER_H_
