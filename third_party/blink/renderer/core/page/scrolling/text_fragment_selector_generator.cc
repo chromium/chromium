@@ -454,13 +454,17 @@ String TextFragmentSelectorGenerator::GetPreviousTextBlock(
   }
 
   // The furthest node within same block without crossing block boundaries would
-  // be the suffix end.
+  // be the prefix start.
   Node* prefix_start = LastVisibleTextNodeWithinBlock(prefix_end);
   if (!prefix_start)
     return "";
 
   auto range_start = Position(prefix_start, 0);
   auto range_end = Position(prefix_end, prefix_end_offset);
+  // TODO(gayane): Find test case when this happens, seems related to shadow
+  // root. See crbug.com/1220830
+  if (range_start >= range_end)
+    return "";
   return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
 }
 
@@ -469,7 +473,6 @@ String TextFragmentSelectorGenerator::GetNextTextBlock(
   Node* suffix_start = suffix_start_position.ComputeContainerNode();
   unsigned suffix_start_offset =
       suffix_start_position.ComputeOffsetInContainerNode();
-
   // If given position point to the last visible text in its containiner node,
   // use the following visible node for the suffix.
   if (IsLastVisiblePosition(suffix_start, suffix_start_offset)) {
@@ -488,6 +491,11 @@ String TextFragmentSelectorGenerator::GetNextTextBlock(
 
   auto range_start = Position(suffix_start, suffix_start_offset);
   auto range_end = Position(suffix_end, suffix_end->textContent().length());
+
+  // TODO(gayane): Find test case when this happens, seems related to shadow
+  // root. See crbug.com/1220830
+  if (range_start >= range_end)
+    return "";
   return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
 }
 
