@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+component("ui") {
+  output_name = "quick_pair_ui"
+
+  defines = [ "IS_QUICK_PAIR_UI_IMPL" ]
+
+  sources = [
+    "fast_pair/fast_pair_notification_controller.cc",
+    "fast_pair/fast_pair_notification_controller.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp:cpp",
+    "//ash/resources/vector_icons",
+    "//ash/strings",
+    "//base",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/message_center",
+  ]
+}

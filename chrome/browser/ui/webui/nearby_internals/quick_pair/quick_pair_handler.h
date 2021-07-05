@@ -5,17 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_QUICK_PAIR_QUICK_PAIR_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_QUICK_PAIR_QUICK_PAIR_HANDLER_H_
 
+#include "ash/quick_pair/common/log_buffer.h"
+#include "ash/quick_pair/common/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chromeos/components/quick_pair/common/log_buffer.h"
-#include "chromeos/components/quick_pair/common/logging.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // WebUIMessageHandler for the Quick Pair debug page at
 // chrome://nearby-internals
 class QuickPairHandler : public content::WebUIMessageHandler,
-                         public chromeos::quick_pair::LogBuffer::Observer {
+                         public ash::quick_pair::LogBuffer::Observer {
  public:
   QuickPairHandler();
   QuickPairHandler(const QuickPairHandler&) = delete;
@@ -30,7 +30,7 @@ class QuickPairHandler : public content::WebUIMessageHandler,
  private:
   // LogBuffer::Observer
   void OnLogMessageAdded(
-      const chromeos::quick_pair::LogBuffer::LogMessage& log_message) override;
+      const ash::quick_pair::LogBuffer::LogMessage& log_message) override;
   void OnLogBufferCleared() override;
 
   // Message handler callback that returns the Log Buffer in dictionary form.
@@ -44,8 +44,8 @@ class QuickPairHandler : public content::WebUIMessageHandler,
   void NotifyFastPairDiscovery(const base::ListValue* args);
   void NotifyFastPairPairing(const base::ListValue* args);
 
-  base::ScopedObservation<chromeos::quick_pair::LogBuffer,
-                          chromeos::quick_pair::LogBuffer::Observer>
+  base::ScopedObservation<ash::quick_pair::LogBuffer,
+                          ash::quick_pair::LogBuffer::Observer>
       observation_{this};
   base::WeakPtrFactory<QuickPairHandler> weak_ptr_factory_{this};
 };

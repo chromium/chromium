@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/values.h"
-#include "chromeos/components/quick_pair/common/logging.h"
 
 namespace {
 // Keys in the JSON representation of a log message
@@ -20,7 +19,7 @@ const char kLogMessageSeverityKey[] = "severity";
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
 base::Value LogMessageToDictionary(
-    const chromeos::quick_pair::LogBuffer::LogMessage& log_message) {
+    const ash::quick_pair::LogBuffer::LogMessage& log_message) {
   base::Value dictionary(base::Value::Type::DICTIONARY);
   dictionary.SetStringKey(kLogMessageTextKey, log_message.text);
   dictionary.SetStringKey(
@@ -57,7 +56,7 @@ void QuickPairHandler::RegisterMessages() {
 }
 
 void QuickPairHandler::OnJavascriptAllowed() {
-  observation_.Observe(chromeos::quick_pair::LogBuffer::GetInstance());
+  observation_.Observe(ash::quick_pair::LogBuffer::GetInstance());
 }
 
 void QuickPairHandler::OnJavascriptDisallowed() {
@@ -68,8 +67,7 @@ void QuickPairHandler::HandleGetLogMessages(const base::ListValue* args) {
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
   base::Value list(base::Value::Type::LIST);
-  for (const auto& log :
-       *chromeos::quick_pair::LogBuffer::GetInstance()->logs()) {
+  for (const auto& log : *ash::quick_pair::LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
   }
   ResolveJavascriptCallback(callback_id, list);
@@ -80,7 +78,7 @@ void QuickPairHandler::OnLogBufferCleared() {
 }
 
 void QuickPairHandler::OnLogMessageAdded(
-    const chromeos::quick_pair::LogBuffer::LogMessage& log_message) {
+    const ash::quick_pair::LogBuffer::LogMessage& log_message) {
   FireWebUIListener("quick-pair-log-message-added",
                     LogMessageToDictionary(log_message));
 }
