@@ -270,6 +270,76 @@ DOMArrayBuffer* NativeValueTraits<IDLNullable<DOMArrayBuffer>>::ArgumentValue(
   return nullptr;
 }
 
+// SharedArrayBuffer
+
+DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  DOMSharedArrayBuffer* shared_array_buffer =
+      ToDOMSharedArrayBuffer(isolate, value);
+  if (LIKELY(shared_array_buffer))
+    return shared_array_buffer;
+
+  exception_state.ThrowTypeError(
+      ExceptionMessages::FailedToConvertJSValue("SharedArrayBuffer"));
+  return nullptr;
+}
+
+DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::ArgumentValue(
+    v8::Isolate* isolate,
+    int argument_index,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  DOMSharedArrayBuffer* shared_array_buffer =
+      ToDOMSharedArrayBuffer(isolate, value);
+  if (LIKELY(shared_array_buffer))
+    return shared_array_buffer;
+
+  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
+      argument_index, "SharedArrayBuffer"));
+  return nullptr;
+}
+
+// Nullable SharedArrayBuffer
+
+DOMSharedArrayBuffer*
+NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::NativeValue(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  DOMSharedArrayBuffer* shared_array_buffer =
+      ToDOMSharedArrayBuffer(isolate, value);
+  if (LIKELY(shared_array_buffer))
+    return shared_array_buffer;
+
+  if (LIKELY(value->IsNullOrUndefined()))
+    return nullptr;
+
+  exception_state.ThrowTypeError(
+      ExceptionMessages::FailedToConvertJSValue("SharedArrayBuffer"));
+  return nullptr;
+}
+
+DOMSharedArrayBuffer*
+NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::ArgumentValue(
+    v8::Isolate* isolate,
+    int argument_index,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  DOMSharedArrayBuffer* shared_array_buffer =
+      ToDOMSharedArrayBuffer(isolate, value);
+  if (LIKELY(shared_array_buffer))
+    return shared_array_buffer;
+
+  if (LIKELY(value->IsNullOrUndefined()))
+    return nullptr;
+
+  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
+      argument_index, "SharedArrayBuffer"));
+  return nullptr;
+}
+
 // ArrayBufferView
 
 template <typename T>
@@ -469,7 +539,7 @@ T NativeValueTraits<T,
   return T();
 }
 
-// IDLNullable [AllowShared, FlexibleArrayBufferView] ArrayBufferView
+// Nullable [AllowShared, FlexibleArrayBufferView] ArrayBufferView
 
 template <typename T>
 T NativeValueTraits<IDLNullable<T>,

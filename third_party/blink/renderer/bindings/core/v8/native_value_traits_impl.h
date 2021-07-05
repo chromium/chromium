@@ -662,6 +662,60 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<DOMArrayBuffer>>
                                        ExceptionState& exception_state);
 };
 
+template <>
+struct CORE_EXPORT NativeValueTraits<DOMSharedArrayBuffer>
+    : public NativeValueTraitsBase<DOMSharedArrayBuffer*> {
+  static DOMSharedArrayBuffer* NativeValue(v8::Isolate* isolate,
+                                           v8::Local<v8::Value> value,
+                                           ExceptionState& exception_state);
+
+  static DOMSharedArrayBuffer* ArgumentValue(v8::Isolate* isolate,
+                                             int argument_index,
+                                             v8::Local<v8::Value> value,
+                                             ExceptionState& exception_state);
+};
+
+template <>
+struct CORE_EXPORT NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>
+    : public NativeValueTraitsBase<DOMSharedArrayBuffer*> {
+  static DOMSharedArrayBuffer* NativeValue(v8::Isolate* isolate,
+                                           v8::Local<v8::Value> value,
+                                           ExceptionState& exception_state);
+
+  static DOMSharedArrayBuffer* ArgumentValue(v8::Isolate* isolate,
+                                             int argument_index,
+                                             v8::Local<v8::Value> value,
+                                             ExceptionState& exception_state);
+};
+
+template <typename T>
+struct NativeValueTraits<
+    T,
+    typename std::enable_if_t<std::is_base_of<DOMArrayBufferView, T>::value>> {
+  // NotShared<T> or MaybeShared<T> should be used instead.
+  static T* NativeValue(v8::Isolate* isolate,
+                        v8::Local<v8::Value> value,
+                        ExceptionState& exception_state) = delete;
+  static T* ArgumentValue(v8::Isolate* isolate,
+                          int argument_index,
+                          v8::Local<v8::Value> value,
+                          ExceptionState& exception_state) = delete;
+};
+
+template <typename T>
+struct NativeValueTraits<
+    IDLNullable<T>,
+    typename std::enable_if_t<std::is_base_of<DOMArrayBufferView, T>::value>> {
+  // NotShared<T> or MaybeShared<T> should be used instead.
+  static T* NativeValue(v8::Isolate* isolate,
+                        v8::Local<v8::Value> value,
+                        ExceptionState& exception_state) = delete;
+  static T* ArgumentValue(v8::Isolate* isolate,
+                          int argument_index,
+                          v8::Local<v8::Value> value,
+                          ExceptionState& exception_state) = delete;
+};
+
 template <typename T>
 struct NativeValueTraits<
     NotShared<T>,
