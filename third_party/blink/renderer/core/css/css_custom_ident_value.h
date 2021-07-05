@@ -17,7 +17,7 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
   explicit CSSCustomIdentValue(const AtomicString&);
   explicit CSSCustomIdentValue(CSSPropertyID);
 
-  AtomicString Value() const {
+  const AtomicString& Value() const {
     DCHECK(!IsKnownPropertyID());
     return string_;
   }
