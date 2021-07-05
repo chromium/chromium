@@ -70,7 +70,6 @@ static_library("test_support") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -101,6 +100,7 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
       ]
       deps = [
         ":test_support",
+        "//extensions/browser/api/messaging:native_messaging",
         "//mojo/core/embedder",
         "//remoting/base",
         "//remoting/base:authorization",

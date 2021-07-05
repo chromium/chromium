@@ -74,7 +74,6 @@ no_check_targets = [
   "//remoting/host/win:*",  # 43 errors
   "//remoting/ios/app/settings:*",  # 6 errors
   "//remoting/protocol:*",  # 3 errors
-  "//remoting/test:*",  # 2 error
   "//sandbox/win:*",  # 7 errors
 
   "//third_party/icu/*",
