@@ -376,7 +376,7 @@ class LocalDeviceInstrumentationTestRun(
 
       steps += [
           set_debug_app, edit_shared_prefs, push_test_data, create_flag_changer,
-          set_vega_permissions
+          set_vega_permissions, DismissCrashDialogs
       ]
 
       def bind_crash_handler(step, dev):
