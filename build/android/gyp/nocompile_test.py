@@ -50,17 +50,22 @@ def _run_command(args, cwd=None):
     _raise_command_exception(args, p.returncode, pout)
 
 
-def _run_command_get_output(args, success_output):
-  """Runs shell command and returns command output."""
+def _run_command_get_failure_output(args):
+  """Runs shell command.
+
+  Returns:
+      Command output if command fails, None if command succeeds.
+  """
   p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   pout, _ = p.communicate()
+
   if p.returncode == 0:
-    return success_output
+    return None
 
   # For Python3 only:
   if isinstance(pout, bytes) and sys.version_info >= (3, ):
     pout = pout.decode('utf-8')
-  return pout
+  return '' if pout is None else pout
 
 
 def _copy_and_append_gn_args(src_args_path, dest_args_path, extra_args):
@@ -93,6 +98,9 @@ def _find_regex_in_test_failure_output(test_output, regex):
       Otherwise:
         the entire test output after the 'FAILED' message is searched.
   """
+  if test_output is None:
+    return False
+
   failed_index = test_output.find('FAILED')
   if failed_index < 0:
     return False
@@ -109,6 +117,22 @@ def _search_regex_in_list(value, regex):
     if re.search(regex, line):
       return True
   return False
+
+
+def _do_build_get_failure_output(gn_path, gn_cmd, options):
+  # Extract directory from test target. As all of the test targets are declared
+  # in the same BUILD.gn file, it does not matter which test target is used.
+  target_dir = gn_path.rsplit(':', 1)[0]
+
+  if gn_cmd is not None:
+    gn_args = [
+        _GN_SRC_REL_PATH, '--root-target=' + target_dir, gn_cmd,
+        os.path.relpath(options.out_dir, _CHROMIUM_SRC)
+    ]
+    _run_command(gn_args, cwd=_CHROMIUM_SRC)
+
+  ninja_args = [_NINJA_PATH, '-C', options.out_dir, gn_path]
+  return _run_command_get_failure_output(ninja_args)
 
 
 def main():
@@ -144,37 +168,34 @@ def main():
   _copy_and_append_gn_args(options.gn_args_path, out_gn_args_path,
                            extra_gn_args)
 
-  # Extract directory from test target. As all of the test targets are declared
-  # in the same BUILD.gn file, it does not matter which test target is used.
-  target0_dir = test_configs[0]['target'].rsplit(':', 1)[0]
-  gn_args = [
-      _GN_SRC_REL_PATH, '--root-target=' + target0_dir, 'gen',
-      os.path.relpath(options.out_dir, _CHROMIUM_SRC)
-  ]
-
   ran_gn_gen = False
+  did_clean_build = False
   error_messages = []
   for config in test_configs:
     # Strip leading '//'
     gn_path = config['target'][2:]
     expect_regex = config['expect_regex']
-    ninja_args = [_NINJA_PATH, '-C', options.out_dir, gn_path]
 
-    # Purpose of quotes at beginning of message is to make it clear that
-    # "Compile successful." is not a compiler log message.
-    test_output = _run_command_get_output(ninja_args, '""\nCompile successful.')
+    test_output = _do_build_get_failure_output(gn_path, None, options)
 
     # 'gn gen' takes > 1s to run. Only run 'gn gen' if it is needed for compile.
-    if _search_regex_in_list(test_output.split('\n'), _GN_GEN_REGEX):
+    if (test_output
+        and _search_regex_in_list(test_output.split('\n'), _GN_GEN_REGEX)):
       assert not ran_gn_gen
       ran_gn_gen = True
-      _run_command(gn_args, cwd=_CHROMIUM_SRC)
+      test_output = _do_build_get_failure_output(gn_path, 'gen', options)
 
-      # Redo compile.
-      test_output = _run_command_get_output(ninja_args,
-                                            '""\nCompile successful.')
+    if (not _find_regex_in_test_failure_output(test_output, expect_regex)
+        and not did_clean_build):
+      # Ensure the failure is not due to incremental build.
+      did_clean_build = True
+      test_output = _do_build_get_failure_output(gn_path, 'clean', options)
 
     if not _find_regex_in_test_failure_output(test_output, expect_regex):
+      if test_output is None:
+        # Purpose of quotes at beginning of message is to make it clear that
+        # "Compile successful." is not a compiler log message.
+        test_output = '""\nCompile successful.'
       error_message = '//{} failed.\nExpected compile output pattern:\n'\
           '{}\nActual compile output:\n{}'.format(
               gn_path, expect_regex, test_output)
