@@ -5,37 +5,20 @@
 #include "chromeos/components/help_app_ui/test/help_app_ui_browsertest.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/path_service.h"
-#include "chromeos/components/help_app_ui/help_app_ui.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 
-// Path to test files loaded via the TestFileRequestFilter.
-constexpr base::FilePath::CharType kTestFileLocation[] =
-    FILE_PATH_LITERAL("chromeos/components/help_app_ui/test");
+constexpr base::FilePath::CharType kHelpAppGuestTestApi[] = FILE_PATH_LITERAL(
+    "chromeos/components/help_app_ui/test/guest_query_receiver.js");
 
 // Test cases that run in the guest context.
-constexpr char kGuestTestCases[] = "help_app_guest_ui_browsertest.js";
-
-// Paths requested on the media-app origin that should be delivered by the test
-// handler.
-constexpr const char* kTestFiles[] = {
-    kGuestTestCases,
-    "help_app_ui_browsertest.js",
-    "driver.js",
-    "guest_query_receiver.js",
-};
+constexpr base::FilePath::CharType kGuestTestCases[] = FILE_PATH_LITERAL(
+    "chromeos/components/help_app_ui/test/help_app_guest_ui_browsertest.js");
 
 HelpAppUiBrowserTest::HelpAppUiBrowserTest()
     : SandboxedWebUiAppTestBase(chromeos::kChromeUIHelpAppURL,
                                 chromeos::kChromeUIHelpAppUntrustedURL,
-                                {},
-                                kGuestTestCases) {
-  ConfigureDefaultTestRequestHandler(
-      base::FilePath(kTestFileLocation),
-      {std::begin(kTestFiles), std::end(kTestFiles)});
-}
+                                {base::FilePath(kHelpAppGuestTestApi),
+                                 base::FilePath(kGuestTestCases)}) {}
 
 HelpAppUiBrowserTest::~HelpAppUiBrowserTest() = default;

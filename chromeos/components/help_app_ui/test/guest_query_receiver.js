@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TEST_ONLY} from './receiver.js';
-
-const {parentMessagePipe} = TEST_ONLY;
-
 /**
  * Test cases registered by GUEST_TEST.
  * @type {!Map<string, function(): Promise<undefined>>}
@@ -32,7 +28,7 @@ async function runTestCase(data) {
  * @param {!string} testName
  * @param {!function(): Promise<undefined>} testCase
  */
-export function GUEST_TEST(testName, testCase) {
+function GUEST_TEST(testName, testCase) {
   guestTestCases.set(testName, testCase);
 }
 
@@ -45,23 +41,18 @@ export function GUEST_TEST(testName, testCase) {
  */
 async function signalTestHandlersReady() {
   const EXPECTED_ERROR =
-      /No handler registered for message type 'test-handlers-ready'/;
-  // Attempt to signal to the driver that we are ready to run tests, give up
-  // after 10 tries and assume something went wrong so we don't spam the error
-  // log too much.
-  let attempts = 10;
-  while (--attempts >= 0) {
+      `No handler registered for message type 'test-handlers-ready'`;
+  while (true) {
     try {
       await parentMessagePipe.sendMessage('test-handlers-ready', {});
       return;
     } catch (/** @type {!GenericErrorResponse} */ e) {
-      if (!EXPECTED_ERROR.test(e.message)) {
+      if (e.message !== EXPECTED_ERROR) {
         console.error('Unexpected error in signalTestHandlersReady', e);
         return;
       }
     }
   }
-  console.error('signalTestHandlersReady failed to signal.');
 }
 
 /** Installs the MessagePipe handlers for receiving test queries. */
@@ -89,3 +80,5 @@ if (document.readyState !== 'complete') {
 } else {
   installTestHandlers();
 }
+
+//# sourceURL=guest_query_receiver.js
