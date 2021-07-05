@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
