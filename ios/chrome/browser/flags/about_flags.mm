@@ -501,7 +501,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"force-startup-signin-promo",
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(signin::kForceStartupSigninPromo)},
+     FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
     {"restore-session-from-cache",
      flag_descriptions::kRestoreSessionFromCacheName,
      flag_descriptions::kRestoreSessionFromCacheDescription, flags_ui::kOsIos,

@@ -356,6 +356,7 @@ public abstract class ChromeFeatureList {
     public static final String FORCE_APP_LANGUAGE_PROMPT = "ForceAppLanguagePrompt";
     public static final String FORCE_DISABLE_EXTENDED_SYNC_PROMOS =
             "ForceDisableExtendedSyncPromos";
+    public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
     public static final String GRANT_NOTIFICATIONS_TO_DSE = "GrantNotificationsToDSE";
     public static final String HANDLE_MEDIA_INTENTS = "HandleMediaIntents";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";

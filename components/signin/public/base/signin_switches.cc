@@ -37,6 +37,11 @@ const base::Feature kUseAccountManagerFacade{"kUseAccountManagerFacade",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_ANDROID) || defined(OS_IOS)
+const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 const base::Feature kMinorModeSupport{"MinorModeSupport",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 

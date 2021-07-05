@@ -313,6 +313,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &signin::kMobileIdentityConsistencyFRE,
     &signin::kMobileIdentityConsistencyPromos,
     &switches::kDeprecateMenagerieAPI,
+    &switches::kForceStartupSigninPromo,
     &switches::kWipeDataOnChildAccountSignin,
     &switches::kDecoupleSyncFromAndroidMasterSync,
     &switches::kForceDisableExtendedSyncPromos,

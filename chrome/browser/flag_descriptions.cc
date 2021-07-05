@@ -110,6 +110,11 @@ const char kDeprecateMenagerieAPIDescription[] =
     "If enabled, the legacy Menagerie API for profile data will be replaced by "
     "the new profile data source";
 
+const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
+const char kForceStartupSigninPromoDescription[] =
+    "If enabled, the full screen signin promo will be forced to show up at "
+    "Chrome start-up.";
+
 const char kDebugHistoryInterventionNoUserActivationName[] =
     "Debug flag for history intervention on no user activation";
 const char kDebugHistoryInterventionNoUserActivationDescription[] =

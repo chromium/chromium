@@ -41,6 +41,24 @@ public final class SigninPromoUtil {
             SyncConsentActivityLauncher syncConsentActivityLauncher,
             final int currentMajorVersion) {
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
+        if (shouldLaunchSigninPromo(prefManager, currentMajorVersion)) {
+            syncConsentActivityLauncher.launchActivityIfAllowed(
+                    context, SigninAccessPoint.SIGNIN_PROMO);
+            prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
+            final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
+                    AccountManagerFacadeProvider.getInstance().getAccounts());
+            prefManager.setSigninPromoLastAccountNames(
+                    new HashSet<>(AccountUtils.toAccountNames(accounts)));
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean shouldLaunchSigninPromo(
+            SigninPreferencesManager prefManager, final int currentMajorVersion) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
+            return true;
+        }
         final int lastPromoMajorVersion = prefManager.getSigninPromoLastShownVersion();
         if (lastPromoMajorVersion == 0) {
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
@@ -87,15 +105,8 @@ public final class SigninPromoUtil {
 
         final List<String> currentAccountNames = AccountUtils.toAccountNames(accounts);
         final Set<String> previousAccountNames = prefManager.getSigninPromoLastAccountNames();
-        if (previousAccountNames != null && previousAccountNames.containsAll(currentAccountNames)) {
-            // Don't show if no new accounts have been added after the last time promo was shown.
-            return false;
-        }
-
-        syncConsentActivityLauncher.launchActivityIfAllowed(
-                context, SigninAccessPoint.SIGNIN_PROMO);
-        prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
-        prefManager.setSigninPromoLastAccountNames(new HashSet<>(currentAccountNames));
-        return true;
+        // Don't show if no new accounts have been added after the last time promo was shown.
+        return previousAccountNames == null
+                || !previousAccountNames.containsAll(currentAccountNames);
     }
 }

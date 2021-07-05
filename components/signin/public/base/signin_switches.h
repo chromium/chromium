@@ -38,6 +38,11 @@ extern const base::Feature kWipeDataOnChildAccountSignin;
 extern const base::Feature kUseAccountManagerFacade;
 #endif
 
+#if defined(OS_ANDROID) || defined(OS_IOS)
+// Features to trigger the startup sign-in promo at boot.
+extern const base::Feature kForceStartupSigninPromo;
+#endif
+
 // Support for the minor mode.
 extern const base::Feature kMinorModeSupport;
 

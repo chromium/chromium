@@ -48224,6 +48224,7 @@ from previous Chrome versions.
   <int value="-273821346"
       label="MaintainShelfStateWhenEnteringOverview:disabled"/>
   <int value="-273570157" label="EnableBloom:enabled"/>
+  <int value="-272266925" label="ForceStartupSigninPromo:enabled"/>
   <int value="-271790049" label="ArcUsbHost:enabled"/>
   <int value="-271084069" label="ClickToCallUI:enabled"/>
   <int value="-270626757" label="log-net-log"/>
@@ -48343,6 +48344,7 @@ from previous Chrome versions.
   <int value="-165006916" label="EnableNeuralPalmDetectionFilter:enabled"/>
   <int value="-164539906"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:disabled"/>
+  <int value="-162928621" label="ForceStartupSigninPromo:disabled"/>
   <int value="-161782023" label="AndroidMessagesProdEndpoint:enabled"/>
   <int value="-160571071" label="InterestFeedV2:enabled"/>
   <int value="-159877930" label="MaterialDesignUserManager:disabled"/>

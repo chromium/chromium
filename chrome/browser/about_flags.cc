@@ -5392,6 +5392,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMobileIdentityConsistencyFREName,
      flag_descriptions::kMobileIdentityConsistencyFREDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(signin::kMobileIdentityConsistencyFRE)},
+    {"force-startup-signin-promo",
+     flag_descriptions::kForceStartupSigninPromoName,
+     flag_descriptions::kForceStartupSigninPromoDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kForceStartupSigninPromo)},
 #endif  // defined(OS_ANDROID)
 
     {"autofill-use-improved-label-disambiguation",

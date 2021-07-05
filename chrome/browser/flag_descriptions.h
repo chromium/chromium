@@ -102,6 +102,9 @@ extern const char kDebugHistoryInterventionNoUserActivationDescription[];
 extern const char kDeprecateMenagerieAPIName[];
 extern const char kDeprecateMenagerieAPIDescription[];
 
+extern const char kForceStartupSigninPromoName[];
+extern const char kForceStartupSigninPromoDescription[];
+
 extern const char kDetectedSourceLanguageOptionName[];
 extern const char kDetectedSourceLanguageOptionDescription[];
 

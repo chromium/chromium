@@ -55,7 +55,8 @@ import java.util.Set;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.MINOR_MODE_SUPPORT})
-@Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS})
+@Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
+        ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO})
 public class SigninPromoUtilLaunchSigninPromoTest {
     private static final int CURRENT_MAJOR_VERSION = 42;
     @Rule
@@ -127,6 +128,14 @@ public class SigninPromoUtilLaunchSigninPromoTest {
         verify(mFakeAccountManagerFacade, never()).getAccounts();
     }
 
+    @Features.EnableFeatures({ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO})
+    @Test
+    public void promoVisibleWhenForcingSigninPromoAtStartup() {
+        Assert.assertTrue(SigninPromoUtil.launchSigninPromoIfNeeded(
+                mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+        verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
+    }
+
     @Test
     public void whenSignedInShouldReturnFalse() {
         final CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.toCoreAccountInfo(
@@ -175,7 +184,6 @@ public class SigninPromoUtilLaunchSigninPromoTest {
         // Old implementation hasn't been storing account list
         Assert.assertTrue(SigninPromoUtil.launchSigninPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade).getAccounts();
         verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(mPrefManager.getSigninPromoLastAccountNames().toArray(),
@@ -190,7 +198,6 @@ public class SigninPromoUtilLaunchSigninPromoTest {
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
         Assert.assertTrue(SigninPromoUtil.launchSigninPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade).getAccounts();
         verify(mLauncherMock).launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountNames().size());
