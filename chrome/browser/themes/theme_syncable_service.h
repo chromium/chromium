@@ -46,7 +46,8 @@ class ThemeSyncableService : public syncer::SyncableService,
   class Observer : public base::CheckedObserver {
    public:
     // Called when theme sync gets started. Observers that register after theme
-    // sync gets started are called right away when they register.
+    // sync gets started are never called, they should check
+    // GetThemeSyncStartState() before registering, instead.
     virtual void OnThemeSyncStarted(ThemeSyncState state) = 0;
   };
 
@@ -63,6 +64,9 @@ class ThemeSyncableService : public syncer::SyncableService,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   void NotifyOnSyncStartedForTesting(ThemeSyncState startup_state);
+
+  // Returns the theme sync startup state or nullopt if it has not started yet.
+  absl::optional<ThemeSyncState> GetThemeSyncStartState();
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
@@ -111,7 +115,7 @@ class ThemeSyncableService : public syncer::SyncableService,
       syncer::SyncChange::SyncChangeType change_type,
       const sync_pb::ThemeSpecifics& theme_specifics);
 
-  void NotifyOnSyncStarted();
+  void NotifyOnSyncStarted(ThemeSyncState startup_state);
 
   Profile* const profile_;
   ThemeService* const theme_service_;
@@ -126,8 +130,7 @@ class ThemeSyncableService : public syncer::SyncableService,
   bool use_system_theme_by_default_;
 
   // Captures the state of theme sync after initial data merge.
-  ThemeSyncState startup_state_ = ThemeSyncState::kFailed;
-  bool sync_started_for_testing_ = false;
+  absl::optional<ThemeSyncState> startup_state_;
 
   base::ThreadChecker thread_checker_;
 

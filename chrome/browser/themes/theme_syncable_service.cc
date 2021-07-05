@@ -66,8 +66,6 @@ void ThemeSyncableService::OnThemeChanged() {
 void ThemeSyncableService::AddObserver(
     ThemeSyncableService::Observer* observer) {
   observer_list_.AddObserver(observer);
-  if (sync_processor_ || sync_started_for_testing_)
-    observer->OnThemeSyncStarted(startup_state_);
 }
 
 void ThemeSyncableService::RemoveObserver(
@@ -77,9 +75,12 @@ void ThemeSyncableService::RemoveObserver(
 
 void ThemeSyncableService::NotifyOnSyncStartedForTesting(
     ThemeSyncState startup_state) {
-  startup_state_ = startup_state;
-  sync_started_for_testing_ = true;
-  NotifyOnSyncStarted();
+  NotifyOnSyncStarted(startup_state);
+}
+
+absl::optional<ThemeSyncableService::ThemeSyncState>
+ThemeSyncableService::GetThemeSyncStartState() {
+  return startup_state_;
 }
 
 void ThemeSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
@@ -112,7 +113,7 @@ ThemeSyncableService::MergeDataAndStartSyncing(
   if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
     // Current theme is unsyncable - don't overwrite from sync data, and don't
     // save the unsyncable theme to sync data.
-    NotifyOnSyncStarted();
+    NotifyOnSyncStarted(ThemeSyncState::kFailed);
     return absl::nullopt;
   }
 
@@ -124,8 +125,9 @@ ThemeSyncableService::MergeDataAndStartSyncing(
     if (sync_data->GetSpecifics().has_theme()) {
       if (!HasNonDefaultTheme(current_specifics) ||
           HasNonDefaultTheme(sync_data->GetSpecifics().theme())) {
-        startup_state_ = MaybeSetTheme(current_specifics, *sync_data);
-        NotifyOnSyncStarted();
+        ThemeSyncState startup_state =
+            MaybeSetTheme(current_specifics, *sync_data);
+        NotifyOnSyncStarted(startup_state);
         return absl::nullopt;
       }
     }
@@ -134,8 +136,7 @@ ThemeSyncableService::MergeDataAndStartSyncing(
   // No theme specifics are found. Create one according to current theme.
   absl::optional<syncer::ModelError> error =
       ProcessNewTheme(syncer::SyncChange::ACTION_ADD, current_specifics);
-  startup_state_ = ThemeSyncState::kApplied;
-  NotifyOnSyncStarted();
+  NotifyOnSyncStarted(ThemeSyncState::kApplied);
   return error;
 }
 
@@ -411,7 +412,10 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
   return sync_processor_->ProcessSyncChanges(FROM_HERE, changes);
 }
 
-void ThemeSyncableService::NotifyOnSyncStarted() {
+void ThemeSyncableService::NotifyOnSyncStarted(ThemeSyncState startup_state) {
+  // Keep the state for later calls to GetThemeSyncStartState().
+  startup_state_ = startup_state;
+
   for (Observer& observer : observer_list_)
-    observer.OnThemeSyncStarted(startup_state_);
+    observer.OnThemeSyncStarted(startup_state);
 }
