@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -92,4 +93,40 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
       }));
 
   CloseBrowserSynchronously(GetIncognitoBrowser());
+}
+
+class IncognitoClearBrowsingDataTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  IncognitoClearBrowsingDataTest() {
+    feature_list_.InitWithFeatureState(
+        features::kIncognitoClearBrowsingDataDialogForDesktop, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(IncognitoClearBrowsingDataTestWithFeatureFlag,
+                         IncognitoClearBrowsingDataTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(IncognitoClearBrowsingDataTest,
+                       ClearBrowsingDataNavigationInIncognito) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  ui_test_utils::SendToOmniboxAndSubmit(incognito_browser,
+                                        "chrome://settings/clearBrowserData");
+  std::u16string current_tab_title;
+
+  if (GetParam()) {
+    ui_test_utils::GetCurrentTabTitle(incognito_browser, &current_tab_title);
+    EXPECT_EQ(u"about:blank", current_tab_title);
+    ASSERT_TRUE(IncognitoClearBrowsingDataDialog::IsShowing());
+  } else {
+    // Should open the clear browsing data dialog in regular browser.
+    ui_test_utils::GetCurrentTabTitle(browser(), &current_tab_title);
+    EXPECT_EQ(u"chrome://settings/clearBrowserData", current_tab_title);
+    ASSERT_FALSE(IncognitoClearBrowsingDataDialog::IsShowing());
+  }
 }

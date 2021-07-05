@@ -83,6 +83,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/content_restriction.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -613,6 +614,11 @@ void OpenCurrentURL(Browser* browser) {
     return;
 
   GURL url(location_bar->GetDestinationURL());
+
+  if (ShouldInterceptChromeURLNavigationInIncognito(browser, url)) {
+    ProcessInterceptedChromeURLNavigationInIncognito(browser, url);
+    return;
+  }
 
   NavigateParams params(browser, url, location_bar->GetPageTransition());
   params.disposition = location_bar->GetWindowOpenDisposition();
@@ -1746,6 +1752,26 @@ absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
 
 void ShowIncognitoClearBrowsingDataDialog(Browser* browser) {
   browser->window()->ShowIncognitoClearBrowsingDataDialog();
+}
+
+bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
+                                                   const GURL& url) {
+  if (!browser || !browser->profile()->IsIncognitoProfile())
+    return false;
+
+  return url == GURL(chrome::kChromeUISettingsURL)
+                    .Resolve(chrome::kClearBrowserDataSubPage) &&
+         base::FeatureList::IsEnabled(
+             features::kIncognitoClearBrowsingDataDialogForDesktop);
+}
+
+void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
+                                                      const GURL& url) {
+  DCHECK(url == GURL(chrome::kChromeUISettingsURL)
+                    .Resolve(chrome::kClearBrowserDataSubPage));
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kIncognitoClearBrowsingDataDialogForDesktop));
+  ShowIncognitoClearBrowsingDataDialog(browser);
 }
 
 }  // namespace chrome
