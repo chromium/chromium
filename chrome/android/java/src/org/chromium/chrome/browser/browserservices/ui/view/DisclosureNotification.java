@@ -73,6 +73,10 @@ public class DisclosureNotification
         NotificationWrapper notification =
                 createNotification(firstTime, mCurrentScope, packageName);
         mNotificationManager.notify(notification);
+        NotificationUmaTracker.getInstance().onNotificationShown(firstTime
+                        ? NotificationUmaTracker.SystemNotificationType.TWA_DISCLOSURE_INITIAL
+                        : NotificationUmaTracker.SystemNotificationType.TWA_DISCLOSURE_SUBSEQUENT,
+                notification.getNotification());
 
         mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureShown();
     }
