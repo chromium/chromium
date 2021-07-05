@@ -17,7 +17,6 @@ static_library("base") {
     "client_tag_hash.h",
     "data_type_histogram.cc",
     "data_type_histogram.h",
-    "enum_set.h",
     "extensions_activity.cc",
     "extensions_activity.h",
     "hash_util.cc",
@@ -75,6 +74,7 @@ static_library("base") {
   ]
   deps = [
     "//base:i18n",
+    "//base/util/enum_set",
     "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",

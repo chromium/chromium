@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_BASE_ENUM_SET_H_
-#define COMPONENTS_SYNC_BASE_ENUM_SET_H_
+#ifndef BASE_UTIL_ENUM_SET_ENUM_SET_H_
+#define BASE_UTIL_ENUM_SET_ENUM_SET_H_
 
 #include <bitset>
 #include <cstddef>
@@ -12,7 +12,8 @@
 
 #include "base/check_op.h"
 
-namespace syncer {
+namespace base {
+namespace util {
 
 // Forward declarations needed for friend declarations.
 template <typename E, E MinEnumValue, E MaxEnumValue>
@@ -313,6 +314,7 @@ EnumSet<E, Min, Max> Difference(EnumSet<E, Min, Max> set1,
   return EnumSet<E, Min, Max>(set1.enums_ & ~set2.enums_);
 }
 
-}  // namespace syncer
+}  // namespace util
+}  // namespace base
 
-#endif  // COMPONENTS_SYNC_BASE_ENUM_SET_H_
+#endif  // BASE_UTIL_ENUM_SET_ENUM_SET_H_

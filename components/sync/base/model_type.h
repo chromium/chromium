@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "components/sync/base/enum_set.h"
+#include "base/util/enum_set/enum_set.h"
 
 namespace base {
 class ListValue;
@@ -158,8 +158,9 @@ enum ModelType {
 };
 
 using ModelTypeSet =
-    EnumSet<ModelType, FIRST_REAL_MODEL_TYPE, LAST_REAL_MODEL_TYPE>;
-using FullModelTypeSet = EnumSet<ModelType, UNSPECIFIED, LAST_REAL_MODEL_TYPE>;
+    base::util::EnumSet<ModelType, FIRST_REAL_MODEL_TYPE, LAST_REAL_MODEL_TYPE>;
+using FullModelTypeSet =
+    base::util::EnumSet<ModelType, UNSPECIFIED, LAST_REAL_MODEL_TYPE>;
 using ModelTypeNameMap = std::map<ModelType, const char*>;
 
 constexpr int GetNumModelTypes() {

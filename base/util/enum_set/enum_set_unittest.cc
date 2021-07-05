@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/enum_set.h"
+#include "base/util/enum_set/enum_set.h"
 
 #include <stddef.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace base {
+namespace util {
 namespace {
 
 enum class TestEnum {
@@ -300,4 +301,5 @@ TEST_F(EnumSetTest, Difference) {
 }
 
 }  // namespace
-}  // namespace syncer
+}  // namespace util
+}  // namespace base

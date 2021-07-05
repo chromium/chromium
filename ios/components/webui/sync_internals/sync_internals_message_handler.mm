@@ -217,8 +217,8 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
 
   // Only allowed to trigger refresh/schedule nudges for protocol types, things
   // like PROXY_TABS are not allowed.
-  service->TriggerRefresh(syncer::Intersection(service->GetActiveDataTypes(),
-                                               syncer::ProtocolTypes()));
+  service->TriggerRefresh(base::util::Intersection(
+      service->GetActiveDataTypes(), syncer::ProtocolTypes()));
 }
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(

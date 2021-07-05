@@ -17,7 +17,7 @@ void ConfigurationRefresher::OnSyncConfigurationCompleted(
     syncer::SyncService* sync_service) {
   // Only allowed to trigger refresh/schedule nudges for protocol types, things
   // like PROXY_TABS are not allowed.
-  sync_service->TriggerRefresh(syncer::Intersection(
+  sync_service->TriggerRefresh(base::util::Intersection(
       sync_service->GetActiveDataTypes(), syncer::ProtocolTypes()));
 }
 

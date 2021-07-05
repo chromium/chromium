@@ -86,6 +86,7 @@ static_library("driver") {
   ]
   deps = [
     "//base:i18n",
+    "//base/util/enum_set",
     "//build:chromeos_buildflags",
     "//components/data_use_measurement/core",
     "//components/invalidation/impl:feature_list",
