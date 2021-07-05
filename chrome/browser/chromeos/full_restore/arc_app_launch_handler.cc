@@ -97,16 +97,21 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
     ::full_restore::FullRestoreReadHandler::GetInstance()
         ->SetArcSessionIdForWindowId(arc_session_id, data_id.first);
 
+    bool launch_ghost_window = false;
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
     if (!window_info->bounds.is_null() && arc_handler &&
         arc_handler->window_handler()) {
       handler_->RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
       arc_handler->window_handler()->LaunchArcGhostWindow(
           app_id, arc_session_id, data_id.second.get());
+      launch_ghost_window = true;
     } else {
       handler_->RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
     }
 #endif
+
+    if (launch_ghost_window)
+      continue;
 
     if (data_id.second->intent.has_value()) {
       proxy->LaunchAppWithIntent(app_id, data_id.second->event_flag.value(),
