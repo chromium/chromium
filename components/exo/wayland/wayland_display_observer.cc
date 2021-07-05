@@ -20,7 +20,6 @@ WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
                                              wl_resource* output_resource)
     : output_(output), output_resource_(output_resource) {
   output_->RegisterOutput(output_resource_);
-  display::Screen::GetScreen()->AddObserver(this);
 
   // Adding itself as an observer will send the initial display metrics.
   AddObserver(this);
@@ -28,7 +27,6 @@ WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
   output_->UnregisterOutput(output_resource_);
-  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 void WaylandDisplayHandler::AddObserver(WaylandDisplayObserver* observer) {

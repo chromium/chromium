@@ -106,11 +106,9 @@ SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name)
                           ->SharedMainThreadContextProvider();
   DCHECK(context_provider_);
   context_provider_->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 SurfaceTreeHost::~SurfaceTreeHost() {
-  display::Screen::GetScreen()->RemoveObserver(this);
   context_provider_->RemoveObserver(this);
 
   SetRootSurface(nullptr);

@@ -944,7 +944,6 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
         output_provider_(output_provider) {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->AddTabletModeObserver(this);
-    display::Screen::GetScreen()->AddObserver(this);
     helper->AddFrameThrottlingObserver();
 
     layout_mode_ = helper->InTabletMode()
@@ -971,7 +970,6 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   ~WaylandRemoteShell() override {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->RemoveTabletModeObserver(this);
-    display::Screen::GetScreen()->RemoveObserver(this);
     helper->RemoveFrameThrottlingObserver();
   }
 
@@ -1464,6 +1462,8 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   int layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
 
   base::flat_map<wl_resource*, BoundsChangeData> pending_bounds_changes_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<WaylandRemoteShell> weak_ptr_factory_{this};
 

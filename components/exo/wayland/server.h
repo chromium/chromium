@@ -77,6 +77,7 @@ class Server : public display::DisplayObserver {
   base::flat_map<int64_t, std::unique_ptr<WaylandDisplayOutput>> outputs_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_data_;
   std::unique_ptr<WaylandSeat> seat_data_;
+  display::ScopedDisplayObserver display_observer_{this};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<WaylandKeyboardExtension> zcr_keyboard_extension_data_;

@@ -156,7 +156,6 @@ Server::Server(Display* display) : display_(display) {
 #endif
   wl_global_create(wl_display_.get(), &wl_subcompositor_interface, 1, display_,
                    bind_subcompositor);
-  display::Screen::GetScreen()->AddObserver(this);
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())
     OnDisplayAdded(display);
   wl_global_create(wl_display_.get(), &zcr_vsync_feedback_v1_interface, 1,
@@ -267,7 +266,6 @@ Server::Server(Display* display) : display_(display) {
 }
 
 Server::~Server() {
-  display::Screen::GetScreen()->RemoveObserver(this);
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
   // methods.
   serial_tracker_->Shutdown();

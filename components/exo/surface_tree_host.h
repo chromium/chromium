@@ -159,6 +159,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   scoped_refptr<viz::ContextProvider> context_provider_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   int64_t display_id_ = display::kInvalidDisplayId;
 
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
