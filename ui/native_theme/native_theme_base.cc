@@ -578,10 +578,12 @@ void NativeThemeBase::PaintCheckbox(
   // gets drawn adjacent to |accent_color|. In order to guarantee contrast
   // between |checkmark_color| and |accent_color|, we choose the |color_scheme|
   // here based on the two possible values for |checkmark_color|.
-  color_scheme = ColorSchemeForAccentColor(
-      accent_color, color_scheme,
-      ControlsBackgroundColorForState(state, ColorScheme::kLight),
-      ControlsBackgroundColorForState(state, ColorScheme::kDark));
+  if (button.checked && state != kDisabled) {
+    color_scheme = ColorSchemeForAccentColor(
+        accent_color, color_scheme,
+        ControlsBackgroundColorForState(state, ColorScheme::kLight),
+        ControlsBackgroundColorForState(state, ColorScheme::kDark));
+  }
 
   const float border_radius =
       GetBorderRadiusForPart(kCheckbox, rect.width(), rect.height());
@@ -719,10 +721,12 @@ void NativeThemeBase::PaintRadio(
   // which gets draw adjacent to |accent_color|. In order to guarantee contrast
   // between the background and |accent_color|, we choose the |color_scheme|
   // here based on the two possible values for ControlsBackgroundColorForState.
-  color_scheme = ColorSchemeForAccentColor(
-      accent_color, color_scheme,
-      ControlsBackgroundColorForState(state, ColorScheme::kLight),
-      ControlsBackgroundColorForState(state, ColorScheme::kDark));
+  if (button.checked && state != kDisabled) {
+    color_scheme = ColorSchemeForAccentColor(
+        accent_color, color_scheme,
+        ControlsBackgroundColorForState(state, ColorScheme::kLight),
+        ControlsBackgroundColorForState(state, ColorScheme::kDark));
+  }
 
   // Most of a radio button is the same as a checkbox, except the the rounded
   // square is a circle (i.e. border radius >= 100%).
@@ -919,10 +923,12 @@ void NativeThemeBase::PaintSliderTrack(
   // We use kNormal here because the user hovering or clicking on the slider
   // will change the state to something else, and we don't want the color-scheme
   // to flicker back and forth when the user interacts with it.
-  color_scheme = ColorSchemeForAccentColor(
-      accent_color, color_scheme,
-      ControlsFillColorForState(kNormal, ColorScheme::kLight),
-      ControlsFillColorForState(kNormal, ColorScheme::kDark));
+  if (state != kDisabled) {
+    color_scheme = ColorSchemeForAccentColor(
+        accent_color, color_scheme,
+        ControlsFillColorForState(kNormal, ColorScheme::kLight),
+        ControlsFillColorForState(kNormal, ColorScheme::kDark));
+  }
 
   // Paint the entire slider track.
   cc::PaintFlags flags;
@@ -983,10 +989,12 @@ void NativeThemeBase::PaintSliderThumb(
   // We use kNormal here because the user hovering or clicking on the slider
   // will change the state to something else, and we don't want the color-scheme
   // to flicker back and forth when the user interacts with it.
-  color_scheme = ColorSchemeForAccentColor(
-      accent_color, color_scheme,
-      ControlsFillColorForState(kNormal, ColorScheme::kLight),
-      ControlsFillColorForState(kNormal, ColorScheme::kDark));
+  if (state != kDisabled) {
+    color_scheme = ColorSchemeForAccentColor(
+        accent_color, color_scheme,
+        ControlsFillColorForState(kNormal, ColorScheme::kLight),
+        ControlsFillColorForState(kNormal, ColorScheme::kDark));
+  }
 
   const float radius =
       GetBorderRadiusForPart(kSliderThumb, rect.width(), rect.height());
