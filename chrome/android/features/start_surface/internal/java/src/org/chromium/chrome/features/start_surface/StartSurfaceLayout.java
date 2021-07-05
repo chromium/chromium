@@ -219,7 +219,8 @@ public class StartSurfaceLayout extends Layout {
             quick = getGridTabListDelegate().prepareOverview();
         }
 
-        // Skip shrinking animation when there is no tab in current tab model.
+        // Skip shrinking animation when there is no tab in current tab model. If it's showing start
+        // surface, we don't show the shrink tab animation.
         boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
         boolean showShrinkingAnimation = animate
                 && TabUiFeatureUtilities.isTabToGtsAnimationEnabled() && !isCurrentTabModelEmpty
@@ -571,13 +572,16 @@ public class StartSurfaceLayout extends Layout {
         super.updateSceneLayer(viewport, contentViewport, layerTitleCache, tabContentManager,
                 resourceManager, browserControls);
         assert mSceneLayer != null;
+        TabListDelegate currentTabListDelegate = isShowingStartSurface()
+                ? getCarouselOrSingleTabListDelegate()
+                : getGridTabListDelegate();
         // The content viewport is intentionally sent as both params below.
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
                 layerTitleCache, tabContentManager, resourceManager, browserControls,
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
-                        ? getGridTabListDelegate().getResourceId()
+                        ? currentTabListDelegate.getResourceId()
                         : 0,
-                mBackgroundAlpha, mStartSurface.getGridTabListDelegate().getTabListTopOffset());
+                mBackgroundAlpha, currentTabListDelegate.getTabListTopOffset());
         mFrameCount++;
         if (mLastFrameTime != 0) {
             long elapsed = SystemClock.elapsedRealtime() - mLastFrameTime;
