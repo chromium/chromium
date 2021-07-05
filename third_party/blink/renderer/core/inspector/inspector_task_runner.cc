@@ -38,7 +38,7 @@ void InspectorTaskRunner::AppendTask(Task task) {
       CrossThreadBindOnce(
           &InspectorTaskRunner::PerformSingleInterruptingTaskDontWait,
           WrapRefCounted(this)));
-  if (isolate_) {
+  if (isolate_ && !recordreplay::IsRecordingOrReplaying()) {
     AddRef();
     isolate_->RequestInterrupt(&V8InterruptCallback, this);
   }
@@ -69,6 +69,11 @@ void InspectorTaskRunner::PerformSingleInterruptingTaskDontWait() {
 }
 
 void InspectorTaskRunner::V8InterruptCallback(v8::Isolate*, void* data) {
+  // When recording/replaying interrupt callbacks won't be replayed precisely,
+  // so we don't use the interrupt to service tasks.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return;
+  }
   InspectorTaskRunner* runner = static_cast<InspectorTaskRunner*>(data);
   Task task = runner->TakeNextInterruptingTask();
   runner->Release();
