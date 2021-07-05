@@ -1013,12 +1013,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   breadcrumbs::BreadcrumbPersistentStorageManager* persistentStorageManager =
       GetApplicationContext()->GetBreadcrumbPersistentStorageManager();
+  DCHECK(persistentStorageManager);
 
-  // Application context can return a null persistent storage manager if
-  // breadcrumbs are not being persisted.
-  if (persistentStorageManager) {
-    breadcrumbService->StartPersisting(persistentStorageManager);
-  }
+  breadcrumbService->StartPersisting(persistentStorageManager);
 
   // Get stored persistent breadcrumbs from last run to set on crash reports.
   persistentStorageManager->GetStoredEvents(
