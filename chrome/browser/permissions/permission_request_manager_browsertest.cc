@@ -219,7 +219,8 @@ class PermissionRequestManagerWithBackForwardCacheBrowserTest
     PermissionRequestManagerBrowserTest::SetUpCommandLine(command_line);
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+           {"ignore_outstanding_network_request_for_testing", "true"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
   }
@@ -862,63 +863,43 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(0u, GetPermissionRequestManager()->Requests().size());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223445
-#define MAYBE_NoPermissionBubbleShownForPagesInCache \
-  DISABLED_NoPermissionBubbleShownForPagesInCache
-#else
-#define MAYBE_NoPermissionBubbleShownForPagesInCache \
-  NoPermissionBubbleShownForPagesInCache
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
-                       MAYBE_NoPermissionBubbleShownForPagesInCache) {
+                       NoPermissionBubbleShownForPagesInCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
   GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
 
   ui_test_utils::NavigateToURL(browser(), url_a);
-  content::RenderFrameHost* rfh_a = GetActiveMainFrame();
-  content::RenderFrameDeletedObserver a_observer(rfh_a);
+  content::RenderFrameHostWrapper rfh_a(GetActiveMainFrame());
 
   ui_test_utils::NavigateToURL(browser(), url_b);
-  ASSERT_FALSE(a_observer.deleted());
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   permissions::MockPermissionRequest req;
-  GetPermissionRequestManager()->AddRequest(rfh_a, &req);
+  GetPermissionRequestManager()->AddRequest(rfh_a.get(), &req);
 
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0, bubble_factory()->show_count());
   EXPECT_EQ(0, bubble_factory()->TotalRequestCount());
-  // Page gets evicted if bubble would have been showed
-  EXPECT_TRUE(a_observer.deleted());
+  // Page gets evicted if bubble would have been shown.
+  rfh_a.WaitUntilRenderFrameDeleted();
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223445
-#define MAYBE_RequestsForPagesInCacheNotGrouped \
-  DISABLED_RequestsForPagesInCacheNotGrouped
-#else
-#define MAYBE_RequestsForPagesInCacheNotGrouped \
-  RequestsForPagesInCacheNotGrouped
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
-                       MAYBE_RequestsForPagesInCacheNotGrouped) {
+                       RequestsForPagesInCacheNotGrouped) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
   GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
 
   ui_test_utils::NavigateToURL(browser(), url_a);
-  content::RenderFrameHost* rfh_a = GetActiveMainFrame();
-  content::RenderFrameDeletedObserver a_observer(rfh_a);
+  content::RenderFrameHostWrapper rfh_a(GetActiveMainFrame());
 
   ui_test_utils::NavigateToURL(browser(), url_b);
-  ASSERT_FALSE(a_observer.deleted());
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-  content::RenderFrameHost* rfh_b = GetActiveMainFrame();
+  content::RenderFrameHostWrapper rfh_b(GetActiveMainFrame());
 
   // Mic, camera, and pan/tilt/zoom requests are grouped if they come from the
   // same origin. Make sure this will not include requests from a cached frame.
@@ -934,10 +915,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   permissions::MockPermissionRequest req_b_2(
       u"req_b_2", permissions::RequestType::kMicStream,
       permissions::PermissionRequestGestureType::GESTURE);
-  GetPermissionRequestManager()->AddRequest(rfh_a,
+  GetPermissionRequestManager()->AddRequest(rfh_a.get(),
                                             &req_a_1);  // Should be skipped
-  GetPermissionRequestManager()->AddRequest(rfh_b, &req_b_1);
-  GetPermissionRequestManager()->AddRequest(rfh_b, &req_b_2);
+  GetPermissionRequestManager()->AddRequest(rfh_b.get(), &req_b_1);
+  GetPermissionRequestManager()->AddRequest(rfh_b.get(), &req_b_2);
 
   bubble_factory()->WaitForPermissionBubble();
 
@@ -946,8 +927,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   EXPECT_EQ(2, bubble_factory()->TotalRequestCount());
   EXPECT_TRUE(req_a_1.cancelled());
 
-  // Page gets evicted if bubble would have been showed.
-  EXPECT_TRUE(a_observer.deleted());
+  // Page gets evicted if bubble would have been shown.
+  rfh_a.WaitUntilRenderFrameDeleted();
 
   // Cleanup before we delete the requests.
   GetPermissionRequestManager()->Closing();
