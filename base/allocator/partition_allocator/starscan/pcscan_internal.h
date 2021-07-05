@@ -30,33 +30,13 @@ class PCScanInternal final {
   using Root = PCScan::Root;
   using TaskHandle = scoped_refptr<PCScanTask>;
 
-  static constexpr size_t kMaxNumberOfRoots = 8u;
-  class Roots final : private std::array<Root*, kMaxNumberOfRoots> {
-    using Base = std::array<Root*, kMaxNumberOfRoots>;
-
-   public:
-    using typename Base::const_iterator;
-    using typename Base::iterator;
-
-    // Explicitly value-initialize Base{} as otherwise the default
-    // (aggregate) initialization won't be considered as constexpr.
-    constexpr Roots() : Base{} {}
-
-    iterator begin() { return Base::begin(); }
-    const_iterator begin() const { return Base::begin(); }
-
-    iterator end() { return begin() + current_; }
-    const_iterator end() const { return begin() + current_; }
-
-    void Add(Root* root);
-
-    size_t size() const { return current_; }
-
-    void ClearForTesting();  // IN-TEST
-
-   private:
-    size_t current_ = 0u;
-  };
+  using SuperPages = std::vector<uintptr_t, MetadataAllocator<uintptr_t>>;
+  using RootsMap =
+      std::unordered_map<Root*,
+                         SuperPages,
+                         std::hash<Root*>,
+                         std::equal_to<>,
+                         MetadataAllocator<std::pair<Root* const, SuperPages>>>;
 
   static PCScanInternal& Instance() {
     // Since the data that PCScanInternal holds is cold, it's fine to have the
@@ -85,11 +65,13 @@ class PCScanInternal final {
   void RegisterScannableRoot(Root* root);
   void RegisterNonScannableRoot(Root* root);
 
-  Roots& scannable_roots() { return scannable_roots_; }
-  const Roots& scannable_roots() const { return scannable_roots_; }
+  RootsMap& scannable_roots() { return scannable_roots_; }
+  const RootsMap& scannable_roots() const { return scannable_roots_; }
 
-  Roots& nonscannable_roots() { return nonscannable_roots_; }
-  const Roots& nonscannable_roots() const { return nonscannable_roots_; }
+  RootsMap& nonscannable_roots() { return nonscannable_roots_; }
+  const RootsMap& nonscannable_roots() const { return nonscannable_roots_; }
+
+  void RegisterNewSuperPage(Root* root, uintptr_t super_page_base);
 
   void SetProcessName(const char* name);
   const char* process_name() const { return process_name_; }
@@ -133,8 +115,9 @@ class PCScanInternal final {
   TaskHandle current_task_;
   mutable std::mutex current_task_mutex_;
 
-  Roots scannable_roots_{};
-  Roots nonscannable_roots_{};
+  RootsMap scannable_roots_;
+  RootsMap nonscannable_roots_;
+  mutable std::mutex roots_mutex_;
 
   bool stack_scanning_enabled_{false};
   // TLS emulation of stack tops. Since this is guaranteed to go through

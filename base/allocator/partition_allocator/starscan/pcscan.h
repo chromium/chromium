@@ -71,6 +71,11 @@ class BASE_EXPORT PCScan final {
   // quarantined objects.
   static void RegisterNonScannableRoot(Root* root);
 
+  // Registers a newly allocated super page for |root|.
+  static void RegisterNewSuperPage(Root* root, uintptr_t super_page_base);
+  static void RegisterNewSuperPage(PartitionRoot<NotThreadSafe>* root,
+                                   uintptr_t super_page_base) {}
+
   ALWAYS_INLINE static void MoveToQuarantine(void* ptr,
                                              size_t usable_size,
                                              size_t slot_size);

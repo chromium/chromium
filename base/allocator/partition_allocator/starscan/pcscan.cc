@@ -21,6 +21,10 @@ void PCScan::RegisterNonScannableRoot(Root* root) {
   PCScanInternal::Instance().RegisterNonScannableRoot(root);
 }
 
+void PCScan::RegisterNewSuperPage(Root* root, uintptr_t super_page_base) {
+  PCScanInternal::Instance().RegisterNewSuperPage(root, super_page_base);
+}
+
 void PCScan::PerformScan(InvocationMode invocation_mode) {
   PCScanInternal::Instance().PerformScan(invocation_mode);
 }

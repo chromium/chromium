@@ -181,9 +181,10 @@ ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
 }
 
 #if DCHECK_IS_ON()
-bool IsScannerQuarantineBitmapEmpty(char* super_page, size_t epoch) {
-  auto* bitmap = QuarantineBitmapFromPointer(QuarantineBitmapType::kScanner,
-                                             epoch, super_page);
+bool IsScannerQuarantineBitmapEmpty(uintptr_t super_page, size_t epoch) {
+  auto* bitmap =
+      QuarantineBitmapFromPointer(QuarantineBitmapType::kScanner, epoch,
+                                  reinterpret_cast<void*>(super_page));
   size_t visited = 0;
   bitmap->Iterate([&visited](auto) { ++visited; });
   return !visited;
@@ -212,20 +213,6 @@ void CommitCardTable() {
       reinterpret_cast<void*>(PartitionAddressSpace::BRPPoolBase()),
       sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
 #endif
-}
-
-void CommitQuarantineBitmaps(PCScan::Root& root) {
-  size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
-  for (auto* super_page_extent = root.first_extent; super_page_extent;
-       super_page_extent = super_page_extent->next) {
-    for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
-              *super_page_end = SuperPagesEndFromExtent(super_page_extent);
-         super_page != super_page_end; super_page += kSuperPageSize) {
-      RecommitSystemPages(internal::SuperPageQuarantineBitmaps(super_page),
-                          quarantine_bitmaps_size_to_commit, PageReadWrite,
-                          PageUpdatePermissions);
-    }
-  }
 }
 
 class PCScanSnapshot final {
@@ -286,11 +273,10 @@ void PCScanSnapshot::EnsureTaken(size_t pcscan_epoch) {
 }
 
 template <class Function>
-void IterateNonEmptySlotSpans(char* super_page_base,
+void IterateNonEmptySlotSpans(uintptr_t super_page_base,
                               size_t nonempty_slot_spans,
                               Function function) {
-  PA_DCHECK(
-      !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
+  PA_DCHECK(!(super_page_base % kSuperPageAlignment));
   PA_DCHECK(nonempty_slot_spans);
 
   size_t slot_spans_to_visit = nonempty_slot_spans;
@@ -299,7 +285,7 @@ void IterateNonEmptySlotSpans(char* super_page_base,
 #endif
 
   IterateSlotSpans<ThreadSafe>(
-      super_page_base, true /*with_quarantine*/,
+      reinterpret_cast<char*>(super_page_base), true /*with_quarantine*/,
       [&function, &slot_spans_to_visit
 #if DCHECK_IS_ON()
        ,
@@ -335,61 +321,54 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
   static constexpr size_t kLargeScanAreaThreshold = 8192;
 
   auto& pcscan_internal = PCScanInternal::Instance();
-  for (Root* root : pcscan_internal.scannable_roots()) {
+  for (const auto& pair : pcscan_internal.scannable_roots()) {
+    Root* root = pair.first;
     typename Root::ScopedGuard guard(root->lock_);
 
-    // Take a snapshot of all super pages and scannable slot spans.
-    for (auto* super_page_extent = root->first_extent; super_page_extent;
-         super_page_extent = super_page_extent->next) {
-      for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
-                *super_page_end = SuperPagesEndFromExtent(super_page_extent);
-           super_page != super_page_end; super_page += kSuperPageSize) {
-        auto* extent_entry =
-            reinterpret_cast<PartitionSuperPageExtentEntry<ThreadSafe>*>(
-                PartitionSuperPageToMetadataArea(super_page));
-        const size_t nonempty_slot_spans =
-            extent_entry->number_of_nonempty_slot_spans;
-        if (!nonempty_slot_spans) {
+    // Take a snapshot of all scannable slot spans.
+    for (uintptr_t super_page : pair.second) {
+      auto* extent_entry =
+          reinterpret_cast<PartitionSuperPageExtentEntry<ThreadSafe>*>(
+              PartitionSuperPageToMetadataArea(
+                  reinterpret_cast<char*>(super_page)));
+      const size_t nonempty_slot_spans =
+          extent_entry->number_of_nonempty_slot_spans;
+      if (!nonempty_slot_spans) {
 #if DCHECK_IS_ON()
-          // Check that quarantine bitmap is empty for super-pages that contain
-          // only empty/decommitted slot-spans.
-          PA_CHECK(IsScannerQuarantineBitmapEmpty(super_page, pcscan_epoch));
+        // Check that quarantine bitmap is empty for super-pages that contain
+        // only empty/decommitted slot-spans.
+        PA_CHECK(IsScannerQuarantineBitmapEmpty(super_page, pcscan_epoch));
 #endif
-          continue;
-        }
-
-        IterateNonEmptySlotSpans(
-            super_page, nonempty_slot_spans, [this](SlotSpan* slot_span) {
-              auto* payload_begin = static_cast<uintptr_t*>(
-                  SlotSpan::ToSlotSpanStartPtr(slot_span));
-              const size_t provisioned_size = slot_span->GetProvisionedSize();
-              // Free & decommitted slot spans are skipped.
-              PA_DCHECK(provisioned_size > 0);
-              auto* payload_end =
-                  payload_begin + (provisioned_size / sizeof(uintptr_t));
-              if (slot_span->bucket->slot_size >= kLargeScanAreaThreshold) {
-                large_scan_areas_worklist_.Push(
-                    {payload_begin, payload_end, slot_span->bucket->slot_size});
-              } else {
-                scan_areas_worklist_.Push({payload_begin, payload_end});
-              }
-            });
-        super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
-        super_pages_worklist_.Push(reinterpret_cast<uintptr_t>(super_page));
+        continue;
       }
+
+      IterateNonEmptySlotSpans(
+          super_page, nonempty_slot_spans, [this](SlotSpan* slot_span) {
+            auto* payload_begin = static_cast<uintptr_t*>(
+                SlotSpan::ToSlotSpanStartPtr(slot_span));
+            const size_t provisioned_size = slot_span->GetProvisionedSize();
+            // Free & decommitted slot spans are skipped.
+            PA_DCHECK(provisioned_size > 0);
+            auto* payload_end =
+                payload_begin + (provisioned_size / sizeof(uintptr_t));
+            if (slot_span->bucket->slot_size >= kLargeScanAreaThreshold) {
+              large_scan_areas_worklist_.Push(
+                  {payload_begin, payload_end, slot_span->bucket->slot_size});
+            } else {
+              scan_areas_worklist_.Push({payload_begin, payload_end});
+            }
+          });
+      super_pages_.insert(super_page);
+      super_pages_worklist_.Push(super_page);
     }
   }
-  for (Root* root : pcscan_internal.nonscannable_roots()) {
+  for (const auto& pair : pcscan_internal.nonscannable_roots()) {
+    Root* root = pair.first;
     typename Root::ScopedGuard guard(root->lock_);
     // Take a snapshot of all super pages and nnonscannable slot spans.
-    for (auto* super_page_extent = root->first_extent; super_page_extent;
-         super_page_extent = super_page_extent->next) {
-      for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
-                *super_page_end = SuperPagesEndFromExtent(super_page_extent);
-           super_page != super_page_end; super_page += kSuperPageSize) {
-        super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
-        super_pages_worklist_.Push(reinterpret_cast<uintptr_t>(super_page));
-      }
+    for (uintptr_t super_page : pair.second) {
+      super_pages_.insert(super_page);
+      super_pages_worklist_.Push(super_page);
     }
   }
 }
@@ -1017,19 +996,6 @@ class PCScan::PCScanThread final {
   TimeDelta wanted_delay_;
 };
 
-void PCScanInternal::Roots::Add(Root* root) {
-  PA_CHECK(std::find(begin(), end(), root) == end());
-  (*this)[current_] = root;
-  ++current_;
-  PA_CHECK(current_ != kMaxNumberOfRoots)
-      << "Exceeded number of allowed partition roots";
-}
-
-void PCScanInternal::Roots::ClearForTesting() {
-  std::fill(begin(), end(), nullptr);
-  current_ = 0;
-}
-
 PCScanInternal::PCScanInternal() : simd_support_(DetectSimdSupport()) {}
 
 PCScanInternal::~PCScanInternal() = default;
@@ -1053,11 +1019,12 @@ void PCScanInternal::PerformScan(PCScan::InvocationMode invocation_mode) {
 #if DCHECK_IS_ON()
   PA_DCHECK(is_initialized());
   PA_DCHECK(scannable_roots().size() > 0);
-  PA_DCHECK(std::all_of(scannable_roots().begin(), scannable_roots().end(),
-                        [](Root* root) { return root->IsScanEnabled(); }));
-  PA_DCHECK(
-      std::all_of(nonscannable_roots().begin(), nonscannable_roots().end(),
-                  [](Root* root) { return root->IsQuarantineEnabled(); }));
+  PA_DCHECK(std::all_of(
+      scannable_roots().begin(), scannable_roots().end(),
+      [](const auto& pair) { return pair.first->IsScanEnabled(); }));
+  PA_DCHECK(std::all_of(
+      nonscannable_roots().begin(), nonscannable_roots().end(),
+      [](const auto& pair) { return pair.first->IsQuarantineEnabled(); }));
 #endif
 
   PCScan& frontend = PCScan::Instance();
@@ -1133,30 +1100,94 @@ void PCScanInternal::ResetCurrentPCScanTask() {
   current_task_.reset();
 }
 
+namespace {
+PCScanInternal::SuperPages GetSuperPagesAndCommitQuarantineBitmaps(
+    PCScan::Root& root) {
+  const size_t quarantine_bitmaps_size_to_commit =
+      CommittedQuarantineBitmapsSize();
+  PCScanInternal::SuperPages super_pages;
+  for (auto* super_page_extent = root.first_extent; super_page_extent;
+       super_page_extent = super_page_extent->next) {
+    for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
+              *super_page_end = SuperPagesEndFromExtent(super_page_extent);
+         super_page != super_page_end; super_page += kSuperPageSize) {
+      RecommitSystemPages(internal::SuperPageQuarantineBitmaps(super_page),
+                          quarantine_bitmaps_size_to_commit, PageReadWrite,
+                          PageUpdatePermissions);
+      super_pages.push_back(reinterpret_cast<uintptr_t>(super_page));
+    }
+  }
+  return super_pages;
+}
+}  // namespace
+
 void PCScanInternal::RegisterScannableRoot(Root* root) {
   PA_DCHECK(is_initialized());
   PA_DCHECK(root);
-  PA_CHECK(root->IsQuarantineAllowed());
-  typename Root::ScopedGuard guard(root->lock_);
-  if (root->IsScanEnabled())
-    return;
-  PA_CHECK(!root->IsQuarantineEnabled());
-  CommitQuarantineBitmaps(*root);
-  root->scan_mode = Root::ScanMode::kEnabled;
-  root->quarantine_mode = Root::QuarantineMode::kEnabled;
-  scannable_roots_.Add(root);
+  // Avoid nesting locks and store super_pages in a temporary vector.
+  SuperPages super_pages;
+  {
+    typename Root::ScopedGuard guard(root->lock_);
+    PA_CHECK(root->IsQuarantineAllowed());
+    if (root->IsScanEnabled())
+      return;
+    PA_CHECK(!root->IsQuarantineEnabled());
+    super_pages = GetSuperPagesAndCommitQuarantineBitmaps(*root);
+    root->scan_mode = Root::ScanMode::kEnabled;
+    root->quarantine_mode = Root::QuarantineMode::kEnabled;
+  }
+  std::lock_guard<std::mutex> lock(roots_mutex_);
+  PA_DCHECK(!scannable_roots_.count(root));
+  auto& root_super_pages = scannable_roots_[root];
+  root_super_pages.insert(root_super_pages.end(), super_pages.begin(),
+                          super_pages.end());
 }
 
 void PCScanInternal::RegisterNonScannableRoot(Root* root) {
   PA_DCHECK(is_initialized());
   PA_DCHECK(root);
+  // Avoid nesting locks and store super_pages in a temporary vector.
+  SuperPages super_pages;
+  {
+    typename Root::ScopedGuard guard(root->lock_);
+    PA_CHECK(root->IsQuarantineAllowed());
+    PA_CHECK(!root->IsScanEnabled());
+    if (root->IsQuarantineEnabled())
+      return;
+    super_pages = GetSuperPagesAndCommitQuarantineBitmaps(*root);
+    root->quarantine_mode = Root::QuarantineMode::kEnabled;
+  }
+  std::lock_guard<std::mutex> lock(roots_mutex_);
+  PA_DCHECK(!nonscannable_roots_.count(root));
+  auto& root_super_pages = nonscannable_roots_[root];
+  root_super_pages.insert(root_super_pages.end(), super_pages.begin(),
+                          super_pages.end());
+}
+
+void PCScanInternal::RegisterNewSuperPage(Root* root,
+                                          uintptr_t super_page_base) {
+  PA_DCHECK(is_initialized());
+  PA_DCHECK(root);
   PA_CHECK(root->IsQuarantineAllowed());
-  typename Root::ScopedGuard guard(root->lock_);
-  if (root->IsQuarantineEnabled())
-    return;
-  CommitQuarantineBitmaps(*root);
-  root->quarantine_mode = Root::QuarantineMode::kEnabled;
-  nonscannable_roots_.Add(root);
+  PA_DCHECK(!(super_page_base % kSuperPageAlignment));
+
+  std::lock_guard<std::mutex> lock(roots_mutex_);
+
+  // Dispatch based on whether root is scannable or not.
+  if (root->IsScanEnabled()) {
+    PA_DCHECK(scannable_roots_.count(root));
+    auto& super_pages = scannable_roots_[root];
+    PA_DCHECK(std::find(super_pages.begin(), super_pages.end(),
+                        super_page_base) == super_pages.end());
+    super_pages.push_back(super_page_base);
+  } else {
+    PA_DCHECK(root->IsQuarantineEnabled());
+    PA_DCHECK(nonscannable_roots_.count(root));
+    auto& super_pages = nonscannable_roots_[root];
+    PA_DCHECK(std::find(super_pages.begin(), super_pages.end(),
+                        super_page_base) == super_pages.end());
+    super_pages.push_back(super_page_base);
+  }
 }
 
 void PCScanInternal::SetProcessName(const char* process_name) {
@@ -1168,8 +1199,9 @@ void PCScanInternal::SetProcessName(const char* process_name) {
 
 size_t PCScanInternal::CalculateTotalHeapSize() const {
   PA_DCHECK(is_initialized());
-  const auto acc = [](size_t size, Root* root) {
-    return size + root->get_total_size_of_committed_pages();
+  std::lock_guard<std::mutex> lock(roots_mutex_);
+  const auto acc = [](size_t size, const auto& pair) {
+    return size + pair.first->get_total_size_of_committed_pages();
   };
   return std::accumulate(scannable_roots_.begin(), scannable_roots_.end(), 0u,
                          acc) +
@@ -1228,16 +1260,19 @@ void PCScanInternal::UnprotectPages(uintptr_t begin, size_t size) {
 }
 
 void PCScanInternal::ClearRootsForTesting() {
+  std::lock_guard<std::mutex> lock(roots_mutex_);
   // Set all roots as non-scannable and non-quarantinable.
-  for (auto* root : scannable_roots_) {
+  for (auto& pair : scannable_roots_) {
+    Root* root = pair.first;
     root->scan_mode = Root::ScanMode::kDisabled;
     root->quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
-  for (auto* root : nonscannable_roots_) {
+  for (auto& pair : nonscannable_roots_) {
+    Root* root = pair.first;
     root->quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
-  scannable_roots_.ClearForTesting();     // IN-TEST
-  nonscannable_roots_.ClearForTesting();  // IN-TEST
+  scannable_roots_.clear();     // IN-TEST
+  nonscannable_roots_.clear();  // IN-TEST
   // Destroy write protector object, so that there is no double free on the next
   // call to ReinitForTesting();
   write_protector_.reset();

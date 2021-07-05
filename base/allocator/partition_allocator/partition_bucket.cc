@@ -592,6 +592,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   if (root->IsQuarantineEnabled()) {
     RecommitSystemPages(quarantine_bitmaps, quarantine_bitmaps_size_to_commit,
                         PageReadWrite, PageUpdatePermissions);
+    PCScan::RegisterNewSuperPage(root, reinterpret_cast<uintptr_t>(super_page));
   }
 
   // If we were after a specific address, but didn't get it, assume that

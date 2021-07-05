@@ -27,11 +27,18 @@ class MetadataAllocator {
   MetadataAllocator(const MetadataAllocator<U>&) {}  // NOLINT
 
   template <typename U>
-  MetadataAllocator& operator=(const MetadataAllocator<U>&) {}
+  MetadataAllocator& operator=(const MetadataAllocator<U>&) {
+    return *this;
+  }
 
   template <typename U>
   bool operator==(const MetadataAllocator<U>&) {
     return true;
+  }
+
+  template <typename U>
+  bool operator!=(const MetadataAllocator<U>& o) {
+    return !operator==(o);
   }
 
   value_type* allocate(size_t size) {
