@@ -321,9 +321,9 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
   return images;
 }
 
-std::unique_ptr<OutputPresenter::Image>
-OutputPresenterGL::AllocateBackgroundImage(gfx::ColorSpace color_space,
-                                           gfx::Size image_size) {
+std::unique_ptr<OutputPresenter::Image> OutputPresenterGL::AllocateSingleImage(
+    gfx::ColorSpace color_space,
+    gfx::Size image_size) {
   auto image = std::make_unique<PresenterImageGL>();
   if (!image->Initialize(shared_image_factory_,
                          shared_image_representation_factory_, image_size,

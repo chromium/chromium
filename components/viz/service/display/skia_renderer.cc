@@ -2276,6 +2276,10 @@ void SkiaRenderer::ScheduleOverlays() {
   // Only Wayland uses this code path.
   auto& locks = pending_overlay_locks_.back();
   for (auto& overlay : current_frame()->overlay_list) {
+    // Solid Color quads do not have associated resource buffers.
+    if (overlay.solid_color.has_value())
+      continue;
+
     // Resources will be unlocked after the next SwapBuffers() is completed.
     locks.emplace_back(resource_provider(), overlay.resource_id);
     auto& lock = locks.back();

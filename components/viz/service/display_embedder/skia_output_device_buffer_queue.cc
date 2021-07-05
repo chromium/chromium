@@ -275,12 +275,61 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
   }
 }
 
+#if defined(USE_OZONE)
+const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
+    const SkColor& color) {
+  // Currently the Wayland protocol does not have protocol to support solid
+  // color quads natively as surfaces. Here we create tiny 4x4 image buffers
+  // in the color space of the frame buffer and clear them to the quad's solid
+  // color. These freshly created buffers are then treated like any other
+  // overlay via the mailbox interface.
+  std::unique_ptr<OutputPresenter::Image> solid_color = nullptr;
+  // First try for an existing same color image.
+  auto it = solid_color_cache_.find(color);
+  if (it != solid_color_cache_.end()) {
+    // This is a prefect color match so use this directly.
+    solid_color = std::move(it->second);
+    solid_color_cache_.erase(it);
+  } else {
+    // Try to reuse an existing image even if the color is different.
+    // Only do this if there are more cached images than those in flight (a
+    // sensible upper bound).
+    if (!solid_color_cache_.empty() &&
+        solid_color_cache_.size() > solid_color_images_.size()) {
+      auto it = solid_color_cache_.begin();
+      solid_color = std::move(it->second);
+      solid_color_cache_.erase(it);
+    } else {
+      // Worst case allocate a new image. This definitely will occur on startup.
+      solid_color =
+          presenter_->AllocateSingleImage(color_space_, gfx::Size(4, 4));
+    }
+    solid_color->BeginWriteSkia();
+    solid_color->sk_surface()->getCanvas()->clear(color);
+    solid_color->EndWriteSkia(/*force_flush*/ true);
+  }
+  DCHECK(solid_color);
+  auto image_mailbox = solid_color->skia_representation()->mailbox();
+  solid_color_images_.insert(std::make_pair(
+      image_mailbox, std::make_pair(color, std::move(solid_color))));
+  return image_mailbox;
+}
+
+#endif
 void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
   DCHECK(pending_overlay_mailboxes_.empty());
   std::vector<OutputPresenter::ScopedOverlayAccess*> accesses(overlays.size());
   for (size_t i = 0; i < overlays.size(); ++i) {
-    const auto& overlay = overlays[i];
+    auto& overlay = overlays[i];
+
+#if defined(USE_OZONE)
+    // TODO(petermcneeley) : Remove this code when http://crbug/1204102 is done.
+    if (overlay.solid_color.has_value()) {
+      overlay.mailbox = GetImageMailboxForColor(overlay.solid_color.value());
+    }
+#endif
+
     if (!overlay.mailbox.IsSharedImage())
       continue;
 
@@ -468,6 +517,17 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     it->Unref();
   }
 
+#if defined(USE_OZONE)
+  for (const auto& mailbox : overlay_mailboxes) {
+    auto it = solid_color_images_.find(mailbox);
+    if (it != solid_color_images_.end()) {
+      solid_color_cache_.insert(
+          std::make_pair(it->second.first, std::move(it->second.second)));
+      solid_color_images_.erase(it);
+    }
+  }
+#endif
+
   // Code below can destroy last representation of the overlay shared image. On
   // MacOS it needs context to be current.
 #if defined(OS_APPLE)
@@ -488,7 +548,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
       return false;
     if (overlay.IsInUseByWindowServer())
       return false;
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
     // Right now, only macOS needs to return maliboxes of released overlays, so
     // SkiaRenderer can unlock resources for them.
     released_overlays.push_back(overlay.mailbox());
@@ -547,7 +607,7 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
 
   if (needs_background_image_ && !background_image_) {
     background_image_ =
-        presenter_->AllocateBackgroundImage(color_space, gfx::Size(4, 4));
+        presenter_->AllocateSingleImage(color_space, gfx::Size(4, 4));
     background_image_is_scheduled_ = false;
   }
 

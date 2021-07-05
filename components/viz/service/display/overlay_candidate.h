@@ -30,6 +30,7 @@ class Rect;
 
 namespace viz {
 class DisplayResourceProvider;
+class SolidColorDrawQuad;
 class StreamVideoDrawQuad;
 class TextureDrawQuad;
 class VideoHoleDrawQuad;
@@ -45,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                            const DrawQuad* quad,
                            const gfx::RectF& primary_rect,
                            OverlayCandidate* candidate,
-                           bool allow_delegated_quads = false);
+                           bool is_delegated_context = false);
   // Returns true if |quad| will not block quads underneath from becoming
   // an overlay.
   static bool IsInvisibleQuad(const DrawQuad* quad);
@@ -143,6 +144,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // if a protected surface can still be displayed. Non-zero when valid.
   uint32_t hw_protected_validation_id = 0;
 
+  // for solid color quads only
+  absl::optional<SkColor> solid_color;
+
  private:
   static bool FromDrawQuadResource(
       DisplayResourceProvider* resource_provider,
@@ -162,6 +166,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                            const TileDrawQuad* quad,
                            const gfx::RectF& primary_rect,
                            OverlayCandidate* candidate);
+  static bool FromSolidColorQuad(
+      DisplayResourceProvider* resource_provider,
+      SurfaceDamageRectList* surface_damage_rect_list,
+      const SolidColorDrawQuad* quad,
+      const gfx::RectF& primary_rect,
+      OverlayCandidate* candidate);
+
   static bool FromStreamVideoQuad(
       DisplayResourceProvider* resource_provider,
       SurfaceDamageRectList* surface_damage_rect_list,

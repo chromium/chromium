@@ -92,6 +92,14 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       auto viewport_src = gfx::ToEnclosedRect(gfx::ScaleRect(
           candidate.uv_rect, candidate.resource_size_in_pixels.width(),
           candidate.resource_size_in_pixels.height()));
+
+      if (it->material == DrawQuad::Material::kSolidColor) {
+        DBG_DRAW_RECT("delegated.overlay.color", candidate.display_rect);
+        candidates->push_back(candidate);
+        candidate_quads.push_back(it);
+        continue;
+      }
+
       // Because of the device scale factor (2) we check against a rounded empty
       // rect.
       // TODO(https://crbug.com/1218678) : Move and generalize this fix in

@@ -136,7 +136,7 @@ bool OverlayCandidate::FromDrawQuad(
     const DrawQuad* quad,
     const gfx::RectF& primary_rect,
     OverlayCandidate* candidate,
-    bool allow_delegated_quads) {
+    bool is_delegated_context) {
   // It is currently not possible to set a color conversion matrix on an HW
   // overlay plane.
   // TODO(https://crbug.com/792757): Remove this check once the bug is resolved.
@@ -172,8 +172,15 @@ bool OverlayCandidate::FromDrawQuad(
       return FromStreamVideoQuad(resource_provider, surface_damage_rect_list,
                                  StreamVideoDrawQuad::MaterialCast(quad),
                                  candidate);
+    case DrawQuad::Material::kSolidColor:
+      if (!is_delegated_context)
+        return false;
+      return candidate->FromSolidColorQuad(
+          resource_provider, surface_damage_rect_list,
+          SolidColorDrawQuad::MaterialCast(quad), primary_rect, candidate);
+
     case DrawQuad::Material::kTiledContent:
-      if (!allow_delegated_quads)
+      if (!is_delegated_context)
         return false;
       return candidate->FromTileQuad(
           resource_provider, surface_damage_rect_list,
@@ -299,21 +306,27 @@ bool OverlayCandidate::FromDrawQuadResource(
     ResourceId resource_id,
     bool y_flipped,
     OverlayCandidate* candidate) {
-  if (!resource_provider->IsOverlayCandidate(resource_id))
+  if (resource_id != kInvalidResourceId &&
+      !resource_provider->IsOverlayCandidate(resource_id))
     return false;
+
   if (quad->visible_rect.IsEmpty())
     return false;
 
-  candidate->format = resource_provider->GetBufferFormat(resource_id);
-  candidate->color_space = resource_provider->GetColorSpace(resource_id);
-  if (!base::Contains(kOverlayFormats, candidate->format))
-    return false;
+  if (resource_id != kInvalidResourceId) {
+    candidate->format = resource_provider->GetBufferFormat(resource_id);
+    candidate->color_space = resource_provider->GetColorSpace(resource_id);
+    if (!base::Contains(kOverlayFormats, candidate->format))
+      return false;
+  }
 
   const SharedQuadState* sqs = quad->shared_quad_state;
+
   gfx::OverlayTransform overlay_transform =
       GetOverlayTransform(sqs->quad_to_target_transform, y_flipped);
   if (overlay_transform == gfx::OVERLAY_TRANSFORM_INVALID)
     return false;
+  candidate->transform = overlay_transform;
 
   auto& transform = sqs->quad_to_target_transform;
   candidate->display_rect = gfx::RectF(quad->rect);
@@ -329,9 +342,26 @@ bool OverlayCandidate::FromDrawQuadResource(
   candidate->damage_area_estimate =
       GetDamageRect(quad, surface_damage_rect_list).size().GetArea();
   candidate->resource_id = resource_id;
-  candidate->transform = overlay_transform;
-  candidate->mailbox = resource_provider->GetMailbox(resource_id);
 
+  if (resource_id != kInvalidResourceId) {
+    candidate->mailbox = resource_provider->GetMailbox(resource_id);
+  }
+
+  return true;
+}
+
+// static
+bool OverlayCandidate::FromSolidColorQuad(
+    DisplayResourceProvider* resource_provider,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const SolidColorDrawQuad* quad,
+    const gfx::RectF& primary_rect,
+    OverlayCandidate* candidate) {
+  if (!FromDrawQuadResource(resource_provider, surface_damage_rect_list, quad,
+                            kInvalidResourceId, false, candidate)) {
+    return false;
+  }
+  candidate->solid_color = quad->color;
   return true;
 }
 

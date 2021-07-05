@@ -49,8 +49,8 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       gfx::ColorSpace color_space,
       gfx::Size image_size,
       size_t num_images) final;
-  std::unique_ptr<Image> AllocateBackgroundImage(gfx::ColorSpace color_space,
-                                                 gfx::Size image_size) final;
+  std::unique_ptr<Image> AllocateSingleImage(gfx::ColorSpace color_space,
+                                             gfx::Size image_size) final;
   void SwapBuffers(SwapCompletionCallback completion_callback,
                    BufferPresentedCallback presentation_callback) final;
   void PostSubBuffer(const gfx::Rect& rect,

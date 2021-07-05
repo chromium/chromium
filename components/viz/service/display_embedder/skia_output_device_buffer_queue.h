@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_DEVICE_BUFFER_QUEUE_H_
 
 #include <memory>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -129,6 +130,18 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // key.
   base::flat_set<OverlayData, OverlayDataComparator> overlays_;
 
+#if defined(USE_OZONE)
+  const gpu::Mailbox GetImageMailboxForColor(const SkColor& color);
+
+  // All in-flight solid color images are held in this container until a swap
+  // buffer with the identifying mailbox releases them.
+  base::flat_map<gpu::Mailbox,
+                 std::pair<SkColor, std::unique_ptr<OutputPresenter::Image>>>
+      solid_color_images_;
+
+  std::unordered_multimap<SkColor, std::unique_ptr<OutputPresenter::Image>>
+      solid_color_cache_;
+#endif
   // Set to true if no image is to be used for the primary plane of this frame.
   bool current_frame_has_no_primary_plane_ = false;
   // Whether the platform needs an occluded background image. Wayland needs it
