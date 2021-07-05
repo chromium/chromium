@@ -38,10 +38,6 @@ namespace content {
 
 namespace {
 
-constexpr uint64_t kRequestedGeolocationPermissionFeature =
-    static_cast<uint64_t>(blink::scheduler::WebSchedulerTrackedFeature::
-                              kRequestedGeolocationPermission);
-
 ukm::SourceId ToSourceId(int64_t navigation_id) {
   return ukm::ConvertToSourceId(navigation_id,
                                 ukm::SourceIdType::NAVIGATION_ID);
@@ -50,15 +46,16 @@ ukm::SourceId ToSourceId(int64_t navigation_id) {
 // Some features are present in almost all page loads (especially the ones
 // which are related to the document finishing loading).
 // We ignore them to make tests easier to read and write.
-constexpr uint64_t kFeaturesToIgnoreMask =
-    1ull << static_cast<size_t>(
-        blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded) |
-    1ull << static_cast<size_t>(blink::scheduler::WebSchedulerTrackedFeature::
-                                    kOutstandingNetworkRequestFetch) |
-    1ull << static_cast<size_t>(blink::scheduler::WebSchedulerTrackedFeature::
-                                    kOutstandingNetworkRequestXHR) |
-    1ull << static_cast<size_t>(blink::scheduler::WebSchedulerTrackedFeature::
-                                    kOutstandingNetworkRequestOthers);
+
+constexpr blink::scheduler::WebSchedulerTrackedFeatures kFeaturesToIgnore =
+    blink::scheduler::WebSchedulerTrackedFeatures(
+        blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
+        blink::scheduler::WebSchedulerTrackedFeature::
+            kOutstandingNetworkRequestFetch,
+        blink::scheduler::WebSchedulerTrackedFeature::
+            kOutstandingNetworkRequestXHR,
+        blink::scheduler::WebSchedulerTrackedFeature::
+            kOutstandingNetworkRequestOthers);
 
 using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
@@ -417,14 +414,14 @@ std::vector<FeatureUsage> GetFeatureUsageMetrics(
                              "CrossOriginSubframesFeatures"})) {
     FeatureUsage feature_usage;
     feature_usage.source_id = entry.source_id;
-    feature_usage.main_frame_features =
-        entry.metrics.at("MainFrameFeatures") & ~kFeaturesToIgnoreMask;
+    feature_usage.main_frame_features = entry.metrics.at("MainFrameFeatures") &
+                                        ~kFeaturesToIgnore.ToEnumBitmask();
     feature_usage.same_origin_subframes_features =
         entry.metrics.at("SameOriginSubframesFeatures") &
-        ~kFeaturesToIgnoreMask;
+        ~kFeaturesToIgnore.ToEnumBitmask();
     feature_usage.cross_origin_subframes_features =
         entry.metrics.at("CrossOriginSubframesFeatures") &
-        ~kFeaturesToIgnoreMask;
+        ~kFeaturesToIgnore.ToEnumBitmask();
     result.push_back(feature_usage);
   }
   return result;
@@ -587,13 +584,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_EQ(
-      static_cast<WebContentsImpl*>(shell()->web_contents())
-              ->GetMainFrame()
-              ->scheduler_tracked_features() &
-          ~kFeaturesToIgnoreMask,
-      1ull << static_cast<size_t>(blink::scheduler::WebSchedulerTrackedFeature::
-                                      kDedicatedWorkerOrWorklet));
+  EXPECT_EQ(base::util::Difference(
+                static_cast<WebContentsImpl*>(shell()->web_contents())
+                    ->GetMainFrame()
+                    ->scheduler_tracked_features(),
+                kFeaturesToIgnore),
+            blink::scheduler::WebSchedulerTrackedFeatures(
+                blink::scheduler::WebSchedulerTrackedFeature::
+                    kDedicatedWorkerOrWorklet));
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
@@ -608,11 +606,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_EQ(static_cast<WebContentsImpl*>(shell()->web_contents())
+  EXPECT_EQ(base::util::Difference(
+                static_cast<WebContentsImpl*>(shell()->web_contents())
                     ->GetMainFrame()
-                    ->scheduler_tracked_features() &
-                ~kFeaturesToIgnoreMask,
-            1ull << static_cast<uint32_t>(
+                    ->scheduler_tracked_features(),
+                kFeaturesToIgnore),
+            blink::scheduler::WebSchedulerTrackedFeatures(
                 blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));
 }
 
@@ -629,8 +628,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, Geolocation) {
         resolve.bind(this, "failure"))
       });
   )"));
-  EXPECT_TRUE(main_frame->scheduler_tracked_features() &
-              (1 << kRequestedGeolocationPermissionFeature));
+  EXPECT_TRUE(main_frame->scheduler_tracked_features().Has(
+      blink::scheduler::WebSchedulerTrackedFeature::
+          kRequestedGeolocationPermission));
 }
 
 class RecordBackForwardCacheMetricsWithoutEnabling

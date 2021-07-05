@@ -21,6 +21,7 @@
 #include "content/public/browser/reload_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -135,7 +136,7 @@ void BackForwardCacheMetrics::DidCommitNavigation(
     // the navigation and other logged data.
     bool served_from_bfcache_not_match =
         navigation->IsServedFromBackForwardCache() &&
-        page_store_result_->not_stored_reasons().to_ullong() != 0ULL;
+        !page_store_result_->not_stored_reasons().Empty();
     bool browsing_instance_not_swapped_not_match =
         page_store_result_->HasNotStoredReason(
             NotRestoredReason::kBrowsingInstanceNotSwapped) &&
@@ -147,7 +148,7 @@ void BackForwardCacheMetrics::DidCommitNavigation(
     bool blocklisted_features_not_match =
         page_store_result_->HasNotStoredReason(
             NotRestoredReason::kBlocklistedFeatures) &&
-        page_store_result_->blocklisted_features() == 0ULL;
+        page_store_result_->blocklisted_features().Empty();
     if (served_from_bfcache_not_match ||
         browsing_instance_not_swapped_not_match || disable_for_rfh_not_match ||
         blocklisted_features_not_match) {
@@ -211,9 +212,11 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
       ukm::ConvertToSourceId(
           last_committed_cross_document_main_frame_navigation_id_,
           ukm::SourceIdType::NAVIGATION_ID));
-  builder.SetMainFrameFeatures(main_frame_features_);
-  builder.SetSameOriginSubframesFeatures(same_origin_frames_features_);
-  builder.SetCrossOriginSubframesFeatures(cross_origin_frames_features_);
+  builder.SetMainFrameFeatures(main_frame_features_.ToEnumBitmask());
+  builder.SetSameOriginSubframesFeatures(
+      same_origin_frames_features_.ToEnumBitmask());
+  builder.SetCrossOriginSubframesFeatures(
+      cross_origin_frames_features_.ToEnumBitmask());
   // DidStart notification might be missing for some same-document
   // navigations. It's good that we don't care about the time in the cache
   // in that case.
@@ -228,10 +231,10 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
   builder.SetBackForwardCache_IsServedFromBackForwardCache(
       navigation->IsServedFromBackForwardCache());
   builder.SetBackForwardCache_NotRestoredReasons(
-      page_store_result_->not_stored_reasons().to_ullong());
+      page_store_result_->not_stored_reasons().ToEnumBitmask());
 
   builder.SetBackForwardCache_BlocklistedFeatures(
-      static_cast<int64_t>(page_store_result_->blocklisted_features()));
+      page_store_result_->blocklisted_features().ToEnumBitmask());
 
   if (browsing_instance_swap_result_) {
     builder.SetBackForwardCache_BrowsingInstanceNotSwappedReason(
@@ -265,9 +268,9 @@ void BackForwardCacheMetrics::RecordFeatureUsage(
     RenderFrameHostImpl* main_frame) {
   DCHECK(!main_frame->GetParent());
 
-  main_frame_features_ = 0;
-  same_origin_frames_features_ = 0;
-  cross_origin_frames_features_ = 0;
+  main_frame_features_.Clear();
+  same_origin_frames_features_.Clear();
+  cross_origin_frames_features_.Clear();
 
   CollectFeatureUsageFromSubtree(main_frame,
                                  main_frame->GetLastCommittedOrigin());
@@ -276,14 +279,15 @@ void BackForwardCacheMetrics::RecordFeatureUsage(
 void BackForwardCacheMetrics::CollectFeatureUsageFromSubtree(
     RenderFrameHostImpl* rfh,
     const url::Origin& main_frame_origin) {
-  uint64_t features = rfh->scheduler_tracked_features();
+  blink::scheduler::WebSchedulerTrackedFeatures features =
+      rfh->scheduler_tracked_features();
   if (!rfh->GetParent()) {
-    main_frame_features_ |= features;
+    main_frame_features_.PutAll(features);
   } else if (rfh->GetLastCommittedOrigin().IsSameOriginWith(
                  main_frame_origin)) {
-    same_origin_frames_features_ |= features;
+    same_origin_frames_features_.PutAll(features);
   } else {
-    cross_origin_frames_features_ |= features;
+    cross_origin_frames_features_.PutAll(features);
   }
 
   for (size_t i = 0; i < rfh->child_count(); ++i) {
@@ -316,7 +320,7 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
 
   // This should not happen, but record this as an 'unknown' reason just in
   // case.
-  if (page_store_result_->not_stored_reasons().none() &&
+  if (page_store_result_->not_stored_reasons().Empty() &&
       !navigation->IsServedFromBackForwardCache()) {
     page_store_result_->No(NotRestoredReason::kUnknown);
     // TODO(altimin): Add a (D)CHECK here, but this code is reached in
@@ -355,11 +359,8 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
   UMA_HISTOGRAM_ENUMERATION(
       "BackForwardCache.AllSites.HistoryNavigationOutcome", outcome);
 
-  for (size_t i = 0; i <= static_cast<int>(NotRestoredReason::kMaxValue); i++) {
-    if (!page_store_result_->not_stored_reasons().test(i))
-      continue;
+  for (NotRestoredReason reason : page_store_result_->not_stored_reasons()) {
     DCHECK(!navigation->IsServedFromBackForwardCache());
-    NotRestoredReason reason = static_cast<NotRestoredReason>(i);
     if (back_forward_cache_allowed) {
       UMA_HISTOGRAM_ENUMERATION(
           "BackForwardCache.HistoryNavigationOutcome.NotRestoredReason",
@@ -379,24 +380,17 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
     }
   }
 
-  for (int i = 0;
-       i <= static_cast<int>(
-                blink::scheduler::WebSchedulerTrackedFeature::kMaxValue);
-       i++) {
-    blink::scheduler::WebSchedulerTrackedFeature feature =
-        static_cast<blink::scheduler::WebSchedulerTrackedFeature>(i);
-    if (page_store_result_->blocklisted_features() &
-        blink::scheduler::FeatureToBit(feature)) {
-      if (back_forward_cache_allowed) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature",
-            feature);
-      }
+  for (blink::scheduler::WebSchedulerTrackedFeature feature :
+       page_store_result_->blocklisted_features()) {
+    if (back_forward_cache_allowed) {
       UMA_HISTOGRAM_ENUMERATION(
-          "BackForwardCache.AllSites.HistoryNavigationOutcome."
-          "BlocklistedFeature",
+          "BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature",
           feature);
     }
+    UMA_HISTOGRAM_ENUMERATION(
+        "BackForwardCache.AllSites.HistoryNavigationOutcome."
+        "BlocklistedFeature",
+        feature);
   }
 
   for (const BackForwardCache::DisabledReason& reason :

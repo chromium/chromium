@@ -1643,35 +1643,21 @@ std::unique_ptr<protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>
 CreateNotRestoredExplanation(
     const BackForwardCacheCanStoreDocumentResult::NotStoredReasons
         not_stored_reasons,
-    const uint64_t blocklisted_features) {
+    const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features) {
   auto reasons = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
 
-  for (size_t i = 0;
-       i <= static_cast<size_t>(
-                BackForwardCacheMetrics::NotRestoredReason::kMaxValue);
-       i++) {
-    if (!not_stored_reasons.test(i)) {
-      // Reason at index i does not exist.
-      continue;
-    }
-    auto reason = static_cast<BackForwardCacheMetrics::NotRestoredReason>(i);
+  for (BackForwardCacheMetrics::NotRestoredReason reason : not_stored_reasons) {
     if (reason ==
         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
-      DCHECK(blocklisted_features);
-      for (uint32_t j = 0;
-           j <= static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue);
-           ++j) {
-        // Add the blocklisted reason if the blocklisted reason exists.
-        if (blocklisted_features & (1ULL << j)) {
-          blink::scheduler::WebSchedulerTrackedFeature feature =
-              static_cast<blink::scheduler::WebSchedulerTrackedFeature>(j);
-          reasons->emplace_back(
-              Page::BackForwardCacheNotRestoredExplanation::Create()
-                  .SetType(MapBlocklistedFeatureToType(feature))
-                  .SetReason(BlocklistedFeatureToProtocol(feature))
-                  .Build());
-        }
+      DCHECK(!blocklisted_features.Empty());
+      for (blink::scheduler::WebSchedulerTrackedFeature feature :
+           blocklisted_features) {
+        reasons->emplace_back(
+            Page::BackForwardCacheNotRestoredExplanation::Create()
+                .SetType(MapBlocklistedFeatureToType(feature))
+                .SetReason(BlocklistedFeatureToProtocol(feature))
+                .Build());
       }
     } else {
       reasons->emplace_back(

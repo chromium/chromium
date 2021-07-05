@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <string>
+#include "base/util/enum_set/enum_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
@@ -20,6 +21,7 @@ namespace scheduler {
 // Please keep in sync with WebSchedulerTrackedFeature in
 // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 enum class WebSchedulerTrackedFeature : uint32_t {
+  kMinValue = 0,
   kWebSocket = 0,
   kWebRTC = 1,
 
@@ -109,6 +111,11 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   kMaxValue = kMediaSessionImplOnServiceCreated,
 };
 
+using WebSchedulerTrackedFeatures =
+    base::util::EnumSet<WebSchedulerTrackedFeature,
+                        WebSchedulerTrackedFeature::kMinValue,
+                        WebSchedulerTrackedFeature::kMaxValue>;
+
 static_assert(static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue) < 64,
               "This enum is used in a bitmask, so the values should fit into a"
               "64-bit integer");
@@ -129,8 +136,8 @@ BLINK_COMMON_EXPORT constexpr uint64_t FeatureToBit(
 // lifetime of the page.
 BLINK_COMMON_EXPORT bool IsFeatureSticky(WebSchedulerTrackedFeature feature);
 
-// All the sticky features in bitmask form.
-BLINK_COMMON_EXPORT uint64_t StickyFeaturesBitmask();
+// All the sticky features.
+BLINK_COMMON_EXPORT WebSchedulerTrackedFeatures StickyFeatures();
 
 }  // namespace scheduler
 }  // namespace blink

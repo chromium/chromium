@@ -9053,10 +9053,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, OutstandingFetchNotCached) {
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
   // Ensure that there are no lingering requests from page load itself.
-  EXPECT_FALSE(rfh_a->scheduler_tracked_features() &
-               (1ull << static_cast<size_t>(
-                    blink::scheduler::WebSchedulerTrackedFeature::
-                        kOutstandingNetworkRequestFetch)));
+  EXPECT_FALSE(rfh_a->scheduler_tracked_features().Has(
+      blink::scheduler::WebSchedulerTrackedFeature::
+          kOutstandingNetworkRequestFetch));
 
   // 2) Create a fetch() request.
   ExecuteScriptAsync(rfh_a, "fetch('/fetch');");
@@ -9089,10 +9088,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, OutstandingXHRNotCached) {
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
   // Ensure that there are no lingering requests from page load itself.
-  EXPECT_FALSE(rfh_a->scheduler_tracked_features() &
-               (1ull << static_cast<size_t>(
-                    blink::scheduler::WebSchedulerTrackedFeature::
-                        kOutstandingNetworkRequestXHR)));
+  EXPECT_FALSE(rfh_a->scheduler_tracked_features().Has(
+      blink::scheduler::WebSchedulerTrackedFeature::
+          kOutstandingNetworkRequestXHR));
 
   // 2) Create a XMLHttpRequest.
   EXPECT_TRUE(ExecJs(rfh_a, R"(

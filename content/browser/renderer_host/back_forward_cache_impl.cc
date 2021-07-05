@@ -18,6 +18,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -45,6 +46,7 @@ class RenderProcessHostInternalObserver;
 namespace {
 
 using blink::scheduler::WebSchedulerTrackedFeature;
+using blink::scheduler::WebSchedulerTrackedFeatures;
 
 // The default number of entries the BackForwardCache can hold per tab.
 static constexpr size_t kDefaultBackForwardCacheSize = 1;
@@ -161,29 +163,29 @@ BackForwardCacheImpl::UnloadSupportStrategy GetUnloadSupportStrategy() {
   return unload_support.Get();
 }
 
-uint64_t SupportedFeaturesBitmaskImpl() {
+WebSchedulerTrackedFeatures SupportedFeaturesImpl() {
+  WebSchedulerTrackedFeatures features;
   if (!IsBackForwardCacheEnabled())
-    return 0;
+    return features;
 
   static constexpr base::FeatureParam<std::string> supported_features(
       &features::kBackForwardCache, "supported_features", "");
   std::vector<std::string> tokens =
       base::SplitString(supported_features.Get(), ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
-  uint64_t mask = 0;
   for (const std::string& token : tokens) {
     auto feature = blink::scheduler::StringToFeature(token);
     DCHECK(feature.has_value()) << "invalid feature string: " << token;
     if (feature.has_value()) {
-      mask |= blink::scheduler::FeatureToBit(feature.value());
+      features.Put(feature.value());
     }
   }
-  return mask;
+  return features;
 }
 
-uint64_t SupportedFeaturesBitmask() {
-  static uint64_t mask = SupportedFeaturesBitmaskImpl();
-  return mask;
+WebSchedulerTrackedFeatures SupportedFeatures() {
+  static WebSchedulerTrackedFeatures features = SupportedFeaturesImpl();
+  return features;
 }
 
 bool IgnoresOutstandingNetworkRequestForTesting() {
@@ -209,75 +211,66 @@ bool ShouldIgnoreBlocklists() {
 
 enum RequestedFeatures { kAll, kOnlySticky };
 
-uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
-                               RequestedFeatures requested_features) {
+BlockListedFeatures GetDisallowedFeatures(
+    RenderFrameHostImpl* rfh,
+    RequestedFeatures requested_features) {
   // TODO(https://crbug.com/1015784): Finalize disallowed feature list, and test
   // for each disallowed feature.
-  constexpr uint64_t kAlwaysDisallowedFeatures =
-      FeatureToBit(WebSchedulerTrackedFeature::kAppBanner) |
-      FeatureToBit(WebSchedulerTrackedFeature::kBroadcastChannel) |
-      FeatureToBit(WebSchedulerTrackedFeature::kContainsPlugins) |
-      FeatureToBit(WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet) |
-      FeatureToBit(WebSchedulerTrackedFeature::kIdleManager) |
-      FeatureToBit(WebSchedulerTrackedFeature::kIndexedDBConnection) |
-      FeatureToBit(WebSchedulerTrackedFeature::kKeyboardLock) |
-      FeatureToBit(
-          WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction) |
-      FeatureToBit(WebSchedulerTrackedFeature::kPaymentManager) |
-      FeatureToBit(WebSchedulerTrackedFeature::kPictureInPicture) |
-      FeatureToBit(WebSchedulerTrackedFeature::kPortal) |
-      FeatureToBit(WebSchedulerTrackedFeature::kPrinting) |
-      FeatureToBit(
-          WebSchedulerTrackedFeature::kRequestedAudioCapturePermission) |
-      FeatureToBit(WebSchedulerTrackedFeature::
-                       kRequestedBackForwardCacheBlockedSensors) |
-      FeatureToBit(
-          WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission) |
-      FeatureToBit(WebSchedulerTrackedFeature::kRequestedMIDIPermission) |
-      FeatureToBit(
-          WebSchedulerTrackedFeature::kRequestedNotificationsPermission) |
-      FeatureToBit(
-          WebSchedulerTrackedFeature::kRequestedVideoCapturePermission) |
-      FeatureToBit(WebSchedulerTrackedFeature::kSharedWorker) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebOTPService) |
-      FeatureToBit(WebSchedulerTrackedFeature::kSpeechRecognizer) |
-      FeatureToBit(WebSchedulerTrackedFeature::kSpeechSynthesis) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebDatabase) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebHID) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebLocks) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebRTC) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebShare) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebSocket) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebXR) |
-      FeatureToBit(
-          WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
+  constexpr WebSchedulerTrackedFeatures kAlwaysDisallowedFeatures(
+      WebSchedulerTrackedFeature::kAppBanner,
+      WebSchedulerTrackedFeature::kBroadcastChannel,
+      WebSchedulerTrackedFeature::kContainsPlugins,
+      WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
+      WebSchedulerTrackedFeature::kIdleManager,
+      WebSchedulerTrackedFeature::kIndexedDBConnection,
+      WebSchedulerTrackedFeature::kKeyboardLock,
+      WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction,
+      WebSchedulerTrackedFeature::kPaymentManager,
+      WebSchedulerTrackedFeature::kPictureInPicture,
+      WebSchedulerTrackedFeature::kPortal,
+      WebSchedulerTrackedFeature::kPrinting,
+      WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
+      WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
+      WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
+      WebSchedulerTrackedFeature::kRequestedMIDIPermission,
+      WebSchedulerTrackedFeature::kRequestedNotificationsPermission,
+      WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
+      WebSchedulerTrackedFeature::kSharedWorker,
+      WebSchedulerTrackedFeature::kWebOTPService,
+      WebSchedulerTrackedFeature::kSpeechRecognizer,
+      WebSchedulerTrackedFeature::kSpeechSynthesis,
+      WebSchedulerTrackedFeature::kWebDatabase,
+      WebSchedulerTrackedFeature::kWebHID,
+      WebSchedulerTrackedFeature::kWebLocks,
+      WebSchedulerTrackedFeature::kWebRTC,
+      WebSchedulerTrackedFeature::kWebShare,
+      WebSchedulerTrackedFeature::kWebSocket,
+      WebSchedulerTrackedFeature::kWebXR,
+      WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
 
-  uint64_t result = kAlwaysDisallowedFeatures;
+  WebSchedulerTrackedFeatures result = kAlwaysDisallowedFeatures;
 
   if (!IsContentInjectionSupported()) {
-    result |= FeatureToBit(WebSchedulerTrackedFeature::kIsolatedWorldScript) |
-              FeatureToBit(WebSchedulerTrackedFeature::kInjectedStyleSheet);
+    result.Put(WebSchedulerTrackedFeature::kIsolatedWorldScript);
+    result.Put(WebSchedulerTrackedFeature::kInjectedStyleSheet);
   }
 
   if (!IgnoresOutstandingNetworkRequestForTesting()) {
-    result |=
-        FeatureToBit(
-            WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers) |
-        FeatureToBit(
-            WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch) |
-        FeatureToBit(WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR);
+    result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers);
+    result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch);
+    result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR);
   }
 
   if (!IsFileSystemSupported()) {
-    result |= FeatureToBit(WebSchedulerTrackedFeature::kWebFileSystem);
+    result.Put(WebSchedulerTrackedFeature::kWebFileSystem);
   }
 
   if (requested_features == RequestedFeatures::kOnlySticky) {
     // Remove all non-sticky features from |result|.
-    result &= blink::scheduler::StickyFeaturesBitmask();
+    result = Intersection(result, blink::scheduler::StickyFeatures());
   }
 
-  result &= ~SupportedFeaturesBitmask();
+  result.RemoveAll(SupportedFeatures());
 
   return result;
 }
@@ -613,9 +606,12 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   // TODO(rakina): Once we move cache-control tracking to RenderFrameHostImpl,
   // change this part to use the information stored in RenderFrameHostImpl
   // instead.
-  uint64_t cache_control_no_store_feature = FeatureToBit(
+
+  BlockListedFeatures cache_control_no_store_feature(
       WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
-  if (rfh->scheduler_tracked_features() & cache_control_no_store_feature) {
+  if (!Intersection(rfh->scheduler_tracked_features(),
+                    cache_control_no_store_feature)
+           .Empty()) {
     result.NoDueToFeatures(cache_control_no_store_feature);
   }
 
@@ -705,9 +701,10 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
   // cache, we should only consider "sticky" features here - features that
   // will always result in a page becoming ineligible for back-forward cache
   // since the first time it's used.
-  if (uint64_t banned_features =
-          GetDisallowedFeatures(rfh, RequestedFeatures::kOnlySticky) &
-          rfh->scheduler_tracked_features()) {
+  WebSchedulerTrackedFeatures banned_features =
+      Intersection(GetDisallowedFeatures(rfh, RequestedFeatures::kOnlySticky),
+                   rfh->scheduler_tracked_features());
+  if (!banned_features.Empty()) {
     if (!ShouldIgnoreBlocklists()) {
       result->NoDueToFeatures(banned_features);
     }
@@ -730,9 +727,10 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
   // in CanStoreRenderFrameHostLater, we are checking all banned features here
   // (not only the "sticky" features), because this time we're making a decision
   // on whether we should store a page in the back-forward cache or not.
-  if (uint64_t banned_features =
-          GetDisallowedFeatures(rfh, RequestedFeatures::kAll) &
-          rfh->scheduler_tracked_features()) {
+  WebSchedulerTrackedFeatures banned_features =
+      Intersection(GetDisallowedFeatures(rfh, RequestedFeatures::kAll),
+                   rfh->scheduler_tracked_features());
+  if (!banned_features.Empty()) {
     bool should_ignore_features_for_now =
         CheckFeatureUsageOnlyAfterAck() &&
         !rfh->render_view_host()->DidReceiveBackForwardCacheAck();
@@ -1053,10 +1051,8 @@ bool BackForwardCacheImpl::CheckFeatureUsageOnlyAfterAck() {
 }
 
 bool BackForwardCacheImpl::IsMediaSessionImplOnServiceCreatedAllowed() {
-  return (SupportedFeaturesBitmask() &
-          FeatureToBit(
-              WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated)) !=
-         0;
+  return SupportedFeatures().Has(
+      WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
 }
 
 void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(

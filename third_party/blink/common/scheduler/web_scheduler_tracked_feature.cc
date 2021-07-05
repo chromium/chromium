@@ -167,47 +167,38 @@ absl::optional<WebSchedulerTrackedFeature> StringToFeature(
 }
 
 bool IsFeatureSticky(WebSchedulerTrackedFeature feature) {
-  return (FeatureToBit(feature) & StickyFeaturesBitmask()) > 0;
+  return StickyFeatures().Has(feature);
 }
 
-uint64_t StickyFeaturesBitmask() {
-  return FeatureToBit(
-             WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache) |
-         FeatureToBit(WebSchedulerTrackedFeature::kContainsPlugins) |
-         FeatureToBit(WebSchedulerTrackedFeature::kDocumentLoaded) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedGeolocationPermission) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedNotificationsPermission) |
-         FeatureToBit(WebSchedulerTrackedFeature::kRequestedMIDIPermission) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedAudioCapturePermission) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedVideoCapturePermission) |
-         FeatureToBit(WebSchedulerTrackedFeature::
-                          kRequestedBackForwardCacheBlockedSensors) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebLocks) |
-         FeatureToBit(
-             WebSchedulerTrackedFeature::kRequestedStorageAccessGrant) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebNfc) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebFileSystem) |
-         FeatureToBit(WebSchedulerTrackedFeature::kAppBanner) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPrinting) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPictureInPicture) |
-         FeatureToBit(WebSchedulerTrackedFeature::kIdleManager) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPaymentManager) |
-         FeatureToBit(WebSchedulerTrackedFeature::kKeyboardLock) |
-         FeatureToBit(WebSchedulerTrackedFeature::kWebOTPService) |
-         FeatureToBit(WebSchedulerTrackedFeature::kIsolatedWorldScript) |
-         FeatureToBit(WebSchedulerTrackedFeature::kInjectedStyleSheet);
+WebSchedulerTrackedFeatures StickyFeatures() {
+  constexpr WebSchedulerTrackedFeatures features = WebSchedulerTrackedFeatures(
+      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore,
+      WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache,
+      WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore,
+      WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
+      WebSchedulerTrackedFeature::kContainsPlugins,
+      WebSchedulerTrackedFeature::kDocumentLoaded,
+      WebSchedulerTrackedFeature::kRequestedGeolocationPermission,
+      WebSchedulerTrackedFeature::kRequestedNotificationsPermission,
+      WebSchedulerTrackedFeature::kRequestedMIDIPermission,
+      WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
+      WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
+      WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
+      WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
+      WebSchedulerTrackedFeature::kWebLocks,
+      WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
+      WebSchedulerTrackedFeature::kWebNfc,
+      WebSchedulerTrackedFeature::kWebFileSystem,
+      WebSchedulerTrackedFeature::kAppBanner,
+      WebSchedulerTrackedFeature::kPrinting,
+      WebSchedulerTrackedFeature::kPictureInPicture,
+      WebSchedulerTrackedFeature::kIdleManager,
+      WebSchedulerTrackedFeature::kPaymentManager,
+      WebSchedulerTrackedFeature::kKeyboardLock,
+      WebSchedulerTrackedFeature::kWebOTPService,
+      WebSchedulerTrackedFeature::kIsolatedWorldScript,
+      WebSchedulerTrackedFeature::kInjectedStyleSheet);
+  return features;
 }
 
 }  // namespace scheduler

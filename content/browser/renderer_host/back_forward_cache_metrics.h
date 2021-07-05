@@ -17,6 +17,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace url {
 class Origin;
@@ -41,6 +42,7 @@ class BackForwardCacheMetrics
   // Please keep in sync with BackForwardCacheNotRestoredReason in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
   enum class NotRestoredReason : uint8_t {
+    kMinValue = 0,
     kNotMainFrame = 0,
     // BackForwardCache is disabled due to low memory device, base::Feature or
     // command line. Note that the more specific NotRestoredReasons
@@ -259,15 +261,15 @@ class BackForwardCacheMetrics
   // Should not be confused with NavigationEntryId.
   int64_t last_committed_cross_document_main_frame_navigation_id_ = -1;
 
-  uint64_t main_frame_features_ = 0;
+  blink::scheduler::WebSchedulerTrackedFeatures main_frame_features_;
   // We record metrics for same-origin frames and cross-origin frames
   // differently as we might want to apply different policies for them,
   // especially for the things around web platform compatibility (e.g. ignore
   // unload handlers in cross-origin iframes but not in same-origin). The
   // details are still subject to metrics, however. NOTE: This is not related to
   // which process these frames are hosted in.
-  uint64_t same_origin_frames_features_ = 0;
-  uint64_t cross_origin_frames_features_ = 0;
+  blink::scheduler::WebSchedulerTrackedFeatures same_origin_frames_features_;
+  blink::scheduler::WebSchedulerTrackedFeatures cross_origin_frames_features_;
 
   absl::optional<base::TimeTicks> started_navigation_timestamp_;
   absl::optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;

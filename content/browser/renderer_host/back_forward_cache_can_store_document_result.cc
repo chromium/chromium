@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 
+#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_util.h"
@@ -17,14 +18,10 @@ namespace {
 
 using blink::scheduler::WebSchedulerTrackedFeature;
 
-std::string DescribeFeatures(uint64_t blocklisted_features) {
+std::string DescribeFeatures(BlockListedFeatures blocklisted_features) {
   std::vector<std::string> features;
-  for (uint32_t i = 0;
-       i <= static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue); ++i) {
-    if (blocklisted_features & (1ULL << i)) {
-      features.push_back(blink::scheduler::FeatureToHumanReadableString(
-          static_cast<WebSchedulerTrackedFeature>(i)));
-    }
+  for (WebSchedulerTrackedFeature feature : blocklisted_features) {
+    features.push_back(blink::scheduler::FeatureToHumanReadableString(feature));
   }
   return base::JoinString(features, ", ");
 }
@@ -33,16 +30,16 @@ std::string DescribeFeatures(uint64_t blocklisted_features) {
 
 bool BackForwardCacheCanStoreDocumentResult::HasNotStoredReason(
     BackForwardCacheMetrics::NotRestoredReason reason) const {
-  return not_stored_reasons_.test(static_cast<size_t>(reason));
+  return not_stored_reasons_.Has(reason);
 }
 
 void BackForwardCacheCanStoreDocumentResult::AddNotStoredReason(
     BackForwardCacheMetrics::NotRestoredReason reason) {
-  not_stored_reasons_.set(static_cast<size_t>(reason));
+  not_stored_reasons_.Put(reason);
 }
 
 bool BackForwardCacheCanStoreDocumentResult::CanStore() const {
-  return not_stored_reasons_.none();
+  return not_stored_reasons_.Empty();
 }
 
 namespace {
@@ -58,18 +55,14 @@ std::string DisabledReasonsToString(
 }  // namespace
 
 std::string BackForwardCacheCanStoreDocumentResult::ToString() const {
-  using Reason = BackForwardCacheMetrics::NotRestoredReason;
-
   if (CanStore())
     return "Yes";
 
   std::vector<std::string> reason_strs;
 
-  for (int i = 0; i <= static_cast<int>(Reason::kMaxValue); i++) {
-    if (!not_stored_reasons_.test(static_cast<size_t>(i)))
-      continue;
-
-    reason_strs.push_back(NotRestoredReasonToString(static_cast<Reason>(i)));
+  for (BackForwardCacheMetrics::NotRestoredReason reason :
+       not_stored_reasons_) {
+    reason_strs.push_back(NotRestoredReasonToString(reason));
   }
 
   return "No: " + base::JoinString(reason_strs, ", ");
@@ -200,10 +193,10 @@ void BackForwardCacheCanStoreDocumentResult::No(
 }
 
 void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
-    uint64_t features) {
+    BlockListedFeatures features) {
   AddNotStoredReason(
       BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
-  blocklisted_features_ |= features;
+  blocklisted_features_.PutAll(features);
 }
 
 void BackForwardCacheCanStoreDocumentResult::
@@ -217,8 +210,8 @@ void BackForwardCacheCanStoreDocumentResult::
 
 void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
-  not_stored_reasons_ |= other.not_stored_reasons_;
-  blocklisted_features_ |= other.blocklisted_features();
+  not_stored_reasons_.PutAll(other.not_stored_reasons_);
+  blocklisted_features_.PutAll(other.blocklisted_features());
   for (const BackForwardCache::DisabledReason& reason :
        other.disabled_reasons()) {
     disabled_reasons_.insert(reason);

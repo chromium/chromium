@@ -3064,16 +3064,16 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Simulate getting 0b1 as a feature vector from the renderer.
   static_cast<blink::mojom::LocalFrameHost*>(main_frame)
       ->DidChangeActiveSchedulerTrackedFeatures(0b1u);
-  DCHECK_EQ(main_frame->scheduler_tracked_features(), 0b1u);
+  DCHECK_EQ(main_frame->scheduler_tracked_features().ToEnumBitmask(), 0b1u);
   // Simulate the browser side reporting a feature usage.
   main_frame->OnSchedulerTrackedFeatureUsed(
       static_cast<blink::scheduler::WebSchedulerTrackedFeature>(1));
-  DCHECK_EQ(main_frame->scheduler_tracked_features(), 0b11u);
+  DCHECK_EQ(main_frame->scheduler_tracked_features().ToEnumBitmask(), 0b11u);
   // Simulate a feature vector being updated from the renderer with some
   // features being activated and some being deactivated.
   static_cast<blink::mojom::LocalFrameHost*>(main_frame)
       ->DidChangeActiveSchedulerTrackedFeatures(0b100u);
-  DCHECK_EQ(main_frame->scheduler_tracked_features(), 0b110u);
+  DCHECK_EQ(main_frame->scheduler_tracked_features().ToEnumBitmask(), 0b110u);
 
   // Navigate away and expect that no values persist the navigation.
   // Note that we are still simulating the renderer call, otherwise features

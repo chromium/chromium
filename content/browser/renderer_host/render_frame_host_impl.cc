@@ -248,6 +248,7 @@
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
@@ -3902,15 +3903,16 @@ void RenderFrameHostImpl::CancelInitialHistoryLoad() {
 
 void RenderFrameHostImpl::DidChangeActiveSchedulerTrackedFeatures(
     uint64_t features_mask) {
-  renderer_reported_scheduler_tracked_features_ = features_mask;
+  renderer_reported_scheduler_tracked_features_ =
+      blink::scheduler::WebSchedulerTrackedFeatures::FromEnumBitmask(
+          features_mask);
 
   MaybeEvictFromBackForwardCache();
 }
 
 void RenderFrameHostImpl::OnSchedulerTrackedFeatureUsed(
     blink::scheduler::WebSchedulerTrackedFeature feature) {
-  browser_reported_scheduler_tracked_features_ |=
-      1ull << static_cast<uint64_t>(feature);
+  browser_reported_scheduler_tracked_features_.Put(feature);
 
   MaybeEvictFromBackForwardCache();
 }
@@ -5534,7 +5536,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     // https://crrev.com/c/2563674. Lets keep this old code for now just in case
     // and replace with a CHECK once we are confident that is the case.
     SCOPED_CRASH_KEY_NUMBER("BFCache", "EvictAfterRestoreReasons",
-                            can_store.not_stored_reasons().to_ullong());
+                            can_store.not_stored_reasons().ToEnumBitmask());
     base::debug::DumpWithoutCrashing();
     BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
         BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason::
@@ -10063,8 +10065,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
 
-  renderer_reported_scheduler_tracked_features_ = 0;
-  browser_reported_scheduler_tracked_features_ = 0;
+  renderer_reported_scheduler_tracked_features_.Clear();
+  browser_reported_scheduler_tracked_features_.Clear();
 
   // TODO(https://crbug.com/888079): The origin computed from the browser must
   // match the one reported from the renderer process.
