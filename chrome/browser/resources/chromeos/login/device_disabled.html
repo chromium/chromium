@@ -6,16 +6,17 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
 <link rel="import" href="/components/oobe_icons.html">
+<link rel="import" href="/components/behaviors/login_screen_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
 
 <dom-module id="device-disabled-element">
   <template>
-    <style include="oobe-dialog-host">
+    <style include="oobe-dialog-host-styles">
       #message {
         @apply --oobe-default-font;
         color: var(--oobe-text-color);

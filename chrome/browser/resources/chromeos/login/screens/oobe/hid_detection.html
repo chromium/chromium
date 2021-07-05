@@ -4,12 +4,13 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
-<link rel="import" href="/components/buttons/oobe_text_button.html">
-<link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
 <link rel="import" href="/components/behaviors/login_screen_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="/components/buttons/oobe_text_button.html">
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
 
 <iron-iconset-svg name="oobe-hid-detection-20" size="20">
   <svg>
@@ -57,7 +58,7 @@
 
 <dom-module id="hid-detection-element">
   <template>
-    <style include="oobe-dialog-host">
+    <style include="oobe-dialog-host-styles">
       .hid-selection-entry {
         border-bottom: 1px solid var(--google-grey-200);
         color: var(--google-grey-900);

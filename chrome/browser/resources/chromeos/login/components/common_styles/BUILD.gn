@@ -1,0 +1,45 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":common_styles.m",
+    ":oobe_dialog_host_styles.m",
+  ]
+}
+
+group("polymer3_elements") {
+  public_deps = [
+    ":common_styles_module",
+    ":oobe_dialog_host_styles_module",
+  ]
+}
+
+js_library("common_styles.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/common_styles.m.js" ]
+  deps = []
+  extra_deps = [ ":common_styles_module" ]
+}
+
+js_library("oobe_dialog_host_styles.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/common_styles/oobe_dialog_host_styles.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_dialog_host_styles_module" ]
+}
+
+polymer_modulizer("common_styles") {
+  js_file = "common_styles.m.js"
+  html_file = "common_styles.html"
+  html_type = "style-module"
+}
+
+polymer_modulizer("oobe_dialog_host_styles") {
+  js_file = "oobe_dialog_host_styles.m.js"
+  html_file = "oobe_dialog_host_styles.html"
+  html_type = "style-module"
+}

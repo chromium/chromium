@@ -7,17 +7,18 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_icons.html">
+<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
 <link rel="import" href="/components/buttons/oobe_back_button.html">
 <link rel="import" href="/components/buttons/oobe_next_button.html">
-<link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/oobe_icons.html">
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
 
 <dom-module id="security-token-pin">
   <template>
-    <style include="oobe-dialog-host">
+    <style include="oobe-dialog-host-styles">
       #pinKeyboardContainer {
         margin-top: 30px;
         position: relative;

@@ -17,7 +17,7 @@ back-navigation is usually used for holding back button, bottom-buttons for the
 rest buttons.
 
 It is intended to use `oobe-adaptive-dialog` along with style sheets:
-`<style include="oobe-dialog-host"></style>`, and add `OobeDialogHostBehavior`.
+`<style include="oobe-dialog-host-styles"></style>`, and add `OobeDialogHostBehavior`.
 
 Fonts and other styling for title, subtitle and regular text is applied
 separately outside of the `oobe-adaptive-dialog` implementation.

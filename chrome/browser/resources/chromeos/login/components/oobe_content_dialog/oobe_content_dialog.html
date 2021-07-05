@@ -7,10 +7,11 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
 
-<link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/oobe_vars/oobe_shared_vars_css.html">
 <link rel="import" href="/components/behaviors/oobe_focus_behavior.html">
 <link rel="import" href="/components/behaviors/oobe_scrollable_behavior.html">
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="/components/oobe_vars/oobe_shared_vars_css.html">
 
 <!--
   Simple OOBE dialog which should be used for OOBE UI elements.
@@ -23,10 +24,10 @@
   focused.
     2. 'show-dialog' is fired.
 
-  Please include oobe-dialog-host shared style if you use oobe-content-dialog.
+  Please include oobe-dialog-host-styles shared style if you use oobe-content-dialog.
 
   Example:
-    <style include="oobe-dialog-host"></style>
+    <style include="oobe-dialog-host-styles"></style>
     <oobe-content-dialog on-show-dialog="onTestDialogShown_">
       <div slot="content">
         <div class="focus-on-show">...</div>
@@ -52,7 +53,7 @@
 -->
 <dom-module id="oobe-content-dialog">
   <template>
-    <style include="oobe-dialog-host cr-shared-style">
+    <style include="oobe-dialog-host-styles cr-shared-style">
       :host {
         height: var(--oobe-adaptive-dialog-height);
         width: var(--oobe-adaptive-dialog-width);

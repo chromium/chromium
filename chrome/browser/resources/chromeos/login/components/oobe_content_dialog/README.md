@@ -16,7 +16,7 @@ back-navigation is usually used for holding back button, bottom-buttons for the
 rest buttons.
 
 It is intended to use `oobe-content-dialog` along with style sheets:
-`<style include="oobe-dialog-host"></style>`, and add `OobeDialogHostBehavior`.
+`<style include="oobe-dialog-host-styles"></style>`, and add `OobeDialogHostBehavior`.
 
 Most of the uses of `oobe-content-dialog` are hosting `webview` which usually
 has its own title, subtitle and icon.

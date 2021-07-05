@@ -176,7 +176,8 @@ constexpr char kOobeCustomVarsCssHTML[] =
     "components/oobe_vars/oobe_custom_vars_css.html";
 constexpr char kOobeCustomVarsCssJsM[] =
     "components/oobe_vars/oobe_custom_vars_css.m.js";
-constexpr char kCommonStylesHTML[] = "components/common_styles.html";
+constexpr char kCommonStylesHTML[] = "components/common_styles/common_styles.html";
+constexpr char kDialogHostStylesHTML[] = "components/common_styles/oobe_dialog_host_styles.html";
 constexpr char kI18nBehaviorHTML[] = "components/behaviors/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/behaviors/oobe_i18n_behavior.js";
 constexpr char kI18nSetupHTML[] = "components/behaviors/i18n_setup.html";
@@ -751,6 +752,8 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
 
   source->AddResourcePath(kCommonStylesHTML,
                           IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML);
+  source->AddResourcePath(kDialogHostStylesHTML,
+                          IDR_OOBE_COMPONENTS_DIALOG_HOST_STYLES_HTML);
   source->AddResourcePath(kOobeSharedVarsCssHTML,
                           IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML);
 

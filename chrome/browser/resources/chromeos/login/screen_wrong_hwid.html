@@ -6,17 +6,18 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="/components/buttons/oobe_text_button.html">
-<link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
 <link rel="import" href="/components/oobe_icons.html">
+<link rel="import" href="/components/behaviors/login_screen_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="/components/buttons/oobe_text_button.html">
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
 
 <dom-module id="wrong-hwid-element">
   <template>
-    <style include="oobe-dialog-host"></style>
+    <style include="oobe-dialog-host-styles"></style>
     <oobe-adaptive-dialog role="dialog">
       <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">

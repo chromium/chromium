@@ -8,13 +8,13 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
-
-<link rel="import" href="/components/oobe_vars/oobe_shared_vars_css.html">
 <link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
 <link rel="import" href="/components/buttons/oobe_icon_button.html">
 <link rel="import" href="/components/buttons/oobe_next_button.html">
 <link rel="import" href="/components/buttons/oobe_text_button.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
 <link rel="import" href="/components/oobe_dialog/oobe_dialog.html">
+<link rel="import" href="/components/oobe_vars/oobe_shared_vars_css.html">
 
 <!--
   OOBE Welcome screen
@@ -66,7 +66,7 @@
 
 <dom-module id="oobe-welcome-dialog">
   <template>
-    <style include="cr-shared-style oobe-dialog-host">
+    <style include="cr-shared-style oobe-dialog-host-styles">
       :host([is-new-layout_]) {
         box-sizing: border-box;
         height: var(--oobe-adaptive-dialog-height);
