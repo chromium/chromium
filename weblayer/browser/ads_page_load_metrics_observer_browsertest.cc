@@ -89,8 +89,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an empty embedded ad isn't reported at all.
+// TODO(crbug.com/1226500): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricEmbeddedEmpty) {
+                       DISABLED_OriginStatusMetricEmbeddedEmpty) {
   base::HistogramTester histogram_tester;
   NavigateAndWaitForCompletion(
       embedded_test_server()->GetURL(
