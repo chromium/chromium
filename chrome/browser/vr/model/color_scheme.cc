@@ -235,9 +235,8 @@ static constexpr size_t kButtonColorsSize = 20;
 }  // namespace
 
 ColorScheme::ColorScheme() = default;
-ColorScheme::ColorScheme(const ColorScheme& other) {
-  *this = other;
-}
+ColorScheme::ColorScheme(const ColorScheme& other) = default;
+ColorScheme& ColorScheme::operator=(const ColorScheme& other) = default;
 
 static_assert(kButtonColorsSize == sizeof(ButtonColors),
               "If the new colors are added to ButtonColors, we must explicitly "

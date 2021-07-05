@@ -59,12 +59,9 @@ TextInputInfo::TextInputInfo(std::u16string t,
   ClampIndices();
 }
 
-TextInputInfo::TextInputInfo(const TextInputInfo& other)
-    : text(other.text),
-      selection_start(other.selection_start),
-      selection_end(other.selection_end),
-      composition_start(other.composition_start),
-      composition_end(other.composition_end) {}
+TextInputInfo::TextInputInfo(const TextInputInfo& other) = default;
+
+TextInputInfo& TextInputInfo::operator=(const TextInputInfo& other) = default;
 
 bool TextInputInfo::operator==(const TextInputInfo& other) const {
   return text == other.text && selection_start == other.selection_start &&
@@ -117,10 +114,11 @@ void TextInputInfo::ClampIndices() {
   }
 }
 
-EditedText::EditedText() {}
+EditedText::EditedText() = default;
 
-EditedText::EditedText(const EditedText& other)
-    : current(other.current), previous(other.previous) {}
+EditedText::EditedText(const EditedText& other) = default;
+
+EditedText& EditedText::operator=(const EditedText& other) = default;
 
 EditedText::EditedText(const TextInputInfo& new_current)
     : current(new_current) {}

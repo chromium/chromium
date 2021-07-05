@@ -87,8 +87,8 @@ class BudgetDatabase {
   struct BudgetChunk {
     BudgetChunk(double amount, base::Time expiration)
         : amount(amount), expiration(expiration) {}
-    BudgetChunk(const BudgetChunk& other)
-        : amount(other.amount), expiration(other.expiration) {}
+    BudgetChunk(const BudgetChunk&) = default;
+    BudgetChunk& operator=(const BudgetChunk&) = default;
 
     double amount;
     base::Time expiration;

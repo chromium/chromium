@@ -23,16 +23,12 @@ TEST(DiscButton, HoverTest) {
   button.SetSize(1.0f, 1.0f);
   button.set_hover_offset(0.5f);
 
-  gfx::TransformOperation foreground_op =
-      button.foreground()->GetTargetTransform().at(UiElement::kTranslateIndex);
   gfx::TransformOperation background_op =
       button.background()->GetTargetTransform().at(UiElement::kTranslateIndex);
   gfx::TransformOperation hit_plane_op =
       button.hit_plane()->GetTargetTransform().at(UiElement::kScaleIndex);
 
   button.OnHoverEnter(gfx::PointF(0.5f, 0.5f), base::TimeTicks());
-  gfx::TransformOperation foreground_op_hover =
-      button.foreground()->GetTargetTransform().at(UiElement::kTranslateIndex);
   gfx::TransformOperation background_op_hover =
       button.background()->GetTargetTransform().at(UiElement::kTranslateIndex);
   gfx::TransformOperation hit_plane_op_hover =

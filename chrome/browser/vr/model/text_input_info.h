@@ -24,6 +24,7 @@ struct VR_BASE_EXPORT TextInputInfo {
                 int composition_start,
                 int compositon_end);
   TextInputInfo(const TextInputInfo& other);
+  TextInputInfo& operator=(const TextInputInfo& other);
 
   static const int kDefaultCompositionIndex = -1;
 
@@ -66,6 +67,7 @@ struct VR_BASE_EXPORT EditedText {
  public:
   EditedText();
   EditedText(const EditedText& other);
+  EditedText& operator=(const EditedText& other);
   explicit EditedText(const TextInputInfo& current);
   EditedText(const TextInputInfo& current, const TextInputInfo& previous);
   explicit EditedText(std::u16string t);

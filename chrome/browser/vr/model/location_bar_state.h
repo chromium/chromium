@@ -25,6 +25,7 @@ struct VR_BASE_EXPORT LocationBarState {
                    bool display_url,
                    bool offline);
   LocationBarState(const LocationBarState& other);
+  LocationBarState& operator=(const LocationBarState& other);
 
   bool operator==(const LocationBarState& other) const;
   bool operator!=(const LocationBarState& other) const;
