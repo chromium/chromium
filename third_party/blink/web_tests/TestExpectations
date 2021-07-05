@@ -7048,3 +7048,6 @@ crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/over
 
 # Sheriff 2021-07-02
 crbug.com/1226112 http/tests/text-autosizing/narrow-iframe.html [ Failure Pass ]
+
+# Sheriff 2021-07-05
+crbug.com/1226445 [ Mac ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
