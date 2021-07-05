@@ -876,7 +876,7 @@
 
   Enum.prototype.decode = function(decoder) {
     let value = decoder.readInt32();
-    return cls.toKnownEnumValue(value);
+    return this.cls.toKnownEnumValue(value);
   };
 
   Enum.prototype.encode = function(encoder, val) {
