@@ -356,6 +356,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   base::ObserverList<WindowTreeHostObserver>::Unchecked observers_;
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   std::unique_ptr<WindowEventDispatcher> dispatcher_;
 
   std::unique_ptr<ui::Compositor> compositor_;
