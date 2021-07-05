@@ -11,6 +11,13 @@ found in the LICENSE file.
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bottomsheet Behaviour Test</title>
 
+    <script>
+      var removeTouchArea = function(event) {
+        var touch_area = event.target;
+        touch_area.parentNode.removeChild(touch_area);
+      }
+    </script>
+
     <style>
       body {
         margin: 0;
@@ -22,14 +29,13 @@ found in the LICENSE file.
         height: 2em;
         background-color: lightgreen;
       }
-      p {
-        height: 5em;
-      }
       .top {
         background-color: lightblue;
+        height: 5em;
       }
       .bottom {
         background-color: yellow;
+        height: 5em;
       }
       .cast {
         height: 100px;
@@ -47,6 +53,12 @@ found in the LICENSE file.
     <p class="top">Top text hidden</p>
     <div class="cast"></div>
     <div class="blank">Blank</div>
-    <p id="bottom" class="bottom">Bottom text</p>
+    <div id="bottom" class="bottom">Bottom
+      <div>
+        <p id="touch_area" ontouchend="removeTouchArea(event)" onmouseup="removeTouchArea(event)">
+          Touchable Area</p>
+        <br>
+      </div>
+    </div>
   </body>
 </html>
