@@ -24,10 +24,10 @@ const base::Feature kNetworkServiceSandbox{"NetworkServiceSandbox",
 const base::Feature kWinSboxDisableKtmComponent{
     "WinSboxDisableKtmComponent", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Experiment for Windows sandbox security mitigation,
+// Emergency "off switch" for new Windows sandbox security mitigation,
 // sandbox::MITIGATION_EXTENSION_POINT_DISABLE.
 const base::Feature kWinSboxDisableExtensionPoints{
-    "WinSboxDisableExtensionPoint", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WinSboxDisableExtensionPoint", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables GPU AppContainer sandbox on Windows.
 const base::Feature kGpuAppContainer{"GpuAppContainer",

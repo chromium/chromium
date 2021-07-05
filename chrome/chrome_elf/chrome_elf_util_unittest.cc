@@ -18,18 +18,18 @@
 
 namespace {
 
-bool SetExtensionPointEnabledFlag(bool creation) {
+bool SetSecurityFinchFlag(bool creation) {
   bool success = true;
-  const std::wstring reg_path(install_static::GetRegistryPath().append(
-      elf_sec::kRegBrowserExtensionPointKeyName));
+  const std::wstring finch_path(install_static::GetRegistryPath().append(
+      elf_sec::kRegSecurityFinchKeyName));
   base::win::RegKey security_key(HKEY_CURRENT_USER, L"", KEY_ALL_ACCESS);
 
   if (creation) {
     if (ERROR_SUCCESS !=
-        security_key.CreateKey(reg_path.c_str(), KEY_QUERY_VALUE))
+        security_key.CreateKey(finch_path.c_str(), KEY_QUERY_VALUE))
       success = false;
   } else {
-    if (ERROR_SUCCESS != security_key.DeleteKey(reg_path.c_str()))
+    if (ERROR_SUCCESS != security_key.DeleteKey(finch_path.c_str()))
       success = false;
   }
 
@@ -92,12 +92,13 @@ TEST(ChromeElfUtilTest, BrowserProcessSecurityTest) {
   registry_util::RegistryOverrideManager override_manager;
   ASSERT_NO_FATAL_FAILURE(RegRedirect(nt::HKCU, &override_manager));
 
-  // First, ensure that the policy is not applied without the reg key.
+  // First, ensure that the emergency-off finch signal works.
+  EXPECT_TRUE(SetSecurityFinchFlag(true));
   elf_security::EarlyBrowserSecurity();
   EXPECT_FALSE(IsSecuritySet());
-  EXPECT_TRUE(SetExtensionPointEnabledFlag(true));
+  EXPECT_TRUE(SetSecurityFinchFlag(false));
 
-  // Second, test that the process mitigation is set when the reg key exists.
+  // Second, test that the process mitigation is set when no finch signal.
   elf_security::EarlyBrowserSecurity();
   EXPECT_TRUE(IsSecuritySet());
 

@@ -115,30 +115,25 @@ void InitializeChromeElf() {
     BrowserBlacklistBeaconSetup();
   }
 
-  // Make sure the registry key we read earlier in startup
+  // Make sure the early finch emergency "off switch" for
   // sandbox::MITIGATION_EXTENSION_POINT_DISABLE is set properly in reg.
   // Note: the very existence of this key signals elf to not enable
   // this mitigation on browser next start.
-  const std::wstring reg_path(install_static::GetRegistryPath().append(
-      elf_sec::kRegBrowserExtensionPointKeyName));
-  base::win::RegKey browser_extension_point_registry_key(
-      HKEY_CURRENT_USER, reg_path.c_str(), KEY_READ);
+  const std::wstring finch_path(install_static::GetRegistryPath().append(
+      elf_sec::kRegSecurityFinchKeyName));
+  base::win::RegKey finch_security_registry_key(HKEY_CURRENT_USER,
+                                                finch_path.c_str(), KEY_READ);
 
-  ExtensionPointEnableState extension_point_enable_state =
-      GetExtensionPointsEnableState();
-  RecordExtensionPointsEnableState(extension_point_enable_state);
-  bool enable_extension_point_policy =
-      (extension_point_enable_state == EXTENSIONPOINT_ENABLED) &&
-      base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxDisableExtensionPoints);
+  RecordExtensionPointsEnableState(GetExtensionPointsEnableState());
 
-  if (enable_extension_point_policy) {
-    if (!browser_extension_point_registry_key.Valid()) {
-      browser_extension_point_registry_key.Create(HKEY_CURRENT_USER,
-                                                  reg_path.c_str(), KEY_WRITE);
-    } else {
-      if (browser_extension_point_registry_key.Valid())
-        browser_extension_point_registry_key.DeleteKey(L"");
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxDisableExtensionPoints)) {
+    if (finch_security_registry_key.Valid())
+      finch_security_registry_key.DeleteKey(L"");
+  } else {
+    if (!finch_security_registry_key.Valid()) {
+      finch_security_registry_key.Create(HKEY_CURRENT_USER, finch_path.c_str(),
+                                         KEY_WRITE);
     }
   }
 }
