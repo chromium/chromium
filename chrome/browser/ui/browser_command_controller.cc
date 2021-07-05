@@ -1014,8 +1014,8 @@ void BrowserCommandController::InitCommandState() {
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
     use_system_title_bar = ui::OzonePlatform::GetInstance()
-                               ->GetPlatformProperties()
-                               .use_system_title_bar;
+                               ->GetPlatformRuntimeProperties()
+                               .supports_server_side_window_decorations;
   }
 #endif
   command_updater_.UpdateCommandEnabled(IDC_USE_SYSTEM_TITLE_BAR,

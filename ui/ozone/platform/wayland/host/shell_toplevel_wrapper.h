@@ -25,11 +25,13 @@ class WaylandConnection;
 class ShellToplevelWrapper {
  public:
   enum class DecorationMode {
+    // Initial mode that the surface has till the first configure event.
+    kNone,
     // Client-side decoration for a window.
     // In this case, the client is responsible for drawing decorations
     // for a window (e.g. caption bar, close button). This is suitable for
     // windows using custom frame.
-    kClientSide = 1,
+    kClientSide,
     // Server-side decoration for a window.
     // In this case, the ash window manager is responsible for drawing
     // decorations. This is suitable for windows using native frame.
