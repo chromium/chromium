@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace infobars {
 class InfoBar;
@@ -19,6 +20,7 @@ class TabSharingUI : public MediaStreamUI {
   ~TabSharingUI() override = default;
 
   static std::unique_ptr<TabSharingUI> Create(
+      content::GlobalRenderFrameHostId capturer,
       const content::DesktopMediaID& media_id,
       std::u16string app_name);
 

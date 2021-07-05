@@ -10,6 +10,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,26 +41,54 @@ class TabSharingInfoBarDelegateTest : public BrowserWithTestWindowTest {
  public:
   TabSharingInfoBarDelegateTest() {}
 
-  infobars::InfoBar* CreateInfobar(std::u16string shared_tab_name,
-                                   std::u16string app_name,
-                                   bool shared_tab,
-                                   bool can_share,
-                                   int tab_index = 0) {
+  infobars::InfoBar* CreateInfobar(
+      std::u16string shared_tab_name,
+      std::u16string app_name,
+      bool shared_tab,
+      bool can_share,
+      int tab_index = 0,
+      absl::optional<content::GlobalRenderFrameHostId> focus_target =
+          absl::nullopt) {
     return TabSharingInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(
             browser()->tab_strip_model()->GetWebContentsAt(tab_index)),
-        shared_tab_name, app_name, shared_tab, can_share,
+        shared_tab_name, app_name, shared_tab, can_share, focus_target,
         tab_sharing_mock_ui());
   }
 
-  ConfirmInfoBarDelegate* CreateDelegate(std::u16string shared_tab_name,
-                                         std::u16string app_name,
-                                         bool shared_tab,
-                                         bool can_share,
-                                         int tab_index = 0) {
-    infobars::InfoBar* infobar = CreateInfobar(
-        shared_tab_name, app_name, shared_tab, can_share, tab_index);
+  ConfirmInfoBarDelegate* CreateDelegate(
+      std::u16string shared_tab_name,
+      std::u16string app_name,
+      bool shared_tab,
+      bool can_share,
+      int tab_index = 0,
+      absl::optional<content::GlobalRenderFrameHostId> focus_target =
+          absl::nullopt) {
+    infobars::InfoBar* infobar =
+        CreateInfobar(shared_tab_name, app_name, shared_tab, can_share,
+                      tab_index, focus_target);
     return static_cast<ConfirmInfoBarDelegate*>(infobar->delegate());
+  }
+
+  content::WebContents* GetWebContents(int tab) {
+    return browser()->tab_strip_model()->GetWebContentsAt(tab);
+  }
+
+  content::GlobalRenderFrameHostId GetGlobalId(int tab) {
+    auto* const main_frame = GetWebContents(tab)->GetMainFrame();
+    return main_frame ? main_frame->GetGlobalId()
+                      : content::GlobalRenderFrameHostId();
+  }
+
+  std::u16string GetExpectedSwitchToMessageForTargetTab(int tab) {
+    return l10n_util::GetStringFUTF16(
+        IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+        url_formatter::FormatUrlForSecurityDisplay(
+            GetWebContents(tab)
+                ->GetMainFrame()
+                ->GetLastCommittedURL()
+                .GetOrigin(),
+            url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 
   MockTabSharingUIViews* tab_sharing_mock_ui() { return &mock_ui; }
@@ -87,19 +116,44 @@ TEST_F(TabSharingInfoBarDelegateTest, StopSharingOnAccept) {
 }
 
 // Test that the infobar on the shared tab has the correct layout:
-// "|icon| Sharing this tab to |app| [Stop]"
-TEST_F(TabSharingInfoBarDelegateTest, InfobarOnSharedTab) {
-  AddTab(browser(), GURL("about:blank"));
+// "|icon| Sharing this tab to |app| [Switch to captured]"
+TEST_F(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
+  AddTab(browser(), GURL("about:blank"));  // Captured; index = 0.
+  AddTab(browser(), GURL("about:blank"));  // Capturing; index = 1.
   ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(std::u16string(), kAppName, true, true);
+      CreateDelegate(std::u16string(), kAppName, true, true, 1, GetGlobalId(0));
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
   EXPECT_EQ(delegate->GetMessageText(),
             l10n_util::GetStringFUTF16(
                 IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
-  EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK);
+  EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK |
+                                        ConfirmInfoBarDelegate::BUTTON_CANCEL);
   EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL),
+            GetExpectedSwitchToMessageForTargetTab(1));
+  EXPECT_FALSE(delegate->IsCloseable());
+}
+
+// Test that the infobar on the shared tab has the correct layout:
+// "|icon| Sharing this tab to |app| [Switch to capturer]"
+TEST_F(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
+  AddTab(browser(), GURL("about:blank"));  // Captured; index = 0.
+  AddTab(browser(), GURL("about:blank"));  // Capturing; index = 1.
+  ConfirmInfoBarDelegate* delegate =
+      CreateDelegate(std::u16string(), kAppName, true, true, 0, GetGlobalId(1));
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               vector_icons::kScreenShareIcon.name);
+  EXPECT_EQ(delegate->GetMessageText(),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
+  EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK |
+                                        ConfirmInfoBarDelegate::BUTTON_CANCEL);
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
+            l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL),
+            GetExpectedSwitchToMessageForTargetTab(0));
   EXPECT_FALSE(delegate->IsCloseable());
 }
 

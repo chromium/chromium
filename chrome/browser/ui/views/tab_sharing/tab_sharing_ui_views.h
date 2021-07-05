@@ -35,7 +35,8 @@ class TabSharingUIViews : public TabSharingUI,
                           public infobars::InfoBarManager::Observer,
                           public content::WebContentsObserver {
  public:
-  TabSharingUIViews(const content::DesktopMediaID& media_id,
+  TabSharingUIViews(content::GlobalRenderFrameHostId capturer,
+                    const content::DesktopMediaID& media_id,
                     std::u16string app_name);
   ~TabSharingUIViews() override;
 
@@ -84,6 +85,7 @@ class TabSharingUIViews : public TabSharingUI,
   void CreateTabCaptureIndicator();
 
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
+  const content::GlobalRenderFrameHostId capturer_;
   content::DesktopMediaID shared_tab_media_id_;
   const std::u16string app_name_;
   content::WebContents* shared_tab_;

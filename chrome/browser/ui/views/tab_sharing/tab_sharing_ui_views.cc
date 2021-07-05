@@ -34,12 +34,15 @@
 
 namespace {
 
+using content::GlobalRenderFrameHostId;
+using content::WebContents;
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 const int kContentsBorderThickness = 5;
 const float kContentsBorderOpacity = 0.50;
 const SkColor kContentsBorderColor = gfx::kGoogleBlue500;
 
-void InitContentsBorderWidget(content::WebContents* contents) {
+void InitContentsBorderWidget(WebContents* contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (browser_view->contents_border_widget())
@@ -75,7 +78,7 @@ void InitContentsBorderWidget(content::WebContents* contents) {
 }
 #endif
 
-void SetContentsBorderVisible(content::WebContents* contents, bool visible) {
+void SetContentsBorderVisible(WebContents* contents, bool visible) {
   // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!contents)
@@ -99,8 +102,8 @@ void SetContentsBorderVisible(content::WebContents* contents, bool visible) {
 #endif
 }
 
-std::u16string GetTabName(content::WebContents* tab) {
-  GURL url = tab->GetLastCommittedURL();
+std::u16string GetTabName(WebContents* tab) {
+  const GURL& url = tab->GetLastCommittedURL();
   const std::u16string tab_name =
       network::IsUrlPotentiallyTrustworthy(url)
           ? base::UTF8ToUTF16(net::GetHostAndOptionalPort(url))
@@ -108,20 +111,29 @@ std::u16string GetTabName(content::WebContents* tab) {
   return tab_name.empty() ? tab->GetTitle() : tab_name;
 }
 
+GlobalRenderFrameHostId GetGlobalId(WebContents* web_contents) {
+  auto* const main_frame = web_contents->GetMainFrame();
+  return main_frame ? main_frame->GetGlobalId() : GlobalRenderFrameHostId();
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<TabSharingUI> TabSharingUI::Create(
+    GlobalRenderFrameHostId capturer,
     const content::DesktopMediaID& media_id,
     std::u16string app_name) {
-  return base::WrapUnique(new TabSharingUIViews(media_id, app_name));
+  return base::WrapUnique(new TabSharingUIViews(capturer, media_id, app_name));
 }
 
-TabSharingUIViews::TabSharingUIViews(const content::DesktopMediaID& media_id,
+TabSharingUIViews::TabSharingUIViews(GlobalRenderFrameHostId capturer,
+                                     const content::DesktopMediaID& media_id,
                                      std::u16string app_name)
-    : shared_tab_media_id_(media_id), app_name_(std::move(app_name)) {
-  shared_tab_ = content::WebContents::FromRenderFrameHost(
-      content::RenderFrameHost::FromID(
+    : capturer_(capturer),
+      shared_tab_media_id_(media_id),
+      app_name_(std::move(app_name)) {
+  shared_tab_ =
+      WebContents::FromRenderFrameHost(content::RenderFrameHost::FromID(
           media_id.web_contents_id.render_process_id,
           media_id.web_contents_id.main_render_frame_id));
   Observe(shared_tab_);
@@ -157,7 +169,7 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
 
   SetContentsBorderVisible(shared_tab_, false);
 
-  content::WebContents* shared_tab =
+  WebContents* shared_tab =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar);
   DCHECK(shared_tab);
   DCHECK_EQ(infobars_[shared_tab], infobar);
@@ -215,7 +227,7 @@ void TabSharingUIViews::OnTabStripModelChanged(
   }
 }
 
-void TabSharingUIViews::TabChangedAt(content::WebContents* contents,
+void TabSharingUIViews::TabChangedAt(WebContents* contents,
                                      int index,
                                      TabChangeType change_type) {
   // Sad tab cannot be shared so don't create an infobar for it.
@@ -244,19 +256,16 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
 }
 
 void TabSharingUIViews::DidFinishNavigation(content::NavigationHandle* handle) {
-  // Only interested in committed navigations on the shared tab that result in
-  // changing the shared tab's name.
   // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
   // frames. This caller was converted automatically to the primary main frame
   // to preserve its semantics. Follow up to confirm correctness.
   if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted() ||
-      handle->IsSameDocument() || handle->GetWebContents() != shared_tab_ ||
-      GetTabName(shared_tab_) == shared_tab_name_) {
+      handle->IsSameDocument() || handle->GetWebContents() != shared_tab_) {
     return;
   }
   shared_tab_name_ = GetTabName(shared_tab_);
   for (const auto& infobars_entry : infobars_) {
-    // Recreate infobars to reflect the new shared tab name.
+    // Recreate infobars to reflect the new shared tab's hostname.
     if (infobars_entry.first != shared_tab_)
       CreateInfobarForWebContents(infobars_entry.first);
   }
@@ -279,8 +288,9 @@ void TabSharingUIViews::CreateInfobarsForAllTabs() {
   browser_list->AddObserver(this);
 }
 
-void TabSharingUIViews::CreateInfobarForWebContents(
-    content::WebContents* contents) {
+void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
+  DCHECK(contents);
+
   auto infobars_entry = infobars_.find(contents);
   // Recreate the infobar if it already exists.
   if (infobars_entry != infobars_.end()) {
@@ -290,10 +300,25 @@ void TabSharingUIViews::CreateInfobarForWebContents(
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(contents);
   infobar_manager->AddObserver(this);
+
+  const bool is_capturing_tab = (GetGlobalId(contents) == capturer_);
+  const bool is_captured_tab = (contents == shared_tab_);
+
+  // Self-capture -> no switch-to button.
+  // Capturer -> switch-to-captured.
+  // Captured -> switch-to-capturer.
+  // Otherwise -> no switch-to button.
+  absl::optional<GlobalRenderFrameHostId> focus_target;
+  if (is_capturing_tab && !is_captured_tab) {
+    focus_target = absl::make_optional(GetGlobalId(shared_tab_));
+  } else if (!is_capturing_tab && is_captured_tab) {
+    focus_target = absl::make_optional(capturer_);
+  }
+
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, app_name_,
       shared_tab_ == contents /*shared_tab*/,
-      !source_callback_.is_null() /*can_share*/, this);
+      !source_callback_.is_null() /*can_share*/, focus_target, this);
 }
 
 void TabSharingUIViews::RemoveInfobarsForAllTabs() {

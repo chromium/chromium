@@ -3489,6 +3489,16 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_TAB_SHARING_INFOBAR_STOP_BUTTON" desc="Text displayed on the button to stop sharing a tab.">
        Stop
       </message>
+      <message name="IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON" desc="Text displayed on an infobar button offering to change focus to another tab.">
+       Switch to tab <ph name="TAB_ORIGIN">$1<ex>meet.google.com</ex></ph>
+      </message>
+      <message name="IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURER_BUTTON" desc="Text displayed on an infobar button offering to change focus to the capturer if its hostname cannot be determined. (Otherwise, IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON will be used.)">
+       Switch to capturing tab
+      </message>
+      <message name="IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURED_BUTTON" desc="Text displayed on an infobar button offering to change focus to the capturer if its hostname cannot be determined. (Otherwise, IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON will be used.)">
+       Switch to captured tab
+      </message>
+
 
       <!-- Task Manager Window -->
       <if expr="not is_android">

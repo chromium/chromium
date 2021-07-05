@@ -6,42 +6,61 @@
 #define CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "content/public/browser/global_routing_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace infobars {
 class ContentInfoBarManager;
 class InfoBar;
 }
 
+class TabSharingInfoBarDelegateButton;
 class TabSharingUI;
 
 // Creates an infobar for sharing a tab using desktopCapture() API; one delegate
 // per tab.
-// Layout for currently shared tab:
+//
+// 1. Layout for currently shared tab:
 // "Sharing this tab to |app_name_|  [Stop]"
-// Layout for all other tabs:
+//
+// 2. Layout for capturing/captured tab:
+// "Sharing |shared_tab_name_| to |app_name_| [Stop] [Switch-Label]"
+// Where [Switch-Label] is "Switch to tab <hostname>", with the hostname for
+// in the captured tab being the capturer's, and vice versa.
+//
+// 3a. Layout for all other tabs:
 // "Sharing |shared_tab_name_| to |app_name_| [Stop] [Share this tab instead]"
-// or if |shared_tab_name_| is empty:
+// 3b. Or if |shared_tab_name_| is empty:
 // "Sharing a tab to |app_name_| [Stop] [Share this tab instead]"
 class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  // Creates a tab sharing infobar. If |shared_tab| is true, it creates an
-  // infobar with "currently shared tab" layout (see class comment). If
-  // |can_share| is false, [Share this tab] button is not displayed.
+  // Creates a tab sharing infobar, which has 1-2 buttons.
+  //
+  // The primary button is for stopping the capture. It is always present.
+  //
+  // If |focus_target| has a value, the secondary button switches focus.
+  // Else, if |can_share|, the secondary button changes the capture target
+  // to be the tab associated with |this| object.
+  // Otherwise, there is no secondary button.
   static infobars::InfoBar* Create(
       infobars::ContentInfoBarManager* infobar_manager,
       const std::u16string& shared_tab_name,
       const std::u16string& app_name,
       bool shared_tab,
       bool can_share,
+      absl::optional<content::GlobalRenderFrameHostId> focus_target,
       TabSharingUI* ui);
-  ~TabSharingInfoBarDelegate() override = default;
+
+  ~TabSharingInfoBarDelegate() override;
 
  private:
-  TabSharingInfoBarDelegate(std::u16string shared_tab_name,
-                            std::u16string app_name,
-                            bool shared_tab,
-                            bool can_share,
-                            TabSharingUI* ui);
+  TabSharingInfoBarDelegate(
+      std::u16string shared_tab_name,
+      std::u16string app_name,
+      bool shared_tab,
+      bool can_share,
+      absl::optional<content::GlobalRenderFrameHostId> focus_target,
+      TabSharingUI* ui);
 
   // ConfirmInfoBarDelegate:
   bool EqualsDelegate(InfoBarDelegate* delegate) const override;
@@ -57,11 +76,12 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   const std::u16string shared_tab_name_;
   const std::u16string app_name_;
-  bool shared_tab_;
-  bool can_share_;
+  const bool shared_tab_;
 
   // Creates and removes delegate's infobar; outlives delegate.
-  TabSharingUI* ui_;
+  TabSharingUI* const ui_;
+
+  std::unique_ptr<TabSharingInfoBarDelegateButton> secondary_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_
