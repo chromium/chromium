@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,7 +15,8 @@
 namespace file_manager {
 
 SystemNotificationManager::SystemNotificationManager(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile),
+      swa_enabled_(ash::features::IsFileManagerSwaEnabled()) {}
 
 SystemNotificationManager::~SystemNotificationManager() = default;
 
@@ -83,6 +85,9 @@ void SystemNotificationManager::Dismiss(const std::string& notification_id) {
 
 void SystemNotificationManager::HandleDeviceEvent(
     const file_manager_private::DeviceEvent& event) {
+  if (!swa_enabled_) {
+    return;
+  }
   std::unique_ptr<message_center::Notification> notification;
 
   const char* id = file_manager_private::ToString(event.type);
@@ -151,6 +156,9 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {}
 void SystemNotificationManager::HandleCopyStart(
     int copy_id,
     file_manager_private::CopyOrMoveProgressStatus& status) {
+  if (!swa_enabled_) {
+    return;
+  }
   if (status.size) {
     required_copy_space_[copy_id] = *status.size;
   }
@@ -163,6 +171,9 @@ namespace file_manager_private = extensions::api::file_manager_private;
 void SystemNotificationManager::HandleCopyEvent(
     int copy_id,
     file_manager_private::CopyOrMoveProgressStatus& status) {
+  if (!swa_enabled_) {
+    return;
+  }
   std::unique_ptr<message_center::Notification> notification;
   int progress = 0;
   std::string id =

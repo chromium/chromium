@@ -99,6 +99,8 @@ class SystemNotificationManager {
   std::map<int, double> required_copy_space_;
 
   Profile* const profile_;
+  // Caches the SWA feature flag.
+  bool swa_enabled_;
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
 };
 
