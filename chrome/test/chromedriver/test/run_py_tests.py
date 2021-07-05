@@ -12,6 +12,7 @@
 # is updated in Devil.
 
 from __future__ import print_function
+from __future__ import absolute_import
 import base64
 import json
 import math
@@ -26,11 +27,14 @@ import tempfile
 import threading
 import time
 import unittest
-import urllib
-import urllib2
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 import uuid
 import imghdr
 import struct
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -529,19 +533,19 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
 
   def testDefaultSession(self):
     driver = self.CreateDriver()
-    self.assertFalse(driver.capabilities.has_key('webSocketUrl'))
+    self.assertFalse('webSocketUrl' in driver.capabilities)
     self.assertRaises(Exception, websocket_connection.WebSocketConnection,
                       _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
 
   def testWebSocketUrlFalse(self):
     driver = self.CreateDriver(web_socket_url=False)
-    self.assertFalse(driver.capabilities.has_key('webSocketUrl'))
+    self.assertFalse('webSocketUrl' in driver.capabilities)
     self.assertRaises(Exception, websocket_connection.WebSocketConnection,
                       _CHROMEDRIVER_SERVER_URL, driver.GetSessionId())
 
   def testWebSocketUrlTrue(self):
     driver = self.CreateDriver(web_socket_url=True)
-    self.assertTrue(driver.capabilities.has_key('webSocketUrl'))
+    self.assertTrue('webSocketUrl' in driver.capabilities)
     self.assertNotEqual(None, driver.GetSessionId())
     self.assertEquals(driver.capabilities['webSocketUrl'],
         self.composeWebSocketUrl(_CHROMEDRIVER_SERVER_URL,
@@ -2356,7 +2360,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     # the test HTTP server.
     path = os.path.join(chrome_paths.GetTestData(), 'chromedriver',
       'page_with_frame.html')
-    url = 'file://' + urllib.pathname2url(path)
+    url = 'file://' + six.moves.urllib.request.pathname2url(path)
     self._driver.Load(url)
     frame = self._driver.FindElement('css selector', '#frm')
     self._driver.SwitchToFrame(frame)
@@ -3922,20 +3926,20 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTest):
 
     try:
       omaha_list = json.loads(
-          urllib2.urlopen('http://omahaproxy.appspot.com/all.json').read())
+          six.moves.urllib.request.urlopen('http://omahaproxy.appspot.com/all.json').read())
       for l in omaha_list:
         if l['os'] != 'android':
           continue
         for v in l['versions']:
           if (('stable' in v['channel'] and 'stable' in _ANDROID_PACKAGE_KEY) or
               ('beta' in v['channel'] and 'beta' in _ANDROID_PACKAGE_KEY)):
-            omaha = map(int, v['version'].split('.'))
-            device = map(int,
-              self._driver.capabilities['browserVersion'].split('.'))
+            omaha = list(map(int, v['version'].split('.')))
+            device = list(map(int,
+              self._driver.capabilities['browserVersion'].split('.')))
             self.assertTrue(omaha <= device)
             return
       raise RuntimeError('Malformed omaha JSON')
-    except urllib2.URLError as e:
+    except six.moves.urllib.error.URLError as e:
       print('Unable to fetch current version info from omahaproxy (%s)' % e)
 
   def testDeviceManagement(self):
@@ -4117,7 +4121,7 @@ class ChromeSwitchesCapabilityTest(ChromeDriverBaseTest):
     # selection.
     ports_generator = util.FindProbableFreePorts()
     for _ in range(3):
-      port = ports_generator.next()
+      port = next(ports_generator)
       port_flag = 'remote-debugging-port=%s' % port
       try:
         driver = self.CreateDriver(chrome_switches=[port_flag])
@@ -4551,7 +4555,7 @@ class ChromeDriverLogTest(ChromeDriverBaseTest):
           chrome_binary=_CHROME_BINARY,
           experimental_options={ self.UNEXPECTED_CHROMEOPTION_CAP : 1 })
       driver.Quit()
-    except chromedriver.ChromeDriverException, e:
+    except chromedriver.ChromeDriverException as e:
       self.assertTrue(self.LOG_MESSAGE in e.message)
     finally:
       chromedriver_server.Kill()
@@ -4651,7 +4655,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
     # selection.
     ports_generator = util.FindProbableFreePorts()
     for _ in range(3):
-      port = ports_generator.next()
+      port = next(ports_generator)
       temp_dir = util.MakeTempDir()
       print('temp dir is ' + temp_dir)
       cmd = [_CHROME_BINARY,
@@ -4691,7 +4695,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
       # selection.
       ports_generator = util.FindProbableFreePorts()
       for _ in range(3):
-        port = ports_generator.next()
+        port = next(ports_generator)
         temp_dir = util.MakeTempDir()
         print('temp dir is ' + temp_dir)
         cmd = [_CHROME_BINARY,
@@ -4759,7 +4763,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
     try:
       os.write(file_descriptor, '#!/bin/bash\nexit 0')
       os.close(file_descriptor)
-      os.chmod(path, 0777)
+      os.chmod(path, 0o777)
       exception_raised = False
       try:
         driver = chromedriver.ChromeDriver(_CHROMEDRIVER_SERVER_URL,
@@ -5034,7 +5038,7 @@ if __name__ == '__main__':
   parser.add_option(
       '', '--android-package',
       help=('Android package key. Possible values: ' +
-            str(_ANDROID_NEGATIVE_FILTER.keys())))
+            str(list(_ANDROID_NEGATIVE_FILTER.keys()))))
 
   parser.add_option(
       '', '--isolated-script-test-output',

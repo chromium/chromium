@@ -4,6 +4,7 @@
 
 """WPT WebDriver tests runner."""
 
+from __future__ import absolute_import
 import pytest
 import os
 import argparse
@@ -90,7 +91,7 @@ def prepare_filtered_tests(isolated_script_test_filter, finder, shard, port):
   filter_list = isolated_script_test_filter.split('::')
   filtered_tests = [get_relative_subtest_path(
       test, finder, shard, port) for test in filter_list]
-  return filter(None, filtered_tests)
+  return [_f for _f in filtered_tests if _f]
 
 def get_relative_subtest_path(external_test_path, finder, shard, port):
   test_name, subtest_suffix = port.split_webdriver_test_name(

@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import BaseHTTPServer
+from __future__ import absolute_import
+import six.moves.BaseHTTPServer
 import os
-import SocketServer
+import six.moves.socketserver
 import threading
 import ssl
 import sys
@@ -57,7 +58,7 @@ class Request(object):
     return self._handler.headers.getheader(name)
 
 
-class _BaseServer(BaseHTTPServer.HTTPServer):
+class _BaseServer(six.moves.BaseHTTPServer.HTTPServer):
   """Internal server that throws if timed out waiting for a request."""
 
   def __init__(self, on_request, server_cert_and_key_path=None):
@@ -70,7 +71,7 @@ class _BaseServer(BaseHTTPServer.HTTPServer):
       server_cert_and_key_path: path to a PEM file containing the cert and key.
                                 if it is None, start the server as an HTTP one.
     """
-    class _Handler(BaseHTTPServer.BaseHTTPRequestHandler):
+    class _Handler(six.moves.BaseHTTPServer.BaseHTTPRequestHandler):
       """Internal handler that just asks the server to handle the request."""
 
       def do_GET(self):
@@ -85,17 +86,18 @@ class _BaseServer(BaseHTTPServer.HTTPServer):
 
       def handle(self):
         try:
-          BaseHTTPServer.BaseHTTPRequestHandler.handle(self)
+          six.moves.BaseHTTPServer.BaseHTTPRequestHandler.handle(self)
         except:
           pass # Ignore socket errors.
 
       def finish(self):
         try:
-          BaseHTTPServer.BaseHTTPRequestHandler.finish(self)
+          six.moves.BaseHTTPServer.BaseHTTPRequestHandler.finish(self)
         except:
           pass # Ignore socket errors.
 
-    BaseHTTPServer.HTTPServer.__init__(self, ('127.0.0.1', 0), _Handler)
+    six.moves.BaseHTTPServer.HTTPServer.__init__(self, ('127.0.0.1', 0), \
+      _Handler)
 
     if server_cert_and_key_path is not None:
       self._is_https_enabled = True
@@ -116,7 +118,7 @@ class _BaseServer(BaseHTTPServer.HTTPServer):
     return 'http' + postfix
 
 
-class _ThreadingServer(SocketServer.ThreadingMixIn, _BaseServer):
+class _ThreadingServer(six.moves.socketserver.ThreadingMixIn, _BaseServer):
   """_BaseServer enhanced to handle multiple requests simultaneously"""
   pass
 

@@ -4,6 +4,7 @@
 
 """Utilities for dealing with the python unittest module."""
 
+from __future__ import absolute_import
 import fnmatch
 import sys
 import unittest
@@ -81,7 +82,7 @@ def GetTestsFromSuite(suite):
 
 def GetTestNamesFromSuite(suite):
   """Returns a list of every test name in the given suite."""
-  return map(lambda x: GetTestName(x), GetTestsFromSuite(suite))
+  return [GetTestName(x) for x in GetTestsFromSuite(suite)]
 
 
 def GetTestName(test):
