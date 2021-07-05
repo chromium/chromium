@@ -3,14 +3,11 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/demo_mode_app_ui/demo_mode_app_ui.h"
-#include "chromeos/components/demo_mode_app_ui/demo_mode_page_handler.h"
 #include "chromeos/components/demo_mode_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_demo_mode_app_resources.h"
 #include "chromeos/grit/chromeos_demo_mode_app_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/views/widget/widget.h"
 
 namespace chromeos {
 
@@ -33,22 +30,6 @@ DemoModeAppUI::DemoModeAppUI(content::WebUI* web_ui)
 }
 
 DemoModeAppUI::~DemoModeAppUI() = default;
-
-void DemoModeAppUI::BindInterface(
-    mojo::PendingReceiver<mojom::demo_mode::PageHandlerFactory> factory) {
-  if (demo_mode_page_factory_.is_bound()) {
-    demo_mode_page_factory_.reset();
-  }
-  demo_mode_page_factory_.Bind(std::move(factory));
-}
-
-void DemoModeAppUI::CreatePageHandler(
-    mojo::PendingReceiver<mojom::demo_mode::PageHandler> handler) {
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
-  demo_mode_page_handler_ =
-      std::make_unique<DemoModePageHandler>(std::move(handler), widget);
-}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DemoModeAppUI)
 
