@@ -6903,6 +6903,87 @@ TEST_F(PersonalDataManagerTest, UpdateClientValidityStates_Disabled) {
                                           AutofillProfile::CLIENT));
 }
 
+// Tests that the least recently used profile of two existing profiles is
+// deleted, when an update of one of the profiles makes it a duplicate of the
+// other, already existing profile. Here, the less recently used profile is
+// edited to become a duplicate of the more recently used profile.
+TEST_F(PersonalDataManagerTest, CreateDuplicateWithAnUpdate) {
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+
+  AutofillProfile more_recently_used_profile(test::GetFullProfile());
+  AutofillProfile less_recently_used_profile(test::GetFullProfile2());
+
+  base::Time older_use_date = AutofillClock::Now();
+  less_recently_used_profile.set_use_date(older_use_date);
+  test_clock.Advance(base::TimeDelta::FromDays(1));
+
+  // Set more recently used profile to have a use date that is newer than
+  // `older_use_date`.
+  base::Time newer_use_data = AutofillClock::Now();
+  more_recently_used_profile.set_use_date(newer_use_data);
+
+  AddProfileToPersonalDataManager(more_recently_used_profile);
+  AddProfileToPersonalDataManager(less_recently_used_profile);
+
+  EXPECT_EQ(personal_data_->GetProfiles().size(), 2U);
+
+  // Now make an update to less recently used profile that makes it a duplicate
+  // of the more recently used profile.
+  AutofillProfile updated_less_recently_used_profile =
+      more_recently_used_profile;
+  updated_less_recently_used_profile.set_guid(
+      less_recently_used_profile.guid());
+  // Set the updated profile to have a older use date than it's duplicate.
+  updated_less_recently_used_profile.set_use_date(older_use_date);
+  UpdateProfileOnPersonalDataManager(updated_less_recently_used_profile);
+
+  // Verify that the less recently used profile was removed.
+  ASSERT_EQ(personal_data_->GetProfiles().size(), 1U);
+  EXPECT_EQ(*personal_data_->GetProfiles()[0], more_recently_used_profile);
+  EXPECT_EQ(personal_data_->GetProfiles()[0]->use_date(), newer_use_data);
+}
+
+// Tests that the least recently used profile of two existing profiles is
+// deleted, when an update of one of the profiles makes it a duplicate of the
+// other, already existing profile. Here, the more recently used profile is
+// edited to become a duplicate of the less recently used profile.
+TEST_F(PersonalDataManagerTest,
+       CreateDuplicateWithAnUpdate_UpdatedProfileWasMoreRecentlyUsed) {
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+
+  AutofillProfile less_recently_used_profile(test::GetFullProfile());
+  AutofillProfile more_recently_used_profile(test::GetFullProfile2());
+
+  less_recently_used_profile.set_use_date(AutofillClock::Now());
+  more_recently_used_profile.set_use_date(AutofillClock::Now());
+
+  AddProfileToPersonalDataManager(less_recently_used_profile);
+  AddProfileToPersonalDataManager(more_recently_used_profile);
+
+  EXPECT_EQ(personal_data_->GetProfiles().size(), 2U);
+
+  // Now make an update to profile2 that makes it a duplicate of profile1,
+  // but set the last use time to be more recent than the one of profile1.
+  AutofillProfile updated_more_recently_used_profile =
+      less_recently_used_profile;
+  updated_more_recently_used_profile.set_guid(
+      more_recently_used_profile.guid());
+  // Set the updated profile to have a newer use date than it's duplicate.
+  test_clock.Advance(base::TimeDelta::FromDays(1));
+  base::Time newer_use_data = AutofillClock::Now();
+  updated_more_recently_used_profile.set_use_date(newer_use_data);
+  UpdateProfileOnPersonalDataManager(updated_more_recently_used_profile);
+
+  // Verify that less recently used profile was removed.
+  ASSERT_EQ(personal_data_->GetProfiles().size(), 1U);
+
+  EXPECT_EQ(*personal_data_->GetProfiles()[0],
+            updated_more_recently_used_profile);
+  EXPECT_EQ(personal_data_->GetProfiles()[0]->use_date(), newer_use_data);
+}
+
 TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
   // Make the IdentityManager return a non-empty AccountInfo when
   // GetPrimaryAccountInfo() is called.

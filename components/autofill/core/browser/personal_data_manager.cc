@@ -722,13 +722,35 @@ void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
   if (is_off_the_record_)
     return;
 
+  if (!database_helper_->GetLocalDatabase())
+    return;
+
+  // If the profile is empty, remove it unconditionally.
   if (profile.IsEmpty(app_locale_)) {
     RemoveByGUID(profile.guid());
     return;
   }
 
-  if (!database_helper_->GetLocalDatabase())
+  // The profile is a duplicate of an existing profile if it has a distinct GUID
+  // but the same content.
+  auto duplicate_profile_iter = base::ranges::find_if(
+      web_profiles_, [&profile](const auto& other_profile) {
+        return profile.guid() != other_profile->guid() &&
+               other_profile->Compare(profile) == 0;
+      });
+
+  // Remove the profile if it is a duplicate of another already existing
+  // profile.
+  if (duplicate_profile_iter != web_profiles_.end()) {
+    // Keep the more recently used version of the profile.
+    if (profile.use_date() > duplicate_profile_iter->get()->use_date()) {
+      UpdateProfileInDB(profile);
+      RemoveByGUID(duplicate_profile_iter->get()->guid());
+    } else {
+      RemoveByGUID(profile.guid());
+    }
     return;
+  }
 
   UpdateProfileInDB(profile);
 }
