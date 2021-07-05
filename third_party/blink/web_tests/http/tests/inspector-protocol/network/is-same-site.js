@@ -1,5 +1,6 @@
 (async function(testRunner) {
-  const {page, session, dp} = await testRunner.startBlank(
+  const {page, session, dp} = await testRunner.startURL(
+      'https://devtools.oopif.test:8443/',
       `Verifies that same site requests are marked as such`);
 
   await dp.Network.enable();

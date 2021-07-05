@@ -1941,11 +1941,12 @@ void NetworkHandler::NavigationRequestWillBeSent(
   }
 
   if (host_) {
-    RenderFrameHostImpl* root_host = host_->GetOutermostMainFrame();
-    WebExposedIsolationInfo web_exposed_isolation_info =
-        root_host->GetSiteInstance()->GetWebExposedIsolationInfo();
-    request->SetIsSameSite(
-        host_->ComputeSiteForCookies().IsFirstParty(common_params.url));
+    if (nav_request.frame_tree_node()->IsMainFrame()) {
+      request->SetIsSameSite(true);
+    } else {
+      request->SetIsSameSite(
+          host_->ComputeSiteForCookies().IsFirstParty(common_params.url));
+    }
   }
   frontend_->RequestWillBeSent(
       id, id, url_without_fragment, std::move(request), current_ticks,
