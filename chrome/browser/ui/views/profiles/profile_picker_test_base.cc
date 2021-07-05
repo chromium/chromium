@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,9 +106,12 @@ void ProfilePickerTestBase::WaitForLayoutWithoutToolbar() {
 void ProfilePickerTestBase::WaitForLoadStop(content::WebContents* contents,
                                             const GURL& url) {
   DCHECK(contents);
-  // Don't check for success as in many instances (e.g. GAIA) it fails with
-  // network error.
-  content::WaitForLoadStopWithoutSuccessCheck(contents);
+  if (contents->GetLastCommittedURL() == url && !contents->IsLoading())
+    return;
+
+  ui_test_utils::UrlLoadObserver url_observer(
+      url, content::NotificationService::AllSources());
+  url_observer.Wait();
   EXPECT_EQ(contents->GetLastCommittedURL(), url);
 }
 
