@@ -78,7 +78,6 @@ RawClipboardHostImpl::RawClipboardHostImpl(RenderFrameHost* render_frame_host)
     : render_frame_routing_id_(
           GlobalRenderFrameHostId(render_frame_host->GetProcess()->GetID(),
                                   render_frame_host->GetRoutingID())),
-      clipboard_(ui::Clipboard::GetForCurrentThread()),
       clipboard_writer_(
           new ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,
                                         CreateDataEndpoint())) {
@@ -90,8 +89,9 @@ void RawClipboardHostImpl::ReadAvailableFormatNames(
   if (!HasTransientUserActivation())
     return;
   std::vector<std::u16string> raw_types =
-      clipboard_->ReadAvailablePlatformSpecificFormatNames(
-          ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
+      ui::Clipboard::GetForCurrentThread()
+          ->ReadAvailablePlatformSpecificFormatNames(
+              ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
   std::move(callback).Run(raw_types);
 }
 
@@ -105,7 +105,7 @@ void RawClipboardHostImpl::Read(const std::u16string& format,
   }
 
   std::string result;
-  clipboard_->ReadData(
+  ui::Clipboard::GetForCurrentThread()->ReadData(
       ui::ClipboardFormatType::GetType(base::UTF16ToUTF8(format)),
       CreateDataEndpoint().get(), &result);
   base::span<const uint8_t> span(

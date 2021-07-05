@@ -214,7 +214,6 @@ class CONTENT_EXPORT ClipboardHostImpl
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 
-  ui::Clipboard* const clipboard_;  // Not owned
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
   // Outstanding is allowed requests per clipboard contents.  Maps a clipboard

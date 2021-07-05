@@ -90,6 +90,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // the main UI thread, but Windows has tricky semantics where there have to
   // be two clipboards: one that lives on the UI thread and one that lives on
   // the IO thread.
+  //
+  // The return value should not be cached.
   static Clipboard* GetForCurrentThread();
 
   // Removes and transfers ownership of the current thread's clipboard to the
@@ -117,6 +119,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // Returns a sequence number which uniquely identifies clipboard state.
   // This can be used to version the data on the clipboard and determine
   // whether it has changed.
+  // TODO(https://crbug.com/1226356): Note that the sequence number uniquely
+  // identifies the clipboard state within this particular ui::Clipboard
+  // instance. It is not guaranteed to be unique across multiple / subsequent
+  // ui::Clipborad instances. Consider changing that.
   virtual uint64_t GetSequenceNumber(ClipboardBuffer buffer) const = 0;
 
   // Tests whether the clipboard contains a certain format.

@@ -106,10 +106,17 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
     return remote_;
   }
 
+  // Re-creates the system clipboard and returns the previous clipboard.
+  std::unique_ptr<ui::Clipboard> DeleteAndRecreateClipboard() {
+    auto original_clipboard = ui::Clipboard::TakeForCurrentThread();
+    clipboard_ = ui::TestClipboard::CreateForCurrentThread();
+    return original_clipboard;
+  }
+
   ui::Clipboard* system_clipboard() { return clipboard_; }
 
  private:
-  ui::Clipboard* const clipboard_;
+  ui::Clipboard* clipboard_;
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 };
 
@@ -164,6 +171,18 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
   SkBitmap actual;
   gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
+}
+
+TEST_F(ClipboardHostImplTest, DoesNotCacheClipboard) {
+  uint64_t unused_sequence_number;
+  mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
+                                      &unused_sequence_number);
+
+  DeleteAndRecreateClipboard();
+
+  // This shouldn't crash after the original ui::Clipboard is gone.
+  mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
+                                      &unused_sequence_number);
 }
 
 TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_AddCallback) {

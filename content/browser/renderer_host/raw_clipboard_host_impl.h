@@ -48,7 +48,6 @@ class CONTENT_EXPORT RawClipboardHostImpl
   // The render frame is not owned.
   const GlobalRenderFrameHostId render_frame_routing_id_;
 
-  ui::Clipboard* const clipboard_;  // Not owned.
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 };
 
