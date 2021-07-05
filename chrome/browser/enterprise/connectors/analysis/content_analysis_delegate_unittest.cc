@@ -138,12 +138,13 @@ class BaseTest : public testing::Test {
 
   void CreateFilesForTest(
       const std::vector<base::FilePath::StringType>& file_names,
-      ContentAnalysisDelegate::Data* data) {
+      ContentAnalysisDelegate::Data* data,
+      const std::string& content = "content") {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     for (const auto& file_name : file_names) {
       base::FilePath path = temp_dir_.GetPath().Append(file_name);
       base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      file.WriteAtCurrentPos("content", 7);
+      file.WriteAtCurrentPos(content.data(), content.size());
       data->paths.emplace_back(path);
     }
   }
@@ -1362,11 +1363,13 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesDefaultPolicy) {
   ASSERT_TRUE(
       ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
+  // The file content bytes correspond to an unsupported type (png) so that
+  // sniffing doesn't indicate the file is supported.
   CreateFilesForTest(
       {FILE_PATH_LITERAL("foo.these"), FILE_PATH_LITERAL("foo.file"),
        FILE_PATH_LITERAL("foo.types"), FILE_PATH_LITERAL("foo.are"),
        FILE_PATH_LITERAL("foo.not"), FILE_PATH_LITERAL("foo.supported")},
-      &data);
+      &data, /*content*/ "\x89PNG\x0D\x0A\x1A\x0A");
 
   // Mark all files with failed scans.
   for (const auto& path : data.paths) {
@@ -1412,11 +1415,13 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypesBlockPolicy) {
   EXPECT_TRUE(
       ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
+  // The file content bytes correspond to an unsupported type (png) so that
+  // sniffing doesn't indicate the file is supported.
   CreateFilesForTest(
       {FILE_PATH_LITERAL("foo.these"), FILE_PATH_LITERAL("foo.file"),
        FILE_PATH_LITERAL("foo.types"), FILE_PATH_LITERAL("foo.are"),
        FILE_PATH_LITERAL("foo.not"), FILE_PATH_LITERAL("foo.supported")},
-      &data);
+      &data, /*content*/ "\x89PNG\x0D\x0A\x1A\x0A");
 
   // Mark all files with failed scans.
   for (const auto& path : data.paths) {
@@ -1452,14 +1457,16 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedAndUnsupportedTypes) {
       ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
   // Only 3 of these file types are supported (bzip, cab and doc). They are
-  // mixed in the list so as to show that insertion order does not matter.
+  // mixed in the list so as to show that insertion order does not matter. The
+  // file content bytes correspond to an unsupported type (png) so that sniffing
+  // doesn't indicate the file is supported.
   CreateFilesForTest(
       {FILE_PATH_LITERAL("foo.bzip"), FILE_PATH_LITERAL("foo.these"),
        FILE_PATH_LITERAL("foo.file"), FILE_PATH_LITERAL("foo.types"),
        FILE_PATH_LITERAL("foo.cab"), FILE_PATH_LITERAL("foo.are"),
        FILE_PATH_LITERAL("foo.not"), FILE_PATH_LITERAL("foo.supported"),
        FILE_PATH_LITERAL("foo_no_extension"), FILE_PATH_LITERAL("foo.doc")},
-      &data);
+      &data, /*content*/ "\x89PNG\x0D\x0A\x1A\x0A");
 
   // Mark all files with failed scans.
   for (const auto& path : data.paths) {
@@ -1499,9 +1506,11 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypeAndDLPFailure) {
   ASSERT_TRUE(
       ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
+  // The file content bytes correspond to an unsupported type (png) so that
+  // sniffing doesn't indicate the file is supported.
   CreateFilesForTest({FILE_PATH_LITERAL("foo.unsupported_extension"),
                       FILE_PATH_LITERAL("dlp_fail.doc")},
-                     &data);
+                     &data, /*content*/ "\x89PNG\x0D\x0A\x1A\x0A");
 
   // Mark DLP as failure.
   SetDLPResponse(FakeContentAnalysisDelegate::DlpResponse(

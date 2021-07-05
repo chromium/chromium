@@ -146,8 +146,8 @@ const std::set<std::string>* ZipMimeTypes() {
   return &set;
 }
 
-const std::set<std::string>* ShellScriptMimeTypes() {
-  static std::set<std::string> set = {"text/x-sh", "application/x-shellscript"};
+const std::set<std::string>* PngMimeTypes() {
+  static std::set<std::string> set = {"image/png"};
   return &set;
 }
 
@@ -740,8 +740,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
 
   // Create the files with unsupported types.
+  std::string png_file_content = "\x89PNG\x0D\x0A\x1A\x0A";
   ContentAnalysisDelegate::Data data;
-  CreateFilesForTest({"a.sh"}, {"file content"}, &data);
+  CreateFilesForTest({"a.png"}, {png_file_content}, &data);
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
 
@@ -750,13 +751,13 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   validator.ExpectUnscannedFileEvent(
       /*url*/ "about:blank",
       /*filename*/ created_file_paths()[0].AsUTF8Unsafe(),
-      // printf "file content" | sha256sum |  tr '[:lower:]' '[:upper:]'
-      /*sha*/
-      "E0AC3601005DFA1864F5392AABAF7D898B1B5BAB854F1ACB4491BCD806B76B0C",
+      // printf "\x89PNG\x0D\x0A\x1A\x0A" | sha256sum |  tr '[:lower:]' \
+      // '[:upper:]'
+      "4C4B6A3BE1314AB86138BEF4314DDE022E600960D8689A2C8F8631802D20DAB6",
       /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
       /*reason*/ "DLP_SCAN_UNSUPPORTED_FILE_TYPE",
-      /*mimetype*/ ShellScriptMimeTypes(),
-      /*size*/ std::string("file content").size(),
+      /*mimetype*/ PngMimeTypes(),
+      /*size*/ png_file_content.size(),
       /*result*/
       expected_result() ? safe_browsing::EventResultToString(
                               safe_browsing::EventResult::ALLOWED)

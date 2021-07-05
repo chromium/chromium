@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
   ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
-                                           sync_response, {"dlp", "malware"});
+                                           sync_response, {"dlp"});
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/signed.exe");
@@ -675,6 +675,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
+  WaitForDeepScanRequest(/*is_advanced_protection=*/false);
   WaitForDownloadToFinish();
 
   // The file should be blocked.

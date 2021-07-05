@@ -51,7 +51,7 @@ const base::Feature kClientSideDetectionReferrerChain{
     "ClientSideDetectionReferrerChain", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kFileAnalysisMimeTypeSniff{
-    "FileAnalysisMimeTypeSniff", base::FEATURE_DISABLED_BY_DEFAULT};
+    "FileAnalysisMimeTypeSniff", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionWithToken{
     "SafeBrowsingCSDRequestWithToken", base::FEATURE_ENABLED_BY_DEFAULT};
