@@ -96,7 +96,7 @@ std::unique_ptr<base::ListValue> BrandcodedDefaultSettings::ExtractList(
   if (master_dictionary_ &&
       master_dictionary_->GetList(pref_name, &value) &&
       !value->empty()) {
-    return std::unique_ptr<base::ListValue>(value->DeepCopy());
+    return value->CreateDeepCopy();
   }
   return nullptr;
 }
