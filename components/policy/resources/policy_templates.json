@@ -575,7 +575,7 @@
         'NotificationsBlockedForUrls',
         'SensorsAllowedForUrls',
         'SensorsBlockedForUrls',
-        "WebUsbAllowDevicesForUrls",
+        'WebUsbAllowDevicesForUrls',
         'WebUsbAskForUrls',
         'WebUsbBlockedForUrls',
         'SerialAskForUrls',
@@ -5750,7 +5750,7 @@
     },
     {
       'name': 'DefaultCookiesSetting',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['dullweber@google.com', 'file://components/content_settings/OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5794,7 +5794,7 @@
     },
     {
       'name': 'DefaultImagesSetting',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/content_settings/OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5827,7 +5827,7 @@
     },
     {
       'name': 'DefaultJavaScriptSetting',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/content_settings/OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5901,7 +5901,7 @@
     },
     {
       'name': 'DefaultPopupsSetting',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5939,7 +5939,7 @@
     },
     {
       'name': 'DefaultNotificationsSetting',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -5977,7 +5977,7 @@
     },
     {
       'name': 'DefaultGeolocationSetting',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -6016,7 +6016,7 @@
     },
     {
       'name': 'DefaultMediaStreamSetting',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -6050,7 +6050,7 @@
     },
     {
       'name': 'DefaultWebBluetoothGuardSetting',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -6873,7 +6873,7 @@
     },
     {
       'name': 'CookiesAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['dullweber@google.com', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6902,7 +6902,7 @@
     },
     {
       'name': 'CookiesBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['dullweber@google.com', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6931,7 +6931,7 @@
     },
     {
       'name': 'CookiesSessionOnlyForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['dullweber@google.com', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6960,7 +6960,7 @@
     },
     {
       'name': 'ImagesAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -6985,7 +6985,7 @@
     },
     {
       'name': 'ImagesBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7010,7 +7010,7 @@
     },
     {
       'name': 'JavaScriptAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7033,7 +7033,7 @@
     },
     {
       'name': 'JavaScriptBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7056,7 +7056,7 @@
     },
     {
       'name': 'KeygenAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7080,7 +7080,7 @@
     },
     {
       'name': 'KeygenBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/content_settings/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7272,7 +7272,7 @@
     },
     {
       'name': 'PluginsAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7296,7 +7296,7 @@
     },
     {
       'name': 'PluginsBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7320,7 +7320,7 @@
     },
     {
       'name': 'PopupsAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7348,7 +7348,7 @@
     },
     {
       'name': 'RegisteredProtocolHandlers',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://chrome/browser/custom_handlers/OWNERS'],
       'type': 'dict',
       'schema': {
         'type': 'array',
@@ -7389,7 +7389,7 @@
     },
     {
       'name': 'PopupsBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7417,7 +7417,7 @@
     },
     {
       'name': 'NotificationsAllowedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -7440,7 +7440,7 @@
     },
     {
       'name': 'NotificationsBlockedForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['engedy@chromium.org', 'file://components/permissions/PERMISSIONS_OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
