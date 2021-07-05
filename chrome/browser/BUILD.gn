@@ -6645,7 +6645,7 @@ static_library("browser") {
     deps += [
       "//components/safe_browsing/content/browser/download:download_stats",
       "//components/safe_browsing/content/common:file_type_policies",
-      "//components/safe_browsing/core/common/proto:download_file_types_proto",
+      "//components/safe_browsing/content/common/proto:download_file_types_proto",
     ]
   }
 }

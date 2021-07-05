@@ -40,7 +40,7 @@ if (safe_browsing_mode != 0 && !is_fuchsia) {
 
     public_deps = [
       "//base",
-      "//components/safe_browsing/core/common/proto:download_file_types_proto",
+      "//components/safe_browsing/content/common/proto:download_file_types_proto",
     ]
 
     deps = [

@@ -2045,7 +2045,7 @@ if (!is_android) {
     }
 
     if (safe_browsing_mode != 0) {
-      deps += [ "//components/safe_browsing/core/common/proto:download_file_types_proto" ]
+      deps += [ "//components/safe_browsing/content/common/proto:download_file_types_proto" ]
     }
 
     if (is_mac) {

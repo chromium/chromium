@@ -35,12 +35,3 @@ fuzzable_proto_library("client_model_proto") {
   sources = [ "client_model.proto" ]
   deps = [ ":csd_proto" ]
 }
-
-# These files have no content/ dependency, but we still aren't building them on
-# on iOS since we don't ship download protection on that platform.
-# TODO(crbug/1056278): Enable this on Fuchsia
-if (safe_browsing_mode != 0 && !is_ios && !is_fuchsia) {
-  proto_library("download_file_types_proto") {
-    sources = [ "download_file_types.proto" ]
-  }
-}

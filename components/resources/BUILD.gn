@@ -54,8 +54,9 @@ grit("components_resources") {
 
   # TODO(crbug/1056278): Enable this on Fuchsia
   if (safe_browsing_mode > 0 && !is_fuchsia) {
-    deps +=
-        [ "//components/safe_browsing/core/resources:make_file_types_protobuf" ]
+    deps += [
+      "//components/safe_browsing/content/resources:make_file_types_protobuf",
+    ]
   }
 }
 

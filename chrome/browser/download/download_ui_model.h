@@ -19,7 +19,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/download/download_commands.h"
