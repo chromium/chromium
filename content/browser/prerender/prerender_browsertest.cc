@@ -706,9 +706,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_iFrame) {
 //
 // Explainer:
 // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history
-//
-// TODO(crbug.com/1197384): Tests a navigation which is not a renderer-initiated
-// one.
 IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
     SessionHistoryShouldHaveSingleNavigationEntryInPrerender) {
@@ -742,6 +739,7 @@ IN_PROC_BROWSER_TEST_F(
   // to the session history, however, all navigations within the prerendering
   // browsing context should be done with replacement in the isolated session
   // history.
+  // TODO: Factor out this test into several tests. This test is getting large.
 
   // Perform history.replaceState() in the prerendered page. Note
   // history.replaceState() doesn't append a new entry anyway. The purpose of
@@ -821,25 +819,54 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(kSameOriginSubframeUrl1, child_frame->GetLastCommittedURL());
 
     // Let the added iframe navigate to the different URL.
-    FrameNavigateParamsCapturer capturer(FrameTreeNode::From(child_frame));
-    const GURL kSameOriginSubframeUrl2 =
-        GetUrl("/empty.html?same_origin_iframe2");
-    ASSERT_EQ(kSameOriginSubframeUrl2,
-              EvalJs(child_frame,
-                     JsReplace("location = $1", kSameOriginSubframeUrl2)));
-    capturer.Wait();
+    {
+      FrameNavigateParamsCapturer capturer(FrameTreeNode::From(child_frame));
+      const GURL kSameOriginSubframeUrl2 =
+          GetUrl("/empty.html?same_origin_iframe2");
+      ASSERT_EQ(kSameOriginSubframeUrl2,
+                EvalJs(child_frame,
+                       JsReplace("location = $1", kSameOriginSubframeUrl2)));
+      capturer.Wait();
 
-    EXPECT_EQ(kSameOriginSubframeUrl2, child_frame->GetLastCommittedURL());
-    ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl2), 1);
+      EXPECT_EQ(kSameOriginSubframeUrl2, child_frame->GetLastCommittedURL());
+      ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl2), 1);
 
-    TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
-                          /*expected_history_length=*/2);
-    AssertPrerenderHistoryLength(host_id, prerender_frame_host);
-    EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+      TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                            /*expected_history_length=*/2);
+      AssertPrerenderHistoryLength(host_id, prerender_frame_host);
+      EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
 
-    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
-    EXPECT_FALSE(capturer.is_same_document());
-    EXPECT_TRUE(capturer.did_replace_entry());
+      EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+      EXPECT_FALSE(capturer.is_same_document());
+      EXPECT_TRUE(capturer.did_replace_entry());
+      EXPECT_TRUE(capturer.is_renderer_initiated());
+    }
+
+    // Use WebContents::OpenURL() to let the added iframe navigate.
+    {
+      FrameNavigateParamsCapturer capturer(FrameTreeNode::From(child_frame));
+      const GURL kSameOriginSubframeUrl3 =
+          GetUrl("/empty.html?same_origin_iframe3");
+      shell()->web_contents()->OpenURL(OpenURLParams(
+          kSameOriginSubframeUrl3, Referrer(),
+          child_frame->GetFrameTreeNodeId(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+          /*is_renderer_initiated=*/false));
+      capturer.Wait();
+
+      EXPECT_EQ(kSameOriginSubframeUrl3, child_frame->GetLastCommittedURL());
+      ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl3), 1);
+
+      TestNavigationHistory(k2ndUrl, /*expected_history_index=*/1,
+                            /*expected_history_length=*/2);
+      AssertPrerenderHistoryLength(host_id, prerender_frame_host);
+      EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
+
+      EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+      EXPECT_FALSE(capturer.is_same_document());
+      EXPECT_TRUE(capturer.did_replace_entry());
+      EXPECT_FALSE(capturer.is_renderer_initiated());
+    }
   }
 
   // Perform history.back() in the prerendered page, which should be no-op.

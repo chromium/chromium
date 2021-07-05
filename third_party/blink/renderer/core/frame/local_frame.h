@@ -827,10 +827,12 @@ class CORE_EXPORT LocalFrame final
 
   void SetEvictCachedSessionStorageOnFreezeOrUnload();
 
-  // Whether a current browsing context should always replace a current history
-  // entry in navigation. In such a browing context, the number of
-  // history entry is limited to 1.
-  bool IsSingleNavigationEntryBrowsingContext() const;
+  // Whether to maintain a trivial session history.
+  //
+  // One example is prerender.
+  // Explainer:
+  // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history
+  bool ShouldMaintainTrivialSessionHistory() const;
 
  private:
   friend class FrameNavigationDisabler;

@@ -212,7 +212,7 @@ void History::pushState(v8::Isolate* isolate,
                         ExceptionState& exception_state) {
   WebFrameLoadType load_type = WebFrameLoadType::kStandard;
   if (DomWindow() &&
-      DomWindow()->GetFrame()->IsSingleNavigationEntryBrowsingContext()) {
+      DomWindow()->GetFrame()->ShouldMaintainTrivialSessionHistory()) {
     DomWindow()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kJavaScript,

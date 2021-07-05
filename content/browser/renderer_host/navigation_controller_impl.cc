@@ -1108,6 +1108,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
     bool previous_document_was_activated,
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
+  if (ShouldMaintainTrivialSessionHistory() && GetLastCommittedEntry())
+    DCHECK(params.should_replace_current_entry);
   is_initial_navigation_ = false;
 
   // Save the previous state before we clobber it.
@@ -3082,6 +3084,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     node = params.frame_tree_node_id != RenderFrameHost::kNoFrameTreeNodeId
                ? frame_tree_.FindByID(params.frame_tree_node_id)
                : frame_tree_.FindByName(params.frame_name);
+    DCHECK(!node || node->frame_tree() == &frame_tree_);
   }
 
   // If no FrameTreeNode was specified, navigate the main frame.
@@ -3100,8 +3103,12 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
 
   // Don't allow an entry replacement if there is no entry to replace.
   // http://crbug.com/457149
-  bool should_replace_current_entry =
-      params.should_replace_current_entry && entries_.size();
+  //
+  // If there is an entry, an entry replacement must happen if the current
+  // browsing context should maintain a trivial session history.
+  bool should_replace_current_entry = (params.should_replace_current_entry ||
+                                       ShouldMaintainTrivialSessionHistory()) &&
+                                      entries_.size();
 
   // Javascript URLs should not create NavigationEntries. All other navigations
   // do, including navigations to chrome renderer debug URLs.
@@ -3150,7 +3157,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
           params.base_url_for_data_url, params.transition_type,
           params.load_type ==
               NavigationController::LOAD_TYPE_HTTP_POST /* is_post */,
-          params.should_replace_current_entry, GetLastCommittedEntry())) {
+          should_replace_current_entry, GetLastCommittedEntry())) {
     reload_type = ReloadType::NORMAL;
     pending_entry_->set_reload_type(reload_type);
 
@@ -4202,6 +4209,13 @@ void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
       return;
     }
   }
+}
+
+bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory() const {
+  // TODO(https://crbug.com/1197384): We may have to add portals and fenced
+  // frames in addition to prerender. This should be kept in sync with
+  // LocalFrame version, LocalFrame::ShouldMaintainTrivialSessionHistory.
+  return frame_tree_.is_prerendering();
 }
 
 }  // namespace content

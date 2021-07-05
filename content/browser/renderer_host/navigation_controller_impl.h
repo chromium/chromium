@@ -694,6 +694,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       FrameNavigationEntry* target_entry,
       const std::string& app_history_key);
 
+  // Whether to maintain a trivial session history.
+  //
+  // One example is prerender.
+  // Explainer:
+  // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history
+  bool ShouldMaintainTrivialSessionHistory() const;
+
   // ---------------------------------------------------------------------------
 
   // The FrameTree this instance belongs to. Each FrameTree gets its own

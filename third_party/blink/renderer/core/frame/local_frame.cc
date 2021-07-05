@@ -696,7 +696,7 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
       request.ClientRedirectReason() != ClientNavigationReason::kAnchorClick)
     return true;
   return frame_load_type == WebFrameLoadType::kStandard &&
-         IsSingleNavigationEntryBrowsingContext();
+         ShouldMaintainTrivialSessionHistory();
 
   // TODO(http://crbug.com/1197384): We may want to assert that
   // WebFrameLoadType is never kStandard in prerendered pages/portals before
@@ -704,10 +704,11 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
   // similar.
 }
 
-bool LocalFrame::IsSingleNavigationEntryBrowsingContext() const {
-  // Portal or prerender should always replace a current history entry.
-  // The spec for prerender is:
-  // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history.
+bool LocalFrame::ShouldMaintainTrivialSessionHistory() const {
+  // TODO(https://crbug.com/1197384): We may have to add fenced frames. This
+  // should be kept in sync with NavigationControllerImpl version,
+  // NavigationControllerImpl::ShouldMaintainTrivialSessionHistory.
+  //
   // TODO(mcnee): Similarly, we need to restrict orphaned contexts.
   return GetPage()->InsidePortal() || GetDocument()->IsPrerendering();
 }
