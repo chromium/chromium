@@ -48,6 +48,9 @@ class StringPieceHasSubstrMatcher {
  public:
   explicit StringPieceHasSubstrMatcher(const std::string& substring)
       : substring_(substring) {}
+  StringPieceHasSubstrMatcher(const StringPieceHasSubstrMatcher&) = default;
+  StringPieceHasSubstrMatcher& operator=(const StringPieceHasSubstrMatcher&) =
+      default;
 
   bool MatchAndExplain(base::StringPiece s,
                        ::testing::MatchResultListener* listener) const {
@@ -64,9 +67,7 @@ class StringPieceHasSubstrMatcher {
   }
 
  private:
-  const std::string substring_;
-
-  DISALLOW_ASSIGN(StringPieceHasSubstrMatcher);
+  std::string substring_;
 };
 
 // Internal implementation for the EXPECT_DFATAL and ASSERT_DFATAL

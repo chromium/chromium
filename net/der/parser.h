@@ -97,6 +97,9 @@ class NET_EXPORT Parser {
   // the Parser object.
   explicit Parser(const Input& input);
 
+  Parser(const Parser&) = default;
+  Parser& operator=(const Parser&) = default;
+
   // Returns whether there is any more data left in the input to parse. This
   // does not guarantee that the data is parseable.
   bool HasMore();
@@ -206,8 +209,6 @@ class NET_EXPORT Parser {
  private:
   CBS cbs_;
   size_t advance_len_;
-
-  DISALLOW_COPY(Parser);
 };
 
 }  // namespace der
