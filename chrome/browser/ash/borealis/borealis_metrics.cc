@@ -10,6 +10,16 @@ namespace borealis {
 
 const char kBorealisDiskClientGetDiskInfoResultHistogram[] =
     "Borealis.Disk.Client.GetDiskInfoResult";
+const char kBorealisDiskClientRequestSpaceResultHistogram[] =
+    "Borealis.Disk.Client.RequestSpaceResult";
+const char kBorealisDiskClientReleaseSpaceResultHistogram[] =
+    "Borealis.Disk.Client.ReleaseSpaceResult";
+extern const char kBorealisDiskClientSpaceRequestedHistogram[] =
+    "Borealis.Disk.Client.SpaceRequested";
+extern const char kBorealisDiskClientSpaceReleasedHistogram[] =
+    "Borealis.Disk.Client.SpaceReleased";
+const char kBorealisDiskClientAvailableSpaceAtRequestHistogram[] =
+    "Borealis.Disk.Client.AvailableSpaceAtRequest";
 const char kBorealisDiskClientNumRequestsPerSessionHistogram[] =
     "Borealis.Disk.Client.NumRequestsPerSesssion";
 const char kBorealisInstallNumAttemptsHistogram[] =
@@ -82,6 +92,40 @@ void RecordBorealisDiskClientGetDiskInfoResultHistogram(
     BorealisGetDiskInfoResult get_disk_info_result) {
   base::UmaHistogramEnumeration(kBorealisDiskClientGetDiskInfoResultHistogram,
                                 get_disk_info_result);
+}
+
+void RecordBorealisDiskClientRequestSpaceResultHistogram(
+    BorealisResizeDiskResult resize_disk_result) {
+  base::UmaHistogramEnumeration(kBorealisDiskClientRequestSpaceResultHistogram,
+                                resize_disk_result);
+}
+
+void RecordBorealisDiskClientReleaseSpaceResultHistogram(
+    BorealisResizeDiskResult resize_disk_result) {
+  base::UmaHistogramEnumeration(kBorealisDiskClientReleaseSpaceResultHistogram,
+                                resize_disk_result);
+}
+
+void RecordBorealisDiskClientSpaceRequestedHistogram(uint64_t bytes_requested) {
+  uint64_t megabytes_requested = bytes_requested / (1024 * 1024);
+  base::UmaHistogramCustomCounts(kBorealisDiskClientSpaceRequestedHistogram,
+                                 megabytes_requested, /*min=*/0, /*max=*/128000,
+                                 /*buckets=*/100);
+}
+
+void RecordBorealisDiskClientSpaceReleasedHistogram(uint64_t bytes_released) {
+  uint64_t megabytes_released = bytes_released / (1024 * 1024);
+  base::UmaHistogramCustomCounts(kBorealisDiskClientSpaceReleasedHistogram,
+                                 megabytes_released, /*min=*/0, /*max=*/128000,
+                                 /*buckets=*/100);
+}
+
+void RecordBorealisDiskClientAvailableSpaceAtRequestHistogram(
+    uint64_t available_bytes) {
+  uint64_t available_megabytes = available_bytes / (1024 * 1024);
+  base::UmaHistogramCustomCounts(
+      kBorealisDiskClientAvailableSpaceAtRequestHistogram, available_megabytes,
+      /*min=*/0, /*max=*/16000, /*buckets=*/100);
 }
 
 void RecordBorealisDiskClientNumRequestsPerSessionHistogram(int num_requests) {

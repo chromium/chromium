@@ -46,8 +46,8 @@ using DiskInfoCallbackFactory = StrictCallbackFactory<void(
     Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
              Described<BorealisGetDiskInfoResult>>)>;
 
-using RequestDeltaCallbackFactory =
-    StrictCallbackFactory<void(Expected<uint64_t, std::string>)>;
+using RequestDeltaCallbackFactory = StrictCallbackFactory<void(
+    Expected<uint64_t, Described<BorealisResizeDiskResult>>)>;
 
 using SyncDiskCallbackFactory = NiceCallbackFactory<void(std::string)>;
 
@@ -66,14 +66,16 @@ class BorealisDiskDispatcherMock : public BorealisDiskManagerDispatcher {
               (const std::string&,
                const std::string&,
                uint64_t,
-               base::OnceCallback<void(Expected<uint64_t, std::string>)>),
+               base::OnceCallback<void(
+                   Expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
               ());
   MOCK_METHOD(void,
               ReleaseSpace,
               (const std::string&,
                const std::string&,
                uint64_t,
-               base::OnceCallback<void(Expected<uint64_t, std::string>)>),
+               base::OnceCallback<void(
+                   Expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
               ());
   MOCK_METHOD(void,
               SetDiskManagerDelegate,
@@ -369,16 +371,59 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSubsequentAttemptSucceeds) {
   run_loop()->RunUntilIdle();
 }
 
+TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIf0SpaceRequested) {
+  RequestDeltaCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(_))
+      .WillOnce(testing::Invoke(
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kInvalidRequest);
+          }));
+  disk_manager_->RequestSpace(0, callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kInvalidRequest, 1);
+}
+
+TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIf0SpaceReleased) {
+  RequestDeltaCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(_))
+      .WillOnce(testing::Invoke(
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kInvalidRequest);
+          }));
+  disk_manager_->ReleaseSpace(0, callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientReleaseSpaceResultHistogram,
+      BorealisResizeDiskResult::kInvalidRequest, 1);
+}
+
 TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfRequestExceedsInt64) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kOverflowError);
           }));
   disk_manager_->ReleaseSpace(uint64_t(std::numeric_limits<int64_t>::max()) + 1,
                               callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientSpaceReleasedHistogram,
+      (uint64_t(std::numeric_limits<int64_t>::max()) + 1) / (1024 * 1024), 1);
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientReleaseSpaceResultHistogram,
+      BorealisResizeDiskResult::kOverflowError, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfBuildDiskInfoFails) {
@@ -396,11 +441,20 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfBuildDiskInfoFails) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kFailedToGetDiskInfo);
           }));
   disk_manager_->RequestSpace(1 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientSpaceRequestedHistogram, (1 * kGiB) / (1024 * 1024),
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kFailedToGetDiskInfo, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskTypeNotRaw) {
@@ -419,11 +473,17 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskTypeNotRaw) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kInvalidDiskType);
           }));
   disk_manager_->RequestSpace(1 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kInvalidDiskType, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestTooHigh) {
@@ -440,12 +500,21 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestTooHigh) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kNotEnoughExpandableSpace);
           }));
   // 6GB > 4GB of expandable space.
   disk_manager_->RequestSpace(6 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientAvailableSpaceAtRequestHistogram,
+      (3 * kGiB) / (1024 * 1024), 1);
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kNotEnoughExpandableSpace, 1);
 }
 
 TEST_F(BorealisDiskManagerTest,
@@ -463,13 +532,19 @@ TEST_F(BorealisDiskManagerTest,
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kWouldNotLeaveEnoughSpace);
           }));
   // Release space is requesting a negative delta. 2GB > 1GB of unused available
   // space.
   disk_manager_->ReleaseSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientReleaseSpaceResultHistogram,
+      BorealisResizeDiskResult::kWouldNotLeaveEnoughSpace, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestIsBelowMinimum) {
@@ -486,12 +561,18 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestIsBelowMinimum) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kViolatesMinimumSize);
           }));
   // Release space is requesting a negative delta. 7GB-2GB < 6GB min_size.
   disk_manager_->ReleaseSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientReleaseSpaceResultHistogram,
+      BorealisResizeDiskResult::kViolatesMinimumSize, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnNoResizeDiskResponse) {
@@ -508,11 +589,17 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnNoResizeDiskResponse) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kConciergeFailed);
           }));
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kConciergeFailed, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailedResizeDiskResponse) {
@@ -534,8 +621,11 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailedResizeDiskResponse) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kConciergeFailed);
           }));
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
@@ -568,8 +658,11 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnDelayedConciergeFailure) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kConciergeFailed);
           }));
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
@@ -603,11 +696,17 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnFailureToGetUpdate) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kFailedGettingUpdate);
           }));
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kFailedGettingUpdate, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
@@ -643,11 +742,17 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceFailsIfResizeTooSmall) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kFailedToFulfillRequest);
           }));
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kFailedToFulfillRequest, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfDiskExpanded) {
@@ -683,11 +788,17 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceFailsIfDiskExpanded) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kFailedToFulfillRequest);
           }));
   disk_manager_->ReleaseSpace(1 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientReleaseSpaceResultHistogram,
+      BorealisResizeDiskResult::kFailedToFulfillRequest, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
@@ -723,12 +834,16 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceSuccessful) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_TRUE(response_or_error);
             EXPECT_EQ(response_or_error.Value(), 2 * kGiB);
           }));
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientRequestSpaceResultHistogram,
+      BorealisResizeDiskResult::kSuccess, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
@@ -764,12 +879,16 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_TRUE(response_or_error);
             EXPECT_EQ(response_or_error.Value(), 1 * kGiB);
           }));
   disk_manager_->ReleaseSpace(1 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientReleaseSpaceResultHistogram,
+      BorealisResizeDiskResult::kSuccess, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestSpaceConvertsSparseDiskToFixed) {
@@ -811,7 +930,8 @@ TEST_F(BorealisDiskManagerTest, RequestSpaceConvertsSparseDiskToFixed) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_TRUE(response_or_error);
             EXPECT_EQ(response_or_error.Value(), 1 * kGiB);
           }));
@@ -858,7 +978,8 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceConvertsSparseDiskToFixed) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_TRUE(response_or_error);
             EXPECT_EQ(response_or_error.Value(), 0);
           }));
@@ -900,15 +1021,13 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
-            EXPECT_TRUE(response_or_error);
-          }));
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) { EXPECT_TRUE(response_or_error); }));
   RequestDeltaCallbackFactory second_callback_factory;
   EXPECT_CALL(second_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
-            EXPECT_FALSE(response_or_error);
-          }));
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) { EXPECT_FALSE(response_or_error); }));
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   disk_manager_->RequestSpace(2 * kGiB, second_callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
@@ -947,9 +1066,8 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
-            EXPECT_TRUE(response_or_error);
-          }));
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) { EXPECT_TRUE(response_or_error); }));
   disk_manager_->RequestSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
 
@@ -981,7 +1099,8 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaSubsequentAttemptSucceeds) {
   RequestDeltaCallbackFactory second_callback_factory;
   EXPECT_CALL(second_callback_factory, Call(_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_TRUE(response_or_error);
             EXPECT_EQ(response_or_error.Value(), 1 * kGiB);
           }));

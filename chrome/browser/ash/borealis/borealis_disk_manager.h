@@ -13,6 +13,7 @@ namespace borealis {
 
 class BorealisContext;
 enum class BorealisGetDiskInfoResult;
+enum class BorealisResizeDiskResult;
 
 // Service responsible for managing borealis' disk space.
 class BorealisDiskManager {
@@ -41,13 +42,17 @@ class BorealisDiskManager {
   // actual size increase in bytes, or an error.
   virtual void RequestSpace(
       uint64_t bytes_requested,
-      base::OnceCallback<void(Expected<uint64_t, std::string>)> callback) = 0;
+      base::OnceCallback<
+          void(Expected<uint64_t, Described<BorealisResizeDiskResult>>)>
+          callback) = 0;
 
   // Attempt to shrink the VM disk by the number of bytes specified. Returns the
   // actual size decrease in bytes, or an error.
   virtual void ReleaseSpace(
       uint64_t bytes_to_release,
-      base::OnceCallback<void(Expected<uint64_t, std::string>)> callback) = 0;
+      base::OnceCallback<
+          void(Expected<uint64_t, Described<BorealisResizeDiskResult>>)>
+          callback) = 0;
 
   // Assesses the disk and resizes it so that it fits within the desired
   // constraints. Returns an empty string on success or an error.

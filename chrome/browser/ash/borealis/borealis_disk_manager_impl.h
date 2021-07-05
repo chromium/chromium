@@ -32,18 +32,20 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
   BorealisDiskManagerImpl& operator=(const BorealisDiskManagerImpl&) = delete;
   ~BorealisDiskManagerImpl() override;
 
-  // TODO(174592560): add more explicit error handling when metrics are
-  // introduced.
   void GetDiskInfo(
       base::OnceCallback<void(
           Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
           callback) override;
-  void RequestSpace(uint64_t bytes_requested,
-                    base::OnceCallback<void(Expected<uint64_t, std::string>)>
-                        callback) override;
-  void ReleaseSpace(uint64_t bytes_to_release,
-                    base::OnceCallback<void(Expected<uint64_t, std::string>)>
-                        callback) override;
+  void RequestSpace(
+      uint64_t bytes_requested,
+      base::OnceCallback<void(
+          Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback)
+      override;
+  void ReleaseSpace(
+      uint64_t bytes_to_release,
+      base::OnceCallback<void(
+          Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback)
+      override;
   // TODO(b/174592560): Since there are differing success criteria, we may wish
   // to split this into Expected<SuccessEnum, ErrorEnum> when we expand on the
   // error handling.
@@ -90,13 +92,15 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
   // negative int64_t).
   void RequestSpaceDelta(
       int64_t target_delta,
-      base::OnceCallback<void(Expected<uint64_t, std::string>)> callback);
+      base::OnceCallback<void(
+          Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback);
 
   void OnRequestSpaceDelta(
       int64_t target_delta,
-      base::OnceCallback<void(Expected<uint64_t, std::string>)> callback,
+      base::OnceCallback<void(
+          Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback,
       Expected<std::unique_ptr<std::pair<BorealisDiskInfo, BorealisDiskInfo>>,
-               std::string> disk_info_or_error);
+               Described<BorealisResizeDiskResult>> disk_info_or_error);
 
   void OnSyncDiskSize(base::OnceCallback<void(std::string)> callback,
                       Expected<std::unique_ptr<BorealisDiskInfo>, std::string>

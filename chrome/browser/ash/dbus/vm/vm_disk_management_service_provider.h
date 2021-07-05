@@ -16,6 +16,10 @@ using ExpectedGetDiskInfoResponse = borealis::Expected<
     borealis::BorealisDiskManager::GetDiskInfoResponse,
     borealis::Described<borealis::BorealisGetDiskInfoResult>>;
 
+using ExpectedRequestDeltaResponse =
+    borealis::Expected<uint64_t,
+                       borealis::Described<borealis::BorealisResizeDiskResult>>;
+
 namespace dbus {
 class MethodCall;
 }  // namespace dbus
@@ -56,14 +60,12 @@ class VmDiskManagementServiceProvider
   void OnGetDiskInfo(std::unique_ptr<dbus::Response> response,
                      dbus::ExportedObject::ResponseSender response_sender,
                      ExpectedGetDiskInfoResponse response_or_error);
-  void OnRequestSpace(
-      std::unique_ptr<dbus::Response> response,
-      dbus::ExportedObject::ResponseSender response_sender,
-      borealis::Expected<uint64_t, std::string> response_or_error);
-  void OnReleaseSpace(
-      std::unique_ptr<dbus::Response> response,
-      dbus::ExportedObject::ResponseSender response_sender,
-      borealis::Expected<uint64_t, std::string> response_or_error);
+  void OnRequestSpace(std::unique_ptr<dbus::Response> response,
+                      dbus::ExportedObject::ResponseSender response_sender,
+                      ExpectedRequestDeltaResponse response_or_error);
+  void OnReleaseSpace(std::unique_ptr<dbus::Response> response,
+                      dbus::ExportedObject::ResponseSender response_sender,
+                      ExpectedRequestDeltaResponse response_or_error);
 
   base::WeakPtrFactory<VmDiskManagementServiceProvider> weak_ptr_factory_{this};
 };

@@ -21,6 +21,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Borealis.Disk.Client.AvailableSpaceAtRequest" units="MB"
+    expires_after="2022-04-08">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Amount of space, in MB, that is available on the Borealis VM disk when a
+    client requests for more space. This is recorded each time a client makes a
+    valid RequestSpace request.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.Disk.Client.GetDiskInfoResult"
     enum="BorealisGetDiskInfoResult" expires_after="2022-04-08">
   <owner>danielng@google.com</owner>
@@ -40,6 +51,52 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The number of requests made by a client within a session of Borealis. This
     counts each time a client makes a disk related request (GetDiskInfo,
     RequestSpace and ReleaseSpace) and is emitted when Borealis is shutdown.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.ReleaseSpaceResult"
+    enum="BorealisResizeDiskResult" expires_after="2022-04-08">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The results of a &quot;ReleaseSpace&quot; request from a client, which will
+    either be a success or an error. This is recorded each time a client makes a
+    ReleaseSpace request.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.RequestSpaceResult"
+    enum="BorealisResizeDiskResult" expires_after="2022-04-08">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The results of a &quot;RequestSpace&quot; request from a client, which will
+    either be a success or an error. This is recorded each time a client makes a
+    RequestSpace request.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.SpaceReleased" units="MB"
+    expires_after="2022-04-08">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Amount of space, in MB, that is freed by the client (via a
+    &quot;ReleaseSpace&quot; request). This is recorded each time a client makes
+    a ReleaseSpace request. This is not necessarily the amount of space that the
+    host frees, it is just the amount that the client signals as free.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Client.SpaceRequested" units="MB"
+    expires_after="2022-04-08">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Amount of space, in MB, that is requested by the client (via a
+    &quot;RequestSpace&quot; request). This is recorded each time a client makes
+    a RequestSpace request. This is not necessarily the amount of space granted
+    by the client, it is just the amount that the client has requested.
   </summary>
 </histogram>
 

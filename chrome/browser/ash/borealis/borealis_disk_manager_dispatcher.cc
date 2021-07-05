@@ -39,11 +39,14 @@ void BorealisDiskManagerDispatcher::RequestSpace(
     const std::string& origin_vm_name,
     const std::string& origin_container_name,
     uint64_t bytes_requested,
-    base::OnceCallback<void(Expected<uint64_t, std::string>)> callback) {
+    base::OnceCallback<void(
+        Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback) {
   std::string error = ValidateRequest(origin_vm_name, origin_container_name);
   if (!error.empty()) {
     std::move(callback).Run(
-        Expected<uint64_t, std::string>::Unexpected(std::move(error)));
+        Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
+            Described<BorealisResizeDiskResult>(
+                BorealisResizeDiskResult::kInvalidRequest, std::move(error))));
     return;
   }
   disk_manager_delegate_->RequestSpace(bytes_requested, std::move(callback));
@@ -53,11 +56,14 @@ void BorealisDiskManagerDispatcher::ReleaseSpace(
     const std::string& origin_vm_name,
     const std::string& origin_container_name,
     uint64_t bytes_to_release,
-    base::OnceCallback<void(Expected<uint64_t, std::string>)> callback) {
+    base::OnceCallback<void(
+        Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback) {
   std::string error = ValidateRequest(origin_vm_name, origin_container_name);
   if (!error.empty()) {
     std::move(callback).Run(
-        Expected<uint64_t, std::string>::Unexpected(std::move(error)));
+        Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
+            Described<BorealisResizeDiskResult>(
+                BorealisResizeDiskResult::kInvalidRequest, std::move(error))));
     return;
   }
   disk_manager_delegate_->ReleaseSpace(bytes_to_release, std::move(callback));

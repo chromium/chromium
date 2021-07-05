@@ -25,12 +25,14 @@ class DiskManagerMock : public BorealisDiskManager {
   MOCK_METHOD(void,
               RequestSpace,
               (uint64_t,
-               base::OnceCallback<void(Expected<uint64_t, std::string>)>),
+               base::OnceCallback<void(
+                   Expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
               ());
   MOCK_METHOD(void,
               ReleaseSpace,
               (uint64_t,
-               base::OnceCallback<void(Expected<uint64_t, std::string>)>),
+               base::OnceCallback<void(
+                   Expected<uint64_t, Described<BorealisResizeDiskResult>>)>),
               ());
   MOCK_METHOD(void, SyncDiskSize, (base::OnceCallback<void(std::string)>), ());
 };
@@ -39,8 +41,8 @@ using DiskInfoCallbackFactory = NiceCallbackFactory<void(
     Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
              Described<BorealisGetDiskInfoResult>>)>;
 
-using RequestDeltaCallbackFactory =
-    NiceCallbackFactory<void(Expected<uint64_t, std::string>)>;
+using RequestDeltaCallbackFactory = NiceCallbackFactory<void(
+    Expected<uint64_t, Described<BorealisResizeDiskResult>>)>;
 
 TEST(BorealisDiskManagerDispatcherTest, GetDiskInfoFailsIfNamesDontMatch) {
   BorealisDiskManagerDispatcher dispatcher;
@@ -94,8 +96,11 @@ TEST(BorealisDiskManagerDispatcherTest, RequestSpaceFailsIfNamesDontMatch) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(testing::_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kInvalidRequest);
           }));
 
   dispatcher.SetDiskManagerDelegate(&disk_mock);
@@ -109,8 +114,11 @@ TEST(BorealisDiskManagerDispatcherTest, RequestSpaceFailsIfDelegateNotSet) {
 
   EXPECT_CALL(callback_factory, Call(testing::_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kInvalidRequest);
           }));
 
   dispatcher.RequestSpace("borealis", "penguin", 1,
@@ -136,8 +144,11 @@ TEST(BorealisDiskManagerDispatcherTest, ReleaseSpaceFailsIfNamesDontMatch) {
   RequestDeltaCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(testing::_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kInvalidRequest);
           }));
 
   dispatcher.SetDiskManagerDelegate(&disk_mock);
@@ -151,8 +162,11 @@ TEST(BorealisDiskManagerDispatcherTest, ReleaseSpaceFailsIfDelegateNotSet) {
 
   EXPECT_CALL(callback_factory, Call(testing::_))
       .WillOnce(testing::Invoke(
-          [](Expected<uint64_t, std::string> response_or_error) {
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
             EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisResizeDiskResult::kInvalidRequest);
           }));
 
   dispatcher.ReleaseSpace("borealis", "penguin", 1,
