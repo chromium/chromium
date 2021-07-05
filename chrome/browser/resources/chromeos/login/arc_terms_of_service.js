@@ -369,12 +369,13 @@ Polymer({
 
   /**
    * Sets current metrics mode.
-   * @param {string} text Describes current metrics state.
+   * @param {string} textKey Key of the text which describes current metrics
+   *     state.
    * @param {boolean} visible If metrics text is visible.
    */
-  setMetricsMode(text, visible) {
+  setMetricsMode(textKey, visible) {
     this.isMetricsHidden = !visible;
-    this.metricsText = text;
+    this.metricsTextKey = textKey;
   },
 
   /**
