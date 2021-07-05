@@ -65,12 +65,6 @@ crbug.com/1203413 [ Mac ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,val
 # Fails or crashes on numerous combinations of backends, hardware, and validation layers
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:* [ Skip ]
 
-## webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,*
-
-# Windows (Intel but not NVIDIA). Possibly nondeterministic.
-crbug.com/1161355 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:* [ Failure ]
-crbug.com/1161355 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:* [ Failure ]
-
 # Mac (Intel and AMD). Possibly nondeterministic.
 crbug.com/1161355 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:format="r8snorm";* [ Failure ]
 crbug.com/1161355 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:format="rg8snorm";* [ Failure ]
