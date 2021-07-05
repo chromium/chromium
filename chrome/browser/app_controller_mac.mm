@@ -309,9 +309,12 @@ base::FilePath GetStartupProfilePathMac() {
   // should not default to Guest when the profile picker is shown.
   // TODO(https://crbug.com/1155158): Remove the ignore_profile_picker parameter
   // once the picker supports opening URLs.
-  return GetStartupProfilePath(/*current_directory=*/base::FilePath(),
-                               *base::CommandLine::ForCurrentProcess(),
-                               /*ignore_profile_picker=*/true);
+  StartupProfilePathInfo profile_path_info =
+      GetStartupProfilePath(/*current_directory=*/base::FilePath(),
+                            *base::CommandLine::ForCurrentProcess(),
+                            /*ignore_profile_picker=*/true);
+  DCHECK_EQ(profile_path_info.mode, StartupProfileMode::kBrowserWindow);
+  return profile_path_info.path;
 }
 
 // Open the urls in the last used browser. Loads the profile asynchronously if

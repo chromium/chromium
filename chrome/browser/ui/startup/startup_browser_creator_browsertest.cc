@@ -3188,10 +3188,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
   // Simulate a second start when the browser is already running.
   base::FilePath current_dir = base::FilePath();
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
-      command_line, current_dir,
+  StartupProfilePathInfo startup_profile_path_info =
       GetStartupProfilePath(current_dir, command_line,
-                            /*ignore_profile_picker=*/false));
+                            /*ignore_profile_picker=*/false);
+  EXPECT_EQ(startup_profile_path_info.mode, StartupProfileMode::kProfilePicker);
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      command_line, current_dir, startup_profile_path_info.path);
   base::RunLoop().RunUntilIdle();
 
   // The picker is shown again if no profile was previously opened.

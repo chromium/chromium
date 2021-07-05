@@ -30,6 +30,42 @@ FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineTab);
 FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineWindow);
 }  // namespace web_app
 
+// Indicates how Chrome should start up the first profile.
+enum class StartupProfileMode {
+  // Regular startup with a browser window.
+  kBrowserWindow,
+  // Profile picker window should be shown on startup.
+  kProfilePicker,
+  // Chrome cannot start because no profiles are available.
+  kError
+};
+
+// Bundles the startup profile path together with a StartupProfileMode.
+// Depending on the `mode` value, `path` is either:
+// - regular profile path for kBrowserWindow; if the guest mode is requested,
+//   contains default profile path with kBrowserWindow mode
+// - guest profile path for kProfilePicker,
+// - empty path for kError
+// TODO(https://crbug.com/1150326): return a guest profile path for the Guest
+// mode and an empty path for kProfilePicker mode
+struct StartupProfilePathInfo {
+  base::FilePath path;
+  StartupProfileMode mode;
+};
+
+// Bundles the startup profile together with a StartupProfileMode.
+// Depending on the `mode` value, `profile` is either:
+// - regular profile for kBrowserWindow; if the Guest mode is requested,
+//   contains default profile with kBrowserWindow mode
+// - guest profile for kProfilePicker,
+// - nullptr for kError
+// TODO(https://crbug.com/1150326): return a guest profile for the Guest mode
+// and return nullptr for kProfilePicker.
+struct StartupProfileInfo {
+  Profile* profile;
+  StartupProfileMode mode;
+};
+
 // class containing helpers for BrowserMain to spin up a new instance and
 // initialize the profile.
 class StartupBrowserCreator {
@@ -249,25 +285,24 @@ bool HasPendingUncleanExit(Profile* profile);
 // bypassing the profile picker, because the profile picker does not support it.
 // TODO(https://crbug.com/1155158): Remove this parameter once the picker
 // supports opening URLs.
-base::FilePath GetStartupProfilePath(const base::FilePath& cur_dir,
-                                     const base::CommandLine& command_line,
-                                     bool ignore_profile_picker);
+StartupProfilePathInfo GetStartupProfilePath(
+    const base::FilePath& cur_dir,
+    const base::CommandLine& command_line,
+    bool ignore_profile_picker);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 // Returns the profile that should be loaded on process startup. This is either
-// the profile returned by GetStartupProfilePath, or the guest profile if the
-// above profile is locked. The guest profile denotes that we should open the
-// user manager. Returns null if the above profile cannot be opened. In case of
-// opening the user manager, returns null if either the guest profile or the
-// system profile cannot be opened.
-Profile* GetStartupProfile(const base::FilePath& cur_dir,
-                           const base::CommandLine& command_line);
+// the profile returned by GetStartupProfilePath, or the guest profile along
+// with StartupProfileMode::kProfilePicker mode if the profile picker should be
+// opened. Returns nullptr with kError if neither the regular profile nor the
+// profile picker can be opened.
+StartupProfileInfo GetStartupProfile(const base::FilePath& cur_dir,
+                                     const base::CommandLine& command_line);
 
 // Returns the profile that should be loaded on process startup when
-// GetStartupProfile() returns null. As with GetStartupProfile(), returning the
-// guest profile means the caller should open the user manager. This may return
-// null if neither any profile nor the user manager can be opened.
-Profile* GetFallbackStartupProfile();
+// GetStartupProfile() returns kError. This may return kError if neither any
+// profile nor the profile picker can be opened.
+StartupProfileInfo GetFallbackStartupProfile();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_H_

@@ -353,11 +353,15 @@ void AddFirstRunNewTabs(StartupBrowserCreator* browser_creator,
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Initializes the primary profile, possibly doing some user prompting to pick
-// a fallback profile. Returns the newly created profile, or NULL if startup
-// should not continue.
-Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
-                              const base::FilePath& cur_dir,
-                              const base::CommandLine& parsed_command_line) {
+// a fallback profile. Returns either
+// - kBrowserWindow mode with the newly created profile,
+// - kProfilePicker mode indicating that the profile picker should be shown;
+//   the profile is a guest profile in this case, or
+// - kError mode with a nullptr profile if startup should not continue.
+StartupProfileInfo CreatePrimaryProfile(
+    const content::MainFunctionParams& parameters,
+    const base::FilePath& cur_dir,
+    const base::CommandLine& parsed_command_line) {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::CreateProfile");
   base::Time start = base::Time::Now();
 
@@ -395,22 +399,23 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
     profile_list->Clear();
   }
 
-  Profile* profile = nullptr;
+  StartupProfileInfo profile_info;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
-  profile = ProfileManager::CreateInitialProfile();
+  profile_info = {ProfileManager::CreateInitialProfile(),
+                  StartupProfileMode::kBrowserWindow};
 
   // TODO(port): fix this. See comments near the definition of |user_data_dir|.
   // It is better to CHECK-fail here than it is to silently exit because of
   // missing code in the above test.
-  CHECK(profile) << "Cannot get default profile.";
+  CHECK(profile_info.profile) << "Cannot get default profile.";
 
 #else
-  profile = GetStartupProfile(cur_dir, parsed_command_line);
+  profile_info = GetStartupProfile(cur_dir, parsed_command_line);
 
-  if (!profile && !last_used_profile_set)
-    profile = GetFallbackStartupProfile();
+  if (profile_info.mode == StartupProfileMode::kError && !last_used_profile_set)
+    profile_info = GetFallbackStartupProfile();
 
-  if (!profile) {
+  if (profile_info.mode == StartupProfileMode::kError) {
     ProfileErrorType error_type =
         profile_dir_specified ? ProfileErrorType::CREATE_FAILURE_SPECIFIED
                               : ProfileErrorType::CREATE_FAILURE_ALL;
@@ -419,13 +424,13 @@ Profile* CreatePrimaryProfile(const content::MainFunctionParams& parameters,
     // report when an error occurs?
     ShowProfileErrorDialog(error_type, IDS_COULDNT_STARTUP_PROFILE_ERROR,
                            "Error creating primary profile.");
-    return nullptr;
+    return profile_info;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 
   UMA_HISTOGRAM_LONG_TIMES(
       "Startup.CreateFirstProfile", base::Time::Now() - start);
-  return profile;
+  return profile_info;
 }
 
 #if defined(OS_MAC)
@@ -448,12 +453,14 @@ void ProcessSingletonNotificationCallbackImpl(
   g_browser_process->platform_part()->PlatformSpecificCommandLineProcessing(
       command_line);
 
-  base::FilePath startup_profile_dir =
+  StartupProfilePathInfo startup_profile_path_info =
       GetStartupProfilePath(current_directory, command_line,
                             /*ignore_profile_picker=*/false);
 
+  DCHECK_NE(startup_profile_path_info.mode, StartupProfileMode::kError);
+
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
-      command_line, current_directory, startup_profile_dir);
+      command_line, current_directory, startup_profile_path_info.path);
 
   // Record now as the last successful chrome start.
   if (ShouldRecordActiveUse(command_line))
@@ -1402,10 +1409,17 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
-  profile_ = CreatePrimaryProfile(parameters(), /*cur_dir=*/base::FilePath(),
-                                  parsed_command_line());
-  if (!profile_)
-    return content::RESULT_CODE_NORMAL_EXIT;
+  StartupProfileInfo profile_info = CreatePrimaryProfile(
+      parameters(), /*cur_dir=*/base::FilePath(), parsed_command_line());
+
+  switch (profile_info.mode) {
+    case StartupProfileMode::kBrowserWindow:
+    case StartupProfileMode::kProfilePicker:
+      profile_ = profile_info.profile;
+      break;
+    case StartupProfileMode::kError:
+      return content::RESULT_CODE_NORMAL_EXIT;
+  }
 
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   if (first_run::IsChromeFirstRun()) {
