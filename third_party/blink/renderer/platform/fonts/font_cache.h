@@ -336,6 +336,7 @@ class PLATFORM_EXPORT FontCache {
   static AtomicString GetFamilyNameForCharacter(SkFontMgr*,
                                                 UChar32,
                                                 const FontDescription&,
+                                                const char* family_name,
                                                 FontFallbackPriority);
 #endif  // defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 

@@ -69,13 +69,14 @@ AtomicString FontCache::GetFamilyNameForCharacter(
     SkFontMgr* fm,
     UChar32 c,
     const FontDescription& font_description,
+    const char* family_name,
     FontFallbackPriority fallback_priority) {
   DCHECK(fm);
 
   Bcp47Vector locales =
       GetBcp47LocaleForRequest(font_description, fallback_priority);
   sk_sp<SkTypeface> typeface(fm->matchFamilyStyleCharacter(
-      nullptr, SkFontStyle(), locales.data(), locales.size(), c));
+      family_name, SkFontStyle(), locales.data(), locales.size(), c));
   if (!typeface)
     return g_empty_atom;
 

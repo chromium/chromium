@@ -90,7 +90,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
 
   AtomicString family_name = GetFamilyNameForCharacter(
-      fm.get(), c, font_description, fallback_priority);
+      fm.get(), c, font_description, nullptr, fallback_priority);
 
   // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji and
   // a) no system fallback was found or b) the system fallback font's PostScript
@@ -187,7 +187,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
 
   sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
   return GetFamilyNameForCharacter(fm.get(), exampler_char, font_description,
-                                   FontFallbackPriority::kText);
+                                   nullptr, FontFallbackPriority::kText);
 }
 
 }  // namespace blink
