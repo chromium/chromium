@@ -13,8 +13,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.TWA_DISCLOSURE_INITIAL;
-import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.TWA_DISCLOSURE_SUBSEQUENT;
+import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS;
+import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS_QUIET;
 
 import android.app.NotificationChannel;
 import android.os.Build;
@@ -108,8 +108,8 @@ public class DisclosureUiPickerTest {
     @Feature("TrustedWebActivities")
     public void picksSnackbar_whenInitialChannelIsDisabled() {
         setNotificationsEnabled(true);
-        setChannelEnabled(TWA_DISCLOSURE_INITIAL, false);
-        setChannelEnabled(TWA_DISCLOSURE_SUBSEQUENT, true);
+        setChannelEnabled(WEBAPPS, false);
+        setChannelEnabled(WEBAPPS_QUIET, true);
 
         mPicker.onFinishNativeInitialization();
         verify(mSnackbar).showIfNeeded();
@@ -119,8 +119,8 @@ public class DisclosureUiPickerTest {
     @Feature("TrustedWebActivities")
     public void picksSnackbar_whenSubsequentChannelIsDisabled() {
         setNotificationsEnabled(true);
-        setChannelEnabled(TWA_DISCLOSURE_INITIAL, true);
-        setChannelEnabled(TWA_DISCLOSURE_SUBSEQUENT, false);
+        setChannelEnabled(WEBAPPS, true);
+        setChannelEnabled(WEBAPPS_QUIET, false);
 
         mPicker.onFinishNativeInitialization();
         verify(mSnackbar).showIfNeeded();
@@ -142,8 +142,8 @@ public class DisclosureUiPickerTest {
     @Feature("TrustedWebActivities")
     public void picksNotification() {
         setNotificationsEnabled(true);
-        setChannelEnabled(TWA_DISCLOSURE_INITIAL, true);
-        setChannelEnabled(TWA_DISCLOSURE_SUBSEQUENT, true);
+        setChannelEnabled(WEBAPPS, true);
+        setChannelEnabled(WEBAPPS_QUIET, true);
 
         mPicker.onFinishNativeInitialization();
         verify(mNotification).onStartWithNative();

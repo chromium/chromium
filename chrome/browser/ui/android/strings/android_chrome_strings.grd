@@ -251,6 +251,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_NOTIFICATION_CATEGORY_ANNOUNCEMENT" desc="Label for announcements notifications, within a list of notification categories. [CHAR_LIMIT=32]">
         Announcements
       </message>
+      <message name="IDS_NOTIFICATION_CATEGORY_WEBAPPS" desc="Label for webapps notifications, within a list of notification categories [CHAR_LIMIT=32]">
+        Web apps
+      </message>
+      <message name="IDS_NOTIFICATION_CATEGORY_WEBAPPS_QUIET" desc="Label for quiet webapps notifications that used for follow up notifications telling the user a TWA is running in Chrome. [CHAR_LIMIT=32]">
+        Web apps (quiet)
+      </message>
       <message name="IDS_NOTIFICATION_CATEGORY_PERMISSION_REQUESTS" desc="Label for permission requests, within a list of notification categories. [CHAR_LIMIT=32]">
        Permission requests
       </message>
@@ -3739,12 +3745,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_GOT_IT" desc="Button for the user to accept a disclosure/message">
         Got it
-      </message>
-      <message name="IDS_TWA_RUNNING_IN_CHROME_CHANNEL_NAME_INITIAL" desc="Notification channel name for the initial, urgent priority notification telling the user a TWA is running in Chrome.">
-        Web apps
-      </message>
-      <message name="IDS_TWA_RUNNING_IN_CHROME_CHANNEL_NAME_SUBSEQUENT" desc="Notification channel name for follow up notifications telling the user a TWA is running in Chrome.">
-        Web apps (quiet)
       </message>
       <message name="IDS_TWA_CLEAR_DATA_DIALOG_TITLE" desc="Title of the clear data dialog showing after user uninstalls or clears data of an app hosting a Trusted Web Activity">
         <ph name="APP_NAME">%1$s<ex>YouTube</ex></ph> also has data in Chrome

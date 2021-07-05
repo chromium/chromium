@@ -17,8 +17,8 @@ import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityM
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_NOT_SHOWN;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.PACKAGE_NAME;
-import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.TWA_DISCLOSURE_INITIAL;
-import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.TWA_DISCLOSURE_SUBSEQUENT;
+import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS;
+import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS_QUIET;
 
 import android.content.Context;
 
@@ -92,7 +92,7 @@ public class DisclosureNotificationTest {
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
 
         NotificationWrapper notification = verifyAndGetNotification();
-        assertEquals(TWA_DISCLOSURE_INITIAL, notification.getNotification().getChannelId());
+        assertEquals(WEBAPPS, notification.getNotification().getChannelId());
     }
 
     @Test
@@ -101,7 +101,7 @@ public class DisclosureNotificationTest {
         mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
 
         NotificationWrapper notification = verifyAndGetNotification();
-        assertEquals(TWA_DISCLOSURE_SUBSEQUENT, notification.getNotification().getChannelId());
+        assertEquals(WEBAPPS_QUIET, notification.getNotification().getChannelId());
     }
 
     @Test

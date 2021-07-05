@@ -72,9 +72,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             ChannelId.MEDIA_PLAYBACK, ChannelId.SCREEN_CAPTURE, ChannelId.CONTENT_SUGGESTIONS,
             ChannelId.WEBAPP_ACTIONS, ChannelId.SITES, ChannelId.SHARING, ChannelId.UPDATES,
             ChannelId.COMPLETED_DOWNLOADS, ChannelId.PERMISSION_REQUESTS,
-            ChannelId.PERMISSION_REQUESTS_HIGH, ChannelId.ANNOUNCEMENT,
-            ChannelId.TWA_DISCLOSURE_INITIAL, ChannelId.TWA_DISCLOSURE_SUBSEQUENT,
-            ChannelId.PRICE_DROP})
+            ChannelId.PERMISSION_REQUESTS_HIGH, ChannelId.ANNOUNCEMENT, ChannelId.WEBAPPS,
+            ChannelId.WEBAPPS_QUIET, ChannelId.PRICE_DROP})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
         String BROWSER = "browser";
@@ -93,8 +92,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String PERMISSION_REQUESTS = "permission_requests";
         String PERMISSION_REQUESTS_HIGH = "permission_requests_high";
         String ANNOUNCEMENT = "announcement";
-        String TWA_DISCLOSURE_INITIAL = "twa_disclosure_initial";
-        String TWA_DISCLOSURE_SUBSEQUENT = "twa_disclosure_subsequent";
+        String WEBAPPS = "twa_disclosure_initial";
+        String WEBAPPS_QUIET = "twa_disclosure_subsequent";
         String WEBRTC_CAM_AND_MIC = "webrtc_cam_and_mic";
         String PRICE_DROP = "shopping_price_drop_alerts";
         String SECURITY_KEY = "security_key";
@@ -214,13 +213,13 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             NotificationManager.IMPORTANCE_LOW, ChannelGroupId.GENERAL));
 
             // Not added to startup channels as not all users will use Trusted Web Activities.
-            map.put(ChannelId.TWA_DISCLOSURE_INITIAL,
-                    PredefinedChannel.createSilenced(ChannelId.TWA_DISCLOSURE_INITIAL,
-                            R.string.twa_running_in_chrome_channel_name_initial,
+            map.put(ChannelId.WEBAPPS,
+                    PredefinedChannel.createSilenced(ChannelId.WEBAPPS,
+                            R.string.notification_category_webapps,
                             NotificationManager.IMPORTANCE_MAX, ChannelGroupId.GENERAL));
-            map.put(ChannelId.TWA_DISCLOSURE_SUBSEQUENT,
-                    PredefinedChannel.create(ChannelId.TWA_DISCLOSURE_SUBSEQUENT,
-                            R.string.twa_running_in_chrome_channel_name_subsequent,
+            map.put(ChannelId.WEBAPPS_QUIET,
+                    PredefinedChannel.create(ChannelId.WEBAPPS_QUIET,
+                            R.string.notification_category_webapps_quiet,
                             NotificationManager.IMPORTANCE_MIN, ChannelGroupId.GENERAL));
 
             // Not added to startup channels because we want this channel to be created on the first
