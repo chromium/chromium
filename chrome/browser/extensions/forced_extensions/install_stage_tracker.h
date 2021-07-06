@@ -401,11 +401,11 @@ class InstallStageTracker : public KeyedService {
   InstallStageTracker(const InstallStageTracker&) = delete;
   InstallStageTracker& operator=(const InstallStageTracker&) = delete;
 
-  // Convenience function to get the InstallStageTracker for a BrowserContext.
+  // Returns instance of InstallStageTracker for a BrowserContext.
   static InstallStageTracker* Get(content::BrowserContext* context);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Returns user type of the user associated with the |profile| and whether the
+  // Returns user type of the user associated with the `profile` and whether the
   // user is new or not if there is an active user.
   static UserInfo GetUserInfo(Profile* profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -451,7 +451,7 @@ class InstallStageTracker : public KeyedService {
       const ExtensionId& id,
       const CrxInstallError& crx_install_error);
 
-  // Retrieves known information for installation of extension |id|.
+  // Retrieves known information for installation of extension `id`.
   // Returns empty data if not found.
   InstallationData Get(const ExtensionId& id);
   static std::string GetFormattedInstallationData(const InstallationData& data);
@@ -463,10 +463,10 @@ class InstallStageTracker : public KeyedService {
   void RemoveObserver(Observer* observer);
 
  private:
-  // Helper function that maps the current app status to AppStatusError enum.
+  // Maps the current app status to AppStatusError enum.
   AppStatusError GetManifestInvalidAppStatusError(const std::string& status);
 
-  // Helper function to report installation failures to the observers.
+  // Reports installation failures to the observers.
   void NotifyObserversOfFailure(const ExtensionId& id,
                                 FailureReason reason,
                                 const InstallationData& data);

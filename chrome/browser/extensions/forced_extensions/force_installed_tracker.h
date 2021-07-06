@@ -72,7 +72,7 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
   // Returns true if all extensions installed/failed installing.
   bool IsReady() const;
 
-  // Add/remove observers to this object, to get notified when installation is
+  // Adds observers to this object, to get notified when installation is
   // finished.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -141,22 +141,22 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
  private:
   policy::PolicyService* policy_service();
 
-  // Fires OnForceInstallationFinished() on observers, then changes |status_| to
+  // Fires OnForceInstallationFinished() on observers, then changes `status_` to
   // kComplete.
   void MaybeNotifyObservers();
 
-  // Increment (or decrement) |load_pending_count_| and |install_pending_count_|
-  // by |delta|, depending on |status|.
+  // Increments (or decrements) `load_pending_count_` and
+  // `install_pending_count_` by `delta`, depending on `status`.
   void UpdateCounters(ExtensionStatus status, int delta);
 
-  // Helper method to modify |extensions_| and bounded counter, adds extension
+  // Modifies `extensions_` and bounded counter by adding extension
   // to the collection.
   void AddExtensionInfo(const ExtensionId& extension_id,
                         ExtensionStatus status,
                         bool is_from_store);
 
-  // Helper method to modify |extensions_| and bounded counter, changes status
-  // of one extensions.
+  // Modifies `extensions_` and bounded counter by changing status
+  // of one extension.
   void ChangeExtensionStatus(const ExtensionId& extension_id,
                              ExtensionStatus status);
 

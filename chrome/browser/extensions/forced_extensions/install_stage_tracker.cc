@@ -18,8 +18,8 @@
 namespace extensions {
 
 namespace {
-// Returns true if the |current_stage| should be overridden by the
-// |new_stage|.
+// Returns true if the `current_stage` should be overridden by the
+// `new_stage`.
 bool ShouldOverrideCurrentStage(
     absl::optional<InstallStageTracker::Stage> current_stage,
     InstallStageTracker::Stage new_stage) {

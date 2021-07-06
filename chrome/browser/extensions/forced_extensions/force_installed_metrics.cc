@@ -36,8 +36,8 @@ constexpr base::TimeDelta kInstallationTimeout =
     base::TimeDelta::FromMinutes(5);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Helper method to convert user_manager::UserType to
-// InstallStageTracker::UserType for histogram purposes.
+// Converts user_manager::UserType to InstallStageTracker::UserType for
+// histogram purposes.
 ForceInstalledMetrics::UserType ConvertUserType(
     InstallStageTracker::UserInfo user_info) {
   switch (user_info.user_type) {
@@ -64,6 +64,27 @@ ForceInstalledMetrics::UserType ConvertUserType(
       NOTREACHED();
   }
   return ForceInstalledMetrics::UserType::kMaxValue;
+}
+
+// Reports type of user in case Force Installed Extensions fail to
+// install only if there is a user corresponding to given profile.
+void ReportUserType(Profile* profile, bool is_stuck_in_initial_creation_stage) {
+  InstallStageTracker::UserInfo user_info =
+      InstallStageTracker::GetUserInfo(profile);
+  // There can be extensions on the login screen. There is no user on the login
+  // screen and thus we would not report in that case.
+  if (!user_info.is_user_present)
+    return;
+
+  ForceInstalledMetrics::UserType user_type = ConvertUserType(user_info);
+  base::UmaHistogramEnumeration("Extensions.ForceInstalledFailureSessionType",
+                                user_type);
+  if (is_stuck_in_initial_creation_stage) {
+    base::UmaHistogramEnumeration(
+        "Extensions.ForceInstalledFailureSessionType."
+        "ExtensionStuckInInitialCreationStage",
+        user_type);
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -369,29 +390,6 @@ bool IsStatusGood(ExtensionStatus status) {
   }
   NOTREACHED();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Report type of user in case Force Installed Extensions fail to
-// install only if there is a user corresponding to given profile.
-void ReportUserType(Profile* profile, bool is_stuck_in_initial_creation_stage) {
-  InstallStageTracker::UserInfo user_info =
-      InstallStageTracker::GetUserInfo(profile);
-  // There can be extensions on the login screen. There is no user on the login
-  // screen and thus we would not report in that case.
-  if (!user_info.is_user_present)
-    return;
-
-  ForceInstalledMetrics::UserType user_type = ConvertUserType(user_info);
-  base::UmaHistogramEnumeration("Extensions.ForceInstalledFailureSessionType",
-                                user_type);
-  if (is_stuck_in_initial_creation_stage) {
-    base::UmaHistogramEnumeration(
-        "Extensions.ForceInstalledFailureSessionType."
-        "ExtensionStuckInInitialCreationStage",
-        user_type);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 

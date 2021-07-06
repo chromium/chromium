@@ -58,10 +58,11 @@ void ForceInstalledTestBase::SetUp() {
       std::make_unique<ForceInstalledTracker>(registry_, profile_);
 }
 
-void ForceInstalledTestBase::SetupForceList(bool is_from_store) {
+void ForceInstalledTestBase::SetupForceList(ExtensionOrigin origin) {
   base::Value list(base::Value::Type::LIST);
-  const std::string update_url =
-      is_from_store ? kExtensionUpdateUrl : kOffStoreUpdateUrl;
+  const std::string update_url = origin == ExtensionOrigin::kWebStore
+                                     ? kExtensionUpdateUrl
+                                     : kOffStoreUpdateUrl;
   list.Append(base::StrCat({kExtensionId1, ";", update_url}));
   list.Append(base::StrCat({kExtensionId2, ";", update_url}));
   std::unique_ptr<base::Value> dict =

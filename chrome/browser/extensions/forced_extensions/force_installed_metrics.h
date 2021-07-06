@@ -91,7 +91,8 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
   Profile* const profile_;
   ForceInstalledTracker* const tracker_;
 
-  // Moment when the class was initialized.
+  // Tracks the moment when the class was initialized and used as timer start
+  // for reporting metrics related to extensions not loaded after 5 minutes.
   base::Time start_time_;
 
   // Tracks whether extensions load stats were already for the session.

@@ -27,6 +27,11 @@ class InstallStageTracker;
 // setting ExtensionInstallForcelist policy value.
 class ForceInstalledTestBase : public testing::Test {
  public:
+  enum class ExtensionOrigin {
+    kWebStore,
+    kOffStore,
+  };
+
   ForceInstalledTestBase();
   ~ForceInstalledTestBase() override;
 
@@ -37,15 +42,15 @@ class ForceInstalledTestBase : public testing::Test {
   void SetUp() override;
 
   // Creates and sets value for ExtensionInstallForcelist policy and
-  // kInstallForceList preference. |is_from_store| tells whether the extensions
+  // kInstallForceList preference. `source` tells whether the extensions
   // specified in the policy should have an update URL from CWS or not.
-  void SetupForceList(bool is_from_store);
+  void SetupForceList(ExtensionOrigin origin);
 
   // Creates and sets empty value for ExtensionInstallForcelist policy and
   // kInstallForceList preference.
   void SetupEmptyForceList();
 
-  // Creates a new extension with |extension_id| and |extension_name| and fakes
+  // Creates a new extension with `extension_id` and `extension_name` and fakes
   // its status by calling one of ForceInstalledTracker's
   // ExtensionRegistryObserver override.
   scoped_refptr<const Extension> CreateNewExtension(
