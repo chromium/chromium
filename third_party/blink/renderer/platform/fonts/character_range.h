@@ -10,7 +10,14 @@ namespace blink {
 struct CharacterRange {
   CharacterRange(float from, float to, float ascent, float descent)
       : start(from), end(to), ascent(ascent), descent(descent) {
-    DCHECK_LE(start, end);
+#if DCHECK_IS_ON()
+    if (isnan(start)) {
+      // start/end can saturate in tests, but not a real world case.
+      DCHECK(isnan(end));
+    } else {
+      DCHECK_LE(start, end);
+    }
+#endif
   }
 
   float Width() const { return end - start; }
