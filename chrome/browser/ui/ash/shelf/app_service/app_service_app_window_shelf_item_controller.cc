@@ -183,12 +183,12 @@ void AppServiceAppWindowShelfItemController::OnAppStatesChanged(
   for (const ui::BaseWindow* window : windows()) {
     auto session_id = arc::GetWindowSessionId(window->GetNativeWindow());
     if (!session_id.has_value())
-      return;
+      continue;
 
     auto app_launch_info =
         ::full_restore::GetArcAppLaunchInfo(arc_app_id, session_id.value());
     if (!app_launch_info)
-      return;
+      continue;
 
     DCHECK(app_launch_info->event_flag.has_value());
 
@@ -218,6 +218,18 @@ void AppServiceAppWindowShelfItemController::RemoveTaskId(int task_id) {
 
 bool AppServiceAppWindowShelfItemController::HasAnyTasks() const {
   return !task_ids_.empty();
+}
+
+void AppServiceAppWindowShelfItemController::AddSessionId(int session_id) {
+  session_ids_.insert(session_id);
+}
+
+void AppServiceAppWindowShelfItemController::RemoveSessionId(int session_id) {
+  session_ids_.erase(session_id);
+}
+
+bool AppServiceAppWindowShelfItemController::HasAnySessions() const {
+  return !session_ids_.empty();
 }
 
 bool AppServiceAppWindowShelfItemController::IsChromeApp() {

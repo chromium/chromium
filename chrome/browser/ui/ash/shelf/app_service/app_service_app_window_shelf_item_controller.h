@@ -50,6 +50,12 @@ class AppServiceAppWindowShelfItemController
   void RemoveTaskId(int task_id);
   bool HasAnyTasks() const;
 
+  // ARC ghost windows introduce session ids to identify the ghost window. So
+  // below functions are added to handle session ids for ghost windows.
+  void AddSessionId(int session_id);
+  void RemoveSessionId(int session_id);
+  bool HasAnySessions() const;
+
  private:
   bool IsChromeApp();
 
@@ -59,6 +65,7 @@ class AppServiceAppWindowShelfItemController
       arc_prefs_observer_{this};
 
   std::set<int> task_ids_;
+  std::set<int> session_ids_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_APP_SERVICE_APP_WINDOW_SHELF_ITEM_CONTROLLER_H_

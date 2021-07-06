@@ -122,6 +122,7 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // arc::ArcSessionManagerObserver:
   void OnArcOptInManagementCheckStarted() override;
   void OnArcSessionStopped(arc::ArcStopReason stop_reason) override;
+  void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
   void HandlePlayStoreLaunch(ArcAppWindowInfo* app_window_info);
 
@@ -130,7 +131,10 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // For consistency, always return the lowest such task ID.
   int GetTaskIdSharingLogicalWindow(int task_id);
 
-  std::vector<int> GetTaskIdsForApp(const std::string& arc_app_id) const;
+  std::vector<int> GetTaskIdsForApp(const std::string& app_id) const;
+
+  // Returns session ids of all ghost windows for the app of `arc_app_id`.
+  std::vector<int> GetSessionIdsForApp(const std::string& app_id) const;
 
   // Invoked when the compressed data is converted to an ImageSkia.
   void OnIconLoaded(int32_t task_id,
@@ -146,6 +150,10 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
                       gfx::ImageSkia icon);
 
   ArcAppWindowInfo* GetArcAppWindowInfo(aura::Window* window);
+
+  // Invoked when the app is removed to close the ghost window with
+  // `session_id`.
+  void OnSessionDestroyed(int32_t session_id);
 
   Profile* const observed_profile_;
   AppServiceAppWindowShelfController* const app_service_controller_;

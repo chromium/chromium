@@ -22,6 +22,8 @@
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -53,12 +55,22 @@ AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
   DCHECK(prefs);
   prefs->AddObserver(this);
+
+  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
+  // arc::ArcSessionManager might not be set in tests.
+  if (arc_session_manager)
+    arc_session_manager->AddObserver(this);
 }
 
 AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
   DCHECK(prefs);
   prefs->RemoveObserver(this);
+
+  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
+  // arc::ArcSessionManager may be released first.
+  if (arc_session_manager)
+    arc_session_manager->RemoveObserver(this);
 }
 
 void AppServiceAppWindowArcTracker::ActiveUserChanged(
@@ -136,6 +148,11 @@ void AppServiceAppWindowArcTracker::OnAppRemoved(const std::string& app_id) {
   for (const auto task_id : task_ids_to_remove)
     OnTaskDestroyed(task_id);
   DCHECK(GetTaskIdsForApp(app_id).empty());
+
+  const std::vector<int> session_ids_to_remove = GetSessionIdsForApp(app_id);
+  for (const auto session_id : session_ids_to_remove)
+    OnSessionDestroyed(session_id);
+  DCHECK(GetSessionIdsForApp(app_id).empty());
 }
 
 void AppServiceAppWindowArcTracker::OnTaskCreated(
@@ -255,7 +272,8 @@ void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
   auto it_controller = app_shelf_group_to_controller_map_.find(app_shelf_id);
   if (it_controller != app_shelf_group_to_controller_map_.end()) {
     it_controller->second->RemoveTaskId(task_id);
-    if (!it_controller->second->HasAnyTasks()) {
+    if (!it_controller->second->HasAnyTasks() &&
+        !it_controller->second->HasAnySessions()) {
       app_service_controller_->owner()->CloseItem(
           it_controller->second->shelf_id());
       app_shelf_group_to_controller_map_.erase(app_shelf_id);
@@ -447,8 +465,10 @@ void AppServiceAppWindowArcTracker::AttachControllerToSession(int session_id) {
   ArcAppWindowInfo* const app_window_info =
       session_id_to_arc_app_window_info_[session_id].get();
   const arc::ArcAppShelfId& app_shelf_id = app_window_info->app_shelf_id();
-  if (base::Contains(app_shelf_group_to_controller_map_, app_shelf_id))
+  if (base::Contains(app_shelf_group_to_controller_map_, app_shelf_id)) {
+    app_shelf_group_to_controller_map_[app_shelf_id]->AddSessionId(session_id);
     return;
+  }
 
   const ash::ShelfID shelf_id(app_shelf_id.ToString());
   std::unique_ptr<AppServiceAppWindowShelfItemController> controller =
@@ -465,6 +485,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToSession(int session_id) {
     app_service_controller_->owner()->SetItemStatus(shelf_id,
                                                     ash::STATUS_RUNNING);
   }
+  item_controller->AddSessionId(session_id);
   app_shelf_group_to_controller_map_[app_shelf_id] = item_controller;
 }
 
@@ -476,6 +497,21 @@ void AppServiceAppWindowArcTracker::OnArcOptInManagementCheckStarted() {
 void AppServiceAppWindowArcTracker::OnArcSessionStopped(
     arc::ArcStopReason stop_reason) {
   opt_in_management_check_start_time_ = base::Time();
+}
+
+void AppServiceAppWindowArcTracker::OnArcPlayStoreEnabledChanged(bool enabled) {
+  if (enabled)
+    return;
+
+  // If ARC was disabled, close the ghost window.
+  std::vector<int> session_ids;
+  for (const auto& it : session_id_to_arc_app_window_info_)
+    session_ids.push_back(it.first);
+
+  for (const auto session_id : session_ids)
+    OnSessionDestroyed(session_id);
+
+  DCHECK(session_id_to_arc_app_window_info_.empty());
 }
 
 void AppServiceAppWindowArcTracker::HandlePlayStoreLaunch(
@@ -540,6 +576,18 @@ std::vector<int> AppServiceAppWindowArcTracker::GetTaskIdsForApp(
   return task_ids;
 }
 
+std::vector<int> AppServiceAppWindowArcTracker::GetSessionIdsForApp(
+    const std::string& app_id) const {
+  std::vector<int> session_ids;
+  for (const auto& it : session_id_to_arc_app_window_info_) {
+    const ArcAppWindowInfo* app_window_info = it.second.get();
+    if (app_window_info->app_shelf_id().app_id() == app_id)
+      session_ids.push_back(it.first);
+  }
+
+  return session_ids;
+}
+
 void AppServiceAppWindowArcTracker::SetDescription(int32_t task_id,
                                                    const std::string& title,
                                                    gfx::ImageSkia icon) {
@@ -593,4 +641,40 @@ ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
                                          /*package_name=*/std::string());
 
   return session_id_to_arc_app_window_info_[*session_id].get();
+}
+
+void AppServiceAppWindowArcTracker::OnSessionDestroyed(int32_t session_id) {
+  auto it = session_id_to_arc_app_window_info_.find(session_id);
+  if (it == session_id_to_arc_app_window_info_.end())
+    return;
+
+  aura::Window* const window = it->second.get()->window();
+  if (window) {
+    app_service_controller_->app_service_instance_helper()->OnInstances(
+        it->second.get()->app_shelf_id().app_id(), window, std::string(),
+        apps::InstanceState::kDestroyed);
+    app_service_controller_->UnregisterWindow(window);
+  }
+
+  // Check if we may close controller now, at this point we can safely remove
+  // controllers without window.
+  const auto app_shelf_id = it->second->app_shelf_id();
+  auto it_controller = app_shelf_group_to_controller_map_.find(app_shelf_id);
+  if (it_controller != app_shelf_group_to_controller_map_.end()) {
+    it_controller->second->RemoveSessionId(session_id);
+    if (!it_controller->second->HasAnyTasks() &&
+        !it_controller->second->HasAnySessions()) {
+      app_service_controller_->owner()->CloseItem(
+          it_controller->second->shelf_id());
+      app_shelf_group_to_controller_map_.erase(app_shelf_id);
+    }
+  }
+  session_id_to_arc_app_window_info_.erase(session_id);
+
+  // Close the ghost window.
+  auto* arc_handler =
+      chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(
+          observed_profile_);
+  if (arc_handler && arc_handler->window_handler())
+    arc_handler->window_handler()->CloseWindow(session_id);
 }

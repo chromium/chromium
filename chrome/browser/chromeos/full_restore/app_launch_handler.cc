@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/full_restore_read_handler.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/common/constants.h"
 
 namespace chromeos {
@@ -86,12 +87,17 @@ void AppLaunchHandler::LaunchApps() {
 }
 
 void AppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
-  // If the restore data has not been read yet, or the app is not ready, don't
-  // launch the app for the restoration.
-  if (!restore_data_ || !update.ReadinessChanged() ||
-      update.Readiness() != apps::mojom::Readiness::kReady) {
+  if (!restore_data_ || !update.ReadinessChanged())
+    return;
+
+  if (!apps_util::IsInstalled(update.Readiness())) {
+    restore_data_->RemoveApp(update.AppId());
     return;
   }
+
+  // If the app is not ready, don't launch the app for the restoration.
+  if (update.Readiness() != apps::mojom::Readiness::kReady)
+    return;
 
   // If there is no restore data or the launch list for the app is empty, don't
   // launch the app.
