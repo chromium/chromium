@@ -19,6 +19,10 @@
 # Exclude to prevent PartitionAlloc<->CheckedPtr cyclical dependency.
 base/allocator/
 
+# Exclude dependences of checked_ptr.h
+base/logging.h
+base/synchronization/lock_impl.h
+
 # Exclude - deprecated and contains legacy C++ and pre-C++11 code.
 ppapi/
 
@@ -44,10 +48,6 @@ components/history_clusters/core/
 # The folder holds headers that are duplicated in the Android source and need to
 # provide a stable C ABI. Can't depend on //base.
 android_webview/public/
-
-# Exclude dependences of checked_ptr.h
-base/logging.h
-base/synchronization/lock_impl.h
 
 # Performance related exclusion based on sampling profiler data
 base/bind_internal.h
