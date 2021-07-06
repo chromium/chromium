@@ -267,6 +267,8 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
                                    ash::kSystemMenuPhoneIcon);
       compat_mode_button->SetText(l10n_util::GetStringUTF16(
           IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE));
+      compat_mode_button->SetAccessibleName(l10n_util::GetStringUTF16(
+          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE));
       if (resize_lock_type == ash::ArcResizeLockType::FULLY_LOCKED) {
         compat_mode_button->SetTooltipText(l10n_util::GetStringUTF16(
             IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE));
@@ -278,12 +280,16 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
                                    ash::kSystemMenuTabletIcon);
       compat_mode_button->SetText(l10n_util::GetStringUTF16(
           IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET));
+      compat_mode_button->SetAccessibleName(l10n_util::GetStringUTF16(
+          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET));
       break;
     case ResizeCompatMode::kResizable:
       compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
                                    views::FrameCaptionButton::Animate::kNo,
                                    kResizableIcon);
       compat_mode_button->SetText(l10n_util::GetStringUTF16(
+          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE));
+      compat_mode_button->SetAccessibleName(l10n_util::GetStringUTF16(
           IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE));
       break;
   }

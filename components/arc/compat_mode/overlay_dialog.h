@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace aura {
@@ -23,6 +24,8 @@ namespace arc {
 
 class OverlayDialog : public views::FlexLayoutView {
  public:
+  METADATA_HEADER(OverlayDialog);
+
   OverlayDialog(const OverlayDialog&) = delete;
   OverlayDialog& operator=(const OverlayDialog&) = delete;
   ~OverlayDialog() override;

@@ -8,6 +8,7 @@
 #include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 
@@ -65,5 +66,8 @@ OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,
   const SkColor kScrimColor = GetShieldLayerColor(ShieldLayerType::kShield60);
   SetBackground(views::CreateSolidBackground(kScrimColor));
 }
+
+BEGIN_METADATA(OverlayDialog, views::FlexLayoutView)
+END_METADATA
 
 }  // namespace arc
