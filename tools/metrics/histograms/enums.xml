@@ -3660,6 +3660,26 @@ Unknown properties are collapsed to zero. -->
   <int value="48" label="tel:// Device selected"/>
 </enum>
 
+<enum name="ArchivemountError">
+  <int value="0" label="Success">EXIT_SUCCESS</int>
+  <int value="1" label="Failure">EXIT_FAILURE</int>
+  <int value="132" label="Terminated by SIGILL">
+    MINIJAIL_ERR_SIG_BASE + SIGILL from libminijail
+  </int>
+  <int value="134" label="Terminated by SIGABRT">
+    MINIJAIL_ERR_SIG_BASE + SIGABRT from libminijail
+  </int>
+  <int value="139" label="Terminated by SIGSEGV">
+    MINIJAIL_ERR_SIG_BASE + SIGSEGV from libminijail
+  </int>
+  <int value="251" label="Cannot mount file in mount namespace">
+    MINIJAIL_ERR_MOUNT from libminijail
+  </int>
+  <int value="253" label="Seccomp violation">
+    MINIJAIL_ERR_JAIL from libminijail
+  </int>
+</enum>
+
 <enum name="ArcIntentHandlerAction">
   <summary>Defines Arc intent handler actions</summary>
   <int value="0" label="Error after showing picker"/>
@@ -16483,6 +16503,11 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Tar"/>
   <int value="4" label="Bzip2-compressed Tar"/>
   <int value="5" label="Gzip-compressed Tar"/>
+  <int value="6" label="Bzip2-compressed Other"/>
+  <int value="7" label="Gzip-compressed Other"/>
+  <int value="8" label="7z"/>
+  <int value="9" label="Crx"/>
+  <int value="10" label="Iso"/>
 </enum>
 
 <enum name="CrosDisksClientFormatError">
