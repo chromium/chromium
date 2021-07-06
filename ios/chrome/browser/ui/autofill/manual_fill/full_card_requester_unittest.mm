@@ -100,14 +100,6 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
   }
 
   void TearDown() override {
-    // Remove the frame in order to destroy the AutofillDriver before the
-    // AutofillClient.
-    web::FakeWebFramesManager* frames_manager =
-        static_cast<web::FakeWebFramesManager*>(
-            web_state()->GetWebFramesManager());
-    std::string frame_id = frames_manager->GetMainWebFrame()->GetFrameId();
-    frames_manager->RemoveWebFrame(frame_id);
-
     personal_data_manager_.SetPrefService(nullptr);
     PlatformTest::TearDown();
   }

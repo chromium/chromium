@@ -82,8 +82,6 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
 
 // Prints a formatted log of a |AutofillCountry| to a |LogBuffer|.
 LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country) {
-  if (!buffer.active())
-    return buffer;
   buffer << LogMessage::kImportAddressProfileFromFormAddressRequirements;
   buffer << Tag{"div"} << Attrib{"class", "country_data"};
   buffer << Tag{"table"};

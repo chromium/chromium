@@ -85,12 +85,6 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  // The creation of a driver is private to ensure that we don't accidentally
-  // register drivers while a frame is already deleted. Such a driver would not
-  // be unregistered properly.
-  ContentAutofillDriver* GetOrCreateDriverForFrame(
-      content::RenderFrameHost* render_frame_host);
-
   std::string app_locale_;
   BrowserAutofillManager::AutofillDownloadManagerState enable_download_manager_;
   AutofillManager::AutofillManagerFactoryCallback

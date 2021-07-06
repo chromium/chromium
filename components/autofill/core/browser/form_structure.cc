@@ -539,14 +539,10 @@ const auto& GetTypeRelationshipMap() {
 }
 
 LogBufferSubmitter LogRationalization(LogManager* log_manager) {
-  LogBufferSubmitter submitter = SafeLog(log_manager);
+  if (!log_manager)
+    return LogManager::DevNull();
+  LogBufferSubmitter submitter = log_manager->Log();
   submitter << LoggingScope::kRationalization << LogMessage::kRationalization;
-  return submitter;
-}
-
-LogBufferSubmitter LogAbortParsing(LogManager* log_manager) {
-  LogBufferSubmitter submitter = SafeLog(log_manager);
-  submitter << LoggingScope::kAbortParsing;
   return submitter;
 }
 
@@ -1018,8 +1014,10 @@ void FormStructure::UpdateAutofillCount() {
 bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   // Exclude URLs not on the web via HTTP(S).
   if (!HasAllowedScheme(source_url_)) {
-    LogAbortParsing(log_manager)
-        << LogMessage::kAbortParsingNotAllowedScheme << *this;
+    if (log_manager) {
+      log_manager->Log() << LoggingScope::kAbortParsing
+                         << LogMessage::kAbortParsingNotAllowedScheme << *this;
+    }
     return false;
   }
 
@@ -1030,16 +1028,22 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
       (!all_fields_are_passwords() ||
        active_field_count() < kRequiredFieldsForFormsWithOnlyPasswordFields) &&
       !has_author_specified_types_) {
-    LogAbortParsing(log_manager) << LogMessage::kAbortParsingNotEnoughFields
-                                 << active_field_count() << *this;
+    if (log_manager) {
+      log_manager->Log() << LoggingScope::kAbortParsing
+                         << LogMessage::kAbortParsingNotEnoughFields
+                         << active_field_count() << *this;
+    }
     return false;
   }
 
   // Rule out search forms.
   if (MatchesPattern(base::UTF8ToUTF16(target_url_.path_piece()),
                      kUrlSearchActionRe)) {
-    LogAbortParsing(log_manager)
-        << LogMessage::kAbortParsingUrlMatchesSearchRegex << *this;
+    if (log_manager) {
+      log_manager->Log() << LoggingScope::kAbortParsing
+                         << LogMessage::kAbortParsingUrlMatchesSearchRegex
+                         << *this;
+    }
     return false;
   }
 
@@ -1049,8 +1053,8 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   }
 
   if (!has_text_field && log_manager) {
-    LogAbortParsing(log_manager)
-        << LogMessage::kAbortParsingFormHasNoTextfield << *this;
+    log_manager->Log() << LoggingScope::kAbortParsing
+                       << LogMessage::kAbortParsingFormHasNoTextfield << *this;
   }
 
   return has_text_field;
@@ -2566,8 +2570,6 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
 }
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
-  if (!buffer.active())
-    return buffer;
   buffer << Tag{"div"} << Attrib{"class", "form"};
   buffer << Tag{"table"};
   buffer << Tr{} << "Form signature:"

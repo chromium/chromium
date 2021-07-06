@@ -15,13 +15,12 @@
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -47,18 +46,16 @@ class FullCardRequesterTest : public testing::Test {
   void SetUp() override {
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         &browser_context_, nullptr);
+    autofill_driver_ =
+        std::make_unique<testing::NiceMock<autofill::TestAutofillDriver>>();
     autofill_client_.SetPrefs(autofill::test::PrefServiceForTesting());
     autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
         web_contents_.get(), &autofill_client_, "en-US",
         autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
     autofill_client_.set_test_payments_client(
         std::make_unique<autofill::payments::TestPaymentsClient>(
-            test_url_loader_factory_.GetSafeWeakWrapper(),
+            autofill_driver_->GetURLLoaderFactory(),
             autofill_client_.GetIdentityManager(), &personal_data_manager_));
-    // Navigate to a site so that the ContentAutofillDriverFactory creates a
-    // ContentAutofillDriver for the frame.
-    content::WebContentsTester::For(web_contents_.get())
-        ->NavigateAndCommit(GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
   }
 
  protected:
@@ -66,7 +63,7 @@ class FullCardRequesterTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   content::TestBrowserContext browser_context_;
   std::unique_ptr<content::WebContents> web_contents_;
-  ::network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<autofill::TestAutofillDriver> autofill_driver_;
   MockAutofillClient autofill_client_;
   scoped_refptr<autofill::AutofillWebDataService> database_;
   MockPersonalDataManager personal_data_manager_;
