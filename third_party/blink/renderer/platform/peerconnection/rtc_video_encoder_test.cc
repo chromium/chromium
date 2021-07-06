@@ -492,7 +492,9 @@ TEST_F(RTCVideoEncoderTest, EncodeTemporalLayer) {
 #if defined(OS_CHROMEOS)
 // Currently we only test spatial SVC encoding on CrOS since only CrOS platform
 // support spatial SVC encoding.
-TEST_F(RTCVideoEncoderTest, EncodeSpatialLayer) {
+
+// http://crbug.com/1226875
+TEST_F(RTCVideoEncoderTest, DISABLED_EncodeSpatialLayer) {
   webrtc::VideoCodec sl_codec = GetSVCLayerCodec(/*num_spatial_layers=*/3);
   CreateEncoder(sl_codec.codecType);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
