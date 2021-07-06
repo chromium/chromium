@@ -31,6 +31,10 @@
   cell.detailTextLabel.text = self.detailText;
   cell.image = self.image;
 
+  if (self.attributedText) {
+    cell.textLabel.attributedText = self.attributedText;
+  }
+
   if (self.detailTextColor) {
     cell.detailTextLabel.textColor = self.detailTextColor;
   } else {

@@ -27,6 +27,9 @@
 // The title text to display.
 @property(nonatomic, copy) NSString* text;
 
+// The attributed text to display.
+@property(nonatomic, copy) NSAttributedString* attributedText;
+
 // The detail text to display.
 @property(nonatomic, copy) NSString* detailText;
 
