@@ -11,7 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/policy/enrollment/device_cloud_policy_initializer.h"
+#include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 class GoogleServiceAuthError;
