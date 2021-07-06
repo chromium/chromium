@@ -572,6 +572,8 @@ ci.android_builder(
     experiments = {
         # TODO(crbug.com/1143122): remove this.
         "chromium.chromium_tests.use_rbe_cas": 50,
+        # TODO(crbug.com/1225524): remove this.
+        "chromium.isolate.use_new_lib": 100,
     },
 )
 
@@ -5279,6 +5281,8 @@ ci.linux_builder(
     experiments = {
         # TODO(crbug.com/1143122): remove this.
         "chromium.chromium_tests.use_rbe_cas": 20,
+        # TODO(crbug.com/1225524): remove this.
+        "chromium.isolate.use_new_lib": 100,
     },
 )
 
