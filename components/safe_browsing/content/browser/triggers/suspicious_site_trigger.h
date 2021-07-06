@@ -150,7 +150,7 @@ class SuspiciousSiteTrigger
 
   // Sets a task runner to use for tests.
   void SetTaskRunnerForTest(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // The delay (in milliseconds) to wait before finishing a report. Can be
   // overwritten for tests.
@@ -172,7 +172,7 @@ class SuspiciousSiteTrigger
 
   // Task runner for posting delayed tasks. Normally set to the runner for the
   // UI thread, but can be overwritten for tests.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<SuspiciousSiteTrigger> weak_ptr_factory_{this};
 

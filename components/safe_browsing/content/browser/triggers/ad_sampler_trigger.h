@@ -88,7 +88,7 @@ class AdSamplerTrigger : public content::WebContentsObserver,
 
   // Sets a task runner to use for tests.
   void SetTaskRunnerForTest(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Ad samples will be collected with frequency
   // 1/|sampler_frequency_denominator_|
@@ -113,7 +113,7 @@ class AdSamplerTrigger : public content::WebContentsObserver,
 
   // Task runner for posting delayed tasks. Normally set to the runner for the
   // UI thread, but can be overwritten for tests.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<AdSamplerTrigger> weak_ptr_factory_{this};
 
