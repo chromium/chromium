@@ -47,8 +47,6 @@ struct InsecureCredential {
   InsecureCredential& operator=(InsecureCredential&& rhs);
   ~InsecureCredential();
 
-  bool SameMetadata(const InsecurityMetadata& metadata) const;
-
   // The primary key of an affected Login.
   FormPrimaryKey parent_key{-1};
   // The signon_realm of the website where the credentials were compromised.
@@ -81,15 +79,6 @@ class InsecureCredentialsTable {
   // Adds information about the compromised credentials. Returns true
   // if the SQL completed successfully and an item was created.
   bool AddRow(const InsecureCredential& compromised_credentials);
-
-  // Adds information about the insecure credential if it doesn't exist.
-  // If it does, it removes the previous entry and adds the new one.
-  bool InsertOrReplace(FormPrimaryKey parent_key,
-                       InsecureType type,
-                       InsecurityMetadata metadata);
-
-  // Removes the row corresponding to |parent_key| and |insecure_type|.
-  bool RemoveRow(FormPrimaryKey parent_key, InsecureType insecure_type);
 
   // Removes information about the credentials compromised for |username| on
   // |signon_realm|. |reason| is the reason why the credentials are removed from

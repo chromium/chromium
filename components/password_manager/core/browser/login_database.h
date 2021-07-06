@@ -337,13 +337,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // kAccountStore depending on the value of `is_account_store_`.
   void FillFormInStore(PasswordForm* form) const;
 
-  // Updates data in the `insecure_credentials_table_` with the password issues
-  // data from `password_issues`. Returns whether any insecure credential entry
-  // was changed.
-  InsecureCredentialsChanged UpdateInsecureCredentials(
-      FormPrimaryKey primary_key,
-      const base::flat_map<InsecureType, InsecurityMetadata>& password_issues);
-
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
 

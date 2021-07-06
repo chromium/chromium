@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
-#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -59,7 +58,6 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
         url::Origin::Create(GURL("https://accounts.google.com/login"));
   }
   form->in_store = PasswordForm::Store::kProfileStore;
-  form->password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
