@@ -56,6 +56,10 @@
     // Trust Tokens request parameters (https://github.com/wicg/trust-token-api)
     [RuntimeEnabled=TrustTokens, SecureContext, Reflect, MeasureAs=TrustTokenIframe] attribute DOMString trustToken;
 
+    // Anonymous iframes
+    // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
+    [CEReactions, Reflect, RuntimeEnabled=AnonymousIframe] attribute boolean anonymous;
+
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLIFrameElement-partial
     [CEReactions, Reflect] attribute DOMString align;
