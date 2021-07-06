@@ -23,6 +23,7 @@ import android.os.SystemClock;
 import android.provider.Browser;
 import android.provider.Telephony;
 import android.text.TextUtils;
+import android.util.AndroidRuntimeException;
 import android.util.Pair;
 import android.view.WindowManager.BadTokenException;
 import android.webkit.MimeTypeMap;
@@ -1654,6 +1655,11 @@ public class ExternalNavigationHandler {
             // https://crbug.com/808494: Handle the URL internally if dispatching to another
             // application fails with a SecurityException. This happens due to malformed manifests
             // in another app.
+            return false;
+        } catch (AndroidRuntimeException e) {
+            // https://crbug.com/1226177: Most likely cause of this exception is Android failing to
+            // start the app that we previously detected could handle the Intent.
+            Log.e(TAG, "Could not start Activity for intent " + intent.toString(), e);
             return false;
         } catch (RuntimeException e) {
             IntentUtils.logTransactionTooLargeOrRethrow(e, intent);
