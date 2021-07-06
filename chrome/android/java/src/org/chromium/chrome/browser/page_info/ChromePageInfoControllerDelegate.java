@@ -218,8 +218,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
     @Override
     public PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String url) {
-        return new PageInfoHistoryController(mainController, rowView, this, url);
+            PageInfoMainController mainController, PageInfoRowView rowView, String host) {
+        return new PageInfoHistoryController(mainController, rowView, this, host);
     }
 
     /**
@@ -282,5 +282,13 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         FragmentActivity activity = ((FragmentActivity) mContext);
         if (activity.isFinishing()) return null;
         return activity.getSupportFragmentManager();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isIncognito() {
+        return mProfile.isOffTheRecord();
     }
 }

@@ -4,6 +4,10 @@
 
 package org.chromium.components.page_info;
 
+import android.app.Activity;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 
 /**
@@ -28,13 +32,13 @@ public interface PageInfoMainController {
      */
     void recordAction(@PageInfoAction int action);
 
-    /**
-     * Refreshes the permissions of the page info.
-     */
+    /** Refreshes the permissions of the page info. */
     void refreshPermissions();
 
-    /**
-     * @return A BrowserContext for this dialog.
-     */
+    /** @return A BrowserContext for this dialog. */
     BrowserContextHandle getBrowserContext();
+
+    /** @return The Activity associated with the controller. */
+    @Nullable
+    Activity getActivity();
 }

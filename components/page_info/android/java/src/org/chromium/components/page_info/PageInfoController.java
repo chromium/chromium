@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.Button;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.ViewCompat;
@@ -220,7 +221,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             final Intent instantAppIntent = mDelegate.getInstantAppIntentForUrl(mFullUrl.getSpec());
             viewParams.instantAppButtonClickCallback = () -> {
                 try {
-                    mWindowAndroid.getActivity().get().startActivity(instantAppIntent);
+                    getActivity().startActivity(instantAppIntent);
                     RecordUserAction.record("Android.InstantApps.LaunchedFromWebsiteSettingsPopup");
                 } catch (ActivityNotFoundException e) {
                     mView.disableInstantAppButton();
@@ -256,7 +257,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                 this, mView.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
         if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
             mHistoryController = mDelegate.createHistoryController(
-                    this, mView.getHistoryRowView(), mFullUrl.getSpec());
+                    this, mView.getHistoryRowView(), mFullUrl.getHost());
             setupForgetSiteButton(mView.getForgetSiteButton());
         }
 
@@ -537,5 +538,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             mSubpageController.onSubpageRemoved();
             mSubpageController = null;
         });
+    }
+
+    @Override
+    @Nullable
+    public Activity getActivity() {
+        return mWindowAndroid.getActivity().get();
     }
 }

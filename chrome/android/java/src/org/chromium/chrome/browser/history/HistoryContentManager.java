@@ -97,6 +97,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final boolean mIsSeparateActivity;
     private final boolean mIsIncognito;
     private final boolean mIsScrollToLoadDisabled;
+    private final String mHostName;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<Tab> mTabSupplier;
     private HistoryAdapter mHistoryAdapter;
@@ -115,6 +116,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param isIncognito Whether the incognito tab model is currently selected.
      * @param shouldShowPrivacyDisclaimers Whether the privacy disclaimers should be shown, if
      *         available.
+     * @param hostName The hostName to retrieve history entries for, or null for all hosts.
      * @param selectionDelegate A class responsible for handling list item selection, null for
      *         unselectable items.
      * @param tabCreatorManager Allows creation of tabs in different models, null if the history UI
@@ -124,13 +126,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      */
     public HistoryContentManager(@NonNull Activity activity, @NonNull Observer observer,
             boolean isSeparateActivity, boolean isIncognito, boolean shouldShowPrivacyDisclaimers,
-            @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
+            @Nullable String hostName, @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
             @Nullable TabCreatorManager tabCreatorManager, @Nullable Supplier<Tab> tabSupplier) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
         mIsIncognito = isIncognito;
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
+        mHostName = hostName;
         mIsScrollToLoadDisabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 || ChromeAccessibilityUtil.isHardwareKeyboardAttached(
                         mActivity.getResources().getConfiguration());
@@ -217,6 +220,12 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /** Initialize the HistoryContentManager to start loading items. */
     public void initialize() {
+        if (mHostName != null) {
+            // Filtering the adapter to only the results from this particular host.
+            // TODO(crbug.com/1173154): Add robust filtering for just items with a matching host in
+            // backend. QueryText could return entries that contain the string anywhere.
+            mHistoryAdapter.setQueryText(mHostName);
+        }
         mHistoryAdapter.initialize();
     }
 

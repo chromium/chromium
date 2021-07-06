@@ -182,7 +182,7 @@ public abstract class PageInfoControllerDelegate {
      */
     @Nullable
     public abstract PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String url);
+            PageInfoMainController mainController, PageInfoRowView rowView, String host);
 
     /**
      * @return Returns the browser context associated with this dialog.
@@ -210,4 +210,6 @@ public abstract class PageInfoControllerDelegate {
     public abstract boolean isAccessibilityEnabled();
 
     public abstract FragmentManager getFragmentManager();
+
+    public abstract boolean isIncognito();
 }

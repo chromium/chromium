@@ -404,6 +404,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mAreHeadersInitialized) setHeaders();
     }
 
+    /**
+     * Sets the query text.
+     * @param query The text to be searched for.
+     */
+    void setQueryText(String query) {
+        mQueryText = query;
+    }
+
     @VisibleForTesting
     ItemGroup getFirstGroupForTests() {
         return getGroupAt(0).first;

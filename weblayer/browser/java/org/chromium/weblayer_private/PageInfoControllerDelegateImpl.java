@@ -104,7 +104,7 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
     @Override
     @Nullable
     public PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String url) {
+            PageInfoMainController mainController, PageInfoRowView rowView, String host) {
         return null;
     }
 
@@ -157,5 +157,13 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
     @Override
     public FragmentManager getFragmentManager() {
         return mBrowser.getFragmentManager();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isIncognito() {
+        return mProfile.isIncognito();
     }
 }
