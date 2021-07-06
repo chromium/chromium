@@ -10,6 +10,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -222,13 +223,23 @@ bool DictionaryValueUpdate::GetDoubleWithoutPathExpansion(
 bool DictionaryValueUpdate::GetStringWithoutPathExpansion(
     base::StringPiece key,
     std::string* out_value) const {
-  return value_->GetStringWithoutPathExpansion(key, out_value);
+  std::string* value = value_->FindStringKey(key);
+  if (!value)
+    return false;
+
+  *out_value = *value;
+  return true;
 }
 
 bool DictionaryValueUpdate::GetStringWithoutPathExpansion(
     base::StringPiece key,
     std::u16string* out_value) const {
-  return value_->GetStringWithoutPathExpansion(key, out_value);
+  std::string* value = value_->FindStringKey(key);
+  if (!value)
+    return false;
+
+  *out_value = base::UTF8ToUTF16(*value);
+  return true;
 }
 
 bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(

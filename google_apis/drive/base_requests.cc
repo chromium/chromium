@@ -143,24 +143,25 @@ google_apis::DriveApiErrorCode MapJsonError(
       value->GetAsDictionary(&dictionary) &&
       dictionary->GetDictionaryWithoutPathExpansion(kErrorKey, &error)) {
     // Get error message.
-    std::string message;
-    error->GetStringWithoutPathExpansion(kErrorMessageKey, &message);
-    DLOG(ERROR) << "code: " << code << ", message: " << message;
+    const std::string* message = error->FindStringKey(kErrorMessageKey);
+    DLOG(ERROR) << "code: " << code
+                << ", message: " << (message ? *message : "");
 
     // Override the error code based on the reason of the first error.
     const base::ListValue* errors = nullptr;
     const base::DictionaryValue* first_error = nullptr;
     if (error->GetListWithoutPathExpansion(kErrorErrorsKey, &errors) &&
         errors->GetDictionary(0, &first_error)) {
-      std::string reason;
-      first_error->GetStringWithoutPathExpansion(kErrorReasonKey, &reason);
-      if (reason == kErrorReasonRateLimitExceeded ||
-          reason == kErrorReasonUserRateLimitExceeded) {
+      const std::string* reason = first_error->FindStringKey(kErrorReasonKey);
+      if (!reason)
+        return code;
+      if (*reason == kErrorReasonRateLimitExceeded ||
+          *reason == kErrorReasonUserRateLimitExceeded) {
         return google_apis::HTTP_SERVICE_UNAVAILABLE;
       }
-      if (reason == kErrorReasonQuotaExceeded)
+      if (*reason == kErrorReasonQuotaExceeded)
         return google_apis::DRIVE_NO_SPACE;
-      if (reason == kErrorReasonResponseTooLarge)
+      if (*reason == kErrorReasonResponseTooLarge)
         return google_apis::DRIVE_RESPONSE_TOO_LARGE;
     }
   }
