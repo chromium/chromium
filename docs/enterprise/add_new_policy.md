@@ -215,7 +215,8 @@ If the policy was never launched, it can also be deleted from
 policy_templates.json instead of just being marked as no longer supported.
 In this case, please remember to add the deleted id to deleted_policy_ids.
 
-If you want to remove support for another reason, please reach out to someone in [ENTERPRISE_POLICY_OWNERS](https://cs.chromium.org/chromium/src/components/policy/resources/ENTERPRISE_POLICY_OWNERS)
+If you want to remove support for another reason, please reach out to someone in
+[ENTERPRISE_POLICY_OWNERS](https://cs.chromium.org/chromium/src/components/policy/resources/ENTERPRISE_POLICY_OWNERS)
 to ensure this is okay. The general preference is to leave policies as
 deprecated, but still supported.
 
@@ -226,7 +227,11 @@ if the policy skipped past the deprecation state.
 ### Steps
 1. Update policy_templates.json, marking the policy as no longer supported.
    Also marking as deprecated if not previously done.
-1. Remove the related policy_test_case.json code one milestone before support is removed.
+1. Update the related test in the `policy_test_cases.json`.
+    - If the policy is going to be removed in the current milestone, remove the
+      the test at the same time.
+    - If the policy is going to be removed in the future milestone, remove the
+      test **after** policy support ended.
 1. Remove the policy handling code.
 1. Notify chromium-enterprise@chromium.org to ensure this removal of support is
    mentioned in the enterprise release notes.

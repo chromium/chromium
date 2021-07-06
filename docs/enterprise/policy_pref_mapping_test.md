@@ -4,10 +4,11 @@
 
 Usually, incoming policy values from the management server are mapped into a
 preference, which is then used by Chrome to control the behavior influenced by
-that policy/preference. Mapping is typically done by a  policy handler (see [configuration_policy_handler_list_factory.cc](https://cs.chromium.org/chromium/src/chrome/browser/policy/configuration_policy_handler_list_factory.cc)). This mapping can be very
-simple by directly mapping a policy value to pref (see kSimplePolicyMap) or more
-complex by a custom policy handler that performs validation / re-mapping /
-cross-checking with other policies etc.
+that policy/preference. Mapping is typically done by a  policy handler (see
+[configuration_policy_handler_list_factory.cc](https://cs.chromium.org/chromium/src/chrome/browser/policy/configuration_policy_handler_list_factory.cc)).
+ This mapping can be very simple by directly mapping a policy value to pref (see
+kSimplePolicyMap) or more complex by a custom policy handler that performs
+validation / re-mapping / cross-checking with other policies etc.
 
 In order to test these policy to preference mappings, we have a range of tests.
 With these tests, you can specify 0...N policies and their values and then check
@@ -106,8 +107,10 @@ separate preferences, their default values, and that either `IdleActionAC` or
 
 ### policy_test_cases.json
 
-The test cases per policy are defined in [//chrome/test/data/policy/policy_test_cases.json](https://cs.chromium.org/chromium/src/chrome/test/data/policy/policy_test_cases.json) (for
-iOS, see separate [//ios/chrome/test/data/policy/policy_test_cases.json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/policy_test_cases.json)).
+The test cases per policy are defined in
+[//chrome/test/data/policy/policy_test_cases.json](https://cs.chromium.org/chromium/src/chrome/test/data/policy/policy_test_cases.json)
+(for iOS, see separate
+[//ios/chrome/test/data/policy/policy_test_cases.json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/policy_test_cases.json)).
 
 These files are JSON files with the policy name as key and a `PolicyTestCase`
 (see below) as value). Each policy must have at least one meaningful test case
@@ -128,8 +131,9 @@ anywhere to add further documentation.
 
 The `os` field should be a list of strings representing the operating systems
 the test case should be run on. Each supported operating system (indicated by
-`supported_on` in [policy_templates.json](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json)) needs to have at least one test case. Valid
-values are:
+`supported_on` in
+[policy_templates.json](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json))
+needs to have at least one test case. Valid values are:
 
 - `win`
 - `linux`
@@ -150,8 +154,8 @@ recommended values and the preference(s) are checked to still be modifiable by
 the user. Use `check_for_mandatory` and `check_for_recommended` (see below) to
 trigger certain preference(s) to only be checked for certain policy levels. If
 the policy is recommendable (indicated by `can_be_recommended` in
-[policy_templates.json](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json) then the preference mapping test should also check
-recommended values.
+[policy_templates.json](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json)
+then the preference mapping test should also check recommended values.
 
 The `policy_pref_mapping_tests` should be a non-empty list of
 `PolicyPrefMappingTest`s.
@@ -206,7 +210,8 @@ location. Possible values are:
 - `user_profile` (default value)
 - `local_state`
 - `signin_profile` (CrOS only, use when a device policy is mapped into the
-  sign-in screen profile using [login_profile_policy_provider.cc](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/policy/login_profile_policy_provider.cc))
+  sign-in screen profile using
+  [login_profile_policy_provider.cc](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/policy/login_profile_policy_provider.cc))
 
 Policies that map into CrosSettings can not be tested at the moment (see
 `reason_for_missing_test`).

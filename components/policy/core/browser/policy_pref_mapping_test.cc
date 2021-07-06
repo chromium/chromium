@@ -538,19 +538,11 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
   const PolicyTestCases test_cases(test_case_path);
   for (const auto& policy : test_cases) {
     for (const auto& test_case : policy.second) {
-      if (!chrome_schema.GetKnownProperty(policy.first).valid()) {
-        // If the policy is supported on this platform according to the test it
-        // should be known otherwise we signal this as a failure.
-        // =====================================================================
-        // !NOTE! If you see this assertion after changing Chrome's VERSION most
-        // probably the mentioned policy was deprecated and deleted. Verify this
-        // in policy_templates.json and remove the corresponding test entry
-        // in policy_test_cases.json. Don't completely delete it from there just
-        // replace it's definition with a single "reason_for_missing_test" value
-        // with "Policy was removed" (see other examples present in the file
-        // already).
-        // =====================================================================
-        EXPECT_FALSE(test_case->IsSupported())
+      if (!chrome_schema.GetKnownProperty(policy.first).valid() &&
+          test_case->IsSupported()) {
+        // Print warning message if a deprecated policy is still supported by
+        // the test file.
+        LOG(WARNING)
             << "Policy " << policy.first
             << " is marked as supported on this OS but does not exist in the "
             << "Chrome policy schema.";
