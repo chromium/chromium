@@ -33,7 +33,6 @@
         assert_unreached("samplebufferfull invoked on wrong profiler");
       });
       pf[1].addEventListener("samplebufferfull", async ()=>{
-        console.log("samplebufferfull");
         pf[0].stop();
         pf[1].stop();
         assertTrue(true);
