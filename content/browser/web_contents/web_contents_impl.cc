@@ -4791,6 +4791,7 @@ void WebContentsImpl::SaveFrameWithHeaders(
     const std::u16string& suggested_filename,
     RenderFrameHost* rfh) {
   DCHECK(rfh);
+  auto& rfhi = *static_cast<RenderFrameHostImpl*>(rfh);
 
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SaveFrameWithHeaders",
                         "url", url, "headers", headers);
@@ -4814,16 +4815,10 @@ void WebContentsImpl::SaveFrameWithHeaders(
   if (delegate_ && delegate_->SaveFrame(url, referrer, rfh))
     return;
 
-  // TODO(nasko): This check for main frame is incorrect and should be fixed
-  // by explicitly passing in which frame this method should target. This would
-  // indicate whether it's the main frame, and also tell us the frame pointer
-  // to use for routing.
-  bool is_main_frame = (url == GetLastCommittedURL());
-  RenderFrameHost* frame_host = GetMainFrame();
-
   int64_t post_id = -1;
-  if (is_main_frame) {
-    NavigationEntry* entry = GetController().GetLastCommittedEntry();
+  if (rfhi.is_main_frame()) {
+    NavigationEntry* entry =
+        rfhi.frame_tree()->controller().GetLastCommittedEntry();
     if (entry)
       post_id = entry->GetPostID();
   }
@@ -4848,8 +4843,7 @@ void WebContentsImpl::SaveFrameWithHeaders(
           policy_exception_justification: "Not implemented."
         })");
   auto params = std::make_unique<download::DownloadUrlParameters>(
-      url, frame_host->GetProcess()->GetID(), frame_host->GetRoutingID(),
-      traffic_annotation);
+      url, rfh->GetProcess()->GetID(), rfh->GetRoutingID(), traffic_annotation);
   params->set_referrer(referrer.url);
   params->set_referrer_policy(
       Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
@@ -4868,9 +4862,7 @@ void WebContentsImpl::SaveFrameWithHeaders(
   }
   params->set_suggested_name(suggested_filename);
   params->set_download_source(download::DownloadSource::WEB_CONTENTS_API);
-  params->set_isolation_info(
-      static_cast<RenderFrameHostImpl*>(rfh)->ComputeIsolationInfoForNavigation(
-          url));
+  params->set_isolation_info(rfhi.ComputeIsolationInfoForNavigation(url));
 
   GetBrowserContext()->GetDownloadManager()->DownloadUrl(std::move(params));
 }

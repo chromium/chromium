@@ -915,9 +915,9 @@ class WebContents : public PageNavigator,
   // Saves the given frame's URL to the local filesystem. The headers, if
   // provided, is used to make a request to the URL rather than using cache.
   // Format of |headers| is a new line separated list of key value pairs:
-  // "<key1>: <value1>\r\n<key2>: <value2>". If `rfh` is provided, the saving is
-  // performed in its context. For example, the associated navigation isolation
-  // info will be used for making the network request.
+  // "<key1>: <value1>\r\n<key2>: <value2>". The saving is performed in the
+  // context of `rfh`. For example, the associated navigation isolation info
+  // will be used for making the network request.
   virtual void SaveFrameWithHeaders(const GURL& url,
                                     const Referrer& referrer,
                                     const std::string& headers,
