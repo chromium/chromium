@@ -44,6 +44,11 @@ KeyedService*
 DesktopProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+
+  DCHECK(!profile->IsSystemProfile());
+  DCHECK(!profile->IsGuestSession());
+  DCHECK(!profile->IsEphemeralGuestProfile());
+
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile);
   DesktopSessionDurationTracker* tracker = DesktopSessionDurationTracker::Get();
@@ -56,6 +61,17 @@ DesktopProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
 content::BrowserContext*
 DesktopProfileSessionDurationsServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
+  // Avoid counting session duration metrics for System and Guest profiles.
+  //
+  // Guest profiles are also excluded from session metrics because they are
+  // created when presenting the profile picker (per crbug.com/1150326) and this
+  // would skew the metrics.
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (profile->IsSystemProfile() || profile->IsGuestSession() ||
+      profile->IsEphemeralGuestProfile()) {
+    return nullptr;
+  }
+
   // Session time in incognito is counted towards the session time in the
   // regular profile. That means that for a user that is signed in and syncing
   // in their regular profile and that is browsing in incognito profile,

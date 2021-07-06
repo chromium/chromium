@@ -344,6 +344,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     This metric is only recorded on Win/Mac/Linux.
 
+    Note: As part of crbug/1223007, we discovered that histogram
+    PasswordManager.AccountStorageUserStateDuration.SignedOutUser was recorded
+    for Guest and System profiles which wasn't intentional. This was fixed in
+    M92.
+
     One caveat with this metric is that if the user has multiple profiles open
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
