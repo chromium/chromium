@@ -8431,6 +8431,16 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Contained me card."/>
 </enum>
 
+<enum name="BooleanContainsPrice">
+  <int value="0" label="Does not contain price"/>
+  <int value="1" label="Contains price"/>
+</enum>
+
+<enum name="BooleanContainsPriceDrop">
+  <int value="0" label="Does not contain price drop"/>
+  <int value="1" label="Contains price drop"/>
+</enum>
+
 <enum name="BooleanContentChangeMode">
   <int value="0" label="Discard Content"/>
   <int value="1" label="Retain Content"/>
@@ -8943,6 +8953,11 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanIsPhishing">
   <int value="0" label="Not phishing"/>
   <int value="1" label="Is phishing"/>
+</enum>
+
+<enum name="BooleanIsProductDetailPage">
+  <int value="0" label="Is not a product detail page"/>
+  <int value="1" label="Is a product detail page"/>
 </enum>
 
 <enum name="BooleanIsRepeat">

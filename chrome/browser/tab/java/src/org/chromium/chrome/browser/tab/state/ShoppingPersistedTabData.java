@@ -55,6 +55,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final String DISPLAY_TIME_MS_PARAM = "price_tracking_display_time_ms";
     private static final String PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM =
             "price_tracking_with_optimization_guide";
+    private static final String METRICS_IDENTIFIER_PREFIX = "NavigationComplete";
 
     private static final int FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS = 2;
     private static final int FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS = 0;
@@ -101,6 +102,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public long mLastPriceChangeTimeMs = NO_TRANSITIONS_OCCURRED;
 
     private PriceDropData mPriceDropData = new PriceDropData();
+    private PriceDropMetricsLogger mPriceDropMetricsLogger;
 
     @VisibleForTesting
     protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
@@ -243,6 +245,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                         PriceTrackingData.parseFrom(metadata.getValue());
                                 parsePriceTrackingDataProto(tab, priceTrackingDataProto, null);
                                 setLastUpdatedMs(System.currentTimeMillis());
+                                mPriceDropMetricsLogger =
+                                        new PriceDropMetricsLogger(priceTrackingDataProto);
+                                mPriceDropMetricsLogger.logPriceDropMetrics(
+                                        METRICS_IDENTIFIER_PREFIX);
                             } catch (InvalidProtocolBufferException e) {
                                 Log.i(TAG,
                                         String.format(Locale.US,
@@ -257,6 +263,17 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                 onCompleteForTesting.run();
                             }
                         });
+    }
+
+    /**
+     * Log price drop metrics, if we have price drop data
+     * @param locationIdentifier where in the user experience the metrics were
+     * called from.
+     */
+    public void logPriceDropMetrics(String locationIdentifier) {
+        if (mPriceDropMetricsLogger != null) {
+            mPriceDropMetricsLogger.logPriceDropMetrics(locationIdentifier);
+        }
     }
 
     @VisibleForTesting
@@ -279,6 +296,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 // relevant and should be cleaned up.
                 delete();
                 mPriceDropData = new PriceDropData();
+                mPriceDropMetricsLogger = null;
             }
 
             @Override
