@@ -67,6 +67,7 @@ void LayoutTextControl::StyleDidChange(HTMLElement* inner_editor,
   LayoutBlock* inner_editor_layout_object =
       To<LayoutBlock>(inner_editor->GetLayoutObject());
   if (inner_editor_layout_object) {
+    // TODO(https://crbug.com/1101564):
     // This is necessary to update the style on the inner_editor based on the
     // changes in the input element ComputedStyle.
     // (See TextControlInnerEditorElement::CreateInnerEditorStyle()).

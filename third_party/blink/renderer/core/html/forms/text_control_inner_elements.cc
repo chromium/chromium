@@ -158,6 +158,9 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
   // The inner block, if present, always has its direction set to LTR,
   // so we need to inherit the direction and unicode-bidi style from the
   // element.
+  // TODO(https://crbug.com/1101564): The custom inheritance done here means we
+  // need to mark for style recalc inside style recalc. See the workaround in
+  // LayoutTextControl::StyleDidChange.
   text_block_style->SetDirection(start_style.Direction());
   text_block_style->SetUnicodeBidi(start_style.GetUnicodeBidi());
   text_block_style->SetUserSelect(EUserSelect::kText);
