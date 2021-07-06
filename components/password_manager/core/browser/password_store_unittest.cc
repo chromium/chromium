@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/insecure_credentials_consumer.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"

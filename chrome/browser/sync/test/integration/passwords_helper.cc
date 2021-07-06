@@ -20,6 +20,7 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "components/password_manager/core/browser/insecure_credentials_consumer.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -387,6 +388,11 @@ PasswordForm CreateTestPasswordForm(int index) {
       base::ASCIIToUTF16(base::StringPrintf("password%d", index));
   form.date_created = base::Time::Now();
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  form.password_issues = base::flat_map<password_manager::InsecureType,
+                                        password_manager::InsecurityMetadata>();
   return form;
 }
 
