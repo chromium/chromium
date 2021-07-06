@@ -514,7 +514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.EngagementTime.Foreground" units="ms"
-    expires_after="2021-10-31">
+    expires_after="2022-01-02">
   <owner>maajid@google.com</owner>
   <owner>shaochuan@google.com</owner>
   <owner>shihuis@google.com</owner>
@@ -540,7 +540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.ExternalStorage.MountedMediaVisibility"
-    enum="BooleanEnabled" expires_after="2021-10-31">
+    enum="BooleanEnabled" expires_after="2022-01-02">
   <owner>fukino@chromium.org</owner>
   <owner>yusukes@chromium.org</owner>
   <summary>
@@ -785,7 +785,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode" enum="ArcOptInSilentAuthCode"
-    expires_after="2021-10-31">
+    expires_after="2022-01-02">
   <owner>elijahtaylor@google.com</owner>
   <summary>
     Arc Silent Auth Code status. This status is set during the ARC OptIn flow.
@@ -1318,7 +1318,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.UiAvailable.AlreadyProvisioned.TimeDelta" units="ms"
-    expires_after="2021-11-01">
+    expires_after="2022-01-02">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>khmel@google.com</owner>
@@ -1342,7 +1342,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.UiAvailable.OobeProvisioning.TimeDelta" units="ms"
-    expires_after="2021-11-01">
+    expires_after="2022-01-02">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>khmel@google.com</owner>

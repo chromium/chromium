@@ -259,7 +259,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.IssueCreated" enum="DevToolsIssueCreated"
-    expires_after="2021-10-31">
+    expires_after="2022-01-02">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>
@@ -268,7 +268,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2021-10-31">
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2022-01-02">
   <owner>yangguo@chromium.org</owner>
   <owner>jegarc@microsoft.com</owner>
   <summary>
@@ -286,7 +286,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="2021-10-31">
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2022-01-02">
   <owner>yangguo@chromium.org</owner>
   <owner>jegarc@microsoft.com</owner>
   <summary>

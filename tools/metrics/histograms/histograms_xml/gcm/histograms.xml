@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="GCM.AccountMappingMessageReceived" enum="BooleanReceived"
-    expires_after="2021-10-31">
+    expires_after="2022-01-02">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -456,7 +456,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.WebPushReceived.DeviceState" enum="WebPushDeviceState"
-    expires_after="2021-10-31">
+    expires_after="2022-01-02">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
