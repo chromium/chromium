@@ -133,6 +133,7 @@ js_type_check("closure_compile_local") {
     ":gaia_header",
     ":gaia_input_form",
     ":gesture_navigation",
+    ":managed_terms_of_service",
     ":marketing_opt_in",
     ":multidevice_setup_first_run",
     ":notification_card",
@@ -315,6 +316,18 @@ js_library("gesture_navigation") {
     "components/buttons:oobe_next_button",
     "components/buttons:oobe_text_button",
     "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+  ]
+}
+
+js_library("managed_terms_of_service") {
+  deps = [
+    "components/behaviors:login_screen_behavior",
+    "components/behaviors:multi_step_behavior",
+    "components/behaviors:oobe_i18n_behavior",
+    "components/buttons:oobe_back_button",
+    "components/buttons:oobe_text_button",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "components/oobe_loading_dialog:oobe_loading_dialog",
   ]
 }
 

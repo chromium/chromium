@@ -18,7 +18,7 @@ const UIState = {
  * screen.
  */
 Polymer({
-  is: 'terms-of-service-element',
+  is: 'managed-terms-of-service-element',
 
   behaviors: [
     OobeI18nBehavior,
@@ -164,30 +164,29 @@ Polymer({
    * @param {string} termsOfService The terms of service, as plain text.
    */
   setTermsOfService(termsOfService) {
-    this.$.termsOfServiceFrame.src =
-        'data:text/html;charset=utf-8,' +
-        encodeURIComponent(
-            '<style>' +
-            'body {' +
-            '  font-family: Roboto, sans-serif;' +
-            '  color: RGBA(0,0,0,.87);' +
-            '  font-size: 14sp;' +
-            '  margin : 0;' +
-            '  padding : 0;' +
-            '  white-space: pre-wrap;' +
-            '}' +
-            '#tosContainer {' +
-            '  overflow: auto;' +
-            '  height: 99%;' +
-            '  padding-left: 16px;' +
-            '  padding-right: 16px;' +
-            '}' +
-            '#tosContainer::-webkit-scrollbar-thumb {' +
-            '  border-radius: 10px;' +
-            '}' +
-            '</style>' +
-            '<body><div id="tosContainer">' + termsOfService + '</div>' +
-            '</body>');
+    this.$.termsOfServiceFrame.src = 'data:text/html;charset=utf-8,' +
+        encodeURIComponent('<style>' +
+                           'body {' +
+                           '  font-family: Roboto, sans-serif;' +
+                           '  color: RGBA(0,0,0,.87);' +
+                           '  font-size: 14sp;' +
+                           '  margin : 0;' +
+                           '  padding : 0;' +
+                           '  white-space: pre-wrap;' +
+                           '}' +
+                           '#tosContainer {' +
+                           '  overflow: auto;' +
+                           '  height: 99%;' +
+                           '  padding-left: 16px;' +
+                           '  padding-right: 16px;' +
+                           '}' +
+                           '#tosContainer::-webkit-scrollbar-thumb {' +
+                           '  border-radius: 10px;' +
+                           '}' +
+                           '</style>' +
+                           '<body><div id="tosContainer">' + termsOfService +
+                           '</div>' +
+                           '</body>');
 
     // Mark the loading as complete.
     this.acceptButtonDisabled_ = false;

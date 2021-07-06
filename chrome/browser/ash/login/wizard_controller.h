@@ -176,6 +176,9 @@ class WizardController {
   // Advances to login/update screen. Should be used in for testing only.
   void SkipToLoginForTesting();
 
+  // Forces to exit wizard after accepting terms of service.
+  void EndOnboardingAfterToS();
+
   // Returns current DemoSetupController if demo setup flow is in progress or
   // nullptr otherwise.
   DemoSetupController* demo_setup_controller() const {

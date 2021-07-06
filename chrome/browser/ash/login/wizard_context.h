@@ -61,6 +61,11 @@ class WizardContext {
   // when screen is skipped or when cancel action is called.
   bool is_user_creation_enabled = false;
 
+  // Whether to exit WizardController right after accepting the terms of
+  // service. Set by WizardController::EndOnboardingAfterToS. Used for showing
+  // terms of service screen to managed users before entering the session.
+  bool end_onboarding_after_tos = false;
+
   // Authorization data that is required by PinSetup screen to add PIN as
   // another possible auth factor. Can be empty (if PIN is not supported).
   // In future will be replaced by AuthSession.

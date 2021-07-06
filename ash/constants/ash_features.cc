@@ -199,6 +199,10 @@ const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
 const base::Feature kBorealisDiskManagement{"BorealisDiskManagement",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable TermsOfServiceURL policy for managed users.
+const base::Feature kManagedTermsOfService{"ManagedTermsOfService",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable display of button on Arc provisioning failure dialog for network
 // tests.
 const base::Feature kButtonARCNetworkDiagnostics{
@@ -1274,6 +1278,10 @@ bool IsLockScreenNotificationsEnabled() {
 
 bool IsManagedDeviceUIRedesignEnabled() {
   return base::FeatureList::IsEnabled(kManagedDeviceUIRedesign);
+}
+
+bool IsManagedTermsOfServiceEnabled() {
+  return base::FeatureList::IsEnabled(kManagedTermsOfService);
 }
 
 bool IsMicMuteNotificationsEnabled() {

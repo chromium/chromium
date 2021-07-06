@@ -18,7 +18,6 @@ js_type_check("closure_compile_local") {
     ":lacros_data_migration",
     ":management_transition",
     ":offline_login",
-    ":public_session_terms_of_service",
     ":update_required_card",
   ]
 }
@@ -76,18 +75,6 @@ js_library("offline_login") {
     "../../components/buttons:oobe_next_button",
     "../../components/oobe_content_dialog:oobe_content_dialog",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
-  ]
-}
-
-js_library("public_session_terms_of_service") {
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_text_button",
-    "../../components/oobe_adaptive_dialog:oobe_adaptive_dialog",
-    "../../components/oobe_loading_dialog:oobe_loading_dialog",
   ]
 }
 

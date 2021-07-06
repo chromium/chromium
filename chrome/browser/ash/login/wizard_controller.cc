@@ -1055,6 +1055,10 @@ void WizardController::SkipToLoginForTesting() {
   OnDeviceDisabledChecked(false /* device_disabled */);
 }
 
+void WizardController::EndOnboardingAfterToS() {
+  wizard_context_->end_onboarding_after_tos = true;
+}
+
 void WizardController::OnScreenExit(OobeScreenId screen,
                                     const std::string& exit_reason) {
   VLOG(1) << "Wizard screen " << screen
@@ -1407,6 +1411,10 @@ void WizardController::OnTermsOfServiceScreenExit(
   switch (result) {
     case TermsOfServiceScreen::Result::ACCEPTED:
     case TermsOfServiceScreen::Result::NOT_APPLICABLE:
+      if (wizard_context_->end_onboarding_after_tos) {
+        OnOobeFlowFinished();
+        return;
+      }
       ShowFamilyLinkNoticeScreen();
       break;
     case TermsOfServiceScreen::Result::DECLINED:

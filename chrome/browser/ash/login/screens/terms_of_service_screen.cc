@@ -7,9 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/location.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
@@ -22,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/escape.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -34,6 +40,22 @@ namespace {
 constexpr const char kAccept[] = "accept";
 constexpr const char kBack[] = "back";
 constexpr const char kRetry[] = "retry";
+constexpr const char kUserTos[] = "user_managed_terms_of_service.txt";
+
+void SaveTosToFile(const std::string& tos, const base::FilePath& tos_path) {
+  if (!base::ImportantFileWriter::WriteFileAtomically(tos_path, tos)) {
+    LOG(ERROR) << "Failed to save terms of services to file: "
+               << tos_path.AsUTF8Unsafe();
+  }
+}
+
+absl::optional<std::string> ReadFileToOptionalString(
+    const base::FilePath& file_path) {
+  std::string content;
+  if (base::ReadFileToString(file_path, &content))
+    return absl::make_optional<std::string>(content);
+  return absl::nullopt;
+}
 
 }  // namespace
 
@@ -100,17 +122,20 @@ void TermsOfServiceScreen::OnViewDestroyed(TermsOfServiceScreenView* view) {
 }
 
 bool TermsOfServiceScreen::MaybeSkip(WizardContext* context) {
-  // Only show the Terms of Service when logging into a public account and Terms
-  // of Service have been specified through policy. In all other cases, advance
-  // to the post-ToS part immediately.
-  if (!user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() ||
-      !ProfileManager::GetActiveUserProfile()->GetPrefs()->IsManagedPreference(
+  // Only show the Terms of Service when Terms of Service have been specified
+  // through policy. In all other cases, advance to the post-ToS part
+  // immediately.
+  if (!ProfileManager::GetActiveUserProfile()->GetPrefs()->IsManagedPreference(
           prefs::kTermsOfServiceURL)) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
+  if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount())
+    return false;
 
-  return false;
+  if (!features::IsManagedTermsOfServiceEnabled())
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+  return !features::IsManagedTermsOfServiceEnabled();
 }
 
 void TermsOfServiceScreen::ShowImpl() {
@@ -208,9 +233,7 @@ void TermsOfServiceScreen::OnDownloadTimeout() {
   // Destroy the fetcher, which will abort the download attempt.
   terms_of_service_loader_.reset();
 
-  // Show an error message to the user.
-  if (view_)
-    view_->OnLoadError();
+  LoadFromFileOrShowError();
 }
 
 void TermsOfServiceScreen::OnDownloaded(
@@ -224,15 +247,62 @@ void TermsOfServiceScreen::OnDownloaded(
     return;
 
   // If the Terms of Service could not be downloaded, do not have a MIME type of
-  // text/plain or are empty, show an error message to the user.
+  // text/plain or are empty, try to load offline version or show an error
+  // message to the user.
   if (!response_body || *response_body == "" || !loader->ResponseInfo() ||
       loader->ResponseInfo()->mime_type != "text/plain") {
-    view_->OnLoadError();
+    LoadFromFileOrShowError();
   } else {
-    // If the Terms of Service were downloaded successfully, show them to the
-    // user.
-    view_->OnLoadSuccess(*response_body);
+    // If the Terms of Service were downloaded successfully, sanitize and show
+    // them to the user.
+    view_->OnLoadSuccess(net::EscapeForHTML(*response_body));
+    if (features::IsManagedTermsOfServiceEnabled()) {
+      // Update locally saved terms.
+      SaveTos(*response_body);
+    }
   }
+}
+
+void TermsOfServiceScreen::LoadFromFileOrShowError() {
+  if (!view_)
+    return;
+  if (features::IsManagedTermsOfServiceEnabled()) {
+    auto tos_path = GetTosFilePath();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(&ReadFileToOptionalString, tos_path),
+        base::BindOnce(&TermsOfServiceScreen::OnTosLoadedFromFile,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+  view_->OnLoadError();
+}
+
+void TermsOfServiceScreen::OnTosLoadedFromFile(
+    absl::optional<std::string> tos) {
+  if (!view_)
+    return;
+  if (!tos.has_value()) {
+    view_->OnLoadError();
+    return;
+  }
+  view_->OnLoadSuccess(tos.value());
+}
+
+// static
+base::FilePath TermsOfServiceScreen::GetTosFilePath() {
+  auto user_data_dir = ProfileManager::GetActiveUserProfile()->GetPath();
+  return user_data_dir.AppendASCII(kUserTos);
+}
+
+void TermsOfServiceScreen::SaveTos(const std::string& tos) {
+  auto tos_path = GetTosFilePath();
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+                             base::BindOnce(&SaveTosToFile, tos, tos_path));
 }
 
 }  // namespace ash

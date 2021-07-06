@@ -45,6 +45,8 @@ class SigninUI {
   virtual void StartUserOnboarding() = 0;
   // Show UI for management transition flow.
   virtual void StartManagementTransition() = 0;
+  // Show additional terms of service on login.
+  virtual void ShowTosForExistingUser() = 0;
 
   virtual void StartEncryptionMigration(
       const UserContext& user_context,

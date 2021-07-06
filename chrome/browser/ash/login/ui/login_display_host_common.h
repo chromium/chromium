@@ -69,6 +69,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;
   void StartUserOnboarding() final;
   void StartManagementTransition() final;
+  void ShowTosForExistingUser() final;
   void StartEncryptionMigration(
       const UserContext& user_context,
       EncryptionMigrationMode migration_mode,

@@ -1759,17 +1759,18 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
   ProfileHelper::Get()->ProfileStartup(profile);
 
   if (start_session_type_ == StartSessionType::kPrimary) {
-    WizardController* oobe_controller = WizardController::default_controller();
+    WizardController* wizard_controller =
+        WizardController::default_controller();
     base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
     bool skip_post_login_screens =
-        (oobe_controller && oobe_controller->skip_post_login_screens()) ||
+        (wizard_controller && wizard_controller->skip_post_login_screens()) ||
         cmdline->HasSwitch(switches::kOobeSkipPostLogin);
 
     if (user_manager->IsCurrentUserNew() && !skip_post_login_screens) {
       profile->GetPrefs()->SetTime(prefs::kOobeOnboardingTime,
                                    base::Time::Now());
-      // Don't specify start URLs if the administrator has configured the start
-      // URLs via policy.
+      // Don't specify start URLs if the administrator has configured the
+      // start URLs via policy.
       if (!SessionStartupPref::TypeIsManaged(profile->GetPrefs())) {
         if (child_service->IsChildAccountStatusKnown())
           MaybeLaunchHelpApp(profile);
@@ -1793,6 +1794,12 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
       LoginDisplayHost::default_host()
           ->GetSigninUI()
           ->StartManagementTransition();
+      return false;
+    } else if (features::IsManagedTermsOfServiceEnabled() &&
+               !user_manager->IsCurrentUserNew() &&
+               profile->GetPrefs()->IsManagedPreference(
+                   ::prefs::kTermsOfServiceURL)) {
+      LoginDisplayHost::default_host()->GetSigninUI()->ShowTosForExistingUser();
       return false;
     }
   }

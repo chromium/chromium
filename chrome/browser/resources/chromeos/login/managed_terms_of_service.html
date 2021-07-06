@@ -22,7 +22,7 @@
 <link rel="import" href="/components/oobe_loading_dialog/oobe_loading_dialog.html">
 <link rel="import" href="/components/throbber_notice/throbber_notice.html">
 
-<dom-module id="terms-of-service-element">
+<dom-module id="managed-terms-of-service-element">
   <template>
     <style include="oobe-dialog-host-styles"></style>
     <link rel="stylesheet" href="chrome://resources/css/throbber.css">
@@ -54,7 +54,7 @@
 
     <!-- LOADING DIALOG -->
     <oobe-loading-dialog title-key="termsOfServiceLoading" for-step="loading">
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
     </oobe-loading-dialog>
 
     <!-- NORMAL DIALOG -->
@@ -62,7 +62,7 @@
          dialog is marked as no-lazy. -->
     <oobe-adaptive-dialog id="termsOfServiceDialog" role="dialog"
         aria-labelledby="title" for-step="loaded" no-lazy>
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
 
       <h1 id="tosHeading" slot="title">[[i18nDynamic(locale,
         'termsOfServiceScreenHeading', tosManager_)]]</h1>

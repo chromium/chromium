@@ -9,7 +9,9 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -23,8 +25,9 @@ namespace ash {
 
 // A screen that shows Terms of Service which have been configured through
 // policy. The screen is shown during login and requires the user to accept the
-// Terms of Service before proceeding. Currently, Terms of Service are available
-// for public sessions only.
+// Terms of Service before proceeding. Try to load online version of Terms of
+// Service, if it isn't available due to any reason - load locally saved terms
+// from file. If there is no locally saved terms - show an error message.
 class TermsOfServiceScreen : public BaseScreen {
  public:
   enum class Result { ACCEPTED, DECLINED, NOT_APPLICABLE };
@@ -59,6 +62,9 @@ class TermsOfServiceScreen : public BaseScreen {
     return exit_callback_;
   }
 
+  // Get path for a user terms of service file.
+  static base::FilePath GetTosFilePath();
+
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext* context) override;
@@ -75,6 +81,13 @@ class TermsOfServiceScreen : public BaseScreen {
   // Callback function called when SimpleURLLoader completes.
   void OnDownloaded(std::unique_ptr<std::string> response_body);
 
+  // Try to load terms of service from file, show error if there is a failure.
+  void LoadFromFileOrShowError();
+  // Show terms of service once they are loaded from file.
+  void OnTosLoadedFromFile(absl::optional<std::string> tos);
+  // Save terms as text to a local file.
+  void SaveTos(const std::string& tos);
+
   TermsOfServiceScreenView* view_;
   ScreenExitCallback exit_callback_;
 
@@ -83,6 +96,8 @@ class TermsOfServiceScreen : public BaseScreen {
   // Timer that enforces a custom (shorter) timeout on the attempt to download
   // the Terms of Service.
   base::OneShotTimer download_timer_;
+
+  base::WeakPtrFactory<TermsOfServiceScreen> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TermsOfServiceScreen);
 };

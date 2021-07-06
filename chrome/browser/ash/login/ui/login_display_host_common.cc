@@ -416,6 +416,11 @@ void LoginDisplayHostCommon::StartManagementTransition() {
   StartWizard(ManagementTransitionScreenView::kScreenId);
 }
 
+void LoginDisplayHostCommon::ShowTosForExistingUser() {
+  GetWizardController()->EndOnboardingAfterToS();
+  StartUserOnboarding();
+}
+
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy())
