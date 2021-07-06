@@ -320,6 +320,7 @@
     boolean isInCanvasFontCache(Document document, DOMString fontString);
     unsigned long canvasFontCacheMaxFonts();
     void forceLoseCanvasContext(HTMLCanvasElement canvas, DOMString contextType);
+    void forceLoseCanvasContext(OffscreenCanvas offscreencanvas, DOMString context_type);
 
     DictionaryTest dictionaryTest();
     RecordTest recordTest();
