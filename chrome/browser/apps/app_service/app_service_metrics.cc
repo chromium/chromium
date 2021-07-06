@@ -67,10 +67,11 @@ enum class DefaultAppName {
   kShortcutCustomizationApp = 44,
   kShimlessRMAApp = 45,
   kOsFeedbackApp = 46,
+  kA4 = 47,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kOsFeedbackApp,
+  kMaxValue = kA4,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -209,7 +210,9 @@ namespace apps {
 
 void RecordAppLaunch(const std::string& app_id,
                      apps::mojom::LaunchSource launch_source) {
-  if (app_id == extension_misc::kCalculatorAppId) {
+  if (app_id == web_app::kA4AppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kA4, launch_source);
+  } else if (app_id == extension_misc::kCalculatorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
   } else if (app_id == extension_misc::kTextEditorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kText, launch_source);
@@ -247,7 +250,8 @@ void RecordAppLaunch(const std::string& app_id,
   } else if (app_id == extension_misc::kGoogleKeepAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kKeep, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (app_id == extension_misc::kGooglePhotosAppId) {
+  } else if (app_id == extension_misc::kGooglePhotosAppId ||
+             app_id == arc::kGooglePhotosAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPhotos, launch_source);
   } else if (app_id == arc::kPlayBooksAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kPlayBooks, launch_source);
