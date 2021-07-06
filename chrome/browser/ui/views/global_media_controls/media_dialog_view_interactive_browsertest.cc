@@ -924,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC)
 // https://crbug.com/1222873
 #define MAYBE_LiveCaption DISABLED_LiveCaption
 #else
