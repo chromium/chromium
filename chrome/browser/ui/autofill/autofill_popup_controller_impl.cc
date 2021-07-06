@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -135,22 +136,18 @@ void AutofillPopupControllerImpl::Show(
       return;
   }
 
-  // Password forms are not processed by |driver|, so the ContentAutofillDriver
-  // and ContentAutofillRouter are not aware of the originating frame.
-  // Therefore, skip routing for password forms.
-  ContentAutofillDriver::SkipRouting skip_routing(GetPopupType() ==
-                                                  PopupType::kPasswords);
-  static_cast<ContentAutofillDriver*>(delegate_->GetAutofillDriver())
-      ->RegisterKeyPressHandler(
-          base::BindRepeating(
-              // Cannot bind HandleKeyPressEvent() directly because of its
-              // return value.
-              [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
-                 const content::NativeWebKeyboardEvent& event) {
-                return weak_this && weak_this->HandleKeyPressEvent(event);
-              },
-              weak_this),
-          skip_routing);
+  absl::visit(
+      [&](auto* driver) {
+        driver->RegisterKeyPressHandler(base::BindRepeating(
+            // Cannot bind HandleKeyPressEvent() directly because of its
+            // return value.
+            [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
+               const content::NativeWebKeyboardEvent& event) {
+              return weak_this && weak_this->HandleKeyPressEvent(event);
+            },
+            weak_this));
+      },
+      GetDriver());
 
   delegate_->OnPopupShown();
 }
@@ -225,13 +222,8 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   if (delegate_) {
     delegate_->ClearPreviewedForm();
     delegate_->OnPopupHidden();
-    // Password forms are not processed by |driver|, so the
-    // ContentAutofillDriver and ContentAutofillRouter are not aware of the
-    // originating frame. Therefore, skip routing for password forms.
-    ContentAutofillDriver::SkipRouting skip_routing(GetPopupType() ==
-                                                    PopupType::kPasswords);
-    static_cast<ContentAutofillDriver*>(delegate_->GetAutofillDriver())
-        ->RemoveKeyPressHandler(skip_routing);
+    absl::visit([](auto* driver) { driver->RemoveKeyPressHandler(); },
+                GetDriver());
   }
 
   HideViewAndDie();
@@ -540,13 +532,33 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   delete this;
 }
 
+absl::variant<ContentAutofillDriver*,
+              password_manager::ContentPasswordManagerDriver*>
+AutofillPopupControllerImpl::GetDriver() {
+  using PasswordManagerDriver = password_manager::PasswordManagerDriver;
+  using ContentPasswordManagerDriver =
+      password_manager::ContentPasswordManagerDriver;
+  absl::variant<AutofillDriver*, PasswordManagerDriver*> driver =
+      delegate_->GetDriver();
+  DCHECK(absl::holds_alternative<AutofillDriver*>(driver) ||
+         absl::holds_alternative<PasswordManagerDriver*>(driver));
+  if (absl::holds_alternative<AutofillDriver*>(driver)) {
+    return static_cast<ContentAutofillDriver*>(
+        absl::get<AutofillDriver*>(driver));
+  } else {
+    return static_cast<ContentPasswordManagerDriver*>(
+        absl::get<PasswordManagerDriver*>(driver));
+  }
+}
+
 void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   if (!accessibility_state_utils::IsScreenReaderEnabled())
     return;
   DCHECK(view_);
 
   // Retrieve the ax tree id associated with the current web contents.
-  ui::AXTreeID tree_id = delegate_->GetAutofillDriver()->GetAxTreeId();
+  ui::AXTreeID tree_id = absl::visit(
+      [](auto* driver) { return driver->GetAxTreeId(); }, GetDriver());
 
   // Retrieve the ax node id associated with the current web contents' element
   // that has a controller relation to the current autofill popup.

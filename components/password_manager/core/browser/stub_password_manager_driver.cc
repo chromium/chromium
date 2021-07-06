@@ -47,16 +47,16 @@ StubPasswordManagerDriver::GetPasswordAutofillManager() {
   return nullptr;
 }
 
-autofill::AutofillDriver* StubPasswordManagerDriver::GetAutofillDriver() {
-  return nullptr;
-}
-
 bool StubPasswordManagerDriver::IsMainFrame() const {
   return true;
 }
 
 bool StubPasswordManagerDriver::CanShowAutofillUi() const {
   return true;
+}
+
+::ui::AXTreeID StubPasswordManagerDriver::GetAxTreeId() const {
+  return {};
 }
 
 const GURL& StubPasswordManagerDriver::GetLastCommittedURL() const {

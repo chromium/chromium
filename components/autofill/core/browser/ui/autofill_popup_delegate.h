@@ -9,6 +9,11 @@
 
 #include "base/callback_forward.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace password_manager {
+class PasswordManagerDriver;
+}
 
 namespace autofill {
 
@@ -63,7 +68,9 @@ class AutofillPopupDelegate {
   virtual PopupType GetPopupType() const = 0;
 
   // Returns the associated AutofillDriver.
-  virtual AutofillDriver* GetAutofillDriver() = 0;
+  virtual absl::variant<AutofillDriver*,
+                        password_manager::PasswordManagerDriver*>
+  GetDriver() = 0;
 
   // Returns the ax node id associated with the current web contents' element
   // who has a controller relation to the current autofill popup.

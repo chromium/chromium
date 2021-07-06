@@ -44,9 +44,9 @@ class WebViewPasswordManagerDriver
   password_manager::PasswordManager* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
-  autofill::AutofillDriver* GetAutofillDriver() override;
   bool IsMainFrame() const override;
   bool CanShowAutofillUi() const override;
+  ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;
 
   void set_bridge(id<PasswordManagerDriverBridge> bridge) { bridge_ = bridge; }

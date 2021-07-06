@@ -480,8 +480,9 @@ autofill::PopupType PasswordAutofillManager::GetPopupType() const {
   return autofill::PopupType::kPasswords;
 }
 
-autofill::AutofillDriver* PasswordAutofillManager::GetAutofillDriver() {
-  return password_manager_driver_->GetAutofillDriver();
+absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
+PasswordAutofillManager::GetDriver() {
+  return password_manager_driver_;
 }
 
 int32_t PasswordAutofillManager::GetWebContentsPopupControllerAxId() const {

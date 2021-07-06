@@ -174,7 +174,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   }
 
   // Send to display.
-  if (query_field_.is_focusable && GetAutofillDriver()->CanShowAutofillUi()) {
+  if (query_field_.is_focusable && driver_->CanShowAutofillUi()) {
     autofill::AutofillClient::PopupOpenArgs open_args(
         element_bounds_, query_field_.text_direction, suggestions,
         AutoselectFirstSuggestion(autoselect_first_suggestion), popup_type_);
@@ -346,7 +346,8 @@ PopupType AutofillExternalDelegate::GetPopupType() const {
   return popup_type_;
 }
 
-AutofillDriver* AutofillExternalDelegate::GetAutofillDriver() {
+absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
+AutofillExternalDelegate::GetDriver() {
   return driver_;
 }
 

@@ -117,8 +117,6 @@ class ContentAutofillDriver : public AutofillDriver,
                               public mojom::AutofillDriver,
                               public KeyPressHandlerManager::Delegate {
  public:
-  using SkipRouting = base::StrongAlias<class SkipRoutingTag, bool>;
-
   // Gets the driver for |render_frame_host|.
   static ContentAutofillDriver* GetForRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
@@ -323,8 +321,10 @@ class ContentAutofillDriver : public AutofillDriver,
 
   const mojo::AssociatedRemote<mojom::AutofillAgent>& GetAutofillAgent();
 
-  // Key-press handlers capture the user input into fields while an Autofill
-  // popup is shown.
+  // Key-press handlers capture the user input into fields from the renderer.
+  // The AutofillPopupControllerImpl listens for input while showing a popup.
+  // That way, the user can select suggestions from the popup, for example.
+  //
   // In a frame-transcending form, the <input> the user queried Autofill from
   // may be in a different frame than |render_frame_host_|. Therefore,
   // RegisterKeyPressHandler() and RemoveKeyPressHandler() are forwarded to the
@@ -333,9 +333,8 @@ class ContentAutofillDriver : public AutofillDriver,
   // ContentAutofillDriver and ContentAutofillRouter and hence are not
   // frame-transcending, this routing must be skipped by setting |skip_routing|.
   void RegisterKeyPressHandler(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler,
-      SkipRouting skip_routing = SkipRouting(false));
-  void RemoveKeyPressHandler(SkipRouting skip_routing = SkipRouting(false));
+      const content::RenderWidgetHost::KeyPressEventCallback& handler);
+  void RemoveKeyPressHandler();
   void RegisterKeyPressHandlerImpl(
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void RemoveKeyPressHandlerImpl();

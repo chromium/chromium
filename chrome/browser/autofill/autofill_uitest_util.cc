@@ -133,7 +133,7 @@ void GenerateTestAutofillPopup(
   gfx::RectF bounds(100.f, 100.f);
 
   ContentAutofillDriver* driver = static_cast<ContentAutofillDriver*>(
-      autofill_external_delegate->GetAutofillDriver());
+      absl::get<AutofillDriver*>(autofill_external_delegate->GetDriver()));
   driver->QueryFormFieldAutofill(query_id, form, field, bounds, false);
 
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};

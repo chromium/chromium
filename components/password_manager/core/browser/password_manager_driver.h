@@ -14,11 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 class GURL;
 
 namespace autofill {
-class AutofillDriver;
 struct FormData;
 struct ParsingResult;
 struct PasswordFormGenerationData;
@@ -109,15 +109,15 @@ class PasswordManagerDriver
   // chrome://password-manager-internals is available.
   virtual void SendLoggingAvailability() {}
 
-  // Return the associated AutofillDriver.
-  virtual autofill::AutofillDriver* GetAutofillDriver() = 0;
-
   // Return true iff the driver corresponds to the main frame.
   virtual bool IsMainFrame() const = 0;
 
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.
   virtual bool CanShowAutofillUi() const = 0;
+
+  // Returns the ax tree id associated with this driver.
+  virtual ::ui::AXTreeID GetAxTreeId() const = 0;
 
   // Returns the last committed URL of the frame.
   virtual const GURL& GetLastCommittedURL() const = 0;

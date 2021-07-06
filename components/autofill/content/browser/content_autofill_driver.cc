@@ -37,7 +37,6 @@
 #include "content/public/common/origin_util.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/origin.h"
 
@@ -617,20 +616,11 @@ ContentAutofillDriver::GetAutofillAgent() {
 }
 
 void ContentAutofillDriver::RegisterKeyPressHandler(
-    const content::RenderWidgetHost::KeyPressEventCallback& handler,
-    SkipRouting skip_routing) {
-  if (skip_routing) {
-    RegisterKeyPressHandlerImpl(handler);
-    return;
-  }
+    const content::RenderWidgetHost::KeyPressEventCallback& handler) {
   autofill_router_->RegisterKeyPressHandler(this, handler);
 }
 
-void ContentAutofillDriver::RemoveKeyPressHandler(SkipRouting skip_routing) {
-  if (skip_routing) {
-    RemoveKeyPressHandlerImpl();
-    return;
-  }
+void ContentAutofillDriver::RemoveKeyPressHandler() {
   autofill_router_->RemoveKeyPressHandler(this);
 }
 

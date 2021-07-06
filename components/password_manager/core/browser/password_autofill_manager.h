@@ -20,6 +20,10 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/gfx/image/image.h"
 
+namespace autofill {
+class AutofillDriver;
+}
+
 namespace favicon_base {
 struct FaviconImageResult;
 }
@@ -58,7 +62,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   bool RemoveSuggestion(const std::u16string& value, int frontend_id) override;
   void ClearPreviewedForm() override;
   autofill::PopupType GetPopupType() const override;
-  autofill::AutofillDriver* GetAutofillDriver() override;
+  absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
+      override;
   int32_t GetWebContentsPopupControllerAxId() const override;
   void RegisterDeletionCallback(base::OnceClosure deletion_callback) override;
 

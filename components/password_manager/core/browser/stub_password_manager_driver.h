@@ -31,9 +31,9 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManager* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
-  autofill::AutofillDriver* GetAutofillDriver() override;
   bool IsMainFrame() const override;
   bool CanShowAutofillUi() const override;
+  ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;
 
  private:

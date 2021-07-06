@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/isolation_info.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
 #if !defined(OS_IOS)
@@ -22,10 +23,6 @@
 
 namespace network {
 class SharedURLLoaderFactory;
-}
-
-namespace ui {
-class AXTreeID;
 }
 
 namespace autofill {

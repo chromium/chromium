@@ -49,8 +49,8 @@ class IOSChromePasswordManagerDriver
   password_manager::PasswordManager* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
-  autofill::AutofillDriver* GetAutofillDriver() override;
   bool IsMainFrame() const override;
+  ::ui::AXTreeID GetAxTreeId() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
 
