@@ -643,8 +643,10 @@ const char* ProtoEnumToString(
     sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
         setting_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::UserConsentTypes::AssistantActivityControlConsent,
-                     SettingType, ALL, DEVICE_APPS);
+                     SettingType, SETTING_TYPE_UNSPECIFIED, DEVICE_APPS);
   switch (setting_type) {
+    ENUM_CASE(sync_pb::UserConsentTypes::AssistantActivityControlConsent,
+              SETTING_TYPE_UNSPECIFIED);
     ENUM_CASE(sync_pb::UserConsentTypes::AssistantActivityControlConsent, ALL);
     ENUM_CASE(sync_pb::UserConsentTypes::AssistantActivityControlConsent,
               WEB_AND_APP_ACTIVITY);

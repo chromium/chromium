@@ -138,6 +138,10 @@ message UserConsentTypes {
 
     // Enum denoting different Assistant activity control setting type.
     enum SettingType {
+      // Legacy clients (< M93) did not set a SettingType; for those,
+      // UNSPECIFIED should be interpreted as ALL. Newer clients should always
+      // set it explicitly.
+      SETTING_TYPE_UNSPECIFIED = 0;
       // All Settings.
       ALL = 1;
       WEB_AND_APP_ACTIVITY = 2;
@@ -145,7 +149,8 @@ message UserConsentTypes {
     }
 
     // The activity control setting which the consent was given or not given to.
-    // If not set, it means the consent is for all settings.
+    // Clients before M93 did not set this field. Such consents should be
+    // treated as applying to ALL.
     optional SettingType setting_type = 3;
   }
 
