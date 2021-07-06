@@ -510,25 +510,25 @@ const size_t kDiskWeightedIOTime = 13;
 
 }  // namespace
 
-std::unique_ptr<DictionaryValue> SystemMemoryInfoKB::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
-  res->SetIntKey("total", total);
-  res->SetIntKey("free", free);
-  res->SetIntKey("available", available);
-  res->SetIntKey("buffers", buffers);
-  res->SetIntKey("cached", cached);
-  res->SetIntKey("active_anon", active_anon);
-  res->SetIntKey("inactive_anon", inactive_anon);
-  res->SetIntKey("active_file", active_file);
-  res->SetIntKey("inactive_file", inactive_file);
-  res->SetIntKey("swap_total", swap_total);
-  res->SetIntKey("swap_free", swap_free);
-  res->SetIntKey("swap_used", swap_total - swap_free);
-  res->SetIntKey("dirty", dirty);
-  res->SetIntKey("reclaimable", reclaimable);
+Value SystemMemoryInfoKB::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
+  res.SetIntKey("total", total);
+  res.SetIntKey("free", free);
+  res.SetIntKey("available", available);
+  res.SetIntKey("buffers", buffers);
+  res.SetIntKey("cached", cached);
+  res.SetIntKey("active_anon", active_anon);
+  res.SetIntKey("inactive_anon", inactive_anon);
+  res.SetIntKey("active_file", active_file);
+  res.SetIntKey("inactive_file", inactive_file);
+  res.SetIntKey("swap_total", swap_total);
+  res.SetIntKey("swap_free", swap_free);
+  res.SetIntKey("swap_used", swap_total - swap_free);
+  res.SetIntKey("dirty", dirty);
+  res.SetIntKey("reclaimable", reclaimable);
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  res->SetIntKey("shmem", shmem);
-  res->SetIntKey("slab", slab);
+  res.SetIntKey("shmem", shmem);
+  res.SetIntKey("slab", slab);
 #endif
 
   return res;
@@ -678,11 +678,11 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   return true;
 }
 
-std::unique_ptr<DictionaryValue> VmStatInfo::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
-  res->SetIntKey("pswpin", pswpin);
-  res->SetIntKey("pswpout", pswpout);
-  res->SetIntKey("pgmajfault", pgmajfault);
+Value VmStatInfo::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
+  res.SetIntKey("pswpin", pswpin);
+  res.SetIntKey("pswpout", pswpout);
+  res.SetIntKey("pgmajfault", pgmajfault);
   return res;
 }
 
@@ -719,24 +719,24 @@ SystemDiskInfo::SystemDiskInfo() {
 
 SystemDiskInfo::SystemDiskInfo(const SystemDiskInfo& other) = default;
 
-std::unique_ptr<Value> SystemDiskInfo::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
+Value SystemDiskInfo::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
 
   // Write out uint64_t variables as doubles.
   // Note: this may discard some precision, but for JS there's no other option.
-  res->SetDouble("reads", static_cast<double>(reads));
-  res->SetDouble("reads_merged", static_cast<double>(reads_merged));
-  res->SetDouble("sectors_read", static_cast<double>(sectors_read));
-  res->SetDouble("read_time", static_cast<double>(read_time));
-  res->SetDouble("writes", static_cast<double>(writes));
-  res->SetDouble("writes_merged", static_cast<double>(writes_merged));
-  res->SetDouble("sectors_written", static_cast<double>(sectors_written));
-  res->SetDouble("write_time", static_cast<double>(write_time));
-  res->SetDouble("io", static_cast<double>(io));
-  res->SetDouble("io_time", static_cast<double>(io_time));
-  res->SetDouble("weighted_io_time", static_cast<double>(weighted_io_time));
+  res.SetDoubleKey("reads", static_cast<double>(reads));
+  res.SetDoubleKey("reads_merged", static_cast<double>(reads_merged));
+  res.SetDoubleKey("sectors_read", static_cast<double>(sectors_read));
+  res.SetDoubleKey("read_time", static_cast<double>(read_time));
+  res.SetDoubleKey("writes", static_cast<double>(writes));
+  res.SetDoubleKey("writes_merged", static_cast<double>(writes_merged));
+  res.SetDoubleKey("sectors_written", static_cast<double>(sectors_written));
+  res.SetDoubleKey("write_time", static_cast<double>(write_time));
+  res.SetDoubleKey("io", static_cast<double>(io));
+  res.SetDoubleKey("io_time", static_cast<double>(io_time));
+  res.SetDoubleKey("weighted_io_time", static_cast<double>(weighted_io_time));
 
-  return std::move(res);
+  return res;
 }
 
 bool IsValidDiskName(StringPiece candidate) {
@@ -848,30 +848,31 @@ TimeDelta GetUserCpuTimeSinceBoot() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-std::unique_ptr<Value> SwapInfo::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
+Value SwapInfo::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
 
   // Write out uint64_t variables as doubles.
   // Note: this may discard some precision, but for JS there's no other option.
-  res->SetDouble("num_reads", static_cast<double>(num_reads));
-  res->SetDouble("num_writes", static_cast<double>(num_writes));
-  res->SetDouble("orig_data_size", static_cast<double>(orig_data_size));
-  res->SetDouble("compr_data_size", static_cast<double>(compr_data_size));
-  res->SetDouble("mem_used_total", static_cast<double>(mem_used_total));
+  res.SetDoubleKey("num_reads", static_cast<double>(num_reads));
+  res.SetDoubleKey("num_writes", static_cast<double>(num_writes));
+  res.SetDoubleKey("orig_data_size", static_cast<double>(orig_data_size));
+  res.SetDoubleKey("compr_data_size", static_cast<double>(compr_data_size));
+  res.SetDoubleKey("mem_used_total", static_cast<double>(mem_used_total));
   double ratio = compr_data_size ? static_cast<double>(orig_data_size) /
                                        static_cast<double>(compr_data_size)
                                  : 0;
-  res->SetDouble("compression_ratio", ratio);
+  res.SetDoubleKey("compression_ratio", ratio);
 
-  return std::move(res);
+  return res;
 }
 
-std::unique_ptr<Value> GraphicsMemoryInfoKB::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
-  res->SetIntKey("gpu_objects", gpu_objects);
-  res->SetDouble("gpu_memory_size", static_cast<double>(gpu_memory_size));
+Value GraphicsMemoryInfoKB::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
 
-  return std::move(res);
+  res.SetIntKey("gpu_objects", gpu_objects);
+  res.SetDoubleKey("gpu_memory_size", static_cast<double>(gpu_memory_size));
+
+  return res;
 }
 
 bool ParseZramMmStat(StringPiece mm_stat_data, SwapInfo* swap_info) {

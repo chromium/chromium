@@ -49,7 +49,6 @@
 
 namespace base {
 
-class DictionaryValue;
 class Value;
 
 // Full declaration is in process_metrics_iocounters.h.
@@ -333,7 +332,7 @@ struct BASE_EXPORT SystemMemoryInfoKB {
   SystemMemoryInfoKB(const SystemMemoryInfoKB& other);
 
   // Serializes the platform specific fields to value.
-  std::unique_ptr<DictionaryValue> ToValue() const;
+  Value ToValue() const;
 
   int total = 0;
 
@@ -427,7 +426,7 @@ BASE_EXPORT bool ParseProcMeminfo(StringPiece input,
 // Data from /proc/vmstat.
 struct BASE_EXPORT VmStatInfo {
   // Serializes the platform specific fields to value.
-  std::unique_ptr<DictionaryValue> ToValue() const;
+  Value ToValue() const;
 
   unsigned long pswpin = 0;
   unsigned long pswpout = 0;
@@ -450,7 +449,7 @@ struct BASE_EXPORT SystemDiskInfo {
   SystemDiskInfo(const SystemDiskInfo& other);
 
   // Serializes the platform specific fields to value.
-  std::unique_ptr<Value> ToValue() const;
+  Value ToValue() const;
 
   uint64_t reads = 0;
   uint64_t reads_merged = 0;
@@ -492,7 +491,7 @@ struct BASE_EXPORT SwapInfo {
   }
 
   // Serializes the platform specific fields to value.
-  std::unique_ptr<Value> ToValue() const;
+  Value ToValue() const;
 
   uint64_t num_reads = 0;
   uint64_t num_writes = 0;
@@ -521,7 +520,7 @@ BASE_EXPORT bool GetSwapInfo(SwapInfo* swap_info);
 // Data about GPU memory usage. These fields will be -1 if not supported.
 struct BASE_EXPORT GraphicsMemoryInfoKB {
   // Serializes the platform specific fields to value.
-  std::unique_ptr<Value> ToValue() const;
+  Value ToValue() const;
 
   int gpu_objects = -1;
   int64_t gpu_memory_size = -1;
@@ -540,7 +539,7 @@ struct BASE_EXPORT SystemPerformanceInfo {
   SystemPerformanceInfo(const SystemPerformanceInfo& other);
 
   // Serializes the platform specific fields to value.
-  std::unique_ptr<Value> ToValue() const;
+  Value ToValue() const;
 
   // Total idle time of all processes in the system (units of 100 ns).
   uint64_t idle_time = 0;
@@ -583,7 +582,7 @@ class BASE_EXPORT SystemMetrics {
   static SystemMetrics Sample();
 
   // Serializes the system metrics to value.
-  std::unique_ptr<Value> ToValue() const;
+  Value ToValue() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SystemMetricsTest, SystemMetrics);

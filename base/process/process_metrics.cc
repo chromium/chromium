@@ -68,26 +68,26 @@ SystemMetrics SystemMetrics::Sample() {
   return system_metrics;
 }
 
-std::unique_ptr<Value> SystemMetrics::ToValue() const {
-  std::unique_ptr<DictionaryValue> res(new DictionaryValue());
+Value SystemMetrics::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
 
-  res->SetIntKey("committed_memory", static_cast<int>(committed_memory_));
+  res.SetIntKey("committed_memory", static_cast<int>(committed_memory_));
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-  std::unique_ptr<DictionaryValue> meminfo = memory_info_.ToValue();
-  std::unique_ptr<DictionaryValue> vmstat = vmstat_info_.ToValue();
-  meminfo->MergeDictionary(vmstat.get());
-  res->Set("meminfo", std::move(meminfo));
-  res->Set("diskinfo", disk_info_.ToValue());
+  Value meminfo = memory_info_.ToValue();
+  Value vmstat = vmstat_info_.ToValue();
+  meminfo.MergeDictionary(&vmstat);
+  res.SetKey("meminfo", std::move(meminfo));
+  res.SetKey("diskinfo", disk_info_.ToValue());
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  res->Set("swapinfo", swap_info_.ToValue());
-  res->Set("gpu_meminfo", gpu_memory_info_.ToValue());
+  res.SetKey("swapinfo", swap_info_.ToValue());
+  res.SetKey("gpu_meminfo", gpu_memory_info_.ToValue());
 #endif
 #if defined(OS_WIN)
-  res->Set("perfinfo", performance_.ToValue());
+  res.SetKey("perfinfo", performance_.ToValue());
 #endif
 
-  return std::move(res);
+  return res;
 }
 
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateCurrentProcessMetrics() {
