@@ -7,17 +7,17 @@
 
 # Crashes
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/disable_controls_reposition.html [ CRASH ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ CRASH ]
-crbug.com/926685 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-010.html [ CRASH ]
-virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-017.html [ CRASH ]
-virtual/layout_ng_block_frag/fast/multicol/change-column-rule.html [ CRASH ]
-virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ CRASH ]
-virtual/text-antialias/letter-spacing-crash.html [ CRASH ]
+crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ CRASH ]
+crbug.com/1225860 crbug.com/926685 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-010.html [ CRASH ]
+crbug.com/1225860 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-017.html [ CRASH ]
+crbug.com/1225858 virtual/layout_ng_block_frag/fast/multicol/change-column-rule.html [ CRASH ]
+crbug.com/1225860 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ CRASH ]
+crbug.com/1225857 virtual/text-antialias/letter-spacing-crash.html [ CRASH ]
 
 # Slow
-virtual/synchronous_html_parser/external/wpt/html/semantics/scripting-1/the-script-element/css-module/import-css-module-basic.html [ SLOW ]
-crbug.com/1126305 virtual/prerender/wpt_internal/prerender/activation-start.html [ SLOW ]
-crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-isolated.https.html [ SLOW ]
+crbug.com/1212963 virtual/synchronous_html_parser/external/wpt/html/semantics/scripting-1/the-script-element/css-module/import-css-module-basic.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/activation-start.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-isolated.https.html [ TIMEOUT ]
 
 # Intentional failures for focusless spatial navigation.
 # Focusless spatial navigation is intentionally disabled when accessibility is turned on.
