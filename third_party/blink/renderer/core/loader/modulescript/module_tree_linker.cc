@@ -7,11 +7,14 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -516,8 +519,14 @@ void ModuleTreeLinker::Instantiate() {
 
     // <spec step="5.2">Perform record.Instantiate(). ...</spec>
     AdvanceState(State::kInstantiating);
+
+    ScriptState* script_state = modulator_->GetScriptState();
+    UseCounter::Count(ExecutionContext::From(script_state),
+                      WebFeature::kInstantiateModuleScript);
+
+    ScriptState::Scope scope(script_state);
     ScriptValue instantiation_error =
-        modulator_->InstantiateModule(record, result_->SourceURL());
+        ModuleRecord::Instantiate(script_state, record, result_->SourceURL());
 
     // <spec step="5.2">... If this throws an exception, set result's error to
     // rethrow to that exception.</spec>

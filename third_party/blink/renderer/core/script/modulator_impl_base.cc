@@ -253,16 +253,6 @@ ModuleImportMeta ModulatorImplBase::HostGetImportMetaProperties(
   return ModuleImportMeta(url_string);
 }
 
-ScriptValue ModulatorImplBase::InstantiateModule(
-    v8::Local<v8::Module> module_record,
-    const KURL& source_url) {
-  UseCounter::Count(GetExecutionContext(),
-                    WebFeature::kInstantiateModuleScript);
-
-  ScriptState::Scope scope(script_state_);
-  return ModuleRecord::Instantiate(script_state_, module_record, source_url);
-}
-
 ModuleType ModulatorImplBase::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
   String module_type_string = module_request.GetModuleTypeString();

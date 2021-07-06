@@ -156,12 +156,6 @@ ModuleImportMeta DummyModulator::HostGetImportMetaProperties(
   return ModuleImportMeta(String());
 }
 
-ScriptValue DummyModulator::InstantiateModule(v8::Local<v8::Module>,
-                                              const KURL&) {
-  NOTREACHED();
-  return ScriptValue();
-}
-
 ModuleType DummyModulator::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
   String module_type_string = module_request.GetModuleTypeString();

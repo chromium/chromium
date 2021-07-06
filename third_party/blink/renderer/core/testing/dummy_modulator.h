@@ -72,7 +72,6 @@ class DummyModulator : public Modulator {
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
   const ImportMap* GetImportMapForTest() const override;
-  ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) override;
   ModuleType ModuleTypeFromRequest(
       const ModuleRequest& module_request) const override;
   ModuleScriptFetcher* CreateModuleScriptFetcher(
