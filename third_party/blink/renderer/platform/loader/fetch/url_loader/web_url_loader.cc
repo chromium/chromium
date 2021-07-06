@@ -660,8 +660,12 @@ bool WebURLLoader::Context::OnReceivedRedirect(
 
 void WebURLLoader::Context::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head) {
-  if (!client_)
+  recordreplay::Assert("WebURLLoader::Context::OnReceivedResponse Start");
+
+  if (!client_) {
+    recordreplay::Assert("WebURLLoader::Context::OnReceivedResponse #1");
     return;
+  }
 
   TRACE_EVENT_WITH_FLOW0("loading", "WebURLLoader::Context::OnReceivedResponse",
                          this,
@@ -677,6 +681,8 @@ void WebURLLoader::Context::OnReceivedResponse(
   PopulateURLResponse(url_, *head, &response, report_raw_headers_, request_id_);
 
   client_->DidReceiveResponse(response);
+
+  recordreplay::Assert("WebURLLoader::Context::OnReceivedResponse Done");
 
   // DidReceiveResponse() may have triggered a cancel, causing the |client_| to
   // go away.
