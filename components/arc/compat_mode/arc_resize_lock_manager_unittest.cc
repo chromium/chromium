@@ -32,10 +32,12 @@ class FakeArcResizeLockManager : public ArcResizeLockManager {
 
   // ArcResizeLockManager:
   void EnableResizeLock(aura::Window* window) override {
+    ArcResizeLockManager::EnableResizeLock(window);
     DCHECK(!base::Contains(resize_lock_enabled_windows_, window));
     resize_lock_enabled_windows_.push_back(window);
   }
   void DisableResizeLock(aura::Window* window) override {
+    ArcResizeLockManager::DisableResizeLock(window);
     DCHECK(base::Contains(resize_lock_enabled_windows_, window));
     base::Erase(resize_lock_enabled_windows_, window);
   }
@@ -44,12 +46,48 @@ class FakeArcResizeLockManager : public ArcResizeLockManager {
   std::vector<aura::Window*> resize_lock_enabled_windows_;
 };
 
+class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
+ public:
+  ~TestArcResizeLockPrefDelegate() override = default;
+
+  // ArcResizeLockPrefDelegate:
+  mojom::ArcResizeLockState GetResizeLockState(
+      const std::string& app_id) const override {
+    auto it = resize_lock_states.find(app_id);
+    if (it == resize_lock_states.end())
+      return mojom::ArcResizeLockState::UNDEFINED;
+
+    return it->second;
+  }
+  void SetResizeLockState(const std::string& app_id,
+                          mojom::ArcResizeLockState state) override {
+    resize_lock_states[app_id] = state;
+  }
+  bool GetResizeLockNeedsConfirmation(const std::string& app_id) override {
+    return false;
+  }
+  void SetResizeLockNeedsConfirmation(const std::string& app_id,
+                                      bool is_needed) override {}
+
+ private:
+  base::flat_map<std::string, mojom::ArcResizeLockState> resize_lock_states;
+  int GetShowSplashScreenDialogCount() const override { return 1; }
+  void SetShowSplashScreenDialogCount(int count) override {}
+};
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kNonInterestedPropKey, false)
 
 }  // namespace
 
 class ArcResizeLockManagerTest : public views::ViewsTestBase {
  public:
+  // views::ViewsTestBase:
+  void SetUp() override {
+    views::ViewsTestBase::SetUp();
+    fake_arc_resize_lock_manager_.SetPrefDelegate(
+        &test_arc_resize_lock_pref_delegate);
+  }
+
   aura::Window* CreateFakeWindow(bool is_arc) {
     aura::Window* window =
         new aura::Window(nullptr, aura::client::WINDOW_TYPE_NORMAL);
@@ -70,8 +108,13 @@ class ArcResizeLockManagerTest : public views::ViewsTestBase {
     return !!fake_arc_resize_lock_manager_.resize_toggle_menu_;
   }
 
+  TestArcResizeLockPrefDelegate* pref_delegate() {
+    return &test_arc_resize_lock_pref_delegate;
+  }
+
  private:
   FakeArcResizeLockManager fake_arc_resize_lock_manager_;
+  TestArcResizeLockPrefDelegate test_arc_resize_lock_pref_delegate;
 };
 
 TEST_F(ArcResizeLockManagerTest, ConstructDestruct) {}
@@ -130,6 +173,36 @@ TEST_F(ArcResizeLockManagerTest, TestNonArcWindowPropertyChange) {
   non_arc_window->SetProperty(ash::kArcResizeLockTypeKey,
                               ash::ArcResizeLockType::RESIZABLE);
   EXPECT_FALSE(IsResizeLockEnabled(non_arc_window));
+}
+
+// Test that the ArcResizeLockState is properly handled for the "first-time
+// launch" app (whose state is ArcResizeLockState::READY).
+TEST_F(ArcResizeLockManagerTest, ResizeLockStateForFirstTimeLaunch) {
+  auto* arc_window = CreateFakeWindow(true);
+  std::string app_id = "app-id";
+  arc_window->SetProperty(ash::kAppIDKey, &app_id);
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window));
+
+  // Test for RESIZE_LIMITED.
+  pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::READY);
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_LIMITED);
+  EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
+            mojom::ArcResizeLockState::ON);
+
+  // Test for RESIZABLE.
+  pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::READY);
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
+  EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
+            mojom::ArcResizeLockState::READY);
+
+  // Test for FULLY_LOCKED.
+  pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::READY);
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::FULLY_LOCKED);
+  EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
+            mojom::ArcResizeLockState::ON);
 }
 
 }  // namespace arc

@@ -63,12 +63,13 @@ class ArcResizeLockManager : public KeyedService,
 
   void ToggleResizeToggleMenu(views::Widget* widget);
 
- private:
-  friend class ArcResizeLockManagerTest;
-
-  // Virtual for testing.
+ protected:
+  // protected and virtual for testing.
   virtual void EnableResizeLock(aura::Window* window);
   virtual void DisableResizeLock(aura::Window* window);
+
+ private:
+  friend class ArcResizeLockManagerTest;
 
   void UpdateCompatModeButton(aura::Window* window);
 

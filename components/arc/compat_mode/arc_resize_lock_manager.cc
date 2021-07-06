@@ -63,6 +63,10 @@ class WindowActivationObserver : public wm::ActivationChangeObserver,
 
   static void RunOnActivated(aura::Window* window,
                              base::OnceClosure on_activated) {
+    // ash::Shell can be null in unittests.
+    if (!ash::Shell::HasInstance())
+      return;
+
     if (ash::Shell::Get()->activation_client()->GetActiveWindow() == window) {
       std::move(on_activated).Run();
       return;
@@ -188,10 +192,11 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   bool is_first_launch = false;
 
   const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+  DCHECK(app_id);
   // The state is |ArcResizeLockState::READY| only when we enable the resize
   // lock for an app for the first time.
-  if (app_id && pref_delegate_->GetResizeLockState(*app_id) ==
-                    mojom::ArcResizeLockState::READY) {
+  if (pref_delegate_->GetResizeLockState(*app_id) ==
+      mojom::ArcResizeLockState::READY) {
     pref_delegate_->SetResizeLockState(*app_id, mojom::ArcResizeLockState::ON);
     is_first_launch = true;
   }
