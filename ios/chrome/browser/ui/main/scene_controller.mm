@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/breadcrumbs/core/features.h"
@@ -140,6 +141,13 @@ namespace {
 // animation. It's used to temporarily disable mutally exclusive chrome
 // commands that trigger a view controller presentation.
 const int64_t kExpectedTransitionDurationInNanoSeconds = 0.2 * NSEC_PER_SEC;
+
+// Maximum delay to wait for fetching the account capabilities before showing
+// the sign-in upgrade promo. If fetching the account capabilities takes more
+// than the delay, then the promo is suppressed - it may be shown on the next
+// start-up.
+constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
+    base::TimeDelta::FromMilliseconds(200);
 
 // Possible results of snapshotting at the moment the user enters the tab
 // switcher. These values are persisted to logs. Entries should not be
@@ -758,9 +766,16 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   // Asynchronously checks whether the default identity can display extended
   // sync promos and displays the sign-in promo if possible.
+  base::Time fetch_start = base::Time::Now();
   identityService->CanOfferExtendedSyncPromos(
       defaultIdentity, ^(ios::ChromeIdentityCapabilityResult result) {
-        if (result != ios::ChromeIdentityCapabilityResult::kTrue) {
+        base::TimeDelta fetch_delay = (base::Time::Now() - fetch_start);
+        base::UmaHistogramTimes(
+            "Signin.AccountCapabilities.GetFromSystemLibraryDuration."
+            "SigninUpgradePromo",
+            fetch_delay);
+        if (fetch_delay > kShowSigninUpgradePromoMaxDelay ||
+            result != ios::ChromeIdentityCapabilityResult::kTrue) {
           return;
         }
         [weakSelf presentSigninUpgradePromo];

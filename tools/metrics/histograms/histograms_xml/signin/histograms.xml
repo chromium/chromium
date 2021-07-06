@@ -58,16 +58,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Signin.AccountCapabilities.GetFromSystemLibraryDuration"
-    units="ms" expires_after="2021-11-01">
+<histogram
+    name="Signin.AccountCapabilities.GetFromSystemLibraryDuration{Caller}"
+    units="ms" expires_after="2021-12-31">
   <owner>aliceywang@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records the time it takes to fetch account capabilities from
-    the system library on Android and iOS on every call.
+    the system library {Caller}.
   </summary>
+  <token key="Caller">
+    <variant name="" summary="on every call (Android and iOS only)"/>
+    <variant name=".SigninUpgradePromo"
+        summary="when attempting to show the full screen sync promo (iOS
+                 only)"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.AccountConsistencyPromoAction"
