@@ -227,7 +227,7 @@ enum class RangeID : int8_t {
 };
 // ---- Begin copy/paste from //ui/gfx/color_space.h ----
 
-// ---- Begin copy/paste from media/base/hdr_metadata.h ----
+// ---- Begin copy/paste from //ui/gfx/hdr_metadata.h ----
 // SMPTE ST 2086 mastering metadata.
 struct MasteringMetadata {
   float primary_r_chromaticity_x = 0;
@@ -243,6 +243,7 @@ struct MasteringMetadata {
 
   MasteringMetadata();
   MasteringMetadata(const MasteringMetadata& rhs);
+  MasteringMetadata& operator=(const MasteringMetadata& rhs);
 };
 
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
@@ -253,15 +254,18 @@ struct HDRMetadata {
 
   HDRMetadata();
   HDRMetadata(const HDRMetadata& rhs);
+  HDRMetadata& operator=(const HDRMetadata& rhs);
 };
 
 inline MasteringMetadata::MasteringMetadata() {}
-inline MasteringMetadata::MasteringMetadata(const MasteringMetadata& rhs) =
-    default;
+inline MasteringMetadata::MasteringMetadata(const MasteringMetadata&) = default;
+inline MasteringMetadata& MasteringMetadata::operator=(
+    const MasteringMetadata&) = default;
 
 inline HDRMetadata::HDRMetadata() {}
-inline HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;
-// ---- End copy/paste from media/base/hdr_metadata.h ----
+inline HDRMetadata::HDRMetadata(const HDRMetadata&) = default;
+inline HDRMetadata& HDRMetadata::operator=(const HDRMetadata&) = default;
+// ---- End copy/paste from //ui/gfx/hdr_metadata.h ----
 
 constexpr int kChannelAll = -1;
 
