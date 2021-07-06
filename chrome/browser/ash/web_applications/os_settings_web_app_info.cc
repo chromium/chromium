@@ -49,7 +49,7 @@ std::unique_ptr<WebApplicationInfo> OSSettingsSystemAppDelegate::GetWebAppInfo()
 }
 
 bool OSSettingsSystemAppDelegate::ShouldCaptureNavigations() const {
-  return false;
+  return true;
 }
 
 gfx::Size OSSettingsSystemAppDelegate::GetMinimumWindowSize() const {
