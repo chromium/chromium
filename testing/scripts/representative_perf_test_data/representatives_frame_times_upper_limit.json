@@ -37,8 +37,10 @@
     },
     "balls_css_transition_2_properties": {
       "ci_095": 12.913,
-      "avg": 99.616,
-      "cpu_wall_time_ratio": 0.208
+      "avg": 120.405,
+      "cpu_wall_time_ratio": 0.208,
+      "experimental": true,
+      "_comment": "crbug.com/1226864"
     },
     "cc_poster_circle": {
       "ci_095": 0.053,
