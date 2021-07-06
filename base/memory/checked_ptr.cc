@@ -5,13 +5,15 @@
 #include "base/memory/checked_ptr.h"
 
 #include "base/allocator/buildflags.h"
-#include "base/check.h"
 
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
 // allocator/partition_allocator/ to be built.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_ref_count.h"
+#include "base/allocator/partition_allocator/partition_root.h"
+#include "base/check.h"
 
 namespace base {
 
