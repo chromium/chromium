@@ -1980,7 +1980,7 @@ class AuditorUI:
         print("  ({})\t{}".format(i + 1, str(error)))
       return 1
 
-    print("traffic annotations are all OK.\n")
+    sys.stdout.write("Traffic annotations are all OK.\n")
     return 0
 
 
