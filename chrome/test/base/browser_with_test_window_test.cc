@@ -164,7 +164,7 @@ void BrowserWithTestWindowTest::NavigateAndCommit(
     NavigationController* controller,
     const GURL& url) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      controller->GetWebContents(), url);
+      controller->DeprecatedGetWebContents(), url);
 }
 
 void BrowserWithTestWindowTest::NavigateAndCommitActiveTab(const GURL& url) {

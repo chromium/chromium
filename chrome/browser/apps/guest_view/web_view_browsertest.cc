@@ -712,12 +712,13 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
     guest_observer.Wait();
     content::Source<content::NavigationController> source =
         guest_observer.source();
-    EXPECT_TRUE(source->GetWebContents()
+    EXPECT_TRUE(source->DeprecatedGetWebContents()
                     ->GetMainFrame()
                     ->GetProcess()
                     ->IsForGuestsOnly());
 
-    content::WebContents* guest_web_contents = source->GetWebContents();
+    content::WebContents* guest_web_contents =
+        source->DeprecatedGetWebContents();
     return guest_web_contents;
   }
 
@@ -1636,7 +1637,7 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
 
   content::Source<content::NavigationController> source =
       empty_guest_observer.source();
-  EXPECT_TRUE(source->GetWebContents()
+  EXPECT_TRUE(source->DeprecatedGetWebContents()
                   ->GetMainFrame()
                   ->GetProcess()
                   ->IsForGuestsOnly());
@@ -1651,7 +1652,8 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
   ASSERT_EQ(2u, guest_contents_list.size());
   content::WebContents* new_window_guest_contents = guest_contents_list[0];
 
-  content::WebContents* empty_guest_web_contents = source->GetWebContents();
+  content::WebContents* empty_guest_web_contents =
+      source->DeprecatedGetWebContents();
   ASSERT_EQ(empty_guest_web_contents, guest_contents_list[1]);
   ASSERT_NE(empty_guest_web_contents, new_window_guest_contents);
   content::WebContents* empty_guest_embedder =
@@ -1980,7 +1982,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestRemoveWebviewOnExit) {
 
   content::Source<content::NavigationController> source =
       guest_observer.source();
-  EXPECT_TRUE(source->GetWebContents()
+  EXPECT_TRUE(source->DeprecatedGetWebContents()
                   ->GetMainFrame()
                   ->GetProcess()
                   ->IsForGuestsOnly());
@@ -1988,7 +1990,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestRemoveWebviewOnExit) {
   ASSERT_TRUE(guest_loaded_listener.WaitUntilSatisfied());
 
   content::WebContentsDestroyedWatcher destroyed_watcher(
-      source->GetWebContents());
+      source->DeprecatedGetWebContents());
 
   // Tell the embedder to kill the guest.
   EXPECT_TRUE(content::ExecuteScript(

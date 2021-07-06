@@ -638,8 +638,8 @@ NavigationControllerImpl::~NavigationControllerImpl() {
   DiscardNonCommittedEntries();
 }
 
-WebContents* NavigationControllerImpl::GetWebContents() {
-  return delegate_->GetWebContents();
+WebContents* NavigationControllerImpl::DeprecatedGetWebContents() {
+  return delegate_->DeprecatedGetWebContents();
 }
 
 BrowserContext* NavigationControllerImpl::GetBrowserContext() {

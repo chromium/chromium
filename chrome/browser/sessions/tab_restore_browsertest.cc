@@ -269,7 +269,7 @@ class TabRestoreTest : public InProcessBrowserTest {
   void EnsureTabFinishedRestoring(content::WebContents* tab) {
     content::NavigationController* controller = &tab->GetController();
     if (!controller->NeedsReload() && !controller->GetPendingEntry() &&
-        !controller->GetWebContents()->IsLoading())
+        !tab->IsLoading())
       return;
 
     content::WindowedNotificationObserver observer(

@@ -161,15 +161,13 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
 
 TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
   // Navigation in current tab.
-  content::NavigationController* controller =
-      &browser()->tab_strip_model()->GetWebContentsAt(0)->GetController();
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   browser()->OpenURL(
       content::OpenURLParams(GURL("http://foo/1"), content::Referrer(),
                              WindowOpenDisposition::CURRENT_TAB,
                              ui::PAGE_TRANSITION_AUTO_BOOKMARK, false));
-  CommitPendingLoad(controller);
-  SessionID tab_id =
-      sessions::SessionTabHelper::IdForTab(controller->GetWebContents());
+  CommitPendingLoad(&web_contents->GetController());
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
   auto* nav_list = navigation_event_list();
   ASSERT_EQ(1U, nav_list->NavigationEventsSize());
   VerifyNavigationEvent(GURL(),                // source_url

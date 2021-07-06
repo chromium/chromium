@@ -1813,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
   content::NavigationController* controller =
       content::Source<content::NavigationController>(windowed_observer.source())
           .ptr();
-  WebContents* popup = controller->GetWebContents();
+  WebContents* popup = controller->DeprecatedGetWebContents();
   ASSERT_TRUE(popup);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   content::RenderViewHost* webui_rvh =

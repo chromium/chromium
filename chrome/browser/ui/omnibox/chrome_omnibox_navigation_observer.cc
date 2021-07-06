@@ -147,7 +147,7 @@ void ChromeOmniboxNavigationObserver::Observe(
   // listening.
   content::NavigationController* controller =
       content::Source<content::NavigationController>(source).ptr();
-  content::WebContents* web_contents = controller->GetWebContents();
+  content::WebContents* web_contents = controller->DeprecatedGetWebContents();
   if (!infobars::ContentInfoBarManager::FromWebContents(web_contents))
     return;
 

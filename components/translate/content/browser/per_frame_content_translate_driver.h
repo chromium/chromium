@@ -40,6 +40,7 @@ struct LanguageDetectionDetails;
 class PerFrameContentTranslateDriver : public ContentTranslateDriver {
  public:
   PerFrameContentTranslateDriver(
+      content::WebContents& web_contents,
       content::NavigationController* nav_controller,
       language::UrlLanguageHistogram* url_language_histogram);
   ~PerFrameContentTranslateDriver() override;

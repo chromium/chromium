@@ -28,7 +28,8 @@ class NavigationControllerDelegate {
   virtual bool IsBeingDestroyed() = 0;
 
   // Methods from WebContentsImpl that NavigationControllerImpl needs to
-  // call.
+  // call. NavigationControllerImpl cannot call them directly because
+  // renderer_host/ cannot depend on WebContents.
   virtual void NotifyBeforeFormRepostWarningShow() = 0;
   virtual void NotifyNavigationEntryCommitted(
       const LoadCommittedDetails& load_details) = 0;
@@ -43,9 +44,9 @@ class NavigationControllerDelegate {
   // preserved in the omnibox.  Defaults to false.
   virtual bool ShouldPreserveAbortedURLs() = 0;
 
-  // This method is needed, since we are no longer guaranteed that the
-  // embedder for NavigationController will be a WebContents object.
-  virtual WebContents* GetWebContents() = 0;
+  // TODO(crbug.com/1225205): Remove this. It is a layering violation as
+  // renderer_host/ cannot depend on WebContents.
+  virtual WebContents* DeprecatedGetWebContents() = 0;
 
   virtual void UpdateOverridingUserAgent() = 0;
 };

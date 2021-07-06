@@ -33,7 +33,7 @@ class PerFrameContentTranslateDriverTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     driver_ = std::make_unique<PerFrameContentTranslateDriver>(
-        &(web_contents()->GetController()),
+        *web_contents(), &(web_contents()->GetController()),
         nullptr /* url_language_histogram */);
     driver_->AddLanguageDetectionObserver(&observer_);
   }

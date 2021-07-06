@@ -2899,7 +2899,7 @@ std::unique_ptr<WebContents> WebContentsImpl::Clone() {
   return tc;
 }
 
-WebContents* WebContentsImpl::GetWebContents() {
+WebContents* WebContentsImpl::DeprecatedGetWebContents() {
   return this;
 }
 
@@ -4466,7 +4466,7 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
       // multiple frame trees (e.g. prerendering) so it's not enough to check
       // against this->frame_tree_.
       FrameTree* frame_tree = frame_tree_node->frame_tree();
-      CHECK_EQ(frame_tree->controller().GetWebContents(), this);
+      CHECK_EQ(frame_tree->controller().DeprecatedGetWebContents(), this);
 
       if (blink::features::IsPrerender2Enabled()) {
         // Prerendering is generally hidden from embedders. If the navigation is

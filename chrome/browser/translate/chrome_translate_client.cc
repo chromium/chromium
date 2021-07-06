@@ -90,15 +90,16 @@ TranslateEventProto::EventType BubbleResultToTranslateEvent(
 
 ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
+  DCHECK(web_contents);
   if (translate::IsSubFrameTranslationEnabled()) {
     per_frame_translate_driver_ =
         std::make_unique<translate::PerFrameContentTranslateDriver>(
-            &web_contents->GetController(),
+            *web_contents, &web_contents->GetController(),
             UrlLanguageHistogramFactory::GetForBrowserContext(
                 web_contents->GetBrowserContext()));
   } else {
     translate_driver_ = std::make_unique<translate::ContentTranslateDriver>(
-        &web_contents->GetController(),
+        *web_contents, &web_contents->GetController(),
         UrlLanguageHistogramFactory::GetForBrowserContext(
             web_contents->GetBrowserContext()),
         TranslateModelServiceFactory::GetOrBuildForKey(

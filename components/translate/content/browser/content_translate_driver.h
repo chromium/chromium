@@ -56,7 +56,8 @@ class ContentTranslateDriver : public TranslateDriver,
     }
   };
 
-  ContentTranslateDriver(content::NavigationController* nav_controller,
+  ContentTranslateDriver(content::WebContents& web_contents,
+                         content::NavigationController* nav_controller,
                          language::UrlLanguageHistogram* url_language_histogram,
                          TranslateModelService* translate_model_service);
   ~ContentTranslateDriver() override;

@@ -280,7 +280,7 @@ void MultiNavigationObserver::Observe(
   content::NavigationController* controller =
       content::Source<content::NavigationController>(source).ptr();
   ++num_navigations_;
-  ++tab_navigation_map_[controller->GetWebContents()];
+  ++tab_navigation_map_[controller->DeprecatedGetWebContents()];
   if (waiting_for_navigation_ &&
       num_navigations_to_wait_for_ == num_navigations_) {
     waiting_for_navigation_ = false;
@@ -366,7 +366,7 @@ void FailLoadsAfterLoginObserver::Observe(
   ASSERT_EQ(type, content::NOTIFICATION_LOAD_STOP);
   content::NavigationController* controller =
       content::Source<content::NavigationController>(source).ptr();
-  WebContents* contents = controller->GetWebContents();
+  WebContents* contents = controller->DeprecatedGetWebContents();
 
   ASSERT_EQ(1u, tabs_needing_navigation_.count(contents));
   ASSERT_EQ(0u, tabs_navigated_to_final_destination_.count(contents));

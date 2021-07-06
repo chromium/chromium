@@ -2947,7 +2947,8 @@ TEST_F(NavigationControllerTest, CloneAndGoBack) {
   controller.GetVisibleEntry()->SetTitle(title);
   NavigateAndCommit(url2);
 
-  std::unique_ptr<WebContents> clone(controller.GetWebContents()->Clone());
+  std::unique_ptr<WebContents> clone(
+      RenderViewHostTestHarness::web_contents()->Clone());
 
   ASSERT_EQ(2, clone->GetController().GetEntryCount());
   EXPECT_TRUE(clone->GetController().NeedsReload());
@@ -2972,7 +2973,8 @@ TEST_F(NavigationControllerTest, CloneAndReload) {
   controller.GetVisibleEntry()->SetTitle(title);
   NavigateAndCommit(url2);
 
-  std::unique_ptr<WebContents> clone(controller.GetWebContents()->Clone());
+  std::unique_ptr<WebContents> clone(
+      RenderViewHostTestHarness::web_contents()->Clone());
   clone->GetController().LoadIfNecessary();
 
   ASSERT_EQ(2, clone->GetController().GetEntryCount());
@@ -3872,7 +3874,8 @@ TEST_F(NavigationControllerTest, IsInitialNavigation) {
 
   // For cloned tabs, IsInitialNavigationShould be true but
   // IsInitialBlankNavigation should be false.
-  std::unique_ptr<WebContents> clone(controller.GetWebContents()->Clone());
+  std::unique_ptr<WebContents> clone(
+      RenderViewHostTestHarness::web_contents()->Clone());
   EXPECT_TRUE(clone->GetController().IsInitialNavigation());
   EXPECT_FALSE(clone->GetController().IsInitialBlankNavigation());
 }
@@ -4396,14 +4399,14 @@ TEST_F(NavigationControllerTest, PruneForwardEntries) {
 // Make sure that cloning a WebContentsImpl and clearing forward entries
 // before the first commit doesn't clear all entries.
 TEST_F(NavigationControllerTest, PruneForwardEntriesAfterClone) {
-  NavigationControllerImpl& controller = controller_impl();
   const GURL url1("http://foo1");
   const GURL url2("http://foo2");
 
   NavigateAndCommit(url1);
   NavigateAndCommit(url2);
 
-  std::unique_ptr<WebContents> clone(controller.GetWebContents()->Clone());
+  std::unique_ptr<WebContents> clone(
+      RenderViewHostTestHarness::web_contents()->Clone());
   clone->GetController().LoadIfNecessary();
 
   // Set a WebContentsDelegate to listen for state changes after the clone call

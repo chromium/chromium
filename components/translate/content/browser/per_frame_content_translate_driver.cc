@@ -127,9 +127,11 @@ void PerFrameContentTranslateDriver::PendingRequestStats::Report() {
 }
 
 PerFrameContentTranslateDriver::PerFrameContentTranslateDriver(
+    content::WebContents& web_contents,
     content::NavigationController* nav_controller,
     language::UrlLanguageHistogram* url_language_histogram)
-    : ContentTranslateDriver(nav_controller,
+    : ContentTranslateDriver(web_contents,
+                             nav_controller,
                              url_language_histogram,
                              /*translate_model_service=*/nullptr) {}
 

@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   content::NavigationController* controller =
       content::Source<content::NavigationController>(windowed_observer.source())
           .ptr();
-  content::WebContents* newtab = controller->GetWebContents();
+  content::WebContents* newtab = controller->DeprecatedGetWebContents();
   ASSERT_TRUE(newtab);
 
   EXPECT_EQ(content::PAGE_TYPE_ERROR,

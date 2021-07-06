@@ -310,7 +310,7 @@ class SmartSessionRestoreTest : public SessionRestoreTest,
       case content::NOTIFICATION_LOAD_START: {
         content::NavigationController* controller =
             content::Source<content::NavigationController>(source).ptr();
-        web_contents_.push_back(controller->GetWebContents());
+        web_contents_.push_back(controller->DeprecatedGetWebContents());
         if (web_contents_.size() == num_tabs_)
           message_loop_runner_->Quit();
         break;

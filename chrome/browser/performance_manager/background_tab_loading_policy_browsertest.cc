@@ -59,7 +59,7 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
     content::NavigationController* controller = &tab->GetController();
     // If tab content is not in a loading state and doesn't need reload.
     if (!controller->NeedsReload() && !controller->GetPendingEntry() &&
-        !controller->GetWebContents()->IsLoading()) {
+        !tab->IsLoading()) {
       return;
     }
 

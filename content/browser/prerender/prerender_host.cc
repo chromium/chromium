@@ -141,12 +141,14 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
   void NotifyNavigationEntriesDeleted() override {}
   void ActivateAndShowRepostFormWarningDialog() override {}
   bool ShouldPreserveAbortedURLs() override { return false; }
-  WebContents* GetWebContents() override { return &web_contents_; }
+  WebContents* DeprecatedGetWebContents() override { return GetWebContents(); }
   void UpdateOverridingUserAgent() override {}
 
   NavigationControllerImpl& GetNavigationController() {
     return frame_tree_->controller();
   }
+
+  WebContents* GetWebContents() { return &web_contents_; }
 
   ActivateResult Activate(NavigationRequest& navigation_request) {
     // There should be no ongoing main-frame navigation during activation.

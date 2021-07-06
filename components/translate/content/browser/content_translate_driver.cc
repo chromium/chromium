@@ -57,10 +57,11 @@ const base::Feature kAutoHrefTranslateAllOrigins{
 }  // namespace
 
 ContentTranslateDriver::ContentTranslateDriver(
+    content::WebContents& web_contents,
     content::NavigationController* nav_controller,
     language::UrlLanguageHistogram* url_language_histogram,
     translate::TranslateModelService* translate_model_service)
-    : content::WebContentsObserver(nav_controller->GetWebContents()),
+    : content::WebContentsObserver(&web_contents),
       navigation_controller_(nav_controller),
       translate_manager_(nullptr),
       max_reload_check_attempts_(kMaxTranslateLoadCheckAttempts),
@@ -118,15 +119,13 @@ bool ContentTranslateDriver::IsLinkNavigation() {
 }
 
 void ContentTranslateDriver::OnTranslateEnabledChanged() {
-  content::WebContents* web_contents = navigation_controller_->GetWebContents();
   for (auto& observer : translation_observers_)
-    observer.OnTranslateEnabledChanged(web_contents);
+    observer.OnTranslateEnabledChanged(web_contents());
 }
 
 void ContentTranslateDriver::OnIsPageTranslatedChanged() {
-  content::WebContents* web_contents = navigation_controller_->GetWebContents();
   for (auto& observer : translation_observers_)
-    observer.OnIsPageTranslatedChanged(web_contents);
+    observer.OnIsPageTranslatedChanged(web_contents());
 }
 
 void ContentTranslateDriver::TranslatePage(int page_seq_no,
@@ -156,20 +155,19 @@ bool ContentTranslateDriver::IsIncognito() {
 }
 
 const std::string& ContentTranslateDriver::GetContentsMimeType() {
-  return navigation_controller_->GetWebContents()->GetContentsMimeType();
+  return web_contents()->GetContentsMimeType();
 }
 
 const GURL& ContentTranslateDriver::GetLastCommittedURL() {
-  return navigation_controller_->GetWebContents()->GetLastCommittedURL();
+  return web_contents()->GetLastCommittedURL();
 }
 
 const GURL& ContentTranslateDriver::GetVisibleURL() {
-  return navigation_controller_->GetWebContents()->GetVisibleURL();
+  return web_contents()->GetVisibleURL();
 }
 
 ukm::SourceId ContentTranslateDriver::GetUkmSourceId() {
-  return ukm::GetSourceIdForWebContentsDocument(
-      navigation_controller_->GetWebContents());
+  return ukm::GetSourceIdForWebContentsDocument(web_contents());
 }
 
 bool ContentTranslateDriver::HasCurrentPage() {
@@ -180,7 +178,7 @@ void ContentTranslateDriver::OpenUrlInNewTab(const GURL& url) {
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  navigation_controller_->GetWebContents()->OpenURL(params);
+  web_contents()->OpenURL(params);
 }
 
 void ContentTranslateDriver::InitiateTranslationIfReload(

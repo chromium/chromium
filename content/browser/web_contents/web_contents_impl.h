@@ -1019,7 +1019,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // NavigationControllerDelegate ----------------------------------------------
 
-  WebContents* GetWebContents() override;
+  WebContents* DeprecatedGetWebContents() override;
   void NotifyNavigationEntryCommitted(
       const LoadCommittedDetails& load_details) override;
   void NotifyNavigationEntryChanged(

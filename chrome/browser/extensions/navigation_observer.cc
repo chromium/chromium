@@ -102,7 +102,7 @@ void NavigationObserver::PromptToEnableExtensionIfNecessary(
     in_progress_prompt_navigation_controller_ = nav_controller;
 
     extension_install_prompt_ = std::make_unique<ExtensionInstallPrompt>(
-        nav_controller->GetWebContents());
+        nav_controller->DeprecatedGetWebContents());
     ExtensionInstallPrompt::PromptType type =
         ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(profile_,
                                                                   extension);

@@ -318,12 +318,12 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     guest_observer.Wait();
     content::Source<content::NavigationController> source =
         guest_observer.source();
-    EXPECT_TRUE(source->GetWebContents()
+    EXPECT_TRUE(source->DeprecatedGetWebContents()
                     ->GetMainFrame()
                     ->GetProcess()
                     ->IsForGuestsOnly());
 
-    guest_web_contents_ = source->GetWebContents();
+    guest_web_contents_ = source->DeprecatedGetWebContents();
     embedder_web_contents_ =
         GuestViewBase::FromWebContents(guest_web_contents_)->
             embedder_web_contents();

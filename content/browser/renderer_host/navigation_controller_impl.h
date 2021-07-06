@@ -86,7 +86,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   ~NavigationControllerImpl() override;
 
   // NavigationController implementation:
-  WebContents* GetWebContents() override;
+  WebContents* DeprecatedGetWebContents() override;
   BrowserContext* GetBrowserContext() override;
   void Restore(int selected_navigation,
                RestoreType type,

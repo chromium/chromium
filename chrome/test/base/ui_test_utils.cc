@@ -505,7 +505,8 @@ void UrlLoadObserver::Observe(
     const content::NotificationDetails& details) {
   NavigationController* controller =
       content::Source<NavigationController>(source).ptr();
-  if (controller->GetWebContents()->GetURL() != url_)
+  NavigationEntry* entry = controller->GetVisibleEntry();
+  if (!entry || entry->GetVirtualURL() != url_)
     return;
 
   WindowedNotificationObserver::Observe(type, source, details);

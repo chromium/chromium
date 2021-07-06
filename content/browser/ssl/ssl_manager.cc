@@ -335,7 +335,7 @@ void SSLManager::DidStartResourceResponse(const GURL& url,
   // any previous decisions that have occurred.
   if (!ssl_host_state_delegate_ ||
       !ssl_host_state_delegate_->HasAllowException(
-          url.host(), controller_->GetWebContents())) {
+          url.host(), controller_->DeprecatedGetWebContents())) {
     return;
   }
 
@@ -432,7 +432,7 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
 
 void SSLManager::NotifyDidChangeVisibleSSLState() {
   WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(controller_->delegate()->GetWebContents());
+      static_cast<WebContentsImpl*>(controller_->DeprecatedGetWebContents());
   contents->DidChangeVisibleSecurityState();
 }
 

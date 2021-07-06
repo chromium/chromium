@@ -60,7 +60,7 @@ const char kDisk[] = "disk";
 static const char kBootTimes[] = "BootTimes";
 
 RenderWidgetHost* GetRenderWidgetHost(NavigationController* tab) {
-  WebContents* web_contents = tab->GetWebContents();
+  WebContents* web_contents = tab->DeprecatedGetWebContents();
   if (web_contents) {
     RenderWidgetHostView* render_widget_host_view =
         web_contents->GetRenderWidgetHostView();

@@ -536,7 +536,7 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
 
   BackForwardMenuModel back_model(browser.get(),
                                   BackForwardMenuModel::ModelType::kBackward);
-  back_model.set_test_web_contents(controller().GetWebContents());
+  back_model.set_test_web_contents(web_contents());
   back_model.SetMenuModelDelegate(&favicon_delegate);
 
   SkBitmap new_icon_bitmap(CreateBitmap(SK_ColorRED));

@@ -302,7 +302,7 @@ class WaitForGURLAndCloseWindow : public content::WindowedNotificationObserver {
     content::NavigationController* web_auth_flow_controller =
         content::Source<content::NavigationController>(source).ptr();
     content::WebContents* web_contents =
-        web_auth_flow_controller->GetWebContents();
+        web_auth_flow_controller->DeprecatedGetWebContents();
 
     if (web_contents->GetLastCommittedURL() == url_) {
       // It is safe to keep the pointer here, because we know in a test, that
