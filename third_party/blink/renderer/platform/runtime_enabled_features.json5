@@ -460,6 +460,16 @@
     {
       name: "CorsRFC1918",
     },
+    // This block isn't really used on its own. Blink doesn't really have to
+    // know about COEP:credentialless. However it is used for "declaring" the
+    // OriginTrial feature name. This is similar to:
+    // https://chromium-review.googlesource.com/c/chromium/src/+/2366778
+    // for CrossOriginOpenerPolicyReporting.
+    {
+      name: "CrossOriginEmbedderPolicyCredentialless",
+      origin_trial_feature_name: "CrossOriginEmbedderPolicyCredentiallessOriginTrial",
+      status: "experimental",
+    },
     {
       name: "CrossOriginIsolation",
       status: "stable",

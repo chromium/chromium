@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Install the third party cookies.
+PASS environment="document" origin_trial="enabled"
+PASS environment="document" origin_trial="disabled"
+PASS environment="service_worker" origin_trial="enabled"
+PASS environment="service_worker" origin_trial="disabled"
+FAIL environment="dedicated_worker" origin_trial="enabled" assert_equals: expected (undefined) undefined but got (string) "cookie"
+PASS environment="dedicated_worker" origin_trial="disabled"
+FAIL environment="shared_worker" origin_trial="enabled" assert_equals: expected (undefined) undefined but got (string) "cookie"
+PASS environment="shared_worker" origin_trial="disabled"
+Harness: the test ran to completion.
+

@@ -1,0 +1,30 @@
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/common.js"></script>
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js"></script>
+<script src="./resources/originTrialTest.js"></script>
+<script>
+
+promise_test(async test => {
+  await setCookie(cross_origin, cookie_key, cookie_value);
+
+  // Those tests check on the various execution context if a cross-origin
+  // no-cors request contains the cookies defined above. The environment and
+  // whether the OriginTrial is enabled vary.
+
+  originTrialTest("document", "enabled", undefined);
+  originTrialTest("document", "disabled", cookie_value);
+
+  originTrialTest("service_worker", "enabled", undefined);
+  originTrialTest("service_worker", "disabled", cookie_value);
+
+  originTrialTest("dedicated_worker", "enabled", undefined);
+  originTrialTest("dedicated_worker", "disabled", cookie_value);
+
+  originTrialTest("shared_worker", "enabled", undefined);
+  originTrialTest("shared_worker", "disabled", cookie_value);
+
+}, "Install the third party cookies.");
+</script>

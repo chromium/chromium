@@ -46,6 +46,7 @@
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/commit_deferring_condition.h"
 #include "content/browser/renderer_host/cookie_utils.h"
+#include "content/browser/renderer_host/cross_origin_embedder_policy.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -2783,9 +2784,10 @@ void NavigationRequest::OnResponseStarted(
     return;
   }
 
-  auto cross_origin_embedder_policy =
-      response_head_->parsed_headers->cross_origin_embedder_policy;
   const auto& url = common_params_->url;
+  auto cross_origin_embedder_policy =
+      CoepFromMainResponse(url, response_head_.get());
+
   if (network::IsUrlPotentiallyTrustworthy(url)) {
     // https://mikewest.github.io/corpp/#process-navigation-response
     if (auto* const parent = GetParentFrame()) {

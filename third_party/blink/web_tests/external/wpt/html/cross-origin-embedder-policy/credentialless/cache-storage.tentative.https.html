@@ -61,9 +61,9 @@ const cacheStorageTest = (
 const environment = location.search.substr(1);
 const constructor = environments[environment];
 
-const context_none = constructor(coep_none);
-const context_credentialless = constructor(coep_credentialless);
-const context_require_corp = constructor(coep_require_corp);
+const context_none = constructor(coep_none)[0];
+const context_credentialless = constructor(coep_credentialless)[0];
+const context_require_corp = constructor(coep_require_corp)[0];
 
 cacheStorageTest(`[${environment}] unsafe-none => unsafe-none`,
   context_none,

@@ -2363,7 +2363,9 @@ void URLLoader::SetRequestCredentials(const GURL& url) {
   // aren't used for those requests.
   if (!coep_allow_credentials) {
     DCHECK(base::FeatureList::IsEnabled(
-        features::kCrossOriginEmbedderPolicyCredentialless));
+               features::kCrossOriginEmbedderPolicyCredentialless) ||
+           base::FeatureList::IsEnabled(
+               features::kCrossOriginEmbedderPolicyCredentiallessOriginTrial));
     url_request_->SetLoadFlags(url_request_->load_flags() |
                                net::LOAD_BYPASS_CACHE);
   }
@@ -2390,7 +2392,9 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
   if (coep_policy != mojom::CrossOriginEmbedderPolicyValue::kCredentialless)
     return true;
   DCHECK(base::FeatureList::IsEnabled(
-      features::kCrossOriginEmbedderPolicyCredentialless));
+             features::kCrossOriginEmbedderPolicyCredentialless) ||
+         base::FeatureList::IsEnabled(
+             features::kCrossOriginEmbedderPolicyCredentiallessOriginTrial));
 
   url::Origin request_origin = url::Origin::Create(url);
   url::Origin request_initiator =

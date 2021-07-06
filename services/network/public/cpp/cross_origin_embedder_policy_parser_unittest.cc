@@ -7,9 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -81,20 +79,44 @@ TEST(CrossOriginEmbedderPolicyTest, Parse) {
       // COEP: require-corp
       {"require-corp", kNoHeader, kRequireCorp, kNoEndpoint, kNone,
        kNoEndpoint},
+
+      // COEP: credentialless
+      {"credentialless", kNoHeader, kCredentialless, kNoEndpoint, kNone,
+       kNoEndpoint},
+
       // COEP-RO: require-corp
       {kNoHeader, "require-corp", kNone, kNoEndpoint, kRequireCorp,
        kNoEndpoint},
+
+      // COEP-RO: credentialless
+      {kNoHeader, "credentialless", kNone, kNoEndpoint, kCredentialless,
+       kNoEndpoint},
+
       // COEP: require-corp with reporting-endpoint
       {"require-corp; report-to=\"endpoint\"", kNoHeader, kRequireCorp,
        "endpoint", kNone, kNoEndpoint},
+
+      // COEP: credentialless with reporting endpoint
+      {"credentialless; report-to=\"endpoint\"", kNoHeader, kCredentialless,
+       "endpoint", kNone, kNoEndpoint},
+
       // COEP-RO: require-corp with reporting-endpoint
       {kNoHeader, "require-corp; report-to=\"endpoint\"", kNone, kNoEndpoint,
        kRequireCorp, "endpoint"},
 
-      // With both headers
+      // COEP-RO: credentialless with reporting endpoint
+      {kNoHeader, "credentialless; report-to=\"endpoint\"", kNone, kNoEndpoint,
+       kCredentialless, "endpoint"},
+
+      // COEP:require-corp, with both headers
       {"require-corp; report-to=\"endpoint1\"",
        "require-corp; report-to=\"endpoint2\"", kRequireCorp, "endpoint1",
        kRequireCorp, "endpoint2"},
+
+      // COEP:credentialless, with both headers
+      {"credentialless; report-to=\"endpoint1\"",
+       "credentialless; report-to=\"endpoint2\"", kCredentialless, "endpoint1",
+       kCredentialless, "endpoint2"},
 
       // With random spaces
       {"  require-corp; report-to=\"endpoint1\"  ",
@@ -112,7 +134,6 @@ TEST(CrossOriginEmbedderPolicyTest, Parse) {
       // Errors
       {"REQUIRE-CORP", kNoHeader, kNone, kNoEndpoint, kNone, kNoEndpoint},
       {"CREDENTIALLESS", kNoHeader, kNone, kNoEndpoint, kNone, kNoEndpoint},
-      {"credentialless", kNoHeader, kNone, kNoEndpoint, kNone, kNoEndpoint},
       {" require-corp; REPORT-TO=\"endpoint\"", kNoHeader, kNone, kNoEndpoint,
        kNone, kNoEndpoint},
       {"foobar; report-to=\"endpoint\"", kNoHeader, kNone, kNoEndpoint, kNone,
@@ -128,57 +149,6 @@ TEST(CrossOriginEmbedderPolicyTest, Parse) {
        kNone, kNoEndpoint},
       {"TOTALLY BLOKEN", "require-corp; report-to=\"x\"", kNone, kNoEndpoint,
        kRequireCorp, "x"},
-  };
-
-  for (const TestCase& test_case : test_cases)
-    CheckTestCase(test_case);
-}
-
-TEST(CrossOriginEmbedderPolicyTest, ParseCredentiallessDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kCrossOriginEmbedderPolicyCredentialless});
-  TestCase test_cases[] = {
-      // COEP: credentialless
-      {"credentialless", kNoHeader, kNone, kNoEndpoint, kNone, kNoEndpoint},
-      // COEP-RO: credentialless
-      {kNoHeader, "credentialless", kNone, kNoEndpoint, kNone, kNoEndpoint},
-      // COEP: credentialless with reporting endpoint
-      {"credentialless; report-to=\"endpoint\"", kNoHeader, kNone, kNoEndpoint,
-       kNone, kNoEndpoint},
-      // COEP-RO: credentialless with reporting endpoint
-      {kNoHeader, "credentialless; report-to=\"endpoint\"", kNone, kNoEndpoint,
-       kNone, kNoEndpoint},
-      // With both headers
-      {"credentialless; report-to=\"endpoint1\"",
-       "credentialless; report-to=\"endpoint2\"", kNone, kNoEndpoint, kNone,
-       kNoEndpoint},
-  };
-  for (const TestCase& test_case : test_cases)
-    CheckTestCase(test_case);
-}
-
-TEST(CrossOriginEmbedderPolicyTest, ParseCredentiallessEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCrossOriginEmbedderPolicyCredentialless}, {});
-  TestCase test_cases[] = {
-      // COEP: credentialless
-      {"credentialless", kNoHeader, kCredentialless, kNoEndpoint, kNone,
-       kNoEndpoint},
-      // COEP-RO: credentialless
-      {kNoHeader, "credentialless", kNone, kNoEndpoint, kCredentialless,
-       kNoEndpoint},
-      // COEP: credentialless with reporting endpoint
-      {"credentialless; report-to=\"endpoint\"", kNoHeader, kCredentialless,
-       "endpoint", kNone, kNoEndpoint},
-      // COEP-RO: credentialless with reporting endpoint
-      {kNoHeader, "credentialless; report-to=\"endpoint\"", kNone, kNoEndpoint,
-       kCredentialless, "endpoint"},
-      // With both headers
-      {"credentialless; report-to=\"endpoint1\"",
-       "credentialless; report-to=\"endpoint2\"", kCredentialless, "endpoint1",
-       kCredentialless, "endpoint2"},
   };
 
   for (const TestCase& test_case : test_cases)

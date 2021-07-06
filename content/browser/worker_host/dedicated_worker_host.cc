@@ -14,6 +14,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/cross_origin_embedder_policy.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -314,9 +315,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   } else if (main_script_load_params->response_head->parsed_headers) {
     // > 14.6 Otherwise, set worker global scope's embedder policy to the result
     // of obtaining an embedder policy from response.
-    worker_cross_origin_embedder_policy_ =
-        main_script_load_params->response_head->parsed_headers
-            ->cross_origin_embedder_policy;
+    worker_cross_origin_embedder_policy_ = CoepFromMainResponse(
+        final_response_url, main_script_load_params->response_head.get());
   }
 
   // Create a COEP reporter with worker's policy.

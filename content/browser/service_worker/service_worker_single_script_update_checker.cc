@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
+#include "content/browser/renderer_host/cross_origin_embedder_policy.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
@@ -236,7 +237,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
     // here, not matter the URLLoader used to load it.
     cross_origin_embedder_policy_ =
         response_head->parsed_headers
-            ? response_head->parsed_headers->cross_origin_embedder_policy
+            ? CoepFromMainResponse(script_url_, response_head.get())
             : network::CrossOriginEmbedderPolicy();
   }
 

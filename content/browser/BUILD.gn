@@ -1345,6 +1345,8 @@ source_set("browser") {
     "renderer_host/commit_deferring_condition_runner.h",
     "renderer_host/cookie_utils.cc",
     "renderer_host/cookie_utils.h",
+    "renderer_host/cross_origin_embedder_policy.cc",
+    "renderer_host/cross_origin_embedder_policy.h",
     "renderer_host/cross_origin_opener_policy_status.cc",
     "renderer_host/cross_origin_opener_policy_status.h",
     "renderer_host/cross_process_frame_connector.cc",

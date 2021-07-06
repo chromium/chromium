@@ -11,7 +11,6 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -45,9 +44,7 @@ Parse(base::StringPiece header_value) {
     };
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kCrossOriginEmbedderPolicyCredentialless) &&
-      item->item.GetString() == "credentialless") {
+  if (item->item.GetString() == "credentialless") {
     return {
         mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
         std::move(endpoint),
