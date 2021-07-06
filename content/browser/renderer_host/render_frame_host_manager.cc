@@ -226,8 +226,52 @@ ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
     case ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap:
       return ProtoLevel::
           SHOULD_SWAP_BROWSING_INSTANCE_YES_SAME_SITE_PROACTIVE_SWAP;
-    default:
-      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO;
+    case ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_PROACTIVE_SWAP_DISABLED;
+    case ShouldSwapBrowsingInstance::kNo_NotMainFrame:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_MAIN_FRAME;
+    case ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_HAS_RELATED_ACTIVE_CONTENTS;
+    case ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_DOES_NOT_HAVE_SITE;
+    case ShouldSwapBrowsingInstance::kNo_SourceURLSchemeIsNotHTTPOrHTTPS:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_SOURCE_URL_SCHEME_NOT_HTTP_OR_HTTPS;
+    case ShouldSwapBrowsingInstance::kNo_DestinationURLSchemeIsNotHTTPOrHTTPS:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_DESTINATION_URL_SCHEME_NOT_HTTP_OR_HTTPS;
+    case ShouldSwapBrowsingInstance::kNo_SameSiteNavigation:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_SAME_SITE_NAVIGATION;
+    case ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_RELOADING_ERROR_PAGE;
+    case ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_ALREADY_HAS_MATCHING_BROWSING_INSTANCE;
+    case ShouldSwapBrowsingInstance::kNo_RendererDebugURL:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_RENDERER_DEBUG_URL;
+    case ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_NEEDED_FOR_BACK_FORWARD_CACHE;
+    case ShouldSwapBrowsingInstance::kNo_SameDocumentNavigation:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_SAME_DOCUMENT_NAVIGATION;
+    case ShouldSwapBrowsingInstance::kNo_SameUrlNavigation:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_SAME_URL_NAVIGATION;
+    case ShouldSwapBrowsingInstance::kNo_WillReplaceEntry:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_WILL_REPLACE_ENTRY;
+    case ShouldSwapBrowsingInstance::kNo_Reload:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_RELOAD;
+    case ShouldSwapBrowsingInstance::kNo_Guest:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO_GUEST;
+    case ShouldSwapBrowsingInstance::kNo_HasNotComittedAnyNavigation:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_HAS_NOT_COMMITTED_ANY_NAVIGATION;
+    case ShouldSwapBrowsingInstance::
+        kNo_UnloadHandlerExistsOnSameSiteNavigation:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_UNLOAD_HANDLER_EXISTS_ON_SAME_SITE_NAVIGATION;
   }
 }
 
