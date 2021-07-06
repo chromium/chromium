@@ -19,6 +19,7 @@ class AppUpdate;
 namespace chromeos {
 namespace full_restore {
 
+class ArcWindowHandler;
 class FullRestoreAppLaunchHandler;
 
 // The ArcAppLaunchHandler class restores ARC apps during the system startup
@@ -40,10 +41,6 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // add the ARC apps windows to `windows_` and `no_stack_windows_`.
   void RestoreArcApps(FullRestoreAppLaunchHandler* app_launch_handler);
 
-  // Checks whether the app of `app_id` is ready. If yes, launch the app.
-  // Otherwise, add `app_id` to |app_ids|.
-  void RestoreApp(const std::string& app_id);
-
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
@@ -51,19 +48,36 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   void OnAppConnectionReady();
 
- protected:
+ private:
+  // Reads the restore data, and add the ARC app windows to `windows_`,
+  // `no_stack_windows_` and `app_ids_`.
+  void LoadRestoreData();
+
+  // Creates the ghost windows or displays the icon with an overlaid spinner to
+  // provide visual feedback that the app cannot be launched immediately (due to
+  // ARC not being ready, or the system perforamcne concern) on Chrome OS.
+  void PrepareAppLaunching(const std::string& app_id);
+
   // Override chromeos::ResourcedClient::Observer
   void OnMemoryPressure(chromeos::ResourcedClient::PressureLevel level,
                         uint64_t reclaim_target_kb) override;
 
- private:
-  void LaunchApp(const std::string& app_id);
-
   FullRestoreAppLaunchHandler* handler_ = nullptr;
 
-  // If the ARC app is not ready, add it to `app_ids`. When the ARC app is
-  // ready, and can be restored, launch the app, and remove it from `app_ids`.
+  // The app id list to be restored. When the ARC app is ready in
+  // AppRegistryCache, launch the ghost window or spin the icon and remove it
+  // from `app_ids`.
   std::set<std::string> app_ids_;
+
+  // The map from the window stack to the app id and the window id. This map is
+  // used to save the windows to be restored.
+  std::map<int32_t, std::pair<std::string, int32_t>> windows_;
+
+  // ARC app windows without the window stack info. This set is used to save the
+  // windows to be restored.
+  std::set<std::pair<std::string, int32_t>> no_stack_windows_;
+
+  ArcWindowHandler* window_handler_ = nullptr;
 
   chromeos::ResourcedClient::PressureLevel pressure_level_;
 

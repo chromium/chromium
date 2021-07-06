@@ -32,6 +32,14 @@ void ArcAppLaunchHandler::RestoreArcApps(
     FullRestoreAppLaunchHandler* app_launch_handler) {
   handler_ = app_launch_handler;
 
+  window_handler_ = FullRestoreArcTaskHandler::GetForProfile(handler_->profile_)
+                        ->window_handler();
+
+  LoadRestoreData();
+
+  if (windows_.empty() && no_stack_windows_.empty())
+    return;
+
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       handler_->profile_));
 
@@ -42,26 +50,24 @@ void ArcAppLaunchHandler::RestoreArcApps(
   // Observe AppRegistryCache to get the notification when the app is ready.
   if (!app_registry_cache_observer_.IsObserving())
     app_registry_cache_observer_.Observe(&cache);
-}
 
-void ArcAppLaunchHandler::RestoreApp(const std::string& app_id) {
-  bool is_ready = false;
-  apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [&is_ready](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady)
-          is_ready = true;
-      });
+  // Add the app to `app_ids` if there is a launch list from the restore data
+  // for the app.
+  std::set<std::string> app_ids;
+  cache.ForEachApp([&app_ids, this](const apps::AppUpdate& update) {
+    if (update.Readiness() == apps::mojom::Readiness::kReady &&
+        app_ids_.find(update.AppId()) != app_ids_.end()) {
+      app_ids.insert(update.AppId());
+    }
+  });
 
-  if (is_ready)
-    LaunchApp(app_id);
-  else
-    app_ids_.insert(app_id);
+  for (const auto& app_id : app_ids)
+    PrepareAppLaunching(app_id);
 }
 
 void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (base::Contains(app_ids_, update.AppId()))
-    LaunchApp(update.AppId());
+    PrepareAppLaunching(update.AppId());
 }
 
 void ArcAppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
@@ -76,7 +82,30 @@ void ArcAppLaunchHandler::OnAppConnectionReady() {
   }
 }
 
-void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
+void ArcAppLaunchHandler::LoadRestoreData() {
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
+          ->AppRegistryCache();
+
+  for (const auto& it : handler_->restore_data_->app_id_to_launch_list()) {
+    if (cache.GetAppType(it.first) != apps::mojom::AppType::kArc)
+      continue;
+
+    app_ids_.insert(it.first);
+    for (const auto& data_it : it.second) {
+      if (data_it.second->activation_index.has_value()) {
+        windows_[data_it.second->activation_index.value()] =
+            std::make_pair(it.first, data_it.first);
+      } else {
+        no_stack_windows_.insert(std::make_pair(it.first, data_it.first));
+      }
+    }
+  }
+}
+
+void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
+  app_ids_.erase(app_id);
+
   const auto it = handler_->restore_data_->app_id_to_launch_list().find(app_id);
   if (it == handler_->restore_data_->app_id_to_launch_list().end())
     return;
@@ -91,13 +120,13 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
   auto* arc_handler =
       FullRestoreArcTaskHandler::GetForProfile(handler_->profile_);
 
-  for (const auto& data_id : it->second) {
+  for (const auto& data_it : it->second) {
     handler_->RecordRestoredAppLaunch(apps::AppTypeName::kArc);
 
-    DCHECK(data_id.second->event_flag.has_value());
+    DCHECK(data_it.second->event_flag.has_value());
 
     apps::mojom::WindowInfoPtr window_info =
-        HandleArcWindowInfo(data_id.second->GetAppWindowInfo());
+        HandleArcWindowInfo(data_it.second->GetAppWindowInfo());
 
     // Set an ARC session id to find the restore window id based on the new
     // created ARC task id in FullRestoreReadHandler.
@@ -106,7 +135,7 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
             ->GetArcSessionId();
     window_info->window_id = arc_session_id;
     ::full_restore::FullRestoreReadHandler::GetInstance()
-        ->SetArcSessionIdForWindowId(arc_session_id, data_id.first);
+        ->SetArcSessionIdForWindowId(arc_session_id, data_it.first);
 
     bool launch_ghost_window = false;
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
@@ -114,7 +143,7 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
         arc_handler->window_handler()) {
       handler_->RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
       arc_handler->window_handler()->LaunchArcGhostWindow(
-          app_id, arc_session_id, data_id.second.get());
+          app_id, arc_session_id, data_it.second.get());
       launch_ghost_window = true;
     } else {
       handler_->RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
@@ -124,13 +153,13 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
     if (launch_ghost_window)
       continue;
 
-    if (data_id.second->intent.has_value()) {
-      proxy->LaunchAppWithIntent(app_id, data_id.second->event_flag.value(),
-                                 std::move(data_id.second->intent.value()),
+    if (data_it.second->intent.has_value()) {
+      proxy->LaunchAppWithIntent(app_id, data_it.second->event_flag.value(),
+                                 std::move(data_it.second->intent.value()),
                                  apps::mojom::LaunchSource::kFromFullRestore,
                                  std::move(window_info));
     } else {
-      proxy->Launch(app_id, data_id.second->event_flag.value(),
+      proxy->Launch(app_id, data_it.second->event_flag.value(),
                     apps::mojom::LaunchSource::kFromFullRestore,
                     std::move(window_info));
     }

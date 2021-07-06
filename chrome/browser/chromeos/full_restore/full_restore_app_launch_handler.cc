@@ -181,11 +181,8 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
 void FullRestoreAppLaunchHandler::LaunchArcApp(
     const std::string& app_id,
     const ::full_restore::RestoreData::LaunchList& launch_list) {
-  if (FullRestoreArcTaskHandler::GetForProfile(profile_)) {
-    FullRestoreArcTaskHandler::GetForProfile(profile_)
-        ->arc_app_launch_handler()
-        ->RestoreApp(app_id);
-  }
+  // TODO(crbug.com/1146900): Remove this function, because the implementation
+  // has been moved to ArcAppLaunchHandler.
 }
 
 void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
