@@ -62,14 +62,13 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
   Length margin_end = Length::Fixed(
       theme.PopupInternalPaddingEnd(GetDocument().GetFrame(), parent_style));
   if (parent_style.IsLeftToRightDirection()) {
-    style->SetTextAlign(ETextAlign::kLeft);
     style->SetMarginLeft(margin_start);
     style->SetMarginRight(margin_end);
   } else {
-    style->SetTextAlign(ETextAlign::kRight);
     style->SetMarginLeft(margin_end);
     style->SetMarginRight(margin_start);
   }
+  style->SetTextAlign(parent_style.GetTextAlign(true));
   style->SetPaddingTop(
       Length::Fixed(theme.PopupInternalPaddingTop(parent_style)));
   style->SetPaddingBottom(

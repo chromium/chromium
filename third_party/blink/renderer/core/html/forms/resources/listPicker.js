@@ -313,6 +313,8 @@ ListPicker.prototype._layout = function() {
       this._config.baseStyle.fontFamily.map(s => '"' + s + '"').join(',');
   this._selectElement.style.fontStyle = this._config.baseStyle.fontStyle;
   this._selectElement.style.fontVariant = this._config.baseStyle.fontVariant;
+  if (this._config.baseStyle.textAlign)
+    this._selectElement.style.textAlign = this._config.baseStyle.textAlign;
   this._updateChildren(this._selectElement, this._config);
 };
 
@@ -453,6 +455,7 @@ ListPicker.prototype._applyItemStyle = function(element, styleConfig) {
   style.fontVariant = styleConfig.fontVariant ? styleConfig.fontVariant : '';
   style.textTransform =
       styleConfig.textTransform ? styleConfig.textTransform : '';
+  style.textAlign = styleConfig.textAlign ? styleConfig.textAlign : '';
 };
 
 ListPicker.prototype._configureItem = function(element, config, inGroup) {
