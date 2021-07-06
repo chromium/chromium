@@ -253,28 +253,6 @@ void UpdateGaiaProfileInfoIfNeeded(Profile* profile) {
     service->UpdatePrimaryAccount();
 }
 
-bool SetActiveProfileToGuestIfLocked() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-
-  const base::FilePath& active_profile_path =
-      profile_manager->GetLastUsedProfileDir();
-  const base::FilePath& guest_path = ProfileManager::GetGuestProfilePath();
-  if (active_profile_path == guest_path)
-    return true;
-
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(active_profile_path);
-
-  // |entry| may be false if a profile is specified on the command line.
-  if (entry && !entry->IsSigninRequired())
-    return false;
-
-  SetLastUsedProfile(guest_path.BaseName().MaybeAsASCII());
-
-  return true;
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {

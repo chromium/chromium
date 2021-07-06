@@ -106,12 +106,6 @@ bool IsProfileLocked(const base::FilePath& profile_path);
 // Starts an update for a new version of the Gaia profile picture and other
 // profile info.
 void UpdateGaiaProfileInfoIfNeeded(Profile* profile);
-
-// If the current active profile (given by prefs::kProfileLastUsed) is locked,
-// changes the active profile to the Guest profile. Returns true if the active
-// profile had been Guest before calling or became Guest as a result of this
-// method.
-bool SetActiveProfileToGuestIfLocked();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // If the profile given by |profile_path| is loaded in the ProfileManager, use
