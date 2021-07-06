@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 
 #include "base/containers/queue.h"
@@ -57,6 +58,14 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
     kError,
   };
 
+  struct SizeComparator {
+    constexpr bool operator()(const gfx::Size& lhs,
+                              const gfx::Size& rhs) const {
+      return std::forward_as_tuple(lhs.width(), lhs.height()) <
+             std::forward_as_tuple(rhs.width(), rhs.height());
+    }
+  };
+
   // Holds input frames coming from the client ready to be encoded.
   struct InputFrameRef;
   // Holds output buffers coming from the client ready to be filled.
@@ -89,11 +98,21 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   void DestroyTask();
   void FlushTask(FlushCallback flush_callback);
 
+  // Blits input surface to dest size surface and return processed surface, if
+  // |vpp_vaapi_wrapper| is empty, this will create it and corresponding
+  // surfaces.
+  scoped_refptr<VASurface> BlitSurfaceWithCreateVppIfNeeded(
+      const scoped_refptr<VideoFrame>& frame,
+      const scoped_refptr<VASurface>& input_surface,
+      const gfx::Size& encode_size,
+      size_t num_va_surfaces);
+
   // Checks if sufficient resources for a new encode job with |frame| as input
   // are available, and if so, claims them by associating them with
   // a EncodeJob, and returns the newly-created job, nullptr otherwise.
   std::unique_ptr<EncodeJob> CreateEncodeJob(scoped_refptr<VideoFrame> frame,
-                                             bool force_keyframe);
+                                             bool force_keyframe,
+                                             const gfx::Size& encode_size);
 
   // Continues encoding frames as long as input_queue_ is not empty, and we are
   // able to create new EncodeJobs.
@@ -114,7 +133,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Callback that returns a no longer used VASurfaceID to
   // |available_vpp_va_surface_ids_| for reuse.
-  void RecycleVPPVASurfaceID(VASurfaceID va_surface_id);
+  void RecycleVPPVASurfaceID(std::vector<VASurfaceID>* va_surfaces,
+                             VASurfaceID va_surface_id);
 
   // Returns a bitstream buffer to the client if both a previously executed job
   // awaits to be completed and we have bitstream buffers available to download
@@ -190,7 +210,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // VA surfaces available for encoding.
   std::vector<VASurfaceID> available_va_surface_ids_;
   // VA surfaces available for scaling.
-  std::vector<VASurfaceID> available_vpp_va_surface_ids_;
+  std::map<gfx::Size, std::vector<VASurfaceID>, SizeComparator>
+      available_vpp_va_surface_ids_;
 
   // VASurfaceIDs internal format.
   static constexpr unsigned int kVaSurfaceFormat = VA_RT_FORMAT_YUV420;
@@ -200,7 +221,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Callback via which finished VA surfaces are returned to us.
   base::RepeatingCallback<void(VASurfaceID)> va_surface_release_cb_;
-  base::RepeatingCallback<void(VASurfaceID)> vpp_va_surface_release_cb_;
+  std::map<gfx::Size, base::RepeatingCallback<void(VASurfaceID)>,
+      SizeComparator> vpp_va_surface_release_cb_;
 
   // Queue of input frames to be encoded.
   base::queue<std::unique_ptr<InputFrameRef>> input_queue_;
@@ -228,7 +250,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // VaapiWrapper for VPP (Video Pre Processing). This is used for scale down
   // for the picture send to vaapi encoder.
-  scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper_;
+  std::map<gfx::Size, scoped_refptr<VaapiWrapper>, SizeComparator>
+      vpp_vaapi_wrapper_;
 
   // The completion callback of the Flush() function.
   FlushCallback flush_callback_;

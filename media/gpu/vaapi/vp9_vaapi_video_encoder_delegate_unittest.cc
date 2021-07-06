@@ -330,6 +330,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
   VideoBitrateAllocation initial_bitrate_allocation;
   initial_bitrate_allocation.SetBitrate(
       0, 0, kDefaultVideoEncodeAcceleratorConfig.bitrate.target());
+  std::vector<gfx::Size> svc_layer_size;
   if (num_spatial_layers > 1u || num_temporal_layers > 1u) {
     DCHECK_GT(num_spatial_layers, 0u);
     for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
@@ -342,6 +343,8 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
           config.input_visible_size.width() / resolution_denom;
       spatial_layer.height =
           config.input_visible_size.height() / resolution_denom;
+      svc_layer_size.emplace_back(
+          gfx::Size(spatial_layer.width, spatial_layer.height));
       spatial_layer.bitrate_bps = config.bitrate.target() * bitrate_factor;
       spatial_layer.framerate = *config.initial_framerate;
       spatial_layer.num_of_temporal_layers = num_temporal_layers;
@@ -349,6 +352,8 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
       config.spatial_layers.push_back(spatial_layer);
     }
   }
+  if (svc_layer_size.empty())
+    svc_layer_size = {config.input_visible_size};
 
   EXPECT_CALL(
       *mock_rate_ctrl_,
@@ -364,6 +369,7 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
   EXPECT_TRUE(encoder_->Initialize(config, ave_config));
   EXPECT_EQ(num_temporal_layers > 1u || num_spatial_layers > 1u,
             !!encoder_->svc_layers_);
+  EXPECT_EQ(encoder_->GetSVCLayerResoltuions(), svc_layer_size);
 }
 
 void VP9VaapiVideoEncoderDelegateTest::

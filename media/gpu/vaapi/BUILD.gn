@@ -235,11 +235,13 @@ source_set("unit_test") {
     "//base/test:test_support",
     "//gpu:test_support",
     "//gpu/ipc/service",
+    "//media:test_support",
     "//media/gpu:common",
     "//mojo/core/embedder",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libvpx:libvp9rc",
+    "//ui/gfx:memory_buffer",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
   ]

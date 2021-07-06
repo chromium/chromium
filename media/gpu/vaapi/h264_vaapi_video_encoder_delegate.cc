@@ -202,6 +202,10 @@ size_t H264VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   return curr_params_.max_num_ref_frames;
 }
 
+std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResoltuions() {
+  return {visible_size_};
+}
+
 bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

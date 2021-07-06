@@ -201,6 +201,7 @@ MEDIA_EXPORT extern const base::Feature kForceHardwareAudioDecoders;
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 MEDIA_EXPORT extern const base::Feature kVp9kSVCHWDecoding;
+MEDIA_EXPORT extern const base::Feature kVp9kSVCHWEncoding;
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)

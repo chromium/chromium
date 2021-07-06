@@ -134,6 +134,10 @@ size_t VP8VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   return kNumVp8ReferenceBuffers;
 }
 
+std::vector<gfx::Size> VP8VaapiVideoEncoderDelegate::GetSVCLayerResoltuions() {
+  return {visible_size_};
+}
+
 bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

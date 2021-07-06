@@ -60,6 +60,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
   BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,
                                       size_t payload_size) override;
+  std::vector<gfx::Size> GetSVCLayerResoltuions() override;
 
  private:
   friend class VP9VaapiVideoEncoderDelegateTest;

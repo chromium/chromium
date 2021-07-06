@@ -27,6 +27,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -237,10 +238,7 @@ bool CreateSpatialLayersConfig(
       return false;
     }
   }
-  // TODO(crbug.com/1217919): Query spatial scalability support for the HW
-  // encoder instead of checking OS.
-  // Underlying encoder will check the spatial SVC encoding capability on CrOS.
-#if !defined(OS_CHROMEOS)
+
   if (codec_settings.codecType == webrtc::kVideoCodecVP9 &&
       codec_settings.VP9().numberOfSpatialLayers > 1 &&
       !RTCVideoEncoder::Vp9HwSupportForSpatialLayers()) {
@@ -248,7 +246,6 @@ bool CreateSpatialLayersConfig(
         << "VP9 SVC not yet supported by HW codecs, falling back to software.";
     return false;
   }
-#endif  // !defined(OS_CHROMEOS)
 
   // We fill SpatialLayer only in temporal layer or spatial layer encoding.
   switch (codec_settings.codecType) {
@@ -1586,6 +1583,13 @@ webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::GetEncoderInfo() const {
 
 // static
 bool RTCVideoEncoder::Vp9HwSupportForSpatialLayers() {
+  // TODO(crbug.com/1217919): Query spatial scalability support for the HW
+  // encoder instead of checking OS.
+  // Underlying encoder will check the spatial SVC encoding capability on CrOS.
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(media::kVp9kSVCHWEncoding))
+    return true;
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
   // Spatial layers are not supported by hardware encoders.
   return false;
 }

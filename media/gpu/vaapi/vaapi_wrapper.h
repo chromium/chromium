@@ -319,7 +319,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // |pixmap| after this method returns and the underlying buffer will be kept
   // alive by the VASurface. |protected_content| should only be true if the
   // format needs VA_RT_FORMAT_PROTECTED (currently only true for AMD).
-  scoped_refptr<VASurface> CreateVASurfaceForPixmap(
+  virtual scoped_refptr<VASurface> CreateVASurfaceForPixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
       bool protected_content = false);
 
@@ -464,11 +464,11 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // |va_surface_dest| applying pixel format conversion, rotation, cropping
   // and scaling if needed. |src_rect| and |dest_rect| are optional. They can
   // be used to specify the area used in the blit.
-  bool BlitSurface(const VASurface& va_surface_src,
-                   const VASurface& va_surface_dest,
-                   absl::optional<gfx::Rect> src_rect = absl::nullopt,
-                   absl::optional<gfx::Rect> dest_rect = absl::nullopt,
-                   VideoRotation rotation = VIDEO_ROTATION_0)
+  virtual bool BlitSurface(const VASurface& va_surface_src,
+                           const VASurface& va_surface_dest,
+                           absl::optional<gfx::Rect> src_rect = absl::nullopt,
+                           absl::optional<gfx::Rect> dest_rect = absl::nullopt,
+                           VideoRotation rotation = VIDEO_ROTATION_0)
       WARN_UNUSED_RESULT;
 
   // Initialize static data before sandbox is enabled.

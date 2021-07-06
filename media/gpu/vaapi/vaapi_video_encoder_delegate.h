@@ -205,6 +205,11 @@ class VaapiVideoEncoderDelegate {
   virtual BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,
                                               size_t payload_size);
 
+  // Gets the active spatial layer resoltuions for K-SVC encoding, VaapiVEA
+  // can get this info from the encoder delegate. Returns empty vector on
+  // failure.
+  virtual std::vector<gfx::Size> GetSVCLayerResoltuions() = 0;
+
   // Submits |buffer| of |type| to the driver.
   void SubmitBuffer(VABufferType type,
                     scoped_refptr<base::RefCountedBytes> buffer);

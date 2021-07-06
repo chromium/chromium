@@ -79,6 +79,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
+  std::vector<gfx::Size> GetSVCLayerResoltuions() override;
   bool PrepareEncodeJob(EncodeJob* encode_job) override;
 
  private:

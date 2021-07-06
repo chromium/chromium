@@ -363,6 +363,18 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
   return metadata;
 }
 
+std::vector<gfx::Size> VP9VaapiVideoEncoderDelegate::GetSVCLayerResoltuions() {
+  if (!ApplyPendingUpdateRates()) {
+    DLOG(ERROR) << __func__ << " ApplyPendingUpdateRates failed";
+    return {};
+  }
+  if (svc_layers_) {
+    return svc_layers_->active_spatial_layer_resolutions();
+  } else {
+    return {visible_size_};
+  }
+}
+
 void VP9VaapiVideoEncoderDelegate::BitrateControlUpdate(
     uint64_t encoded_chunk_size_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
