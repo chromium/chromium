@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 
+#include <string>
+
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/screens/os_install_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
@@ -15,13 +17,12 @@
 namespace chromeos {
 
 namespace {
-constexpr const char kShowConfirmStep[] =
-    "login.OsInstallScreen.showConfirmStep";
-constexpr const char kShowInProgressStep[] =
-    "login.OsInstallScreen.showInProgressStep";
-constexpr const char kShowErrorStep[] = "login.OsInstallScreen.showErrorStep";
-constexpr const char kShowSuccessStep[] =
-    "login.OsInstallScreen.showSuccessStep";
+constexpr const char kConfirmStep[] = "confirm";
+constexpr const char kInProgressStep[] = "in-progress";
+constexpr const char kFailedStep[] = "failed";
+constexpr const char kNoDestinationDeviceFoundStep[] =
+    "no-destination-device-found";
+constexpr const char kSuccessStep[] = "success";
 }  // namespace
 
 // static
@@ -61,6 +62,13 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
                IDS_OS_INSTALL_SCREEN_IN_PROGRESS_SUBTITLE);
 
   builder->Add("osInstallDialogErrorTitle", IDS_OS_INSTALL_SCREEN_ERROR_TITLE);
+  builder->Add("osInstallDialogErrorFailedSubtitle",
+               IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE);
+  builder->Add("osInstallDialogErrorNoDestSubtitle",
+               IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE);
+  builder->Add("osInstallDialogErrorNoDestContent",
+               IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT);
+
   builder->Add("osInstallDialogSuccessTitle",
                IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE);
   builder->Add("osInstallDialogSendFeedback",
@@ -85,12 +93,16 @@ void OsInstallScreenHandler::Unbind() {
   BaseScreenHandler::SetBaseScreen(nullptr);
 }
 
+void OsInstallScreenHandler::ShowStep(const char* step) {
+  CallJS("login.OsInstallScreen.showStep", std::string(step));
+}
+
 void OsInstallScreenHandler::ShowConfirmStep() {
-  CallJS(kShowConfirmStep);
+  ShowStep(kConfirmStep);
 }
 
 void OsInstallScreenHandler::StartInstall() {
-  CallJS(kShowInProgressStep);
+  ShowStep(kInProgressStep);
 
   OsInstallClient* const os_install_client = OsInstallClient::Get();
 
@@ -102,16 +114,16 @@ void OsInstallScreenHandler::StatusChanged(OsInstallClient::Status status,
                                            const std::string& service_log) {
   switch (status) {
     case OsInstallClient::Status::InProgress:
-      CallJS(kShowInProgressStep);
+      ShowStep(kInProgressStep);
       break;
-
     case OsInstallClient::Status::Succeeded:
-      CallJS(kShowSuccessStep);
+      ShowStep(kSuccessStep);
       break;
-
     case OsInstallClient::Status::Failed:
+      ShowStep(kFailedStep);
+      break;
     case OsInstallClient::Status::NoDestinationDeviceFound:
-      CallJS(kShowErrorStep);
+      ShowStep(kNoDestinationDeviceFoundStep);
       break;
   }
 }

@@ -1039,6 +1039,23 @@
   <message name="IDS_OS_INSTALL_SCREEN_ERROR_TITLE" desc="Title of the error page of the OS install screen">
     Installation failed
   </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE" desc="Subtitle of the error page of the OS install screen for general failure" translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Sorry, something went wrong and we were unable to install CloudReady.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Please visit [TBD LINK] for additional information or view logs for details.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE" desc="Subtitle of the error page of the OS install screen when no valid destination for installation was found" translateable="false">
+    The installer could not find a valid destination to install CloudReady. Please visit [TBD LINK] for additional information.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT" desc="Content of the error page of the OS install screen when no valid destination for installation was found" translateable="false">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Check that your device contains working internal storage such as a HDD, SDD, or eMMC.
+    <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check that your internal storage device is greater than 16GB.
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check the connection to the internal storage, if physically accessible.
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure you're using a certified model, and if so check all install notes for this model.
+    <ph name="END_LIST">&lt;/ul&gt;</ph>
+    <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>View logs for additional details.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
     Installation complete
   </message>

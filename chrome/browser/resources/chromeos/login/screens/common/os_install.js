@@ -10,8 +10,9 @@
 const UIState = {
   INTRO: 'intro',
   CONFIRM: 'confirm',
-  IN_PROGRESS: 'in_progress',
-  ERROR: 'error',
+  IN_PROGRESS: 'in-progress',
+  FAILED: 'failed',
+  NO_DESTINATION_DEVICE_FOUND: 'no-destination-device-found',
   SUCCESS: 'success',
 };
 
@@ -26,10 +27,7 @@ Polymer({
   ],
 
   EXTERNAL_API: [
-    'showConfirmStep',
-    'showInProgressStep',
-    'showErrorStep',
-    'showSuccessStep',
+    'showStep',
   ],
 
   UI_STEPS: UIState,
@@ -47,20 +45,12 @@ Polymer({
     });
   },
 
-  showConfirmStep() {
-    this.setUIStep(UIState.CONFIRM);
-  },
-
-  showInProgressStep() {
-    this.setUIStep(UIState.IN_PROGRESS);
-  },
-
-  showErrorStep() {
-    this.setUIStep(UIState.ERROR);
-  },
-
-  showSuccessStep() {
-    this.setUIStep(UIState.SUCCESS);
+  /**
+   * Set and show screen step.
+   * @param {string} step screen step.
+   */
+  showStep(step) {
+    this.setUIStep(step);
   },
 
   onIntroNextButtonPressed_() {
@@ -100,6 +90,26 @@ Polymer({
   getConfirmBodyHtml_(locale) {
     return this.i18nAdvanced(
         'osInstallDialogConfirmBody', {tags: ['p', 'ul', 'li']});
+  },
+
+  /**
+   * @param {string} locale
+   * @return {string}
+   * @private
+   */
+  getErrorNoDestContentHtml_(locale) {
+    return this.i18nAdvanced(
+        'osInstallDialogErrorNoDestContent', {tags: ['p', 'ul', 'li']});
+  },
+
+  /**
+   * @param {string} locale
+   * @return {string}
+   * @private
+   */
+  getErrorFailedSubtitleHtml_(locale) {
+    return this.i18nAdvanced(
+        'osInstallDialogErrorFailedSubtitle', {tags: ['p']});
   },
 });
 })();

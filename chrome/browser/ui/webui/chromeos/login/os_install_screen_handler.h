@@ -35,6 +35,7 @@ class OsInstallScreenView {
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
 
+  virtual void ShowStep(const char* step) = 0;
   virtual void ShowConfirmStep() = 0;
   virtual void StartInstall() = 0;
 };
@@ -60,6 +61,7 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   void Show() override;
   void Bind(OsInstallScreen* screen) override;
   void Unbind() override;
+  void ShowStep(const char* step) override;
   void ShowConfirmStep() override;
   void StartInstall() override;
 
