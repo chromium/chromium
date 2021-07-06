@@ -319,8 +319,9 @@ std::string InitialPreferences::GetVariationsSeedSignature() const {
 std::string InitialPreferences::ExtractPrefString(
     const std::string& name) const {
   std::string result;
-  std::unique_ptr<base::Value> pref_value;
-  if (initial_dictionary_->Remove(name, &pref_value)) {
+  absl::optional<base::Value> pref_value =
+      initial_dictionary_->ExtractKey(name);
+  if (pref_value.has_value()) {
     if (!pref_value->GetAsString(&result))
       NOTREACHED();
   }

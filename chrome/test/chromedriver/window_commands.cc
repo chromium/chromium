@@ -1893,7 +1893,7 @@ Status ExecuteReleaseActions(Session* session,
       if (!pressed->FindKey(it->key_event->key))
         continue;
       web_view->DispatchKeyEvents({*it->key_event}, false);
-      pressed->Remove(it->key_event->key, nullptr);
+      pressed->RemoveKey(it->key_event->key);
     } else if (it->mouse_event) {
       int pressed = it->input_state->FindKey("pressed")->GetInt();
       int button_mask = 1 << it->mouse_event->button;
