@@ -340,6 +340,13 @@ ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {
   return reinterpret_cast<char*>(pointer_as_uint + SystemPageSize());
 }
 
+template <bool thread_safe>
+ALWAYS_INLINE PartitionSuperPageExtentEntry<thread_safe>*
+PartitionSuperPageToExtent(char* ptr) {
+  return reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
+      PartitionSuperPageToMetadataArea(ptr));
+}
+
 // Size that should be reserved for 2 back-to-back quarantine bitmaps (if
 // present) inside a super page. Elements of a super page are
 // partition-page-aligned, hence the returned size is a multiple of partition

@@ -27,6 +27,8 @@ class WriteProtector : public AllocatedOnPCScanMetadataPartition {
   virtual void ProtectPages(uintptr_t begin, size_t length) = 0;
   virtual void UnprotectPages(uintptr_t begin, size_t length) = 0;
 
+  virtual bool IsEnabled() const = 0;
+
   virtual PCScan::ClearType SupportedClearType() const = 0;
 };
 
@@ -35,7 +37,12 @@ class NoWriteProtector final : public WriteProtector {
   void ProtectPages(uintptr_t, size_t) final {}
   void UnprotectPages(uintptr_t, size_t) final {}
   PCScan::ClearType SupportedClearType() const final;
+  inline bool IsEnabled() const override;
 };
+
+bool NoWriteProtector::IsEnabled() const {
+  return false;
+}
 
 #if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 class UserFaultFDWriteProtector final : public WriteProtector {
@@ -51,11 +58,18 @@ class UserFaultFDWriteProtector final : public WriteProtector {
 
   PCScan::ClearType SupportedClearType() const final;
 
+  inline bool IsEnabled() const override;
+
  private:
   bool IsSupported() const;
 
   const int uffd_ = 0;
 };
+
+bool UserFaultFDWriteProtector::IsEnabled() const {
+  return IsSupported();
+}
+
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 
 }  // namespace internal

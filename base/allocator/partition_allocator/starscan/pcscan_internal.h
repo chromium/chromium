@@ -93,6 +93,7 @@ class PCScanInternal final {
 
   void* GetCurrentThreadStackTop() const;
 
+  bool WriteProtectionEnabled() const;
   void ProtectPages(uintptr_t begin, size_t size);
   void UnprotectPages(uintptr_t begin, size_t size);
 
@@ -102,6 +103,7 @@ class PCScanInternal final {
 
  private:
   friend base::NoDestructor<PCScanInternal>;
+  friend class StarScanSnapshot;
 
   using StackTops = std::unordered_map<
       PlatformThreadId,

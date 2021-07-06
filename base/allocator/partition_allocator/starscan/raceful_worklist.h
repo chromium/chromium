@@ -60,6 +60,12 @@ class RacefulWorklist {
 
   void Push(const T& t) { data_.push_back(Node(t)); }
 
+  template <typename It>
+  void Push(It begin, It end) {
+    std::transform(begin, end, std::back_inserter(data_),
+                   [](const T& t) { return Node(t); });
+  }
+
   template <typename Function>
   void VisitNonConcurrently(Function) const;
 
