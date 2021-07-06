@@ -77,14 +77,9 @@ WGPUOrigin3D GPUOrigin2DToWGPUOrigin3D(const V8GPUOrigin2D* webgpu_origin) {
 }
 
 bool IsExternalImageWebGLCanvas(
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
     const V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas* external_image
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-    const ImageBitmapOrHTMLCanvasElementOrOffscreenCanvas& external_image
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
 ) {
   CanvasRenderingContextHost* canvas = nullptr;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
   switch (external_image->GetContentType()) {
     case V8UnionHTMLCanvasElementOrImageBitmapOrOffscreenCanvas::ContentType::
         kHTMLCanvasElement:
@@ -96,22 +91,10 @@ bool IsExternalImageWebGLCanvas(
       break;
     default:
       canvas = nullptr;
-  }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-  if (external_image.IsHTMLCanvasElement()) {
-    canvas = external_image.GetAsHTMLCanvasElement();
-  } else if (external_image.IsOffscreenCanvas()) {
-    canvas = external_image.GetAsOffscreenCanvas();
-  } else {
-    canvas = nullptr;
-  }
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
-
-  if (canvas && canvas->IsWebGL()) {
-    return true;
+      break;
   }
 
-  return false;
+  return canvas && canvas->IsWebGL();
 }
 
 bool IsValidExternalImageDestinationFormat(
