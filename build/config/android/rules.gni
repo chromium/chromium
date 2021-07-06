@@ -4142,8 +4142,14 @@ if (enable_java_templates) {
       _info_path = invoker.info_path
     }
     _output_path = "${target_out_dir}/${target_name}"
+
+    # Some targets only differ by _java with other targets so _java and _junit
+    # need to be replaced by non-empty strings to avoid duplicate targets. (e.g.
+    # androidx_window_window_java vs androidx_window_window_java_java).
     _target_name_without_java_or_junit =
-        string_replace(string_replace(target_name, "_java", ""), "_junit", "")
+        string_replace(string_replace(target_name, "_java", "_J"),
+                       "_junit",
+                       "_U")
 
     # This unpack target is a python action, not a valid java target. Since the
     # java targets below depend on it, its name must not match the java patterns

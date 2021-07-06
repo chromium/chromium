@@ -261,7 +261,7 @@ android_apk("weblayer_support_apk") {
     loadable_modules +=
         [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
     deps += [
-      "//third_party/arcore-android-sdk-client:com_google_ar_core__unpack_aar",
+      "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar",
       "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
     ]
   }
