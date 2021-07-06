@@ -269,6 +269,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kVrBrowsingFeedback,
     &kWebOtpCrossDeviceSimpleString,
     &content_creation::kWebNotesStylizeEnabled,
+    &kWebApkInstallCompleteNotification,
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
@@ -759,6 +760,9 @@ const base::Feature kVrBrowsingFeedback{"VrBrowsingFeedback",
 // a descriptive text.
 const base::Feature kWebOtpCrossDeviceSimpleString{
     "WebOtpCrossDeviceSimpleString", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kWebApkInstallCompleteNotification{
+    "WebApkInstallCompleteNotification", base::FEATURE_DISABLED_BY_DEFAULT};
 
 static jboolean JNI_ChromeFeatureList_IsEnabled(
     JNIEnv* env,
