@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import logging
 import os
 import tempfile
@@ -139,7 +140,7 @@ class _RunCtsTest(unittest.TestCase):
 
   def testFilterFile_CombinesExcludedMatches(self):
     with tempfile.NamedTemporaryFile(prefix='cts_run_test') as filter_file:
-      filter_file.write('suite.goodtest')
+      filter_file.write('suite.goodtest'.encode())
       filter_file.seek(0)
       mock_args = self._getArgsMock(
           test_filter_file=filter_file.name,
@@ -149,7 +150,7 @@ class _RunCtsTest(unittest.TestCase):
 
   def testFilterFile_CombinesAll(self):
     with tempfile.NamedTemporaryFile(prefix='cts_run_test') as filter_file:
-      filter_file.write('suite.goodtest')
+      filter_file.write('suite.goodtest'.encode())
       filter_file.seek(0)
       mock_args = self._getArgsMock(
           test_filter_file=filter_file.name,
