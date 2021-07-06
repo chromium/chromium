@@ -606,7 +606,7 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
 
 inline bool PaintFastBottomLayer(const Document* document,
                                  Node* node,
-                                 const PaintInfo& paint_info,
+                                 GraphicsContext& context,
                                  const BoxPainterBase::FillLayerInfo& info,
                                  const PhysicalRect& rect,
                                  const FloatRoundedRect& border_rect,
@@ -626,7 +626,6 @@ inline bool PaintFastBottomLayer(const Document* document,
 
   // Compute the destination rect for painting the color here because we may
   // need it for computing the image painting rect for optimization.
-  GraphicsContext& context = paint_info.context;
   FloatRoundedRect color_border =
       info.is_rounded_fill ? border_rect
                            : FloatRoundedRect(PixelSnappedIntRect(rect));
@@ -711,7 +710,7 @@ inline bool PaintFastBottomLayer(const Document* document,
   if (node && info.image && info.image->IsImageResource()) {
     PaintTimingDetector::NotifyBackgroundImagePaint(
         *node, *image, To<StyleFetchedImage>(*info.image),
-        paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
+        context.GetPaintController().CurrentPaintChunkProperties(),
         RoundedIntRect(image_border.Rect()));
 
     LocalDOMWindow* window = node->GetDocument().domWindow();
@@ -896,7 +895,6 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
                                     BackgroundImageGeometry& geometry,
                                     bool object_has_multiple_boxes,
                                     const PhysicalSize& flow_box_size) {
-  GraphicsContext& context = paint_info.context;
   if (rect.IsEmpty())
     return;
 
@@ -907,6 +905,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   if (!info.should_paint_image && !info.should_paint_color)
     return;
 
+  GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver clip_with_scrolling_state_saver(
       context, info.is_clipped_with_local_scrolling);
   auto scrolled_paint_rect =
@@ -949,8 +948,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       (bleed_avoidance == kBackgroundBleedShrinkBackground ||
        did_adjust_paint_rect);
   if (!disable_fast_path &&
-      PaintFastBottomLayer(document_, node_, paint_info, info, rect,
-                           border_rect, geometry, image.get(), composite_op)) {
+      PaintFastBottomLayer(document_, node_, context, info, rect, border_rect,
+                           geometry, image.get(), composite_op)) {
     return;
   }
 
