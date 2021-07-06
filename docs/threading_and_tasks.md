@@ -610,7 +610,7 @@ class A {
 ```
 
 Note: `WeakPtr` is not thread-safe: `GetWeakPtr()`, `~WeakPtrFactory()`, and
-`Compute()` (bound to a `WeakPtr`) must all run on the same sequence.
+`Store()` (bound to a `WeakPtr`) must all run on the same sequence.
 
 ### Using base::CancelableTaskTracker
 
