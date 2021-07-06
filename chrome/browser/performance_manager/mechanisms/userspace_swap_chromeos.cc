@@ -53,6 +53,19 @@ constexpr base::TimeDelta kSwapDeviceAvailableSpaceCheckInterval =
 base::TimeTicks g_last_swap_device_free_space_check;
 uint64_t g_swap_device_free_swap_bytes;
 
+// We must bind our mojo remote on the UI thread, this callback does that.
+void BindUserspaceSwapReceiverOnUIThread(
+    RenderProcessHostProxy proxy,
+    mojo::PendingReceiver<::userspace_swap::mojom::UserspaceSwap> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::RenderProcessHost* render_process_host = proxy.Get();
+  if (!render_process_host) {
+    return;
+  }
+
+  render_process_host->BindReceiver(std::move(receiver));
+}
+
 // UserspaceSwapMechanismData contains process node specific details and
 // handles.
 class UserspaceSwapMechanismData
@@ -92,6 +105,18 @@ void InitializeProcessNodeOnGraph(int render_process_host_id,
 
   auto* data = UserspaceSwapMechanismData::GetOrCreate(process_node);
 
+  // If all other setup has completed successfully, we can tell the renderer to
+  // construct an implementation of userspace_swap::mojom::UserspaceSwap.
+  // The RenderProcessHostProxy is a WeakPtr that should only be accessed on the
+  // UI thread.
+  mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote;
+  const RenderProcessHostProxy& proxy =
+      process_node->GetRenderProcessHostProxy();
+
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&BindUserspaceSwapReceiverOnUIThread, proxy,
+                                remote.InitWithNewPipeAndPassReceiver()));
+
   // Wrap up the received userfaultfd into a UserfaultFD instance.
   std::unique_ptr<UserfaultFD> userfaultfd =
       UserfaultFD::WrapFD(std::move(uffd));
@@ -115,8 +140,9 @@ void InitializeProcessNodeOnGraph(int render_process_host_id,
     return;
   }
 
-  data->swap_data = RendererSwapData::Create(
-      render_process_host_id, std::move(userfaultfd), std::move(swap_file));
+  data->swap_data =
+      RendererSwapData::Create(render_process_host_id, std::move(userfaultfd),
+                               std::move(swap_file), std::move(remote));
 }
 
 }  // namespace

@@ -4851,7 +4851,6 @@ test("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../../chromeos/memory/userspace_swap/userspace_swap.cc",
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",
       "../browser/nearby_sharing/nearby_share_delegate_impl_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
@@ -5907,7 +5906,6 @@ test("unit_tests") {
         "//chromeos/login/auth:test_support",
         "//chromeos/login/login_state:test_support",
         "//chromeos/login/session",
-        "//chromeos/memory/userspace_swap",
         "//chromeos/services/assistant/public/cpp",
         "//chromeos/services/assistant/public/shared",
         "//chromeos/services/device_sync/public/cpp:test_support",
@@ -6228,6 +6226,13 @@ test("unit_tests") {
       "//chromeos/services/nearby/public/cpp:test_support",
       "//components/arc:arc_test_support",
       "//components/full_restore:unit_tests",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/memory/userspace_swap",
+      "//chromeos/memory/userspace_swap:mojom",
     ]
   }
 

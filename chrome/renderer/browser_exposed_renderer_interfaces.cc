@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/allocator/buildflags.h"
+#include "chrome/renderer/performance_manager/mechanisms/userspace_swap_impl_chromeos.h"
 #if BUILDFLAG(USE_TCMALLOC)
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom.h"
 #include "chrome/renderer/performance_manager/mechanisms/tcmalloc_tunables_impl.h"
@@ -64,6 +65,14 @@ void ExposeChromeRendererInterfacesToBrowser(
                base::SequencedTaskRunnerHandle::Get());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (performance_manager::mechanism::UserspaceSwapImpl::
+          PlatformSupportsUserspaceSwap()) {
+    binders->Add(
+        base::BindRepeating(
+            &performance_manager::mechanism::UserspaceSwapImpl::Create),
+        base::SequencedTaskRunnerHandle::Get());
+  }
+
 #if BUILDFLAG(USE_TCMALLOC)
   binders->Add(
       base::BindRepeating(

@@ -17,6 +17,8 @@
 #include "chromeos/memory/userspace_swap/region.h"
 #include "chromeos/memory/userspace_swap/swap_storage.h"
 #include "chromeos/memory/userspace_swap/userfaultfd.h"
+#include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 
 namespace chromeos {
@@ -79,10 +81,12 @@ class RendererSwapDataImpl : public RendererSwapData {
   RendererSwapDataImpl(
       int render_process_host_id,
       std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD>&& uffd,
-      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile>&& swap_file)
+      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile>&& swap_file,
+      mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap>&& remote)
       : render_process_host_id_(render_process_host_id),
         uffd_(std::move(uffd)),
-        swap_file_(std::move(swap_file)) {}
+        swap_file_(std::move(swap_file)),
+        remote_(std::move(remote)) {}
 
   ~RendererSwapDataImpl() override;
 
@@ -108,6 +112,10 @@ class RendererSwapDataImpl : public RendererSwapData {
 
   std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd_;
   std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file_;
+
+  // The remote is our link to the renderer to perform the operations it needs
+  // to allow for swapping a region.
+  mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote_;
 };
 
 int RendererSwapDataImpl::render_process_host_id() const {
@@ -280,9 +288,11 @@ RendererSwapData::~RendererSwapData() {}
 CHROMEOS_EXPORT std::unique_ptr<RendererSwapData> RendererSwapData::Create(
     int render_process_host_id,
     std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
-    std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file) {
+    std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file,
+    mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote) {
   return std::make_unique<RendererSwapDataImpl>(
-      render_process_host_id, std::move(uffd), std::move(swap_file));
+      render_process_host_id, std::move(uffd), std::move(swap_file),
+      std::move(remote));
 }
 
 CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled() {

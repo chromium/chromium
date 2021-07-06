@@ -13,3 +13,35 @@ interface UserspaceSwapInitialization {
   [Sync]
   TransferUserfaultFD(uint64 error, handle<platform> uffd_handle) => ();
 };
+
+// The UserspaceSwap interface are the messages the browser will send to a
+// renderer to prepare for and complete userspace swap.
+interface UserspaceSwap {
+  // The MovePTEsLeavingMapping message tells the renderer to move the
+  // region located at |address| having |length| to |dest|. The renderer
+  // will move the page table entries leaving the source |address| mapped.
+  //
+  // CAUTION: There is an inherent race condition that exists when using
+  // this message. It's entirely possible that a mapping may be unmapped
+  // and an unrelated one remapped at this same address. This situation
+  // which can be detected (by use of userfaultfd) cannot be avoided. The
+  // expectation is that this message will only be used on mappings which
+  // should never be unmapped. As a result detected unmaps or failures
+  // to perform the remap will result in the receiver of this message
+  // being killed.
+  MovePTEsLeavingMapping(uint64 address, uint64 length, uint64 dest);
+
+  // The MapArea message tells the renderer to mmap an area as PROT_NONE.
+  // The primary use of this is to cause memory to be dropped without being
+  // recounted. It's possible to use MADV_DONTNEED to accomplish the same;
+  // however, that's less than ideal as it not reset the VMA itself. When
+  // using MMAP_FIXED the result is unmapping what is at that location
+  // first while holding the mm semaphore in write mode. This mapping will
+  // be created (MAP_ANONYMOUS | MAP_FIXED) with PROT_NONE protections.
+  //
+  // Ultimately we need to discard the remapped memory, unregister with
+  // userfaultfd, and mark a region as PROT_NONE so it can be merged
+  // with it's neighboring previously split VMAs. A single mmap(2)
+  // can accomplish all of these things.
+  MapArea(uint64 address, uint64 length);
+};

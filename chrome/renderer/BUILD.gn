@@ -450,9 +450,15 @@ static_library("renderer") {
     sources += [
       "performance_manager/mechanisms/tcmalloc_tunables_impl.cc",
       "performance_manager/mechanisms/tcmalloc_tunables_impl.h",
+      "performance_manager/mechanisms/userspace_swap_impl_chromeos.cc",
+      "performance_manager/mechanisms/userspace_swap_impl_chromeos.h",
     ]
 
-    deps += [ "//chrome/common/performance_manager/mojom" ]
+    deps += [
+      "//chrome/common/performance_manager/mojom",
+      "//chromeos/memory/userspace_swap",
+      "//chromeos/memory/userspace_swap:mojom",
+    ]
   }
 }
 

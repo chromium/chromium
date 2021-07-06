@@ -13,11 +13,18 @@
 #include "base/time/time.h"
 #include "chromeos/chromeos_export.h"
 #include "chromeos/memory/userspace_swap/region.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 #ifndef MREMAP_DONTUNMAP
 #define MREMAP_DONTUNMAP 4
 #endif
+
+namespace userspace_swap {
+namespace mojom {
+class UserspaceSwap;
+}  // namespace mojom
+}  // namespace userspace_swap
 
 // This file is for containing the browser and renderer common userspace swap
 // components such as helper functions and structures.
@@ -145,7 +152,8 @@ class CHROMEOS_EXPORT RendererSwapData {
   static std::unique_ptr<RendererSwapData> Create(
       int render_process_host_id,
       std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
-      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file);
+      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file,
+      mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote);
 
   // Returns the Render Process Host ID associated with this RendererSwapData.
   virtual int render_process_host_id() const = 0;
