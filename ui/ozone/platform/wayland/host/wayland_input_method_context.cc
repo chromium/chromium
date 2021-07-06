@@ -112,6 +112,7 @@ WaylandInputMethodContext::WaylandInputMethodContext(
       ime_delegate_(ime_delegate),
       is_simple_(is_simple),
       text_input_(nullptr) {
+  connection_->wayland_window_manager()->AddObserver(this);
   Init();
 }
 
@@ -120,6 +121,7 @@ WaylandInputMethodContext::~WaylandInputMethodContext() {
     text_input_->Deactivate();
     text_input_->HideInputPanel();
   }
+  connection_->wayland_window_manager()->RemoveObserver(this);
 }
 
 void WaylandInputMethodContext::Init(bool initialize_for_testing) {
@@ -178,20 +180,13 @@ void WaylandInputMethodContext::Reset() {
 }
 
 void WaylandInputMethodContext::Focus() {
-  WaylandWindow* window =
-      connection_->wayland_window_manager()->GetCurrentKeyboardFocusedWindow();
-  if (!text_input_ || !window)
-    return;
-
-  text_input_->Activate(window);
-  text_input_->ShowInputPanel();
+  focused_ = true;
+  MaybeUpdateActivated();
 }
 
 void WaylandInputMethodContext::Blur() {
-  if (text_input_) {
-    text_input_->Deactivate();
-    text_input_->HideInputPanel();
-  }
+  focused_ = false;
+  MaybeUpdateActivated();
 }
 
 void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
@@ -413,6 +408,33 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
 #else
   NOTIMPLEMENTED();
 #endif
+}
+
+void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {
+  MaybeUpdateActivated();
+}
+
+void WaylandInputMethodContext::MaybeUpdateActivated() {
+  if (!text_input_)
+    return;
+
+  WaylandWindow* window =
+      connection_->wayland_window_manager()->GetCurrentKeyboardFocusedWindow();
+  // Activate Wayland IME only if 1) InputMethod in Chrome has some
+  // TextInputClient connected, and 2) the actual keyboard focus of Wayland
+  // is given to Chrome, which is notified via wl_keyboard::enter.
+  bool activated = focused_ && window;
+  if (activated_ == activated)
+    return;
+
+  activated_ = activated;
+  if (activated) {
+    text_input_->Activate(window);
+    text_input_->ShowInputPanel();
+  } else {
+    text_input_->Deactivate();
+    text_input_->HideInputPanel();
+  }
 }
 
 }  // namespace ui

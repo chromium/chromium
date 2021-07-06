@@ -30,8 +30,12 @@ namespace ui {
 
 class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
  public:
-  TestInputMethodContextDelegate() {}
-  ~TestInputMethodContextDelegate() override {}
+  TestInputMethodContextDelegate() = default;
+  TestInputMethodContextDelegate(const TestInputMethodContextDelegate&) =
+      delete;
+  TestInputMethodContextDelegate& operator=(
+      const TestInputMethodContextDelegate&) = delete;
+  ~TestInputMethodContextDelegate() override = default;
 
   void OnCommit(const std::u16string& text) override {
     was_on_commit_called_ = true;
@@ -59,13 +63,14 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   bool was_on_commit_called_ = false;
   bool was_on_preedit_changed_called_ = false;
   absl::optional<gfx::Range> on_delete_surrounding_text_range_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodContextDelegate);
 };
 
 class WaylandInputMethodContextTest : public WaylandTest {
  public:
-  WaylandInputMethodContextTest() {}
+  WaylandInputMethodContextTest() = default;
+  WaylandInputMethodContextTest(const WaylandInputMethodContextTest&) = delete;
+  WaylandInputMethodContextTest& operator=(
+      const WaylandInputMethodContextTest&) = delete;
 
   void SetUp() override {
     WaylandTest::SetUp();
@@ -84,9 +89,10 @@ class WaylandInputMethodContextTest : public WaylandTest {
     connection_->ScheduleFlush();
 
     Sync();
+    // Unset Keyboard focus.
+    connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
 
     zwp_text_input_ = server_.text_input_manager_v1()->text_input();
-    window_->set_keyboard_focus(true);
 
     ASSERT_TRUE(connection_->text_input_manager_v1());
     ASSERT_TRUE(zwp_text_input_);
@@ -97,25 +103,73 @@ class WaylandInputMethodContextTest : public WaylandTest {
       input_method_context_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
   wl::MockZwpTextInput* zwp_text_input_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandInputMethodContextTest);
 };
 
-TEST_P(WaylandInputMethodContextTest, Focus) {
+TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
+  // Activate is called only when both InputMethod's TextInputClient focus and
+  // Wayland's keyboard focus is met.
+
+  // Scenario 1: InputMethod focus is set, then Keyboard focus is set.
+  // Unset them in the reversed order.
+  EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource())).Times(0);
+  EXPECT_CALL(*zwp_text_input_, ShowInputPanel()).Times(0);
+  input_method_context_->Focus();
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource()));
+  EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
+  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(
+      window_.get());
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  EXPECT_CALL(*zwp_text_input_, Deactivate());
+  EXPECT_CALL(*zwp_text_input_, HideInputPanel());
+  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  EXPECT_CALL(*zwp_text_input_, Deactivate()).Times(0);
+  EXPECT_CALL(*zwp_text_input_, HideInputPanel()).Times(0);
+  input_method_context_->Blur();
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  // Scenario 2: Keyboard focus is set, then InputMethod focus is set.
+  // Unset them in the reversed order.
+  EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource())).Times(0);
+  EXPECT_CALL(*zwp_text_input_, ShowInputPanel()).Times(0);
+  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(
+      window_.get());
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
   EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource()));
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
   input_method_context_->Focus();
   connection_->ScheduleFlush();
   Sync();
-}
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
 
-TEST_P(WaylandInputMethodContextTest, Blur) {
   EXPECT_CALL(*zwp_text_input_, Deactivate());
   EXPECT_CALL(*zwp_text_input_, HideInputPanel());
   input_method_context_->Blur();
   connection_->ScheduleFlush();
   Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  EXPECT_CALL(*zwp_text_input_, Deactivate()).Times(0);
+  EXPECT_CALL(*zwp_text_input_, HideInputPanel()).Times(0);
+  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
 }
 
 TEST_P(WaylandInputMethodContextTest, Reset) {

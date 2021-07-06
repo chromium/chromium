@@ -109,6 +109,8 @@ void WaylandWindowManager::SetKeyboardFocusedWindow(WaylandWindow* window) {
     old_focused_window->set_keyboard_focus(false);
   if (window)
     window->set_keyboard_focus(true);
+  for (auto& observer : observers_)
+    observer.OnKeyboardFocusedWindowChanged();
 }
 
 WaylandWindow* WaylandWindowManager::FindParentForNewWindow(
@@ -168,6 +170,11 @@ void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
 
   for (WaylandWindowObserver& observer : observers_)
     observer.OnWindowRemoved(window);
+
+  if (window->has_keyboard_focus()) {
+    for (auto& observer : observers_)
+      observer.OnKeyboardFocusedWindowChanged();
+  }
 }
 
 void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
