@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler_factory.h"
 
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,7 @@ FullRestoreArcTaskHandlerFactory::FullRestoreArcTaskHandlerFactory()
           "FullRestoreArcTaskHandler",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ArcAppListPrefsFactory::GetInstance());
+  DependsOn(apps::AppServiceProxyFactory::GetInstance());
 }
 
 KeyedService* FullRestoreArcTaskHandlerFactory::BuildServiceInstanceFor(

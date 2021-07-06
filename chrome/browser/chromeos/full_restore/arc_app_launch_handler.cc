@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
@@ -24,30 +25,33 @@
 namespace chromeos {
 namespace full_restore {
 
-ArcAppLaunchHandler::ArcAppLaunchHandler(FullRestoreAppLaunchHandler* handler)
-    : handler_(handler),
-      cache_(apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
-                 ->AppRegistryCache()) {
+ArcAppLaunchHandler::ArcAppLaunchHandler() = default;
+ArcAppLaunchHandler::~ArcAppLaunchHandler() = default;
+
+void ArcAppLaunchHandler::RestoreArcApps(
+    FullRestoreAppLaunchHandler* app_launch_handler) {
+  handler_ = app_launch_handler;
+
+  DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      handler_->profile_));
+
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
+          ->AppRegistryCache();
+
   // Observe AppRegistryCache to get the notification when the app is ready.
-  Observe(&cache_);
-
-  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
-  if (client)
-    client->AddObserver(this);
-}
-
-ArcAppLaunchHandler::~ArcAppLaunchHandler() {
-  chromeos::ResourcedClient* client = chromeos::ResourcedClient::Get();
-  if (client)
-    client->RemoveObserver(this);
+  if (!app_registry_cache_observer_.IsObserving())
+    app_registry_cache_observer_.Observe(&cache);
 }
 
 void ArcAppLaunchHandler::RestoreApp(const std::string& app_id) {
   bool is_ready = false;
-  cache_.ForOneApp(app_id, [&is_ready](const apps::AppUpdate& update) {
-    if (update.Readiness() == apps::mojom::Readiness::kReady)
-      is_ready = true;
-  });
+  apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&is_ready](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kReady)
+          is_ready = true;
+      });
 
   if (is_ready)
     LaunchApp(app_id);
@@ -63,6 +67,13 @@ void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
 void ArcAppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   apps::AppRegistryCache::Observer::Observe(nullptr);
+}
+
+void ArcAppLaunchHandler::OnAppConnectionReady() {
+  if (chromeos::ResourcedClient::Get() &&
+      !resourced_client_observer_.IsObserving()) {
+    resourced_client_observer_.Observe(chromeos::ResourcedClient::Get());
+  }
 }
 
 void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {

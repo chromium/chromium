@@ -146,8 +146,11 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
     should_launch_browser_ = false;
   }
 
-  if (arc::IsArcAllowedForProfile(profile_))
-    arc_app_launch_handler_ = std::make_unique<ArcAppLaunchHandler>(this);
+  if (FullRestoreArcTaskHandler::GetForProfile(profile_)) {
+    FullRestoreArcTaskHandler::GetForProfile(profile_)
+        ->arc_app_launch_handler()
+        ->RestoreArcApps(this);
+  }
 
   LaunchApps();
 }
@@ -178,8 +181,11 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
 void FullRestoreAppLaunchHandler::LaunchArcApp(
     const std::string& app_id,
     const ::full_restore::RestoreData::LaunchList& launch_list) {
-  if (arc_app_launch_handler_)
-    arc_app_launch_handler_->RestoreApp(app_id);
+  if (FullRestoreArcTaskHandler::GetForProfile(profile_)) {
+    FullRestoreArcTaskHandler::GetForProfile(profile_)
+        ->arc_app_launch_handler()
+        ->RestoreApp(app_id);
+  }
 }
 
 void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(

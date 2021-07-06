@@ -22,8 +22,6 @@ class Profile;
 namespace chromeos {
 namespace full_restore {
 
-class ArcAppLaunchHandler;
-
 // The FullRestoreAppLaunchHandler class calls FullRestoreReadHandler to read
 // the full restore data from the full restore data file on a background task
 // runner, and restore apps and web pages based on the user preference or the
@@ -81,8 +79,6 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
       const ::full_restore::RestoreData::LaunchList& launch_list) override;
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
   void RecordArcGhostWindowLaunch(bool is_arc_ghost_window) override;
-
-  std::unique_ptr<ArcAppLaunchHandler> arc_app_launch_handler_;
 
   bool should_restore_ = false;
 

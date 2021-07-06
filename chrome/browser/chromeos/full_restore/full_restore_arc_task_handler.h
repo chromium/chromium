@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -17,6 +16,9 @@ class Profile;
 
 namespace chromeos {
 namespace full_restore {
+
+class ArcAppLaunchHandler;
+class ArcWindowHandler;
 
 // The FullRestoreArcTaskHandler class observes ArcAppListPrefs, and calls
 // FullRestoreSaveHandler to update the ARC app launch info when a task is
@@ -40,6 +42,10 @@ class FullRestoreArcTaskHandler : public KeyedService,
   ArcWindowHandler* window_handler() { return window_handler_.get(); }
 #endif
 
+  ArcAppLaunchHandler* arc_app_launch_handler() {
+    return arc_app_launch_handler_.get();
+  }
+
   // ArcAppListPrefs::Observer.
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
@@ -61,6 +67,8 @@ class FullRestoreArcTaskHandler : public KeyedService,
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ArcWindowHandler> window_handler_;
 #endif
+
+  std::unique_ptr<ArcAppLaunchHandler> arc_app_launch_handler_;
 };
 
 }  // namespace full_restore

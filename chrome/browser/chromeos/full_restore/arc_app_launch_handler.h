@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
@@ -30,10 +31,14 @@ class FullRestoreAppLaunchHandler;
 class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
                             public chromeos::ResourcedClient::Observer {
  public:
-  explicit ArcAppLaunchHandler(FullRestoreAppLaunchHandler* handler);
+  ArcAppLaunchHandler();
   ArcAppLaunchHandler(const ArcAppLaunchHandler&) = delete;
   ArcAppLaunchHandler& operator=(const ArcAppLaunchHandler&) = delete;
   ~ArcAppLaunchHandler() override;
+
+  // Invoked when the restoration process can start. Reads the restore data, and
+  // add the ARC apps windows to `windows_` and `no_stack_windows_`.
+  void RestoreArcApps(FullRestoreAppLaunchHandler* app_launch_handler);
 
   // Checks whether the app of `app_id` is ready. If yes, launch the app.
   // Otherwise, add `app_id` to |app_ids|.
@@ -43,6 +48,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
+
+  void OnAppConnectionReady();
 
  protected:
   // Override chromeos::ResourcedClient::Observer
@@ -58,9 +65,15 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // ready, and can be restored, launch the app, and remove it from `app_ids`.
   std::set<std::string> app_ids_;
 
-  apps::AppRegistryCache& cache_;
-
   chromeos::ResourcedClient::PressureLevel pressure_level_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
+  base::ScopedObservation<chromeos::ResourcedClient,
+                          chromeos::ResourcedClient::Observer>
+      resourced_client_observer_{this};
 
   base::WeakPtrFactory<ArcAppLaunchHandler> weak_ptr_factory_{this};
 };
