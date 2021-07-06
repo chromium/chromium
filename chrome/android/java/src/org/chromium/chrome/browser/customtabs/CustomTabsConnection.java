@@ -360,7 +360,7 @@ public class CustomTabsConnection {
         String originalPackage = getClientPackageNameForSession(session);
         String selfPackage = ContextUtils.getApplicationContext().getPackageName();
         if (TextUtils.isEmpty(originalPackage) || !selfPackage.equals(originalPackage)) return;
-        mClientManager.overridePackageNameForSession(session, packageName);
+        mClientManager.overridePackageNameForSessionForTesting(session, packageName); // IN-TEST
     }
 
     /** Warmup activities that should only happen once. */
