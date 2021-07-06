@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -679,7 +679,7 @@ void VerdictCacheManager::CleanUpExpiredRealTimeUrlCheckVerdicts() {
 void VerdictCacheManager::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindRepeating(
                      &VerdictCacheManager::RemoveContentSettingsOnURLsDeleted,
                      GetWeakPtr(), deletion_info.IsAllHistory(),

@@ -9,7 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/buildflags.h"
@@ -643,7 +643,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, request_callback.Get(),
                             response_callback.Get(),
-                            base::ThreadTaskRunnerHandle::Get());
+                            base::SequencedTaskRunnerHandle::Get());
 
   // |request_callback| should not be called.
   EXPECT_CALL(request_callback, Run(_, _)).Times(0);
@@ -679,7 +679,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
             // Check token is attached.
             EXPECT_EQ("access_token_string", token);
           }),
-      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
@@ -716,7 +716,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
             // indicates that token fetches are not configured in the client.
             EXPECT_EQ("", token);
           }),
-      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
@@ -740,7 +740,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, request_callback.Get(),
                             response_callback.Get(),
-                            base::ThreadTaskRunnerHandle::Get());
+                            base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(request_callback, Run(_, _)).Times(1);
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
@@ -764,7 +764,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, request_callback.Get(),
                             response_callback.Get(),
-                            base::ThreadTaskRunnerHandle::Get());
+                            base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ false,
                                      /* is_cached_response */ false, _));
@@ -811,7 +811,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
             EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
             EXPECT_EQ(kTestReferrerUrl, request->referrer_chain().Get(1).url());
           }),
-      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
 
   task_environment_.RunUntilIdle();
 }
@@ -843,7 +843,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
             // Check referrer chain is attached.
             EXPECT_EQ(0, request->referrer_chain().size());
           }),
-      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
@@ -903,7 +903,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
                          .Get(1)
                          .is_subframe_referrer_url_removed());
       }),
-      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
@@ -961,7 +961,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         EXPECT_FALSE(
             request->referrer_chain().Get(1).is_subframe_url_removed());
       }),
-      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
@@ -1003,7 +1003,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
             EXPECT_EQ(1, request->referrer_chain().size());
             EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
           }),
-      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
+      response_callback.Get(), base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
@@ -1019,7 +1019,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, request_callback.Get(),
                             response_callback.Get(),
-                            base::ThreadTaskRunnerHandle::Get());
+                            base::SequencedTaskRunnerHandle::Get());
 
   EXPECT_CALL(request_callback, Run(_, _)).Times(1);
   EXPECT_CALL(response_callback, Run(_, _, _)).Times(0);

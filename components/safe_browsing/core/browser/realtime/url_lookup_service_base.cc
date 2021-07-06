@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -204,7 +204,7 @@ size_t RealTimeUrlLookupServiceBase::GetBackoffDurationInSeconds() const {
 }
 
 void RealTimeUrlLookupServiceBase::HandleLookupError() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   consecutive_failures_++;
 
   // Any successful lookup clears both |consecutive_failures_| as well as
@@ -238,7 +238,7 @@ void RealTimeUrlLookupServiceBase::HandleLookupError() {
 }
 
 void RealTimeUrlLookupServiceBase::HandleLookupSuccess() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResetFailures();
 
   // |did_successful_lookup_since_last_backoff_| is set to true only when we
@@ -247,7 +247,7 @@ void RealTimeUrlLookupServiceBase::HandleLookupSuccess() {
 }
 
 bool RealTimeUrlLookupServiceBase::IsInBackoffMode() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool in_backoff = backoff_timer_.IsRunning();
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.Backoff.State",
                                     GetMetricSuffix(), in_backoff);
@@ -255,14 +255,14 @@ bool RealTimeUrlLookupServiceBase::IsInBackoffMode() const {
 }
 
 void RealTimeUrlLookupServiceBase::ResetFailures() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   consecutive_failures_ = 0;
   backoff_timer_.Stop();
 }
 
 std::unique_ptr<RTLookupResponse>
 RealTimeUrlLookupServiceBase::GetCachedRealTimeUrlVerdict(const GURL& url) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<RTLookupResponse::ThreatInfo> cached_threat_info =
       std::make_unique<RTLookupResponse::ThreatInfo>();
 
@@ -297,7 +297,7 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
     const GURL& url,
     RTLookupResponse response) {
   if (response.threat_info_size() > 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&VerdictCacheManager::CacheRealTimeUrlVerdict,
                                   base::Unretained(cache_manager_), url,
                                   response, base::Time::Now()));
@@ -309,7 +309,7 @@ void RealTimeUrlLookupServiceBase::StartLookup(
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
   // Check cache.
@@ -341,7 +341,7 @@ void RealTimeUrlLookupServiceBase::SendRequest(
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<RTLookupRequest> request = FillRequestProto(url);
   RecordRequestPopulationWithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
@@ -407,7 +407,7 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
     base::TimeTicks request_start_time,
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     std::unique_ptr<std::string> response_body) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = pending_requests_.find(url_loader);
   DCHECK(it != pending_requests_.end()) << "Request not found";

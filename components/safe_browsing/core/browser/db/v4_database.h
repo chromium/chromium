@@ -14,9 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_checker.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_store.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
@@ -108,7 +107,7 @@ class V4Database {
   // the database creation is complete, it runs the NewDatabaseReadyCallback on
   // the same thread as it was called.
   // NOTE: Within |new_db_callback| the client should invoke
-  // V4Database::InitializeOnIOThread() on the IO thread.
+  // V4Database::InitializeOnIOSequence() on the IO thread.
   static void Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::FilePath& base_path,
@@ -116,7 +115,7 @@ class V4Database {
       NewDatabaseReadyCallback new_db_callback);
 
   // Initialize state that lives on the IO thread.
-  void InitializeOnIOThread();
+  void InitializeOnIOSequence();
 
   // Destroys the provided v4_database on its task_runner since this may be a
   // long operation.
@@ -209,7 +208,7 @@ class V4Database {
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::FilePath& base_path,
       const ListInfos& list_infos,
-      const scoped_refptr<base::SingleThreadTaskRunner>& callback_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
       NewDatabaseReadyCallback callback);
 
   // Makes the passed |factory| the factory used to instantiate a V4Database.
@@ -235,8 +234,9 @@ class V4Database {
 
   bool IsStoreAvailable(const ListIdentifier& identifier) const;
 
-  // Used to verify that certain methods are called on the IO thread.
-  THREAD_CHECKER(io_thread_checker_);
+  // Used to verify that certain methods are called on the client-designated IO
+  // sequence (see InitializeOnIOSequence()).
+  SEQUENCE_CHECKER(io_sequence_checker_);
 
   const scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 

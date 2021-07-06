@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,8 +29,9 @@ namespace {
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
-      : TestSafeBrowsingDatabaseManager(base::ThreadTaskRunnerHandle::Get(),
-                                        base::ThreadTaskRunnerHandle::Get()) {}
+      : TestSafeBrowsingDatabaseManager(
+            base::SequencedTaskRunnerHandle::Get(),
+            base::SequencedTaskRunnerHandle::Get()) {}
 
   MOCK_METHOD1(CancelCheck, void(SafeBrowsingDatabaseManager::Client*));
 

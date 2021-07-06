@@ -28,7 +28,7 @@ SafeBrowsingPrimaryAccountTokenFetcher::
 
 void SafeBrowsingPrimaryAccountTokenFetcher::Start(
     Callback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // NOTE: base::Unretained() is safe below as this object owns
   // |token_fetch_tracker_|, and the callback will not be invoked after

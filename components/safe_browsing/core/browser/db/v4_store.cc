@@ -362,7 +362,7 @@ ApplyUpdateResult V4Store::ProcessUpdate(
 
 void V4Store::ApplyUpdate(
     std::unique_ptr<ListUpdateResponse> response,
-    const scoped_refptr<base::SingleThreadTaskRunner>& callback_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
     UpdatedStoreReadyCallback callback) {
   base::ElapsedThreadTimer thread_timer;
   std::unique_ptr<V4Store> new_store(

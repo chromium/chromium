@@ -15,7 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -126,7 +126,7 @@ void PasswordProtectionServiceBase::RequestFinished(
     PasswordProtectionRequest* request,
     RequestOutcome outcome,
     std::unique_ptr<LoginReputationClientResponse> response) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
 
   if (response) {
@@ -205,7 +205,7 @@ void PasswordProtectionServiceBase::RequestFinished(
 }
 
 void PasswordProtectionServiceBase::CancelPendingRequests() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto it = pending_requests_.begin(); it != pending_requests_.end();) {
     PasswordProtectionRequest* request = it->get();
     // These are the requests for whom we're still waiting for verdicts.
@@ -243,7 +243,7 @@ int PasswordProtectionServiceBase::GetRequestTimeoutInMS() {
 void PasswordProtectionServiceBase::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindRepeating(&PasswordProtectionServiceBase::
                               RemoveUnhandledSyncPasswordReuseOnURLsDeleted,

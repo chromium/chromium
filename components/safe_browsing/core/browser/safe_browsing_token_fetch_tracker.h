@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 
@@ -57,7 +57,7 @@ class SafeBrowsingTokenFetchTracker {
       OnTokenFetchTimeoutCallback on_token_fetch_timeout_callback);
   void Finish(int request_id, const std::string& access_token);
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The count of requests sent. This is used as an ID for requests.
   int requests_sent_ = 0;

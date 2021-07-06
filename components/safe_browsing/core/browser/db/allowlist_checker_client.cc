@@ -103,7 +103,7 @@ AllowlistCheckerClient::AllowlistCheckerClient(
     : callback_for_result_(std::move(callback_for_result)),
       database_manager_(database_manager),
       default_does_match_allowlist_(default_does_match_allowlist) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Set a timer to fail open, i.e. call it "allowlisted", if the full
   // check takes too long.
@@ -114,7 +114,7 @@ AllowlistCheckerClient::AllowlistCheckerClient(
 }
 
 AllowlistCheckerClient::~AllowlistCheckerClient() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 // SafeBrowsingDatabaseMananger::Client impl
@@ -129,7 +129,7 @@ void AllowlistCheckerClient::OnCheckUrlForHighConfidenceAllowlist(
 }
 
 void AllowlistCheckerClient::OnCheckUrlResult(bool did_match_allowlist) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Stop();
 
   // The callback can only be invoked by other code paths if this object is not
@@ -142,7 +142,7 @@ void AllowlistCheckerClient::OnCheckUrlResult(bool did_match_allowlist) {
 }
 
 void AllowlistCheckerClient::OnTimeout() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   database_manager_->CancelCheck(this);
   OnCheckUrlResult(default_does_match_allowlist_);
 }

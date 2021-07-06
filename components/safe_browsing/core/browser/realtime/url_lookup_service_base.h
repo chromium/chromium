@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -214,7 +214,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Fills in fields in |RTLookupRequest|.
   std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url);
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Count of consecutive failures to complete URL lookup requests. When it
   // reaches |kMaxFailuresToEnforceBackoff|, we enter the backoff mode. It gets

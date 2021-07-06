@@ -13,8 +13,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -423,7 +423,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual gfx::Size GetCurrentContentAreaSize() const = 0;
 #endif
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   std::vector<std::string> saved_passwords_matching_domains_;
 

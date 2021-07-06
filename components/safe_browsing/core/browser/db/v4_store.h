@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
@@ -196,7 +195,7 @@ class V4Store {
   int64_t file_size() const { return file_size_; }
 
   void ApplyUpdate(std::unique_ptr<ListUpdateResponse> response,
-                   const scoped_refptr<base::SingleThreadTaskRunner>& runner,
+                   const scoped_refptr<base::SequencedTaskRunner>& runner,
                    UpdatedStoreReadyCallback callback);
 
   // Records (in kilobytes) and returns the size of the file on disk for this

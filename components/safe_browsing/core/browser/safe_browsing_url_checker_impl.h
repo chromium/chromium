@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -266,7 +266,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
     bool is_cached_safe_url;
   };
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
   const net::HttpRequestHeaders headers_;
   const int load_flags_;
   const network::mojom::RequestDestination request_destination_;

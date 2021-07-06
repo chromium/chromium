@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
@@ -131,7 +131,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
 
   // This object is used exclusively on the IO thread but may be constructed on
   // the UI thread.
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
@@ -158,11 +158,11 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
 
   // This object is used exclusively on the IO thread but may be constructed on
   // the UI thread.
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 SafeBrowsingUrlCheckerImpl::~SafeBrowsingUrlCheckerImpl() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (state_ == STATE_CHECKING_URL) {
     if (can_check_db_) {
@@ -210,7 +210,7 @@ SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(const GURL& url,
   resource.callback =
       base::BindRepeating(&SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete,
                           weak_factory_.GetWeakPtr());
-  resource.callback_sequence = base::ThreadTaskRunnerHandle::Get();
+  resource.callback_sequence = base::SequencedTaskRunnerHandle::Get();
   resource.web_contents_getter = web_contents_getter_;
   resource.web_state_getter = web_state_getter_;
   resource.threat_source = is_from_real_time_check
@@ -336,7 +336,7 @@ void SafeBrowsingUrlCheckerImpl::OnTimeout() {
 void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
                                               const std::string& method,
                                               Notifier notifier) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DVLOG(1) << "SafeBrowsingUrlCheckerImpl checks URL: " << url;
   urls_.emplace_back(url, method, std::move(notifier),
@@ -346,7 +346,7 @@ void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
 }
 
 void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(STATE_BLOCKED, state_);
   if (!base::FeatureList::IsEnabled(kDelayedWarnings)) {
     DCHECK_NE(STATE_DELAYED_BLOCKING_PAGE, state_);
@@ -404,7 +404,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "CheckUrl", this, "url",
                                url.spec());
 
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(&SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult,
                          weak_factory_.GetWeakPtr(), url, threat_type,
@@ -446,7 +446,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
           // Full-hash matched locally so queue a call to
           // |OnCheckUrlForHighConfidenceAllowlist| to trigger the hash-based
           // checking.
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SequencedTaskRunnerHandle::Get()->PostTask(
               FROM_HERE,
               base::BindOnce(&SafeBrowsingUrlCheckerImpl::
                                  OnCheckUrlForHighConfidenceAllowlist,
@@ -457,7 +457,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
           // No match found locally or |can_check_db_| is false. Queue the call
           // to |OnCheckUrlForHighConfidenceAllowlist| to perform the full URL
           // lookup.
-          base::ThreadTaskRunnerHandle::Get()->PostTask(
+          base::SequencedTaskRunnerHandle::Get()->PostTask(
               FROM_HERE,
               base::BindOnce(&SafeBrowsingUrlCheckerImpl::
                                  OnCheckUrlForHighConfidenceAllowlist,
@@ -559,7 +559,7 @@ bool SafeBrowsingUrlCheckerImpl::RunNextCallback(bool proceed,
 
 void SafeBrowsingUrlCheckerImpl::OnCheckUrlForHighConfidenceAllowlist(
     bool did_match_allowlist) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_expected_request_destination =
       (network::mojom::RequestDestination::kDocument == request_destination_) ||
       ((network::mojom::RequestDestination::kIframe == request_destination_ ||
@@ -579,7 +579,8 @@ void SafeBrowsingUrlCheckerImpl::OnCheckUrlForHighConfidenceAllowlist(
       FROM_HERE,
       base::BindOnce(&SafeBrowsingUrlCheckerImpl::StartLookupOnUIThread,
                      weak_factory_.GetWeakPtr(), url, url_lookup_service_on_ui_,
-                     database_manager_, base::ThreadTaskRunnerHandle::Get()));
+                     database_manager_,
+                     base::SequencedTaskRunnerHandle::Get()));
 }
 
 void SafeBrowsingUrlCheckerImpl::SetWebUIToken(int token) {
@@ -617,7 +618,7 @@ void SafeBrowsingUrlCheckerImpl::StartLookupOnUIThread(
 }
 
 void SafeBrowsingUrlCheckerImpl::PerformHashBasedCheck(const GURL& url) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!can_check_db_ ||
       database_manager_->CheckBrowseUrl(
           url, url_checker_delegate_->GetThreatTypes(), this)) {
@@ -638,7 +639,7 @@ bool SafeBrowsingUrlCheckerImpl::CanPerformFullURLLookup(const GURL& url) {
 void SafeBrowsingUrlCheckerImpl::OnRTLookupRequest(
     std::unique_ptr<RTLookupRequest> request,
     std::string oauth_token) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   LogRTLookupRequest(*request, oauth_token);
 }
@@ -647,7 +648,7 @@ void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
     bool is_rt_lookup_successful,
     bool is_cached_response,
     std::unique_ptr<RTLookupResponse> response) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_expected_request_destination =
       (network::mojom::RequestDestination::kDocument == request_destination_) ||
       ((network::mojom::RequestDestination::kIframe == request_destination_ ||
@@ -684,7 +685,7 @@ void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
 void SafeBrowsingUrlCheckerImpl::LogRTLookupRequest(
     const RTLookupRequest& request,
     const std::string& oauth_token) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!webui_delegate_)
     return;
@@ -701,7 +702,7 @@ void SafeBrowsingUrlCheckerImpl::LogRTLookupRequest(
 
 void SafeBrowsingUrlCheckerImpl::LogRTLookupResponse(
     const RTLookupResponse& response) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!webui_delegate_)
     return;
