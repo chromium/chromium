@@ -347,6 +347,8 @@ component("bluetooth") {
         "dbus/bluetooth_adapter_client.h",
         "dbus/bluetooth_admin_policy_client.cc",
         "dbus/bluetooth_admin_policy_client.h",
+        "dbus/bluetooth_advertisement_monitor_manager_client.cc",
+        "dbus/bluetooth_advertisement_monitor_manager_client.h",
         "dbus/bluetooth_agent_manager_client.cc",
         "dbus/bluetooth_agent_manager_client.h",
         "dbus/bluetooth_agent_service_provider.cc",
