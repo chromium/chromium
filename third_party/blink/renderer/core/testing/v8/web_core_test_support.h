@@ -34,7 +34,6 @@ namespace web_core_test_support {
 
 void InjectInternalsObject(v8::Local<v8::Context>);
 void ResetInternalsObject(v8::Local<v8::Context>);
-void RegisterInstallOriginTrialFeaturesForTesting();
 
 }  // namespace web_core_test_support
 

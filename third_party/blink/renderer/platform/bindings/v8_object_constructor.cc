@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 
-#include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
@@ -105,8 +104,6 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
     type->InstallConditionalFeatures(context, world, v8::Local<v8::Object>(),
                                      prototype_object, interface_object,
                                      interface_template);
-    InstallOriginTrialFeatures(type, ScriptState::From(context),
-                               prototype_object, interface_object);
   }
 
   return interface_object;
