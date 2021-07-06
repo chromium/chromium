@@ -218,6 +218,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.EphemeralGuest.Signin" enum="BooleanProfileSignedIn"
     expires_after="2022-02-02">
+  <obsolete>
+    Removed on 2021-07.
+  </obsolete>
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>

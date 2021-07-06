@@ -1356,8 +1356,6 @@ static_library("browser") {
     "profiles/gaia_info_update_service_factory.h",
     "profiles/guest_mode_policy_handler.cc",
     "profiles/guest_mode_policy_handler.h",
-    "profiles/guest_signin_observer_factory.cc",
-    "profiles/guest_signin_observer_factory.h",
     "profiles/incognito_mode_policy_handler.cc",
     "profiles/incognito_mode_policy_handler.h",
     "profiles/off_the_record_profile_impl.cc",
