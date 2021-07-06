@@ -867,6 +867,46 @@ const CSSValue* Columns::CSSValueFromComputedStyleInternal(
       columnsShorthand(), style, layout_object, allow_visited_style);
 }
 
+bool Container::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 256>& properties) const {
+  const CSSValue* type = css_parsing_utils::ConsumeContainerType(range);
+  if (!type)
+    return false;
+
+  const CSSValue* name = CSSIdentifierValue::Create(CSSValueID::kNone);
+  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
+    if (!(name = css_parsing_utils::ConsumeContainerName(range, context)))
+      return false;
+  }
+
+  if (!range.AtEnd())
+    return false;
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kContainerType, CSSPropertyID::kContainer, *type,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kContainerName, CSSPropertyID::kContainer, *name,
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+
+  return true;
+}
+
+const CSSValue* Container::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValuesForContainerShorthand(style, layout_object,
+                                                         allow_visited_style);
+}
+
 bool Flex::ParseShorthand(bool important,
                           CSSParserTokenRange& range,
                           const CSSParserContext& context,

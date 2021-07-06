@@ -2683,6 +2683,38 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
   }
 }
 
+CSSValueList* ComputedStyleUtils::ValuesForContainerShorthand(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) {
+  CHECK_EQ(containerShorthand().length(), 2u);
+  CHECK_EQ(containerShorthand().properties()[0],
+           &GetCSSPropertyContainerType());
+  CHECK_EQ(containerShorthand().properties()[1],
+           &GetCSSPropertyContainerName());
+
+  CSSValueList* list = CSSValueList::CreateSlashSeparated();
+
+  const CSSValue* type =
+      GetCSSPropertyContainerType().CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+  const CSSValue* name =
+      GetCSSPropertyContainerName().CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
+
+  DCHECK(type);
+  DCHECK(name);
+
+  list->Append(*type);
+
+  if (!(IsA<CSSIdentifierValue>(name) &&
+        To<CSSIdentifierValue>(*name).GetValueID() == CSSValueID::kNone)) {
+    list->Append(*name);
+  }
+
+  return list;
+}
+
 // Returns up to two values for 'scroll-customization' property. The values
 // correspond to the customization values for 'x' and 'y' axes.
 CSSValue* ComputedStyleUtils::ScrollCustomizationFlagsToCSSValue(

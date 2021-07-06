@@ -55,6 +55,7 @@ class StylePropertySerializer {
   String PageBreakPropertyValue(const StylePropertyShorthand&) const;
   String GetShorthandValue(const StylePropertyShorthand&,
                            String separator = " ") const;
+  String ContainerValue() const;
   String FontValue() const;
   String FontVariantValue() const;
   bool AppendFontLonghandValueIfNotNormal(const CSSProperty&,

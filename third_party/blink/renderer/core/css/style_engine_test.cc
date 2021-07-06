@@ -3726,6 +3726,31 @@ TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
   }
 }
 
+TEST_F(StyleEngineTest, ContainerPropertiesRuntimeFlag) {
+  Vector<String> declarations = {"container-type:inline-size",
+                                 "container-name:foo", "container:inline-size"};
+
+  {
+    ScopedCSSContainerQueriesForTest feature(false);
+
+    for (const String& decl : declarations) {
+      const auto* set = css_test_helpers::ParseDeclarationBlock(decl);
+      ASSERT_TRUE(set);
+      EXPECT_EQ(0u, set->PropertyCount());
+    }
+  }
+
+  {
+    ScopedCSSContainerQueriesForTest feature(true);
+
+    for (const String& decl : declarations) {
+      const auto* set = css_test_helpers::ParseDeclarationBlock(decl);
+      ASSERT_TRUE(set);
+      EXPECT_GT(set->PropertyCount(), 0u);
+    }
+  }
+}
+
 TEST_F(StyleEngineTest, VideoControlsReject) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <video controls></video>

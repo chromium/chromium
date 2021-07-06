@@ -4897,7 +4897,7 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   CSSIdentifierValue* inline_size = nullptr;
   CSSIdentifierValue* block_size = nullptr;
 
-  while (!range.AtEnd()) {
+  while (range.Peek().GetType() == kIdentToken) {
     CSSValueID id = range.Peek().Id();
     if (id == CSSValueID::kInlineSize && !inline_size) {
       inline_size = ConsumeIdent(range);

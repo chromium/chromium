@@ -26,6 +26,8 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
     const CSSProperty& shorthand = CSSProperty::Get(property_id);
     if (!shorthand.IsShorthand())
       continue;
+    if (shorthand.Exposure() == CSSExposure::kNone)
+      continue;
     div->SetInlineStyleProperty(property_id, "var(--dummy)");
     const StylePropertyShorthand& longhands = shorthandForProperty(property_id);
     for (unsigned i = 0; i < longhands.length(); i++) {
