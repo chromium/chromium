@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/prerender_features_page_load_metrics_observer.h"
 
 #include <memory>
 
@@ -19,15 +19,16 @@ const char kDefaultTestUrl[] = "https://a.test";
 const char kOtherOriginUrl[] = "https://b.test";
 const char kFeaturesHistogramName[] = "Blink.UseCounter.Features";
 
-class PrerenderPageLoadMetricsObserverTest
+class PrerenderFeaturesPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
  protected:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
-    // PrerenderPageLoadMetricsObserver requires
+    // PrerenderFeaturesPageLoadMetricsObserver requires
     // UseCounterPageLoadMetricsObserver to log UseCounter to UMA.
     tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
 
-    tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
+    tracker->AddObserver(
+        std::make_unique<PrerenderFeaturesPageLoadMetricsObserver>());
   }
 
   void SimulateFirstContentfulPaint() {
@@ -76,7 +77,7 @@ class PrerenderPageLoadMetricsObserverTest
   }
 };
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, NoLocalStorage) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, NoLocalStorage) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   EXPECT_EQ(GetPageVisits(), 1);
@@ -84,7 +85,7 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, NoLocalStorage) {
   EXPECT_EQ(GetLocalStorageAfterFcpCount(), 0);
 }
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, LocalStorageBeforeFcp) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, LocalStorageBeforeFcp) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   // Access local storage.
@@ -106,7 +107,7 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, LocalStorageBeforeFcp) {
   EXPECT_EQ(GetLocalStorageAfterFcpCount(), 0);
 }
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, LocalStorageAfterFcp) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, LocalStorageAfterFcp) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   // Reach FCP.
@@ -122,7 +123,7 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, LocalStorageAfterFcp) {
   EXPECT_EQ(GetLocalStorageAfterFcpCount(), 1);
 }
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, ThirdPartyLocalStorage) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, ThirdPartyLocalStorage) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   tester()->SimulateStorageAccess(
@@ -135,7 +136,7 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, ThirdPartyLocalStorage) {
   EXPECT_EQ(GetLocalStorageAfterFcpCount(), 0);
 }
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, NoSessionStorage) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, NoSessionStorage) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   EXPECT_EQ(GetPageVisits(), 1);
@@ -143,7 +144,7 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, NoSessionStorage) {
   EXPECT_EQ(GetSessionStorageAfterFcpCount(), 0);
 }
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, SessionStorageBeforeFcp) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, SessionStorageBeforeFcp) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   // Access session storage.
@@ -165,7 +166,7 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, SessionStorageBeforeFcp) {
   EXPECT_EQ(GetSessionStorageAfterFcpCount(), 0);
 }
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, SessionStorageAfterFcp) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, SessionStorageAfterFcp) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   // Reach FCP.
@@ -181,7 +182,7 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, SessionStorageAfterFcp) {
   EXPECT_EQ(GetSessionStorageAfterFcpCount(), 1);
 }
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, ThirdPartySessionStorage) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, ThirdPartySessionStorage) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   tester()->SimulateStorageAccess(
@@ -194,7 +195,7 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, ThirdPartySessionStorage) {
   EXPECT_EQ(GetSessionStorageAfterFcpCount(), 0);
 }
 
-TEST_F(PrerenderPageLoadMetricsObserverTest, MultipleStorage) {
+TEST_F(PrerenderFeaturesPageLoadMetricsObserverTest, MultipleStorage) {
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   // Access local storage.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/prerender_features_page_load_metrics_observer.h"
 
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "content/public/browser/web_contents.h"
@@ -26,12 +26,12 @@ bool IsFirstParty(const GURL& url, const GURL& first_party_url) {
 
 }  // namespace
 
-void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+void PrerenderFeaturesPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   did_fcp_ = true;
 }
 
-void PrerenderPageLoadMetricsObserver::OnStorageAccessed(
+void PrerenderFeaturesPageLoadMetricsObserver::OnStorageAccessed(
     const GURL& url,
     const GURL& first_party_url,
     bool blocked_by_policy,
@@ -69,7 +69,7 @@ void PrerenderPageLoadMetricsObserver::OnStorageAccessed(
   }
 }
 
-void PrerenderPageLoadMetricsObserver::RecordFeatureUse(
+void PrerenderFeaturesPageLoadMetricsObserver::RecordFeatureUse(
     blink::mojom::WebFeature feature) {
   page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       GetDelegate().GetWebContents()->GetMainFrame(), feature);

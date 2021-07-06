@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_PAGE_LOAD_METRICS_OBSERVER_H_
-#define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_PAGE_LOAD_METRICS_OBSERVER_H_
+#ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_FEATURES_PAGE_LOAD_METRICS_OBSERVER_H_
+#define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_FEATURES_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
@@ -17,10 +17,10 @@ enum class WebFeature : int32_t;
 // normal page loads which, when if used during prerendering, may result in
 // cancelling or freezing the prerender, to help estimate the effect on
 // coverage.
-class PrerenderPageLoadMetricsObserver
+class PrerenderFeaturesPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  PrerenderPageLoadMetricsObserver() = default;
+  PrerenderFeaturesPageLoadMetricsObserver() = default;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
   void OnFirstContentfulPaintInPage(
@@ -38,4 +38,4 @@ class PrerenderPageLoadMetricsObserver
   bool did_session_storage_ = false;
 };
 
-#endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_FEATURES_PAGE_LOAD_METRICS_OBSERVER_H_
