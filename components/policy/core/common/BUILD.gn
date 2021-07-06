@@ -409,6 +409,8 @@ source_set("common_constants") {
     "policy_switches.cc",
     "policy_switches.h",
     "policy_types.h",
+    "proxy_settings_constants.cc",
+    "proxy_settings_constants.h",
   ]
 
   if (is_ios) {

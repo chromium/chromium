@@ -14,6 +14,7 @@
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/proxy_settings_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
@@ -30,6 +31,7 @@ namespace {
 struct ProxyModeValidationEntry {
   const char* mode_value;
   bool pac_url_allowed;
+  bool pac_mandatory_allowed;
   bool bypass_list_allowed;
   bool server_allowed;
   int error_message_id;
@@ -38,16 +40,16 @@ struct ProxyModeValidationEntry {
 // List of entries determining which proxy policies can be specified, depending
 // on the ProxyMode.
 const ProxyModeValidationEntry kProxyModeValidationMap[] = {
-  { ProxyPrefs::kDirectProxyModeName,
-    false, false, false, IDS_POLICY_PROXY_MODE_DISABLED_ERROR },
-  { ProxyPrefs::kAutoDetectProxyModeName,
-    false, false, false, IDS_POLICY_PROXY_MODE_AUTO_DETECT_ERROR },
-  { ProxyPrefs::kPacScriptProxyModeName,
-    true, false, false, IDS_POLICY_PROXY_MODE_PAC_URL_ERROR },
-  { ProxyPrefs::kFixedServersProxyModeName,
-    false, true, true, IDS_POLICY_PROXY_MODE_FIXED_SERVERS_ERROR },
-  { ProxyPrefs::kSystemProxyModeName,
-    false, false, false, IDS_POLICY_PROXY_MODE_SYSTEM_ERROR },
+    {ProxyPrefs::kDirectProxyModeName, false, false, false, false,
+     IDS_POLICY_PROXY_MODE_DISABLED_ERROR},
+    {ProxyPrefs::kAutoDetectProxyModeName, false, false, false, false,
+     IDS_POLICY_PROXY_MODE_AUTO_DETECT_ERROR},
+    {ProxyPrefs::kPacScriptProxyModeName, true, true, false, false,
+     IDS_POLICY_PROXY_MODE_PAC_URL_ERROR},
+    {ProxyPrefs::kFixedServersProxyModeName, false, false, true, true,
+     IDS_POLICY_PROXY_MODE_FIXED_SERVERS_ERROR},
+    {ProxyPrefs::kSystemProxyModeName, false, false, false, false,
+     IDS_POLICY_PROXY_MODE_SYSTEM_ERROR},
 };
 
 }  // namespace
@@ -70,6 +72,8 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   const base::Value* server_mode =
       GetProxyPolicyValue(policies, key::kProxyServerMode);
   const base::Value* pac_url = GetProxyPolicyValue(policies, key::kProxyPacUrl);
+  const base::Value* pac_mandatory =
+      GetProxyPolicyValue(policies, kProxyPacMandatory);
   const base::Value* bypass_list =
       GetProxyPolicyValue(policies, key::kProxyBypassList);
 
@@ -102,6 +106,10 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                        key::kProxyPacUrl,
                        entry.error_message_id);
     }
+    if (!entry.pac_mandatory_allowed && pac_mandatory) {
+      errors->AddError(key::kProxySettings, kProxyPacMandatory,
+                       entry.error_message_id);
+    }
     if (!entry.bypass_list_allowed && bypass_list) {
       errors->AddError(key::kProxySettings,
                        key::kProxyBypassList,
@@ -114,6 +122,7 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     }
 
     if ((!entry.pac_url_allowed && pac_url) ||
+        (!entry.pac_mandatory_allowed && pac_mandatory) ||
         (!entry.bypass_list_allowed && bypass_list) ||
         (!entry.server_allowed && server)) {
       return false;
@@ -137,6 +146,8 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   const base::Value* server_mode =
       GetProxyPolicyValue(policies, key::kProxyServerMode);
   const base::Value* pac_url = GetProxyPolicyValue(policies, key::kProxyPacUrl);
+  const base::Value* pac_mandatory =
+      GetProxyPolicyValue(policies, kProxyPacMandatory);
   const base::Value* bypass_list =
       GetProxyPolicyValue(policies, key::kProxyBypassList);
 
@@ -181,9 +192,11 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     case ProxyPrefs::MODE_PAC_SCRIPT: {
       std::string pac_url_string;
       if (pac_url && pac_url->GetAsString(&pac_url_string)) {
+        bool mandatory =
+            pac_mandatory && pac_mandatory->GetIfBool().value_or(false);
         prefs->SetValue(
             proxy_config::prefs::kProxy,
-            ProxyConfigDictionary::CreatePacScript(pac_url_string, false));
+            ProxyConfigDictionary::CreatePacScript(pac_url_string, mandatory));
       } else {
         NOTREACHED();
       }

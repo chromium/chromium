@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_details.h"
+#include "components/policy/core/common/proxy_settings_constants.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -102,12 +103,18 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
   ASSERT_TRUE(subschema.GetProperty(key::kProxyServer).valid());
   ASSERT_TRUE(subschema.GetProperty(key::kProxyServerMode).valid());
   ASSERT_TRUE(subschema.GetProperty(key::kProxyPacUrl).valid());
+  ASSERT_TRUE(subschema.GetProperty(kProxyPacMandatory).valid());
   ASSERT_TRUE(subschema.GetProperty(key::kProxyBypassList).valid());
 
   // The properties are iterated in order.
   const char* kExpectedProperties[] = {
-      key::kProxyBypassList, key::kProxyMode,       key::kProxyPacUrl,
-      key::kProxyServer,     key::kProxyServerMode, nullptr,
+      key::kProxyBypassList,
+      key::kProxyMode,
+      kProxyPacMandatory,
+      key::kProxyPacUrl,
+      key::kProxyServer,
+      key::kProxyServerMode,
+      nullptr,
   };
   const char** next = kExpectedProperties;
   for (Schema::Iterator it(subschema.GetPropertiesIterator());
@@ -117,6 +124,8 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
     ASSERT_TRUE(it.schema().valid());
     if (it.key() == key::kProxyServerMode)
       EXPECT_EQ(base::Value::Type::INTEGER, it.schema().type());
+    else if (strcmp(it.key(), kProxyPacMandatory) == 0)
+      EXPECT_EQ(base::Value::Type::BOOLEAN, it.schema().type());
     else
       EXPECT_EQ(base::Value::Type::STRING, it.schema().type());
   }

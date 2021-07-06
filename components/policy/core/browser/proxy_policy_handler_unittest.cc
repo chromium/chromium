@@ -13,10 +13,12 @@
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/proxy_settings_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -39,16 +41,17 @@ class ProxyPolicyHandlerTest
 
  protected:
   // Verify that all the proxy prefs are set to the specified expected values.
-  void VerifyProxyPrefs(
-      const std::string& expected_proxy_server,
-      const std::string& expected_proxy_pac_url,
-      const std::string& expected_proxy_bypass_list,
-      const ProxyPrefs::ProxyMode& expected_proxy_mode) {
+  void VerifyProxyPrefs(const std::string& expected_proxy_server,
+                        const std::string& expected_proxy_pac_url,
+                        absl::optional<bool> expected_proxy_pac_mandatory,
+                        const std::string& expected_proxy_bypass_list,
+                        const ProxyPrefs::ProxyMode& expected_proxy_mode) {
     const base::Value* value = nullptr;
     ASSERT_TRUE(store_->GetValue(proxy_config::prefs::kProxy, &value));
     ASSERT_TRUE(value->is_dict());
     ProxyConfigDictionary dict(value->Clone());
     std::string s;
+    bool b;
     if (expected_proxy_server.empty()) {
       EXPECT_FALSE(dict.GetProxyServer(&s));
     } else {
@@ -60,6 +63,12 @@ class ProxyPolicyHandlerTest
     } else {
       ASSERT_TRUE(dict.GetPacUrl(&s));
       EXPECT_EQ(expected_proxy_pac_url, s);
+    }
+    if (!expected_proxy_pac_mandatory) {
+      EXPECT_FALSE(dict.GetPacMandatory(&b));
+    } else {
+      ASSERT_TRUE(dict.GetPacMandatory(&b));
+      EXPECT_EQ(*expected_proxy_pac_mandatory, b);
     }
     if (expected_proxy_bypass_list.empty()) {
       EXPECT_FALSE(dict.GetBypassList(&s));
@@ -88,8 +97,7 @@ TEST_F(ProxyPolicyHandlerTest, ManualOptions) {
       nullptr);
   UpdateProviderPolicy(policy);
 
-  VerifyProxyPrefs("chromium.org",
-                   std::string(),
+  VerifyProxyPrefs("chromium.org", std::string(), absl::nullopt,
                    "http://chromium.org/override",
                    ProxyPrefs::MODE_FIXED_SERVERS);
 }
@@ -109,8 +117,7 @@ TEST_F(ProxyPolicyHandlerTest, ManualOptionsReversedApplyOrder) {
              POLICY_SOURCE_CLOUD, base::Value("chromium.org"), nullptr);
   UpdateProviderPolicy(policy);
 
-  VerifyProxyPrefs("chromium.org",
-                   std::string(),
+  VerifyProxyPrefs("chromium.org", std::string(), absl::nullopt,
                    "http://chromium.org/override",
                    ProxyPrefs::MODE_FIXED_SERVERS);
 }
@@ -135,8 +142,8 @@ TEST_F(ProxyPolicyHandlerTest, NoProxyServerMode) {
              POLICY_SOURCE_CLOUD,
              base::Value(ProxyPolicyHandler::PROXY_SERVER_MODE), nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(
-      std::string(), std::string(), std::string(), ProxyPrefs::MODE_DIRECT);
+  VerifyProxyPrefs(std::string(), std::string(), absl::nullopt, std::string(),
+                   ProxyPrefs::MODE_DIRECT);
 }
 
 TEST_F(ProxyPolicyHandlerTest, NoProxyModeName) {
@@ -145,8 +152,8 @@ TEST_F(ProxyPolicyHandlerTest, NoProxyModeName) {
              POLICY_SOURCE_CLOUD, base::Value(ProxyPrefs::kDirectProxyModeName),
              nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(
-      std::string(), std::string(), std::string(), ProxyPrefs::MODE_DIRECT);
+  VerifyProxyPrefs(std::string(), std::string(), absl::nullopt, std::string(),
+                   ProxyPrefs::MODE_DIRECT);
 }
 
 TEST_F(ProxyPolicyHandlerTest, AutoDetectProxyServerMode) {
@@ -157,9 +164,7 @@ TEST_F(ProxyPolicyHandlerTest, AutoDetectProxyServerMode) {
       base::Value(ProxyPolicyHandler::PROXY_AUTO_DETECT_PROXY_SERVER_MODE),
       nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(std::string(),
-                   std::string(),
-                   std::string(),
+  VerifyProxyPrefs(std::string(), std::string(), absl::nullopt, std::string(),
                    ProxyPrefs::MODE_AUTO_DETECT);
 }
 
@@ -169,9 +174,7 @@ TEST_F(ProxyPolicyHandlerTest, AutoDetectProxyModeName) {
              POLICY_SOURCE_CLOUD,
              base::Value(ProxyPrefs::kAutoDetectProxyModeName), nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(std::string(),
-                   std::string(),
-                   std::string(),
+  VerifyProxyPrefs(std::string(), std::string(), absl::nullopt, std::string(),
                    ProxyPrefs::MODE_AUTO_DETECT);
 }
 
@@ -180,14 +183,14 @@ TEST_F(ProxyPolicyHandlerTest, PacScriptProxyMode) {
   policy.Set(key::kProxyPacUrl, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
              POLICY_SOURCE_CLOUD, base::Value("http://short.org/proxy.pac"),
              nullptr);
+  policy.Set(kProxyPacMandatory, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+             POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   policy.Set(key::kProxyMode, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
              POLICY_SOURCE_CLOUD,
              base::Value(ProxyPrefs::kPacScriptProxyModeName), nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(std::string(),
-                   "http://short.org/proxy.pac",
-                   std::string(),
-                   ProxyPrefs::MODE_PAC_SCRIPT);
+  VerifyProxyPrefs(std::string(), "http://short.org/proxy.pac", true,
+                   std::string(), ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 TEST_F(ProxyPolicyHandlerTest, PacScriptProxyModeInvalid) {
@@ -213,10 +216,8 @@ TEST_F(ProxyPolicyHandlerTest, PacScriptProxyModeBug78016) {
              POLICY_SOURCE_CLOUD,
              base::Value(ProxyPrefs::kPacScriptProxyModeName), nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(std::string(),
-                   "http://short.org/proxy.pac",
-                   std::string(),
-                   ProxyPrefs::MODE_PAC_SCRIPT);
+  VerifyProxyPrefs(std::string(), "http://short.org/proxy.pac", false,
+                   std::string(), ProxyPrefs::MODE_PAC_SCRIPT);
 }
 
 TEST_F(ProxyPolicyHandlerTest, UseSystemProxyServerMode) {
@@ -227,8 +228,8 @@ TEST_F(ProxyPolicyHandlerTest, UseSystemProxyServerMode) {
       base::Value(ProxyPolicyHandler::PROXY_USE_SYSTEM_PROXY_SERVER_MODE),
       nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(
-      std::string(), std::string(), std::string(), ProxyPrefs::MODE_SYSTEM);
+  VerifyProxyPrefs(std::string(), std::string(), absl::nullopt, std::string(),
+                   ProxyPrefs::MODE_SYSTEM);
 }
 
 TEST_F(ProxyPolicyHandlerTest, UseSystemProxyMode) {
@@ -237,8 +238,8 @@ TEST_F(ProxyPolicyHandlerTest, UseSystemProxyMode) {
              POLICY_SOURCE_CLOUD, base::Value(ProxyPrefs::kSystemProxyModeName),
              nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(
-      std::string(), std::string(), std::string(), ProxyPrefs::MODE_SYSTEM);
+  VerifyProxyPrefs(std::string(), std::string(), absl::nullopt, std::string(),
+                   ProxyPrefs::MODE_SYSTEM);
 }
 
 TEST_F(ProxyPolicyHandlerTest,
@@ -251,9 +252,7 @@ TEST_F(ProxyPolicyHandlerTest,
              POLICY_SOURCE_CLOUD,
              base::Value(ProxyPrefs::kAutoDetectProxyModeName), nullptr);
   UpdateProviderPolicy(policy);
-  VerifyProxyPrefs(std::string(),
-                   std::string(),
-                   std::string(),
+  VerifyProxyPrefs(std::string(), std::string(), absl::nullopt, std::string(),
                    ProxyPrefs::MODE_AUTO_DETECT);
 }
 

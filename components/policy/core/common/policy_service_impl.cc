@@ -25,6 +25,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/proxy_settings_constants.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -39,11 +40,8 @@ namespace policy {
 namespace {
 
 const char* kProxyPolicies[] = {
-  key::kProxyMode,
-  key::kProxyServerMode,
-  key::kProxyServer,
-  key::kProxyPacUrl,
-  key::kProxyBypassList,
+    key::kProxyMode,   key::kProxyServerMode, key::kProxyServer,
+    key::kProxyPacUrl, kProxyPacMandatory,    key::kProxyBypassList,
 };
 
 // Maps the separate policies for proxy settings into a single Dictionary

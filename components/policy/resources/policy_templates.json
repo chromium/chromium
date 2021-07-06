@@ -4336,6 +4336,7 @@
             'enum': ['direct', 'auto_detect', 'pac_script', 'fixed_servers', 'system'],
           },
           'ProxyPacUrl': { 'type': 'string' },
+          'ProxyPacMandatory': { 'type': 'boolean' },
           'ProxyServer': { 'type': 'string' },
           'ProxyBypassList': { 'type': 'string' },
           'ProxyServerMode': { '$ref': 'ProxyServerMode' },
@@ -4361,6 +4362,7 @@
        Setting the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy accepts the following fields:
          * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD">ProxyMode</ph>, which lets you specify the proxy server Chrome uses and prevents users from changing proxy settings
          * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD">ProxyPacUrl</ph>, a URL to a proxy .pac file
+         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD">ProxyPacMandatory</ph>, which prevents the network stack from falling back to direct connections with invalid or unavailable PAC script
          * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph>, a URL of the proxy server
          * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph>, a list of hosts for which the proxy will be bypassed
 
@@ -4371,7 +4373,7 @@
           * <ph name="PROXY_MODE_ENUM_SYSTEM">system</ph>, the systems's proxy is used and all other fields are ignored.
           * <ph name="PROXY_MODE_ENUM_AUTO_DETECT">auto_detect</ph>, all other fields are ignored.
           * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS">fixed_servers</ph>, the <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD">ProxyServer</ph> and <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> fields are used.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT">pac_script</ph>, the <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL">ProxyPacUrl</ph> and <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> fields are used.
+          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT">pac_script</ph>, the <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL">ProxyPacUrl</ph>, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD">ProxyPacMandatory</ph> and <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD">ProxyBypassList</ph> fields are used.
 
       Note: For more detailed examples, visit The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).''',
       'arc_support': 'Only a subset of proxy configuration options are made available to Android apps. Android apps may voluntarily choose to use the proxy. You cannot force them to use a proxy.',
