@@ -734,6 +734,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // details.
   absl::optional<DisplayFeature> display_feature_;
 
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   base::WeakPtrFactory<RenderWidgetHostViewAura> weak_ptr_factory_{this};
 };
 

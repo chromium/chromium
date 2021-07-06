@@ -2039,7 +2039,6 @@ RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
       window_->GetHost()->RemoveObserver(this);
     UnlockMouse();
     wm::SetTooltipText(window_, nullptr);
-    display::Screen::GetScreen()->RemoveObserver(this);
 
     // This call is usually no-op since |this| object is already removed from
     // the Aura root window and we don't have a way to get an input method
@@ -2079,7 +2078,7 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
   wm::SetTooltipText(window_, &tooltip_);
   wm::SetActivationDelegate(window_, this);
   aura::client::SetFocusChangeObserver(window_, this);
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
 
   window_->SetType(type);
   window_->Init(ui::LAYER_SOLID_COLOR);

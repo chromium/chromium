@@ -295,14 +295,9 @@ CompositorImpl::CompositorImpl(CompositorClient* client,
   DCHECK(client);
 
   SetRootWindow(root_window);
-
-  // Listen to display density change events and update painted device scale
-  // factor accordingly.
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 CompositorImpl::~CompositorImpl() {
-  display::Screen::GetScreen()->RemoveObserver(this);
   DetachRootWindow();
   // Clean-up any surface references.
   SetSurface(nullptr, false);

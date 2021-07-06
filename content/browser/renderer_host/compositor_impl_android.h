@@ -273,6 +273,10 @@ class CONTENT_EXPORT CompositorImpl
 
   uint32_t pending_readbacks_ = 0u;
 
+  // Listen to display density change events and update painted device scale
+  // factor accordingly.
+  display::ScopedDisplayObserver display_observer_{this};
+
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CompositorImpl);
