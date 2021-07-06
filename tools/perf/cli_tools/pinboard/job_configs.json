@@ -36,15 +36,6 @@
     "repository": "chromium"
   },
   {
-    "name": "Try job for v8: enable TurboProp as mid-tier - Win10",
-    "target": "performance_test_suite",
-    "configuration": "win-10-perf",
-    "benchmark": "v8.browsing_desktop",
-    "story_tags": "2019,2018",
-    "patch": "https://chromium-review.googlesource.com/c/v8/v8/+/2632600",
-    "repository": "chromium"
-  },
-  {
     "name": "Try job for v8: enable TurboProp as mid-tier - Speedometer - Pixel2",
     "target": "performance_test_suite",
     "configuration": "android-pixel2-perf",
@@ -75,24 +66,6 @@
     "name": "Try job for v8: enable TurboProp as mid-tier - Jetstream2 - Linux",
     "target": "performance_test_suite",
     "configuration": "linux-perf",
-    "benchmark": "jetstream2",
-    "story": "JetStream2",
-    "patch": "https://chromium-review.googlesource.com/c/v8/v8/+/2632600",
-    "repository": "chromium"
-  },
-  {
-    "name": "Try job for v8: enable TurboProp as mid-tier - Speedometer - Win10",
-    "target": "performance_test_suite",
-    "configuration": "win-10-perf",
-    "benchmark": "speedometer2",
-    "story": "Speedometer2",
-    "patch": "https://chromium-review.googlesource.com/c/v8/v8/+/2632600",
-    "repository": "chromium"
-  },
-  {
-    "name": "Try job for v8: enable TurboProp as mid-tier - Jetstream2 - Win10",
-    "target": "performance_test_suite",
-    "configuration": "win-10-perf",
     "benchmark": "jetstream2",
     "story": "JetStream2",
     "patch": "https://chromium-review.googlesource.com/c/v8/v8/+/2632600",
