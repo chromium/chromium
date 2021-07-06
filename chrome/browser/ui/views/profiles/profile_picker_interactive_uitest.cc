@@ -21,7 +21,6 @@
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -205,14 +204,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
 // Checks that both the signin web view and the main picker view are able to
 // process a back keyboard event.
-IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       NavigateBackWithKeyboard) {
-#if defined(USE_OZONE)
-  // Fails with ozone (https://crbug.com/1173544).
-  if (features::IsUsingOzonePlatform())
-    GTEST_SKIP();
+// TODO(https://crbug.com/1173544): Flaky on linux.
+#if defined(OS_LINUX)
+#define MAYBE_NavigateBackWithKeyboard DISABLED_NavigateBackWithKeyboard
+#else
+#define MAYBE_NavigateBackWithKeyboard NavigateBackWithKeyboard
 #endif
-
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
+                       MAYBE_NavigateBackWithKeyboard) {
   // Simulate walking through the flow starting at the picker so that navigating
   // back to the picker makes sense.
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
