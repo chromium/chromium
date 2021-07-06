@@ -593,12 +593,23 @@ void SMILTimeContainer::UpdateTimedElements(TimingUpdate& update) {
 }
 
 void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
+  recordreplay::Assert("SMILTimeContainer::ApplyTimedEffects Start");
+
   if (document_order_indexes_dirty_)
     UpdateDocumentOrderIndexes();
 
-  bool did_apply_effects = false;
+  HeapVector<Member<SVGElement>> animated_targets_vector;
   for (auto& entry : animated_targets_) {
-    ElementSMILAnimations* animations = entry.key->GetSMILAnimations();
+    animated_targets_vector.push_back(entry.key);
+  }
+  std::sort(animated_targets_vector.begin(), animated_targets_vector.end(),
+            recordreplay::CompareByPointerId());
+
+  bool did_apply_effects = false;
+  for (auto& entry : animated_targets_vector) {
+    recordreplay::Assert("SMILTimeContainer::ApplyTimedEffects #1 %d",
+                         recordreplay::PointerId(entry.Get()));
+    ElementSMILAnimations* animations = entry->GetSMILAnimations();
     if (animations && animations->Apply(elapsed))
       did_apply_effects = true;
   }
@@ -607,6 +618,8 @@ void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
     UseCounter::Count(&GetDocument(),
                       WebFeature::kSVGSMILAnimationAppliedEffect);
   }
+
+  recordreplay::Assert("SMILTimeContainer::ApplyTimedEffects Done");
 }
 
 void SMILTimeContainer::AdvanceFrameForTesting() {
