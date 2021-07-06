@@ -410,8 +410,8 @@ void AuthenticationService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      DCHECK(user_approved_account_list_manager_.GetApprovedAccountIDList()
-                 .empty());
+      // TODO(crbug.com/1217673): Re-add DCHECK if approved account list
+      // must be empty prior to a set call.
       ApproveAccountList();
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
