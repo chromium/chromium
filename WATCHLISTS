@@ -72,10 +72,7 @@
                   'chrome/android/javatests/src/org/chromium/chrome/browser/.*ChooserDialogTest.java'
     },
     'android_omnibox': {
-      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/omnibox/'
-    },
-    'android_omnibox_deps': {
-      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/omnibox/*/*DEPS',
+      'filepath': 'chrome/browser/ui/android/omnibox/',
     },
     'android_search_widget': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/locale/' \
@@ -90,7 +87,8 @@
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/Tab'
     },
     'android_toolbar': {
-      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/toolbar/'
+      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/toolbar/' \
+                  '|chrome/browser/ui/android/toolbar/'
     },
     'android_uma_settings': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/settings/privacy/PrivacyPreferencesManager.java|'\
@@ -2100,7 +2098,6 @@
     'android_infra': ['agrieve+watch@chromium.org'],
     'android_item_chooser_dialogs': ['juncai+watch@chromium.org'],
     'android_omnibox': ['ender+watch@chromium.org'],
-    'android_omnibox_deps': ['jinsukkim+deps@chromium.org'],
     'android_search_widget': ['tedchoc+watch@chromium.org',
                               'yusufo+watch@chromium.org'],
     'android_studio': ['wnwen+watch@chromium.org',
