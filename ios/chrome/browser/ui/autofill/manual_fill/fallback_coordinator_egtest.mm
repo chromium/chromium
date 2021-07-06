@@ -263,8 +263,7 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the input accessory view continues working after a picker is
 // present.
-// TODO(crbug.com/1218869): Re-enable this test.
-- (void)DISABLED_testInputAccessoryBarIsPresentAfterPickers {
+- (void)testInputAccessoryBarIsPresentAfterPickers {
   // Add the profile to be used.
   [AutofillAppInterface saveExampleProfile];
 
@@ -408,8 +407,7 @@ BOOL WaitForKeyboardToAppear() {
 
 // Test the input accessory bar is present when undocking then docking the
 // keyboard.
-// TODO(crbug.com/1218869): Re-enable this test.
-- (void)DISABLED_testInputAccessoryBarIsPresentAfterUndockingKeyboard {
+- (void)testInputAccessoryBarIsPresentAfterUndockingKeyboard {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPhone.");
   }
@@ -448,8 +446,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the manual fallback view is present in incognito.
-// Disabled due to flakiness. See crbug.com/1115321.
-- (void)DISABLED_testIncognitoManualFallbackMenu {
+- (void)testIncognitoManualFallbackMenu {
   // Add the profile to use for verification.
   [AutofillAppInterface saveExampleProfile];
 
@@ -485,8 +482,7 @@ BOOL WaitForKeyboardToAppear() {
 // Tests the mediator stops observing objects when the incognito BVC is
 // destroyed. Waiting for dealloc was causing a race condition with the
 // autorelease pool, and some times a DCHECK will be hit.
-// TODO(crbug.com/1111258): Investigate cause of flakiness and re-enable.
-- (void)DISABLED_testOpeningIncognitoTabsDoNotLeak {
+- (void)testOpeningIncognitoTabsDoNotLeak {
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   std::string webViewText("Profile form");
   [AutofillAppInterface saveExampleProfile];
@@ -558,8 +554,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the manual fallback view is not duplicated after incognito.
-// Disabled due to flakiness. See crbug.com/1115282.
-- (void)DISABLED_testReturningFromIncognitoDoesNotDuplicatesManualFallbackMenu {
+- (void)testReturningFromIncognitoDoesNotDuplicatesManualFallbackMenu {
   // Add the profile to use for verification.
   [AutofillAppInterface saveExampleProfile];
 
