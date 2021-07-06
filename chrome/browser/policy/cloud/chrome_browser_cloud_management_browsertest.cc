@@ -9,10 +9,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -33,7 +32,6 @@
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -48,7 +46,10 @@
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
-#include "components/policy/test_support/local_policy_test_server.h"
+#include "components/policy/policy_constants.h"
+#include "components/policy/test_support/client_storage.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -74,27 +75,41 @@ namespace em = enterprise_management;
 namespace policy {
 namespace {
 
-const char kEnrollmentToken[] = "enrollment_token";
-const char kInvalidEnrollmentToken[] = "invalid_enrollment_token";
-const char kMachineName[] = "foo";
-const char kClientID[] = "fake_client_id";
-const char kDMToken[] = "fake_dm_token";
+constexpr char kEnrollmentToken[] = "enrollment_token";
+constexpr char kMachineName[] = "foo";
+constexpr char kClientID[] = "fake_client_id";
+constexpr char kDMToken[] = "fake_dm_token";
 const char kInvalidDMToken[] = "invalid_dm_token";
-const char kEnrollmentResultMetrics[] =
+constexpr char kEnrollmentResultMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.Result";
 const char kUnenrollmentSuccessMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess";
-const char kTestPolicyConfig[] = R"(
-{
-  "google/chrome/machine-level-user" : {
-    "mandatory": {
-      "ShowHomeButton": true
-    }
-  },
-  "robot_api_auth_code": "fake_auth_code",
-  "service_account_identity": "foo@bar.com"
+
+std::unique_ptr<PolicyStorage> CreatePolicyStorage() {
+  em::CloudPolicySettings settings;
+  em::BooleanPolicyProto* show_home_button = settings.mutable_showhomebutton();
+  show_home_button->mutable_policy_options()->set_mode(
+      em::PolicyOptions::MANDATORY);
+  show_home_button->set_value(true);
+
+  auto policy_storage = std::make_unique<PolicyStorage>();
+  policy_storage->SetPolicyPayload(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+      settings.SerializeAsString());
+  policy_storage->set_robot_api_auth_code("fake_auth_code");
+  policy_storage->set_service_account_identity("foo@bar.com");
+  return policy_storage;
 }
-)";
+
+ClientStorage::ClientInfo CreateTestClientInfo() {
+  ClientStorage::ClientInfo client_info;
+  client_info.device_id = kClientID;
+  client_info.device_token = kDMToken;
+  client_info.allowed_policy_types.insert(
+      {dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType});
+  return client_info;
+}
 
 class ChromeBrowserCloudManagementControllerObserver
     : public ChromeBrowserCloudManagementController::Observer {
@@ -210,8 +225,8 @@ class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
 }  // namespace
 
 class ChromeBrowserCloudManagementServiceIntegrationTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::string(
+    : public PlatformBrowserTest,
+      public testing::WithParamInterface<std::string (
           ChromeBrowserCloudManagementServiceIntegrationTest::*)(void)> {
  public:
   MOCK_METHOD4(OnJobDone,
@@ -317,9 +332,7 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
   }
 
   void StartTestServer() {
-    test_server_ = std::make_unique<LocalPolicyTestServer>(
-        "chrome/test/data/policy/"
-        "policy_machine_level_user_cloud_policy_service_browsertest.json");
+    test_server_ = std::make_unique<EmbeddedPolicyTestServer>();
     ASSERT_TRUE(test_server_->Start());
   }
 
@@ -335,7 +348,7 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
   std::string token_;
   std::unique_ptr<DeviceManagementService> service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<LocalPolicyTestServer> test_server_;
+  std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementServiceIntegrationTest,
@@ -389,7 +402,7 @@ class CloudPolicyStoreObserverStub : public CloudPolicyStore::Observer {
   DISALLOW_COPY_AND_ASSIGN(CloudPolicyStoreObserverStub);
 };
 
-class MachineLevelUserCloudPolicyManagerTest : public InProcessBrowserTest {
+class MachineLevelUserCloudPolicyManagerTest : public PlatformBrowserTest {
  protected:
   bool CreateAndInitManager(const std::string& dm_token) {
     base::ScopedAllowBlockingForTesting scope_for_testing;
@@ -435,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(MachineLevelUserCloudPolicyManagerTest, WithDmToken) {
 }
 
 class ChromeBrowserCloudManagementEnrollmentTest
-    : public InProcessBrowserTest,
+    : public PlatformBrowserTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   ChromeBrowserCloudManagementEnrollmentTest() {
@@ -469,7 +482,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
   }
 #endif
@@ -491,7 +504,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
     DMToken dm_token = BrowserDMTokenStorage::Get()->RetrieveDMToken();
     if (is_enrollment_token_valid()) {
       EXPECT_TRUE(dm_token.is_valid());
-      EXPECT_EQ("fake_device_management_token", dm_token.value());
+      EXPECT_EQ(kFakeDeviceToken, dm_token.value());
     } else {
       EXPECT_TRUE(dm_token.is_empty());
     }
@@ -522,7 +535,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
   base::HistogramTester histogram_tester_;
 
  private:
-  LocalPolicyTestServer test_server_;
+  EmbeddedPolicyTestServer test_server_;
   FakeBrowserDMTokenStorage storage_;
   ChromeBrowserCloudManagementControllerObserver observer_;
 
@@ -561,7 +574,7 @@ INSTANTIATE_TEST_SUITE_P(ChromeBrowserCloudManagementEnrollmentTest,
 
 class MachineLevelUserCloudPolicyPolicyFetchTest
     : public ChromeBrowserCloudManagementControllerObserver,
-      public InProcessBrowserTest,
+      public PlatformBrowserTest,
       public ::testing::WithParamInterface<std::tuple<std::string, bool>> {
  public:
   MachineLevelUserCloudPolicyPolicyFetchTest() {
@@ -608,18 +621,15 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
   }
 #endif
 
   void SetUpTestServer() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    base::FilePath config_path = temp_dir_.GetPath().AppendASCII("config.json");
-    base::WriteFile(config_path, kTestPolicyConfig);
-    test_server_ = std::make_unique<LocalPolicyTestServer>(config_path);
-    test_server_->RegisterClient(kDMToken, kClientID, {} /* state_keys */);
+    test_server_ = std::make_unique<EmbeddedPolicyTestServer>(
+        std::make_unique<ClientStorage>(), CreatePolicyStorage());
+    test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
   }
 
   DMToken retrieve_dm_token() { return storage_.RetrieveDMToken(); }
@@ -631,7 +641,7 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
   base::HistogramTester histogram_tester_;
 
  private:
-  std::unique_ptr<LocalPolicyTestServer> test_server_;
+  std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   FakeBrowserDMTokenStorage storage_;
   base::ScopedTempDir temp_dir_;
   base::RepeatingClosure quit_closure_;
@@ -679,16 +689,17 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
   const PolicyMap& policy_map = manager->store()->policy_map();
   if (dm_token() != kInvalidDMToken) {
     EXPECT_EQ(1u, policy_map.size());
-    EXPECT_EQ(base::Value(true), *(policy_map.Get("ShowHomeButton")->value()));
+    EXPECT_EQ(base::Value(true),
+              *(policy_map.Get(key::kShowHomeButton)->value()));
 
     // The token in storage should be valid.
     DMToken token = retrieve_dm_token();
     EXPECT_TRUE(token.is_valid());
 
-    // The test server will register with "fake_device_management_token" if
+    // The test server will register with kFakeDeviceToken if
     // Chrome is started without a DM token.
     if (dm_token().empty())
-      EXPECT_EQ(token.value(), "fake_device_management_token");
+      EXPECT_EQ(token.value(), kFakeDeviceToken);
     else
       EXPECT_EQ(token.value(), kDMToken);
 
@@ -721,7 +732,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class MachineLevelUserCloudPolicyRobotAuthTest
     : public ChromeBrowserCloudManagementControllerObserver,
-      public InProcessBrowserTest {
+      public PlatformBrowserTest {
  public:
   MachineLevelUserCloudPolicyRobotAuthTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -769,24 +780,21 @@ class MachineLevelUserCloudPolicyRobotAuthTest
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
   }
 #endif
 
   void SetUpTestServer() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    base::FilePath config_path = temp_dir_.GetPath().AppendASCII("config.json");
-    base::WriteFile(config_path, kTestPolicyConfig);
-    test_server_ = std::make_unique<LocalPolicyTestServer>(config_path);
-    test_server_->RegisterClient(kDMToken, kClientID, {} /* state_keys */);
+    test_server_ = std::make_unique<EmbeddedPolicyTestServer>(
+        std::make_unique<ClientStorage>(), CreatePolicyStorage());
+    test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
   }
 
   DMToken retrieve_dm_token() { return storage_.RetrieveDMToken(); }
 
  private:
-  std::unique_ptr<LocalPolicyTestServer> test_server_;
+  std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   FakeBrowserDMTokenStorage storage_;
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -824,13 +832,14 @@ IN_PROC_BROWSER_TEST_F(MachineLevelUserCloudPolicyRobotAuthTest, MAYBE_Test) {
   const PolicyMap& policy_map = manager->store()->policy_map();
 
   EXPECT_EQ(1u, policy_map.size());
-  EXPECT_EQ(base::Value(true), *(policy_map.Get("ShowHomeButton")->value()));
+  EXPECT_EQ(base::Value(true),
+            *(policy_map.Get(key::kShowHomeButton)->value()));
 
   // The token in storage should be valid.
   DMToken token = retrieve_dm_token();
   EXPECT_TRUE(token.is_valid());
 
-  // The test server will register with "fake_device_management_token" if
+  // The test server will register with kFakeDeviceToken if
   // Chrome is started without a DM token.
   EXPECT_EQ(token.value(), kDMToken);
 

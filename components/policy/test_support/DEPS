@@ -6,6 +6,9 @@ include_rules = [
   # to test.
 
   "+crypto",
-  "+net"
+  "+net",
+  "+services/network/public/cpp",
+  "+services/network/test",
+  "+third_party/re2",
 ]
 
