@@ -2,11 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SETTINGS_OWNER_FLAGS_STORAGE_H_
-#define CHROME_BROWSER_ASH_SETTINGS_OWNER_FLAGS_STORAGE_H_
+#ifndef CHROME_BROWSER_ASH_SETTINGS_ABOUT_FLAGS_H_
+#define CHROME_BROWSER_ASH_SETTINGS_ABOUT_FLAGS_H_
+
+#include <map>
 
 #include "base/compiler_specific.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+
+class PrefService;
+
+namespace base {
+class CommandLine;
+}
 
 namespace ownership {
 class OwnerSettingsService;
@@ -37,8 +45,13 @@ class OwnerFlagsStorage : public ::flags_ui::PrefServiceFlagsStorage {
 // GetFlags() are implemented as no-ops.
 class ReadOnlyFlagsStorage : public ::flags_ui::FlagsStorage {
  public:
-  // Initializes the object with a given set of flags.
-  explicit ReadOnlyFlagsStorage(const std::set<std::string>& flags);
+  ReadOnlyFlagsStorage(
+      const std::set<std::string>& flags,
+      const std::map<std::string, std::string>& origin_list_flags);
+  // Parses flags specified in the --feature-flags and
+  // --feature-flags-origin-list command line switches. This is used by Chrome
+  // OS to pass flags configuration from session_manager to Chrome on startup.
+  explicit ReadOnlyFlagsStorage(base::CommandLine* command_line);
   ~ReadOnlyFlagsStorage() override;
 
   // ::flags_ui::FlagsStorage:
@@ -52,12 +65,33 @@ class ReadOnlyFlagsStorage : public ::flags_ui::FlagsStorage {
 
  private:
   std::set<std::string> flags_;
+  std::map<std::string, std::string> origin_list_flags_;
 };
 
-// Parses flags specified in the --feature-flags command line switch. This is
-// used by Chrome OS to pass flags configuration from session_manager to Chrome
-// on startup.
-std::set<std::string> ParseFlagsFromCommandLine();
+// A helper class to update Chrome OS session manager feature flags
+// configuration from a provided FlagsStorage instance. This is meant to be used
+// in the code paths that restart the browser to apply a different set of flags.
+class FeatureFlagsUpdate {
+ public:
+  FeatureFlagsUpdate(const ::flags_ui::FlagsStorage& flags_storage,
+                     PrefService* profile_prefs);
+  ~FeatureFlagsUpdate();
+
+  // Checks whether the flags configuration specified in |cmdline| is different.
+  // |flags_difference| is filled in to indicate which flags differ.
+  bool DiffersFromCommandLine(base::CommandLine* cmdline,
+                              std::set<std::string>* flags_difference);
+
+  // Updates session_manager with the flags configuration via D-Bus.
+  void UpdateSessionManager();
+
+ private:
+  static void ApplyUserPolicyToFlags(PrefService* user_profile_prefs,
+                                     std::set<std::string>* flags);
+
+  std::set<std::string> flags_;
+  std::map<std::string, std::string> origin_list_flags_;
+};
 
 }  // namespace about_flags
 }  // namespace ash
@@ -71,4 +105,4 @@ using ::ash::about_flags::ReadOnlyFlagsStorage;
 }  // namespace about_flags
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_SETTINGS_OWNER_FLAGS_STORAGE_H_
+#endif  // CHROME_BROWSER_ASH_SETTINGS_ABOUT_FLAGS_H_

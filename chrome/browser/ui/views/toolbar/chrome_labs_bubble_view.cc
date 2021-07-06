@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
+
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
@@ -32,14 +33,9 @@
 #include "ui/views/layout/layout_provider.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/settings/owner_flags_storage.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/user.h"
+#include "chrome/browser/ash/settings/about_flags.h"
 #endif
 
 namespace {
@@ -305,18 +301,8 @@ void ChromeLabsBubbleView::RestartToApplyFlags() {
   // On Chrome OS be less intrusive and restart inside the user session after
   // we apply the newly selected flags.
   VLOG(1) << "Restarting to apply per-session flags...";
-
-  // On Chrome OS, Chrome asks session_manager to apply feature flags on
-  // restart. Adhere to policy-enforced command-line switch handling when
-  // applying modified flags.
-  auto flags = flags_storage_->GetFlags();
-  ash::UserSessionManager::ApplyUserPolicyToFlags(profile_->GetPrefs(), &flags);
-
-  AccountId account_id =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
-  ash::SessionManagerClient::Get()->SetFeatureFlagsForUser(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-      {flags.begin(), flags.end()});
+  ash::about_flags::FeatureFlagsUpdate(*flags_storage_, profile_->GetPrefs())
+      .UpdateSessionManager();
 #endif
   chrome::AttemptRestart();
 }

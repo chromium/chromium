@@ -48,7 +48,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/settings/owner_flags_storage.h"
+#include "chrome/browser/ash/settings/about_flags.h"
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -155,7 +155,7 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
   // preferences and applied via a chrome restart upon user login, see
   // UserSessionManager::RestartToApplyPerSessionFlagsIfNeed for the latter.
   ash::about_flags::ReadOnlyFlagsStorage flags_storage(
-      ash::about_flags::ParseFlagsFromCommandLine());
+      base::CommandLine::ForCurrentProcess());
 #else
   flags_ui::PrefServiceFlagsStorage flags_storage(local_state_.get());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

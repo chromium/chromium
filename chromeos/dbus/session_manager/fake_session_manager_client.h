@@ -127,7 +127,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
                        const std::vector<std::string>& flags) override;
   void SetFeatureFlagsForUser(
       const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::vector<std::string>& feature_flags) override;
+      const std::vector<std::string>& feature_flags,
+      const std::map<std::string, std::string>& origin_list_flags) override;
   void GetServerBackedStateKeys(StateKeysCallback callback) override;
 
   void StartArcMiniContainer(
@@ -366,9 +367,17 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   bool session_stopped_ = false;
 
-  // The last-set flags for user set through |SetFlagsForUser|.
-  std::map<cryptohome::AccountIdentifier, std::vector<std::string>>
-      flags_for_user_;
+  // The flags and feature flags state that has been set for a user through
+  // |SetFlagsForUser| and |SetFeatureFlagsForUser|.
+  struct FlagsState {
+    FlagsState();
+    ~FlagsState();
+
+    std::vector<std::string> flags;
+    std::vector<std::string> feature_flags;
+    std::map<std::string, std::string> origin_list_flags;
+  };
+  std::map<cryptohome::AccountIdentifier, FlagsState> flags_for_user_;
 
   base::WeakPtrFactory<FakeSessionManagerClient> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FakeSessionManagerClient);

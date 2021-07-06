@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -18,9 +19,11 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
@@ -28,6 +31,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/sha2.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/switches/chrome_switches.h"
 
 namespace chromeos {
 
@@ -599,15 +603,19 @@ bool FakeSessionManagerClient::SupportsBrowserRestart() const {
 void FakeSessionManagerClient::SetFlagsForUser(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const std::vector<std::string>& flags) {
-  flags_for_user_[cryptohome_id] = flags;
+  flags_for_user_[cryptohome_id].flags = flags;
 }
 
 void FakeSessionManagerClient::SetFeatureFlagsForUser(
     const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::vector<std::string>& feature_flags) {
+    const std::vector<std::string>& feature_flags,
+    const std::map<std::string, std::string>& origin_list_flags) {
   // session_manager's SetFeatureFlagsForUser implementation has the side effect
   // of clearing flags, match that behavior.
-  flags_for_user_[cryptohome_id] = {};
+  auto& state = flags_for_user_[cryptohome_id];
+  state.flags = {};
+  state.feature_flags = feature_flags;
+  state.origin_list_flags = origin_list_flags;
 }
 
 void FakeSessionManagerClient::GetServerBackedStateKeys(
@@ -724,7 +732,35 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   if (iter == flags_for_user_.end())
     return false;
 
-  *out_flags_for_user = iter->second;
+  // Raw flags.
+  *out_flags_for_user = iter->second.flags;
+
+  // Encode feature flags.
+  std::vector<base::Value> feature_flag_list;
+  for (const auto& feature_flag : iter->second.feature_flags) {
+    feature_flag_list.emplace_back(base::Value(feature_flag));
+  }
+  if (!feature_flag_list.empty()) {
+    std::string encoded;
+    base::JSONWriter::Write(base::Value(std::move(feature_flag_list)),
+                            &encoded);
+    out_flags_for_user->push_back(base::StringPrintf(
+        "--%s=%s", chromeos::switches::kFeatureFlags, encoded.c_str()));
+  }
+
+  // Encode origin list values.
+  base::Value origin_list_dict(base::Value::Type::DICTIONARY);
+  for (const auto& entry : iter->second.origin_list_flags) {
+    origin_list_dict.SetStringKey(entry.first, entry.second);
+  }
+  if (!origin_list_dict.DictEmpty()) {
+    std::string encoded;
+    base::JSONWriter::Write(origin_list_dict, &encoded);
+    out_flags_for_user->push_back(base::StringPrintf(
+        "--%s=%s", chromeos::switches::kFeatureFlagsOriginList,
+        encoded.c_str()));
+  }
+
   return true;
 }
 
@@ -797,6 +833,9 @@ void FakeSessionManagerClient::set_on_start_device_wipe_callback(
     base::OnceClosure callback) {
   on_start_device_wipe_callback_ = std::move(callback);
 }
+
+FakeSessionManagerClient::FlagsState::FlagsState() = default;
+FakeSessionManagerClient::FlagsState::~FlagsState() = default;
 
 ScopedFakeSessionManagerClient::ScopedFakeSessionManagerClient() {
   SessionManagerClient::InitializeFake();

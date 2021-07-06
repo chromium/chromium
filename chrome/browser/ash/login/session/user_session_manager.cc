@@ -74,8 +74,8 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ash/settings/owner_flags_storage.h"
 #include "chrome/browser/ash/sync/os_sync_util.h"
 #include "chrome/browser/ash/sync/turn_sync_on_helper.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
@@ -100,7 +100,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -362,7 +361,7 @@ void LogCustomFeatureFlags(const std::set<std::string>& feature_flags) {
     }
   }
 
-  about_flags::ReadOnlyFlagsStorage flags_storage(feature_flags);
+  about_flags::ReadOnlyFlagsStorage flags_storage(feature_flags, {});
   ::about_flags::RecordUMAStatistics(&flags_storage, "Login.CustomFlags");
 }
 
@@ -471,20 +470,6 @@ void UserSessionManager::OverrideHomedir() {
 void UserSessionManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(::prefs::kRLZBrand, std::string());
   registry->RegisterBooleanPref(::prefs::kRLZDisabled, false);
-}
-
-// static
-void UserSessionManager::ApplyUserPolicyToFlags(PrefService* user_profile_prefs,
-                                                std::set<std::string>* flags) {
-  // Get target value for --site-per-process for the user session according to
-  // policy. If it is supposed to be enabled, make sure it can not be disabled
-  // using flags-induced command-line switches.
-  const PrefService::Preference* site_per_process_pref =
-      user_profile_prefs->FindPreference(::prefs::kSitePerProcess);
-  if (site_per_process_pref->IsManaged() &&
-      site_per_process_pref->GetValue()->GetBool()) {
-    flags->erase(::about_flags::SiteIsolationTrialOptOutChoiceEnabled());
-  }
 }
 
 UserSessionManager::UserSessionManager()
@@ -607,7 +592,7 @@ void UserSessionManager::CompleteGuestSessionLogin(const GURL& start_url) {
   SessionManagerClient::Get()->SetFeatureFlagsForUser(
       cryptohome::CreateAccountIdentifierFromAccountId(
           user_manager::GuestAccountId()),
-      {});
+      /*feature_flags=*/{}, /*origin_list_flags=*/{});
 
   RestartChrome(command_line, RestartChromeReason::kGuest);
 }
@@ -942,26 +927,20 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
 
   // Compare feature flags configured for the device vs. user. Restart is only
   // required when there's a difference.
-  std::set<std::string> designated_flags =
-      flags_ui::PrefServiceFlagsStorage(profile->GetPrefs()).GetFlags();
-  ApplyUserPolicyToFlags(profile->GetPrefs(), &designated_flags);
-  std::set<std::string> actual_flags = about_flags::ParseFlagsFromCommandLine();
+  flags_ui::PrefServiceFlagsStorage flags_storage(profile->GetPrefs());
+  about_flags::FeatureFlagsUpdate update(flags_storage, profile->GetPrefs());
+
   std::set<std::string> flags_difference;
-  std::set_symmetric_difference(
-      designated_flags.begin(), designated_flags.end(), actual_flags.begin(),
-      actual_flags.end(),
-      std::inserter(flags_difference, flags_difference.begin()));
-  if (flags_difference.empty())
+  if (!update.DiffersFromCommandLine(base::CommandLine::ForCurrentProcess(),
+                                     &flags_difference)) {
     return false;
+  }
 
   // Restart is required. Emit metrics and logs and trigger the restart.
   LogCustomFeatureFlags(flags_difference);
   LOG(WARNING) << "Restarting to apply per-session flags...";
 
-  auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
-  SessionManagerClient::Get()->SetFeatureFlagsForUser(
-      account_id, {designated_flags.begin(), designated_flags.end()});
+  update.UpdateSessionManager();
   attempt_restart_closure_.Run();
   return true;
 }

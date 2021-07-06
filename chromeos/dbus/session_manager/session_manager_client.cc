@@ -507,13 +507,26 @@ class SessionManagerClientImpl : public SessionManagerClient {
 
   void SetFeatureFlagsForUser(
       const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::vector<std::string>& feature_flags) override {
+      const std::vector<std::string>& feature_flags,
+      const std::map<std::string, std::string>& origin_list_flags) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
         login_manager::kSessionManagerSetFeatureFlagsForUser);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(cryptohome_id.account_id());
     writer.AppendArrayOfStrings(feature_flags);
+
+    dbus::MessageWriter dict_writer(nullptr);
+    writer.OpenArray("{ss}", &dict_writer);
+    for (const auto& origin_entry : origin_list_flags) {
+      dbus::MessageWriter entry_writer(nullptr);
+      dict_writer.OpenDictEntry(&entry_writer);
+      entry_writer.AppendString(origin_entry.first);
+      entry_writer.AppendString(origin_entry.second);
+      dict_writer.CloseContainer(&entry_writer);
+    }
+    writer.CloseContainer(&dict_writer);
+
     session_manager_proxy_->CallMethod(&method_call,
                                        dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                                        base::DoNothing());
