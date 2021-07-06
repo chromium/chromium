@@ -13,6 +13,7 @@
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -316,8 +317,13 @@ class DiscardableImageGenerator {
 
 }  // namespace
 
-DiscardableImageMap::DiscardableImageMap() = default;
-DiscardableImageMap::~DiscardableImageMap() = default;
+DiscardableImageMap::DiscardableImageMap() {
+  recordreplay::RegisterPointer(this);
+}
+
+DiscardableImageMap::~DiscardableImageMap() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void DiscardableImageMap::Generate(const PaintOpBuffer* paint_op_buffer,
                                    const gfx::Rect& bounds) {
@@ -351,7 +357,12 @@ DiscardableImageMap::TakeDecodingModeMap() {
 void DiscardableImageMap::GetDiscardableImagesInRect(
     const gfx::Rect& rect,
     std::vector<const DrawImage*>* images) const {
+  recordreplay::Assert("DiscardableImageMap::GetDiscardableImagesInRect %d %d %d %d %d",
+                       recordreplay::PointerId(this),
+                       rect.x(), rect.y(), rect.width(), rect.height());
   images_rtree_.SearchRefs(rect, images);
+  recordreplay::Assert("DiscardableImageMap::GetDiscardableImagesInRect Done %lu",
+                       images->size());
 }
 
 const DiscardableImageMap::Rects& DiscardableImageMap::GetRectsForImage(
