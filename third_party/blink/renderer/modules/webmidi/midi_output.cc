@@ -78,8 +78,7 @@ base::TimeTicks GetTimeOrigin(ExecutionContext* context) {
   }
 
   DCHECK(performance);
-  return base::TimeTicks() +
-         base::TimeDelta::FromSecondsD(performance->GetTimeOrigin());
+  return performance->GetTimeOriginInternal();
 }
 
 class MessageValidator {

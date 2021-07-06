@@ -58,8 +58,8 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
       // GetTimeOrigin() returns seconds from the monotonic clock's origin..
       // Trace events timestamps accept seconds (as a double) based on
       // CurrentTime::monotonicallyIncreasingTime().
-      unsafe_start_for_traces = trace_event::ToTraceTimestamp(
-          performance->GetTimeOrigin() + start / 1000.0);
+      unsafe_start_for_traces = performance->GetTimeOriginInternal() +
+                                base::TimeDelta::FromMillisecondsD(start);
     } else {
       start = performance->now();
       unsafe_start_for_traces = base::TimeTicks::Now();

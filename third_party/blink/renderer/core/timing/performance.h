@@ -142,9 +142,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   DOMHighResTimeStamp timeOrigin() const;
 
   // Internal getter method for the time origin value.
-  double GetTimeOrigin() const {
-    return time_origin_.since_origin().InSecondsF();
-  }
+  base::TimeTicks GetTimeOriginInternal() const { return time_origin_; }
 
   PerformanceEntryVector getEntries();
   // Get BufferedEntriesByType will return all entries in the buffer regardless

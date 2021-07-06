@@ -40,9 +40,7 @@ Profiler* Profiler::Create(ScriptState* script_state,
   DCHECK(profiler_group);
 
   auto* profiler = profiler_group->CreateProfiler(
-      script_state, *options,
-      base::TimeTicks() +
-          base::TimeDelta::FromSecondsD(performance->GetTimeOrigin()),
+      script_state, *options, performance->GetTimeOriginInternal(),
       exception_state);
   if (exception_state.HadException())
     return nullptr;
