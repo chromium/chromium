@@ -2610,9 +2610,6 @@ extern const char kEnableOAuthIppDescription[];
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 
-extern const char kEnterpriseReportingInChromeOSName[];
-extern const char kEnterpriseReportingInChromeOSDescription[];
-
 extern const char kExoGamepadVibrationName[];
 extern const char kExoGamepadVibrationDescription[];
 

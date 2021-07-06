@@ -370,12 +370,6 @@ const base::Feature kEnterpriseReportingApiKeychainRecreation{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Upload enterprise cloud reporting from Chrome OS.
-const base::Feature kEnterpriseReportingInChromeOS{
-    "EnterpriseReportingInChromeOS", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 #if !defined(OS_ANDROID)
 // Enables real-time reporting for extension request
 const base::Feature kEnterpriseRealtimeExtensionRequest{

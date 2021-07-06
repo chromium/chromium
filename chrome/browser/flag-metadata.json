@@ -2880,11 +2880,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "enterprise-reporting-in-chromeos",
-    "owners": [ "bmalcolm" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "ev-details-in-page-info",
     "owners": [ "cthomp" ],
     "expiry_milestone": 83
@@ -5280,7 +5275,7 @@
     // This flag is used for in-the-field debugging of animation issues on
     // Chrome OS.
     "expiry_milestone": -1
-  }, 
+  },
   {
     "name": "unsafely-treat-insecure-origin-as-secure",
     "owners": [ "security-dev" ],

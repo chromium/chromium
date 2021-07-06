@@ -4541,12 +4541,6 @@ const char kEnableSuggestedFilesDescription[] =
     "Enable Suggested Files feature in Launcher, which will show file "
     "suggestions in the suggestion chips when the launcher is opened";
 
-const char kEnterpriseReportingInChromeOSName[] =
-    "Enterprise cloud reporting in Chrome OS";
-const char kEnterpriseReportingInChromeOSDescription[] =
-    "Enable the enterprise cloud reporting in Chrome OS. This feature requires "
-    "user level cloud management.";
-
 const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
 const char kExoGamepadVibrationDescription[] =
     "Allow Exo clients like Android to request vibration events for gamepads "

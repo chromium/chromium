@@ -765,9 +765,6 @@ void UserCloudPolicyManagerChromeOS::StartRefreshSchedulerIfReady() {
 
 void UserCloudPolicyManagerChromeOS::StartReportSchedulerIfReady(
     bool enable_delayed_creation) {
-  if (!base::FeatureList::IsEnabled(features::kEnterpriseReportingInChromeOS))
-    return;
-
   if (!client() || !client()->is_registered())
     return;
 

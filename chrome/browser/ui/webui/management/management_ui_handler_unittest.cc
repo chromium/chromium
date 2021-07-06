@@ -39,7 +39,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -58,7 +57,6 @@
 #include "chrome/browser/chromeos/policy/uploading/status_uploader.h"
 #include "chrome/browser/chromeos/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -402,7 +400,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     install_attributes_ =
         std::make_unique<chromeos::ScopedStubInstallAttributes>(
             chromeos::StubInstallAttributes::CreateUnset());
-    scoped_feature_list_.Init();
 
     crostini_features_ = std::make_unique<crostini::FakeCrostiniFeatures>();
     SetUpConnectManager();
@@ -460,9 +457,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         GetTestConfig().crostini_report_usage);
     local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled,
                             GetTestConfig().cloud_reporting_enabled);
-    scoped_feature_list()->Reset();
-    scoped_feature_list()->InitAndEnableFeature(
-        features::kEnterpriseReportingInChromeOS);
 
     profile_->GetPrefs()->SetFilePath(
         crostini::prefs::kCrostiniAnsiblePlaybookFilePath,
@@ -505,9 +499,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string GetManagementOverview() const {
     return extracted_.management_overview;
-  }
-  base::test::ScopedFeatureList* scoped_feature_list() {
-    return &scoped_feature_list_;
   }
 
   crostini::FakeCrostiniFeatures* crostini_features() {
@@ -598,7 +589,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   std::unique_ptr<chromeos::ScopedStubInstallAttributes> install_attributes_;
   std::unique_ptr<crostini::FakeCrostiniFeatures> crostini_features_;
   TestingPrefServiceSimple local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple user_prefs_;
   std::unique_ptr<TestDeviceCloudPolicyManagerChromeOS> manager_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;

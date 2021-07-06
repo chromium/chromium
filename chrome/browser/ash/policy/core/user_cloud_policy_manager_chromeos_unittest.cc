@@ -872,9 +872,6 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, TestReportSchedulerCreation) {
   // Open policy and feature flag to enable report scheduler.
   g_browser_process->local_state()->SetBoolean(
       enterprise_reporting::kCloudReportingEnabled, true);
-  scoped_feature_list()->Reset();
-  scoped_feature_list()->InitAndEnableFeature(
-      features::kEnterpriseReportingInChromeOS);
 
   // Log in an user account, and set it as primary.
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kTestGaiaId);
@@ -906,9 +903,6 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, TestReportSchedulerDelayedCreation) {
   // Open policy and feature flag to enable report scheduler.
   g_browser_process->local_state()->SetBoolean(
       enterprise_reporting::kCloudReportingEnabled, true);
-  scoped_feature_list()->Reset();
-  scoped_feature_list()->InitAndEnableFeature(
-      features::kEnterpriseReportingInChromeOS);
 
   // To simulate an intermediate status in user session, log in an user account
   // as primiary but set |profile_is_created_| as false.
@@ -952,9 +946,6 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, TestSkipReportSchedulerCreation) {
   // Open policy and feature flag to enable report scheduler.
   g_browser_process->local_state()->SetBoolean(
       enterprise_reporting::kCloudReportingEnabled, true);
-  scoped_feature_list()->Reset();
-  scoped_feature_list()->InitAndEnableFeature(
-      features::kEnterpriseReportingInChromeOS);
 
   // No primary user is specified.
   ASSERT_FALSE(user_manager_->GetPrimaryUser());
@@ -976,9 +967,6 @@ TEST_P(UserCloudPolicyManagerChromeOSTest,
   // scheduler.
   g_browser_process->local_state()->SetBoolean(
       enterprise_reporting::kCloudReportingEnabled, true);
-  scoped_feature_list()->Reset();
-  scoped_feature_list()->InitAndDisableFeature(
-      features::kEnterpriseReportingInChromeOS);
 
   // Report scheduler won't be created.
   MakeManagerWithPreloadedStore(base::TimeDelta());

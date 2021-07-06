@@ -5610,13 +5610,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnterpriseReportingApiKeychainRecreation)},
 #endif  // defined(OS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enterprise-reporting-in-chromeos",
-     flag_descriptions::kEnterpriseReportingInChromeOSName,
-     flag_descriptions::kEnterpriseReportingInChromeOSDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kEnterpriseReportingInChromeOS)},
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !defined(OS_ANDROID)
     {"enterprise-realtime-extension-request",
      flag_descriptions::kEnterpriseRealtimeExtensionRequestName,
