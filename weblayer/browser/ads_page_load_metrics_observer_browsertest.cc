@@ -72,8 +72,9 @@ class AdsPageLoadMetricsObserverBrowserTest
 };
 
 // Test that an embedded ad is same origin.
+// TODO(crbug.com/1210190): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricEmbedded) {
+                       DISABLED_OriginStatusMetricEmbedded) {
   base::HistogramTester histogram_tester;
   auto waiter = CreatePageLoadMetricsTestWaiter();
   NavigateAndWaitForCompletion(
@@ -102,8 +103,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an ad with the same origin as the main page is same origin.
+// TODO(crbug.com/1210190): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricSame) {
+                       DISABLED_OriginStatusMetricSame) {
   // Set the frame's resource as a rule.
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("pixel.png")});
@@ -130,8 +132,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an ad with a different origin as the main page is cross origin.
+// TODO(crbug.com/1210190): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricCross) {
+                       DISABLED_OriginStatusMetricCross) {
   // Note: Cannot navigate cross-origin without dynamically generating the URL.
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -297,8 +300,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 // Check that the Heavy Ad Intervention fires the correct number of times to
 // protect privacy, and that after that limit is hit, the Ads Intervention
 // Framework takes over for future navigations.
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       HeavyAdInterventionBlocklistFull_InterventionBlocked) {
+// TODO(crbug.com/1210190): This test is flaky.
+IN_PROC_BROWSER_TEST_F(
+    AdsPageLoadMetricsObserverResourceBrowserTest,
+    DISABLED_HeavyAdInterventionBlocklistFull_InterventionBlocked) {
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
       http_responses(4);
   for (auto& http_response : http_responses) {
@@ -380,8 +385,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Check that clearing browsing data resets the number of times that the Heavy
 // Ad Intervention has been triggered.
+// TODO(crbug.com/1210190): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       ClearBrowsingDataClearsHeavyAdBlocklist) {
+                       DISABLED_ClearBrowsingDataClearsHeavyAdBlocklist) {
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
       http_responses(4);
   for (auto& http_response : http_responses) {

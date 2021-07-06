@@ -97,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       ad_frame_tagged_by_script->GetFrameTreeNodeId()));
 }
 
-IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
+// TODO(crbug.com/1210190): This test is flaky.
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, DISABLED_FramesByURL) {
   subresource_filter::TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.
