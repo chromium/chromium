@@ -56,18 +56,35 @@ class AverageLagTrackerTest : public testing::Test {
     EXPECT_THAT(histogram_tester().GetAllSamples(
                     "Event.Latency.ScrollBegin.Touch.AverageLagPresentation"),
                 ElementsAre(Bucket(bucket_value, count)));
+
+    EXPECT_THAT(
+        histogram_tester().GetAllSamples("Event.Latency.ScrollBegin.Touch."
+                                         "AverageLagPresentation.NoPrediction"),
+        ElementsAre(Bucket(bucket_value, count)));
   }
 
   void CheckScrollUpdateHistograms(int bucket_value, int count) {
     EXPECT_THAT(histogram_tester().GetAllSamples(
                     "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"),
                 ElementsAre(Bucket(bucket_value, count)));
+
+    EXPECT_THAT(
+        histogram_tester().GetAllSamples("Event.Latency.ScrollUpdate.Touch."
+                                         "AverageLagPresentation.NoPrediction"),
+        ElementsAre(Bucket(bucket_value, count)));
   }
 
   void CheckPredictionPositiveHistograms(int bucket_value, int count) {
     EXPECT_THAT(histogram_tester().GetAllSamples(
                     "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation."
                     "PredictionPositive"),
+                ElementsAre(Bucket(bucket_value, count)));
+  }
+
+  void CheckRemainingLagPercentageHistograms(int bucket_value, int count) {
+    EXPECT_THAT(histogram_tester().GetAllSamples(
+                    "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation."
+                    "RemainingLagPercentage"),
                 ElementsAre(Bucket(bucket_value, count)));
   }
 
@@ -81,6 +98,9 @@ class AverageLagTrackerTest : public testing::Test {
   void CheckScrollUpdateHistogramsTotalCount(int count) {
     histogram_tester().ExpectTotalCount(
         "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", count);
+    histogram_tester().ExpectTotalCount(
+        "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction",
+        count);
   }
 
   void CheckPredictionPositiveHistogramsTotalCount(int count) {
@@ -155,6 +175,7 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   CheckScrollUpdateHistograms(9, 1);
   CheckPredictionPositiveHistograms(0, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
+  CheckRemainingLagPercentageHistograms(100 - 0, 1);
 
   ResetHistograms();
 
@@ -167,6 +188,7 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   CheckScrollUpdateHistograms(8, 1);
   CheckPredictionPositiveHistograms(0, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
+  CheckRemainingLagPercentageHistograms(100 - 0, 1);
 }
 
 // Test the case that event's frame swap time is later than next event's
@@ -341,6 +363,7 @@ TEST_F(AverageLagTrackerTest, ScrollPrediction) {
   CheckScrollUpdateHistograms(4, 1);
   CheckPredictionPositiveHistograms(5, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
+  CheckRemainingLagPercentageHistograms(100 * 4.375 / 9.375, 1);
 }
 
 // Test AverageLag with imperfect scroll prediction.
@@ -381,6 +404,7 @@ TEST_F(AverageLagTrackerTest, ImperfectScrollPrediction) {
   // Positive effect of prediction = 4.3px
   CheckPredictionPositiveHistograms(4, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
+  CheckRemainingLagPercentageHistograms(100 * 5.075 / 9.375, 1);
 }
 
 TEST_F(AverageLagTrackerTest, NegativePredictionEffect) {
@@ -420,6 +444,9 @@ TEST_F(AverageLagTrackerTest, NegativePredictionEffect) {
   // Negative effect of prediction = 11.25
   CheckPredictionPositiveHistogramsTotalCount(0);
   CheckPredictionNegativeHistograms(11, 1);
+
+  // 100 * 20.625 / 9.375 = 220 is logged into bucket 219.
+  CheckRemainingLagPercentageHistograms(219, 1);
 }
 
 TEST_F(AverageLagTrackerTest, NoPredictionEffect) {

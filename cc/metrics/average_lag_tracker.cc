@@ -188,30 +188,52 @@ void AverageLagTracker::CalculateAndReportAverageLagUma(bool send_anyway) {
 
     const float time_delta =
         (frame_lag.frame_time - last_reported_time_).InMillisecondsF();
-    const float scaled_lag = accumulated_lag_ / time_delta;
-    base::UmaHistogramCounts1000(GetAverageLagMetricName(event_type),
-                                 scaled_lag);
+    const float scaled_lag_with_prediction = accumulated_lag_ / time_delta;
+    const float scaled_lag_no_prediction =
+        accumulated_lag_no_prediction_ / time_delta;
 
-    const float prediction_effect =
-        (accumulated_lag_no_prediction_ - accumulated_lag_) / time_delta;
+    base::UmaHistogramCounts1000(GetAverageLagMetricName(event_type),
+                                 scaled_lag_with_prediction);
+    base::UmaHistogramCounts1000(
+        base::JoinString({GetAverageLagMetricName(event_type), "NoPrediction"},
+                         "."),
+        scaled_lag_with_prediction);
+
+    const float lag_improvement =
+        scaled_lag_no_prediction - scaled_lag_with_prediction;
+
     // Log positive and negative prediction effects. ScrollBegin currently
     // doesn't take prediction into account so don't log for it.
     // Positive effect means that the prediction reduced the perceived lag,
     // where negative means prediction made lag worse (most likely due to
     // misprediction).
     if (event_type == EventType::ScrollUpdate) {
-      if (prediction_effect >= 0.f) {
+      if (lag_improvement >= 0.f) {
         base::UmaHistogramCounts1000(
             base::JoinString(
                 {GetAverageLagMetricName(event_type), "PredictionPositive"},
                 "."),
-            prediction_effect);
+            lag_improvement);
       } else {
         base::UmaHistogramCounts1000(
             base::JoinString(
                 {GetAverageLagMetricName(event_type), "PredictionNegative"},
                 "."),
-            -prediction_effect);
+            -lag_improvement);
+      }
+
+      if (scaled_lag_no_prediction > 0) {
+        // How much of the original lag wasn't removed by prediction.
+        float remaining_lag_ratio =
+            scaled_lag_with_prediction / scaled_lag_no_prediction;
+
+        // Using custom bucket count for high precision on values in (0, 100).
+        // With 100 buckets, (0, 100) is mapped into 60 buckets.
+        base::UmaHistogramCustomCounts(
+            base::JoinString(
+                {GetAverageLagMetricName(event_type), "RemainingLagPercentage"},
+                "."),
+            100 * remaining_lag_ratio, 1, 500, 100);
       }
     }
     accumulated_lag_ = 0;

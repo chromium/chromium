@@ -727,9 +727,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     finger when user scrolls. Only reports touch scrolling. See
     https://docs.google.com/document/d/154jddNiKtxELBvrjLz9v6A7sA1J3iwQQzySHgtY12Oo/
 
-    This is the lag caused by the Gesture Scroll Begin Event. In each touch
-    interaction there is a GSB followed by multiple Gesture Scroll Updates,
-    which are separately logged by
+    This is the lag observed in processing the Gesture Scroll Begin Event. In
+    each touch interaction there is a GSB followed by multiple Gesture Scroll
+    Updates, which are separately logged by
+    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.
+
+    Team: input-dev@chromium.org.
+  </summary>
+</histogram>
+
+<histogram
+    name="Event.Latency.ScrollBegin.Touch.AverageLagPresentation.NoPrediction"
+    units="pixels" expires_after="M97">
+  <owner>flackr@chromium.org</owner>
+  <owner>joalmei@microsoft.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Measures an average distance that represents how the page sticks to the
+    finger when user scrolls if prediction was disabled. Only reports touch
+    scrolling. See
+    https://docs.google.com/document/d/154jddNiKtxELBvrjLz9v6A7sA1J3iwQQzySHgtY12Oo/
+
+    This is the lag observed in processing the Gesture Scroll Begin Event. In
+    each touch interaction there is a GSB followed by multiple Gesture Scroll
+    Updates, which are separately logged by
     Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.
 
     Team: input-dev@chromium.org.
@@ -1287,55 +1308,96 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     finger when user scrolls. Only reports touch scrolling. See
     https://docs.google.com/document/d/154jddNiKtxELBvrjLz9v6A7sA1J3iwQQzySHgtY12Oo/
 
-    This is the lag caused by the Gesture Scroll Updates occurring in the
-    lifetime of a scroll interaction.
+    This is the lag observed in processing the Gesture Scroll Updates occurring
+    in the lifetime of a scroll interaction.
 
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
 <histogram
-    name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.PredictionNegative"
+    name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction"
     units="pixels" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
-    Measures the negative impact on the AverageLagPresentation metric that is
-    attributable to scroll prediction. This value has the same units as
-    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation but is a difference
-    between that value and what it would have been if prediction was disabled.
+    Measures an average distance that represents how the page sticks to the
+    finger when user scrolls if prediction was disabled. Only reports touch
+    scrolling. See
+    https://docs.google.com/document/d/154jddNiKtxELBvrjLz9v6A7sA1J3iwQQzySHgtY12Oo/
 
-    PredictionNegative is logged when prediction caused an increase in perceived
-    lag (i.e. the rendered position was on average further from the actual
-    location of the finger) for a given interaction/interval. The duration of
-    the interaction/interval is either 1s, or the time from when the user starts
-    scrolling to lifting the finger, whichever is smaller.
+    This is the lag observed in processing the Gesture Scroll Updates occurring
+    in the lifetime of a scroll interaction.
 
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
 <histogram
-    name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.PredictionPositive"
+    name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.RemainingLagPercentage"
+    units="%" expires_after="M97">
+  <owner>flackr@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Percentage of touch lag that prediction wasn't able to remove.
+
+    This is the ratio (Lag_with_prediction)/(Lag_without_prediction). Lag is the
+    average distance between the finger and page positons during touch
+    scrolling.
+
+    0% means all the lag existing before prediction was removed. 100% means that
+    prediction had no impact. Greater than 100% means that prediction introduced
+    more lag.
+
+    This metric doesn't distinguish between OverPrediction and UnderPrediction.
+    A same absolute value of OverPrediction or UnderPrediction will result in
+    the same RemainingLagPercentage value.
+
+    Lag_with_prediction =
+    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation
+    Lag_without_prediction =
+    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction
+
+    Team: input-dev@chromium.org.
+  </summary>
+</histogram>
+
+<histogram
+    name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.{PredictionImpact}"
     units="pixels" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
-    Measures the positive impact on the AverageLagPresentation metric that is
-    attributable to scroll prediction. This value has the same units as
-    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation but is a difference
-    between that value and what it would have been if prediction was disabled.
+    Improvement of prediction in touch lag. It is defined as
+    (Lag_without_prediction - Lag_with_prediction).
 
-    PredictionPostive is logged when prediction caused a decrease in perceived
-    lag (i.e. the rendered position was on average closer to the actual location
-    of the finger) for a given interaction/interval. The duration of the
-    interaction/interval is either 1s, or the time from when the user starts
-    scrolling to lifting the finger, whichever is smaller.
+    Lag is the distance between the finger position and the rendered position.
+
+    When positive, prediction improves touch performance (reduces lag). When
+    negative, prediction worsens touch performance (increases lag).
+
+    The duration of the interaction/interval is either 1s, or the time from when
+    the user starts scrolling to lifting the finger, whichever is smaller.
+
+    This metric uses directionless distances, therefore it doesn't distinguish
+    between OverPrediction and UnderPrediction. A same absolute value of
+    OverPrediction or UnderPrediction will result in the same PredictionImpact
+    value.
+
+    Lag_with_prediction =
+    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation
+    Lag_without_prediction =
+    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction
 
     Team: input-dev@chromium.org.
   </summary>
+  <token key="PredictionImpact">
+    <variant name="PredictionNegative" summary="Negative impact values"/>
+    <variant name="PredictionPositive" summary="Positive impact values"/>
+  </token>
 </histogram>
 
 <histogram
