@@ -675,20 +675,6 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
                       {'href': policy_group_ref + '#' + policy['atomic_group']},
                       policy['atomic_group'])
 
-  def _AddPolicyNote(self, parent, policy):
-    '''If a policy has an additional web page assigned with it, then add
-    a link for that page.
-
-    Args:
-      policy: The data structure of the policy.
-    '''
-    if 'problem_href' not in policy:
-      return
-    problem_href = policy['problem_href']
-    div = self._AddStyledElement(parent, 'div', ['div.note'])
-    note = self.GetLocalizedMessage('note').replace('$6', problem_href)
-    self._AddParagraphs(div, note)
-
   def _AddPolicyRow(self, parent, policy):
     '''Adds a row for the policy in the summary table.
 
@@ -740,7 +726,6 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
         policy_name_text += self.GetLocalizedMessage('deprecated') + ")"
       self.AddText(h2, policy_name_text)
       self.AddElement(parent2, 'span', {}, policy['caption'])
-      self._AddPolicyNote(parent2, policy)
       self._AddPolicyDetails(parent2, policy)
     else:
       # Groups get a more compact description.

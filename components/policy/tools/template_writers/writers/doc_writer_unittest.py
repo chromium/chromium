@@ -1061,18 +1061,6 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '</dd>'
         '</dl></root>')
 
-  def testAddPolicyNote(self):
-    # TODO(jkummerow): The functionality tested by this test is currently not
-    # used for anything and will probably soon be removed.
-    # Test if nodes are correctly added to policies.
-    policy = {'problem_href': 'http://www.example.com/5'}
-    self.writer.messages['doc_note'] = {'text': '...$6...'}
-    self.writer._AddPolicyNote(self.doc_root, policy)
-    self.assertEquals(
-        self.doc_root.toxml(), '<root><div style="style_div.note;"><p>...'
-        '<a href="http://www.example.com/5">http://www.example.com/5</a>'
-        '...</p></div></root>')
-
   def testAddPolicyRow(self):
     # Test if policies are correctly added to the summary table.
     policy = {
