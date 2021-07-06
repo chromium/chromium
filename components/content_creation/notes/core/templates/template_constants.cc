@@ -14,7 +14,9 @@ const uint16_t k400Weight = 400;
 const uint16_t k700Weight = 700;
 
 const int kDefaultMinTextSizeSP = 14;
-const int kDefaultMaxTextSizeSP = 26;
+const int kDefaultMaxTextSizeSP = 48;
+const int kFriendlyMaxSizeSP = 32;
+const int kBiggerMaxTextSizeSP = 60;
 
 const char kBebasNeueFontName[] = "Bebas Neue";
 const char kMansalvaFontName[] = "Mansalva";
@@ -83,7 +85,7 @@ NoteTemplate GetFriendlyTemplate() {
       TextStyle(kRockSaltFontName,
                 /*font_color=*/kGrey900Color, k400Weight,
                 /*all_caps=*/false, TextAlignment::kStart,
-                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
+                kDefaultMinTextSizeSP, kFriendlyMaxSizeSP),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
@@ -121,7 +123,7 @@ NoteTemplate GetImpactfulTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter,
-                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP,
+                kDefaultMinTextSizeSP, kBiggerMaxTextSizeSP,
                 /*highlight_color=*/kWhiteColor, HighlightStyle::kHalf),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
@@ -149,7 +151,7 @@ NoteTemplate GetGroovyTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kYellow400Color, k400Weight,
                 /*all_caps=*/true, TextAlignment::kStart, kDefaultMinTextSizeSP,
-                kDefaultMaxTextSizeSP,
+                kBiggerMaxTextSizeSP,
                 /*highlight_color=*/kBlue900Color, HighlightStyle::kFull),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
@@ -163,7 +165,7 @@ NoteTemplate GetMonochromeTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kWhiteColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter,
-                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP),
+                kDefaultMinTextSizeSP, kBiggerMaxTextSizeSP),
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
@@ -175,7 +177,7 @@ NoteTemplate GetBoldTemplate() {
       TextStyle(kBebasNeueFontName,
                 /*font_color=*/kBlackColor, k400Weight,
                 /*all_caps=*/true, TextAlignment::kCenter,
-                kDefaultMinTextSizeSP, kDefaultMaxTextSizeSP,
+                kDefaultMinTextSizeSP, kBiggerMaxTextSizeSP,
                 /*highlight_color=*/kLightYellowColor, HighlightStyle::kHalf),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
