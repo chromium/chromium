@@ -59,7 +59,7 @@ message SecurityDomainMember {
 message JoinSecurityDomainsRequest {
   SecurityDomain security_domain = 1;
   SecurityDomainMember security_domain_member = 2;
-  SharedMemberKey shared_member_key = 3;
+  repeated SharedMemberKey shared_member_key = 3;
   int32 member_type_hint = 4;
 }
 

@@ -65,14 +65,14 @@ struct TrustedVaultKeyAndVersion {
 // vault backend sequence.
 class TrustedVaultConnection {
  public:
-  // |last_key_version| is server-side determined version of the last trusted
-  // vault key. If request was successful, it's guaranteed to be the real
-  // version of |last_trusted_vault_key_and_version.key| passed to
-  // RegisterAuthenticationFactor() and not be equal to
-  // kUnknownConstantKeyVersion.
   using RegisterAuthenticationFactorCallback =
-      base::OnceCallback<void(TrustedVaultRegistrationStatus,
-                              int /*last_key_version*/)>;
+      base::OnceCallback<void(TrustedVaultRegistrationStatus)>;
+  // If registration request was successful without local keys, it means only
+  // constant key exists server-side and it's exposed as
+  // |vault_key_and_version|.
+  using RegisterDeviceWithoutKeysCallback = base::OnceCallback<void(
+      TrustedVaultRegistrationStatus,
+      const TrustedVaultKeyAndVersion& /*vault_key_and_version*/)>;
   using DownloadNewKeysCallback =
       base::OnceCallback<void(TrustedVaultDownloadKeysStatus,
                               const std::vector<std::vector<uint8_t>>& /*keys*/,
@@ -101,16 +101,23 @@ class TrustedVaultConnection {
   // authentication factor. Calls |callback| upon completion, unless the
   // returned object is destroyed earlier. Caller should hold returned request
   // object until |callback| call or until request needs to be cancelled.
-  // |last_trusted_vault_key_and_version.version| can be set to
-  // kUnknownConstantKeyVersion if constant key is used (with non-constant key
-  // it will lead to request failure).
+  // |trusted_vault_keys| must be ordered by version and must not be empty.
   virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+      const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
+      int last_trusted_vault_key_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
       absl::optional<int> authentication_factor_type_hint,
       RegisterAuthenticationFactorCallback callback) WARN_UNUSED_RESULT = 0;
+
+  // Special version of the above for the case where the caller has no local
+  // keys available. Attempts to register the device using constant key. May
+  // succeed only if constant key is the only key known server-side.
+  virtual std::unique_ptr<Request> RegisterDeviceWithoutKeys(
+      const CoreAccountInfo& account_info,
+      const SecureBoxPublicKey& device_public_key,
+      RegisterDeviceWithoutKeysCallback callback) WARN_UNUSED_RESULT = 0;
 
   // Asynchronously attempts to download new vault keys (e.g. keys with version
   // greater than the on in |last_trusted_vault_key_and_version|) from the

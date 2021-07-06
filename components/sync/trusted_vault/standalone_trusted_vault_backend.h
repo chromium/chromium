@@ -133,16 +133,17 @@ class StandaloneTrustedVaultBackend
   // Called when device registration for |gaia_id| is completed (either
   // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
   // given |gaia_id|.
-  void OnDeviceRegistered(TrustedVaultRegistrationStatus status,
-                          int last_vault_key_version);
+  void OnDeviceRegistered(TrustedVaultRegistrationStatus status);
+  void OnDeviceRegisteredWithoutKeys(
+      TrustedVaultRegistrationStatus status,
+      const TrustedVaultKeyAndVersion& vault_key_and_version);
 
   void OnKeysDownloaded(TrustedVaultDownloadKeysStatus status,
                         const std::vector<std::vector<uint8_t>>& vault_keys,
                         int last_vault_key_version);
 
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb,
-                                    TrustedVaultRegistrationStatus status,
-                                    int last_vault_key_version);
+                                    TrustedVaultRegistrationStatus status);
 
   void AbandonConnectionRequest();
 

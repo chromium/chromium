@@ -24,6 +24,10 @@ namespace syncer {
 // backend thread.
 class TrustedVaultConnectionImpl : public TrustedVaultConnection {
  public:
+  using JoinSecurityDomainsCallback =
+      base::OnceCallback<void(TrustedVaultRegistrationStatus,
+                              int /*last_key_version=*/)>;
+
   TrustedVaultConnectionImpl(
       const GURL& trusted_vault_service_url,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -37,11 +41,17 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
 
   std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+      const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
+      int last_trusted_vault_key_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
       absl::optional<int> authentication_factor_type_hint,
       RegisterAuthenticationFactorCallback callback) override;
+
+  std::unique_ptr<Request> RegisterDeviceWithoutKeys(
+      const CoreAccountInfo& account_info,
+      const SecureBoxPublicKey& device_public_key,
+      RegisterDeviceWithoutKeysCallback callback) override;
 
   std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,
@@ -54,6 +64,15 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       IsRecoverabilityDegradedCallback callback) override;
 
  private:
+  std::unique_ptr<Request> SendJoinSecurityDomainsRequest(
+      const CoreAccountInfo& account_info,
+      const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
+      int last_trusted_vault_key_version,
+      const SecureBoxPublicKey& authentication_factor_public_key,
+      AuthenticationFactorType authentication_factor_type,
+      absl::optional<int> authentication_factor_type_hint,
+      JoinSecurityDomainsCallback callback);
+
   // SharedURLLoaderFactory is created lazily, because it needs to be done on
   // the backend sequence, while this class ctor is called on UI thread.
   scoped_refptr<network::SharedURLLoaderFactory> GetOrCreateURLLoaderFactory();

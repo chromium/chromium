@@ -74,17 +74,23 @@ bool ValidateJoinSecurityDomainsRequest(
     return false;
   }
 
-  const sync_pb::SharedMemberKey& shared_key = request.shared_member_key();
-  if (shared_key.wrapped_key().empty()) {
-    DVLOG(1)
-        << "JoinSecurityDomains request has shared key with empty wrapped key";
+  if (request.shared_member_key().empty()) {
+    DVLOG(1) << "JoinSecurityDomains request has no shared keys";
     return false;
   }
+  for (const sync_pb::SharedMemberKey& shared_key :
+       request.shared_member_key()) {
+    if (shared_key.wrapped_key().empty()) {
+      DVLOG(1) << "JoinSecurityDomains request has shared key with empty "
+                  "wrapped key";
+      return false;
+    }
 
-  if (shared_key.member_proof().empty()) {
-    DVLOG(1)
-        << "JoinSecurityDomains request has shared key with empty wrapped key";
-    return false;
+    if (shared_key.member_proof().empty()) {
+      DVLOG(1) << "JoinSecurityDomains request has shared key with empty "
+                  "wrapped key";
+      return false;
+    }
   }
 
   return true;
@@ -303,17 +309,21 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     return response;
   }
 
-  const sync_pb::SharedMemberKey& shared_key =
-      deserialized_content.shared_member_key();
-  if (shared_key.epoch() != 0 && shared_key.epoch() != state_.current_epoch) {
+  const sync_pb::SharedMemberKey& last_shared_key =
+      *deserialized_content.shared_member_key().rbegin();
+  if (last_shared_key.epoch() != 0 &&
+      last_shared_key.epoch() != state_.current_epoch) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_PRECONDITION_FAILED);
     return response;
   }
 
-  if (shared_key.epoch() != 0) {
+  if (last_shared_key.epoch() != 0) {
     // Valid joining of existing security domain.
-    state_.public_key_to_shared_keys[member.public_key()] = {shared_key};
+    state_.public_key_to_shared_keys[member.public_key()] =
+        std::vector<sync_pb::SharedMemberKey>(
+            deserialized_content.shared_member_key().begin(),
+            deserialized_content.shared_member_key().end());
     return CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(
         state_.current_epoch);
   }
@@ -322,8 +332,9 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
       SecureBoxPublicKey::CreateByImport(
           ProtoStringToBytes(member.public_key()));
   if (!state_.constant_key_allowed ||
+      deserialized_content.shared_member_key_size() != 1 ||
       !VerifyMemberProof(*member_public_key, GetConstantTrustedVaultKey(),
-                         ProtoStringToBytes(shared_key.member_proof()))) {
+                         ProtoStringToBytes(last_shared_key.member_proof()))) {
     // Either constant key is not allowed, or request uses the real key without
     // populating the epoch.
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -338,7 +349,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     state_.current_epoch = 100;
   }
 
-  state_.public_key_to_shared_keys[member.public_key()] = {shared_key};
+  state_.public_key_to_shared_keys[member.public_key()] = {last_shared_key};
 
   return CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(
       state_.current_epoch);

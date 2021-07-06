@@ -42,6 +42,12 @@ const char kAccessToken[] = "access_token";
 const char kEncodedPrivateKey[] =
     "49e052293c29b5a50b0013eec9d030ac2ad70a42fe093be084264647cb04e16f";
 
+MATCHER_P2(TrustedVaultKeyAndVersionEq, expected_key, expected_version, "") {
+  const TrustedVaultKeyAndVersion& key_and_version = arg;
+  return key_and_version.key == expected_key &&
+         key_and_version.version == expected_version;
+}
+
 std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   std::vector<uint8_t> private_key_bytes;
   bool success = base::HexStringToBytes(kEncodedPrivateKey, &private_key_bytes);
@@ -158,7 +164,8 @@ class TrustedVaultConnectionImplTest : public testing::Test {
         response_http_code);
   }
 
-  const std::vector<uint8_t> kTrustedVaultKey = {1, 2, 3, 4};
+  const std::vector<std::vector<uint8_t>> kTrustedVaultKeys = {{1, 2},
+                                                               {1, 2, 3, 4}};
   const GURL kTestURL = GURL("https://test.com/test");
 
  private:
@@ -169,16 +176,76 @@ class TrustedVaultConnectionImplTest : public testing::Test {
   TrustedVaultConnectionImpl connection_;
 };
 
-TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
-  const TrustedVaultKeyAndVersion kTrustedVaultKeyAndVersion(kTrustedVaultKey,
-                                                             /*version=*/1234);
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldSendJoinSecurityDomainsRequestWithoutKeys) {
+  std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
+  ASSERT_THAT(key_pair, NotNull());
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RegisterDeviceWithoutKeys(
+          /*account_info=*/CoreAccountInfo(), key_pair->public_key(),
+          TrustedVaultConnection::RegisterDeviceWithoutKeysCallback());
+  EXPECT_THAT(request, NotNull());
+
+  const network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_request, NotNull());
+  const network::ResourceRequest& resource_request = pending_request->request;
+  EXPECT_THAT(resource_request.method, Eq("POST"));
+  EXPECT_THAT(resource_request.url,
+              Eq(GetFullJoinSecurityDomainsURLForTesting(kTestURL)));
+
+  sync_pb::JoinSecurityDomainsRequest deserialized_body;
+  EXPECT_TRUE(deserialized_body.ParseFromString(
+      network::GetUploadData(resource_request)));
+  EXPECT_THAT(deserialized_body.security_domain().name(),
+              Eq(kSyncSecurityDomainName));
+
+  std::string public_key_string;
+  AssignBytesToProtoString(key_pair->public_key().ExportToBytes(),
+                           &public_key_string);
+
+  std::string encoded_public_key;
+  base::Base64UrlEncode(public_key_string,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_public_key);
+
+  const sync_pb::SecurityDomainMember& member =
+      deserialized_body.security_domain_member();
+  EXPECT_THAT(member.name(),
+              Eq(kSecurityDomainMemberNamePrefix + encoded_public_key));
+  EXPECT_THAT(member.public_key(), Eq(public_key_string));
+  EXPECT_THAT(member.member_type(),
+              Eq(sync_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE));
+
+  // Constant key with |epoch| set to kUnknownConstantKeyVersion must be sent.
+  ASSERT_THAT(deserialized_body.shared_member_key(), SizeIs(1));
+  const sync_pb::SharedMemberKey& shared_key =
+      deserialized_body.shared_member_key(0);
+  EXPECT_THAT(shared_key.epoch(), Eq(0));
+
+  EXPECT_THAT(DecryptTrustedVaultWrappedKey(
+                  key_pair->private_key(),
+                  /*wrapped_key=*/ProtoStringToBytes(shared_key.wrapped_key())),
+              Eq(GetConstantTrustedVaultKey()));
+  EXPECT_TRUE(VerifyMemberProof(key_pair->public_key(),
+                                GetConstantTrustedVaultKey(),
+                                ProtoStringToBytes(shared_key.member_proof())));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldSendJoinSecurityDomainsRequestWithKeys) {
+  const std::vector<std::vector<uint8_t>> kTrustedVaultKeys = {{1, 2},
+                                                               {1, 2, 3, 4}};
+  const int kLastKeyVersion = 1234;
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeyAndVersion,
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          kLastKeyVersion, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt,
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
@@ -214,31 +281,44 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
   EXPECT_THAT(member.member_type(),
               Eq(sync_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE));
 
-  const sync_pb::SharedMemberKey& shared_key =
-      deserialized_body.shared_member_key();
-  EXPECT_THAT(shared_key.epoch(), Eq(kTrustedVaultKeyAndVersion.version));
+  ASSERT_THAT(deserialized_body.shared_member_key(),
+              SizeIs(kTrustedVaultKeys.size()));
+  const sync_pb::SharedMemberKey& shared_key_1 =
+      deserialized_body.shared_member_key(0);
+  EXPECT_THAT(shared_key_1.epoch(), Eq(kLastKeyVersion - 1));
 
-  EXPECT_THAT(DecryptTrustedVaultWrappedKey(
-                  key_pair->private_key(),
-                  /*wrapped_key=*/ProtoStringToBytes(shared_key.wrapped_key())),
-              Eq(kTrustedVaultKeyAndVersion.key));
-  EXPECT_TRUE(VerifyMemberProof(key_pair->public_key(),
-                                kTrustedVaultKeyAndVersion.key,
-                                ProtoStringToBytes(shared_key.member_proof())));
+  EXPECT_THAT(DecryptTrustedVaultWrappedKey(key_pair->private_key(),
+                                            /*wrapped_key=*/ProtoStringToBytes(
+                                                shared_key_1.wrapped_key())),
+              Eq(kTrustedVaultKeys[0]));
+  EXPECT_TRUE(
+      VerifyMemberProof(key_pair->public_key(), kTrustedVaultKeys[0],
+                        ProtoStringToBytes(shared_key_1.member_proof())));
+
+  const sync_pb::SharedMemberKey& shared_key_2 =
+      deserialized_body.shared_member_key(1);
+  EXPECT_THAT(shared_key_2.epoch(), Eq(kLastKeyVersion));
+
+  EXPECT_THAT(DecryptTrustedVaultWrappedKey(key_pair->private_key(),
+                                            /*wrapped_key=*/ProtoStringToBytes(
+                                                shared_key_2.wrapped_key())),
+              Eq(kTrustedVaultKeys[1]));
+  EXPECT_TRUE(
+      VerifyMemberProof(key_pair->public_key(), kTrustedVaultKeys[1],
+                        ProtoStringToBytes(shared_key_2.member_proof())));
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
        ShouldSendJoinSecurityDomainsRequestTypeHint) {
   const int kTypeHint = 19;
-  const TrustedVaultKeyAndVersion kTrustedVaultKeyAndVersion(kTrustedVaultKey,
-                                                             /*version=*/1234);
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeyAndVersion,
-          key_pair->public_key(), AuthenticationFactorType::kUnspecified,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1234, key_pair->public_key(),
+          AuthenticationFactorType::kUnspecified,
           /*authentication_factor_type_hint=*/kTypeHint,
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
@@ -268,38 +348,37 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kSuccess), _));
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kSuccess)));
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(
       net::HTTP_OK, MakeJoinSecurityDomainsResponse(/*current_epoch=*/1)
                         .SerializeAsString()));
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
-       ShouldPopulateLastKeyVersionWhenJoinSecurityDomain) {
+       ShouldPopulateConstantKeyAndVersionWhenJoinSecurityDomain) {
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
 
-  base::MockCallback<
-      TrustedVaultConnection::RegisterAuthenticationFactorCallback>
+  base::MockCallback<TrustedVaultConnection::RegisterDeviceWithoutKeysCallback>
       callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/0),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
-          /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
+      connection()->RegisterDeviceWithoutKeys(
+          /*account_info=*/CoreAccountInfo(), key_pair->public_key(),
+          callback.Get());
   ASSERT_THAT(request, NotNull());
 
   const int kServerConstantKeyVersion = 100;
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kSuccess),
-                            kServerConstantKeyVersion));
+  EXPECT_CALL(callback,
+              Run(Eq(TrustedVaultRegistrationStatus::kSuccess),
+                  TrustedVaultKeyAndVersionEq(GetConstantTrustedVaultKey(),
+                                              kServerConstantKeyVersion)));
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(
       net::HTTP_OK, MakeJoinSecurityDomainsResponse(
                         /*current_epoch=*/kServerConstantKeyVersion)
@@ -317,14 +396,13 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/0),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/0, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(callback,
-              Run(Eq(TrustedVaultRegistrationStatus::kOtherError), _));
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
   EXPECT_TRUE(
       RespondToJoinSecurityDomainsRequest(net::HTTP_OK,
                                           /*response_content=*/std::string()));
@@ -341,14 +419,13 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/0),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/0, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(callback,
-              Run(Eq(TrustedVaultRegistrationStatus::kOtherError), _));
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(
       net::HTTP_OK,
       /*response_content=*/"corrupted_proto"));
@@ -365,14 +442,13 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  EXPECT_CALL(callback,
-              Run(Eq(TrustedVaultRegistrationStatus::kOtherError), _));
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
   EXPECT_TRUE(
       RespondToJoinSecurityDomainsRequest(net::HTTP_INTERNAL_SERVER_ERROR,
                                           /*response_content=*/std::string()));
@@ -389,15 +465,15 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_NOT_FOUND indicates that security domain was removed.
   EXPECT_CALL(callback,
-              Run(Eq(TrustedVaultRegistrationStatus::kLocalDataObsolete), _));
+              Run(Eq(TrustedVaultRegistrationStatus::kLocalDataObsolete)));
   EXPECT_TRUE(
       RespondToJoinSecurityDomainsRequest(net::HTTP_NOT_FOUND,
                                           /*response_content=*/std::string()));
@@ -415,9 +491,9 @@ TEST_F(
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -425,7 +501,7 @@ TEST_F(
   // |last_trusted_vault_key_and_version| is not actually the last on the server
   // side.
   EXPECT_CALL(callback,
-              Run(Eq(TrustedVaultRegistrationStatus::kLocalDataObsolete), _));
+              Run(Eq(TrustedVaultRegistrationStatus::kLocalDataObsolete)));
   EXPECT_TRUE(
       RespondToJoinSecurityDomainsRequest(net::HTTP_PRECONDITION_FAILED,
                                           /*response_content=*/std::string()));
@@ -447,13 +523,12 @@ TEST_F(
 
   // |callback| is called immediately after RegisterAuthenticationFactor(),
   // because there is no access token.
-  EXPECT_CALL(callback,
-              Run(Eq(TrustedVaultRegistrationStatus::kOtherError), _));
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -471,9 +546,9 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(),
-          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
-          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
+          AuthenticationFactorType::kPhysicalDevice,
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
