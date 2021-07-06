@@ -6,9 +6,11 @@
 
 namespace blink {
 
+SuggestionMarkerProperties::SuggestionMarkerProperties() = default;
 SuggestionMarkerProperties::SuggestionMarkerProperties(
     const SuggestionMarkerProperties& other) = default;
-SuggestionMarkerProperties::SuggestionMarkerProperties() = default;
+SuggestionMarkerProperties& SuggestionMarkerProperties::operator=(
+    const SuggestionMarkerProperties& other) = default;
 SuggestionMarkerProperties::Builder::Builder() = default;
 
 SuggestionMarkerProperties::Builder::Builder(

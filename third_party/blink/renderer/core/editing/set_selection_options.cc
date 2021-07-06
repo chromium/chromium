@@ -6,9 +6,11 @@
 
 namespace blink {
 
+SetSelectionOptions::SetSelectionOptions() = default;
 SetSelectionOptions::SetSelectionOptions(const SetSelectionOptions& other) =
     default;
-SetSelectionOptions::SetSelectionOptions() = default;
+SetSelectionOptions& SetSelectionOptions::operator=(
+    const SetSelectionOptions& other) = default;
 SetSelectionOptions::Builder::Builder() = default;
 
 SetSelectionOptions::Builder::Builder(const SetSelectionOptions& data) {

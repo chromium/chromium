@@ -45,6 +45,7 @@ class ROBufferTestThread : public base::PlatformThread::Delegate {
       : reader_(reader), i_(i) {}
   ROBufferTestThread() = default;
   ROBufferTestThread(const ROBufferTestThread&) = default;
+  ROBufferTestThread& operator=(const ROBufferTestThread&) = default;
 
   void ThreadMain() override {
     EXPECT_EQ((i_ + 1) * 26U, reader_->size());

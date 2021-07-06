@@ -53,6 +53,16 @@ class NGTableCollapsedEdge {
     InitCachedProps();
   }
 
+  NGTableCollapsedEdge(const NGTableCollapsedEdge& edge)
+      : NGTableCollapsedEdge(edge, 0) {}
+
+  NGTableCollapsedEdge& operator=(const NGTableCollapsedEdge& edge) {
+    edge_index_ = edge.edge_index_;
+    border_width_ = edge.border_width_;
+    border_style_ = edge.border_style_;
+    return *this;
+  }
+
   bool Exists() const { return edge_index_ != UINT_MAX; }
 
   bool CanPaint() const {
@@ -204,13 +214,6 @@ class NGTableCollapsedEdge {
   }
   bool operator!=(const NGTableCollapsedEdge& rhs) const {
     return !(*this == rhs);
-  }
-
-  NGTableCollapsedEdge& operator=(const NGTableCollapsedEdge& edge) {
-    edge_index_ = edge.edge_index_;
-    border_width_ = edge.border_width_;
-    border_style_ = edge.border_style_;
-    return *this;
   }
 
  private:

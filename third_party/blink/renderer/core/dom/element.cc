@@ -2946,8 +2946,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       // make sure we clear out-of-date ComputedStyles outside the flat tree
       // in Element::EnsureComputedStyle().
       if (child_change.RecalcDescendants()) {
-        RecalcDescendantStyles(StyleRecalcChange::kClearEnsured,
-                               child_recalc_context);
+        RecalcDescendantStyles(
+            StyleRecalcChange(StyleRecalcChange::kClearEnsured),
+            child_recalc_context);
       }
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
       slot->RecalcStyleForSlotChildren(child_change, child_recalc_context);

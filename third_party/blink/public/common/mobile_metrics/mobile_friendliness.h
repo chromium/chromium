@@ -15,6 +15,7 @@ namespace blink {
 struct BLINK_COMMON_EXPORT MobileFriendliness {
   MobileFriendliness() = default;
   MobileFriendliness(const MobileFriendliness&) = default;
+  MobileFriendliness& operator=(const MobileFriendliness&) = default;
 
   bool operator==(const MobileFriendliness& other) const;
   bool operator!=(const MobileFriendliness& other) const {

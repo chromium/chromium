@@ -36,6 +36,7 @@ class ClipList {
 
     ClipOp();
     ClipOp(const ClipOp&);
+    ClipOp& operator=(const ClipOp&);
   };
 
   // Number of clip ops that can be stored in a ClipList without resorting to

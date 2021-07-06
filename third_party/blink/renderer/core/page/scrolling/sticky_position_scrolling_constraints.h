@@ -80,6 +80,8 @@ struct StickyPositionScrollingConstraints final {
         is_anchored_bottom(false) {}
   StickyPositionScrollingConstraints(
       const StickyPositionScrollingConstraints& other) = default;
+  StickyPositionScrollingConstraints& operator=(
+      const StickyPositionScrollingConstraints& other) = default;
 
   // Computes the sticky offset for a given overflow clip rect.
   //

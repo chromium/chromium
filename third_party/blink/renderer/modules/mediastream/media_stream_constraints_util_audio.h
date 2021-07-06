@@ -52,7 +52,8 @@ class MODULES_EXPORT AudioDeviceCaptureCapability {
   // getUserMedia() with device capture for devices that are currently in use.
   explicit AudioDeviceCaptureCapability(blink::MediaStreamAudioSource* source);
 
-  AudioDeviceCaptureCapability(const AudioDeviceCaptureCapability& other);
+  AudioDeviceCaptureCapability(const AudioDeviceCaptureCapability&);
+  AudioDeviceCaptureCapability& operator=(const AudioDeviceCaptureCapability&);
 
   // If this capability represents a device currently in use, this method
   // returns a pointer to the MediaStreamAudioSource object associated with the

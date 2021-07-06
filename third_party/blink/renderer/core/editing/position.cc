@@ -148,10 +148,11 @@ PositionTemplate<Strategy>::PositionTemplate(const Node& anchor_node,
     : PositionTemplate(&anchor_node, offset) {}
 
 template <typename Strategy>
-PositionTemplate<Strategy>::PositionTemplate(const PositionTemplate& other)
-    : anchor_node_(other.anchor_node_),
-      offset_(other.offset_),
-      anchor_type_(other.anchor_type_) {}
+PositionTemplate<Strategy>::PositionTemplate(const PositionTemplate&) = default;
+
+template <typename Strategy>
+PositionTemplate<Strategy>& PositionTemplate<Strategy>::operator=(
+    const PositionTemplate&) = default;
 
 // static
 template <typename Strategy>

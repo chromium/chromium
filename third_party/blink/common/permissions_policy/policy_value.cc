@@ -10,6 +10,10 @@ namespace blink {
 
 PolicyValue::PolicyValue() : type_(mojom::PolicyValueType::kNull) {}
 
+PolicyValue::PolicyValue(const PolicyValue&) = default;
+
+PolicyValue& PolicyValue::operator=(const PolicyValue&) = default;
+
 // static
 PolicyValue PolicyValue::CreateBool(bool value) {
   return PolicyValue(value);
@@ -80,16 +84,6 @@ void PolicyValue::SetDoubleValue(double double_value) {
 void PolicyValue::SetIntValue(int32_t int_value) {
   DCHECK_EQ(mojom::PolicyValueType::kEnum, type_);
   int_value_ = int_value;
-}
-
-PolicyValue& PolicyValue::operator=(const PolicyValue& rhs) {
-  if (this != &rhs) {
-    type_ = rhs.type_;
-    bool_value_ = rhs.bool_value_;
-    double_value_ = rhs.double_value_;
-    int_value_ = rhs.int_value_;
-  }
-  return *this;
 }
 
 bool operator==(const PolicyValue& lhs, const PolicyValue& rhs) {

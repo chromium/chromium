@@ -39,6 +39,8 @@ SkPath ClipList::IntersectPathWithClip(const SkPath& path) const {
 
 ClipList::ClipOp::ClipOp() : anti_aliasing_mode_(kAntiAliased) {}
 
-ClipList::ClipOp::ClipOp(const ClipOp& other) = default;
+ClipList::ClipOp::ClipOp(const ClipOp&) = default;
+
+ClipList::ClipOp& ClipList::ClipOp::operator=(const ClipOp&) = default;
 
 }  // namespace blink

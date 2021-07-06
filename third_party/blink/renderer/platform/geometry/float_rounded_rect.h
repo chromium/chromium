@@ -58,11 +58,8 @@ class PLATFORM_EXPORT FloatRoundedRect {
           bottom_left_(bottom_left),
           bottom_right_(bottom_right) {}
 
-    constexpr Radii(const FloatRoundedRect::Radii& int_radii)
-        : top_left_(int_radii.TopLeft()),
-          top_right_(int_radii.TopRight()),
-          bottom_left_(int_radii.BottomLeft()),
-          bottom_right_(int_radii.BottomRight()) {}
+    constexpr Radii(const Radii&) = default;
+    constexpr Radii& operator=(const Radii&) = default;
 
     void SetTopLeft(const FloatSize& size) { top_left_ = size; }
     void SetTopRight(const FloatSize& size) { top_right_ = size; }

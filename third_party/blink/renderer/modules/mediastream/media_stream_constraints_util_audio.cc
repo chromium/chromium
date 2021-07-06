@@ -1500,7 +1500,10 @@ AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(
 }
 
 AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(
-    const AudioDeviceCaptureCapability& other) = default;
+    const AudioDeviceCaptureCapability&) = default;
+
+AudioDeviceCaptureCapability& AudioDeviceCaptureCapability::operator=(
+    const AudioDeviceCaptureCapability&) = default;
 
 String AudioDeviceCaptureCapability::DeviceID() const {
   return source_ ? String(source_->device().id.data()) : device_id_;

@@ -59,6 +59,7 @@ class CORE_EXPORT Dictionary final {
     value_type_ = ValueType::kObject;
   }
 
+  Dictionary(const Dictionary&) = default;
   Dictionary& operator=(const Dictionary&) = default;
 
   bool IsObject() const { return !dictionary_object_.IsEmpty(); }

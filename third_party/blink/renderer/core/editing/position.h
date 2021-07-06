@@ -71,6 +71,7 @@ class PositionTemplate {
   PositionTemplate(const Node* anchor_node, int offset);
 
   PositionTemplate(const PositionTemplate&);
+  PositionTemplate& operator=(const PositionTemplate&);
 
   // Returns a newly created |Position| with |kOffsetInAnchor|. |offset| can be
   // out of bound. Out of bound position is used for computing undo/redo

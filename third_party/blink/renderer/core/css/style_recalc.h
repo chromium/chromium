@@ -59,7 +59,8 @@ class CORE_EXPORT StyleRecalcChange {
 
   StyleRecalcChange() = default;
   StyleRecalcChange(const StyleRecalcChange&) = default;
-  StyleRecalcChange(Propagate propagate) : propagate_(propagate) {}
+  StyleRecalcChange& operator=(const StyleRecalcChange&) = default;
+  explicit StyleRecalcChange(Propagate propagate) : propagate_(propagate) {}
 
   StyleRecalcChange ForChildren(const Element& element) const {
     return {RecalcDescendants() ? kRecalcDescendants : kNo,

@@ -22,8 +22,9 @@ class CORE_EXPORT SuggestionMarkerProperties final {
  public:
   class CORE_EXPORT Builder;
 
-  SuggestionMarkerProperties(const SuggestionMarkerProperties&);
   SuggestionMarkerProperties();
+  SuggestionMarkerProperties(const SuggestionMarkerProperties&);
+  SuggestionMarkerProperties& operator=(const SuggestionMarkerProperties&);
 
   SuggestionMarker::SuggestionType Type() const { return type_; }
   SuggestionMarker::RemoveOnFinishComposing RemoveOnFinishComposing() const {

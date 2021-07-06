@@ -53,13 +53,8 @@ class PLATFORM_EXPORT FloatBox {
                      float depth)
       : x_(x), y_(y), z_(z), width_(width), height_(height), depth_(depth) {}
 
-  constexpr FloatBox(const FloatBox& box)
-      : x_(box.X()),
-        y_(box.Y()),
-        z_(box.Z()),
-        width_(box.Width()),
-        height_(box.Height()),
-        depth_(box.Depth()) {}
+  constexpr FloatBox(const FloatBox&) = default;
+  constexpr FloatBox& operator=(const FloatBox&) = default;
 
   void SetOrigin(const FloatPoint3D& origin) {
     x_ = origin.X();

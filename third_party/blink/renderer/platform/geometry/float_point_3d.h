@@ -44,8 +44,9 @@ class PLATFORM_EXPORT FloatPoint3D {
 
   constexpr FloatPoint3D(const FloatPoint& p) : x_(p.X()), y_(p.Y()), z_(0) {}
 
-  constexpr FloatPoint3D(const FloatPoint3D& p)
-      : x_(p.X()), y_(p.Y()), z_(p.Z()) {}
+  constexpr FloatPoint3D(const FloatPoint3D&) = default;
+
+  constexpr FloatPoint3D& operator=(const FloatPoint3D&) = default;
 
   FloatPoint3D(const gfx::Point3F&);
 

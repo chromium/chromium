@@ -47,6 +47,7 @@ class CORE_EXPORT StyleVariables {
 
   StyleVariables();
   StyleVariables(const StyleVariables&);
+  StyleVariables& operator=(const StyleVariables&);
 
   bool operator==(const StyleVariables& other) const;
   bool operator!=(const StyleVariables& other) const {

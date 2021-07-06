@@ -22,8 +22,9 @@ class CORE_EXPORT SetSelectionOptions final {
  public:
   class CORE_EXPORT Builder;
 
-  SetSelectionOptions(const SetSelectionOptions&);
   SetSelectionOptions();
+  SetSelectionOptions(const SetSelectionOptions&);
+  SetSelectionOptions& operator=(const SetSelectionOptions&);
 
   CursorAlignOnScroll GetCursorAlignOnScroll() const {
     return cursor_align_on_scroll_;

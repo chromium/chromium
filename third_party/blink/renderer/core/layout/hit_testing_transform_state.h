@@ -53,12 +53,9 @@ class HitTestingTransformState {
         last_planar_area_(area),
         accumulating_transform_(false) {}
 
-  HitTestingTransformState(const HitTestingTransformState& other)
-      : last_planar_point_(other.last_planar_point_),
-        last_planar_quad_(other.last_planar_quad_),
-        last_planar_area_(other.last_planar_area_),
-        accumulated_transform_(other.accumulated_transform_),
-        accumulating_transform_(other.accumulating_transform_) {}
+  HitTestingTransformState(const HitTestingTransformState&) = default;
+  HitTestingTransformState& operator=(const HitTestingTransformState&) =
+      default;
 
   enum TransformAccumulation { kFlattenTransform, kAccumulateTransform };
   void Translate(int x, int y, TransformAccumulation);

@@ -68,6 +68,7 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
    public:
     ViewState() = default;
     ViewState(const ViewState&) = default;
+    ViewState& operator=(const ViewState&) = default;
 
     ScrollOffset visual_viewport_scroll_offset_;
     ScrollOffset scroll_offset_;

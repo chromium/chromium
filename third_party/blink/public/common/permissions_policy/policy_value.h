@@ -20,6 +20,8 @@ namespace blink {
 class BLINK_COMMON_EXPORT PolicyValue {
  public:
   PolicyValue();
+  PolicyValue(const PolicyValue&);
+  PolicyValue& operator=(const PolicyValue&);
 
   static PolicyValue CreateBool(bool);
   static PolicyValue CreateDecDouble(double);
@@ -44,9 +46,6 @@ class BLINK_COMMON_EXPORT PolicyValue {
   void SetBoolValue(bool bool_value);
   void SetDoubleValue(double double_value);
   void SetIntValue(int32_t int_value);
-
-  // Operater overrides
-  PolicyValue& operator=(const PolicyValue& rhs);
 
   void SetToMax();
   void SetToMin();

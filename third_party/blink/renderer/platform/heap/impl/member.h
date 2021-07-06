@@ -425,6 +425,8 @@ class UntracedMember final
 
   UntracedMember(T* raw) : Parent(raw) {}
 
+  UntracedMember(const UntracedMember& other) : Parent(other) {}
+
   template <typename U>
   UntracedMember(const Persistent<U>& other) : Parent(other) {}
 

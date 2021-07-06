@@ -50,6 +50,9 @@ RegisteredEventListener::RegisteredEventListener(
           options->PassiveForcedForDocumentTarget()),
       passive_specified_(options->PassiveSpecified()) {}
 
+RegisteredEventListener::RegisteredEventListener(
+    const RegisteredEventListener& that) = default;
+
 RegisteredEventListener& RegisteredEventListener::operator=(
     const RegisteredEventListener& that) = default;
 

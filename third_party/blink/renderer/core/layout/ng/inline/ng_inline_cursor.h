@@ -240,6 +240,7 @@ class CORE_EXPORT NGInlineCursor {
                  const NGFragmentItems& items);
   explicit NGInlineCursor(const NGInlineBackwardCursor& backward_cursor);
   NGInlineCursor(const NGInlineCursor& other) = default;
+  NGInlineCursor& operator=(const NGInlineCursor& other) = default;
 
   // Creates an |NGInlineCursor| without the root. Even when callers don't know
   // the root of the inline formatting context, this cursor can |MoveTo()|
