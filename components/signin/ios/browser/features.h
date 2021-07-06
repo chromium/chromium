@@ -9,9 +9,6 @@
 
 namespace signin {
 
-// Features to trigger the startup sign-in promo at boot.
-extern const base::Feature kForceStartupSigninPromo;
-
 // This feature simplify sign-out UI in the account table view.
 extern const base::Feature kSimplifySignOutIOS;
 
