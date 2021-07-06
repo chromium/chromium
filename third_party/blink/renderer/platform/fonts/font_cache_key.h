@@ -52,12 +52,7 @@ struct FontCacheKey {
   DISALLOW_NEW();
 
  public:
-  FontCacheKey()
-      : creation_params_(),
-        font_size_(0),
-        options_(0),
-        device_scale_factor_(0),
-        is_unique_match_(false) {}
+  FontCacheKey() = default;
   FontCacheKey(FontFaceCreationParams creation_params,
                float font_size,
                unsigned options,
@@ -127,20 +122,19 @@ struct FontCacheKey {
 #endif  // defined(OS_ANDROID)
 
  private:
-
   FontFaceCreationParams creation_params_;
-  unsigned font_size_;
-  unsigned options_;
+  unsigned font_size_ = 0;
+  unsigned options_ = 0;
   // FontCacheKey is the key to retrieve FontPlatformData entries from the
   // FontCache. FontPlatformData queries the platform's font render style, which
   // is dependent on the device scale factor. That's why we need
   // device_scale_factor_ to be a part of computing the cache key.
-  float device_scale_factor_;
+  float device_scale_factor_ = 0;
 #if defined(OS_ANDROID)
   AtomicString locale_;
 #endif  // defined(OS_ANDROID)
   scoped_refptr<FontVariationSettings> variation_settings_;
-  bool is_unique_match_;
+  bool is_unique_match_ = false;
 };
 
 struct FontCacheKeyHash {
