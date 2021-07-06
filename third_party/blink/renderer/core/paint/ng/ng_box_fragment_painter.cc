@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
@@ -114,7 +115,21 @@ inline bool IsVisibleToHitTest(const ComputedStyle& style,
 inline bool IsVisibleToHitTest(const NGFragmentItem& item,
                                const HitTestRequest& request) {
   const ComputedStyle& style = item.Style();
-  return IsVisibleToPaint(item, style) && IsVisibleToHitTest(style, request);
+  if (item.Type() != NGFragmentItem::kSvgText)
+    return IsVisibleToPaint(item, style) && IsVisibleToHitTest(style, request);
+
+  if (item.IsHiddenForPaint())
+    return false;
+  PointerEventsHitRules hit_rules(PointerEventsHitRules::SVG_TEXT_HITTESTING,
+                                  request, style.PointerEvents());
+  if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
+    return false;
+  if (hit_rules.can_hit_bounding_box ||
+      (hit_rules.can_hit_stroke &&
+       (style.HasStroke() || !hit_rules.require_stroke)) ||
+      (hit_rules.can_hit_fill && (style.HasFill() || !hit_rules.require_fill)))
+    return IsVisibleToHitTest(style, request);
+  return false;
 }
 
 inline bool IsVisibleToHitTest(const NGPhysicalFragment& fragment,
