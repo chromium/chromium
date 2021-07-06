@@ -292,6 +292,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     auto cursor = cursor_factory.CreateImageCursor(
         mojom::CursorType::kCustom, dummy_cursor, gfx::Point(5, 8));
 
+    // Set a cursor.
     wl_resource* surface_resource = nullptr;
     EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8))
         .WillOnce(SaveArg<0>(&surface_resource));
@@ -299,24 +300,29 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     connection_->ScheduleFlush();
 
     Sync();
+    Mock::VerifyAndClearExpectations(pointer_);
 
     ASSERT_TRUE(surface_resource);
     auto* mock_pointer_surface =
         wl::MockSurface::FromResource(surface_resource);
     EXPECT_EQ(mock_pointer_surface->buffer_scale(), scale);
 
-    Mock::VerifyAndClearExpectations(pointer_);
-
+    // Update the focus.
     EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8));
     wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
                           wl_fixed_from_int(50), wl_fixed_from_int(75));
-
     Sync();
 
     connection_->ScheduleFlush();
 
     Sync();
+    Mock::VerifyAndClearExpectations(pointer_);
 
+    // Reset the focus for the next iteration.
+    wl_pointer_send_leave(pointer_->resource(), 1, surface_->resource());
+    Sync();
+    connection_->ScheduleFlush();
+    Sync();
     Mock::VerifyAndClearExpectations(pointer_);
   }
 }

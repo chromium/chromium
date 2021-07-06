@@ -65,7 +65,7 @@ WaylandWindow* WaylandWindowManager::GetWindowWithLargestBounds() const {
 }
 
 WaylandWindow* WaylandWindowManager::GetCurrentFocusedWindow() const {
-  for (auto entry : window_map_) {
+  for (const auto& entry : window_map_) {
     WaylandWindow* window = entry.second;
     if (window->has_pointer_focus() || window->has_touch_focus())
       return window;
@@ -73,13 +73,42 @@ WaylandWindow* WaylandWindowManager::GetCurrentFocusedWindow() const {
   return nullptr;
 }
 
+WaylandWindow* WaylandWindowManager::GetCurrentPointerFocusedWindow() const {
+  for (const auto& entry : window_map_) {
+    WaylandWindow* window = entry.second;
+    if (window->has_pointer_focus())
+      return window;
+  }
+  return nullptr;
+}
+
 WaylandWindow* WaylandWindowManager::GetCurrentKeyboardFocusedWindow() const {
-  for (auto entry : window_map_) {
+  for (const auto& entry : window_map_) {
     WaylandWindow* window = entry.second;
     if (window->has_keyboard_focus())
       return window;
   }
   return nullptr;
+}
+
+void WaylandWindowManager::SetPointerFocusedWindow(WaylandWindow* window) {
+  auto* old_focused_window = GetCurrentPointerFocusedWindow();
+  if (window == old_focused_window)
+    return;
+  if (old_focused_window)
+    old_focused_window->SetPointerFocus(false);
+  if (window)
+    window->SetPointerFocus(true);
+}
+
+void WaylandWindowManager::SetKeyboardFocusedWindow(WaylandWindow* window) {
+  auto* old_focused_window = GetCurrentKeyboardFocusedWindow();
+  if (window == old_focused_window)
+    return;
+  if (old_focused_window)
+    old_focused_window->set_keyboard_focus(false);
+  if (window)
+    window->set_keyboard_focus(true);
 }
 
 WaylandWindow* WaylandWindowManager::FindParentForNewWindow(

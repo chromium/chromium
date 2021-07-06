@@ -99,6 +99,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   Sync();
 
   EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerFocusedWindow());
 
   auto* pointer = server_.seat()->pointer();
   ASSERT_TRUE(pointer);
@@ -111,12 +112,14 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
 
   EXPECT_FALSE(manager_->GetCurrentKeyboardFocusedWindow());
   EXPECT_TRUE(window1.get() == manager_->GetCurrentFocusedWindow());
+  EXPECT_TRUE(window1.get() == manager_->GetCurrentPointerFocusedWindow());
 
   wl_pointer_send_leave(pointer->resource(), 2, surface->resource());
 
   Sync();
 
   EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerFocusedWindow());
 }
 
 TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {

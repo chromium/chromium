@@ -160,8 +160,6 @@ class WaylandEventSource : public PlatformEventSource,
   void OnWindowRemoved(WaylandWindow* window) override;
 
   void UpdateKeyboardModifiers(int modifier, bool down);
-  void HandleKeyboardFocusChange(WaylandWindow* window, bool focused);
-  void HandlePointerFocusChange(WaylandWindow* window);
   void HandleTouchFocusChange(WaylandWindow* window,
                               bool focused,
                               absl::optional<PointerId> id = absl::nullopt);
@@ -196,9 +194,6 @@ class WaylandEventSource : public PlatformEventSource,
   // Recent pointer frames to compute fling scroll.
   // Front is newer, and back is older.
   std::deque<PointerFrame> recent_pointer_frames_;
-
-  // The window the pointer is over.
-  WaylandWindow* window_with_pointer_focus_ = nullptr;
 
   // Map that keeps track of the current touch points, associating touch IDs to
   // to the surface/location where they happened.

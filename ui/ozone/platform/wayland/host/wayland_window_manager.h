@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
@@ -24,6 +23,8 @@ class WaylandSubsurface;
 class WaylandWindowManager {
  public:
   WaylandWindowManager();
+  WaylandWindowManager(const WaylandWindowManager&) = delete;
+  WaylandWindowManager& operator=(const WaylandWindowManager&) = delete;
   ~WaylandWindowManager();
 
   void AddObserver(WaylandWindowObserver* observer);
@@ -53,8 +54,25 @@ class WaylandWindowManager {
   // Returns a current focused window by pointer or touch.
   WaylandWindow* GetCurrentFocusedWindow() const;
 
+  // Returns a current focused window by pointer.
+  WaylandWindow* GetCurrentPointerFocusedWindow() const;
+
   // Returns a current focused window by keyboard.
   WaylandWindow* GetCurrentKeyboardFocusedWindow() const;
+
+  // Sets the given window as the pointer focused window.
+  // If there already is another, the old one will be unset.
+  // If nullptr is passed to |window|, it means pointer focus is unset from
+  // any window.
+  // The given |window| must be managed by this manager.
+  void SetPointerFocusedWindow(WaylandWindow* window);
+
+  // Sets the given window as the keyboard focused window.
+  // If there already is another, the old one will be unset.
+  // If nullptr is passed to |window|, it means keyboard focus is unset from
+  // any window.
+  // The given |window| must be managed by this manager.
+  void SetKeyboardFocusedWindow(WaylandWindow* window);
 
   // Returns a parent window suitable for newly created non-toplevel windows. If
   // the |parent_widget| is gfx::kNullAcceleratedWidget, either the currently
@@ -90,8 +108,6 @@ class WaylandWindowManager {
   // Stores strictly monotonically increasing counter for allocating unique
   // AccelerateWidgets.
   gfx::AcceleratedWidget last_accelerated_widget_ = gfx::kNullAcceleratedWidget;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandWindowManager);
 };
 
 }  // namespace ui
