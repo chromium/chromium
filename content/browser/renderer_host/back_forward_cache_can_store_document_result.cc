@@ -26,6 +26,58 @@ std::string DescribeFeatures(BlockListedFeatures blocklisted_features) {
   return base::JoinString(features, ", ");
 }
 
+const char* BrowsingInstanceSwapResultToString(
+    absl::optional<ShouldSwapBrowsingInstance> reason) {
+  if (!reason)
+    return "no BI swap result";
+  switch (reason.value()) {
+    case ShouldSwapBrowsingInstance::kYes_ForceSwap:
+      return "forced BI swap";
+    case ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled:
+      return "BI not swapped - proactive swap disabled";
+    case ShouldSwapBrowsingInstance::kNo_NotMainFrame:
+      return "BI not swapped - not a main frame";
+    case ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents:
+      return "BI not swapped - has related active contents";
+    case ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite:
+      return "BI not swapped - current SiteInstance does not have site";
+    case ShouldSwapBrowsingInstance::kNo_SourceURLSchemeIsNotHTTPOrHTTPS:
+      return "BI not swapped - source URL scheme is not HTTP(S)";
+    case ShouldSwapBrowsingInstance::kNo_DestinationURLSchemeIsNotHTTPOrHTTPS:
+      return "BI not swapped - destination URL scheme is not HTTP(S)";
+    case ShouldSwapBrowsingInstance::kNo_SameSiteNavigation:
+      return "BI not swapped - same site navigation";
+    case ShouldSwapBrowsingInstance::kNo_ReloadingErrorPage:
+      return "BI not swapped - reloading error page";
+    case ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance:
+      return "BI not swapped - already has matching BrowsingInstance";
+    case ShouldSwapBrowsingInstance::kNo_RendererDebugURL:
+      return "BI not swapped - URL is a renderer debug URL";
+    case ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache:
+      return "BI not swapped - old page can't be stored in bfcache";
+    case ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap:
+      return "proactively swapped BI (cross-site)";
+    case ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap:
+      return "proactively swapped BI (same-site)";
+    case ShouldSwapBrowsingInstance::kNo_SameDocumentNavigation:
+      return "BI not swapped - same-document navigation";
+    case ShouldSwapBrowsingInstance::kNo_SameUrlNavigation:
+      return "BI not swapped - navigation to the same URL";
+    case ShouldSwapBrowsingInstance::kNo_WillReplaceEntry:
+      return "BI not swapped - navigation entry will be replaced";
+    case ShouldSwapBrowsingInstance::kNo_Reload:
+      return "BI not swapped - reloading";
+    case ShouldSwapBrowsingInstance::kNo_Guest:
+      return "BI not swapped - <webview> guest";
+    case ShouldSwapBrowsingInstance::kNo_HasNotComittedAnyNavigation:
+      return "BI not swapped - hasn't committed any navigation";
+    case ShouldSwapBrowsingInstance::
+        kNo_UnloadHandlerExistsOnSameSiteNavigation:
+      return "BI not swapped - unload handler exists and the navigation is "
+             "same-site";
+  }
+}
+
 }  // namespace
 
 bool BackForwardCacheCanStoreDocumentResult::HasNotStoredReason(
@@ -78,7 +130,9 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kBackForwardCacheDisabled:
       return "BackForwardCache disabled";
     case Reason::kRelatedActiveContentsExist:
-      return "related active contents exist";
+      return base::StringPrintf(
+          "related active contents exist: %s",
+          BrowsingInstanceSwapResultToString(browsing_instance_swap_result_));
     case Reason::kHTTPStatusNotOK:
       return "HTTP status is not OK";
     case Reason::kSchemeNotHTTPOrHTTPS:
@@ -208,6 +262,13 @@ void BackForwardCacheCanStoreDocumentResult::
     disabled_reasons_.insert(reason);
 }
 
+void BackForwardCacheCanStoreDocumentResult::NoDueToRelatedActiveContents(
+    absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result) {
+  AddNotStoredReason(
+      BackForwardCacheMetrics::NotRestoredReason::kRelatedActiveContentsExist);
+  browsing_instance_swap_result_ = browsing_instance_swap_result;
+}
+
 void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
   not_stored_reasons_.PutAll(other.not_stored_reasons_);
@@ -216,6 +277,8 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
        other.disabled_reasons()) {
     disabled_reasons_.insert(reason);
   }
+  if (other.browsing_instance_swap_result_)
+    browsing_instance_swap_result_ = other.browsing_instance_swap_result_;
 }
 
 BackForwardCacheCanStoreDocumentResult::

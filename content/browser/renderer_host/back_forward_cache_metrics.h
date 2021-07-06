@@ -172,6 +172,11 @@ class BackForwardCacheMetrics
   void SetBrowsingInstanceSwapResult(
       absl::optional<ShouldSwapBrowsingInstance> reason);
 
+  absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result()
+      const {
+    return browsing_instance_swap_result_;
+  }
+
   // Notifies that the main frame has started a navigation to an entry
   // associated with |this|.
   //

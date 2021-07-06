@@ -11,6 +11,7 @@
 #include "base/util/enum_set/enum_set.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {
@@ -43,6 +44,9 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   void No(BackForwardCacheMetrics::NotRestoredReason reason);
   void NoDueToFeatures(BlockListedFeatures features);
 
+  void NoDueToRelatedActiveContents(
+      absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result);
+
   // TODO(hajimehoshi): Replace the arbitrary strings with base::Location /
   // FROM_HERE for privacy reasons.
   void NoDueToDisableForRenderFrameHostCalled(
@@ -72,6 +76,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   NotStoredReasons not_stored_reasons_;
   BlockListedFeatures blocklisted_features_;
   std::set<BackForwardCache::DisabledReason> disabled_reasons_;
+  absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
 };
 
 }  // namespace content
