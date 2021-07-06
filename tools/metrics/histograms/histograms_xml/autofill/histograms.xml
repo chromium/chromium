@@ -938,7 +938,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.FormFillSuccessIOS"
-    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2021-10-30">
+    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2022-01-02">
   <owner>kazinova@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

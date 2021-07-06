@@ -803,7 +803,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ReceiverJitterBufferDelayMs" units="ms"
-    expires_after="2021-10-31">
+    expires_after="2022-01-02">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The jitter buffer delay for the receiving side. Sampled once every 10 ms

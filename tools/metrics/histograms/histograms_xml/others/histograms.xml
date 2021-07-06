@@ -9604,7 +9604,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.NumWorkerProcess" units="count"
-    expires_after="2021-10-24">
+    expires_after="2022-01-02">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -10241,7 +10241,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mojo.Channel.Linux.SharedMemWriteBytes_Fail_NoSpace"
-    units="bytes" expires_after="2021-11-01">
+    units="bytes" expires_after="2022-01-02">
   <owner>bgeffon@chromium.org</owner>
   <owner>rockot@google.com</owner>
   <summary>
@@ -10251,7 +10251,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mojo.Channel.Linux.SharedMemWriteBytes_Fail_TooLarge"
-    units="bytes" expires_after="2021-11-01">
+    units="bytes" expires_after="2022-01-02">
   <owner>bgeffon@chromium.org</owner>
   <owner>rockot@google.com</owner>
   <summary>
@@ -19307,7 +19307,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.LocalFontUsed" enum="BooleanUsage"
-    expires_after="2021-10-31">
+    expires_after="2022-01-02">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kenjibaheux@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
@@ -19453,7 +19453,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Discoverability.TimeToOpen" units="ms"
-    expires_after="M94">
+    expires_after="2022-01-02">
   <owner>eokoyomon@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>

@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.DeviceSyncSoftwareFeaturesResult"
-    enum="BooleanSuccess" expires_after="2021-10-06">
+    enum="BooleanSuccess" expires_after="2022-01-02">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
