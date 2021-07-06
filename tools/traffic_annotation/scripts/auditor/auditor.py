@@ -20,18 +20,19 @@ from functools import reduce
 from google.protobuf import text_format
 from google.protobuf.descriptor import FieldDescriptor
 from google.protobuf.message import Message
+from pathlib import Path
 from typing import NewType, TYPE_CHECKING, Any, Optional, List, Dict, Set, \
     Iterable, Tuple, Union
 
 # Path to the directory where this script is.
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+SCRIPT_DIR = Path(__file__).resolve().parent
 
 # Absolute path to chrome/src.
-SRC_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", "..", ".."))
+SRC_DIR = SCRIPT_DIR.parents[3]
 
 # TODO(nicolaso): Move extractor.py to this folder once the C++ auditor doesn't
 # depend on it anymore.
-sys.path.insert(0, os.path.join(SCRIPT_DIR, ".."))
+sys.path.insert(0, str(SCRIPT_DIR.parent))
 import extractor
 from annotation_tools import NetworkTrafficAnnotationTools
 
@@ -203,7 +204,7 @@ def policy_to_text(chrome_policy: Iterable[Message]) -> str:
   return re.sub(r", $", "", writer.getvalue()).strip()
 
 
-def write_annotations_tsv_file(file_path: str, annotations: List["Annotation"],
+def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
                                missing_ids: List[UniqueId]):
   """Writes a TSV file of all annotations and their contents in file_path."""
   logger.info("Saving annotations to TSV file: {}.".format(file_path))
@@ -288,8 +289,7 @@ def write_annotations_tsv_file(file_path: str, annotations: List["Annotation"],
   lines.insert(0, title)
   report = "\n".join(lines) + "\n"
 
-  with open(file_path, "wb") as tsv_file:
-    tsv_file.write(report.encode("utf-8"))
+  file_path.write_text(report, "utf-8")
 
 
 class AuditorError:
@@ -345,7 +345,7 @@ class AuditorError:
   def __init__(self,
                result_type: "AuditorError.Type",
                message: str = "",
-               file_path: str = "",
+               file_path: Optional[Path] = None,
                line: int = 0,
                *extra_details: str):
     self.type = result_type
@@ -507,6 +507,9 @@ class Annotation:
         completing annotations.
     second_id_hash_code: HashCode of the second_id.
 
+    file: Path to the C++ file that contains the annotation definition.
+    line: Line number where the annotation is defined in that C++ file.
+
     is_loaded_from_archive: True if this annotations was loaded from
         annotations.xml, rather than extracted from C++ code.
     archived_content_hash_code: content_hash_code loaded from annotations.xml.
@@ -552,6 +555,11 @@ class Annotation:
     # annotations.xml. Then, make second_id_hash_code a computed property like
     # unique_id_hash_code.
 
+    # TODO(nicolaso): Remove file and line from the proto in
+    # traffic_annotation.proto.
+    self.file: Optional[Path] = None
+    self.line: int = 0
+
     self.is_loaded_from_archive = False
     self.archived_content_hash_code: HashCode = -1
     self.archived_added_in_milestone = 0
@@ -589,7 +597,7 @@ class Annotation:
     annotation.is_loaded_from_archive = True
     annotation.type = archived.type
     annotation.unique_id = archived.id
-    annotation.proto.source.file = archived.file_path
+    annotation.file = archived.file_path
     annotation.archived_content_hash_code = archived.content_hash_code
     annotation.archived_added_in_milestone = archived.added_in_milestone
 
@@ -649,13 +657,14 @@ class Annotation:
 
     # Update comment.
     merge_string_field(other.proto, combination.proto, "comments")
+    assert self.file is not None
+    assert completing_annotation.file is not None
     combination.proto.comments += (
         "This annotation is a merge of the following two annotations:\n"
         "'{}' in '{}:{}' and '{}' in '{}:{}'.".format(
-            self.unique_id, self.proto.source.file, self.proto.source.line,
+            self.unique_id, self.file.as_posix(), self.line,
             completing_annotation.unique_id,
-            completing_annotation.proto.source.file,
-            completing_annotation.proto.source.line))
+            completing_annotation.file.as_posix(), completing_annotation.line))
 
     # Copy TrafficSemantics.
     semantics_string_fields = [
@@ -675,8 +684,8 @@ class Annotation:
       return combination, [
           AuditorError(
               AuditorError.Type.MERGE_FAILED,
-              "Annotations contain different semantics::destination values", "",
-              0, self.unique_id, completing_annotation.unique_id)
+              "Annotations contain different semantics::destination values",
+              None, 0, self.unique_id, completing_annotation.unique_id)
       ]
 
     # Copy TrafficPolicy.
@@ -759,10 +768,12 @@ class Annotation:
   def deserialize(self, serialized_annotation: extractor.Annotation
                   ) -> List[AuditorError]:
     """Deserializes an instance from extractor.Annotation."""
-    file_path = os.path.relpath(serialized_annotation.file_path, SRC_DIR)
+    file_path = Path(serialized_annotation.file_path)
+    if file_path.is_absolute():
+      file_path = file_path.relative_to(SRC_DIR)
     line_number = serialized_annotation.line_number
-    self.proto.source.file = file_path
-    self.proto.source.line = line_number
+    self.file = file_path
+    self.line = line_number
 
     if serialized_annotation.type_name == "Mutable":
       return [
@@ -838,7 +849,7 @@ class Annotation:
       error_text = ", ".join(unspecifieds)
       return [
           AuditorError(AuditorError.Type.INCOMPLETE_ANNOTATION, error_text,
-                       self.proto.source.file, self.proto.source.line)
+                       self.file, self.line)
       ]
     else:
       return []
@@ -853,7 +864,7 @@ class Annotation:
           AuditorError(
               AuditorError.Type.INCONSISTENT_ANNOTATION,
               "Cookies store is specified while cookies are not allowed.",
-              self.proto.source.file, self.proto.source.line)
+              self.file, self.line)
       ]
 
     if policy.chrome_policy and policy.policy_exception_justification:
@@ -861,7 +872,7 @@ class Annotation:
           AuditorError(
               AuditorError.Type.INCONSISTENT_ANNOTATION,
               "Both chrome policies and policy exception justification are "
-              "present.", self.proto.source.file, self.proto.source.line)
+              "present.", self.file, self.line)
       ]
 
     return []
@@ -902,12 +913,11 @@ class FileFilter:
        `git ls-files`."""
 
   def __init__(self):
-    self.git_files: List[str] = []
+    self.git_files: List[Path] = []
     self.git_file_for_testing: Optional[str] = None
 
-  def get_source_files(self, safe_list: SafeList,
-                       directory_name: str) -> List[str]:
-    """Returns a filtered list of files in the directory_name directory.
+  def get_source_files(self, safe_list: SafeList, prefix: str) -> List[Path]:
+    """Returns a filtered list of files in the prefix directory.
 
     Relevant files:
       - Are tracked by git.
@@ -920,13 +930,14 @@ class FileFilter:
     if not self.git_files:
       self.get_files_from_git()
 
-    for f in self.git_files:
-      if not f.startswith(directory_name):
+    for file_path in self.git_files:
+      posix_path = file_path.as_posix()
+      if not posix_path.startswith(prefix):
         continue
       if (ExceptionType.ALL in safe_list
-          and any(r.match(f) for r in safe_list[ExceptionType.ALL])):
+          and any(r.match(posix_path) for r in safe_list[ExceptionType.ALL])):
         continue
-      file_paths.append(f)
+      file_paths.append(file_path)
 
     # TODO(nicolaso): Also filter files by content, like the C++ auditor.
     # Empirically, this seems to save ~10s when parsing the whole codebase (22s
@@ -938,15 +949,15 @@ class FileFilter:
 
     return file_paths
 
-  def _is_supported_source_file(self, file_path: str) -> bool:
+  def _is_supported_source_file(self, file_path: Path) -> bool:
     """Returns true if file_path looks like a non-test C++/Obj-C++ file."""
     # Check file extension.
-    if not re.search(r'\.(cc|mm)$', file_path):
+    if file_path.suffix not in [".cc", ".mm"]:
       return False
 
     # Ignore test files to speed up the tests. They would be only tested when
     # filters are disabled.
-    if re.search(r'test\.(cc|mm)$', file_path):
+    if file_path.stem.endswith("test"):
       return False
 
     return True
@@ -973,7 +984,7 @@ class FileFilter:
       lines = process.stdout.decode("utf-8").split("\n")
 
     self.git_files = [
-        f for f in lines if f and self._is_supported_source_file(f)
+        Path(f) for f in lines if f and self._is_supported_source_file(Path(f))
     ]
 
     # Now that we're done, undo the chdir().
@@ -1023,8 +1034,7 @@ class IdChecker:
         if not re.match(r"^[0-9a-zA-Z_]*$", id):
           errors.append(
               AuditorError(AuditorError.Type.ID_INVALID_CHARACTER, id,
-                           annotation.proto.source.file,
-                           annotation.proto.source.line))
+                           annotation.file, annotation.line))
 
     return errors
 
@@ -1038,8 +1048,7 @@ class IdChecker:
            annotation.second_id_hash_code == annotation.unique_id_hash_code)):
         errors.append(
             AuditorError(AuditorError.Type.MISSING_SECOND_ID, "",
-                         annotation.proto.source.file,
-                         annotation.proto.source.line))
+                         annotation.file, annotation.line))
 
     return errors
 
@@ -1055,8 +1064,7 @@ class IdChecker:
       for id, hash_code in annotation.get_ids():
         if id in invalid_ids:
           errors.append(
-              AuditorError(error_type, id, annotation.proto.source.file,
-                           annotation.proto.source.line))
+              AuditorError(error_type, id, annotation.file, annotation.line))
 
     return errors
 
@@ -1079,7 +1087,7 @@ class IdChecker:
             continue
           if id != collisions[hash_code]:
             errors.append(
-                AuditorError(AuditorError.Type.HASH_CODE_COLLISION, id, "", 0,
+                AuditorError(AuditorError.Type.HASH_CODE_COLLISION, id, None, 0,
                              collisions[hash_code]))
 
     return errors
@@ -1142,10 +1150,8 @@ class IdChecker:
     """Constructs and returns a REPEATED_ID error."""
     return AuditorError(
         AuditorError.Type.REPEATED_ID,
-        "{} in '{}:{}'".format(common_id, annotation1.proto.source.file,
-                               annotation1.proto.source.line), "", 0,
-        "'{}:{}'".format(annotation2.proto.source.file,
-                         annotation2.proto.source.line))
+        "{} in '{}:{}'".format(common_id, annotation1.file, annotation1.line),
+        None, 0, "'{}:{}'".format(annotation2.file, annotation2.line))
 
 
 class ArchivedAnnotation:
@@ -1171,7 +1177,7 @@ class ArchivedAnnotation:
                id: UniqueId,
                hash_code: HashCode,
                type: Annotation.Type,
-               file_path: str,
+               file_path: Union[Path, str, None],
                added_in_milestone: int,
                second_id: HashCode = HashCode(-1),
                deprecated: str = "",
@@ -1183,7 +1189,7 @@ class ArchivedAnnotation:
     self.id = id
     self.hash_code = hash_code
     self.type = type
-    self.file_path = file_path
+    self.file_path = Path(file_path) if file_path else None
     self.added_in_milestone = added_in_milestone
     self.second_id = second_id
     self.deprecated = deprecated
@@ -1208,11 +1214,10 @@ class ArchivedAnnotation:
 class Exporter:
   """Handles loading and saving ArchivedAnnotations in annotations.xml."""
 
-  ANNOTATIONS_XML_PATH = os.path.join(SCRIPT_DIR, "..", "..", "summary",
-                                      "annotations.xml")
+  ANNOTATIONS_XML_PATH = (SCRIPT_DIR.parent.parent / "summary" /
+                          "annotations.xml")
 
-  GROUPING_XML_PATH = os.path.join(SCRIPT_DIR, "..", "..", "summary",
-                                   "grouping.xml")
+  GROUPING_XML_PATH = SCRIPT_DIR.parent.parent / "summary" / "grouping.xml"
 
   def __init__(self):
     self.archive: Dict[UniqueId, ArchivedAnnotation] = {}
@@ -1221,7 +1226,7 @@ class Exporter:
     if self._current_platform not in SUPPORTED_PLATFORMS:
       raise ValueError("Unsupported platform {}".format(self._current_platform))
 
-    with open(os.path.join(SRC_DIR, "chrome", "VERSION")) as f:
+    with open(SRC_DIR / "chrome" / "VERSION") as f:
       contents = f.read()
       m = re.search(r'MAJOR=(\d+)', contents)
       if not m:
@@ -1233,7 +1238,7 @@ class Exporter:
     """Loads annotations from annotations.xml into self.archive using
     ArchivedAnnotation objects."""
     logger.info("Parsing {}.".format(
-        os.path.relpath(Exporter.ANNOTATIONS_XML_PATH, SRC_DIR)))
+        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
 
     self.archive = {}
 
@@ -1302,7 +1307,7 @@ class Exporter:
       if annotation.unique_id in self.archive:
         archived = self.archive[annotation.unique_id]
         archived.second_id = annotation.second_id_hash_code
-        archived.file_path = annotation.proto.source.file
+        archived.file_path = annotation.file
         if not self.matches_current_platform(archived):
           archived.os_list.append(self._current_platform)
         # content_hash_code includes the proto, so this detects most changes.
@@ -1317,7 +1322,7 @@ class Exporter:
             content_hash_code=annotation.get_content_hash_code(),
             os_list=SUPPORTED_PLATFORMS,
             added_in_milestone=self._current_milestone,
-            file_path=annotation.proto.source.file)
+            file_path=annotation.file)
         if annotation.needs_two_ids():
           new_item.second_id = annotation.second_id_hash_code
         if annotation.type != Annotation.Type.COMPLETE:
@@ -1352,7 +1357,7 @@ class Exporter:
     for unique_id, archived in self.archive.items():
       if not archived.os_list and not archived.deprecated:
         archived.deprecated = datetime.date.today().strftime("%Y-%m-%d")
-        archived.file_path = ""
+        archived.file_path = None
         archived.semantics_fields = []
         archived.policy_fields = []
 
@@ -1374,9 +1379,15 @@ class Exporter:
       # serialize deterministically.
       for field in ArchivedAnnotation.FIELDS:
         value = getattr(archived, field)
-        if isinstance(value, str):
-          # Remove empty strings, but preserve file_path="".
-          if value or field == "file_path":
+        if value is None and field == "file_path":
+          # Always include file_path="", even if it's empty.
+          node.attrib[field] = ""
+        elif isinstance(value, Path):
+          # For file_path="", convert backslashes to slashes.
+          node.attrib[field] = value.as_posix()
+        elif isinstance(value, str):
+          # Remove empty strings.
+          if value:
             node.attrib[field] = value
         elif isinstance(value, bool):
           # Boolean is "1" if True, or absent if False.
@@ -1423,7 +1434,7 @@ class Exporter:
       if archived.hash_code in used_codes:
         errors.append(
             AuditorError(AuditorError.Type.HASH_CODE_COLLISION,
-                         str(archived.hash_code), "", 0, unique_id))
+                         str(archived.hash_code), None, 0, unique_id))
       else:
         used_codes[archived.hash_code] = unique_id
 
@@ -1455,10 +1466,9 @@ class Exporter:
   def save_annotations_xml(self) -> None:
     """Saves self._archive into annotations.xml"""
     logger.info("Saving annotations to {}.".format(
-        os.path.relpath(Exporter.ANNOTATIONS_XML_PATH, SRC_DIR)))
+        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
     xml_str = self._generate_serialized_xml()
-    with open(Exporter.ANNOTATIONS_XML_PATH, 'w') as f:
-      f.write(xml_str)
+    Exporter.ANNOTATIONS_XML_PATH.write_text(xml_str)
 
   def get_deprecated_ids(self) -> List[UniqueId]:
     """Produces the list of deprecated unique ids. Requires that annotations.xml
@@ -1510,10 +1520,9 @@ class Exporter:
     """Returns the required updates to go from one state to another in
     annotations.xml"""
     logger.info("Computing required updates for {}.".format(
-        os.path.relpath(Exporter.ANNOTATIONS_XML_PATH, SRC_DIR)))
+        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
 
-    with open(Exporter.ANNOTATIONS_XML_PATH) as f:
-      old_xml = f.read()
+    old_xml = Exporter.ANNOTATIONS_XML_PATH.read_text("utf-8")
 
     new_xml = self._generate_serialized_xml()
 
@@ -1523,8 +1532,8 @@ class Exporter:
 class Auditor:
   """Extracts and validates annotations from the codebase."""
 
-  SAFE_LIST_PATH = os.path.join(SRC_DIR, "tools", "traffic_annotation",
-                                "auditor", "safe_list.txt")
+  SAFE_LIST_PATH = (SRC_DIR / "tools" / "traffic_annotation" / "auditor" /
+                    "safe_list.txt")
 
   def __init__(self):
     self.extracted_annotations: List[Annotation] = []
@@ -1549,7 +1558,7 @@ class Auditor:
       return self._safe_list
 
     logger.info("Parsing {}.".format(
-        os.path.relpath(Auditor.SAFE_LIST_PATH, SRC_DIR)))
+        Auditor.SAFE_LIST_PATH.relative_to(SRC_DIR)))
     with open(Auditor.SAFE_LIST_PATH) as f:
       for line in f.readlines():
         # Ignore comments and empty lines.
@@ -1576,24 +1585,25 @@ class Auditor:
 
     return self._safe_list
 
-  def _is_safe_listed(self, file_path: str,
+  def _is_safe_listed(self, file_path: Path,
                       exception_type: ExceptionType) -> bool:
     """Returns true if file_path matches the safe list for this exception
     type."""
     safe_list = self._get_safe_list()
-    if any(r.match(file_path) for r in safe_list[ExceptionType.ALL]):
+    posix_path = file_path.as_posix()
+    if any(r.match(posix_path) for r in safe_list[ExceptionType.ALL]):
       return True
-    return any(r.match(file_path) for r in safe_list[exception_type])
+    return any(r.match(posix_path) for r in safe_list[exception_type])
 
-  def run_extractor(self, build_path: str,
-                    path_filters: List[str]) -> List[extractor.Annotation]:
+  def run_extractor(self, build_path: Path, path_filters: List[str],
+                    skip_compdb: bool) -> List[extractor.Annotation]:
     """Run the extractor on the codebase.
 
     Filters files based on `git ls-files` and compdb. Git lets us avoid
     auto-generated files, and compdb lets us filter files by platform.
 
     Args:
-      build_path: str
+      build_path: Path
         Path to a directory where Chrome was built (e.g., out/Release)
       path_filters: List[str]
         If this list is empty, parse all .cc files in the repository.
@@ -1620,8 +1630,8 @@ class Auditor:
       compdb_files = None
     else:
       logger.info("Generating compile_commands.json")
-      tools = NetworkTrafficAnnotationTools(build_path)
-      compdb_files = tools.GetCompDBFiles(True)
+      tools = NetworkTrafficAnnotationTools(str(build_path))
+      compdb_files = tools.GetCompDBFiles(not skip_compdb)
 
     if path_filters:
       logger.info("Parsing valid .cc/.mm files in the Chromium repository, "
@@ -1633,10 +1643,9 @@ class Auditor:
     all_annotations = []
 
     for relative_path in files:
-      absolute_path = os.path.join(SRC_DIR, relative_path)
-
+      absolute_path = SRC_DIR / relative_path
       # Skip files based on compdb and path_filters.
-      if compdb_files is not None and absolute_path not in compdb_files:
+      if (compdb_files is not None and str(absolute_path) not in compdb_files):
         continue
       if (path_filters
           and not self._path_filters_match(path_filters, relative_path)):
@@ -1650,7 +1659,7 @@ class Auditor:
 
     return all_annotations
 
-  def _filter_errors(self, file_path: str,
+  def _filter_errors(self, file_path: Path,
                      errors: List[AuditorError]) -> List[AuditorError]:
     """Returns a new list, with safe-listed errors for this file filtered
     out."""
@@ -1670,8 +1679,8 @@ class Auditor:
     for serialized_annotation in all_annotations:
       annotation = Annotation()
       errors = annotation.deserialize(serialized_annotation)
-      filtered_errors = self._filter_errors(annotation.proto.source.file,
-                                            errors)
+      assert annotation.file is not None
+      filtered_errors = self._filter_errors(annotation.file, errors)
 
       if errors and not filtered_errors:
         # There were errors, but they were all filtered out. Skip this
@@ -1765,8 +1774,7 @@ class Auditor:
 
   def _get_grouping_xml_ids(self, grouping_xml_path=Exporter.GROUPING_XML_PATH
                             ) -> Set[UniqueId]:
-    logger.info("Parsing {}.".format(os.path.relpath(grouping_xml_path,
-                                                     SRC_DIR)))
+    logger.info("Parsing {}.".format(grouping_xml_path.relative_to(SRC_DIR)))
 
     grouping_xml_ids = set()
     tree = xml.etree.ElementTree.parse(grouping_xml_path)
@@ -1786,7 +1794,7 @@ class Auditor:
     grouping_xml_ids = self._get_grouping_xml_ids()
 
     logger.info("Computing required updates for {}.".format(
-        os.path.relpath(Exporter.GROUPING_XML_PATH, SRC_DIR)))
+        Exporter.GROUPING_XML_PATH.relative_to(SRC_DIR)))
 
     # Compare with the annotation ids.
     extracted_ids = set()
@@ -1814,12 +1822,13 @@ class Auditor:
 
     return errors
 
-  def _path_filters_match(self, path_filters: List[str], file_path: str):
+  def _path_filters_match(self, path_filters: List[str], file_path: Path):
     """Checks if path_filters include the given file_path, or there are path
     filters which are folders (no "." in their name) and match the file
     name."""
-    return (file_path in path_filters
-            or any("." not in f and file_path.startswith(f)
+    posix_path = file_path.as_posix()
+    return (posix_path in path_filters
+            or any("." not in f and posix_path.startswith(f)
                    for f in path_filters))
 
   def _add_missing_annotations(self, path_filters: List[str]):
@@ -1833,7 +1842,7 @@ class Auditor:
     for unique_id, archived in self.exporter.archive.items():
       if (not archived.deprecated
           and self.exporter.matches_current_platform(archived)
-          and archived.file_path
+          and archived.file_path is not None
           and not self._path_filters_match(path_filters, archived.file_path)):
         self.extracted_annotations.append(
             Annotation.load_from_archive(archived))
@@ -1887,20 +1896,21 @@ class AuditorUI:
   Most attributes are derived from command-line flags."""
 
   def __init__(self,
-               build_path: str,
-               path_filters: Optional[List[str]] = None,
+               build_path: Path,
+               path_filters: List[str],
                no_filtering: bool = True,
                test_only: bool = False,
                error_limit: int = 0,
-               annotations_file: str = ""):
+               annotations_file: Optional[Path] = None,
+               skip_compdb: bool = False):
     self.build_path = build_path
-    if path_filters is None:
-      path_filters = []
-    self.path_filters = path_filters
+    # Convert backslashes to slashes on Windows.
+    self.path_filters = [Path(f).as_posix() for f in path_filters]
     self.no_filtering = no_filtering
     self.test_only = test_only
     self.error_limit = error_limit
     self.annotations_file = annotations_file
+    self.skip_compdb = skip_compdb
 
     # Exposed for testing.
     self.traffic_annotation = self.import_compiled_proto()
@@ -1913,9 +1923,8 @@ class AuditorUI:
     The compiled proto is located ${self.build_path}/pyproto/ and generated
     as a part of compiling Chrome."""
     # Use the build path to import the compiled traffic annotation proto.
-    traffic_annotation_proto_path = os.path.join(self.build_path, "pyproto",
-                                                 "tools", "traffic_annotation")
-    sys.path.insert(0, traffic_annotation_proto_path)
+    proto_path = self.build_path / "pyproto" / "tools" / "traffic_annotation"
+    sys.path.insert(0, str(proto_path))
 
     try:
       global traffic_annotation_pb2
@@ -1938,7 +1947,8 @@ class AuditorUI:
       self.path_filters = []
 
     all_annotations = self.auditor.run_extractor(self.build_path,
-                                                 self.path_filters)
+                                                 self.path_filters,
+                                                 self.skip_compdb)
     errors = []
 
     errors.extend(self.auditor.parse_extractor_output(all_annotations))
@@ -1950,7 +1960,7 @@ class AuditorUI:
           self.auditor.run_all_checks(self.path_filters, self.test_only))
 
     # Write annotations TSV file.
-    if self.annotations_file:
+    if self.annotations_file is not None:
       missing_ids = self.auditor.exporter.get_other_platforms_annotation_ids()
       write_annotations_tsv_file(self.annotations_file,
                                  self.auditor.extracted_annotations,
@@ -1982,6 +1992,7 @@ if __name__ == "__main__":
       prog="auditor.py",
       usage="%(prog)s [OPTION] ... [path_filters]")
   args_parser.add_argument("--build-path",
+                           type=Path,
                            help="Path to the build directory.",
                            required=True)
   args_parser.add_argument(
@@ -2006,9 +2017,14 @@ if __name__ == "__main__":
                            help="Limit for the maximum number of returned "
                            " errors. Use 0 for unlimited.")
   args_parser.add_argument("--annotations-file",
-                           default="",
+                           type=Path,
                            help="Optional path to a TSV output file with all"
                            " annotations.")
+  args_parser.add_argument(
+      "--skip-compdb",
+      help="Assume compile_commands exists in the build-path, and is "
+      " up-to-date. This speeds up the auditor.",
+      action="store_true")
   args_parser.add_argument(
       "path_filters",
       nargs="*",
@@ -2019,13 +2035,14 @@ if __name__ == "__main__":
       " --all-files, using the python extractor.")
 
   args = args_parser.parse_args()
-  build_path = args.build_path
+  build_path = Path(args.build_path)
 
   print("Starting traffic annotation auditor. This may take a few minutes.")
   print("If you find a bug in this script, file bugs against the 'Enterprise>"
         "TrafficAnnotations' component and CC nicolaso@chromium.org.")
   auditor_ui = AuditorUI(build_path, args.path_filters, args.no_filtering,
-                         args.test_only, args.limit, args.annotations_file)
+                         args.test_only, args.limit, args.annotations_file,
+                         args.skip_compdb)
 
   try:
     sys.exit(auditor_ui.main())

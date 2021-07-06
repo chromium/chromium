@@ -15,16 +15,12 @@ import unittest
 from auditor import *
 from typing import cast, Tuple
 
-# Path to this script's dir.
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-
 # Path to the test_data/ dir.
-TESTS_DIR = os.path.join(SCRIPT_DIR, "..", "test_data")
+TESTS_DIR = SCRIPT_DIR.parent / "test_data"
 
 # TODO(nicolaso): Move these to tools/traffic_annotation/scripts/test_data/ once
 # the Python auditor has fully replaced the C++ one.
-CPP_TESTS_DIR = os.path.join(SRC_DIR, "tools", "traffic_annotation", "auditor",
-                             "tests")
+CPP_TESTS_DIR = (SRC_DIR / "tools" / "traffic_annotation" / "auditor" / "tests")
 
 TEST_DEPRECATED_IDS = [UniqueId("abc"), UniqueId("def"), UniqueId("ghi")]
 
@@ -34,8 +30,8 @@ class AuditorTest(unittest.TestCase):
     unittest.TestCase.setUp(self)
 
     path_filters = [
-        os.path.relpath(os.path.join(TESTS_DIR, "test_sample_annotations.cc"),
-                        SRC_DIR)
+        TESTS_DIR.joinpath("test_sample_annotations.cc").relative_to(
+            SRC_DIR).as_posix()
     ]
     self.auditor_ui = AuditorUI(build_path,
                                 path_filters,
@@ -45,11 +41,14 @@ class AuditorTest(unittest.TestCase):
     self.auditor.file_filter.git_file_for_testing = os.path.join(
         TESTS_DIR, "git_list.txt")
 
-    all_annotations = self.auditor.run_extractor(build_path, path_filters)
+    all_annotations = self.auditor.run_extractor(self.auditor_ui.build_path,
+                                                 self.auditor_ui.path_filters,
+                                                 skip_compdb=True)
 
     self.sample_annotations = {}
     for annotation in all_annotations:
       self.sample_annotations[annotation.unique_id] = annotation
+    logger.info("{} {}".format(all_annotations, self.sample_annotations))
 
     # Expose the traffic_annotation_pb2.py import from auditor.py.
     global traffic_annotation
@@ -57,7 +56,7 @@ class AuditorTest(unittest.TestCase):
 
   def deserialize(self,
                   file_name: str) -> Tuple[Annotation, List[AuditorError]]:
-    file_path = os.path.join(CPP_TESTS_DIR, "extractor_outputs", file_name)
+    file_path = CPP_TESTS_DIR / "extractor_outputs" / file_name
     with open(file_path) as f:
       lines = [l.rstrip() for l in f.readlines()]
 
@@ -128,7 +127,7 @@ class AuditorTest(unittest.TestCase):
         "tools/traffic_annotation/auditor/tests/"
         "relevant_file_name_and_content.mm",
     ]
-    self.assertCountEqual(relevant_files, filter.git_files)
+    self.assertCountEqual([Path(f) for f in relevant_files], filter.git_files)
 
   def test_get_source_files(self):
     """Tests that FileFilter.get_source_files() gives the correct list of
@@ -143,7 +142,9 @@ class AuditorTest(unittest.TestCase):
                           filter.get_source_files(ignore_list, ""))
 
     # Check if a file is ignored when added to the ignore list.
-    ignore_list = {ExceptionType.ALL: [re.compile(filter.git_files[0])]}
+    ignore_list = {
+        ExceptionType.ALL: [re.compile(filter.git_files[0].as_posix())]
+    }
     self.assertCountEqual(
         set(filter.git_files) - set(filter.git_files[:1]),
         filter.get_source_files(ignore_list, ""))
@@ -161,32 +162,32 @@ class AuditorTest(unittest.TestCase):
     auditor = Auditor()  # use the real safe_list.txt
     for t in ExceptionType:
       # Anything in /tools directory is safelisted for all types.
-      self.assertTrue(auditor._is_safe_listed("tools/something.cc", t))
-      self.assertTrue(auditor._is_safe_listed("tools/somewhere/something.mm",
-                                              t))
+      self.assertTrue(auditor._is_safe_listed(Path("tools/something.cc"), t))
+      self.assertTrue(
+          auditor._is_safe_listed(Path("tools/somewhere/something.mm"), t))
 
       # Anything in a general folder is not safelisted for any type.
-      self.assertFalse(auditor._is_safe_listed("something.cc", t))
-      self.assertFalse(auditor._is_safe_listed("content/something.mm", t))
+      self.assertFalse(auditor._is_safe_listed(Path("something.cc"), t))
+      self.assertFalse(auditor._is_safe_listed(Path("content/something.mm"), t))
 
     # Files defining missing annotation functions in net/ are exception of
     # 'missing' type.
     self.assertTrue(
-        auditor._is_safe_listed("net/url_request/url_fetcher.cc",
+        auditor._is_safe_listed(Path("net/url_request/url_fetcher.cc"),
                                 ExceptionType.MISSING))
     self.assertTrue(
-        auditor._is_safe_listed("net/url_request/url_request_context.cc",
+        auditor._is_safe_listed(Path("net/url_request/url_request_context.cc"),
                                 ExceptionType.MISSING))
 
     # Files with the word "test" in their path can have the "test" annotation.
     self.assertFalse(
-        auditor._is_safe_listed("net/url_request/url_fetcher.cc",
+        auditor._is_safe_listed(Path("net/url_request/url_fetcher.cc"),
                                 ExceptionType.TEST_ANNOTATION))
     self.assertTrue(
-        auditor._is_safe_listed("chrome/browser/test_something.cc",
+        auditor._is_safe_listed(Path("chrome/browser/test_something.cc"),
                                 ExceptionType.TEST_ANNOTATION))
     self.assertTrue(
-        auditor._is_safe_listed("test/send_something.cc",
+        auditor._is_safe_listed(Path("test/send_something.cc"),
                                 ExceptionType.TEST_ANNOTATION))
 
   def test_annotation_deserialization(self) -> None:
@@ -236,9 +237,10 @@ class AuditorTest(unittest.TestCase):
       self.assertEqual(annotation.unique_id,
                        "supervised_user_refresh_token_fetcher")
       self.assertEqual(
-          annotation.proto.source.file, "chrome/browser/supervised_user/legacy/"
-          "supervised_user_refresh_token_fetcher.cc")
-      self.assertEqual(annotation.proto.source.line, 166)
+          annotation.file,
+          Path("chrome/browser/supervised_user/legacy/"
+               "supervised_user_refresh_token_fetcher.cc"))
+      self.assertEqual(annotation.line, 166)
       self.assertEqual(annotation.proto.semantics.sender, "Supervised Users")
       self.assertEqual(annotation.proto.policy.cookies_allowed, 1)
 
@@ -615,7 +617,7 @@ class AuditorTest(unittest.TestCase):
                                   added_in_milestone=62,
                                   semantics_fields=[2, 3],
                                   policy_fields=[-1, 3, 4],
-                                  file_path="foobar.cc")
+                                  file_path=Path("foobar.cc"))
     annotation = Annotation.load_from_archive(archived)
     self.assertTrue(annotation.is_loaded_from_archive)
     self.assertEqual(annotation.type, archived.type)
@@ -628,7 +630,7 @@ class AuditorTest(unittest.TestCase):
                      archived.semantics_fields)
     self.assertEqual(annotation.get_policy_field_numbers(),
                      archived.policy_fields)
-    self.assertEqual(annotation.proto.source.file, archived.file_path)
+    self.assertEqual(annotation.file, archived.file_path)
 
   def test_annotations_xml(self):
     """Tests is annotations.xml has proper content."""
@@ -672,7 +674,7 @@ class AuditorTest(unittest.TestCase):
 
   def test_annotation_grouping(self):
     """Tests if an annotation is in test_grouping.xml or not."""
-    grouping_xml_path = os.path.join(CPP_TESTS_DIR, "test_grouping.xml")
+    grouping_xml_path = CPP_TESTS_DIR / "test_grouping.xml"
     grouping_xml_ids = self.auditor._get_grouping_xml_ids(grouping_xml_path)
     self.assertCountEqual([
         "foobar_policy_fetcher", "foobar_info_fetcher",
@@ -740,11 +742,12 @@ class AuditorTest(unittest.TestCase):
 if __name__ == "__main__":
   args_parser = argparse.ArgumentParser(description="Unittests for auditor.py")
   args_parser.add_argument("--build-path",
+                           type=Path,
                            help="Path to the build directory.",
                            required=True)
   args_parser.add_argument('unittest_args', nargs='*')
 
   args = args_parser.parse_args()
-  build_path = args.build_path
+  build_path = Path(args.build_path)
   sys.argv[1:] = args.unittest_args
   unittest.main()

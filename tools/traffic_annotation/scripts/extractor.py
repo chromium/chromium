@@ -161,8 +161,15 @@ def is_inside_comment(string, pos):
 
 def extract_annotations(file_path):
   """Extracts and returns annotations from the file at |file_path|."""
-  with open(file_path) as f:
-    contents = f.read()
+  if sys.version_info.major >= 3:
+    # In Python 3, contents is a unicode string decoded from UTF-8 file
+    # contents.
+    with open(file_path, encoding="utf-8") as f:
+      contents = f.read()
+  else:
+    # In Python 2, contents is a byte-string.
+    with open(file_path) as f:
+      contents = f.read()
 
   defs = []
 
