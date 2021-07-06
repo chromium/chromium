@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"

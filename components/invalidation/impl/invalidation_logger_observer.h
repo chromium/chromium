@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_INVALIDATION_LOGGER_OBSERVER_H_
 #define COMPONENTS_INVALIDATION_IMPL_INVALIDATION_LOGGER_OBSERVER_H_
 
+#include <set>
+#include <string>
+
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
 namespace base {
 class DictionaryValue;
+class Time;
 }  // namespace base
 
 namespace invalidation {

@@ -13,6 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"

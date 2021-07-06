@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_IMPRESSION_DETAIL_H_
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {

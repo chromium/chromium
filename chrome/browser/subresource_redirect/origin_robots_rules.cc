@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "chrome/browser/subresource_redirect/subresource_redirect_util.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/http/http_request_headers.h"

@@ -24,6 +24,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace media {
 class VideoFrame;
 }  // namespace media

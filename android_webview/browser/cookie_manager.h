@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"

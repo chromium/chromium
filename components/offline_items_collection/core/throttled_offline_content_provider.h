@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 
 namespace base {

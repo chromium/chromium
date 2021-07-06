@@ -11,6 +11,10 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace mojo {
 
 class InterfaceEndpointClient;

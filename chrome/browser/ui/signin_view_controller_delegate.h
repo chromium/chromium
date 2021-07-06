@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;

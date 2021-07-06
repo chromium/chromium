@@ -12,6 +12,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace content {
 class WebContents;
 }

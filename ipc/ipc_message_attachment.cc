@@ -11,6 +11,8 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <unistd.h>
+
 #include "base/posix/eintr_wrapper.h"
 #include "ipc/ipc_platform_file_attachment_posix.h"
 #endif

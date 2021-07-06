@@ -13,6 +13,11 @@
 
 class PrefRegistrySimple;
 
+namespace base {
+class Time;
+class TimeDelta;
+}  // namespace base
+
 namespace chromeos {
 
 namespace device_sync {

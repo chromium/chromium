@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "ui/gfx/geometry/size.h"

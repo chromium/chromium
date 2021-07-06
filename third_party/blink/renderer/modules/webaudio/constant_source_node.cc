@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constant_source_options.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"

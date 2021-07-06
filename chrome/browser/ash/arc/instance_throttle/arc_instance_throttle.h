@@ -15,6 +15,10 @@
 #include "components/arc/arc_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace content {
 class BrowserContext;
 }

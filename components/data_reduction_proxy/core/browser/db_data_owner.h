@@ -13,6 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
+namespace base {
+class Time;
+}
+
 namespace data_reduction_proxy {
 class DataStore;
 class DataUsageBucket;

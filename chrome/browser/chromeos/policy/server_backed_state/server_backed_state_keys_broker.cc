@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 
 namespace policy {

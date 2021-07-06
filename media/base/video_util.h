@@ -19,6 +19,10 @@
 
 class GrDirectContext;
 
+namespace base {
+class TimeDelta;
+}
+
 namespace gpu {
 namespace raster {
 class RasterInterface;

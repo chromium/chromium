@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

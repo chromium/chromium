@@ -8,6 +8,7 @@
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/transform_node.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace cc {
 namespace {

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"

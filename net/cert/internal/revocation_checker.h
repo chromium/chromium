@@ -6,6 +6,7 @@
 #define NET_CERT_INTERNAL_REVOCATION_CHECKER_H_
 
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/parsed_certificate.h"

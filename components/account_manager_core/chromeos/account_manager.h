@@ -30,6 +30,7 @@ class PrefService;
 namespace base {
 class SequencedTaskRunner;
 class ImportantFileWriter;
+class TimeTicks;
 }  // namespace base
 
 namespace network {

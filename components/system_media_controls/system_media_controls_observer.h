@@ -8,6 +8,10 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace system_media_controls {
 
 // Interface to observe events on the SystemMediaControls.

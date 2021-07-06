@@ -17,6 +17,10 @@
 
 struct SpellCheckResult;
 
+namespace base {
+class TimeTicks;
+}
+
 namespace content {
 class BrowserContext;
 }

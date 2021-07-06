@@ -8,8 +8,8 @@
 #include <atomic>
 
 #include "base/atomicops.h"
+#include "base/check.h"
 #include "base/macros.h"
-#include "base/threading/platform_thread.h"
 
 namespace device {
 

@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 

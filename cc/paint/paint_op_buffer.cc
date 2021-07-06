@@ -25,6 +25,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/gpu/GrRecordingContext.h"
 #include "ui/gfx/skia_util.h"

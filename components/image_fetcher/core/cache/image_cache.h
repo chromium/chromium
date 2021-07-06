@@ -21,6 +21,7 @@ class PrefService;
 namespace base {
 class Clock;
 class SequencedTaskRunner;
+class TimeTicks;
 }  // namespace base
 
 namespace image_fetcher {

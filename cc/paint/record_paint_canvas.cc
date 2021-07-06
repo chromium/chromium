@@ -12,6 +12,7 @@
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/utils/SkNWayCanvas.h"
 
 namespace cc {

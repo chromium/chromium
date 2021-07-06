@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
+#include <cmath>
 #include <limits>
 
 #include "base/android/jni_android.h"
@@ -32,7 +33,7 @@ double RoundDoubleTowardsZero(const double& x) {
   if (std::isnan(x)) {
     return 0.0;
   }
-  return x > 0.0 ? floor(x) : ceil(x);
+  return x > 0.0 ? std::floor(x) : std::ceil(x);
 }
 
 // Rounds to jlong using Java's type conversion rules.

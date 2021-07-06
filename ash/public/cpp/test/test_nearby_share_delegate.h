@@ -9,10 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
-
-namespace base {
-class TimeTicks;
-}  // namespace base
+#include "base/time/time.h"
 
 namespace ash {
 

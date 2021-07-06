@@ -12,6 +12,10 @@
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace image_fetcher {
 
 // Represents the initialization status of a image storage module.
