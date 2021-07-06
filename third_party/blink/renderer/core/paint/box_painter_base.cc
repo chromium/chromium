@@ -604,6 +604,26 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
   return true;
 }
 
+void DidDrawImage(
+    Node* node,
+    const Image& image,
+    const StyleImage& style_image,
+    const PropertyTreeStateOrAlias& current_paint_chunk_properties,
+    const FloatRect& image_rect) {
+  if (!node || !style_image.IsImageResource())
+    return;
+  const IntRect enclosing_rect = EnclosingIntRect(image_rect);
+  PaintTimingDetector::NotifyBackgroundImagePaint(
+      *node, image, To<StyleFetchedImage>(style_image),
+      current_paint_chunk_properties, enclosing_rect);
+
+  LocalDOMWindow* window = node->GetDocument().domWindow();
+  DCHECK(window);
+  ImageElementTiming::From(*window).NotifyBackgroundImagePainted(
+      *node, To<StyleFetchedImage>(style_image), current_paint_chunk_properties,
+      enclosing_rect);
+}
+
 inline bool PaintFastBottomLayer(const Document* document,
                                  Node* node,
                                  GraphicsContext& context,
@@ -707,19 +727,9 @@ inline bool PaintFastBottomLayer(const Document* document,
                          node && node->ComputedStyleRef().DisableForceDark(),
                          composite_op, info.respect_image_orientation);
 
-  if (node && info.image && info.image->IsImageResource()) {
-    PaintTimingDetector::NotifyBackgroundImagePaint(
-        *node, *image, To<StyleFetchedImage>(*info.image),
-        context.GetPaintController().CurrentPaintChunkProperties(),
-        RoundedIntRect(image_border.Rect()));
-
-    LocalDOMWindow* window = node->GetDocument().domWindow();
-    DCHECK(window);
-    ImageElementTiming::From(*window).NotifyBackgroundImagePainted(
-        *node, To<StyleFetchedImage>(*info.image),
-        context.GetPaintController().CurrentPaintChunkProperties(),
-        RoundedIntRect(image_border.Rect()));
-  }
+  DidDrawImage(node, *image, *info.image,
+               context.GetPaintController().CurrentPaintChunkProperties(),
+               image_border.Rect());
   return true;
 }
 
@@ -843,19 +853,9 @@ void PaintFillLayerBackground(const Document* document,
     DrawTiledBackground(context, image, geometry, composite_op,
                         node && node->ComputedStyleRef().DisableForceDark(),
                         info.respect_image_orientation);
-    if (node && info.image && info.image->IsImageResource()) {
-      PaintTimingDetector::NotifyBackgroundImagePaint(
-          *node, *image, To<StyleFetchedImage>(*info.image),
-          context.GetPaintController().CurrentPaintChunkProperties(),
-          EnclosingIntRect(geometry.SnappedDestRect()));
-
-      LocalDOMWindow* window = node->GetDocument().domWindow();
-      DCHECK(window);
-      ImageElementTiming::From(*window).NotifyBackgroundImagePainted(
-          *node, To<StyleFetchedImage>(*info.image),
-          context.GetPaintController().CurrentPaintChunkProperties(),
-          EnclosingIntRect(geometry.SnappedDestRect()));
-    }
+    DidDrawImage(node, *image, *info.image,
+                 context.GetPaintController().CurrentPaintChunkProperties(),
+                 FloatRect(geometry.SnappedDestRect()));
   }
 }
 
