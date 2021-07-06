@@ -189,14 +189,10 @@ void GraphicsDelegateWin::SetVRDisplayInfo(
   // Store the first left and right views. VRUiHostImpl::SetVRDisplayInfo has
   // already validated that the left and right views exist.
   for (auto& view : info->views) {
-    if (!left_ && view->eye == device::mojom::XREye::kLeft) {
+    if (view->eye == device::mojom::XREye::kLeft) {
       left_ = std::move(view);
-    } else if (!right_ && view->eye == device::mojom::XREye::kRight) {
+    } else if (view->eye == device::mojom::XREye::kRight) {
       right_ = std::move(view);
-    }
-
-    if (left_ && right_) {
-      break;
     }
   }
 
