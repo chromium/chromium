@@ -5,22 +5,20 @@
 #include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_handler.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
-#include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/restore_data.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 namespace chromeos {
 namespace full_restore {
@@ -30,15 +28,16 @@ ArcAppLaunchHandler::~ArcAppLaunchHandler() = default;
 
 void ArcAppLaunchHandler::RestoreArcApps(
     FullRestoreAppLaunchHandler* app_launch_handler) {
+  DCHECK(app_launch_handler);
   handler_ = app_launch_handler;
-
-  window_handler_ = FullRestoreArcTaskHandler::GetForProfile(handler_->profile_)
-                        ->window_handler();
 
   LoadRestoreData();
 
-  if (windows_.empty() && no_stack_windows_.empty())
+  if (!HasRestoreData())
     return;
+
+  window_handler_ = FullRestoreArcTaskHandler::GetForProfile(handler_->profile_)
+                        ->window_handler();
 
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       handler_->profile_));
@@ -66,6 +65,18 @@ void ArcAppLaunchHandler::RestoreArcApps(
 }
 
 void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
+  if (!HasRestoreData() || !update.ReadinessChanged())
+    return;
+
+  if (!apps_util::IsInstalled(update.Readiness())) {
+    RemoveApp(update.AppId());
+    return;
+  }
+
+  // If the app is not ready, don't launch the app for the restoration.
+  if (update.Readiness() != apps::mojom::Readiness::kReady)
+    return;
+
   if (base::Contains(app_ids_, update.AppId()))
     PrepareAppLaunching(update.AppId());
 }
@@ -76,6 +87,9 @@ void ArcAppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void ArcAppLaunchHandler::OnAppConnectionReady() {
+  if (!HasRestoreData())
+    return;
+
   if (chromeos::ResourcedClient::Get() &&
       !resourced_client_observer_.IsObserving()) {
     resourced_client_observer_.Observe(chromeos::ResourcedClient::Get());
@@ -83,6 +97,7 @@ void ArcAppLaunchHandler::OnAppConnectionReady() {
 }
 
 void ArcAppLaunchHandler::LoadRestoreData() {
+  DCHECK(handler_);
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
           ->AppRegistryCache();
@@ -94,16 +109,17 @@ void ArcAppLaunchHandler::LoadRestoreData() {
     app_ids_.insert(it.first);
     for (const auto& data_it : it.second) {
       if (data_it.second->activation_index.has_value()) {
-        windows_[data_it.second->activation_index.value()] =
-            std::make_pair(it.first, data_it.first);
+        windows_[data_it.second->activation_index.value()] = {it.first,
+                                                              data_it.first};
       } else {
-        no_stack_windows_.insert(std::make_pair(it.first, data_it.first));
+        no_stack_windows_.push_back({it.first, data_it.first});
       }
     }
   }
 }
 
 void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
+  DCHECK(handler_);
   app_ids_.erase(app_id);
 
   const auto it = handler_->restore_data_->app_id_to_launch_list().find(app_id);
@@ -170,6 +186,42 @@ void ArcAppLaunchHandler::OnMemoryPressure(
     chromeos::ResourcedClient::PressureLevel level,
     uint64_t reclaim_target_kb) {
   pressure_level_ = level;
+}
+
+bool ArcAppLaunchHandler::HasRestoreData() {
+  return !(windows_.empty() && no_stack_windows_.empty());
+}
+
+bool ArcAppLaunchHandler::CanLaunchApp() {
+  switch (pressure_level_) {
+    case chromeos::ResourcedClient::PressureLevel::NONE:
+      return true;
+    case chromeos::ResourcedClient::PressureLevel::MODERATE:
+    case chromeos::ResourcedClient::PressureLevel::CRITICAL:
+      return false;
+  }
+}
+
+void ArcAppLaunchHandler::RemoveApp(const std::string& app_id) {
+  app_ids_.erase(app_id);
+  std::vector<int32_t> window_stacks;
+  for (auto& it : windows_) {
+    if (it.second.app_id == app_id)
+      window_stacks.push_back(it.first);
+  }
+
+  for (auto window_stack : window_stacks)
+    windows_.erase(window_stack);
+
+  std::vector<std::list<WindowInfo>::iterator> windows;
+  for (auto it = no_stack_windows_.begin(); it != no_stack_windows_.end();
+       ++it) {
+    if (it->app_id == app_id)
+      windows.push_back(it);
+  }
+
+  for (auto it : windows)
+    no_stack_windows_.erase(it);
 }
 
 }  // namespace full_restore

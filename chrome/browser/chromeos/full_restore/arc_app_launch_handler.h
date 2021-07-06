@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_APP_LAUNCH_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_APP_LAUNCH_HANDLER_H_
 
-#include <set>
+#include <list>
+#include <map>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -19,6 +20,7 @@ class AppUpdate;
 namespace chromeos {
 namespace full_restore {
 
+class ArcAppLaunchHandlerArcAppBrowserTest;
 class ArcWindowHandler;
 class FullRestoreAppLaunchHandler;
 
@@ -32,6 +34,11 @@ class FullRestoreAppLaunchHandler;
 class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
                             public chromeos::ResourcedClient::Observer {
  public:
+  struct WindowInfo {
+    std::string app_id;
+    int32_t window_id;
+  };
+
   ArcAppLaunchHandler();
   ArcAppLaunchHandler(const ArcAppLaunchHandler&) = delete;
   ArcAppLaunchHandler& operator=(const ArcAppLaunchHandler&) = delete;
@@ -49,6 +56,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   void OnAppConnectionReady();
 
  private:
+  friend ArcAppLaunchHandlerArcAppBrowserTest;
+
   // Reads the restore data, and add the ARC app windows to `windows_`,
   // `no_stack_windows_` and `app_ids_`.
   void LoadRestoreData();
@@ -62,6 +71,15 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   void OnMemoryPressure(chromeos::ResourcedClient::PressureLevel level,
                         uint64_t reclaim_target_kb) override;
 
+  // Returns true if there are windows to be restored. Otherwise, returns false.
+  bool HasRestoreData();
+
+  // Returns true if the app can be launched. Otherwise, returns false.
+  bool CanLaunchApp();
+
+  // Invoked when the app of the given `app_id` is removed.
+  void RemoveApp(const std::string& app_id);
+
   FullRestoreAppLaunchHandler* handler_ = nullptr;
 
   // The app id list to be restored. When the ARC app is ready in
@@ -71,15 +89,16 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   // The map from the window stack to the app id and the window id. This map is
   // used to save the windows to be restored.
-  std::map<int32_t, std::pair<std::string, int32_t>> windows_;
+  std::map<int32_t, WindowInfo> windows_;
 
-  // ARC app windows without the window stack info. This set is used to save the
-  // windows to be restored.
-  std::set<std::pair<std::string, int32_t>> no_stack_windows_;
+  // ARC app windows without the window stack info. This list is used to save
+  // the windows to be restored.
+  std::list<WindowInfo> no_stack_windows_;
 
   ArcWindowHandler* window_handler_ = nullptr;
 
-  chromeos::ResourcedClient::PressureLevel pressure_level_;
+  chromeos::ResourcedClient::PressureLevel pressure_level_ =
+      chromeos::ResourcedClient::PressureLevel::MODERATE;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

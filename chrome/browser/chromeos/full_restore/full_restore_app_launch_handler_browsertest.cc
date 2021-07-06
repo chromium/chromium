@@ -24,6 +24,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -1098,6 +1100,29 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     EXPECT_EQ(status_bar_color, data_it->second->status_bar_color.value());
   }
 
+  void VerifyRestoreData(const std::string& app_id, int32_t window_id) {
+    DCHECK(app_launch_handler());
+
+    const auto& app_id_to_launch_list =
+        app_launch_handler()->restore_data_->app_id_to_launch_list();
+
+    auto it = app_id_to_launch_list.find(app_id);
+    EXPECT_TRUE(it != app_id_to_launch_list.end());
+
+    auto data_it = it->second.find(window_id);
+    EXPECT_TRUE(data_it != it->second.end());
+  }
+
+  void VerifyNoRestoreData(const std::string& app_id) {
+    DCHECK(app_launch_handler());
+
+    const auto& app_id_to_launch_list =
+        app_launch_handler()->restore_data_->app_id_to_launch_list();
+
+    auto it = app_id_to_launch_list.find(app_id);
+    EXPECT_FALSE(it != app_id_to_launch_list.end());
+  }
+
   ArcAppListPrefs* app_prefs() { return ArcAppListPrefs::Get(profile()); }
 
   arc::mojom::AppHost* app_host() { return app_prefs(); }
@@ -1671,6 +1696,243 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
       test_full_restore_info_observer());
+  StopInstance();
+}
+
+class ArcAppLaunchHandlerArcAppBrowserTest
+    : public FullRestoreAppLaunchHandlerArcAppBrowserTest {
+ protected:
+  void Restore() {
+    FullRestoreAppLaunchHandlerArcAppBrowserTest::Restore();
+
+    arc_app_launch_handler_ =
+        FullRestoreArcTaskHandler::GetForProfile(profile())
+            ->arc_app_launch_handler();
+  }
+
+  void UpdateApp(const std::string& app_id, apps::mojom::Readiness readiness) {
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_id = app_id;
+    app->app_type = apps::mojom::AppType::kArc;
+    app->readiness = readiness;
+
+    std::vector<apps::mojom::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    proxy->AppRegistryCache().OnApps(std::move(deltas),
+                                     apps::mojom::AppType::kArc,
+                                     false /* should_notify_initialized */);
+  }
+
+  void RemoveApp(const std::string& app_id) {
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_id = app_id;
+    app->app_type = apps::mojom::AppType::kArc;
+    app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+
+    std::vector<apps::mojom::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    proxy->AppRegistryCache().OnApps(std::move(deltas),
+                                     apps::mojom::AppType::kArc,
+                                     false /* should_notify_initialized */);
+  }
+
+  bool HasRestoreData() {
+    DCHECK(arc_app_launch_handler_);
+    return arc_app_launch_handler_->HasRestoreData();
+  }
+
+  bool HasRestoreData(const std::string& app_id) {
+    DCHECK(arc_app_launch_handler_);
+
+    for (auto it : arc_app_launch_handler_->windows_) {
+      if (it.second.app_id == app_id)
+        return true;
+    }
+    for (auto it : arc_app_launch_handler_->no_stack_windows_) {
+      if (it.app_id == app_id)
+        return true;
+    }
+
+    return false;
+  }
+
+  std::set<std::string> GetAppIds() {
+    DCHECK(arc_app_launch_handler_);
+    return arc_app_launch_handler_->app_ids_;
+  }
+
+  void VerifyWindows(int32_t index,
+                     const std::string& app_id,
+                     int32_t window_id) {
+    DCHECK(arc_app_launch_handler_);
+    auto it = arc_app_launch_handler_->windows_.find(index);
+    ASSERT_TRUE(it != arc_app_launch_handler_->windows_.end());
+    EXPECT_EQ(app_id, it->second.app_id);
+    EXPECT_EQ(window_id, it->second.window_id);
+  }
+
+  void VerifyNoStackWindows(const std::string& app_id, int32_t window_id) {
+    DCHECK(arc_app_launch_handler_);
+    bool found = false;
+    for (auto it : arc_app_launch_handler_->no_stack_windows_) {
+      if (it.app_id == app_id && it.window_id == window_id) {
+        found = true;
+        break;
+      }
+    }
+    EXPECT_TRUE(found);
+  }
+
+ private:
+  ArcAppLaunchHandler* arc_app_launch_handler_ = nullptr;
+};
+
+// Verify the saved windows in ArcAppLaunchHandler when apps are removed.
+IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RemoveApps) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, true);
+
+  const std::string app_id1 = GetTestApp1Id(kTestAppPackage);
+  const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
+
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id2 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+
+  SaveAppLaunchInfo(app_id1, session_id1);
+  SaveAppLaunchInfo(app_id2, session_id2);
+
+  // Simulate creating kTaskId1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  CreateTask(app_id1, kTaskId1, session_id1);
+
+  // Create the window for the app1.
+  views::Widget* widget1 = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window1 = widget1->GetNativeWindow();
+
+  // Simulate creating kTaskId2 for the app2.
+  int32_t kTaskId2 = 101;
+  CreateTask(app_id2, kTaskId2, session_id2);
+
+  WaitForAppLaunchInfoSaved();
+
+  int32_t activation_index1 = 11;
+  SaveWindowInfo(window1, activation_index1,
+                 chromeos::WindowStateType::kNormal);
+
+  WaitForAppLaunchInfoSaved();
+
+  Restore();
+  widget1->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+  app_host()->OnTaskDestroyed(kTaskId2);
+
+  EXPECT_TRUE(HasRestoreData());
+  VerifyWindows(activation_index1, app_id1, kTaskId1);
+  VerifyNoStackWindows(app_id2, kTaskId2);
+  VerifyRestoreData(app_id1, kTaskId1);
+  VerifyRestoreData(app_id2, kTaskId2);
+
+  // Remove `app_id2`, and verify windows and restore data for `app_id2` have
+  // been removed.
+  RemoveApp(app_id2);
+  VerifyWindows(activation_index1, app_id1, kTaskId1);
+  EXPECT_FALSE(HasRestoreData(app_id2));
+  VerifyRestoreData(app_id1, kTaskId1);
+  VerifyNoRestoreData(app_id2);
+
+  // Remove app_id1, and verify windows and restore data for `app_id1` have been
+  // removed.
+  RemoveApp(app_id1);
+  EXPECT_FALSE(HasRestoreData(app_id1));
+  VerifyNoRestoreData(app_id1);
+  VerifyNoRestoreData(app_id2);
+
+  StopInstance();
+}
+
+// Verify the saved windows in ArcAppLaunchHandler when apps status are
+// modified.
+IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, UpdateApps) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, true);
+
+  const std::string app_id1 = GetTestApp1Id(kTestAppPackage);
+  const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
+
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id2 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+
+  SaveAppLaunchInfo(app_id1, session_id1);
+  SaveAppLaunchInfo(app_id2, session_id2);
+
+  // Simulate creating kTaskId1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  CreateTask(app_id1, kTaskId1, session_id1);
+
+  // Create the window for the app1.
+  views::Widget* widget1 = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window1 = widget1->GetNativeWindow();
+
+  // Simulate creating kTaskId2 for the app2.
+  int32_t kTaskId2 = 101;
+  CreateTask(app_id2, kTaskId2, session_id2);
+
+  WaitForAppLaunchInfoSaved();
+
+  int32_t activation_index1 = 11;
+  SaveWindowInfo(window1, activation_index1,
+                 chromeos::WindowStateType::kNormal);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Modify apps status before restoring, so that apps can't be restored, to
+  // verify the saved restore data.
+  UpdateApp(app_id1, apps::mojom::Readiness::kDisabledByPolicy);
+  UpdateApp(app_id2, apps::mojom::Readiness::kDisabledByPolicy);
+  Restore();
+  widget1->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+  app_host()->OnTaskDestroyed(kTaskId2);
+
+  EXPECT_TRUE(HasRestoreData());
+  VerifyWindows(activation_index1, app_id1, kTaskId1);
+  VerifyNoStackWindows(app_id2, kTaskId2);
+
+  std::set<std::string> app_ids = GetAppIds();
+  EXPECT_TRUE(base::Contains(app_ids, app_id1));
+  EXPECT_TRUE(base::Contains(app_ids, app_id2));
+  VerifyRestoreData(app_id1, kTaskId1);
+  VerifyRestoreData(app_id2, kTaskId2);
+
+  // Modify the app_id1 status to be ready to prepare launching app_id1.
+  UpdateApp(app_id1, apps::mojom::Readiness::kReady);
+  app_ids = GetAppIds();
+  EXPECT_FALSE(base::Contains(app_ids, app_id1));
+  EXPECT_TRUE(base::Contains(app_ids, app_id2));
+
+  UpdateApp(app_id2, apps::mojom::Readiness::kReady);
+  app_ids = GetAppIds();
+  EXPECT_FALSE(base::Contains(app_ids, app_id1));
+  EXPECT_FALSE(base::Contains(app_ids, app_id2));
+
+  // Verify the restore data and windows for `app_id1` and `app_id2` are not
+  // removed.
+  VerifyRestoreData(app_id1, kTaskId1);
+  VerifyRestoreData(app_id2, kTaskId2);
+
+  VerifyWindows(activation_index1, app_id1, kTaskId1);
+  VerifyNoStackWindows(app_id2, kTaskId2);
+
   StopInstance();
 }
 
