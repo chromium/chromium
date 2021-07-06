@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -17,7 +18,13 @@
 
 namespace policy {
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, SeparateProxyPoliciesMerging) {
+// TODO(https://crbug.com/1226768): flaky
+#if defined(OS_WIN)
+#define MAYBE_SeparateProxyPoliciesMerging DISABLED_SeparateProxyPoliciesMerging
+#else
+#define MAYBE_SeparateProxyPoliciesMerging SeparateProxyPoliciesMerging
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_SeparateProxyPoliciesMerging) {
   // Add an individual proxy policy value.
   PolicyMap policies;
   policies.Set(key::kProxyServerMode, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
