@@ -446,8 +446,14 @@ IN_PROC_BROWSER_TEST_F(DnsProbeCurrentConfigFailingProbesTest, BadConfig) {
   ExpectDisplayingErrorPage("DNS_PROBE_FINISHED_BAD_CONFIG");
 }
 
+#if defined(OS_WIN)
+// https://crbug.com/1226818 Test is flaky on WIN builders.
+#define MAYBE_BadSecureConfig DISABLED_BadSecureConfig
+#else
+#define MAYBE_BadSecureConfig BadSecureConfig
+#endif
 IN_PROC_BROWSER_TEST_F(DnsProbeCurrentSecureConfigFailingProbesTest,
-                       BadSecureConfig) {
+                       MAYBE_BadSecureConfig) {
   NavigateToDnsError();
 
   EXPECT_EQ(error_page::DNS_PROBE_STARTED, WaitForSentStatus());
