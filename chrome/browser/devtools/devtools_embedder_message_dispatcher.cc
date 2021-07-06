@@ -46,19 +46,18 @@ bool GetValue(const base::Value& value, bool* result) {
 }
 
 bool GetValue(const base::Value& value, gfx::Rect* rect) {
-  const base::DictionaryValue* dict;
-  if (!value.GetAsDictionary(&dict))
+  if (!value.is_dict())
     return false;
-  int x = 0;
-  int y = 0;
-  int width = 0;
-  int height = 0;
-  if (!dict->GetInteger("x", &x) ||
-      !dict->GetInteger("y", &y) ||
-      !dict->GetInteger("width", &width) ||
-      !dict->GetInteger("height", &height))
+  absl::optional<int> x = value.FindIntKey("x");
+  absl::optional<int> y = value.FindIntKey("y");
+  absl::optional<int> width = value.FindIntKey("width");
+  absl::optional<int> height = value.FindIntKey("height");
+  if (!x.has_value() || !y.has_value() || !width.has_value() ||
+      !height.has_value()) {
     return false;
-  rect->SetRect(x, y, width, height);
+  }
+
+  rect->SetRect(x.value(), y.value(), width.value(), height.value());
   return true;
 }
 
