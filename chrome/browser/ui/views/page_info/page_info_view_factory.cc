@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
@@ -152,6 +153,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
                           base::Unretained(navigation_handler_)),
       vector_icons::kArrowBackIcon);
   views::InstallCircleHighlightPathGenerator(back_button.get());
+  back_button->SetID(VIEW_ID_BACK_BUTTON);
+  back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetProperty(views::kInternalPaddingKey,
                            back_button->GetInsets());
   header->AddChildView(std::move(back_button));
@@ -173,6 +176,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
   auto close_button = views::BubbleFrameView::CreateCloseButton(
       base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
                           base::Unretained(navigation_handler_)));
+  close_button->SetID(VIEW_ID_PAGE_INFO_CLOSE_BUTTON);
   close_button->SetVisible(true);
   close_button->SetProperty(views::kInternalPaddingKey,
                             close_button->GetInsets());

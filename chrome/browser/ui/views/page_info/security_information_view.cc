@@ -58,6 +58,8 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
     // labels after more UI is implemented.
     security_summary_label->SetTextContext(
         views::style::CONTEXT_DIALOG_BODY_TEXT);
+    security_summary_label->SetID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
     security_summary_label_ =
         layout->AddView(std::move(security_summary_label), 1.0, 1.0,
                         views::GridLayout::FILL, views::GridLayout::LEADING);
@@ -72,6 +74,8 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
 
   start_secondary_row();
   auto security_details_label = std::make_unique<views::StyledLabel>();
+  security_details_label->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
   security_details_label_ =
       layout->AddView(std::move(security_details_label), 1.0, 1.0,
                       views::GridLayout::FILL, views::GridLayout::LEADING);
@@ -237,9 +241,12 @@ void SecurityInformationView::AddPasswordReuseButtons(
       (password_reuse_button_container_->width() - kSpacingBetweenButtons) >=
       (change_password_button_size +
        allowlist_password_reuse_button->CalculatePreferredSize().width());
+  bool is_page_info_v2 =
+      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop);
   auto layout = std::make_unique<views::BoxLayout>(
-      can_fit_in_one_line ? views::BoxLayout::Orientation::kHorizontal
-                          : views::BoxLayout::Orientation::kVertical,
+      can_fit_in_one_line || is_page_info_v2
+          ? views::BoxLayout::Orientation::kHorizontal
+          : views::BoxLayout::Orientation::kVertical,
       gfx::Insets(), kSpacingBetweenButtons);
   // Make buttons left-aligned. For RTL languages, buttons will automatically
   // become right-aligned.

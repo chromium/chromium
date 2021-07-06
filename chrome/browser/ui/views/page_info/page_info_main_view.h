@@ -56,6 +56,8 @@ class PageInfoMainView : public views::View,
   const std::u16string details_text() const { return details_text_; }
 
  private:
+  friend class PageInfoBubbleViewDialogBrowserTest;
+
   // Creates a view with vertical box layout that will used a container for
   // other views.
   std::unique_ptr<views::View> CreateContainerView() WARN_UNUSED_RESULT;

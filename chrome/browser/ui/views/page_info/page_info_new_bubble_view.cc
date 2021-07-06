@@ -83,6 +83,10 @@ void PageInfoNewBubbleView::CloseBubble() {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
+void PageInfoNewBubbleView::DidChangeVisibleSecurityState() {
+  presenter_->UpdateSecurityState();
+}
+
 void PageInfoNewBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
 
