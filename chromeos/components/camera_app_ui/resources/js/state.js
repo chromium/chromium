@@ -17,6 +17,7 @@ export const State = {
   CAMERA_CONFIGURING: 'camera-configuring',
   CAMERA_SWITCHING: 'camera-switching',
   CUSTOM_VIDEO_PARAMETERS: 'custom-video-parameters',
+  ENABLE_MULTISTREAM_RECORDING: 'enable-multistream-recording',
   ENABLE_PTZ: 'enable-ptz',
   EXPERT: 'expert',
   FPS_30: 'fps-30',

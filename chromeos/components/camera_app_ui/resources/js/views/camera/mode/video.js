@@ -177,21 +177,12 @@ export class VideoHandler {
 }
 
 /**
- * @param {!MediaStream} stream
- * @return {!Resolution}
- */
-function getResolution(stream) {
-  const {width, height} = stream.getVideoTracks()[0].getSettings();
-  return new Resolution(width, height);
-}
-
-/**
  * Video mode capture controller.
  */
 export class Video extends ModeBase {
   /**
    * @param {!MediaStream} stream Preview stream.
-   * @param {!MediaStreamConstraints} captureConstraints
+   * @param {?MediaStreamConstraints} captureConstraints
    * @param {?Resolution} captureResolution
    * @param {!Facing} facing
    * @param {!VideoHandler} handler
@@ -200,7 +191,7 @@ export class Video extends ModeBase {
     super(stream, facing);
 
     /**
-     * @const {!MediaStreamConstraints}
+     * @const {?MediaStreamConstraints}
      * @private
      */
     this.captureConstraints_ = captureConstraints;
@@ -209,7 +200,13 @@ export class Video extends ModeBase {
      * @const {!Resolution}
      * @private
      */
-    this.captureResolution_ = captureResolution || getResolution(stream);
+    this.captureResolution_ = (() => {
+      if (captureResolution !== null) {
+        return captureResolution;
+      }
+      const {width, height} = stream.getVideoTracks()[0].getSettings();
+      return new Resolution(width, height);
+    })();
 
     /**
      * @const {!VideoHandler}
@@ -363,8 +360,7 @@ export class Video extends ModeBase {
     const preference = encoderPreference.get(loadTimeData.getBoard()) ||
         {profile: h264.Profile.HIGH, multiplier: 2};
     const {profile, multiplier} = preference;
-    const {width, height, frameRate} =
-        this.captureStream_.stream.getVideoTracks()[0].getSettings();
+    const {width, height, frameRate} = this.getVideoTrack_().getSettings();
     const resolution = new Resolution(width, height);
     const bitrate = resolution.area * multiplier;
     const level = h264.getMinimalLevel(profile, bitrate, frameRate, resolution);
@@ -377,6 +373,25 @@ export class Video extends ModeBase {
       return null;
     }
     return {profile, level, bitrate};
+  }
+
+  /**
+   * @return {!MediaStream}
+   * @private
+   */
+  getRecordingStream_() {
+    if (this.captureStream_ !== null) {
+      return this.captureStream_.stream;
+    }
+    return this.stream_;
+  }
+
+  /**
+   * Gets video track of recording stream.
+   * @return {!MediaStreamTrack}
+   */
+  getVideoTrack_() {
+    return this.getRecordingStream_().getVideoTracks()[0];
   }
 
   /**
@@ -393,13 +408,12 @@ export class Video extends ModeBase {
       throw new CanceledError('Recording sound is canceled');
     }
 
-    if (this.captureStream_ === null) {
+    if (this.captureConstraints_ !== null && this.captureStream_ === null) {
       this.captureStream_ = await StreamManager.getInstance().openCaptureStream(
           this.captureConstraints_);
     }
     if (this.imageCapture_ === null) {
-      this.imageCapture_ =
-          new ImageCapture(this.captureStream_.stream.getVideoTracks()[0]);
+      this.imageCapture_ = new ImageCapture(this.getVideoTrack_());
     }
 
     try {
@@ -414,7 +428,7 @@ export class Video extends ModeBase {
         option.videoBitsPerSecond = param.bitrate;
       }
       this.mediaRecorder_ =
-          new MediaRecorder(this.captureStream_.stream, option);
+          new MediaRecorder(this.getRecordingStream_(), option);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_RECORD_START_FAILED);
       throw e;
@@ -450,20 +464,17 @@ export class Video extends ModeBase {
       return;
     }
 
-    const settings =
-        this.captureStream_.stream.getVideoTracks()[0].getSettings();
-    const resolution = new Resolution(settings.width, settings.height);
     state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
     try {
       await this.handler_.handleResultVideo(new VideoResult({
-        resolution,
+        resolution: this.captureResolution_,
         duration: this.recordTime_.inMinutes(),
         videoSaver,
         everPaused: this.everPaused_,
       }));
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
-          {resolution, facing: this.facing_});
+          {resolution: this.captureResolution_, facing: this.facing_});
     } catch (e) {
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});
@@ -559,10 +570,10 @@ export class VideoFactory extends ModeFactory {
     this.handler_ = handler;
 
     /**
-     * @type {!MediaStreamConstraints}
+     * @type {?MediaStreamConstraints}
      * @private
      */
-    this.captureConstraints_;
+    this.captureConstraints_ = null;
   }
 
   /**
@@ -571,16 +582,18 @@ export class VideoFactory extends ModeFactory {
   async prepareDevice(constraints, resolution) {
     this.captureResolution_ = resolution;
     const deviceId = assertString(constraints.video.deviceId.exact);
-    this.captureConstraints_ = {
-      audio: constraints.audio,
-      video: {
-        deviceId: constraints.video.deviceId,
-        frameRate: constraints.video.frameRate,
-      },
-    };
-    if (resolution !== null) {
-      this.captureConstraints_.video.width = resolution.width;
-      this.captureConstraints_.video.height = resolution.height;
+    if (state.get(state.State.ENABLE_MULTISTREAM_RECORDING)) {
+      this.captureConstraints_ = {
+        audio: constraints.audio,
+        video: {
+          deviceId: constraints.video.deviceId,
+          frameRate: constraints.video.frameRate,
+        },
+      };
+      if (resolution !== null) {
+        this.captureConstraints_.video.width = resolution.width;
+        this.captureConstraints_.video.height = resolution.height;
+      }
     }
 
     const deviceOperator = await DeviceOperator.getInstance();

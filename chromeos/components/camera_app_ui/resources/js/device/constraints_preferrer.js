@@ -505,9 +505,11 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
   }
 
   /**
-   * @override
+   * @param {string} deviceId
+   * @return {!Array<!CaptureCandidate>}
+   * @private
    */
-  getSortedCandidates(deviceId) {
+  getMultiStreamSortedCandidates_(deviceId) {
     /** @type {!Resolution} */
     const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
 
@@ -567,6 +569,73 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     return this.deviceVideoPreviewResolutionMap_.get(deviceId)
         .flatMap(toVideoCandidate)
         .sort(this.getPreferResolutionSort_(prefR));
+  }
+
+  /**
+   * @param {string} deviceId
+   * @return {!Array<!CaptureCandidate>}
+   * @private
+   */
+  getSortedCandidates_(deviceId) {
+    /**
+     * Maps specified video resolution to object of resolution and all supported
+     * constant fps under that resolution or null fps for not support constant
+     * fps. The resolution-fpses are sorted by user preference of constant fps.
+     * @param {!Resolution} r
+     * @return {!Array<{r: !Resolution, fps: number}>}
+     */
+    const getFpses = (r) => {
+      let /** !Array<?number> */ constFpses = [null];
+      /** @type {!Array<number>} */
+      const constFpsInfo = this.constFpsInfo_[deviceId][r];
+      // The higher constant fps will be ignored if constant 30 and 60 presented
+      // due to currently lack of UI support for toggling it.
+      if (constFpsInfo.includes(30) && constFpsInfo.includes(60)) {
+        const prefFps =
+            this.prefFpses_[deviceId] && this.prefFpses_[deviceId][r] || 30;
+        constFpses = prefFps === 30 ? [30, 60] : [60, 30];
+      } else {
+        constFpses =
+            [...constFpsInfo.filter((fps) => fps >= 30).sort().reverse(), null];
+      }
+      return constFpses.map((fps) => ({r, fps}));
+    };
+
+    /**
+     * @param {!Resolution} r
+     * @param {number} fps
+     * @return {!MediaStreamConstraints}
+     */
+    const toPreivewConstraints = ({width, height}, fps) => ({
+      audio: {echoCancellation: false},
+      video: {
+        deviceId: {exact: deviceId},
+        frameRate: fps ? {exact: fps} : {min: 20, ideal: 30},
+        width,
+        height,
+      },
+    });
+
+    const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
+    return [...this.supportedResolutions_.get(deviceId)]
+        .flatMap(getFpses)
+        .map(({r, fps}) => ({
+               resolution: r,
+               // For non-multistream recording, preview stream is used directly
+               // to do video recording.
+               previewCandidates: [toPreivewConstraints(r, fps)],
+             }))
+        .sort(this.getPreferResolutionSort_(prefR));
+  }
+
+  /**
+   * @override
+   */
+  getSortedCandidates(deviceId) {
+    if (state.get(state.State.ENABLE_MULTISTREAM_RECORDING)) {
+      return this.getMultiStreamSortedCandidates_(deviceId);
+    }
+    return this.getSortedCandidates_(deviceId);
   }
 }
 

@@ -373,6 +373,10 @@ export class Camera extends View {
     state.addObserver(state.State.SCREEN_OFF_AUTO, handleScreenStateChange);
     state.addObserver(state.State.HAS_EXTERNAL_SCREEN, handleScreenStateChange);
 
+    state.addObserver(state.State.ENABLE_MULTISTREAM_RECORDING, () => {
+      this.start();
+    });
+
     this.initVideoEncoderOptions_();
   }
 
