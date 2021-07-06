@@ -5,6 +5,7 @@
 #include "components/captive_portal/content/captive_portal_url_loader_throttle.h"
 
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace captive_portal {
 

@@ -12,7 +12,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+
+class GURL;
 
 namespace network {
 class SharedURLLoaderFactory;

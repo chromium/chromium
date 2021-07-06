@@ -25,6 +25,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "net/base/load_flags.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace {
 #if OS_LINUX

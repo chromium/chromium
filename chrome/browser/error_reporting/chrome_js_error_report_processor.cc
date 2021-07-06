@@ -31,6 +31,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/escape.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace {
 

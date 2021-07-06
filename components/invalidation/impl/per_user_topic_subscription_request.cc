@@ -16,6 +16,7 @@
 #include "components/sync/base/model_type.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_fetcher.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 using net::HttpRequestHeaders;

@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/resource_request.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"

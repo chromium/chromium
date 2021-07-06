@@ -13,6 +13,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 
+class GURL;
+
 namespace content {
 
 class URLLoaderFactoryGetter;

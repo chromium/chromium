@@ -6,6 +6,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/browser_ui/client_certificate/android/ssl_client_certificate_request.h"
 #include "content/public/browser/client_certificate_delegate.h"
+#include "net/ssl/ssl_private_key.h"
 
 namespace chrome {
 

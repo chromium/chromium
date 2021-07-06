@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
 
+#include <cinttypes>
 #include <string>
 #include <vector>
 

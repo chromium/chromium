@@ -11,6 +11,10 @@
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 namespace weblayer {
 
 // Exposed for testing.

@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/zlib/zlib.h"
+#include "url/gurl.h"
 
 #if defined(OS_WIN)
 #include <io.h>

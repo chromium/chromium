@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace signin {
 

@@ -35,6 +35,7 @@
 
 namespace net {
 class IOBuffer;
+class HttpResponseInfo;
 }
 
 namespace content {

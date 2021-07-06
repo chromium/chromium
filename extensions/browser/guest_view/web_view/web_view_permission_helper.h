@@ -18,6 +18,10 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
+namespace base {
+class DictionaryValue;
+}
+
 namespace extensions {
 
 class WebViewGuest;

@@ -21,9 +21,7 @@ class FileSystemContext;
 class SpecialStoragePolicy;
 }
 
-namespace url {
 class GURL;
-}
 
 namespace content {
 

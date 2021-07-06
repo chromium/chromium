@@ -5,6 +5,7 @@
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 #include <list>
 #include <memory>

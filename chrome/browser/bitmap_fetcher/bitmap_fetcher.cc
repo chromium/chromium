@@ -11,6 +11,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/data_url.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
 
 BitmapFetcher::BitmapFetcher(

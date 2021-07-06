@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

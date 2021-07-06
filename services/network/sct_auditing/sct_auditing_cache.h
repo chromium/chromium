@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/mru_cache.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
@@ -23,6 +24,7 @@
 #include "url/gurl.h"
 
 namespace net {
+class HttpResponseHeaders;
 class X509Certificate;
 }
 

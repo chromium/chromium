@@ -17,6 +17,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 namespace network {
 class SimpleURLLoader;
 }  // namespace network

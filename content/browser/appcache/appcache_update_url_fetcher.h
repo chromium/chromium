@@ -13,6 +13,10 @@
 #include "net/base/io_buffer.h"
 #include "url/gurl.h"
 
+namespace net {
+struct RedirectInfo;
+}
+
 namespace content {
 
 class AppCacheResponseWriter;

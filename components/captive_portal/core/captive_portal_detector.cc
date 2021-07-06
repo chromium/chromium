@@ -14,6 +14,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/resource_request.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/network/network_configuration_handler.h"

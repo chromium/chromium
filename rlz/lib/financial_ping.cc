@@ -32,6 +32,7 @@
 #include "rlz/lib/rlz_value_store.h"
 #include "rlz/lib/string_utils.h"
 #include "rlz/lib/time_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 

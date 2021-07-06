@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
+#include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
