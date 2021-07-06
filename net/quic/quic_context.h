@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/quic/core/quic_connection.h"
 

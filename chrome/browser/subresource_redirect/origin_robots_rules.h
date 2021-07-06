@@ -15,10 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-namespace base {
-class TimeDelta;
-}
-
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;

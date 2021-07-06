@@ -12,8 +12,6 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-class TimeDelta;
-class TimeTicks;
 }
 
 namespace media {

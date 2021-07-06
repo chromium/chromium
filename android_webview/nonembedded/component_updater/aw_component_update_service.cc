@@ -17,7 +17,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_utils.h"

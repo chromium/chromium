@@ -17,10 +17,6 @@
 
 class GURL;
 
-namespace base {
-class Time;
-}
-
 namespace blink {
 enum class ServiceWorkerStatusCode;
 }  // namespace blink

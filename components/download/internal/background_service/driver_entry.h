@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

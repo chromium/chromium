@@ -7,8 +7,11 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/offline_pages/task/task.h"
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace offline_pages {
 

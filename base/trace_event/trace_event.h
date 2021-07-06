@@ -18,7 +18,6 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/builtin_categories.h"

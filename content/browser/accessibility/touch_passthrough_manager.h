@@ -14,10 +14,6 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace base {
-class TimeTicks;
-}
-
 namespace content {
 
 class BrowserAccessibilityManager;

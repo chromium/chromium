@@ -11,11 +11,6 @@
 class AndroidSessionDurationsService;
 class Profile;
 
-namespace base {
-class TimeDelta;
-class TimeTicks;
-}  // namespace base
-
 class AndroidSessionDurationsServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:

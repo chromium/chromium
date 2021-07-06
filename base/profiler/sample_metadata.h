@@ -53,8 +53,6 @@
 
 namespace base {
 
-class TimeTicks;
-
 class BASE_EXPORT SampleMetadata {
  public:
   // Set the metadata value associated with |name|.

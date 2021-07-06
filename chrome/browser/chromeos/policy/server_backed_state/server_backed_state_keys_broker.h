@@ -14,10 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
-namespace base {
-class TimeDelta;
-}
-
 namespace chromeos {
 class SessionManagerClient;
 }

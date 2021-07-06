@@ -19,10 +19,6 @@
 
 class SkBitmap;
 
-namespace base {
-class TimeTicks;
-}
-
 namespace ui {
 
 class OSExchangeData;

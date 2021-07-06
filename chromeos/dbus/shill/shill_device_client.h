@@ -15,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class TimeDelta;
 class Value;
 }  // namespace base
 

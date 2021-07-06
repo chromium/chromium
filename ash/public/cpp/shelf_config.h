@@ -21,10 +21,6 @@
 #include "ui/display/display_observer.h"
 #include "ui/gfx/animation/tween.h"
 
-namespace base {
-class TimeDelta;
-}
-
 namespace session_manager {
 enum class SessionState;
 }  // namespace session_manager

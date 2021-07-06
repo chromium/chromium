@@ -4,7 +4,6 @@
 
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/metrics/android_session_durations_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"

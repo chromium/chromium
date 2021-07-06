@@ -21,11 +21,6 @@
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace base {
-class Time;
-class TimeTicks;
-}  // namespace base
-
 namespace media {
 
 struct CdmConfig;

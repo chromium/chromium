@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"

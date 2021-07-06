@@ -9,10 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 
-namespace base {
-class Time;
-}
-
 namespace chromeos {
 namespace secure_channel {
 

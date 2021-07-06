@@ -6,7 +6,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace cc {
 namespace {

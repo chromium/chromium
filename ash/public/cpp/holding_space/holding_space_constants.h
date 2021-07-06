@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONSTANTS_H_
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 

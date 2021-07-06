@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/time/time.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 

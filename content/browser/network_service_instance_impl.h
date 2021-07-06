@@ -9,10 +9,6 @@
 #include "base/callback_list.h"
 #include "content/common/content_export.h"
 
-namespace base {
-class TimeDelta;
-}
-
 namespace content {
 
 // Creates the network::NetworkService object on the IO thread directly instead

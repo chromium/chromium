@@ -14,7 +14,6 @@
 
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
