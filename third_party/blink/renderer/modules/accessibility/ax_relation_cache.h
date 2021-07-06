@@ -84,6 +84,9 @@ class AXRelationCache {
   // owned ids have not changed, e.g. when an object has been refreshed.
   void UpdateAriaOwnsWithCleanLayout(AXObject* owner, bool force = false);
 
+  // Is there work to be done when layout becomes clean?
+  bool IsDirty() const;
+
   static bool IsValidOwner(AXObject* owner);
   static bool IsValidOwnedChild(AXObject* child);
 

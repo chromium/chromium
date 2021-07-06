@@ -952,6 +952,10 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   if (document.IsNull())
     return;
 
+  DCHECK(document.IsAccessibilityEnabled())
+      << "SendPendingAccessibilityEvents should not do any work when nothing "
+         "has enabled accessibility.";
+
   if (needs_initial_ax_tree_root_) {
     // At the very start of accessibility for this document, push a layout
     // complete for the entire document, in order to initialize the browser's

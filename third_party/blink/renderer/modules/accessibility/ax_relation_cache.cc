@@ -56,6 +56,10 @@ void AXRelationCache::ProcessUpdatesWithCleanLayout() {
   owner_ids_to_update_.clear();
 }
 
+bool AXRelationCache::IsDirty() const {
+  return !initialized_ || !owner_ids_to_update_.IsEmpty();
+}
+
 bool AXRelationCache::IsAriaOwned(const AXObject* child) const {
   if (!child)
     return false;

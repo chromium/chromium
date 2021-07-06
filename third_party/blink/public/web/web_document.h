@@ -145,6 +145,9 @@ class WebDocument : public WebNode {
   // Returns true if the document is in prerendering.
   BLINK_EXPORT bool IsPrerendering();
 
+  // Return true if  accessibility processing has been enabled.
+  BLINK_EXPORT bool IsAccessibilityEnabled();
+
   // Adds `callback` to the post-prerendering activation steps.
   // https://jeremyroman.github.io/alternate-loading-modes/#document-post-prerendering-activation-steps-list
   BLINK_EXPORT void AddPostPrerenderingActivationStep(

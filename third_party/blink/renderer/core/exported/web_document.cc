@@ -295,6 +295,10 @@ bool WebDocument::IsPrerendering() {
   return ConstUnwrap<Document>()->IsPrerendering();
 }
 
+bool WebDocument::IsAccessibilityEnabled() {
+  return ConstUnwrap<Document>()->IsAccessibilityEnabled();
+}
+
 void WebDocument::AddPostPrerenderingActivationStep(
     base::OnceClosure callback) {
   return Unwrap<Document>()->AddPostPrerenderingActivationStep(

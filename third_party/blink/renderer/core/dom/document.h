@@ -1581,6 +1581,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID ax_id);
 
+  // Return true if any accessibility contexts have been enabled.
+  bool IsAccessibilityEnabled() const { return !ax_contexts_.IsEmpty(); }
+
   bool HaveRenderBlockingResourcesLoaded() const;
 
   // Sets a beforeunload handler for documents which are embedding plugins. This
