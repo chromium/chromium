@@ -1103,6 +1103,11 @@ void WebViewImpl::ResizeVisualViewport(const gfx::Size& new_size) {
   GetPage()->GetVisualViewport().ClampToBoundaries();
 }
 
+void WebViewImpl::DidFirstVisuallyNonEmptyPaint() {
+  DCHECK(MainFrameImpl());
+  local_main_frame_host_remote_->DidFirstVisuallyNonEmptyPaint();
+}
+
 void WebViewImpl::UpdateICBAndResizeViewport(
     const IntSize& visible_viewport_size) {
   // We'll keep the initial containing block size from changing when the top

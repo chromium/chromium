@@ -30,7 +30,6 @@ class Size;
 namespace content {
 
 class RenderViewHost;
-class RenderViewHostImpl;
 class RenderViewHostDelegateView;
 class WebContents;
 
@@ -128,22 +127,11 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // ignored.
   virtual bool ShouldIgnoreUnresponsiveRenderer();
 
-  // The RenderView finished the first visually non-empty paint.
-  virtual void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) {}
-
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();
 
   // Returns true if the render view is rendering a portal.
   virtual bool IsPortal();
-
-  // Called when the theme color for the underlying document as specified
-  // by theme-color meta tag has changed.
-  virtual void OnThemeColorChanged(RenderViewHostImpl* source) {}
-
-  // Called when the CSS background color for the underlying document has
-  // changed.
-  virtual void OnBackgroundColorChanged(RenderViewHostImpl* source) {}
 
   // Called on RenderView creation to get the initial base background color
   // for this RenderView. Nullopt means a color is not set, and the blink

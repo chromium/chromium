@@ -220,7 +220,6 @@ class TestWebFrameWidgetHost : public mojom::blink::WidgetHost,
   void AutoscrollStart(const gfx::PointF& position) override;
   void AutoscrollFling(const gfx::Vector2dF& position) override;
   void AutoscrollEnd() override;
-  void DidFirstVisuallyNonEmptyPaint() override;
   void StartDragging(const blink::WebDragData& drag_data,
                      blink::DragOperationsMask operations_allowed,
                      const SkBitmap& bitmap,

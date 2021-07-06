@@ -118,8 +118,6 @@ void FakeRenderWidgetHost::AutoscrollFling(const gfx::Vector2dF& position) {}
 
 void FakeRenderWidgetHost::AutoscrollEnd() {}
 
-void FakeRenderWidgetHost::DidFirstVisuallyNonEmptyPaint() {}
-
 void FakeRenderWidgetHost::StartDragging(
     blink::mojom::DragDataPtr drag_data,
     blink::DragOperationsMask operations_allowed,

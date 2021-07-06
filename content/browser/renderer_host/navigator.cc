@@ -443,9 +443,7 @@ void Navigator::DidNavigate(
   // code doesn't exist anymore. Also, move this code in the
   // PageTransitionIsMainFrame code block above.
   if (ui::PageTransitionIsMainFrame(params.transition) && delegate_) {
-    RenderViewHostImpl* rvh = static_cast<RenderViewHostImpl*>(
-        render_frame_host->GetRenderViewHost());
-    rvh->SetContentsMimeType(params.contents_mime_type);
+    render_frame_host->GetPage().SetContentsMimeType(params.contents_mime_type);
   }
 
   // RenderFrameHostImpl::DidNavigate will update the url, and may cause the

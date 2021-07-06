@@ -1273,6 +1273,10 @@ interface LocalMainFrameHost {
   // This corresponds to the window.resizeTo() and window.moveTo() APIs, and the browser
   // may ignore this message.
   SetWindowRect(gfx.mojom.Rect bounds) => ();
+
+  // Sent once a paint happens after the first non empty layout. In other words,
+  // after the frame has painted something.
+  DidFirstVisuallyNonEmptyPaint();
 };
 
 // Implemented in Browser, this interface defines remote-main-frame-specific

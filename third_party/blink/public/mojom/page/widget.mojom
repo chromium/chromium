@@ -184,10 +184,6 @@ interface FrameWidgetHost {
   // Sent by a widget to the browser to notify the end of the autoscroll.
   AutoscrollEnd();
 
-  // Sent once a paint happens after the first non empty layout. In other words,
-  // after the frame widget has painted something.
-  DidFirstVisuallyNonEmptyPaint();
-
   // Used to tell the browser the user started dragging in the content area.
   // |drag_data| contains contextual information about the pieces of the page
   // the user dragged. The browser uses this notification to initiate a drag

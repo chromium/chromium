@@ -11,7 +11,6 @@ namespace content {
 
 class StubRenderWidgetHostOwnerDelegate : public RenderWidgetHostOwnerDelegate {
  public:
-  void RenderWidgetDidFirstVisuallyNonEmptyPaint() override {}
   void RenderWidgetGotFocus() override {}
   void RenderWidgetLostFocus() override {}
   void RenderWidgetDidForwardMouseEvent(

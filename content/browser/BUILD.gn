@@ -78,6 +78,7 @@ source_set("browser") {
     "//components/payments/core",
     "//components/payments/core:error_strings",
     "//components/payments/mojom",
+
     # TODO(698985): Remove `permissions_common`.
     "//components/permissions:permissions_common",
     "//components/power_scheduler",
@@ -1275,6 +1276,7 @@ source_set("browser") {
     "permissions/permission_service_context.h",
     "permissions/permission_service_impl.cc",
     "permissions/permission_service_impl.h",
+
     # TODO(698985): Remove `permission_util.*`.
     "permissions/permission_util.cc",
     "permissions/permission_util.h",
@@ -1565,6 +1567,7 @@ source_set("browser") {
     "renderer_host/overscroll_controller_delegate.h",
     "renderer_host/p2p/socket_dispatcher_host.cc",
     "renderer_host/p2p/socket_dispatcher_host.h",
+    "renderer_host/page_delegate.h",
     "renderer_host/page_impl.cc",
     "renderer_host/page_impl.h",
     "renderer_host/page_lifecycle_state_manager.cc",

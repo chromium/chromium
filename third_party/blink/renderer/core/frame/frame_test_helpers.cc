@@ -911,8 +911,6 @@ void TestWebFrameWidgetHost::AutoscrollFling(const gfx::Vector2dF& position) {}
 
 void TestWebFrameWidgetHost::AutoscrollEnd() {}
 
-void TestWebFrameWidgetHost::DidFirstVisuallyNonEmptyPaint() {}
-
 void TestWebFrameWidgetHost::StartDragging(
     const blink::WebDragData& drag_data,
     blink::DragOperationsMask operations_allowed,

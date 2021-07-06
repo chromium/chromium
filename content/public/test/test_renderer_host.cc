@@ -93,13 +93,6 @@ RenderViewHostTester* RenderViewHostTester::For(RenderViewHost* host) {
 }
 
 // static
-void RenderViewHostTester::SimulateFirstPaint(RenderViewHost* rvh) {
-  static_cast<RenderViewHostImpl*>(rvh)
-      ->GetWidget()
-      ->DidFirstVisuallyNonEmptyPaint();
-}
-
-// static
 std::unique_ptr<content::InputMsgWatcher>
 RenderViewHostTester::CreateInputWatcher(RenderViewHost* rvh,
                                          blink::WebInputEvent::Type type) {

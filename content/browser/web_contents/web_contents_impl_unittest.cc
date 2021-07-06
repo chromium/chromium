@@ -374,9 +374,7 @@ TEST_F(WebContentsImplTest, UpdateTitleBeforeFirstNavigation) {
 TEST_F(WebContentsImplTest, SetMainFrameMimeType) {
   ASSERT_TRUE(controller().IsInitialNavigation());
   std::string mime = "text/html";
-  RenderViewHostImpl* rvh =
-      static_cast<RenderViewHostImpl*>(main_test_rfh()->GetRenderViewHost());
-  rvh->SetContentsMimeType(mime);
+  main_test_rfh()->GetPage().SetContentsMimeType(mime);
   EXPECT_EQ(mime, contents()->GetContentsMimeType());
 }
 
@@ -2516,7 +2514,7 @@ TEST_F(WebContentsImplTest, ThemeColorChangeDependingOnFirstVisiblePaint) {
 
   // Simulate that the first visually non-empty paint has occurred. This will
   // propagate the current theme color to the delegates.
-  RenderViewHostTester::SimulateFirstPaint(test_rvh());
+  rfh->GetPage().OnFirstVisuallyNonEmptyPaint();
 
   EXPECT_EQ(SK_ColorRED, contents()->GetThemeColor());
   EXPECT_EQ(1, observer.theme_color_change_calls());
@@ -2655,8 +2653,7 @@ TEST_F(WebContentsImplTest, StartingSandboxFlags) {
 TEST_F(WebContentsImplTest, DidFirstVisuallyNonEmptyPaint) {
   TestWebContentsObserver observer(contents());
 
-  RenderWidgetHostOwnerDelegate* rwhod = test_rvh();
-  rwhod->RenderWidgetDidFirstVisuallyNonEmptyPaint();
+  contents()->GetPrimaryPage().OnFirstVisuallyNonEmptyPaint();
 
   EXPECT_TRUE(observer.observed_did_first_visually_non_empty_paint());
 }

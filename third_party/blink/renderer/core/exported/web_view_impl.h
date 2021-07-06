@@ -575,6 +575,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // virtual keyboard to overlay over content but allow scrolling it into view.
   void ResizeVisualViewport(const gfx::Size&);
 
+  // Called once a paint happens after the first non empty layout. In other
+  // words, after the frame has painted something.
+  void DidFirstVisuallyNonEmptyPaint();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest,

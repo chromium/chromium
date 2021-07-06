@@ -4652,6 +4652,12 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
   std::move(callback).Run();
 }
 
+void RenderFrameHostImpl::DidFirstVisuallyNonEmptyPaint() {
+  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  DCHECK(is_main_frame());
+  GetPage().OnFirstVisuallyNonEmptyPaint();
+}
+
 void RenderFrameHostImpl::DownloadURL(
     blink::mojom::DownloadURLParamsPtr blink_parameters) {
   // TODO(crbug.com/1205359): We should defer the download until the
@@ -5234,13 +5240,16 @@ void RenderFrameHostImpl::VisibilityChanged(
 
 void RenderFrameHostImpl::DidChangeThemeColor(
     absl::optional<SkColor> theme_color) {
-  render_view_host_->OnThemeColorChanged(this, theme_color);
+  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  DCHECK(is_main_frame());
+  GetPage().OnThemeColorChanged(theme_color);
 }
 
 void RenderFrameHostImpl::DidChangeBackgroundColor(SkColor background_color,
                                                    bool color_adjust) {
-  render_view_host_->DidChangeBackgroundColor(this, background_color,
-                                              color_adjust);
+  // TODO(crbug.com/1225366): Consider moving this to PageImpl.
+  DCHECK(is_main_frame());
+  GetPage().DidChangeBackgroundColor(background_color, color_adjust);
 }
 
 void RenderFrameHostImpl::SetCommitCallbackInterceptorForTesting(
@@ -9927,9 +9936,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     TRACE_EVENT1("content", "DidCommitProvisionalLoad_StateResetForNewDocument",
                  "render_frame_host", static_cast<void*>(this));
 
-    if (navigation_request->IsInMainFrame()) {
-      render_view_host_->ResetPerPageState();
-    }
     last_committed_cross_document_navigation_id_ =
         navigation_request->GetNavigationId();
 
@@ -12034,8 +12040,11 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
     RenderFrameHostImpl& document) {
   // Only create page object for the main document as the PageImpl is 1:1 with
   // main document.
-  if (!document.GetParent())
-    owned_page = std::make_unique<PageImpl>(document);
+  if (!document.GetParent()) {
+    PageDelegate* page_delegate = document.frame_tree()->page_delegate();
+    DCHECK(page_delegate);
+    owned_page = std::make_unique<PageImpl>(document, *page_delegate);
+  }
 }
 RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() =
     default;

@@ -34,6 +34,7 @@
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
@@ -182,6 +183,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                        public RenderViewHostDelegate,
                                        public RenderWidgetHostDelegate,
                                        public RenderFrameHostManager::Delegate,
+                                       public PageDelegate,
                                        public blink::mojom::ColorChooserFactory,
                                        public NavigationControllerDelegate,
                                        public NavigatorDelegate,
@@ -855,10 +857,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   SessionStorageNamespaceMap GetSessionStorageNamespaceMap() override;
   bool IsJavaScriptDialogShowing() const override;
   bool ShouldIgnoreUnresponsiveRenderer() override;
-  void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) override;
   bool IsGuest() override;
-  void OnThemeColorChanged(RenderViewHostImpl* source) override;
-  void OnBackgroundColorChanged(RenderViewHostImpl* source) override;
   void RecomputeWebPreferencesSlow() override;
   absl::optional<SkColor> GetBaseBackgroundColor() override;
 
@@ -997,6 +996,15 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool FocusLocationBarByDefault() override;
   int GetOuterDelegateFrameTreeNodeId() override;
   void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override;
+
+  // PageDelegate -------------------------------------------------------------
+
+  void OnFirstVisuallyNonEmptyPaint(PageImpl& page) override;
+
+  // These both check that the color has in fact changed before notifying
+  // observers.
+  void OnThemeColorChanged(PageImpl& page) override;
+  void OnBackgroundColorChanged(PageImpl& page) override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
 

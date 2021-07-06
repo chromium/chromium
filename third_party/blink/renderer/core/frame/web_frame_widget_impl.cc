@@ -2681,7 +2681,7 @@ void WebFrameWidgetImpl::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
     NotifySwapAndPresentationTime(
         base::NullCallback(),
         WTF::Bind(&WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout,
-                  WrapPersistent(this)));
+                  WrapWeakPersistent(this)));
   }
 
   ForEachLocalFrameControlledByWidget(
@@ -2696,7 +2696,10 @@ void WebFrameWidgetImpl::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
 void WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout(
     blink::WebSwapResult,
     base::TimeTicks) {
-  GetAssociatedFrameWidgetHost()->DidFirstVisuallyNonEmptyPaint();
+  // |local_root_| may be null if the widget has shut down between when this
+  // callback was requested and when it was resolved by the compositor.
+  if (local_root_)
+    local_root_->ViewImpl()->DidFirstVisuallyNonEmptyPaint();
 }
 
 void WebFrameWidgetImpl::RequestAnimationAfterDelay(

@@ -28,9 +28,6 @@ struct NativeWebKeyboardEvent;
 //  and http://crbug.com/478281.
 class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
  public:
-  // The RenderWidget finished the first visually non-empty paint.
-  virtual void RenderWidgetDidFirstVisuallyNonEmptyPaint() = 0;
-
   // The RenderWidgetHost got the focus.
   virtual void RenderWidgetGotFocus() = 0;
 

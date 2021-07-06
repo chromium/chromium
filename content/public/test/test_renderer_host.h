@@ -147,8 +147,6 @@ class RenderViewHostTester {
   // RenderViewHostTestEnabler instance (see below) to do this.
   static RenderViewHostTester* For(RenderViewHost* host);
 
-  static void SimulateFirstPaint(RenderViewHost* rvh);
-
   static std::unique_ptr<content::InputMsgWatcher> CreateInputWatcher(
       RenderViewHost* rvh,
       blink::WebInputEvent::Type type);

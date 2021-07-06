@@ -34,6 +34,7 @@ struct FramePolicy;
 namespace content {
 
 class BrowserContext;
+class PageDelegate;
 class RenderFrameHostDelegate;
 class RenderViewHostDelegate;
 class RenderViewHostImpl;
@@ -154,6 +155,7 @@ class CONTENT_EXPORT FrameTree {
             RenderViewHostDelegate* render_view_delegate,
             RenderWidgetHostDelegate* render_widget_delegate,
             RenderFrameHostManager::Delegate* manager_delegate,
+            PageDelegate* page_delegate,
             Type type);
   ~FrameTree();
 
@@ -175,10 +177,9 @@ class CONTENT_EXPORT FrameTree {
 
   Delegate* delegate() { return delegate_; }
 
-  // Delegates for RenderFrameHosts, RenderViewHosts, RenderWidgetHosts and
-  // RenderFrameHostManagers. These can be kept centrally on the FrameTree
-  // because they are expected to be the same for all frames on a given
-  // FrameTree.
+  // Delegates for various objects.  These can be kept centrally on the
+  // FrameTree because they are expected to be the same for all frames on a
+  // given FrameTree.
   RenderFrameHostDelegate* render_frame_delegate() {
     return render_frame_delegate_;
   }
@@ -191,6 +192,7 @@ class CONTENT_EXPORT FrameTree {
   RenderFrameHostManager::Delegate* manager_delegate() {
     return manager_delegate_;
   }
+  PageDelegate* page_delegate() { return page_delegate_; }
 
   using RenderViewHostMapId = util::IdType32<class RenderViewHostMap>;
   using RenderViewHostMap = std::unordered_map<RenderViewHostMapId,
@@ -416,6 +418,7 @@ class CONTENT_EXPORT FrameTree {
   RenderViewHostDelegate* render_view_delegate_;
   RenderWidgetHostDelegate* render_widget_delegate_;
   RenderFrameHostManager::Delegate* manager_delegate_;
+  PageDelegate* page_delegate_;
 
   // The Navigator object responsible for managing navigations on this frame
   // tree. Each FrameTreeNode will default to using it for navigation tasks in

@@ -81,6 +81,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
                                         &web_contents,
                                         &web_contents,
                                         &web_contents,
+                                        &web_contents,
                                         FrameTree::Type::kPrerender)) {
     scoped_refptr<SiteInstance> site_instance =
         SiteInstance::Create(web_contents.GetBrowserContext());

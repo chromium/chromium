@@ -2761,11 +2761,6 @@ void RenderWidgetHostImpl::AutoscrollEnd() {
       cancel_event, ui::LatencyInfo(ui::SourceEventType::OTHER));
 }
 
-void RenderWidgetHostImpl::DidFirstVisuallyNonEmptyPaint() {
-  if (owner_delegate_)
-    owner_delegate_->RenderWidgetDidFirstVisuallyNonEmptyPaint();
-}
-
 void RenderWidgetHostImpl::StartDragging(
     blink::mojom::DragDataPtr drag_data,
     blink::DragOperationsMask drag_operations_mask,

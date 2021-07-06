@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -81,6 +82,9 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
 
   // Returns the main RenderFrameHost associated with this Page.
   RenderFrameHost& GetMainDocument() { return GetMainDocumentHelper(); }
+
+  // Write a description of this Page into the provided |context|.
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's

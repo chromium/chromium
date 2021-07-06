@@ -253,34 +253,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Marks all views in the frame tree as evicted.
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction();
 
-  // Resets any per page state. This should be called when a main frame
-  // associated with this RVH commits a navigation to a new document. Note that
-  // this means it should NOT be called for same document navigations or when
-  // restoring a page from the back-forward cache.
-  void ResetPerPageState();
-
-  bool did_first_visually_non_empty_paint() const {
-    return did_first_visually_non_empty_paint_;
-  }
-
-  void OnThemeColorChanged(RenderFrameHostImpl* rfh,
-                           const absl::optional<SkColor>& theme_color);
-
-  void DidChangeBackgroundColor(RenderFrameHostImpl* rfh,
-                                const SkColor& background_color,
-                                bool color_adjust);
-
-  absl::optional<SkColor> theme_color() const {
-    return main_frame_theme_color_;
-  }
-
-  absl::optional<SkColor> background_color() const {
-    return main_frame_background_color_;
-  }
-
-  void SetContentsMimeType(std::string mime_type);
-  const std::string& contents_mime_type() { return contents_mime_type_; }
-
   // Manual RTTI to ensure safe downcasts in tests.
   virtual bool IsTestRenderViewHost() const;
 
@@ -326,7 +298,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   ~RenderViewHostImpl() override;
 
   // RenderWidgetHostOwnerDelegate overrides.
-  void RenderWidgetDidFirstVisuallyNonEmptyPaint() override;
   void RenderWidgetGotFocus() override;
   void RenderWidgetLostFocus() override;
   void RenderWidgetDidForwardMouseEvent(
@@ -432,26 +403,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   std::unique_ptr<PageLifecycleStateManager> page_lifecycle_state_manager_;
 
   bool updating_web_preferences_ = false;
-
-  // ---------- Per page state START ------------------------------------------
-  // The following members will get reset when this RVH commits a navigation to
-  // a new document. See ResetPerPageState()
-
-  // Whether the first visually non-empty paint has occurred.
-  bool did_first_visually_non_empty_paint_ = false;
-
-  // The theme color for the underlying document as specified
-  // by theme-color meta tag.
-  absl::optional<SkColor> main_frame_theme_color_;
-
-  // The background color for the underlying document as computed by CSS.
-  absl::optional<SkColor> main_frame_background_color_;
-
-  // Contents MIME type for the main document. It can be used to check whether
-  // we can do something for special contents.
-  std::string contents_mime_type_;
-
-  // ---------- Per page state END --------------------------------------------
 
   // BackForwardCache:
   bool is_in_back_forward_cache_ = false;
