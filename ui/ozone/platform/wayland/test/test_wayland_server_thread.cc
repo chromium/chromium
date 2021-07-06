@@ -70,6 +70,10 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
 
   if (!data_device_manager_.Initialize(display_.get()))
     return false;
+  if (config.primary_selection_protocol != PrimarySelectionProtocol::kNone) {
+    if (!selection_device_manager_.Initialize(display_.get()))
+      return false;
+  }
   if (!seat_.Initialize(display_.get()))
     return false;
   if (config.shell_version == ShellVersion::kV6) {

@@ -20,6 +20,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
@@ -51,6 +52,7 @@ ui::PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
 class WaylandClipboardTest : public WaylandTest {
  public:
   WaylandClipboardTest() = default;
+  ~WaylandClipboardTest() override = default;
 
   void SetUp() override {
     WaylandTest::SetUp();
@@ -62,6 +64,11 @@ class WaylandClipboardTest : public WaylandTest {
 
     clipboard_ = connection_->clipboard();
     ASSERT_TRUE(clipboard_);
+    Sync();
+
+    ASSERT_EQ(GetParam().primary_selection_protocol !=
+                  wl::PrimarySelectionProtocol::kNone,
+              clipboard_->IsSelectionBufferAvailable());
 
     offered_data_.clear();
   }
@@ -80,7 +87,7 @@ class WaylandClipboardTest : public WaylandTest {
   }
 
   wl::TestDataDeviceManager* data_device_manager_;
-  PlatformClipboard* clipboard_;
+  WaylandClipboard* clipboard_;
   PlatformClipboard::DataMap offered_data_;
 
  private:
@@ -249,14 +256,22 @@ TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
   EXPECT_TRUE(clipboard_->IsSelectionOwner(buffer));
 }
 
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandClipboardTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kStable}));
+INSTANTIATE_TEST_SUITE_P(
+    WithoutPrimarySelection,
+    WaylandClipboardTest,
+    Values(wl::ServerConfig{
+        .primary_selection_protocol = wl::PrimarySelectionProtocol::kNone}));
 
-INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandClipboardTest,
-                         Values(wl::ServerConfig{
-                             .shell_version = wl::ShellVersion::kV6}));
+INSTANTIATE_TEST_SUITE_P(
+    WithZwpPrimarySelection,
+    WaylandClipboardTest,
+    Values(wl::ServerConfig{
+        .primary_selection_protocol = wl::PrimarySelectionProtocol::kZwp}));
+
+INSTANTIATE_TEST_SUITE_P(
+    WithGtkPrimarySelection,
+    WaylandClipboardTest,
+    Values(wl::ServerConfig{
+        .primary_selection_protocol = wl::PrimarySelectionProtocol::kGtk}));
 
 }  // namespace ui
