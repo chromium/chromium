@@ -262,6 +262,7 @@
   // It is theoretically possible that a Tab has been added to the webStateList
   // since the deletion has been scheduled. It is unlikely to happen for real
   // because it would require superhuman speed.
+  DCHECK(self.hasIncognitoInterface);
   DCHECK(self.otrBrowser->GetWebStateList()->empty());
   DCHECK(_browserState);
 

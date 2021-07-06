@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, WindowActivityOrigin) {
 NSUserActivity* ActivityToLoadURL(WindowActivityOrigin origin,
                                   const GURL& url,
                                   const web::Referrer& referrer,
-                                  bool in_incognito);
+                                  BOOL in_incognito);
 
 // Create a new activity that opens a new regular (non-incognito) tab, loading
 // |url|.
@@ -60,19 +60,19 @@ NSUserActivity* ActivityToLoadURL(WindowActivityOrigin origin, const GURL& url);
 
 // Create a new activity that moves a tab either between browsers, or reorders
 // within a browser.
-NSUserActivity* ActivityToMoveTab(NSString* tab_id);
+NSUserActivity* ActivityToMoveTab(NSString* tab_id, BOOL incognito);
 
 // Returns an activity based on |activity_to_adapt| info, changing its mode to
 // follow |incognito|.
 NSUserActivity* AdaptUserActivityToIncognito(NSUserActivity* activity_to_adapt,
-                                             bool incognito);
+                                             BOOL incognito);
 
 // true if |activity| is one that indicates a URL load (including loading the
 // new tab page in a new tab).
-bool ActivityIsURLLoad(NSUserActivity* activity);
+BOOL ActivityIsURLLoad(NSUserActivity* activity);
 
 // true if |activity| is one that indicates a tab move.
-bool ActivityIsTabMove(NSUserActivity* activity);
+BOOL ActivityIsTabMove(NSUserActivity* activity);
 
 // The URLLoadParams needed to perform the load defined in |activity|, if any.
 // If |activity| is not a URL load activity, the default UrlLoadParams are
@@ -84,5 +84,9 @@ WindowActivityOrigin OriginOfActivity(NSUserActivity* activity);
 
 // Returns the tab identifier from the given activity.
 NSString* GetTabIDFromActivity(NSUserActivity* activity);
+
+// Returns |true| if the activity is a tab move activity and has the incognito
+// flag set.
+BOOL GetIncognitoFromTabMoveActivity(NSUserActivity* activity);
 
 #endif  // IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_WINDOW_ACTIVITY_HELPERS_H_

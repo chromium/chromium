@@ -43,7 +43,7 @@ Browser* FindBrowser(NSString* tab_id,
     }
   }
   tab_index = WebStateList::kInvalidIndex;
-  return nil;
+  return nullptr;
 }
 
 // Finds the browser in |browser_list| containing a tab with |tab_id|. Searches

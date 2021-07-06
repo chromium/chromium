@@ -514,8 +514,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
 // Tests that dragging a tab grid incognito item to the edge opens a new window
 // and that the tab is properly transferred, incuding navigation stack.
-// TODO(crbug.com/1176180): re-enable this test when it is fixed.
-- (void)DISABLED_testIncognitoDragAndDropAtEdgeToCreateNewWindow {
+- (void)testIncognitoDragAndDropAtEdgeToCreateNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
@@ -652,9 +651,8 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
       performAction:grey_tap()];
 }
 
-// Tests dragging tab grid item between windows.
-// TODO(crbug.com/1176669): re-enable this test when it is fixed.
-- (void)DISABLED_testDragAndDropIncognitoBetweenWindows {
+// Tests dragging incognito tab grid item between windows.
+- (void)testDragAndDropIncognitoBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 

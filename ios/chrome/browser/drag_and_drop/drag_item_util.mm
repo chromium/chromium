@@ -44,13 +44,13 @@ UIDragItem* CreateTabDragItem(web::WebState* web_state) {
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
   NSString* tab_id = TabIdTabHelper::FromWebState(web_state)->tab_id();
+  BOOL incognito = web_state->GetBrowserState()->IsOffTheRecord();
   // Visibility "all" is required to allow the OS to recognize this activity for
   // creating a new window.
-  [item_provider registerObject:ActivityToMoveTab(tab_id)
+  [item_provider registerObject:ActivityToMoveTab(tab_id, incognito)
                      visibility:NSItemProviderRepresentationVisibilityAll];
-  TabInfo* tab_info = [[TabInfo alloc]
-      initWithTabID:tab_id
-          incognito:web_state->GetBrowserState()->IsOffTheRecord()];
+  TabInfo* tab_info = [[TabInfo alloc] initWithTabID:tab_id
+                                           incognito:incognito];
   // Local objects allow synchronous drops, whereas NSItemProvider only allows
   // asynchronous drops.
   drag_item.localObject = tab_info;

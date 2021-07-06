@@ -26,11 +26,12 @@ NSString* const kReferrerURLKey = @"LoadParams_ReferrerURL";
 NSString* const kReferrerPolicyKey = @"LoadParams_ReferrerPolicy";
 NSString* const kOriginKey = @"LoadParams_Origin";
 NSString* const kTabIdentifierKey = @"TabIdentifier";
+NSString* const kTabIncognitoKey = @"TabIncognito";
 
 namespace {
 
-// Helper for any actibity that opens URLs.
-NSUserActivity* BaseActivityForURLOpening(bool in_incognito) {
+// Helper for any activity that opens URLs.
+NSUserActivity* BaseActivityForURLOpening(BOOL in_incognito) {
   NSString* type =
       in_incognito ? kLoadIncognitoURLActivityType : kLoadURLActivityType;
   NSUserActivity* activity = [[NSUserActivity alloc] initWithActivityType:type];
@@ -42,7 +43,7 @@ NSUserActivity* BaseActivityForURLOpening(bool in_incognito) {
 NSUserActivity* ActivityToLoadURL(WindowActivityOrigin origin,
                                   const GURL& url,
                                   const web::Referrer& referrer,
-                                  bool in_incognito) {
+                                  BOOL in_incognito) {
   NSUserActivity* activity = BaseActivityForURLOpening(in_incognito);
   NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
   params[kOriginKey] = [NSNumber numberWithInteger:origin];
@@ -69,19 +70,23 @@ NSUserActivity* ActivityToLoadURL(WindowActivityOrigin origin,
   return activity;
 }
 
-NSUserActivity* ActivityToMoveTab(NSString* tab_id) {
+NSUserActivity* ActivityToMoveTab(NSString* tab_id, BOOL incognito) {
   NSString* moveTabActivityType =
       base::SysUTF8ToNSString(BUILDFLAG(IOS_MOVE_TAB_ACTIVITY_TYPE));
   NSUserActivity* activity =
       [[NSUserActivity alloc] initWithActivityType:moveTabActivityType];
   NSNumber* origin = @(WindowActivityOrigin::WindowActivityTabDragOrigin);
-  NSDictionary* params = @{kOriginKey : origin, kTabIdentifierKey : tab_id};
+  NSDictionary* params = @{
+    kOriginKey : origin,
+    kTabIdentifierKey : tab_id,
+    kTabIncognitoKey : @(incognito)
+  };
   [activity addUserInfoEntriesFromDictionary:params];
   return activity;
 }
 
 NSUserActivity* AdaptUserActivityToIncognito(NSUserActivity* activity_to_adapt,
-                                             bool incognito) {
+                                             BOOL incognito) {
   if (([activity_to_adapt.activityType
            isEqualToString:kLoadIncognitoURLActivityType] &&
        !incognito) ||
@@ -95,12 +100,12 @@ NSUserActivity* AdaptUserActivityToIncognito(NSUserActivity* activity_to_adapt,
   return activity_to_adapt;
 }
 
-bool ActivityIsURLLoad(NSUserActivity* activity) {
+BOOL ActivityIsURLLoad(NSUserActivity* activity) {
   return [activity.activityType isEqualToString:kLoadURLActivityType] ||
          [activity.activityType isEqualToString:kLoadIncognitoURLActivityType];
 }
 
-bool ActivityIsTabMove(NSUserActivity* activity) {
+BOOL ActivityIsTabMove(NSUserActivity* activity) {
   NSString* moveTabActivityType =
       base::SysUTF8ToNSString(BUILDFLAG(IOS_MOVE_TAB_ACTIVITY_TYPE));
   return [activity.activityType isEqualToString:moveTabActivityType];
@@ -110,7 +115,7 @@ UrlLoadParams LoadParamsFromActivity(NSUserActivity* activity) {
   if (!ActivityIsURLLoad(activity))
     return UrlLoadParams();
 
-  bool incognito =
+  BOOL incognito =
       [activity.activityType isEqualToString:kLoadIncognitoURLActivityType];
   NSURL* passed_url = base::mac::ObjCCast<NSURL>(activity.userInfo[kURLKey]);
   NSURL* referer_url =
@@ -141,4 +146,10 @@ NSString* GetTabIDFromActivity(NSUserActivity* activity) {
   if (!ActivityIsTabMove(activity))
     return nil;
   return activity.userInfo[kTabIdentifierKey];
+}
+
+BOOL GetIncognitoFromTabMoveActivity(NSUserActivity* activity) {
+  if (!ActivityIsTabMove(activity))
+    return NO;
+  return [activity.userInfo[kTabIncognitoKey] boolValue];
 }
