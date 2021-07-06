@@ -8148,9 +8148,9 @@ interface SVGViewElement : SVGElement
     method constructor
     setter zoomAndPan
 interface Sanitizer
-    static method defaultConfig
+    static getter defaultConfig
     attribute @@toStringTag
-    method config
+    getter config
     method constructor
     method sanitize
     method sanitizeToString

@@ -16,6 +16,6 @@ typedef (DOMString or TrustedHTML or DocumentFragment or Document) SanitizerInpu
   [MeasureAs=SanitizerAPIToFragment, CallWith=ScriptState, RaisesException] DocumentFragment sanitize(SanitizerInputWithTrustedHTML input);
   [MeasureAs=SanitizerAPIToString, CallWith=ScriptState, RaisesException] DOMString sanitizeToString(SanitizerInput input);
 
-  [MeasureAs=SanitizerAPIGetConfig] SanitizerConfig config();
-  [MeasureAs=SanitizerAPIGetDefaultConfig] static SanitizerConfig defaultConfig();
+  [MeasureAs=SanitizerAPIGetConfig] readonly attribute SanitizerConfig config;
+  [MeasureAs=SanitizerAPIGetDefaultConfig] static readonly attribute SanitizerConfig defaultConfig;
 };
