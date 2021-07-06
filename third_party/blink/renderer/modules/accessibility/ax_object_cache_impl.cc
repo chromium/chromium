@@ -3287,12 +3287,16 @@ void AXObjectCacheImpl::HandleFocusedUIElementChanged(
     Element* new_focused_element) {
   TRACE_EVENT0("accessibility",
                "AXObjectCacheImpl::HandleFocusedUIElementChanged");
-#if DCHECK_IS_ON()
-  // The focus can be in a different document when a popup is open.
   Document& focused_doc =
       new_focused_element ? new_focused_element->GetDocument() : *document_;
+
+#if DCHECK_IS_ON()
+  // The focus can be in a different document when a popup is open.
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(focused_doc);
 #endif  // DCHECK_IS_ON()
+
+  if (focused_doc.GetPage() && focused_doc.GetPage()->InsidePortal())
+    return;  // Elements inside a portal are not considered focusable.
 
   if (validation_message_axid_) {
     DeferTreeUpdate(

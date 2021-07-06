@@ -12,16 +12,12 @@ crbug.com/926685 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/mult
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-017.html [ CRASH ]
 virtual/layout_ng_block_frag/fast/multicol/change-column-rule.html [ CRASH ]
 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ CRASH ]
-crbug.com/1093466 virtual/portals/external/wpt/portals/portals-adopt-predecessor.html [ CRASH ]
 virtual/text-antialias/letter-spacing-crash.html [ CRASH ]
 
 # Slow
 virtual/synchronous_html_parser/external/wpt/html/semantics/scripting-1/the-script-element/css-module/import-css-module-basic.html [ SLOW ]
 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/activation-start.html [ SLOW ]
 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-isolated.https.html [ SLOW ]
-
-# Failures
-crbug.com/1093466 virtual/portals/external/wpt/portals/portals-focus.sub.html [ FAILURE ]
 
 # Intentional failures for focusless spatial navigation.
 # Focusless spatial navigation is intentionally disabled when accessibility is turned on.

@@ -55,6 +55,7 @@ AXTreeManager* AXTreeManagerMap::GetManagerForChildTree(
   // Some platforms do not use AXTreeManagers, so child trees don't exist in
   // the browser process.
   DCHECK(!child_tree_manager ||
+         !child_tree_manager->GetParentNodeFromParentTreeAsAXNode() ||
          child_tree_manager->GetParentNodeFromParentTreeAsAXNode()->id() ==
              parent_node.id());
   return child_tree_manager;

@@ -1064,7 +1064,15 @@ int32_t Page::AutoplayFlags() const {
 }
 
 void Page::SetInsidePortal(bool inside_portal) {
+  if (inside_portal_ == inside_portal)
+    return;
+
   inside_portal_ = inside_portal;
+
+  if (MainFrame() && MainFrame()->IsLocalFrame() &&
+      DeprecatedLocalMainFrame()->GetDocument()) {
+    DeprecatedLocalMainFrame()->GetDocument()->ClearAXObjectCache();
+  }
 }
 
 bool Page::InsidePortal() const {
