@@ -1395,6 +1395,8 @@ void CanvasResourceProvider::RasterRecordOOP(
     sk_sp<cc::PaintRecord> last_recording,
     bool needs_clear,
     gpu::Mailbox mailbox) {
+  if (IsGpuContextLost())
+    return;
   gpu::raster::RasterInterface* ri = RasterInterface();
   SkColor background_color =
       ColorParams().GetSkAlphaType() == kOpaque_SkAlphaType
