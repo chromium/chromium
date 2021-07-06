@@ -113,3 +113,83 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
   // Mixed content should be blocked in the new page.
   EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
 }
+
+// Tests that the prerending doesn't affect the mixed content's insecure status
+// with the main frame.
+IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
+                       DoNotAffectInsecureOfPrimaryPageInPrerendering) {
+  GURL primary_url(
+      test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
+
+  auto* helper = MixedContentSettingsTabHelper::FromWebContents(web_contents());
+
+  // Loads a primary page that has mixed content.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), primary_url));
+
+  // Mixed content should be blocked in the page.
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+
+  // Loads a page in the prerendering.
+  GURL prerender_url(
+      test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
+  const int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  // Mixed content should be blocked in the prerendering page.
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*prerender_rfh));
+
+  helper->AllowRunningOfInsecureContent(*prerender_rfh);
+
+  // Mixed content should be unblocked in the prerendering page.
+  EXPECT_TRUE(helper->IsRunningInsecureContentAllowed(*prerender_rfh));
+
+  // Mixed content should keep to be blocked in the primary page.
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+
+  // Activates the page from the prerendering.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+
+  // Mixed content should keep to be unblocked in the new page.
+  EXPECT_TRUE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+}
+
+// Tests that the activated page keeps the mixed content's secure status
+// after the prerending page is activated.
+IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
+                       DoNotAffectSecureOfPrerenderingPage) {
+  GURL primary_url(
+      test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
+
+  auto* helper = MixedContentSettingsTabHelper::FromWebContents(web_contents());
+
+  // Loads a primary page that has mixed content.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), primary_url));
+
+  // Mixed content should be blocked in the activated page.
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+
+  // Loads a page in the prerendering.
+  GURL prerender_url(
+      test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  // Mixed content should be blocked in the prerendering page.
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*prerender_rfh));
+
+  helper->AllowRunningOfInsecureContent(*current_frame_host());
+
+  // Mixed content should be unblocked in the activated page.
+  EXPECT_TRUE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+
+  // Mixed content should keep to be blocked in the prerendering page.
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*prerender_rfh));
+
+  // Activates the page from the prerendering.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+
+  // Mixed content should keep to be blocked in the activated page.
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+}

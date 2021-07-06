@@ -372,7 +372,8 @@ void ContentSettingMixedScriptBubbleModel::OnCustomLinkClicked() {
       MixedContentSettingsTabHelper::FromWebContents(web_contents());
   if (mixed_content_settings) {
     // Update browser side settings to allow active mixed content.
-    mixed_content_settings->AllowRunningOfInsecureContent();
+    mixed_content_settings->AllowRunningOfInsecureContent(
+        *web_contents()->GetMainFrame());
   }
 
   // Update renderer side settings to allow active mixed content.

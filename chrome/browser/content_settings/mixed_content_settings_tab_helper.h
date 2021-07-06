@@ -24,7 +24,8 @@ class MixedContentSettingsTabHelper
   // WebContents/tab. This will stick around as long as the main frame's
   // RenderFrameHost stays the same. When the RenderFrameHost changes, we're
   // back to the default (mixed content resources are not allowed to run).
-  void AllowRunningOfInsecureContent();
+  void AllowRunningOfInsecureContent(
+      content::RenderFrameHost& render_frame_host);
 
   bool IsRunningInsecureContentAllowed(
       content::RenderFrameHost& render_frame_host);

@@ -31,16 +31,15 @@ MixedContentSettingsTabHelper::MixedContentSettingsTabHelper(WebContents* tab)
           WebContents::FromRenderFrameHost(tab->GetOpener()));
   if (opener_settings &&
       opener_settings->IsRunningInsecureContentAllowed(*tab->GetOpener())) {
-    AllowRunningOfInsecureContent();
+    AllowRunningOfInsecureContent(*tab->GetOpener());
   }
 }
 
 MixedContentSettingsTabHelper::~MixedContentSettingsTabHelper() {}
 
-void MixedContentSettingsTabHelper::AllowRunningOfInsecureContent() {
-  // TODO(crbug.com/1061899): use render_frame_host->GetMainFrame() for the
-  // correct render_frame_host instead of going through web_contents().
-  auto* main_frame = web_contents()->GetMainFrame();
+void MixedContentSettingsTabHelper::AllowRunningOfInsecureContent(
+    RenderFrameHost& render_frame_host) {
+  auto* main_frame = render_frame_host.GetMainFrame();
   if (!base::Contains(settings_, main_frame)) {
     settings_[main_frame] = std::make_unique<PageSettings>(main_frame);
   }
