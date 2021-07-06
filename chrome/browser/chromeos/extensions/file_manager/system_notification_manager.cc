@@ -183,10 +183,15 @@ void SystemNotificationManager::HandleCopyEvent(
   std::u16string title =
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE);
 
-  GURL source_gurl(*status.source_url.get());
-  std::u16string file_name = base::UTF8ToUTF16(source_gurl.ExtractFileName());
-  std::u16string message =
-      l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_COPY_FILE_NAME, file_name);
+  std::u16string message;
+  if (status.source_url) {
+    GURL source_gurl(*status.source_url);
+    message = l10n_util::GetStringFUTF16(
+        IDS_FILE_BROWSER_COPY_FILE_NAME,
+        base::UTF8ToUTF16(source_gurl.ExtractFileName()));
+  } else {
+    message = l10n_util::GetStringUTF16(IDS_FILE_BROWSER_FILE_ERROR_GENERIC);
+  }
 
   auto copy_operation = required_copy_space_.find(copy_id);
   switch (status.type) {
