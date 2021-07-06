@@ -382,8 +382,6 @@ void ProfilePickerView::ShowScreen(
     return;
   }
 
-  // Make sure to load the url as the last step so that the UI state is
-  // coherent upon the NavigationStateChanged notification.
   contents->GetController().LoadURL(url, content::Referrer(),
                                     ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                     std::string());
