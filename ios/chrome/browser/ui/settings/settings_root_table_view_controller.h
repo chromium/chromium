@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 // SettingsRootTableViewController is a base class for integrating UITableViews
-// into the Settings UI.  It handles the configuration and display of the MDC
-// AppBar.
+// into the Settings UI. This class is made to be subclassed and contains the
+// logic to handle the most common user interactions (edit, delete...).
 @interface SettingsRootTableViewController
     : ChromeTableViewController <SettingsRootViewControlling,
                                  TableViewLinkHeaderFooterItemDelegate,
