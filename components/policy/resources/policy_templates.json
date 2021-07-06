@@ -56,7 +56,6 @@
 #       newly added policies.
 #   - user-description: A text that helps users understand what a policy with
 #       this tag means for their privacy and/or security.
-# TODO(fhorschig|tnagel): Revisit policy tags after reviews.
 #
 # Policy group descriptions, policy captions and similar texts are localized
 # strings taken from the <message> nodes of the .grd file. Their name attributes
@@ -295,7 +294,6 @@
 
   'risk_tag_definitions' : [
     # All following tags are ordered by severity of their impact.
-    # TODO(fhorschig|tnagel): Revisit user-descriptions after reviews.
     {
       'name': 'full-admin-access',
       'description': '''Policies with this tag enable an administrator to
