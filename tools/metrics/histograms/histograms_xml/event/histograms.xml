@@ -1243,55 +1243,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Event.Latency.ScrollUpdate.Touch.AverageLag.PredictionNegative"
+    name="Event.Latency.ScrollUpdate.Touch.AverageLag.{PredictionImpact}"
     units="pixels" expires_after="M97">
   <obsolete>
-    Removed 2021.06.30 - replaced by AverageLagPresentation.PredictionNegative,
+    Removed 2021.06.30 - replaced by AverageLagPresentation.{PredictionImpact},
     which is more accurate.
   </obsolete>
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
-    Measures the negative impact on the AverageLag metric that is attributable
-    to scroll prediction. This value has the same units as
-    Event.Latency.ScrollUpdate.Touch.AverageLag but is a difference between that
-    value and what it would have been if prediction was disabled.
+    Improvement of prediction in touch lag. It is defined as
+    (Lag_without_prediction - Lag_with_prediction).
 
-    PredictionNegative is logged when prediction caused an increase in perceived
-    lag (i.e. the rendered position was on average further from the actual
-    location of the finger) for a given interaction/interval. The duration of
-    the interaction/interval is either 1s, or the time from when the user starts
-    scrolling to lifting the finger, whichever is smaller.
+    Lag is the distance between the finger position and the rendered position.
 
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
+    When positive, prediction improves touch performance (reduces lag). When
+    negative, prediction worsens touch performance (increases lag).
 
-<histogram
-    name="Event.Latency.ScrollUpdate.Touch.AverageLag.PredictionPositive"
-    units="pixels" expires_after="M97">
-  <obsolete>
-    Removed 2021.06.30 - replaced by AverageLagPresentation.PredictionPositive,
-    which is more accurate.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Measures the positive impact on the AverageLag metric that is attributable
-    to scroll prediction. This value has the same units as
-    Event.Latency.ScrollUpdate.Touch.AverageLag but is a difference between that
-    value and what it would have been if prediction was disabled.
+    The duration of the interaction/interval is either 1s, or the time from when
+    the user starts scrolling to lifting the finger, whichever is smaller.
 
-    PredictionPostive is logged when prediction caused a decrease in perceived
-    lag (i.e. the rendered position was on average closer to the actual location
-    of the finger) for a given interaction/interval. The duration of the
-    interaction/interval is either 1s, or the time from when the user starts
-    scrolling to lifting the finger, whichever is smaller.
+    Lag_with_prediction =
+    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation
+    Lag_without_prediction =
+    Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction
 
     Team: input-dev@chromium.org.
   </summary>
+  <token key="PredictionImpact">
+    <variant name="PredictionNegative" summary="Negative impact values"/>
+    <variant name="PredictionPositive" summary="Positive impact values"/>
+  </token>
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"
