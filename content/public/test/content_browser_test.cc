@@ -160,7 +160,7 @@ void ContentBrowserTest::PostRunTestOnMainThread() {
     i.GetCurrentValue()->FastShutdownIfPossible();
   }
 
-  Shell::CloseAllWindows();
+  Shell::Shutdown();
 }
 
 Shell* ContentBrowserTest::CreateBrowser() {

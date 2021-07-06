@@ -6,12 +6,17 @@
 
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/shell/browser/shell.h"
 
 namespace content {
 
 void ShellPlatformDelegate::DidCreateOrAttachWebContents(
     Shell* shell,
     WebContents* web_contents) {}
+
+void ShellPlatformDelegate::DidCloseLastWindow() {
+  Shell::Shutdown();
+}
 
 std::unique_ptr<JavaScriptDialogManager>
 ShellPlatformDelegate::CreateJavaScriptDialogManager(Shell* shell) {

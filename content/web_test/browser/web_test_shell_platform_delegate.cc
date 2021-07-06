@@ -29,6 +29,13 @@ void WebTestShellPlatformDelegate::DidCreateOrAttachWebContents(
   WebTestControlHost::Get()->DidCreateOrAttachWebContents(web_contents);
 }
 
+void WebTestShellPlatformDelegate::DidCloseLastWindow() {
+  // Some tests, or some fuzzer's test cases are closing every window. When
+  // this happens, the test runner must run the next test. For this reason, this
+  // do not call Shell::Shutdown(). It will be called manually at the end of:
+  // WebTestBrowserMainRunner::RunBrowserMain().
+}
+
 std::unique_ptr<JavaScriptDialogManager>
 WebTestShellPlatformDelegate::CreateJavaScriptDialogManager(Shell* shell) {
   return std::make_unique<WebTestJavaScriptDialogManager>();

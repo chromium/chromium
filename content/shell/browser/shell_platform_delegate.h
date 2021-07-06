@@ -48,6 +48,10 @@ class ShellPlatformDelegate {
   // cleanup.
   virtual void CleanUp(Shell* shell);
 
+  // Called from the Shell destructor after destroying the last one. This is
+  // usually a good time to call Shell::Shutdown().
+  virtual void DidCloseLastWindow();
+
   // Links the WebContents into the newly created window.
   virtual void SetContents(Shell* shell);
 

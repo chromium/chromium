@@ -21,6 +21,7 @@ class WebTestShellPlatformDelegate : public ShellPlatformDelegate {
                             const gfx::Size& initial_size) override;
   void DidCreateOrAttachWebContents(Shell* shell,
                                     WebContents* web_contents) override;
+  void DidCloseLastWindow() override;
   gfx::NativeWindow GetNativeWindow(Shell* shell) override;
   void CleanUp(Shell* shell) override;
   void SetContents(Shell* shell) override;

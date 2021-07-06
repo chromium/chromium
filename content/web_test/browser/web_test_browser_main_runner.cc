@@ -92,18 +92,10 @@ void RunTests(content::BrowserMainRunner* main_runner) {
 
   content::TestInfoExtractor test_extractor(
       *base::CommandLine::ForCurrentProcess());
-  bool ran_at_least_once = false;
   std::unique_ptr<content::TestInfo> test_info;
   while ((test_info = test_extractor.GetNextTest())) {
-    ran_at_least_once = true;
     if (!RunOneTest(*test_info, &test_controller, main_runner))
       break;
-  }
-  if (!ran_at_least_once) {
-    // CloseAllWindows will cause the |main_runner| loop to quit.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&content::Shell::CloseAllWindows));
-    main_runner->Run();
   }
 }
 
@@ -248,9 +240,11 @@ void WebTestBrowserMainRunner::RunBrowserMain(
       << "BrowserMainRunner::Initialize failed in WebTestBrowserMainRunner";
 
   RunTests(main_runner.get());
-  base::RunLoop().RunUntilIdle();
 
-  content::Shell::CloseAllWindows();
+  // Shell::Shutdown() will cause the |main_runner| loop to quit.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&Shell::Shutdown));
+  main_runner->Run();
 
   main_runner->Shutdown();
 }
