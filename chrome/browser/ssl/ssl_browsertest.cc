@@ -9118,7 +9118,9 @@ class SSLPrerenderTest : public InProcessBrowserTest {
 
 // Tests that prerendering will be cancelled if the server asks for client
 // certificates.
-IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, ServerRequireClientCert_Navigation) {
+// Disabled due to https://crbug.com/1226770
+IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
+                       DISABLED_ServerRequireClientCert_Navigation) {
   base::HistogramTester histogram_tester;
   test_server_ = std::make_unique<net::EmbeddedTestServer>(
       net::EmbeddedTestServer::TYPE_HTTPS);
