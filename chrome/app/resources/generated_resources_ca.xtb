@@ -6922,7 +6922,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8571687764447439720">Afegeix un tiquet de Kerberos</translation>
 <translation id="8574990355410201600">Permet sempre el so a <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Mantén premuda la tecla <ph name="KEY_EQUIVALENT" /> per sortir</translation>
-<translation id="8576785408880814823">Prem un interruptor nou per iniciar l'assignació.
+<translation id="8576785408880814823">Prem un nou interruptor per iniciar l'assignació.
 Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Afegeix una pestanya a la llista de lectura}other{Afegeix pestanyes a la llista de lectura}}</translation>
 <translation id="8578639784464423491">No pot tenir més de 99 lletres</translation>
@@ -6931,7 +6931,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="8584280235376696778">O&amp;bre el vídeo en una pestanya nova</translation>
 <translation id="8584427708066927472">S'ha esborrat la contrasenya d'aquest dispositiu</translation>
 <translation id="8585480574870650651">Suprimeix Crostini</translation>
-<translation id="8585841788766257444">Els llocs web que apareixen a continuació segueixen una configuració personalitzada en comptes de la predeterminada</translation>
+<translation id="8585841788766257444">Els llocs web que apareixen a continuació segueixen una opció de configuració personalitzada en comptes de la predeterminada</translation>
 <translation id="8588866096426746242">Mostra les estadístiques del perfil</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" />: està mostrant contingut de realitat virtual en un visor</translation>
 <translation id="8590375307970699841">Configurar actualitzacions automàtiques</translation>
