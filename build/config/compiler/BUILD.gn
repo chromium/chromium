@@ -75,7 +75,10 @@ declare_args() {
 
   # Enable fatal linker warnings. Building Chromium with certain versions
   # of binutils can cause linker warning.
-  fatal_linker_warnings = true
+  # TODO(thakis): Set this to true unconditionally once lld/MachO no longer
+  # warns in mac intel->arm cross builds.
+  fatal_linker_warnings = !(is_apple && use_lld && target_cpu == "arm64" &&
+                            host_cpu != target_cpu)
 
   # Build with C++ RTTI enabled. Chromium builds without RTTI by default,
   # but some sanitizers are known to require it, like CFI diagnostics
