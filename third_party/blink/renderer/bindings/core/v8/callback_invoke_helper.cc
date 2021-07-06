@@ -37,17 +37,16 @@ inline bool IsCallbackObjectCallable(CallbackInterfaceBase* callback) {
 template <class CallbackBase, CallbackInvokeHelperMode mode>
 bool CallbackInvokeHelper<CallbackBase, mode>::PrepareForCall(
     V8ValueOrScriptWrappableAdapter callback_this) {
+  v8::Isolate* isolate = callback_->GetIsolate();
   if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
-    ScriptForbiddenScope::ThrowScriptForbiddenException(
-        callback_->GetIsolate());
+    ScriptForbiddenScope::ThrowScriptForbiddenException(isolate);
     return Abort();
   }
 
   if (mode == CallbackInvokeHelperMode::kConstructorCall) {
     // step 3. If ! IsConstructor(F) is false, throw a TypeError exception.
     if (!IsCallbackConstructor(callback_)) {
-      ExceptionState exception_state(callback_->GetIsolate(),
-                                     ExceptionState::kExecutionContext,
+      ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                      class_like_name_, property_name_);
       exception_state.ThrowTypeError(
           "The provided callback is not a constructor.");
@@ -61,7 +60,7 @@ bool CallbackInvokeHelper<CallbackBase, mode>::PrepareForCall(
       if (!callback_->CallbackObject()->IsFunction()) {
         // step 4.2. Return the result of converting undefined to the callback
         // function's return type.
-        result_ = v8::Undefined(callback_->GetIsolate());
+        result_ = v8::Undefined(isolate);
         return false;
       }
     }
@@ -75,23 +74,21 @@ bool CallbackInvokeHelper<CallbackBase, mode>::PrepareForCall(
       // step 10. If ! IsCallable(O) is false, then:
       v8::MicrotaskQueue* microtask_queue =
           ToMicrotaskQueue(callback_->CallbackRelevantScriptState());
-      v8::MicrotasksScope microtasks_scope(callback_->GetIsolate(),
-                                           microtask_queue,
+      v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                            v8::MicrotasksScope::kRunMicrotasks);
 
       v8::Local<v8::Value> value;
       if (!callback_->CallbackObject()
                ->Get(callback_->CallbackRelevantScriptState()->GetContext(),
-                     V8String(callback_->GetIsolate(), property_name_))
+                     V8String(isolate, property_name_))
                .ToLocal(&value)) {
         return Abort();
       }
       if (!value->IsFunction()) {
         V8ThrowException::ThrowTypeError(
-            callback_->GetIsolate(),
-            ExceptionMessages::FailedToExecute(
-                property_name_, class_like_name_,
-                "The provided callback is not callable."));
+            isolate, ExceptionMessages::FailedToExecute(
+                         property_name_, class_like_name_,
+                         "The provided callback is not callable."));
         return Abort();
       }
       function_ = value.As<v8::Function>();
@@ -106,7 +103,7 @@ bool CallbackInvokeHelper<CallbackBase, mode>::PrepareForCall(
     callback_this_ = callback_->CallbackObject();
   } else if (callback_this.IsEmpty()) {
     // step 2. If thisArg was not given, let thisArg be undefined.
-    callback_this_ = v8::Undefined(callback_->GetIsolate());
+    callback_this_ = v8::Undefined(isolate);
   } else {
     callback_this_ =
         callback_this.V8Value(callback_->CallbackRelevantScriptState());

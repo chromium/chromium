@@ -68,11 +68,11 @@ class CallbackInvokeHelper final {
   template <typename IDLReturnType, typename ReturnType>
   v8::Maybe<ReturnType> Result() {
     DCHECK(!aborted_);
-    ExceptionState exception_state(callback_->GetIsolate(),
-                                   ExceptionState::kExecutionContext,
+    v8::Isolate* isolate = callback_->GetIsolate();
+    ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                    class_like_name_, property_name_);
     auto&& result = NativeValueTraits<IDLReturnType>::NativeValue(
-        callback_->GetIsolate(), result_, exception_state);
+        isolate, result_, exception_state);
     if (exception_state.HadException())
       return v8::Nothing<ReturnType>();
     return v8::Just<ReturnType>(result);
