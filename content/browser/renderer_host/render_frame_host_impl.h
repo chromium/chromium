@@ -2286,7 +2286,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The SendCommit* functions below are wrappers for commit calls
   // made to mojom::NavigationClient.
   // These exist to be overridden in tests to retain mojo callbacks.
-  // Note: |navigation_id| is used in test overrides, but is unused otherwise.
   virtual void SendCommitNavigation(
       mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
