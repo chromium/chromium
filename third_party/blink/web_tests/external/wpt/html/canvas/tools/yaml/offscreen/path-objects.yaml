@@ -2192,6 +2192,13 @@
     @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 100, 50, [0, 0, 0, 0, 0]);
     t.done();
 
+- name: 2d.path.roundrect.radius.negative
+  desc: roundRect() with negative radius throws an exception
+  code: |
+    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 0, 0, [-1]);
+    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 0, 0, [1, -1]);
+    t.done();
+
 - name: 2d.path.fill.overlap
   testing:
   - 2d.path.fill.basic

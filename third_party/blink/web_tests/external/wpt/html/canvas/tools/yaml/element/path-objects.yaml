@@ -2191,6 +2191,13 @@
   code: |
     @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 100, 50, [0, 0, 0, 0, 0]);
 
+- name: 2d.path.roundrect.radius.negative
+  desc: roundRect() with negative radius throws an exception
+  code: |
+    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 0, 0, [-1]);
+    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 0, 0, [1, -1]);
+    t.done();
+
 - name: 2d.path.ellipse.basics
   desc: Verify canvas throws error when drawing ellipse with negative radii.
   testing:
