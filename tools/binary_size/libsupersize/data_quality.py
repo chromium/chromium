@@ -208,14 +208,20 @@ def _DescribeSizeInfoContainerCoverage(raw_symbols, container):
       if len(syms):
         yield '* {} symbols are {}. {}'.format(len(syms), desc, size_msg(syms))
 
-    # These thresholds were found by experimenting with arm32 Chrome.
-    # E.g.: Set them to 0 and see what warnings get logged, then take max value.
     spam_counter = 0
-    for i in range(len(in_section) - 1):
-      sym = in_section[i + 1]
+    i = 1
+    count = len(in_section)
+    while i < count:
+      prev_sym = in_section[i - 1]
+      sym = in_section[i]
       if (not sym.full_name.startswith('*')
-          and not sym.source_path.endswith('.S')  # Assembly symbol are iffy.
-          and not sym.IsStringLiteral()
+          # Assembly symbol are iffy.
+          and not prev_sym.source_path.endswith('.S') and
+          not sym.source_path.endswith('.S')
+          # String literal symbol creation is imperfect.
+          and not prev_sym.IsStringLiteral() and not sym.IsStringLiteral()
+          # Thresholds found by experimenting with arm32 Chrome.
+          # E.g.: Set to 0 and see what warnings appear, then take max value.
           and ((sym.section in 'rd' and sym.padding >= 256) or
                (sym.section in 't' and sym.padding >= 64))):
         # TODO(crbug.com/959906): We should synthesize symbols for these gaps
@@ -224,8 +230,10 @@ def _DescribeSizeInfoContainerCoverage(raw_symbols, container):
         if spam_counter > 5:
           break
         yield 'Large padding of {} between:'.format(sym.padding)
-        yield '  A) ' + repr(in_section[i])
+        yield '  A) ' + repr(in_section[i - 1])
         yield '  B) ' + repr(sym)
+      # All aliases will have the same padding.
+      i += sym.num_aliases
 
 
 def DescribeSizeInfoCoverage(size_info):
