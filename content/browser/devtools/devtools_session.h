@@ -63,7 +63,7 @@ class DevToolsSession : public protocol::FrontendChannel,
   void DispatchProtocolMessage(base::span<const uint8_t> message);
   void SuspendSendingMessagesToAgent();
   void ResumeSendingMessagesToAgent();
-  void ClearPendingMessages();
+  void ClearPendingMessages(bool did_crash);
 
   using HandlersMap =
       base::flat_map<std::string,

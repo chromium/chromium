@@ -305,6 +305,8 @@ class TargetHandler::Throttle : public content::NavigationThrottle {
  private:
   void CleanupPointers();
 
+  base::WeakPtrFactory<TargetHandler::Throttle> weak_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(Throttle);
 };
 
@@ -413,11 +415,13 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
       devtools_session_->ResumeSendingMessagesToAgent();
   }
 
-  void SetThrottle(Throttle* throttle) { throttle_ = throttle; }
+  void SetThrottle(scoped_refptr<DevToolsThrottleHandle> throttle) {
+    throttle_ = throttle;
+  }
 
   void ResumeIfThrottled() {
     if (throttle_)
-      throttle_->Clear();
+      throttle_.reset();
   }
 
   void SendMessageToAgentHost(base::span<const uint8_t> message) {
@@ -434,7 +438,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
       const std::string* method;
       if (value.has_value() && (method = value->FindStringKey(kMethod)) &&
           *method == kResumeMethod) {
-        throttle_->Clear();
+        throttle_.reset();
       }
     }
 
@@ -514,7 +518,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   std::string id_;
   bool flatten_protocol_;
   DevToolsSession* devtools_session_ = nullptr;
-  Throttle* throttle_ = nullptr;
+  scoped_refptr<DevToolsThrottleHandle> throttle_;
 
   DISALLOW_COPY_AND_ASSIGN(Session);
 };
@@ -546,10 +550,10 @@ void TargetHandler::Throttle::CleanupPointers() {
 void TargetHandler::Throttle::SetThrottledAgentHost(
     DevToolsAgentHost* agent_host) {
   agent_host_ = agent_host;
-  if (agent_host_) {
-    target_handler_->auto_attached_sessions_[agent_host_.get()]->SetThrottle(
-        this);
-  }
+  target_handler_->AddThrottle(
+      agent_host_.get(),
+      base::MakeRefCounted<DevToolsThrottleHandle>(base::BindOnce(
+          &TargetHandler::Throttle::Clear, weak_factory_.GetWeakPtr())));
 }
 
 const char* TargetHandler::Throttle::GetNameForLogging() {
@@ -1128,6 +1132,18 @@ void TargetHandler::ApplyNetworkContextParamsOverrides(
     context_params->initial_proxy_config = net::ProxyConfigWithAnnotation(
         std::move(it->second), kSettingsProxyConfigTrafficAnnotation);
     contexts_with_overridden_proxy_.erase(browser_context->UniqueId());
+  }
+}
+
+void TargetHandler::AddThrottle(
+    DevToolsAgentHost* agent_host,
+    scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
+  if (!agent_host)
+    return;
+
+  if (auto_attached_sessions_[agent_host]) {
+    auto_attached_sessions_[agent_host]->SetThrottle(
+        std::move(throttle_handle));
   }
 }
 

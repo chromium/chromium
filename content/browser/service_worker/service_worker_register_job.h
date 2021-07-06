@@ -139,10 +139,21 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       blink::ServiceWorkerStatusCode status);
   void UpdateAndContinue();
 
-  // PlzServiceWorker:
-  // Starts script loading before starting the worker. This is called only when
-  // the job type is REGISTRATION_JOB and the worker doesn't need an
-  // byte-for-byte check.
+  // With PlzServiceWorker, we start fetching the script before starting the
+  // worker. The 3 functions below represent the expected order of execution
+  // in this process:
+  // - Devtools might decide it wants to auto-attach to new targets and to start
+  //   intercepting messages before the fetch starts. If so it needs to start
+  //   some handlers asynchronously. We pass down to the handlers a "throttle"
+  //   that can resume script fetching via a callback when ready.
+  // - We create a factory and a pass it to a ServiceWorkerNewScriptFetcher.
+  //   Once the script fetch succeeded (or failed), it calls into the final
+  //   step.
+  // - We inspect the response, determine if its a failure or not and update
+  //   state. If successful we start the worker with load parameters returned by
+  //   the ServiceWorkerNewScriptFetcher.
+  void MaybeThrottleForDevToolsBeforeStartingScriptFetch(
+      scoped_refptr<ServiceWorkerVersion> version);
   void StartScriptFetchForNewWorker(
       scoped_refptr<ServiceWorkerVersion> version);
   void OnScriptFetchCompleted(

@@ -11,6 +11,7 @@
 
 #include <vector>
 
+#include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -176,6 +177,23 @@ void OnSignedExchangeCertificateRequestCompleted(
 
 std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
     NavigationHandle* navigation_handle);
+
+// When registering a new ServiceWorker with PlzServiceWorker, the main script
+// fetch happens before starting the worker. This means that we need to give
+// TargetHandlers the opportunity to attach to newly created ServiceWorker
+// before the script fetch begins if they specified blocking auto-attach
+// properties. The `throttle` controls when the script fetch resumes.
+//
+// Note on the input parameters:
+// - `wrapper` and `version_id` are used to identify an existing newly
+//   installing service worker agent. It is expected to exist.
+// - `requesting_frame_id` is required, because the auto attacher is the one of
+//   the frame registering the worker.
+void ThrottleMainScriptFetch(
+    ServiceWorkerContextWrapper* wrapper,
+    int64_t version_id,
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    scoped_refptr<DevToolsThrottleHandle> throttle_handle);
 
 bool ShouldWaitForDebuggerInWindowOpen();
 

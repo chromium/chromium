@@ -419,7 +419,7 @@ void DevToolsSession::ResumeSendingMessagesToAgent() {
   }
 }
 
-void DevToolsSession::ClearPendingMessages() {
+void DevToolsSession::ClearPendingMessages(bool did_crash) {
   for (auto it = pending_messages_.begin(); it != pending_messages_.end();) {
     const PendingMessage& message = *it;
     if (SpanEquals(crdtp::SpanFrom("Page.reload"),
@@ -428,11 +428,13 @@ void DevToolsSession::ClearPendingMessages() {
       continue;
     }
     // Send error to the client and remove the message from pending.
+    std::string error_message =
+        did_crash ? kTargetCrashedMessage : kTargetClosedMessage;
     SendProtocolResponse(
         message.call_id,
         crdtp::CreateErrorResponse(
             message.call_id,
-            crdtp::DispatchResponse::ServerError(kTargetCrashedMessage)));
+            crdtp::DispatchResponse::ServerError(error_message)));
     it = pending_messages_.erase(it);
   }
 }

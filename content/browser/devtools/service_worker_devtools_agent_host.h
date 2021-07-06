@@ -72,6 +72,12 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   void WorkerVersionInstalled();
   void WorkerVersionDoomed();
 
+  // This a niche function used when failing a ServiceWorker main script fetch
+  // with PlzServiceWorker. Since the worker did not have the opportunity to
+  // boot up, some messages will be left unanswered. This makes sure they are
+  // answered with an error message, avoid time outs in WPTs.
+  void WorkerMainScriptFetchingFailed();
+
   const GURL& scope() const { return scope_; }
   const base::UnguessableToken& devtools_worker_token() const {
     return devtools_worker_token_;
@@ -89,6 +95,9 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   const ServiceWorkerContextWrapper* context_wrapper() const {
     return context_wrapper_.get();
   }
+
+  bool should_pause_on_start() { return should_pause_on_start_; }
+  void set_should_pause_on_start(bool should_pause_on_start);
 
  private:
   ~ServiceWorkerDevToolsAgentHost() override;
@@ -119,6 +128,16 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   GURL scope_;
   base::Time version_installed_time_;
   base::Time version_doomed_time_;
+
+  // `should_pause_on_start_` is set by DevTools auto-attachers if any that
+  // asked for execution to be paused so that they could attach asynchronously
+  // to the new ServiceWorker target. If true, we throttle the main script fetch
+  // and pause the renderer when starting.
+  // Note: This is only used with PlzServiceWorker. If PlzServiceWorker is off,
+  // this state is not stored but passed directly into the starting parameters
+  // of the ServiceWorker as `should_wait_for_debugger`.
+  bool should_pause_on_start_ = false;
+
   absl::optional<network::CrossOriginEmbedderPolicy>
       cross_origin_embedder_policy_;
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>

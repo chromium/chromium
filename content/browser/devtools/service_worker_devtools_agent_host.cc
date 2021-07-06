@@ -117,6 +117,11 @@ void ServiceWorkerDevToolsAgentHost::WorkerVersionDoomed() {
   version_doomed_time_ = base::Time::Now();
 }
 
+void ServiceWorkerDevToolsAgentHost::WorkerMainScriptFetchingFailed() {
+  for (DevToolsSession* session : sessions())
+    session->ClearPendingMessages(/*did_crash=*/false);
+}
+
 ServiceWorkerDevToolsAgentHost::~ServiceWorkerDevToolsAgentHost() {
   ServiceWorkerDevToolsManager::GetInstance()->AgentHostDestroyed(this);
 }
@@ -289,6 +294,12 @@ absl::optional<network::CrossOriginEmbedderPolicy>
 ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string&) {
   return cross_origin_embedder_policy_;
+}
+
+void ServiceWorkerDevToolsAgentHost::set_should_pause_on_start(
+    bool should_pause_on_start) {
+  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
+  should_pause_on_start_ = should_pause_on_start;
 }
 
 }  // namespace content

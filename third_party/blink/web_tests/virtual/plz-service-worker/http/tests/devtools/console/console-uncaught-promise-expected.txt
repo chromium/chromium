@@ -1,0 +1,71 @@
+Tests that uncaught promise rejections are logged into console.
+
+error: Inspected target navigated or closed
+console-uncaught-promise.js:26 Uncaught (in promise) Error: err1
+promiseTest1 @ console-uncaught-promise.js:26
+timeout @ console-uncaught-promise.js:19
+Promise.then (async)
+promiseTest1 @ console-uncaught-promise.js:29
+timeout @ console-uncaught-promise.js:19
+setTimeout (async)
+runNextPromiseTest @ console-uncaught-promise.js:18
+(anonymous) @ console-uncaught-promise.js:100
+console-uncaught-promise.js:47 Uncaught (in promise) Error: err2
+promiseTest2 @ console-uncaught-promise.js:47
+timeout @ console-uncaught-promise.js:19
+Promise.then (async)
+(anonymous) @ console-uncaught-promise.js:43
+Promise.catch (async)
+(anonymous) @ console-uncaught-promise.js:42
+Promise.catch (async)
+(anonymous) @ console-uncaught-promise.js:41
+Promise.catch (async)
+promiseTest2 @ console-uncaught-promise.js:40
+timeout @ console-uncaught-promise.js:19
+setTimeout (async)
+runNextPromiseTest @ console-uncaught-promise.js:18
+(anonymous) @ console-uncaught-promise.js:100
+console-uncaught-promise.js:65 Uncaught (in promise) DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+throwDOMException @ console-uncaught-promise.js:65
+catcher @ console-uncaught-promise.js:57
+Promise.catch (async)
+promiseTest3 @ console-uncaught-promise.js:56
+timeout @ console-uncaught-promise.js:19
+setTimeout (async)
+runNextPromiseTest @ console-uncaught-promise.js:18
+(anonymous) @ console-uncaught-promise.js:100
+console-uncaught-promise.js:71 Uncaught (in promise) 42
+promiseTest4 @ console-uncaught-promise.js:71
+timeout @ console-uncaught-promise.js:19
+setTimeout (async)
+runNextPromiseTest @ console-uncaught-promise.js:18
+(anonymous) @ console-uncaught-promise.js:100
+console-uncaught-promise.js:76 Uncaught (in promise) 1e+100
+promiseTest5 @ console-uncaught-promise.js:76
+timeout @ console-uncaught-promise.js:19
+setTimeout (async)
+runNextPromiseTest @ console-uncaught-promise.js:18
+(anonymous) @ console-uncaught-promise.js:100
+console-uncaught-promise.js:81 Uncaught (in promise) foo
+promiseTest6 @ console-uncaught-promise.js:81
+timeout @ console-uncaught-promise.js:19
+setTimeout (async)
+runNextPromiseTest @ console-uncaught-promise.js:18
+(anonymous) @ console-uncaught-promise.js:100
+console-uncaught-promise.js:86 Uncaught (in promise) {foo: 42}
+    foo: 42
+    [[Prototype]]: Object
+promiseTest7 @ console-uncaught-promise.js:86
+timeout @ console-uncaught-promise.js:19
+setTimeout (async)
+runNextPromiseTest @ console-uncaught-promise.js:18
+(anonymous) @ console-uncaught-promise.js:100
+console-uncaught-promise.js:91 Uncaught (in promise) undefined
+promiseTest8 @ console-uncaught-promise.js:91
+timeout @ console-uncaught-promise.js:19
+setTimeout (async)
+runNextPromiseTest @ console-uncaught-promise.js:18
+(anonymous) @ console-uncaught-promise.js:100
+A bad HTTP response code (404) was received when fetching the script.
+inspected-page.html:1 Uncaught (in promise) TypeError: Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/devtools/console/') with script ('http://127.0.0.1:8000/devtools/console/404'): A bad HTTP response code (404) was received when fetching the script.
+

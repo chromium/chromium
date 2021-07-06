@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/target.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
@@ -59,6 +60,7 @@ class TargetHandler : public DevToolsDomainHandler,
   void DidFinishNavigation(NavigationHandle* navigation_handle);
   std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
       NavigationHandle* navigation_handle);
+
   void UpdatePortals();
   bool ShouldThrottlePopups() const;
 
@@ -112,6 +114,11 @@ class TargetHandler : public DevToolsDomainHandler,
   void ApplyNetworkContextParamsOverrides(
       BrowserContext* browser_context,
       network::mojom::NetworkContextParams* network_context_params);
+
+  // Adds a throttle for an auto attaching session. If none is known for this
+  // `agent_host`, is a no-op.
+  void AddThrottle(DevToolsAgentHost* agent_host,
+                   scoped_refptr<DevToolsThrottleHandle> throttle_handle);
 
  private:
   class Session;

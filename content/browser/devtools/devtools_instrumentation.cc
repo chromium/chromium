@@ -392,6 +392,16 @@ void CreateThrottlesForAgentHost(
   }
 }
 
+void ThrottleForServiceWorkerAgentHost(
+    ServiceWorkerDevToolsAgentHost* agent_host,
+    DevToolsAgentHostImpl* requesting_agent_host,
+    scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
+  for (auto* target_handler :
+       protocol::TargetHandler::ForAgentHost(requesting_agent_host)) {
+    target_handler->AddThrottle(agent_host, throttle_handle);
+  }
+}
+
 std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
     NavigationHandle* navigation_handle) {
   FrameTreeNode* frame_tree_node =
@@ -421,6 +431,42 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
   }
 
   return result;
+}
+
+void ThrottleMainScriptFetch(
+    ServiceWorkerContextWrapper* wrapper,
+    int64_t version_id,
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
+  ServiceWorkerDevToolsAgentHost* agent_host =
+      ServiceWorkerDevToolsManager::GetInstance()
+          ->GetDevToolsAgentHostForNewInstallingWorker(wrapper, version_id);
+  DCHECK(agent_host);
+
+  // TODO(ahemery): We should probably also add the possibility for Browser wide
+  // agents to throttle the request.
+
+  // If we have a requesting_frame_id, we should have a frame and a frame tree
+  // node. However since the lifetime of these objects can be complex, we check
+  // at each step that we indeed can go reach all the way to the FrameTreeNode.
+  if (!requesting_frame_id)
+    return;
+
+  RenderFrameHostImpl* requesting_frame =
+      RenderFrameHostImpl::FromID(requesting_frame_id);
+  if (!requesting_frame)
+    return;
+
+  FrameTreeNode* ftn = requesting_frame->frame_tree_node();
+  DCHECK(ftn);
+
+  DevToolsAgentHostImpl* requesting_agent_host =
+      RenderFrameDevToolsAgentHost::GetFor(ftn);
+  if (!requesting_agent_host)
+    return;
+
+  ThrottleForServiceWorkerAgentHost(agent_host, requesting_agent_host,
+                                    throttle_handle);
 }
 
 bool ShouldWaitForDebuggerInWindowOpen() {

@@ -15,7 +15,9 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
+#include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -64,12 +66,15 @@ class CONTENT_EXPORT ServiceWorkerDevToolsManager {
       std::vector<scoped_refptr<ServiceWorkerDevToolsAgentHost>>* result);
 
   // This function signals the beginning of a main script fetch for a non
-  // installed worker. This is currently only used for plzServiceWorker.
+  // installed worker. This is currently only used for PlzServiceWorker.
   void WorkerMainScriptFetchingStarting(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       int64_t version_id,
       const GURL& url,
-      const GURL& scope);
+      const GURL& scope,
+      const GlobalRenderFrameHostId& requesting_frame_id,
+      scoped_refptr<DevToolsThrottleHandle> throttle_handle);
+
   // This function is called when a new worker installation failed to fetch
   // the main script. It cleans up internal state.
   void WorkerMainScriptFetchingFailed(

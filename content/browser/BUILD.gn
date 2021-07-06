@@ -738,6 +738,8 @@ source_set("browser") {
     "devtools/devtools_stream_file.h",
     "devtools/devtools_stream_pipe.cc",
     "devtools/devtools_stream_pipe.h",
+    "devtools/devtools_throttle_handle.cc",
+    "devtools/devtools_throttle_handle.h",
     "devtools/devtools_traceable_screenshot.cc",
     "devtools/devtools_traceable_screenshot.h",
     "devtools/devtools_url_loader_interceptor.cc",

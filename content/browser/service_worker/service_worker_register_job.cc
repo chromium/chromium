@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -445,21 +446,30 @@ void ServiceWorkerRegisterJob::
   UpdateAndContinue();
 }
 
-void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
-    scoped_refptr<ServiceWorkerVersion> version) {
+void ServiceWorkerRegisterJob::
+    MaybeThrottleForDevToolsBeforeStartingScriptFetch(
+        scoped_refptr<ServiceWorkerVersion> version) {
   DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
-  DCHECK(!new_script_fetcher_);
+
+  int64_t version_id = version->version_id();
+  const GURL& script_url = version->script_url();
+  const GURL& scope = version->scope();
+  auto devtools_throttle_handle = base::MakeRefCounted<DevToolsThrottleHandle>(
+      base::BindOnce(&ServiceWorkerRegisterJob::StartScriptFetchForNewWorker,
+                     weak_factory_.GetWeakPtr(), std::move(version)));
 
   // We are about to start fetching from the browser process and we want
   // devtools to be able to instrument the URLLoaderFactory. This call will
   // create a DevtoolsAgentHost.
-  // TODO(https://crbug.com/1211358): To give the opportunity to devtools target
-  // handlers to attach before starting the fetch, we should pass in a boolean
-  // pointer indicating if we should pause the fetch and act on it in the
-  // ServiceWorkerNewScriptFetcher.
   ServiceWorkerDevToolsManager::GetInstance()->WorkerMainScriptFetchingStarting(
-      context_->wrapper(), version->version_id(), version->script_url(),
-      version->scope());
+      context_->wrapper(), version_id, script_url, scope, requesting_frame_id_,
+      std::move(devtools_throttle_handle));
+}
+
+void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
+    scoped_refptr<ServiceWorkerVersion> version) {
+  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
+  DCHECK(!new_script_fetcher_);
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
       context_->wrapper()->GetLoaderFactoryForMainScriptFetch(
@@ -557,9 +567,10 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
     context_->registry()->NotifyInstallingRegistration(registration());
     base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>)> next_task;
     if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
-      next_task = base::BindOnce(
-          &ServiceWorkerRegisterJob::StartScriptFetchForNewWorker,
-          weak_factory_.GetWeakPtr());
+      next_task =
+          base::BindOnce(&ServiceWorkerRegisterJob::
+                             MaybeThrottleForDevToolsBeforeStartingScriptFetch,
+                         weak_factory_.GetWeakPtr());
     } else {
       next_task =
           base::BindOnce(&ServiceWorkerRegisterJob::StartWorkerForUpdate,
