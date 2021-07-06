@@ -45,6 +45,7 @@ struct ProfileAttributesInitParams {
   // `AccountId` of the user of the profile. Empty if the profile doesn't have
   // any associated `user_manager::User`.
   AccountId account_id{EmptyAccountId()};
+  // TODO(https://crbug.com/1225156): Remove this.
   // Whether the profile is guest.
   bool is_guest = false;
   // Whether the profile is ephemeral. Ephemeral profiles are cleaned up on

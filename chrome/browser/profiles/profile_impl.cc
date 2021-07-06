@@ -471,13 +471,8 @@ ProfileImpl::ProfileImpl(
 #endif
 
   if (path == ProfileManager::GetGuestProfilePath()) {
-    if (IsEphemeralGuestProfileEnabled()) {
-      profile_metrics::SetBrowserProfileType(
-          this, profile_metrics::BrowserProfileType::kEphemeralGuest);
-    } else {
       profile_metrics::SetBrowserProfileType(
           this, profile_metrics::BrowserProfileType::kGuest);
-    }
   } else if (path == ProfileManager::GetSystemProfilePath()) {
     profile_metrics::SetBrowserProfileType(
         this, profile_metrics::BrowserProfileType::kSystem);
@@ -543,9 +538,8 @@ ProfileImpl::ProfileImpl(
     // Prefs were loaded synchronously so we can continue directly.
     OnPrefsLoaded(create_mode, true);
   }
-
 #if !defined(OS_ANDROID)
-  if (IsGuestSession() || IsEphemeralGuestProfile()) {
+  if (IsGuestSession()) {
     PrefService* local_state = g_browser_process->local_state();
     DCHECK(local_state);
     base::UmaHistogramBoolean(

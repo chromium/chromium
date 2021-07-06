@@ -410,8 +410,6 @@ PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
 }
 
 bool Profile::IsEphemeralGuestProfile() const {
-  CHECK_NE(profile_metrics::GetBrowserProfileType(this),
-           profile_metrics::BrowserProfileType::kEphemeralGuest);
   return false;
 }
 

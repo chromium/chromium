@@ -547,9 +547,6 @@ class ProfileManager : public Profile::Delegate {
   // Controls whether to initialize some services. Only disabled for testing.
   bool do_final_services_init_ = true;
 
-  // Path to Guest profile. Can be empty when the profile does not exist.
-  base::FilePath guest_profile_path_;
-
   // TODO(chrome/browser/profiles/OWNERS): Usage of this in profile_manager.cc
   // should likely be turned into DCHECK_CURRENTLY_ON(BrowserThread::UI) for
   // consistency with surrounding code in the same file but that wasn't trivial

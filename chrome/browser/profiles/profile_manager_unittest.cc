@@ -727,17 +727,9 @@ class UnittestGuestProfileManager : public FakeProfileManager {
   bool create_profiles_as_guest_ = true;
 };
 
-class ProfileManagerGuestTest : public ProfileManagerTest,
-                                public ::testing::WithParamInterface<bool> {
+class ProfileManagerGuestTest : public ProfileManagerTest {
  public:
-  ProfileManagerGuestTest() {
-    is_ephemeral = GetParam();
-
-    // Update |is_ephemeral| if it's not supported on platform.
-    is_ephemeral &=
-        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral);
-  }
+  ProfileManagerGuestTest() = default;
   ProfileManagerGuestTest(const ProfileManagerGuestTest&) = delete;
   ProfileManagerGuestTest& operator=(const ProfileManagerGuestTest&) = delete;
   ~ProfileManagerGuestTest() override = default;
@@ -755,8 +747,6 @@ class ProfileManagerGuestTest : public ProfileManagerTest,
     RegisterUser(GetFakeUserManager()->GetGuestAccountId());
 #endif
   }
-
-  bool IsEphemeral() { return is_ephemeral; }
 
   // Call this function if the test shouldn't create all profiles as guest by
   // default.
@@ -780,30 +770,21 @@ class ProfileManagerGuestTest : public ProfileManagerTest,
 #endif
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   UnittestGuestProfileManager* unittest_profile_manager_ = nullptr;
-  bool is_ephemeral;
 };
 
-TEST_P(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
+TEST_F(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
 
   Profile* profile = profile_manager->GetLastUsedProfileAllowedByPolicy();
   ASSERT_TRUE(profile);
-  if (IsEphemeral()) {
-    EXPECT_TRUE(profile->IsEphemeralGuestProfile());
-    EXPECT_FALSE(profile->IsGuestSession());
-    EXPECT_FALSE(profile->IsOffTheRecord());
-  } else {
-    EXPECT_TRUE(profile->IsGuestSession());
-    EXPECT_FALSE(profile->IsEphemeralGuestProfile());
-    EXPECT_TRUE(profile->IsOffTheRecord());
-  }
+  EXPECT_TRUE(profile->IsGuestSession());
+  EXPECT_TRUE(profile->IsOffTheRecord());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_P(ProfileManagerGuestTest, GuestProfileIncognito) {
+TEST_F(ProfileManagerGuestTest, GuestProfileIncognito) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   EXPECT_TRUE(primary_profile->IsOffTheRecord());
 
@@ -819,34 +800,22 @@ TEST_P(ProfileManagerGuestTest, GuestProfileIncognito) {
 }
 #endif
 
-TEST_P(ProfileManagerGuestTest, GetGuestProfilePath) {
+TEST_F(ProfileManagerGuestTest, GetGuestProfilePath) {
   base::FilePath guest_path = ProfileManager::GetGuestProfilePath();
-  base::FilePath expected_path = temp_dir_.GetPath();
-  const std::string kExpectedGuestProfileName =
-      IsEphemeral() ? "Guest 1" : "Guest Profile";
-  expected_path = expected_path.AppendASCII(kExpectedGuestProfileName);
+  base::FilePath expected_path =
+      temp_dir_.GetPath().AppendASCII("Guest Profile");
   EXPECT_EQ(expected_path, guest_path);
 }
 
-TEST_P(ProfileManagerGuestTest, GuestProfileAttributes) {
+TEST_F(ProfileManagerGuestTest, GuestProfileAttributes) {
   // In these tests, the primary profile is a guest one.
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(primary_profile->GetPath());
-  if (IsEphemeral()) {
-    ASSERT_NE(entry, nullptr);
-    EXPECT_TRUE(entry->IsEphemeral());
-    EXPECT_TRUE(entry->IsOmitted());
-  } else {
-    EXPECT_EQ(entry, nullptr);
-  }
+  EXPECT_EQ(entry, nullptr);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ProfileManagerGuestTest,
-                         /*is_ephemeral=*/testing::Bool());
 
 TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1445,7 +1414,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
 #define MAYBE_CleanUpGuestEphemeralProfile CleanUpGuestEphemeralProfile
 #endif
 // TODO(crbug.com/1203621) Disabled for flakiness.
-TEST_P(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
+TEST_F(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
   // Create two profiles, one of them is guest.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
@@ -1474,9 +1443,7 @@ TEST_P(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
   storage.AddProfile(std::move(params));
   ASSERT_TRUE(base::CreateDirectory(path));
 
-  size_t profiles_count = IsEphemeral() ? 2u : 1u;
-  ASSERT_EQ(profiles_count,
-            storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
+  ASSERT_EQ(1u, storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
 
   // Set the active profile.
   PrefService* local_state = g_browser_process->local_state();
@@ -1495,28 +1462,15 @@ TEST_P(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
   const base::ListValue* final_last_active_profile_list =
       local_state->GetList(prefs::kProfilesLastActive);
 
-  if (IsEphemeral()) {
-    // The ephemeral guest profile should be deleted, and the last used profile
-    // set to the other one. Also, the guest ephemeral profile should be removed
-    // from the kProfilesLastActive list.
-    EXPECT_FALSE(base::DirectoryExists(guest_path));
-    EXPECT_TRUE(base::DirectoryExists(path));
-    EXPECT_EQ(profile_name, local_state->GetString(prefs::kProfileLastUsed));
-    ASSERT_EQ(1u, storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
-    ASSERT_EQ(1u, final_last_active_profile_list->GetSize());
-    ASSERT_EQ(path.BaseName().MaybeAsASCII(),
-              (final_last_active_profile_list->GetList())[0].GetString());
-  } else {
-    // The regular guest profile isn't impacted.
-    EXPECT_TRUE(base::DirectoryExists(guest_path));
-    EXPECT_TRUE(base::DirectoryExists(path));
-    EXPECT_EQ(guest_profile_name,
-              local_state->GetString(prefs::kProfileLastUsed));
-    ASSERT_EQ(1u, storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
-    ASSERT_EQ(2u, final_last_active_profile_list->GetSize());
-    ASSERT_EQ(guest_path.BaseName().MaybeAsASCII(),
-              (final_last_active_profile_list->GetList())[0].GetString());
-  }
+  // The guest profile isn't impacted.
+  EXPECT_TRUE(base::DirectoryExists(guest_path));
+  EXPECT_TRUE(base::DirectoryExists(path));
+  EXPECT_EQ(guest_profile_name,
+            local_state->GetString(prefs::kProfileLastUsed));
+  ASSERT_EQ(1u, storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
+  ASSERT_EQ(2u, final_last_active_profile_list->GetSize());
+  ASSERT_EQ(guest_path.BaseName().MaybeAsASCII(),
+            (final_last_active_profile_list->GetList())[0].GetString());
 }
 
 TEST_F(ProfileManagerTest, CleanUpEphemeralProfilesWithGuestLastUsedProfile) {
@@ -1704,7 +1658,7 @@ TEST_F(ProfileManagerTest, LastProfileDeleted) {
   EXPECT_EQ(profile_path2, storage.GetAllProfilesAttributes()[0]->GetPath());
 }
 
-TEST_P(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
+TEST_F(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
   // Make new profiles to be created as non-guest by default.
   DoNotCreateNewProfilesAsGuest();
 

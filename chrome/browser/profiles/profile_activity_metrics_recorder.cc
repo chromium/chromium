@@ -31,7 +31,7 @@ constexpr base::TimeDelta kLongTimeOfInactivity =
     base::TimeDelta::FromMinutes(30);
 
 int GetMetricsBucketIndex(const Profile* profile) {
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+  if (profile->IsGuestSession())
     return 0;
 
   if (!g_browser_process->profile_manager()) {
@@ -105,8 +105,6 @@ void RecordProfilesState() {
 
 void RecordAccountMetrics(const Profile* profile) {
   DCHECK(profile);
-  if (profile->IsEphemeralGuestProfile())
-    return;
 
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()

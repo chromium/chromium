@@ -19,8 +19,8 @@ enum class BrowserProfileType {
   kGuest = 2,
   kSystem = 3,
   kOtherOffTheRecordProfile = 4,
-  kEphemeralGuest = 5,
-  kMaxValue = kEphemeralGuest,
+  kDeprecatedEphemeralGuest = 5,
+  kMaxValue = kDeprecatedEphemeralGuest,
 };
 
 // Returns the BrowserProfileType value associated with |browser_context|.

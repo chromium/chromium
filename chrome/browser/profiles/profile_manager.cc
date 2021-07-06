@@ -440,8 +440,7 @@ bool IsLoggedIn() {
 #endif
 
 bool IsEphemeral(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles) ||
-         profile->IsEphemeralGuestProfile();
+  return profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles);
 }
 
 int GetTotalRefCount(const std::map<ProfileKeepAliveOrigin, int>& keep_alives) {
@@ -648,7 +647,7 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
       if (profile) {
         // crbug.com/823338 -> CHECK that the profiles aren't guest or
         // incognito, causing a crash during session restore.
-        CHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile())
+        CHECK(!profile->IsGuestSession())
             << "Guest profiles shouldn't have been saved as active profiles";
         CHECK(!profile->IsOffTheRecord())
             << "OTR profiles shouldn't have been saved as active profiles";
@@ -731,17 +730,6 @@ void ProfileManager::RemoveObserver(ProfileManagerObserver* observer) {
 Profile* ProfileManager::GetProfile(const base::FilePath& profile_dir) {
   TRACE_EVENT0("browser", "ProfileManager::GetProfile");
 
-  // If Epehemral Guest profile is enabled and OTR Guest profile is requested,
-  // deny it.
-  // This can specifically happen if user is browsing in OTR Guest mode and
-  // either enable Ephemeral Guest profile through flags and relaunches the
-  // browser, or restarts browser and finch enables Ephemeral Guest profile.
-  // crbug.com/1183755.
-  if (Profile::IsEphemeralGuestProfileEnabled() &&
-      profile_dir == user_data_dir().Append(chrome::kGuestProfileDir)) {
-    return nullptr;
-  }
-
   // If the profile is already loaded (e.g., chrome.exe launched twice), just
   // return it.
   Profile* profile = GetProfileByPath(profile_dir);
@@ -811,16 +799,13 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
   if (!callback.is_null()) {
     if (iter != profiles_info_.end() && info->GetCreatedProfile()) {
       Profile* profile = info->GetCreatedProfile();
-      // If this was the non-ephemeral Guest profile, apply settings and go
-      // OffTheRecord.
+      // If this was the Guest profile, apply settings and go OffTheRecord.
       // The system profile also needs characteristics of being off the record,
       // such as having no extensions, not writing to disk, etc.
-      if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile() ||
-          profile->IsSystemProfile()) {
+      if (profile->IsGuestSession() || profile->IsSystemProfile()) {
         SetNonPersonalProfilePrefs(profile);
-      }
-      if (profile->IsGuestSession() || profile->IsSystemProfile())
         profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      }
 
       // Profile has already been created. Run callback immediately.
       callback.Run(profile, Profile::CREATE_STATUS_INITIALIZED);
@@ -973,32 +958,8 @@ base::FilePath ProfileManager::GetGuestProfilePath() {
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  if (profile_manager->guest_profile_path_.empty()) {
-    if (Profile::IsEphemeralGuestProfileEnabled()) {
-      PrefService* local_state = g_browser_process->local_state();
-      DCHECK(local_state);
-
-      // Create the next Guest profile in the next available directory slot.
-      int next_directory =
-          local_state->GetInteger(prefs::kGuestProfilesNumCreated);
-      std::string profile_name = chrome::kEphemeralGuestProfileDirPrefix;
-      profile_name.append(base::NumberToString(next_directory));
-      base::FilePath new_path = profile_manager->user_data_dir();
-#if defined(OS_WIN)
-      new_path = new_path.Append(base::ASCIIToWide(profile_name));
-#else
-      new_path = new_path.Append(profile_name);
-#endif
-      local_state->SetInteger(prefs::kGuestProfilesNumCreated,
-                              ++next_directory);
-      profile_manager->guest_profile_path_ = new_path;
-    } else {
-      profile_manager->guest_profile_path_ =
-          profile_manager->user_data_dir().Append(chrome::kGuestProfileDir);
-    }
-  }
-
-  return profile_manager->guest_profile_path_;
+  base::FilePath guest_path = profile_manager->user_data_dir();
+  return guest_path.Append(chrome::kGuestProfileDir);
 }
 
 // static
@@ -1277,7 +1238,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   size_t avatar_index;
   std::string profile_name;
   std::string supervised_user_id;
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
+  if (profile->IsGuestSession()) {
     profile_name = l10n_util::GetStringUTF8(IDS_PROFILES_GUEST_PROFILE_NAME);
     avatar_index = 0;
   } else {
@@ -1797,10 +1758,8 @@ Profile* ProfileManager::CreateAndInitializeProfile(
   info->MarkProfileAsCreated(info->GetRawProfile());
   Profile* profile_ptr = info->GetCreatedProfile();
 
-  if (profile_ptr->IsGuestSession() || profile_ptr->IsEphemeralGuestProfile() ||
-      profile_ptr->IsSystemProfile()) {
+  if (profile_ptr->IsGuestSession() || profile_ptr->IsSystemProfile())
     SetNonPersonalProfilePrefs(profile_ptr);
-  }
 
   bool go_off_the_record = ShouldGoOffTheRecord(profile_ptr);
   DoFinalInit(info, go_off_the_record);
@@ -1845,10 +1804,8 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
   if (profile) {
     // If this was the guest or system profile, finish setting its special
     // status.
-    if (profile->IsGuestSession() || profile->IsSystemProfile() ||
-        profile->IsEphemeralGuestProfile()) {
+    if (profile->IsGuestSession() || profile->IsSystemProfile())
       SetNonPersonalProfilePrefs(profile);
-    }
 
     // Invoke CREATED callback for incognito profiles.
     if (go_off_the_record)
@@ -2066,7 +2023,6 @@ void ProfileManager::CleanUpGuestProfile() {
     // can't delete it properly.
     profiles::RemoveBrowsingDataForProfile(GetGuestProfilePath());
   }
-  profile_manager->guest_profile_path_.clear();
 #endif  //! BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -2188,11 +2144,6 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   init_params.is_consented_primary_account = is_consented_primary_account;
 
   init_params.is_ephemeral = IsEphemeral(profile);
-  if (profile->IsEphemeralGuestProfile()) {
-    init_params.is_guest = true;
-    init_params.is_omitted = true;
-  }
-
   init_params.is_signed_in_with_credential_provider =
       profile->GetPrefs()->GetBoolean(prefs::kSignedInWithCredentialProvider);
 
@@ -2240,7 +2191,7 @@ void ProfileManager::SaveActiveProfiles() {
   for (it = active_profiles_.begin(); it != active_profiles_.end(); ++it) {
     // crbug.com/823338 -> CHECK that the profiles aren't guest or incognito,
     // causing a crash during session restore.
-    CHECK((!(*it)->IsGuestSession()) && (!(*it)->IsEphemeralGuestProfile()))
+    CHECK((!(*it)->IsGuestSession()))
         << "Guest profiles shouldn't be saved as active profiles";
     CHECK(!(*it)->IsOffTheRecord())
         << "OTR profiles shouldn't be saved as active profiles";

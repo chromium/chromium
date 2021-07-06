@@ -351,9 +351,6 @@ void TestingProfile::Init() {
   else
     CreateTestingPrefService();
 
-  if (guest_session_ && IsEphemeralGuestProfileEnabled())
-    GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
-
   key_->SetPrefs(prefs_.get());
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
 
@@ -441,13 +438,8 @@ void TestingProfile::Init() {
 
 void TestingProfile::InitializeProfileType() {
   if (guest_session_) {
-    if (IsEphemeralGuestProfileEnabled()) {
-      profile_metrics::SetBrowserProfileType(
-          this, profile_metrics::BrowserProfileType::kEphemeralGuest);
-    } else {
-      profile_metrics::SetBrowserProfileType(
-          this, profile_metrics::BrowserProfileType::kGuest);
-    }
+    profile_metrics::SetBrowserProfileType(
+        this, profile_metrics::BrowserProfileType::kGuest);
     return;
   }
 
@@ -661,13 +653,10 @@ void TestingProfile::SetOffTheRecordProfile(
 Profile* TestingProfile::GetOffTheRecordProfile(
     const OTRProfileID& otr_profile_id,
     bool create_if_needed) {
-  if (IsOffTheRecord())
+  if (IsOffTheRecord()) {
     return original_profile_->GetOffTheRecordProfile(otr_profile_id,
                                                      create_if_needed);
-
-  // Ephemeral Guest profiles do not support Incognito.
-  if (IsEphemeralGuestProfile() && otr_profile_id == OTRProfileID::PrimaryID())
-    return nullptr;
+  }
 
   if (!HasOffTheRecordProfile(otr_profile_id)) {
     if (!create_if_needed)
@@ -1116,11 +1105,6 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
   DCHECK(!build_called_);
   DCHECK(original_profile);
   build_called_ = true;
-
-  // Ephemeral guest profiles do not support Incognito.
-  if (original_profile->IsEphemeralGuestProfile() &&
-      otr_profile_id == OTRProfileID::PrimaryID())
-    return nullptr;
 
   // Note: Owned by |original_profile|.
   return new TestingProfile(

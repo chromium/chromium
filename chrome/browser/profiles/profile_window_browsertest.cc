@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "components/account_id/account_id.h"
@@ -51,8 +50,6 @@
 #endif
 
 namespace {
-
-enum ProfileWindowType { INCOGNITO, GUEST, EPHEMERAL_GUEST };
 
 // Code related to history borrowed from:
 // chrome/browser/history/history_browsertest.cc
@@ -117,38 +114,30 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, CountForNullBrowser) {
   EXPECT_EQ(0, BrowserList::GetOffTheRecordBrowsersActiveForProfile(nullptr));
 }
 
-class ProfileWindowCountBrowserTest
-    : public ProfileWindowBrowserTest,
-      public testing::WithParamInterface<ProfileWindowType> {
+class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
+                                      public testing::WithParamInterface<bool> {
  protected:
-  ProfileWindowCountBrowserTest() {
-    ProfileWindowType profile_type = GetParam();
-    is_incognito_ = profile_type == ProfileWindowType::INCOGNITO;
-    if (!is_incognito_)
-      TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-          scoped_feature_list_,
-          profile_type == ProfileWindowType::EPHEMERAL_GUEST);
-  }
+  ProfileWindowCountBrowserTest() = default;
+
+  bool is_incognito() { return GetParam(); }
 
   int GetWindowCount() {
-    return is_incognito_ ? BrowserList::GetOffTheRecordBrowsersActiveForProfile(
-                               browser()->profile())
-                         : BrowserList::GetGuestBrowserCount();
+    return is_incognito()
+               ? BrowserList::GetOffTheRecordBrowsersActiveForProfile(
+                     browser()->profile())
+               : BrowserList::GetGuestBrowserCount();
   }
 
   Browser* CreateGuestOrIncognitoBrowser() {
     Browser* new_browser;
     // When |profile_| is null this means no browsers have been created,
     // this is the first browser instance.
-    // |is_incognito_| is used to determine which browser type to open.
     if (!profile_) {
-      new_browser = is_incognito_ ? CreateIncognitoBrowser(browser()->profile())
-                                  : CreateGuestBrowser();
+      new_browser = is_incognito()
+                        ? CreateIncognitoBrowser(browser()->profile())
+                        : CreateGuestBrowser();
       profile_ = new_browser->profile();
     } else {
-      if (profile_->IsEphemeralGuestProfile())
-        new_browser = CreateBrowser(profile_);
-      else
         new_browser = CreateIncognitoBrowser(profile_);
     }
 
@@ -156,8 +145,6 @@ class ProfileWindowCountBrowserTest
   }
 
  private:
-  bool is_incognito_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   Profile* profile_ = nullptr;
 };
 
@@ -207,44 +194,17 @@ IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest,
   EXPECT_EQ(1, GetWindowCount());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ProfileWindowCountBrowserTest,
-                         testing::Values(ProfileWindowType::INCOGNITO,
-                                         ProfileWindowType::GUEST,
-                                         ProfileWindowType::EPHEMERAL_GUEST));
+INSTANTIATE_TEST_SUITE_P(All, ProfileWindowCountBrowserTest, testing::Bool());
 
-class GuestProfileWindowBrowserTest : public ProfileWindowBrowserTest,
-                                      public testing::WithParamInterface<bool> {
- protected:
-  GuestProfileWindowBrowserTest() {
-    is_ephemeral_ = GetParam();
-
-    // Change the value if Ephemeral is not supported.
-    is_ephemeral_ &=
-        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_);
-  }
-
-  bool IsEphemeral() { return is_ephemeral_; }
-
- private:
-  bool is_ephemeral_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest, OpenGuestBrowser) {
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenGuestBrowser) {
   EXPECT_TRUE(CreateGuestBrowser());
 }
 
-IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest, GuestIsOffTheRecord) {
-  Profile* guest_profile = CreateGuestBrowser()->profile();
-  if (IsEphemeral())
-    EXPECT_FALSE(guest_profile->IsOffTheRecord());
-  else
-    EXPECT_TRUE(guest_profile->IsOffTheRecord());
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIsOffTheRecord) {
+  EXPECT_TRUE(CreateGuestBrowser()->profile()->IsOffTheRecord());
 }
 
-IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest, GuestIgnoresHistory) {
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
   Browser* guest_browser = CreateGuestBrowser();
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
@@ -260,12 +220,10 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest, GuestIgnoresHistory) {
   std::vector<GURL> urls =
       ui_test_utils::HistoryEnumerator(guest_browser->profile()).urls();
 
-  unsigned int expect_history =
-      guest_browser->profile()->IsEphemeralGuestProfile() ? 1 : 0;
-  ASSERT_EQ(expect_history, urls.size());
+  ASSERT_EQ(0u, urls.size());
 }
 
-IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest, GuestClearsCookies) {
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsCookies) {
   Browser* guest_browser = CreateGuestBrowser();
   Profile* guest_profile = guest_browser->profile();
 
@@ -288,8 +246,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest, GuestClearsCookies) {
   ASSERT_EQ("", cookie);
 }
 
-IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
-                       GuestClearsFindInPageCache) {
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
   Browser* guest_browser = CreateGuestBrowser();
   Profile* guest_profile = guest_browser->profile();
 
@@ -314,28 +271,16 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
 
   // Open a new guest browser window. Since this is a separate session, the find
   // in page text should have been cleared (along with all other browsing data).
-  // For ephemeral Guest profiles, after closing the last Guest browser the
-  // Guest profile is scheduled for deletion and is not considered a Guest
-  // profile anymore. Therefore the next Guest window requires opening a new
-  // browser and refreshing the profile object.
-  if (IsEphemeral()) {
-    guest_profile = CreateGuestBrowser()->profile();
-  } else {
     profiles::FindOrCreateNewWindowForProfile(
         guest_profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
         chrome::startup::IS_NOT_FIRST_RUN, true /*always_create*/);
-  }
+
   EXPECT_EQ(std::u16string(),
             FindBarStateFactory::GetForBrowserContext(guest_profile)
                 ->GetSearchPrepopulateText());
 }
 
-IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest, GuestCannotSignin) {
-  // TODO(https://crbug.com/1125474): Enable the test after identity manager is
-  // updated for ephemeral Guest profiles.
-  if (IsEphemeral())
-    return;
-
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestCannotSignin) {
   Browser* guest_browser = CreateGuestBrowser();
 
   signin::IdentityManager* identity_manager =
@@ -345,8 +290,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest, GuestCannotSignin) {
   ASSERT_FALSE(identity_manager);
 }
 
-IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
-                       GuestAppMenuLacksBookmarks) {
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
   EmptyAcceleratorHandler accelerator_handler;
   // Verify the normal browser has a bookmark menu.
   AppMenuModel model_normal_profile(&accelerator_handler, browser());
@@ -358,10 +302,6 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
   AppMenuModel model_guest_profile(&accelerator_handler, guest_browser);
   EXPECT_EQ(-1, model_guest_profile.GetIndexOfCommandId(IDC_BOOKMARKS_MENU));
 }
-
-INSTANTIATE_TEST_SUITE_P(GuestProfileWindowBrowserTest,
-                         GuestProfileWindowBrowserTest,
-                         /*is_ephemeral=*/testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   Profile* profile = browser()->profile();

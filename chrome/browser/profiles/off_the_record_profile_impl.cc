@@ -133,14 +133,12 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
     case profile_metrics::BrowserProfileType::kGuest:
       return profile_metrics::BrowserProfileType::kGuest;
 
-    case profile_metrics::BrowserProfileType::kEphemeralGuest:
-      return profile_metrics::BrowserProfileType::kEphemeralGuest;
-
     case profile_metrics::BrowserProfileType::kSystem:
       return profile_metrics::BrowserProfileType::kSystem;
 
     case profile_metrics::BrowserProfileType::kIncognito:
     case profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile:
+    case profile_metrics::BrowserProfileType::kDeprecatedEphemeralGuest:
       NOTREACHED();
   }
   return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
@@ -176,9 +174,6 @@ void OffTheRecordProfileImpl::Init() {
 
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
-
-  // Incognito is not available for ephemeral Guest profiles.
-  CHECK(!IsIncognitoProfile() || !profile_->IsEphemeralGuestProfile());
 
   // Always crash when incognito is not available.
   CHECK(!IsIncognitoProfile() ||

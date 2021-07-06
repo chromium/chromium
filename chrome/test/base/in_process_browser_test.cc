@@ -588,13 +588,8 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
       guest_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
   run_loop.Run();
 
-  Profile* profile = profile_manager->GetProfileByPath(guest_path);
-  if (!profile->IsEphemeralGuestProfile())
-    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-
-  const bool is_ephemeral = Profile::IsEphemeralGuestProfileEnabled();
-  EXPECT_EQ(is_ephemeral, profile->IsEphemeralGuestProfile());
-  EXPECT_NE(is_ephemeral, profile->IsGuestSession());
+  Profile* profile = profile_manager->GetProfileByPath(guest_path)
+                         ->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Create browser and add tab.
   Browser* browser = Browser::Create(Browser::CreateParams(profile, true));

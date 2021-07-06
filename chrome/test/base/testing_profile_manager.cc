@@ -150,11 +150,9 @@ TestingProfile* TestingProfileManager::CreateGuestProfile() {
   profile_ptr->set_profile_name(kGuestProfileName);
 
   // Set up a profile with an off the record profile.
-  if (!TestingProfile::IsEphemeralGuestProfileEnabled()) {
-    TestingProfile::Builder off_the_record_builder;
-    off_the_record_builder.SetGuestSession();
-    off_the_record_builder.BuildIncognito(profile_ptr);
-  }
+  TestingProfile::Builder off_the_record_builder;
+  off_the_record_builder.SetGuestSession();
+  off_the_record_builder.BuildIncognito(profile_ptr);
 
   profile_manager_->AddProfile(std::move(profile));
   profile_manager_->SetNonPersonalProfilePrefs(profile_ptr);
@@ -209,8 +207,7 @@ void TestingProfileManager::DeleteAllTestingProfiles() {
   for (auto it = testing_profiles_.begin(); it != testing_profiles_.end();
        ++it) {
     TestingProfile* profile = it->second;
-    if (profile->IsGuestSession() || profile->IsSystemProfile() ||
-        profile->IsEphemeralGuestProfile()) {
+    if (profile->IsGuestSession() || profile->IsSystemProfile()) {
       // This Profile was skipped in ProfileManager::AddProfileToStorage().
       continue;
     }

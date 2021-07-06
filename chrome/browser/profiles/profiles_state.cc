@@ -175,8 +175,7 @@ void UpdateProfileName(Profile* profile,
 
 bool IsRegularOrGuestSession(Browser* browser) {
   Profile* profile = browser->profile();
-  return profile->IsRegularProfile() || profile->IsGuestSession() ||
-         profile->IsEphemeralGuestProfile();
+  return profile->IsRegularProfile() || profile->IsGuestSession();
 }
 
 bool IsGuestModeRequested(const base::CommandLine& command_line,
