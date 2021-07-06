@@ -96,11 +96,9 @@ class PrefetchedSignedExchangeCache;
 class ServiceWorkerMainResourceHandle;
 struct SubresourceLoaderParams;
 
-// A UI thread object that owns a navigation request until it commits. It
-// ensures the UI thread can start a navigation request in the
-// ResourceDispatcherHost (that lives on the IO thread).
-// TODO(clamy): Describe the interactions between the UI and IO thread during
-// the navigation following its refactoring.
+// The primary implementation of NavigationHandle.
+//
+// Lives from navigation start until the navigation has been committed.
 class CONTENT_EXPORT NavigationRequest
     : public NavigationHandle,
       public NavigationURLLoaderDelegate,
@@ -143,7 +141,8 @@ class CONTENT_EXPORT NavigationRequest
     // asynchronous.
     WILL_PROCESS_RESPONSE,
 
-    // The response started on the IO thread and is ready to be committed.
+    // The browser process has asked the renderer to commit the response
+    // and is waiting for acknowledgement that it has been committed.
     READY_TO_COMMIT,
 
     // The response has been committed. This is one of the two final states of
@@ -157,7 +156,7 @@ class CONTENT_EXPORT NavigationRequest
     // running the WillFailRequest event. This is potentially asynchronous.
     WILL_FAIL_REQUEST,
 
-    // The request failed on the IO thread and an error page should be
+    // The request failed with a net error code and an error page should be
     // displayed. This is one of the two final states for the request.
     DID_COMMIT_ERROR_PAGE,
   };
@@ -203,10 +202,6 @@ class CONTENT_EXPORT NavigationRequest
       const absl::optional<blink::Impression>& impression);
 
   // Creates a request for a renderer-initiated navigation.
-  // Note: |body| is sent to the IO thread when calling BeginNavigation, and
-  // should no longer be manipulated afterwards on the UI thread.
-  // TODO(clamy): see if ResourceRequestBody could be un-refcounted to avoid
-  // threading subtleties.
   static std::unique_ptr<NavigationRequest> CreateRendererInitiated(
       FrameTreeNode* frame_tree_node,
       NavigationEntryImpl* entry,
@@ -1031,7 +1026,8 @@ class CONTENT_EXPORT NavigationRequest
   void CommitErrorPage(const absl::optional<std::string>& error_page_content);
 
   // Have a RenderFrameHost commit the navigation. The NavigationRequest will
-  // be destroyed after this call.
+  // be destroyed sometime after this call, typically after the renderer has
+  // informed the browser process that the commit has finished.
   void CommitNavigation();
 
   // Commits the navigation to an existing page (back-forward cache navigation
