@@ -103,6 +103,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1307966114820526988">Zastarjele funkcije</translation>
 <translation id="131405271941274527"><ph name="URL" /> želi slati i primati informacije kada svojim telefonom dodirnete NFC uređaj</translation>
 <translation id="1314509827145471431">Povezivanje desne strane</translation>
+<translation id="1319245136674974084">Ne pitaj me više za ovu aplikaciju</translation>
 <translation id="1320233736580025032">Prc1 (koverta)</translation>
 <translation id="132301787627749051">Potražite sliku u međumemoriji</translation>
 <translation id="1323433172918577554">Prikaži više</translation>
@@ -744,6 +745,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3655670868607891010">Ako vam se često prikazuje ova poruka, probajte sljedeće <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revizija</translation>
 <translation id="3664782872746246217">Ključne riječi:</translation>
+<translation id="3671540257457995106">Dozvoliti promjenu veličine?</translation>
 <translation id="3676592649209844519">ID uređaja:</translation>
 <translation id="3677008721441257057">Jeste li mislili &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Zahtjev nije bilo moguće potpisati</translation>
@@ -1104,6 +1106,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4953689047182316270">Odgovori na događaje vezane za pristupačnost</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Proširi popis</translation>
+<translation id="4968522289500246572">Ova aplikacija je dizajnirana za mobilne uređaje i možda neće dobro promijeniti veličinu. Aplikacija može naići na probleme ili se ponovo pokrenuti.</translation>
 <translation id="4973922308112707173">Dvostruko bušenje na gornjoj strani</translation>
 <translation id="4974590756084640048">Ponovo omogući upozorenja</translation>
 <translation id="4984088539114770594">Koristiti mikrofon?</translation>
@@ -1152,6 +1155,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5123063207673082822">Vikend</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Potvrdite karticu</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> možda neće dobro promijeniti veličinu. Koristite zadane postavke veličina prozora da spriječite probleme s aplikacijom.</translation>
 <translation id="5135404736266831032">Upravljaj adresama...</translation>
 <translation id="5138014172396933048">Virtuelna kartica trenutno nije dostupna. Kontaktirajte banku</translation>
 <translation id="5138227688689900538">Prikaži manje</translation>
@@ -1518,6 +1522,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="647261751007945333">Pravila uređaja</translation>
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6489534406876378309">Pokreni otpremanje padova aplikacija</translation>
+<translation id="6493924760403974580">Ova aplikacija podržava samo ovu veličinu.</translation>
 <translation id="6499038740797743453">Poništiti lozinku?</translation>
 <translation id="6502991525169604759">Bez vaših promjena</translation>
 <translation id="6508722015517270189">Ponovo pokrenite Chrome</translation>
@@ -2172,6 +2177,7 @@ Dodatni detalji:
 <translation id="8975263830901772334">Nazivi fajlova koje štampate</translation>
 <translation id="8978053250194585037">Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />otkrilo krađu identiteta<ph name="END_LINK" /> na web lokaciji <ph name="SITE" />. Web lokacije za krađu identiteta se pretvaraju da su druge web lokacije kako bi vas prevarile.</translation>
 <translation id="8983003182662520383">Načini plaćanja i adrese iz Google Paya</translation>
+<translation id="8983369100812962543">Sada možete promijeniti veličinu aplikacije</translation>
 <translation id="8987927404178983737">Mjesec</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> želi pristupiti informacijama o vašem aktivnom korištenju ovog uređaja</translation>

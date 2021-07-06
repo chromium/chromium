@@ -161,7 +161,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2170530631236737939">Sveip ned med tre fingre for å lukke Oversikt</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
-<translation id="2222338659135520253">Pålogging kreves</translation>
 <translation id="2222841058024245321">Skrivebord 7</translation>
 <translation id="2224075387478458881">Skjermopptak tillates ikke når beskyttet innhold er synlig</translation>
 <translation id="225680501294068881">Leter etter enheter ...</translation>
@@ -348,6 +347,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
 <translation id="3712407551474845318">Ta skjermdump av et område</translation>
 <translation id="371370241367527062">Mikrofon foran</translation>
+<translation id="3713734891607377840">Åpne når nedlastingen er fullført</translation>
 <translation id="3742055079367172538">Skjermdump tatt</translation>
 <translation id="3771549900096082774">Høykontrastmodus</translation>
 <translation id="3773700760453577392">En administrator har slått av multipålogging for <ph name="USER_EMAIL" />. Alle brukere må logge av for å fortsette.</translation>
@@ -377,6 +377,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="394485226368336402">Lydinnstillinger</translation>
 <translation id="3945319193631853098">Trykk for å fullføre konfigureringen</translation>
 <translation id="3945867833895287237">Kobler til Wi-Fi-sone …</translation>
+<translation id="3950820424414687140">Logg på</translation>
 <translation id="3958465044488004317">Se resultatet i assistenten</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3969043077941541451">Av</translation>

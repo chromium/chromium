@@ -466,6 +466,7 @@
 <translation id="1507246803636407672">&amp;Адхіліць</translation>
 <translation id="1508491105858779599">Каб разблакіраваць прыладу, пакладзіце палец на сканер адбіткаў пальцаў.</translation>
 <translation id="1508575541972276599">Бягучая версія: Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">Аднавіць групу</translation>
 <translation id="1509281256533087115">Доступ да <ph name="DEVICE_NAME_AND_VENDOR" /> праз USB</translation>
 <translation id="1509960214886564027">Функцыі на многіх сайтах могуць перастаць працаваць</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
@@ -588,6 +589,7 @@
 <translation id="1627408615528139100">Файл ужо спампаваны</translation>
 <translation id="1628948239858170093">Праверыць файл перад адкрыццём?</translation>
 <translation id="1629314197035607094">Тэрмін дзеяння пароля скончыўся</translation>
+<translation id="1629451755632656601">Дазволіць Google шукаць персаналізаваныя скідкі на тавары ў вашых кошыках?</translation>
 <translation id="1630300831289687074">Скора вы зможаце выкарыстоўваць Chromebook.</translation>
 <translation id="163072119192489970">Дазволена завяршаць адпраўку і атрыманне даных</translation>
 <translation id="1630768113285622200">Перазапусціць і працягнуць</translation>
@@ -1293,6 +1295,7 @@
 <translation id="236117173274098341">Аптымізаваць</translation>
 <translation id="2361340419970998028">Ідзе адпраўка водгуку…</translation>
 <translation id="236141728043665931">Заўсёды блакіраваць доступ да мікрафона</translation>
+<translation id="2363744066037724557">Аднавіць акно</translation>
 <translation id="2364498172489649528">Пройдзена</translation>
 <translation id="2365507699358342471">Гэтаму сайту дазволены доступ да тэксту і відарысаў, скапіраваных у буфер абмену.</translation>
 <translation id="2367972762794486313">Паказаць праграмы</translation>
@@ -2675,6 +2678,7 @@
 <translation id="3857807444929313943">Адніміце палец і дакраніцеся зноў</translation>
 <translation id="3861638017150647085">Імя карыстальніка "<ph name="USERNAME" />" недаступнае</translation>
 <translation id="3861977424605124250">Паказваць пры запуску</translation>
+<translation id="386239283124269513">Аднавіць групу</translation>
 <translation id="3862788408946266506">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS</translation>
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
 <translation id="3866249974567520381">Апісанне</translation>
@@ -3522,7 +3526,6 @@
 <translation id="4830502475412647084">Ідзе ўсталяванне абнаўлення АС</translation>
 <translation id="4830573902900904548">Прыладзе <ph name="DEVICE_TYPE" /> не ўдалося падключыцца да інтэрнэту праз сетку <ph name="NETWORK_NAME" />. Выберыце іншую сетку. <ph name="LEARN_MORE_LINK_START" />Даведацца больш<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">На серверы друку знойдзены 1 прынтар</translation>
-<translation id="4834007576107377210">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя)</translation>
 <translation id="4836046166855586901">Дазволіць сайтам запытваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="4836504898754963407">Кіраваць адбіткамі пальцаў</translation>
 <translation id="4837128290434901661">Зноў зрабіць Google Пошук стандартнай пошукавай сістэмай?</translation>
@@ -4243,7 +4246,6 @@
 <translation id="5627832140542566187">Арыентацыя дысплэя</translation>
 <translation id="562935524653278697">Адміністратар выключыў сінхранізацыю закладак, гісторыі, пароляў і іншых налад.</translation>
 <translation id="5631017369956619646">Выкарыстанне ЦП</translation>
-<translation id="5631713186079911700">Будзе выдалена гісторыя ў полі пошуку</translation>
 <translation id="5632059346822207074">Запытаны дазвол. Каб адказаць, націсніце Ctrl + Forward</translation>
 <translation id="5632566673632479864">Уліковы запіс <ph name="EMAIL" /> больш не дазволена выкарыстоўваць як асноўны. Гэты ўліковы запіс знаходзіцца пад кіраваннем дамена <ph name="DOMAIN" />, таму з прылады будуць выдалены вашы закладкі, гісторыя, паролі і іншыя налады.</translation>
 <translation id="5632592977009207922">Ідзе спампоўванне, засталося <ph name="PERCENT_REMAINING" /> %</translation>
@@ -5647,6 +5649,7 @@
 <translation id="7225179976675429563">Адсутнічае тып сеткі</translation>
 <translation id="7228479291753472782">Кіраваць наладамі, якія вызначаюць, ці могуць вэб-сайты выкарыстоўваць такія функцыі як вызначэнне геаграфічнага месцазнаходжання, мець доступ да мікрафона, камеры і г. д.</translation>
 <translation id="7228523857728654909">Блакіроўка экрана і ўваход</translation>
+<translation id="7230222852462421043">Аднавіць акно</translation>
 <translation id="7230787553283372882">Наладжванне памеру тэксту</translation>
 <translation id="7232750842195536390">Не ўдалося перайменаваць</translation>
 <translation id="7234010996000898150">Ідзе скасаванне аднаўлення кантэйнера Linux</translation>
@@ -6256,12 +6259,14 @@
 <translation id="7853747251428735">Іншыя &amp;інструменты</translation>
 <translation id="7855678561139483478">Перамясціць укладку ў новае акно</translation>
 <translation id="7857093393627376423">Тэкставыя прапановы</translation>
+<translation id="7857675386615530425">Выканаць пошук па частцы старонкі з дапамогай Google Аб'ектыва</translation>
 <translation id="7857949311770343000">Ці з'яўляецца старонка новай укладкі той, якую вы чакалі ўбачыць?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Сэрвіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Спампоўкі</translation>
 <translation id="7861846108263890455">Мова Уліковага запісу Google</translation>
 <translation id="7864539943188674973">Адключыць Bluetooth</translation>
+<translation id="7866230141401327032">Выканаць пошук па частцы старонкі з дапамогай Google Аб'ектыва</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – спалучана</translation>
 <translation id="7870730066603611552">Праверка параметраў сінхранізацыі пасля наладжвання</translation>
 <translation id="7870790288828963061">Праграм-кіёскаў навейшай версіі не знойдзена. Няма чаго абнаўляць. Выміце USB-сховішча.</translation>
@@ -6836,6 +6841,7 @@
 <translation id="850875081535031620">Не знойдзена шкоднага праграмнага забеспячэння</translation>
 <translation id="8509177919508253835">Скід ключоў бяспекі і стварэнне PIN-кодаў</translation>
 <translation id="8509646642152301857">Збой спампоўкі слоўніка праверкі правапісу.</translation>
+<translation id="8509967119010808787">Каб выканаць пошук ва ўкладках, націсніце тут.</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Ненадзейныя паролі не знойдзены}=1{Знойдзены {COUNT} ненадзейны пароль}one{Знойдзены {COUNT} ненадзейны пароль}few{Знойдзена {COUNT} ненадзейныя паролі}many{Знойдзена {COUNT} ненадзейных пароляў}other{Знойдзена {COUNT} ненадзейнага пароля}}</translation>
 <translation id="8512476990829870887">Завяршыць працэс</translation>
 <translation id="851263357009351303">Заўсёды дазваляць відарысы на сайце <ph name="HOST" /></translation>

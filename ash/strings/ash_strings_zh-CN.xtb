@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">若要退出“概览”模式，请用三根手指向下滑动</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
-<translation id="2222338659135520253">必须登录</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2224075387478458881">禁止在屏幕显示受保护内容时录制屏幕</translation>
 <translation id="225680501294068881">正在查找设备...</translation>
@@ -377,6 +376,7 @@
 <translation id="394485226368336402">音频设置</translation>
 <translation id="3945319193631853098">点按即可完成设置</translation>
 <translation id="3945867833895287237">正在连接到热点…</translation>
+<translation id="3950820424414687140">登录</translation>
 <translation id="3958465044488004317">查看 Google 助理给出的结果</translation>
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3969043077941541451">已关闭</translation>

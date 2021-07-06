@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Каб выйсці з рэжыму Агляду, правядзіце трыма пальцамі ўніз</translation>
 <translation id="2208323208084708176">Рэжым адзінага працоўнага стала</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
-<translation id="2222338659135520253">Трэба выканаць уваход</translation>
 <translation id="2222841058024245321">Працоўны стол 7</translation>
 <translation id="2224075387478458881">Запіс экрана забаронены, калі на ім ёсць абароненае змесціва</translation>
 <translation id="225680501294068881">Ідзе пошук прылад…</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Загрузка…</translation>
 <translation id="3712407551474845318">Вобласць здымкі</translation>
 <translation id="371370241367527062">Пярэдні мікрафон</translation>
+<translation id="3713734891607377840">Адкрыць пасля завяршэння</translation>
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
 <translation id="3771549900096082774">Рэжым высокай кантраснасці</translation>
 <translation id="3773700760453577392">Адміністратар забараніў уваход у некалькі ўліковых запісаў для карыстальніка <ph name="USER_EMAIL" />. Каб працягнуць, усе карыстальнікі павінны выйсці.</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">Налады гуку</translation>
 <translation id="3945319193631853098">Дакраніцеся, каб завяршыць наладжванне</translation>
 <translation id="3945867833895287237">Ідзе падключэнне да хот-спота...</translation>
+<translation id="3950820424414687140">Увайсці</translation>
 <translation id="3958465044488004317">Паглядзіце вынік у Памочніку</translation>
 <translation id="3962859241508114581">Папярэдні трэк</translation>
 <translation id="3969043077941541451">Выключана</translation>

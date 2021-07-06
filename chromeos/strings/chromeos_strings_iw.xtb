@@ -32,6 +32,7 @@
 <translation id="1499900233129743732">המשתמש הזה מנוהל על ידי <ph name="MANAGER" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
+<translation id="1600964289716072707">כדי להוסיף דף, ממקמים מסמך נוסף על הסורק ובוחרים באפשרות 'סריקה'.</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
@@ -50,6 +51,7 @@
 <translation id="1947737735496445907">הודפסה</translation>
 <translation id="1979103255016296513">המועד האחרון לשינוי הסיסמה כבר חלף</translation>
 <translation id="1999615961760456652">פורטל שבוי</translation>
+<translation id="2006864819935886708">קישוריות</translation>
 <translation id="2008685064673031089">חיפוש מספרים ראשוניים</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
@@ -138,6 +140,7 @@
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
+<translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
 <translation id="4378373042927530923">לא הופעל</translation>
@@ -285,6 +288,7 @@
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
+<translation id="6905724422583748843">חזרה אל <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">המכסה של הסורק פתוח. יש לסגור אותו ולנסות שוב.</translation>
 <translation id="6911383237894364323">לא ניתן להתחבר לשרתי מדיה</translation>
 <translation id="6957231940976260713">שם שירות</translation>
@@ -329,6 +333,7 @@
 <translation id="7769672763586021400">מזהה דגם</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7819857487979277519">‏PSK ‏(WPA או RSN)</translation>
+<translation id="7835501727204647447">‏התקנה של CloudReady</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>

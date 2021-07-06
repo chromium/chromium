@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">Неподдржани функции</translation>
 <translation id="131405271941274527"><ph name="URL" /> сака да испраќа и прима информации кога ќе го допрете телефонот врз уред со NFC</translation>
 <translation id="1314509827145471431">Врзување десно</translation>
+<translation id="1319245136674974084">Не прашувај повторно за апликацијава</translation>
 <translation id="1320233736580025032">Prc1 (плик)</translation>
 <translation id="132301787627749051">Пребарајте слика од привремената меморија</translation>
 <translation id="1323433172918577554">Прикажи повеќе</translation>
@@ -744,6 +745,7 @@
 <translation id="3655670868607891010">Доколку ова го гледате често, обидете се со овие <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3664782872746246217">Клучни зборови:</translation>
+<translation id="3671540257457995106">Да се дозволи промена на големината?</translation>
 <translation id="3676592649209844519">ID на уред:</translation>
 <translation id="3677008721441257057">Дали мислевте на &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Барањето не може да се потпише</translation>
@@ -1104,6 +1106,7 @@
 <translation id="4953689047182316270">Одговори на настани за пристапност</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Прошири ја листата</translation>
+<translation id="4968522289500246572">Апликацијава е дизајнирана за мобилен уред и можеби нема добро да ја промени големината. Апликацијата може да има проблеми или да се рестартира.</translation>
 <translation id="4973922308112707173">Две дупки горе</translation>
 <translation id="4974590756084640048">Повторно овозможи ги предупредувањата</translation>
 <translation id="4984088539114770594">Да се користи микрофонот?</translation>
@@ -1152,6 +1155,7 @@
 <translation id="5123063207673082822">Викенд</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Потврдете ја картичката</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> можеби нема добро да ја промени големината. Користете ги зададените големини за прозорците за да спречите проблеми со апликацијата.</translation>
 <translation id="5135404736266831032">Управувајте со адресите…</translation>
 <translation id="5138014172396933048">Виртуелната картичка не е достапна во моментов, контактирајте со банката</translation>
 <translation id="5138227688689900538">Прикажи помалку</translation>
@@ -1518,6 +1522,7 @@
 <translation id="647261751007945333">Политики на уред</translation>
 <translation id="6476284679642588870">Управувајте со начините на плаќање</translation>
 <translation id="6489534406876378309">Започни поставување падови</translation>
+<translation id="6493924760403974580">Апликацијава ја поддржува само оваа големина.</translation>
 <translation id="6499038740797743453">Да се ресетира лозинката?</translation>
 <translation id="6502991525169604759">Без промените</translation>
 <translation id="6508722015517270189">Рестартирајте го Chrome</translation>
@@ -2172,6 +2177,7 @@
 <translation id="8975263830901772334">Имиња на датотеките што ги печатите</translation>
 <translation id="8978053250194585037">Google Safe Browsing неодамна <ph name="BEGIN_LINK" />откри кражба на идентитет<ph name="END_LINK" /> на <ph name="SITE" />. Сајтовите за кражба на идентитети се преправаат дека се други веб-сајтови за да ве измамат.</translation>
 <translation id="8983003182662520383">Начини на плаќање и адреси преку Google Pay</translation>
+<translation id="8983369100812962543">Сега може да ја промените големината на апликацијата</translation>
 <translation id="8987927404178983737">Месец</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> сака да знае кога активно го користите уредов</translation>

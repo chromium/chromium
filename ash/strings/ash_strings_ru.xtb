@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
-<translation id="2222338659135520253">Требуется выполнить вход.</translation>
 <translation id="2222841058024245321">Рабочий стол 7</translation>
 <translation id="2224075387478458881">Запись экрана запрещена, так как на нем есть защищенный контент.</translation>
 <translation id="225680501294068881">Поиск устройств…</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="3712407551474845318">Снимок области</translation>
 <translation id="371370241367527062">Фронтальный микрофон</translation>
+<translation id="3713734891607377840">Открыть после скачивания</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3771549900096082774">Режим высокой контрастности</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">Настройки звука</translation>
 <translation id="3945319193631853098">Нажмите, чтобы завершить настройку.</translation>
 <translation id="3945867833895287237">Подключение к точке доступа…</translation>
+<translation id="3950820424414687140">Вход</translation>
 <translation id="3958465044488004317">Посмотрите результат в Ассистенте.</translation>
 <translation id="3962859241508114581">Предыдущий трек</translation>
 <translation id="3969043077941541451">Отключен</translation>

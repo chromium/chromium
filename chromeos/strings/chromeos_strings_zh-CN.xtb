@@ -50,6 +50,7 @@
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
 <translation id="1999615961760456652">强制门户</translation>
+<translation id="2006864819935886708">连接</translation>
 <translation id="2008685064673031089">高峰搜索</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
@@ -138,6 +139,7 @@
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
+<translation id="4289540628985791613">概述</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 张图片</translation>
 <translation id="4378373042927530923">未运行</translation>

@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Жалпы маалыматтан чыгуу үчүн үч манжаңыз менен ылдый сүрүп коюңуз</translation>
 <translation id="2208323208084708176">Биргелешкен иш тактасы режими</translation>
 <translation id="2220572644011485463">PIN же сырсөз</translation>
-<translation id="2222338659135520253">Аккаунтка кирүү талап кылынат</translation>
 <translation id="2222841058024245321">7-иш такта</translation>
 <translation id="2224075387478458881">Корголгон мазмун көрүнүп турганда экрандагыны жаздырып алууга болбойт</translation>
 <translation id="225680501294068881">Түзмөктөр изделүүдө…</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Жүктөлүүдө…</translation>
 <translation id="3712407551474845318">Бөлүктү тартуу</translation>
 <translation id="371370241367527062">Маңдайкы микрофон</translation>
+<translation id="3713734891607377840">Жүктөлүп бүткөндөн кийин ачылсын</translation>
 <translation id="3742055079367172538">Скриншот тартылды</translation>
 <translation id="3771549900096082774">Жогорку контраст режими</translation>
 <translation id="3773700760453577392">Администратор <ph name="USER_EMAIL" /> дарегине бир убакта бир нече колдонуучуга кирүүгө тыюу салды. Улантуу үчүн бардык колдонуучулар чыгышы керек.</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">Аудио жөндөөлөрү</translation>
 <translation id="3945319193631853098">Жөндөп бүтүрүү үчүн таптаңыз</translation>
 <translation id="3945867833895287237">Байланыш түйүнүнө туташууда...</translation>
+<translation id="3950820424414687140">Кирүү</translation>
 <translation id="3958465044488004317">Жардамчынын натыйжаларын көрүү</translation>
 <translation id="3962859241508114581">Мурунку трек</translation>
 <translation id="3969043077941541451">Өчүк</translation>
@@ -755,7 +756,7 @@
 <translation id="6972754398087986839">Баштоо</translation>
 <translation id="6981982820502123353">Атайын мүмкүн-төр</translation>
 <translation id="698231206551913481">Колдонуучуга тийиштүү бардык файлдар менен жергиликтүү дайындар көзөмөлдөнгөн колдонуучу чыгарылып салынганда биротоло жок болот.</translation>
-<translation id="7007983414944123363">PIN кодуңуз же сырсөзүңүз ырасталган жок. Кайра аракет кылыңыз.</translation>
+<translation id="7007983414944123363">PIN кодуңуз же сырсөзүңүз ырасталган жок. Кайталап көрүңүз.</translation>
 <translation id="7015766095477679451">Саат <ph name="COME_BACK_TIME" /> болгондо кайтып келиңиз.</translation>
 <translation id="70168403932084660">6-иш такта</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> түзмөгүңүздү телефонуңузга туташтырыңыз</translation>

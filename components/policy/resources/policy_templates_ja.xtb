@@ -356,6 +356,13 @@
       このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> では、サーバーがイントラネット上にあるかどうかの検出を試みます。IWA リクエストへの応答はその結果に基づいて行われます。サーバーがインターネット上のものとして検出された場合は、<ph name="PRODUCT_NAME" /> ではそのサーバーからの IWA リクエストを無視します。
 
       注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
+<translation id="1495817006535797003">このポリシーを設定した場合、カンマ区切りのリストで指定した発行元が各自のプロセスで実行され、サブドメインによって指定された発行元が分離されます。たとえば、https://example.com/ と指定すると、https://foo.example.com/ が https://example.com/ サイトの一部として分離されます。Android では <ph name="PRODUCT_NAME" /> バージョン 77 以降、特定のデリケートなコンテンツを含むウェブサイトがデフォルトで分離されており、このポリシーによってデフォルトのサイト分離モードが特定の発行元にも適用されます。
+
+      このポリシーを無効に設定した場合は、すべてのサイト分離が無効になります。これには、デリケートなコンテンツを含むサイトの分離、IsolateOriginsAndroid と SitePerProcessAndroid のフィールド テスト、その他のサイト分離モードが含まれます。ただしユーザーはコマンドライン フラグを使用して手動で IsolateOrigins を有効にできます。
+
+      このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。
+
+      注: Android で大量のサイトを分離する場合、特にメモリ容量の少ないデバイスでパフォーマンスに影響が生じる可能性があります。このポリシーは、厳密に 1 GB より大きい RAM を搭載した Android デバイスの Chrome のみに適用されます。Android 以外のプラットフォームにこのポリシーを適用するには、<ph name="ISOLATE_ORIGINS_POLICY_NAME" /> を使用してください。</translation>
 <translation id="1502843533062797703">第三者ソフトウェアからのコードの挿入をブロックする</translation>
 <translation id="1503969899251962413">このポリシーでは、このデバイスの <ph name="PLUGIN_VM_NAME" /> のライセンスキーを指定します。
 
@@ -683,6 +690,7 @@
 <translation id="1930127294345368978">1 回の印刷ジョブで使用できる用紙の最大数</translation>
 <translation id="193259052151668190">取り外し可能な USB デバイスの許可リスト</translation>
 <translation id="1933378685401357864">壁紙の画像</translation>
+<translation id="1942626390957213764">デスクトップ共有ハブを無効にする</translation>
 <translation id="1945994447126139909">この企業向けのポリシーは一時的な適用を想定しており、<ph name="PRODUCT_NAME" /> バージョン 88 で削除される予定です。Chrome のデフォルトのリファラー ポリシーは、Chrome 85 安定版の公開に向けた段階的措置として、現在の「no-referrer-when-downgrade」からさらに安全な「strict-origin-when-cross-origin」に変更され、セキュリティが強化されます。
 
       安定版の公開まで、このポリシーは無視されます。公開後、このポリシーを有効にしている場合は、Chrome のデフォルトのリファラー ポリシーが以前の値「no-referrer-when-downgrade」に設定されます。
@@ -2392,6 +2400,9 @@
 <translation id="4086150283035515220">このポリシーを有効に設定した場合、ユーザーはダウンロードの前に各ファイルの保存先を尋ねられます。このポリシーを無効に設定した場合、ダウンロードは直ちに開始され、ユーザーはファイルの保存先を尋ねられません。
 
       このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。</translation>
+<translation id="4087476676669545471">このポリシーを True に設定するか未設定のままにした場合、ユーザーはデスクトップ共有ハブの機能を使用して、現在のウェブページを共有または保存できます。共有ハブにはアドレスバーまたはその他メニューからアクセスできます。
+
+       このポリシーを False に設定した場合は、アドレスバーの共有アイコンとその他メニューのエントリが削除されます。</translation>
 <translation id="4088589230932595924">シークレット モードを適用する</translation>
 <translation id="4089849819635523136"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> では、アドレスバーで使用する、このプロバイダで検索を実行するためのキーワード（ショートカット）を指定できます。
 
@@ -3313,6 +3324,7 @@
 
           このポリシーを無効に設定した場合、この機能は強制的に無効になります。
           </translation>
+<translation id="5435888298115339571">アドレスバーとその他メニューでデスクトップ共有を有効にする</translation>
 <translation id="5442026853063570579">このポリシーでは、Android 開発者向けオプションへのアクセスも管理できます。このポリシーを「DeveloperToolsDisallowed」（値 2）に設定した場合、ユーザーは開発者向けオプションにアクセスできません。このポリシーを別の値に設定するか未設定のままにした場合、ユーザーは Android 設定アプリのビルド番号を 7 回タップすれば開発者向けオプションにアクセスできます。</translation>
 <translation id="5445596354079213552">このポリシーは、デバイスが自動更新の有効期限に達していて、<ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ポリシーで設定された <ph name="PRODUCT_OS_NAME" /> の最小バージョン要件を満たしていない場合にのみ有効です。
 
@@ -4135,6 +4147,17 @@
       このポリシーを未設定のままにするか、空のリストを指定した場合、デバイスのローカル アカウントは表示されません。</translation>
 <translation id="6584541828182430328">全画面表示の警告を無効にする</translation>
 <translation id="6598235178374410284">ユーザーのアバター画像</translation>
+<translation id="6601311299236772162">このポリシーでは、<ph name="PRODUCT_NAME" /> の「従来のブラウザのサポート」機能でサイトリストまたはグレーリストのポリシーをどのように扱うかを管理します。次のポリシーに影響します: <ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
+
+      [Default]（0）に設定するか未設定のままにした場合、URL は緩やかな基準で照合されます。「/」を含まないルールは、URL のホスト名の任意の場所に含まれる部分文字列が照合されます。
+
+      [Strict]（1）に設定した場合、URL は厳格な基準で照合されます。「/」を含まないルールは、ホスト名の末尾のみが照合されます。また、ドメイン名の区切りとしてのみ使用する必要があります。この設定では、<ph name="MS_IE_PRODUCT_NAME" /> および <ph name="MS_EDGE_PRODUCT_NAME" /> との互換性がより高くなります。
+
+      たとえば、「example.com」というルールは、
+
+      解析モードに関係なく、「http://example.com/」と「http://subdomain.example.com/」に一致します。
+
+      「http://notexample.com/」、「http://example.com.invalid.com/」、「http://example.comabc/」は [Default] モードの場合のみ一致します。</translation>
 <translation id="6603004149426829878">タイムゾーンを解決する際、常に利用可能な位置情報の信号をサーバーに送信する</translation>
 <translation id="6604049565198492174">このポリシーでは、各 <ph name="PRODUCT_NAME" /> デバイスのユーザーごとにプッシュ型ネットワーク設定を許可します。ネットワーク設定は、Open Network Configuration 形式で定義された JSON 形式の文字列です。</translation>
 <translation id="660567106648774919">このポリシーはサポートが終了しています。代わりに <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> ポリシーを使用してください。
@@ -5041,6 +5064,13 @@
 
           このポリシーの値はミリ秒単位とし、画面オフ（設定されている場合）およびアイドル待ちの時間と同じかそれより短い時間を指定できます。</translation>
 <translation id="7680437377926096177">最後のウィンドウを閉じたときにログアウト ダイアログを表示しない</translation>
+<translation id="7681958144280390173">このポリシーを有効に設定した場合、すべてのサイトが分離されます（各サイトが独自のプロセスで実行されます）。Android では <ph name="PRODUCT_NAME" /> バージョン 77 以降、特定のデリケートなコンテンツを含むウェブサイトがデフォルトで分離されており、このポリシーによってデフォルトのサイト分離モードがすべてのサイトに適用されます。
+
+      このポリシーを無効に設定した場合は、すべてのサイト分離が無効になります。これには、デリケートなコンテンツを含むサイトの分離、IsolateOriginsAndroid と SitePerProcessAndroid のフィールド テスト、その他のサイト分離モードが含まれます。ただし、ユーザーはポリシーを手動で有効にできます。
+
+      このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。
+
+      注: 今後は改善される予定ですが、Android ですべてのサイトを分離する場合、現在は特にローエンドのデバイスでパフォーマンスに影響が生じる可能性があります。このポリシーは、厳密に 1 GB より大きい RAM を搭載した Android デバイスの Chrome のみに適用されます。ユーザーへのパフォーマンス上の影響を抑えつつ、特定のサイトを分離する場合は、<ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> で分離するサイトのリストを指定してください。Android 以外のプラットフォームにこのポリシーを適用するには、<ph name="SITE_PER_PROCESS_POLICY_NAME" /> を使用してください。</translation>
 <translation id="7683777542468165012">動的なポリシーの更新</translation>
 <translation id="7687943045976362719">このポリシーが設定されている場合、指定されたコンテンツ タイプは <ph name="PRODUCT_FRAME_NAME" /> で処理されます。
 
@@ -5735,6 +5765,7 @@
       このポリシーが未設定の場合、起動時には新しいタブページが開きます。
 
       <ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみこの機能を使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
+<translation id="8671119576957984818">デスクトップ共有ハブを有効にする</translation>
 <translation id="8672321184841719703">自動更新の対象バージョンを指定</translation>
 <translation id="867410340948518937">U2F（Universal Second Factor）</translation>
 <translation id="8676959842615154675">このポリシーを有効に設定した場合、リモート アクセス ホストは、そのホストが関連付けられているローカル ユーザーの名前と、ホストの所有者として登録されている Google アカウントの名前（たとえば、ホストの所有者が「johndoe@example.com」の場合は「johndoe」）を比較します。ホストの所有者の名前と、ホストが関連付けられているローカル ユーザーの名前が異なる場合、このホストは起動しません。所有者の Google アカウントが必ず特定のドメインと関連付けられるようにするには、このポリシーを <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> と一緒に使用してください。

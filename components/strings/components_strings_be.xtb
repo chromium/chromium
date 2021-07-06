@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">Састарэлыя функцыі</translation>
 <translation id="131405271941274527">Сайт <ph name="URL" /> запытвае доступ на абмен інфармацыяй, калі вы націсканнем выбіраеце свой тэлефон на прыладзе NFC</translation>
 <translation id="1314509827145471431">Пераплёт справа</translation>
+<translation id="1319245136674974084">Больш не пытаць адносна гэтай праграмы</translation>
 <translation id="1320233736580025032">Prc1 (канверт)</translation>
 <translation id="132301787627749051">Пошук відарыса з буфера абмену</translation>
 <translation id="1323433172918577554">Паказаць яшчэ</translation>
@@ -743,6 +744,7 @@
 <translation id="3655670868607891010">Калі вы часта бачыце гэта паведамленне, паспрабуйце наступнае: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Рэдакцыя</translation>
 <translation id="3664782872746246217">Ключавыя словы:</translation>
+<translation id="3671540257457995106">Дазволіць змяняць памер?</translation>
 <translation id="3676592649209844519">Ідэнтыфікатар прылады:</translation>
 <translation id="3677008721441257057">Вы мелі на ўвазе &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Не ўдалося падпісаць запыт</translation>
@@ -1103,6 +1105,7 @@
 <translation id="4953689047182316270">Адказваць на падзеі функцый спецыяльных магчымасцей</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Разгарнуць спіс</translation>
+<translation id="4968522289500246572">Гэта праграма створана для мабільных прылад, таму змяненне яе памеру можа выклікаць памылкі. Праграма можа працаваць няправільна або перазапусціцца.</translation>
 <translation id="4973922308112707173">Дзве дзіркі зверху</translation>
 <translation id="4974590756084640048">Паўторна ўключыць папярэджанні</translation>
 <translation id="4984088539114770594">Выкарыстоўваць мікрафон?</translation>
@@ -1151,6 +1154,7 @@
 <translation id="5123063207673082822">Выхадныя</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Спраўджанне карткі</translation>
+<translation id="512670116361803001">Змяненне памеру праграмы "<ph name="APP_NAME" />" можа выклікаць памылкі. Каб пазбегнуць іх, выкарыстоўвайце загадзя зададзеныя памеры вокнаў.</translation>
 <translation id="5135404736266831032">Кіраваць адрасамі...</translation>
 <translation id="5138014172396933048">Віртуальная картка зараз недаступная, звяжыцеся са сваім банкам</translation>
 <translation id="5138227688689900538">Паказаць менш</translation>
@@ -1517,6 +1521,7 @@
 <translation id="647261751007945333">Палітыкі прылады</translation>
 <translation id="6476284679642588870">Наладзіць спосабы аплаты</translation>
 <translation id="6489534406876378309">Пачаць запампоўку збояў</translation>
+<translation id="6493924760403974580">Праграма падтрымлівае толькі гэты памер.</translation>
 <translation id="6499038740797743453">Скінуць пароль?</translation>
 <translation id="6502991525169604759">Без унесеных вамі змяненняў</translation>
 <translation id="6508722015517270189">Перазапусціце Chrome</translation>
@@ -2172,6 +2177,7 @@
 <translation id="8975263830901772334">Назвы файлаў, якія вы друкуеце</translation>
 <translation id="8978053250194585037">Бяспечны прагляд Google толькі што <ph name="BEGIN_LINK" />выявіў фішынг<ph name="END_LINK" /> на сайце <ph name="SITE" />. Фішынгавыя сайты выдаюць сябе за іншыя сайты, каб падмануць вас.</translation>
 <translation id="8983003182662520383">Спосабы аплаты і адрасы, якія выкарыстоўваюць Google Pay</translation>
+<translation id="8983369100812962543">Цяпер можна змяняць памер праграмы</translation>
 <translation id="8987927404178983737">Месяц</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">Сайт <ph name="URL" /> запытвае дазвол на атрыманне інфармацыі пра тое, калі вы карыстаецеся гэтай прыладай</translation>

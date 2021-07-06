@@ -161,7 +161,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2170530631236737939">Vuốt xuống bằng 3 ngón tay để thoát khỏi chế độ Tổng quan</translation>
 <translation id="2208323208084708176">Chế độ màn hình đồng nhất</translation>
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
-<translation id="2222338659135520253">Cần đăng nhập</translation>
 <translation id="2222841058024245321">Không gian làm việc 7</translation>
 <translation id="2224075387478458881">Không thể sử dụng chức năng ghi màn hình khi có nội dung được bảo vệ</translation>
 <translation id="225680501294068881">Đang quét tìm thiết bị...</translation>
@@ -348,6 +347,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="3712407551474845318">Chụp một vùng màn hình</translation>
 <translation id="371370241367527062">Micrô mặt trước</translation>
+<translation id="3713734891607377840">Mở khi hoàn tất</translation>
 <translation id="3742055079367172538">Ảnh màn hình đã chụp</translation>
 <translation id="3771549900096082774">Chế độ tương phản cao</translation>
 <translation id="3773700760453577392">Quản trị viên không cho phép <ph name="USER_EMAIL" /> thực hiện đăng nhập nhiều tài khoản. Tất cả người dùng phải đăng xuất để tiếp tục.</translation>
@@ -377,6 +377,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="394485226368336402">Cài đặt âm thanh</translation>
 <translation id="3945319193631853098">Nhấn để hoàn tất quá trình thiết lập</translation>
 <translation id="3945867833895287237">Đang kết nối với điểm phát sóng...</translation>
+<translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="3958465044488004317">Xem kết quả trên giao diện người dùng gốc của Trợ lý</translation>
 <translation id="3962859241508114581">Bản nhạc trước</translation>
 <translation id="3969043077941541451">Đang tắt</translation>

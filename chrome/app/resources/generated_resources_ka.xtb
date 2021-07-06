@@ -463,6 +463,7 @@
 <translation id="1507246803636407672">&amp;გაუქმება</translation>
 <translation id="1508491105858779599">მოწყობილობის განსაბლოკად მოათავსეთ თითი თითის ანაბეჭდის სენსორზე.</translation>
 <translation id="1508575541972276599">ამჟამინდელი ვერსიაა Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">ჯგუფის &amp;აღდგენა</translation>
 <translation id="1509281256533087115">USB-ს მეშვეობით ნებისმიერ <ph name="DEVICE_NAME_AND_VENDOR" />-ზე წვდომა</translation>
 <translation id="1509960214886564027">მრავალი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს</translation>
 <translation id="1510238584712386396">გამშვები</translation>
@@ -585,6 +586,7 @@
 <translation id="1627408615528139100">უკვე ჩამოტვირთულია</translation>
 <translation id="1628948239858170093">გსურთ ფაილის სკანირება გახსნამდე?</translation>
 <translation id="1629314197035607094">პაროლის მოქმედების ვადა ამოიწურა</translation>
+<translation id="1629451755632656601">გსურთ, Google-მა პერსონალურად გიპოვოთ თქვენს კალათებთან დაკავშირებული ფასდაკლებები?</translation>
 <translation id="1630300831289687074">თქვენი Chromebook-ის გამოყენებას მალე შეძლებთ.</translation>
 <translation id="163072119192489970">მონაცემთა გაგზავნის/მიღების დასრულება დაშვებულია</translation>
 <translation id="1630768113285622200">გადატვირთვა და გაგრძელება</translation>
@@ -1290,6 +1292,7 @@
 <translation id="236117173274098341">ოპტიმიზაცია</translation>
 <translation id="2361340419970998028">მიმდინარეობს გამოხმაურების გაგზავნა...</translation>
 <translation id="236141728043665931">ყოველთვის დაიბლოკოს მიკროფონზე წვდომა</translation>
+<translation id="2363744066037724557">ფანჯრის &amp;აღდგენა</translation>
 <translation id="2364498172489649528">გავლილია</translation>
 <translation id="2365507699358342471">ამ საიტს შეუძლია გაცვლის ბუფერში კოპირებული ტექსტისა და სურათების ნახვა.</translation>
 <translation id="2367972762794486313">პროგრამების ჩვენება</translation>
@@ -2673,6 +2676,7 @@
 <translation id="3857807444929313943">აიღეთ თითი, შემდეგ კი ხელახლა შეეხეთ</translation>
 <translation id="3861638017150647085">მომხმარებლის სახელი „<ph name="USERNAME" />“ მიუწვდომელია</translation>
 <translation id="3861977424605124250">გაშვებისას ჩვენება</translation>
+<translation id="386239283124269513">ჯგუფის &amp;აღდგენა</translation>
 <translation id="3862788408946266506">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს Chrome OS-ის კიოსკის რეჟიმში</translation>
 <translation id="3865414814144988605">გარჩევადობა</translation>
 <translation id="3866249974567520381">აღწერა</translation>
@@ -3520,7 +3524,6 @@
 <translation id="4830502475412647084">მიმდინარეობს ოპერაციული სისტემის განახლების ინსტალაცია</translation>
 <translation id="4830573902900904548">თქვენი <ph name="DEVICE_TYPE" /> ვერ უკავშირდება ინტერნეტს <ph name="NETWORK_NAME" />-ის მეშვეობით. გთხოვთ, აირჩიოთ სხვა ქსელი. <ph name="LEARN_MORE_LINK_START" />შეიტყვეთ მეტი<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">ბეჭდვის სერვერზე მოიძებნა 1 პრინტერი</translation>
-<translation id="4834007576107377210">გაეცანით თქვენი საძიებო სისტემის ინსტრუქციას იმის თაობაზე, როგორ წაშალოთ თქვენი ძიების ისტორია, თუ ეს შესაძლებელია</translation>
 <translation id="4836046166855586901">შეკითხვა, როცა საიტებს სურთ ამ მოწყობილობის აქტიურად გამოყენების შესახებ ინფორმაციის მიღება</translation>
 <translation id="4836504898754963407">თითის ანაბეჭდების მართვა</translation>
 <translation id="4837128290434901661">გსურთ Google Search-ზე დაბრუნება?</translation>
@@ -4243,7 +4246,6 @@
 <translation id="5627832140542566187">ჩვენების ორიენტაცია</translation>
 <translation id="562935524653278697">თქვენი სანიშნეების, ისტორიის, პაროლების და სხვა პარამეტრების სინქრონიზაცია გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="5631017369956619646">CPU-ს გამოყენება</translation>
-<translation id="5631713186079911700">გაასუფთავებს ისტორიას საძიებო ველში</translation>
 <translation id="5632059346822207074">მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშთა კომბინაციას Ctrl + წინ</translation>
 <translation id="5632566673632479864">თქვენი ანგარიში (<ph name="EMAIL" />) აღარ დაიშვება ძირითადი ანგარიშის სახით. ვინაიდან ამ ანგარიშს მართავს <ph name="DOMAIN" />, თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები წაიშლება ამ მოწყობილობიდან.</translation>
 <translation id="5632592977009207922">მიმდინარეობს ჩამოტვირთვა, დარჩენილია <ph name="PERCENT_REMAINING" />%</translation>
@@ -5650,6 +5652,7 @@
 <translation id="7225179976675429563">ქსელის ტიპი არ არის მითითებული</translation>
 <translation id="7228479291753472782">იმ პარამეტრების მართვა, რომლებიც განსაზღვრავს, შეუძლია თუ არა ვებსაიტებს ისეთ ფუნქციების გამოყენება, როგორიცაა გეოლოკაცია, მიკროფონი, კამერა, და ა.შ.</translation>
 <translation id="7228523857728654909">ეკრანის დაბლოკვა და სისტემაში შესვლა</translation>
+<translation id="7230222852462421043">ფანჯრის &amp;აღდგენა</translation>
 <translation id="7230787553283372882">ტექსტის ზომის მორგება</translation>
 <translation id="7232750842195536390">გადარქმევა ვერ მოხერხდა</translation>
 <translation id="7234010996000898150">მიმდინარეობს Linux აღდგენის გაუქმება</translation>
@@ -6259,12 +6262,14 @@
 <translation id="7853747251428735">დამატებითი ხე&amp;ლსაწყოები</translation>
 <translation id="7855678561139483478">ჩანართის ახალ ფანჯარაში გადატანა</translation>
 <translation id="7857093393627376423">ტექსტური შემოთავაზებები</translation>
+<translation id="7857675386615530425">გვერდის ნაწილში ძიება Google Lens-ით</translation>
 <translation id="7857949311770343000">ეს ის ჩანართია, რომელსაც მოელოდით?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">სერვისი: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ჩ&amp;ამოტვირთვები</translation>
 <translation id="7861846108263890455">Google ანგარიშის ენა</translation>
 <translation id="7864539943188674973">გამორთეთ Bluetooth</translation>
+<translation id="7866230141401327032">გვერდის ნაწილში ძიება Google Lens-ით</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> — დაწყვილებული</translation>
 <translation id="7870730066603611552">დაყენების შემდეგ სინქრონიზაციის ვარიანტების გადახედვა</translation>
 <translation id="7870790288828963061">Kiosk აპები უფრო ახალი ვერსიით ვერ მოიძებნა. განსაახლებელი არაფერია. ამოიღეთ USB დისკი.</translation>
@@ -6839,6 +6844,7 @@
 <translation id="850875081535031620">საზიანო პროგრამული უზრუნველყოფა არ მოიძებნა</translation>
 <translation id="8509177919508253835">უსაფრთხოების გასაღებების გადაყენება და PIN-კოდების შექმნა</translation>
 <translation id="8509646642152301857">მართლწერის შემოწმების ლექსიკონი ვერ ჩამოიტვირთა.</translation>
+<translation id="8509967119010808787">ჩანართებში ძიებისთვის დააწკაპუნეთ აქ</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{სუსტი პაროლები არ მოიძებნა}=1{მოიძებნა {COUNT} სუსტი პაროლი}other{მოიძებნა {COUNT} სუსტი პაროლი}}</translation>
 <translation id="8512476990829870887">პროცესის დასრულება</translation>
 <translation id="851263357009351303">ყოველთვის მიეცი ნება <ph name="HOST" />-ს, აჩვენოს გამოსახულებები</translation>

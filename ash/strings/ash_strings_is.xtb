@@ -161,7 +161,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2170530631236737939">Strjúktu niður með þremur fingrum til að loka Yfirliti.</translation>
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
-<translation id="2222338659135520253">Innskráningar krafist</translation>
 <translation id="2222841058024245321">Skrifborð 7</translation>
 <translation id="2224075387478458881">Skjáupptaka er óheimil á meðan varið efni er sýnilegt</translation>
 <translation id="225680501294068881">Leitar að tækjum...</translation>
@@ -348,6 +347,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="370665806235115550">Hleður...</translation>
 <translation id="3712407551474845318">Taka mynd af svæði</translation>
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
+<translation id="3713734891607377840">Opna þegar niðurhali lýkur</translation>
 <translation id="3742055079367172538">Skjámynd tekin</translation>
 <translation id="3771549900096082774">Mikil birtuskil</translation>
 <translation id="3773700760453577392">Stjórnandi hefur lokað á innskráningu fleiri en eins notanda fyrir <ph name="USER_EMAIL" />. Allir notendur verða að skrá sig út til að halda áfram.</translation>
@@ -377,6 +377,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="394485226368336402">Hljóðstillingar</translation>
 <translation id="3945319193631853098">Ýttu til að ljúka uppsetningu</translation>
 <translation id="3945867833895287237">Tengist heitum reit...</translation>
+<translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3958465044488004317">Sjá niðurstöður í Hjálpara</translation>
 <translation id="3962859241508114581">Fyrra lag</translation>
 <translation id="3969043077941541451">Slökkt</translation>

@@ -161,7 +161,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2170530631236737939">Perbraukite žemyn trimis pirštais, kad išeitumėte iš „Apžvalgos“ skilties</translation>
 <translation id="2208323208084708176">Vieno darbalaukio režimas</translation>
 <translation id="2220572644011485463">PIN kodas arba slaptažodis</translation>
-<translation id="2222338659135520253">Reikia prisijungti</translation>
 <translation id="2222841058024245321">7 darbalaukis</translation>
 <translation id="2224075387478458881">Negalima įrašyti ekrano vaizdo, jei matomas apsaugotas turinys</translation>
 <translation id="225680501294068881">Ieškoma įrenginių...</translation>
@@ -348,6 +347,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="370665806235115550">Įkeliama...</translation>
 <translation id="3712407551474845318">Užfiksuoti sritį</translation>
 <translation id="371370241367527062">Priekinis mikrofonas</translation>
+<translation id="3713734891607377840">Baigus atidaryti</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
 <translation id="3771549900096082774">Didelio kontrasto režimas</translation>
 <translation id="3773700760453577392">Administratorius neleido <ph name="USER_EMAIL" /> prisijungti prie kelių paskyrų. Norėdami tęsti, visi naudotojai turi atsijungti.</translation>
@@ -377,6 +377,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="394485226368336402">Garso nustatymai</translation>
 <translation id="3945319193631853098">Palieskite, kad baigtumėte sąranką</translation>
 <translation id="3945867833895287237">Prisijungiama prie viešosios interneto prieigos taško...</translation>
+<translation id="3950820424414687140">Prisijungti</translation>
 <translation id="3958465044488004317">Peržiūrėkite rezultatą naudodami Padėjėją</translation>
 <translation id="3962859241508114581">Ankstesnis takelis</translation>
 <translation id="3969043077941541451">Išjungta</translation>

@@ -465,6 +465,7 @@
 <translation id="1507246803636407672">&amp;Հրաժարվել</translation>
 <translation id="1508491105858779599">Սարքն ապակողպելու համար մատը դրեք մատնահետքի սենսորի վրա։</translation>
 <translation id="1508575541972276599">Ընթացիկ տարբերակ՝ Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Վերականգնել խումբը</translation>
 <translation id="1509281256533087115">Մուտք գործեք ցանկացած <ph name="DEVICE_NAME_AND_VENDOR" /> սարք USB-ի միջոցով</translation>
 <translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
@@ -587,6 +588,7 @@
 <translation id="1627408615528139100">Ֆայլն արդեն ներբեռնվել է</translation>
 <translation id="1628948239858170093">Բացելուց առաջ ստուգե՞լ ֆայլը</translation>
 <translation id="1629314197035607094">Գաղտնաբառի ժամկետը լրացել է</translation>
+<translation id="1629451755632656601">Թույլատրե՞լ Google-ին անհատականացված զեղչեր որոնել զամբյուղում։</translation>
 <translation id="1630300831289687074">Դուք շուտով կկարողանաք օգտագործել ձեր Chromebook-ը։</translation>
 <translation id="163072119192489970">Թույլատրվում է ավարտել տվյալների ուղարկումն ու ստացումը</translation>
 <translation id="1630768113285622200">Վերագործարկել և շարունակել</translation>
@@ -1292,6 +1294,7 @@
 <translation id="236117173274098341">Օպտիմալացնել</translation>
 <translation id="2361340419970998028">Կարծիքն ուղարկվում է…</translation>
 <translation id="236141728043665931">Միշտ արգելափակել խոսափողի օգտագործումը</translation>
+<translation id="2363744066037724557">&amp;Վերականգնել պատուհանը</translation>
 <translation id="2364498172489649528">Անցել է ստուգում</translation>
 <translation id="2365507699358342471">Այս կայքը կարող է տեսնել սեղմատախտակին պատճենված տեքստն ու պատկերները:</translation>
 <translation id="2367972762794486313">Ցույց տալ հավելվածները</translation>
@@ -2674,6 +2677,7 @@
 <translation id="3857807444929313943">Բարձրացրեք մատը և նորից փորձեք</translation>
 <translation id="3861638017150647085">«<ph name="USERNAME" />» օգտանունը հասանելի չէ</translation>
 <translation id="3861977424605124250">Ցույց տալ գործարկման ժամանակ</translation>
+<translation id="386239283124269513">&amp;Վերականգնել խումբը</translation>
 <translation id="3862788408946266506">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի Chrome OS-ի կրպակի ռեժիմում</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
 <translation id="3866249974567520381">Նկարագրություն</translation>
@@ -3521,7 +3525,6 @@
 <translation id="4830502475412647084">Օպերացիոն համակարգի թարմացման տեղադրում</translation>
 <translation id="4830573902900904548">Ձեր <ph name="DEVICE_TYPE" /> սարքը չի կարողանում կապակցվել համացանցին <ph name="NETWORK_NAME" />-ի միջոցով: Ընտրեք այլ ցանց: <ph name="LEARN_MORE_LINK_START" />Մանրամասն<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Տպման սերվերում գտնվել է 1 տպիչ։</translation>
-<translation id="4834007576107377210">Որոնման պատմությունը ջնջելու համար դիտեք համապատասխան որոնողական համակարգի հրահանգները։</translation>
 <translation id="4836046166855586901">Հարցնել, երբ որևէ կայք ուզում է տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="4836504898754963407">Մատնահետքերի կառավարում</translation>
 <translation id="4837128290434901661">Վերադառնա՞լ Google Որոնմանը</translation>
@@ -4247,7 +4250,6 @@
 <translation id="5627832140542566187">Էկրանի դիրքավորումը</translation>
 <translation id="562935524653278697">Ադմինիստրատորն անջատել է ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և մյուս կարգավորումների համաժամացումը:</translation>
 <translation id="5631017369956619646">CPU-ի օգտագործումը</translation>
-<translation id="5631713186079911700">Մաքրում է պատմությունը որոնման դաշտում</translation>
 <translation id="5632059346822207074">Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք Ctrl + Forward։</translation>
 <translation id="5632566673632479864">Ձեր <ph name="EMAIL" /> հաշիվն այլևս չի կարող օգտագործվել որպես հիմնական հաշիվ: Քանի որ այս հաշիվը կառավարվում է <ph name="DOMAIN" /> տիրույթի կողմից, ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումները կջնջվեն այս սարքից:</translation>
 <translation id="5632592977009207922">Ներբեռնվում է, մնացել է <ph name="PERCENT_REMAINING" />%</translation>
@@ -5654,6 +5656,7 @@
 <translation id="7225179976675429563">Ցանցի տեսակը նշված չէ</translation>
 <translation id="7228479291753472782">Կարգավորումներ, որոնք սահմանում են, թե արդյոք կայքերը կարող են օգտագործել տեղադրությունը, խոսափողը, ֆոտոխցիկը և այլ գործառույթներ:</translation>
 <translation id="7228523857728654909">Էկրանի կողպում և մուտք</translation>
+<translation id="7230222852462421043">&amp;Վերականգնել պատուհանը</translation>
 <translation id="7230787553283372882">Թույլ է տալիս կարգավորել տեքստի չափը</translation>
 <translation id="7232750842195536390">Չհաջողվեց վերանվանել</translation>
 <translation id="7234010996000898150">Լինուքսի վերականգնումը չեղարկվում է</translation>
@@ -6262,12 +6265,14 @@
 <translation id="7853747251428735">Լրացուցիչ գործիքներ</translation>
 <translation id="7855678561139483478">Բացել ներդիրը նոր պատուհանում</translation>
 <translation id="7857093393627376423">Տեքստային հուշումներ</translation>
+<translation id="7857675386615530425">Էջի հատվածի որոնում Google Տեսապակու միջոցով</translation>
 <translation id="7857949311770343000">Սա՞ է ձեր ուզած նոր ներդիրի էջը:</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Ծառայություն՝ <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Ներբեռնումներ</translation>
 <translation id="7861846108263890455">Google հաշվի լեզուն</translation>
 <translation id="7864539943188674973">Անջատել Bluetooth-ը</translation>
+<translation id="7866230141401327032">Էջի հատվածի որոնում Google Տեսապակու միջոցով</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> սարք՝ զուգակցված է</translation>
 <translation id="7870730066603611552">Ստուգել համաժամացման պարամետրերը աշխատաշրջանի մեկնարկից հետո</translation>
 <translation id="7870790288828963061">Kiosk հավելվածների ավելի նոր տարբերակներ չեն գտնվել: Թարմացում չի պահանջվում: Հեռացրեք USB հիշողությունը:</translation>
@@ -6842,6 +6847,7 @@
 <translation id="850875081535031620">Վնասաբեր ծրագրեր չեն գտնվել</translation>
 <translation id="8509177919508253835">Վերակայեք անվտանգության բանալիները և ստեղծեք PIN կոդեր</translation>
 <translation id="8509646642152301857">Ուղղագրության ստուգման բառացանկը չհաջողվեց ներբեռնել:</translation>
+<translation id="8509967119010808787">Սեղմեք այստեղ՝ ներդիրներում որոնելու համար</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Թույլ գաղտնաբառեր չեն գտնվել}=1{Գտնվել է {COUNT} թույլ գաղտնաբառ}one{Գտնվել է {COUNT} թույլ գաղտնաբառ}other{Գտնվել է {COUNT} թույլ գաղտնաբառ}}</translation>
 <translation id="8512476990829870887">Ավարտել գործընթացը</translation>
 <translation id="851263357009351303">Միշտ թույլատրել <ph name="HOST" />-ին ցուցադրել պատկերները</translation>

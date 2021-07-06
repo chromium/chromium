@@ -103,6 +103,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1307966114820526988">Funcionalidades descontinuadas</translation>
 <translation id="131405271941274527"><ph name="URL" /> pretende enviar e receber informações quando toca no telemóvel num dispositivo NFC</translation>
 <translation id="1314509827145471431">Encadernar à direita</translation>
+<translation id="1319245136674974084">Não voltar a perguntar para esta app</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">Pesquisar imagem da área de transferência</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
@@ -744,6 +745,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3655670868607891010">Se vê isto com frequência, experimente <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisão</translation>
 <translation id="3664782872746246217">Palavras-chave:</translation>
+<translation id="3671540257457995106">Pretende permitir o redimensionamento?</translation>
 <translation id="3676592649209844519">ID do dispositivo:</translation>
 <translation id="3677008721441257057">Será que quis dizer &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Não foi possível assinar o pedido</translation>
@@ -1104,6 +1106,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4953689047182316270">Responder a eventos de acessibilidade</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
+<translation id="4968522289500246572">Esta app foi concebida para dispositivos móveis e pode não ser redimensionada corretamente. A app pode ter problemas ou reiniciar.</translation>
 <translation id="4973922308112707173">Perfuração dupla na parte superior</translation>
 <translation id="4974590756084640048">Reativar avisos</translation>
 <translation id="4984088539114770594">Pretende utilizar o microfone?</translation>
@@ -1152,6 +1155,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5123063207673082822">Fim de semana</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Valide o cartão</translation>
+<translation id="512670116361803001">A app <ph name="APP_NAME" /> pode não ser redimensionada corretamente. Utilize os tamanhos da janela predefinidos para impedir que a app tenha problemas.</translation>
 <translation id="5135404736266831032">Gerir endereços…</translation>
 <translation id="5138014172396933048">O cartão virtual não está disponível neste momento. Contacte o seu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
@@ -1518,6 +1522,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="647261751007945333">Políticas do dispositivo</translation>
 <translation id="6476284679642588870">Gerir métodos de pagamento</translation>
 <translation id="6489534406876378309">Começar a carregar falhas</translation>
+<translation id="6493924760403974580">Esta app apenas suporta este tamanho.</translation>
 <translation id="6499038740797743453">Pretende repor a palavra-passe?</translation>
 <translation id="6502991525169604759">Sem as suas alterações</translation>
 <translation id="6508722015517270189">Reiniciar o Chrome</translation>
@@ -2172,6 +2177,7 @@ Detalhes adicionais:
 <translation id="8975263830901772334">Nomes dos ficheiros impressos</translation>
 <translation id="8978053250194585037">A Navegação segura do Google <ph name="BEGIN_LINK" />detetou phishing<ph name="END_LINK" /> recentemente em <ph name="SITE" />. Os sites de phishing simulam ser outros Websites para o enganar.</translation>
 <translation id="8983003182662520383">Métodos de pagamento e endereços com o Google Pay</translation>
+<translation id="8983369100812962543">Já pode redimensionar a app</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> pretende saber quando está a utilizar ativamente este dispositivo.</translation>

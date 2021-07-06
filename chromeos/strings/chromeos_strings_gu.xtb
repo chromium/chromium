@@ -50,6 +50,7 @@
 <translation id="1947737735496445907">પ્રિન્ટ થઈ ગયું</translation>
 <translation id="1979103255016296513">પાસવર્ડ બદલવાની તારીખ નીકળી ગઈ છે</translation>
 <translation id="1999615961760456652">કૅપ્ટિવ પોર્ટલ</translation>
+<translation id="2006864819935886708">કનેક્ટિવિટી</translation>
 <translation id="2008685064673031089">મુખ્ય શોધ</translation>
 <translation id="2080070583977670716">વધુ સેટિંગ્સ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
@@ -76,6 +77,7 @@
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2740531572673183784">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2751739896257479635">EAP તબક્કા 2 માટેનું પ્રમાણીકરણ</translation>
+<translation id="2783010256799387990">પરીક્ષણ પાસ કર્યુ</translation>
 <translation id="2789486458103222910">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2805756323405976993">ઍપ</translation>
 <translation id="2862104018715411648">તમારા દસ્તાવેજને સ્કૅનર પર મૂકો અને શરૂ કરવા માટે સ્કૅન કરો પસંદ કરો</translation>
@@ -137,7 +139,9 @@
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
 <translation id="4238516577297848345">કોઈ પ્રિન્ટ કામ ચાલુ નથી</translation>
+<translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="4297501883039923494">બંધ - અજાણી ભૂલ</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> છબીઓ</translation>
 <translation id="4378373042927530923">ચલાવ્યું નથી</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
@@ -295,6 +299,7 @@
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7172721935181587524">1 છબી</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
 <translation id="7271040990581020067">સ્કૅનર હાલમાં ઉપયોગમાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
@@ -344,6 +349,7 @@
 <translation id="8294431847097064396">સ્રોત</translation>
 <translation id="8297006494302853456">નબળું</translation>
 <translation id="8302368968391049045">HTTPS ફાયરવૉલ</translation>
+<translation id="8318753676953949627">કોઈ છબી ઉપલબ્ધ નથી</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
 <translation id="8352772353338965963">એકથી વધુ સાઇન ઇન કરવા એક એકાઉન્ટ ઉમેરો. બધા સાઇન ઇન એકાઉન્ટ પાસવર્ડ વગર ઉપયોગ કરી શકાય છે, તેથી આ સુવિધા માત્ર વિશ્વસનીય એકાઉન્ટ સાથે ઉપયોગમાં આવવી જોઇએ.</translation>
 <translation id="8364946094152050673">સર્વરના કોઈ નામ આપવામાં આવ્યા નથી</translation>

@@ -161,7 +161,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2170530631236737939">Scorri con tre dita verso il basso per uscire dalla modalità Panoramica</translation>
 <translation id="2208323208084708176">Modalità desktop unificato</translation>
 <translation id="2220572644011485463">PIN o password</translation>
-<translation id="2222338659135520253">Accesso richiesto</translation>
 <translation id="2222841058024245321">Scrivania 7</translation>
 <translation id="2224075387478458881">La funzionalità Registrazione dello schermo non è consentita se sono visibili contenuti protetti</translation>
 <translation id="225680501294068881">Ricerca dispositivi in corso...</translation>
@@ -348,6 +347,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
 <translation id="3712407551474845318">Acquisisci area</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
+<translation id="3713734891607377840">Apri dopo il completamento</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3771549900096082774">Modalità ad alto contrasto</translation>
 <translation id="3773700760453577392">Un amministratore ha vietato l'accesso simultaneo per <ph name="USER_EMAIL" />.
@@ -378,6 +378,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="394485226368336402">Impostazioni audio</translation>
 <translation id="3945319193631853098">Tocca per completare la configurazione</translation>
 <translation id="3945867833895287237">Connessione all'hotspot in corso…</translation>
+<translation id="3950820424414687140">Accedi</translation>
 <translation id="3958465044488004317">Visualizza il risultato nell'assistente</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3969043077941541451">Off</translation>
@@ -729,7 +730,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6751826523481687655">La traccia delle prestazioni è attiva</translation>
 <translation id="6752912906630585008">Scrivania <ph name="REMOVED_DESK" /> rimossa e unita alla scrivania <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Nessun contenuto multimediale in riproduzione</translation>
-<translation id="6773040085467426602">Fai clic su Interrompi per fermare le operazioni di acquisizione dei pacchetti in esecuzione.</translation>
+<translation id="6773040085467426602">Fai clic su Interrompi per fermare le operazioni di acquisizione del pacchetto in esecuzione.</translation>
 <translation id="6777216307882431711">Alimentazione dei dispositivi USB-C collegati</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6803622936009808957">Impossibile duplicare i display perché non sono state trovate risoluzioni supportate. È stato attivato il desktop esteso.</translation>

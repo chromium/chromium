@@ -32,6 +32,7 @@
 <translation id="1499900233129743732">Seda kasutajat haldab domeen <ph name="MANAGER" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
 <translation id="150962533380566081">Vale PUK-kood.</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
+<translation id="1600964289716072707">Asetage skannerile veel üks leht ja valige käsk Skanni, et leht lisada.</translation>
 <translation id="1621067168122174824">Käita laadimistest</translation>
 <translation id="1641857168437328880">Dokumendisöötur (ühepoolne)</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
@@ -50,6 +51,7 @@
 <translation id="1947737735496445907">Prinditud</translation>
 <translation id="1979103255016296513">Parooli muutmise tähtaeg on möödunud</translation>
 <translation id="1999615961760456652">Hõiveportaal</translation>
+<translation id="2006864819935886708">Ühenduvus</translation>
 <translation id="2008685064673031089">Algarvude otsing</translation>
 <translation id="2080070583977670716">Rohkem seadeid</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioon <ph name="MILESTONE_VERSION" /></translation>
@@ -138,6 +140,7 @@
 <translation id="4176463684765177261">Keelatud</translation>
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ühtegi prinditööd pole pooleli</translation>
+<translation id="4289540628985791613">Ülevaade</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> pilti</translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
@@ -285,6 +288,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6766275201586212568">Ebaõnnestunud DNS-lahendused</translation>
 <translation id="6768237774506518020">DNS-lahenduste ebaõnnestumiste kõrge määr</translation>
 <translation id="6853312040151791195">Tühjenemise kiirus</translation>
+<translation id="6905724422583748843">Tagasi lehele <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skanneri kaas on avatud. Sulgege kaas ja proovige uuesti.</translation>
 <translation id="6911383237894364323">Meediaserveritega ei õnnestu ühendust luua</translation>
 <translation id="6957231940976260713">Teenuse nimi</translation>
@@ -329,6 +333,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7769672763586021400">Mudeli ID</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7819857487979277519">PSK (WPA või RSN)</translation>
+<translation id="7835501727204647447">Installi CloudReady</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teenusepakkuja tüüp</translation>
 <translation id="7936303884198020182">Ei leitud ühtegi nimeserverit</translation>

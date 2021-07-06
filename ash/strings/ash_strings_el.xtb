@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Σύρετε προς τα κάτω με τρία δάχτυλα για έξοδο από την Επισκόπηση</translation>
 <translation id="2208323208084708176">Ενιαία λειτουργία επιφάνειας εργασίας.</translation>
 <translation id="2220572644011485463">PIN ή κωδικός πρόσβασης</translation>
-<translation id="2222338659135520253">Απαιτείται σύνδεση</translation>
 <translation id="2222841058024245321">Γραφείο 7</translation>
 <translation id="2224075387478458881">Η εγγραφή οθόνης δεν επιτρέπεται όταν είναι ορατό προστατευμένο περιεχόμενο.</translation>
 <translation id="225680501294068881">Σάρωση για συσκευές…</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Φόρτωση...</translation>
 <translation id="3712407551474845318">Περιοχή λήψης</translation>
 <translation id="371370241367527062">Μπροστινό μικρόφωνο</translation>
+<translation id="3713734891607377840">Άνοιγμα όταν ολοκληρωθεί</translation>
 <translation id="3742055079367172538">Το στιγμιότυπο οθόνης έχει ληφθεί</translation>
 <translation id="3771549900096082774">Λειτουργία υψηλής αντίθεσης</translation>
 <translation id="3773700760453577392">Ένας διαχειριστής δεν επιτρέπει τη σύνδεση σε πολλούς λογαριασμούς για τον χρήστη <ph name="USER_EMAIL" />. Όλοι οι χρήστες πρέπει να αποσυνδεθούν για να συνεχίσετε.</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">Ρυθμίσεις ήχου</translation>
 <translation id="3945319193631853098">Πατήστε για να ολοκληρώσετε τη ρύθμιση</translation>
 <translation id="3945867833895287237">Σύνδεση σε σημείο πρόσβασης Wi-Fi…</translation>
+<translation id="3950820424414687140">Σύνδεση</translation>
 <translation id="3958465044488004317">Εμφάνιση αποτελέσματος στον Βοηθό</translation>
 <translation id="3962859241508114581">Προηγούμενο κομμάτι</translation>
 <translation id="3969043077941541451">Ανενεργό</translation>

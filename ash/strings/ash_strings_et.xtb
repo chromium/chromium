@@ -161,7 +161,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2170530631236737939">Ülevaatest lahkumiseks pühkige kolme sõrmega alla</translation>
 <translation id="2208323208084708176">Ühendatud töölaua režiim</translation>
 <translation id="2220572644011485463">PIN-kood või parool</translation>
-<translation id="2222338659135520253">Nõutav on sisselogimine</translation>
 <translation id="2222841058024245321">Töölaud 7</translation>
 <translation id="2224075387478458881">Ekraanikuva jäädvustamine pole lubatud, kui kaitstud sisu on nähtaval</translation>
 <translation id="225680501294068881">Seadmete skannimine ...</translation>
@@ -348,6 +347,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="370665806235115550">Laadimine...</translation>
 <translation id="3712407551474845318">Jäädvusta piirkond</translation>
 <translation id="371370241367527062">Eesmine mikrofon</translation>
+<translation id="3713734891607377840">Lõpetamisel avatakse</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
 <translation id="3771549900096082774">Suure kontrastsusega režiim</translation>
 <translation id="3773700760453577392">Administraator on keelanud e-posti aadressi <ph name="USER_EMAIL" /> puhul mitmele kontole sisselogimise.
@@ -378,6 +378,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="394485226368336402">Heliseaded</translation>
 <translation id="3945319193631853098">Puudutage seadistamise lõpuleviimiseks</translation>
 <translation id="3945867833895287237">Ühendamine kuumkohaga …</translation>
+<translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3958465044488004317">Vaadake tulemust rakenduses Assistent</translation>
 <translation id="3962859241508114581">Eelmine lugu</translation>
 <translation id="3969043077941541451">Väljas</translation>

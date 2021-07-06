@@ -466,6 +466,7 @@
 <translation id="1507246803636407672">&amp;Отхвърляне</translation>
 <translation id="1508491105858779599">Поставете и задръжте пръста си върху сензора за отпечатъци, за да отключите устройството.</translation>
 <translation id="1508575541972276599">Текущата версия е Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Възстановяване на групата</translation>
 <translation id="1509281256533087115">Достъп до всяко устройство <ph name="DEVICE_NAME_AND_VENDOR" /> чрез USB</translation>
 <translation id="1509960214886564027">Функциите в много сайтове може да не работят правилно</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
@@ -585,6 +586,7 @@
 <translation id="1627408615528139100">Файлът вече е изтеглен</translation>
 <translation id="1628948239858170093">Да се сканира ли файлът, преди да го отворите?</translation>
 <translation id="1629314197035607094">Паролата е изтекла</translation>
+<translation id="1629451755632656601">Да се разреши ли на Google да намира персонализирани отстъпки в кошниците ви?</translation>
 <translation id="1630300831289687074">Скоро ще можете да използвате своя Chromebook.</translation>
 <translation id="163072119192489970">Сайтове с разрешение за завършване на изпращането и получаването на данни</translation>
 <translation id="1630768113285622200">Рестартиране и продължаване</translation>
@@ -1301,6 +1303,7 @@
 <translation id="236117173274098341">Оптимизиране</translation>
 <translation id="2361340419970998028">Отзивите се изпращат...</translation>
 <translation id="236141728043665931">Достъпът до микрофона да се блокира винаги</translation>
+<translation id="2363744066037724557">Възстановяване на &amp;прозореца</translation>
 <translation id="2364498172489649528">Премината</translation>
 <translation id="2365507699358342471">Този сайт може да преглежда текста и изображенията, копирани в буферната памет.</translation>
 <translation id="2367972762794486313">Показване на приложенията</translation>
@@ -2685,6 +2688,7 @@
 <translation id="3857807444929313943">Вдигнете пръст и докоснете отново</translation>
 <translation id="3861638017150647085">Потребителското име „<ph name="USERNAME" />“ е заето</translation>
 <translation id="3861977424605124250">Показване при стартиране</translation>
+<translation id="386239283124269513">&amp;Възстановяване на групата</translation>
 <translation id="3862788408946266506">Приложенията с атрибут „kiosk_only“ в манифеста трябва да бъдат инсталирани в павилионния режим на Chrome OS</translation>
 <translation id="3865414814144988605">Разделителна способност</translation>
 <translation id="3866249974567520381">Описание</translation>
@@ -3533,7 +3537,6 @@
 <translation id="4830502475412647084">Актуализацията на операционната система се инсталира</translation>
 <translation id="4830573902900904548">Устройството ви <ph name="DEVICE_TYPE" /> не може да се свърже с интернет през „<ph name="NETWORK_NAME" />“. Моля, изберете друга мрежа. <ph name="LEARN_MORE_LINK_START" />Научете повече<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">В сървъра за отпечатване бе открит 1 принтер</translation>
-<translation id="4834007576107377210">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо)</translation>
 <translation id="4836046166855586901">Извеждане на запитване, когато сайт иска да знае кога това устройство се използва активно</translation>
 <translation id="4836504898754963407">Управление на отпечатъците</translation>
 <translation id="4837128290434901661">Искате ли да се върнете към Google Търсене?</translation>
@@ -4257,7 +4260,6 @@
 <translation id="5627832140542566187">Ориентация на дисплея</translation>
 <translation id="562935524653278697">Администраторът ви е деактивирал синхронизирането на вашите отметки, история, пароли и други настройки.</translation>
 <translation id="5631017369956619646">Използване на процесора</translation>
-<translation id="5631713186079911700">Изчиства историята в полето за търсене</translation>
 <translation id="5632059346822207074">Изисква се разрешение. Натиснете Ctrl + бутона за преминаване напред, за да отговорите</translation>
 <translation id="5632566673632479864">Профилът ви <ph name="EMAIL" /> вече не може да се използва като основен. Тъй като този профил се управлява от <ph name="DOMAIN" />, вашите отметки, история, пароли и други настройки ще бъдат изчистени от устройството.</translation>
 <translation id="5632592977009207922">Изтегля се, още<ph name="PERCENT_REMAINING" />%</translation>
@@ -5664,6 +5666,7 @@
 <translation id="7225179976675429563">Липсва типът мрежа</translation>
 <translation id="7228479291753472782">Управление на настройките, които посочват дали уебсайтовете могат да използват функции като геолокация, микрофон, камера и др.</translation>
 <translation id="7228523857728654909">Заключване на екрана и влизане в профила</translation>
+<translation id="7230222852462421043">Възстановяване на &amp;прозореца</translation>
 <translation id="7230787553283372882">Персонализирайте размера на текста</translation>
 <translation id="7232750842195536390">Преименуването не бе успешно</translation>
 <translation id="7234010996000898150">Възстановяването на Linux се анулира</translation>
@@ -6273,12 +6276,14 @@
 <translation id="7853747251428735">Още инструмен&amp;ти</translation>
 <translation id="7855678561139483478">Преместване на раздела в нов прозорец</translation>
 <translation id="7857093393627376423">Текстови предложения</translation>
+<translation id="7857675386615530425">Търсене в част от страницата посредством Google Обектив</translation>
 <translation id="7857949311770343000">Това очакваният от вас нов раздел ли е?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Изтегляния</translation>
 <translation id="7861846108263890455">Език на профила в Google</translation>
 <translation id="7864539943188674973">Деактивиране на Bluetooth</translation>
+<translation id="7866230141401327032">Търсене в част от страницата посредством Google Обектив</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – сдвоено</translation>
 <translation id="7870730066603611552">Преглед на опциите за синхронизиране след настройването</translation>
 <translation id="7870790288828963061">Няма намерени павилионни приложения с по-нова версия. Няма нищо за актуализиране. Моля, извадете USB паметта.</translation>
@@ -6855,6 +6860,7 @@
 <translation id="850875081535031620">Няма намерен опасен софтуер</translation>
 <translation id="8509177919508253835">Нулиране на ключове за сигурност и създаване на ПИН кодове</translation>
 <translation id="8509646642152301857">Изтеглянето на речника за проверка на правописа не бе успешно.</translation>
+<translation id="8509967119010808787">За да търсите в разделите си, кликнете тук</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Няма открити ненадеждни пароли}=1{Открита е {COUNT} ненадеждна парола}other{Открити са {COUNT} ненадеждни пароли}}</translation>
 <translation id="8512476990829870887">Прекратяване на процеса</translation>
 <translation id="851263357009351303">Да се разреши на <ph name="HOST" /> винаги да показва изображения</translation>

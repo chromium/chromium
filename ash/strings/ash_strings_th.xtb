@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">ใช้ 3 นิ้วเลื่อนลงเพื่อออกจาก "ภาพรวม"</translation>
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
-<translation id="2222338659135520253">ต้องลงชื่อเข้าใช้</translation>
 <translation id="2222841058024245321">เดสก์ 7</translation>
 <translation id="2224075387478458881">ไม่อนุญาตให้บันทึกหน้าจอเมื่อมีเนื้อหาที่ได้รับการคุ้มครองแสดงอยู่</translation>
 <translation id="225680501294068881">กำลังสแกนหาอุปกรณ์...</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">กำลังโหลด ...</translation>
 <translation id="3712407551474845318">จับภาพบางส่วนของหน้าเว็บ</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
+<translation id="3713734891607377840">เปิดเมื่อดาวน์โหลดเสร็จ</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
 <translation id="3771549900096082774">โหมดคอนทราสต์สูง</translation>
 <translation id="3773700760453577392">ผู้ดูแลระบบไม่อนุญาตให้ <ph name="USER_EMAIL" /> ลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี ผู้ใช้ทุกคนต้องออกจากระบบเพื่อดำเนินการต่อ</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">การตั้งค่าเสียง</translation>
 <translation id="3945319193631853098">แตะเพื่อตั้งค่าให้เสร็จสิ้น</translation>
 <translation id="3945867833895287237">กำลังเชื่อมต่อฮอตสปอต...</translation>
+<translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3958465044488004317">ดูผลลัพธ์ใน Assistant</translation>
 <translation id="3962859241508114581">แทร็กก่อนหน้า</translation>
 <translation id="3969043077941541451">ปิด</translation>

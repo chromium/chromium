@@ -853,6 +853,7 @@
 <translation id="6441734959916820584">Το όνομα είναι πολύ μεγάλο</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# Εικόνα}other{# Εικόνες}}</translation>
 <translation id="6447558397796644647">Δεν είναι δυνατή η εύρεση του σελιδοδείκτη. Ελέγξτε την ορθογραφία ή προσθέστε έναν νέο σελιδοδείκτη.</translation>
+<translation id="6459045781120991510">Έρευνες</translation>
 <translation id="6461962085415701688">Δεν είναι δυνατό το άνοιγμα του αρχείου</translation>
 <translation id="6464977750820128603">Μπορείτε να δείτε και να ορίσετε χρονόμετρα για τους ιστοτόπους που επισκέπτεστε στο Chrome.\n\nΗ Google λαμβάνει πληροφορίες σχετικά με τους ιστοτόπους για τους οποίους ορίζετε χρονόμετρα και τη χρονική διάρκεια που τους χρησιμοποιείτε. Αυτές οι πληροφορίες χρησιμοποιούνται για τη βελτίωση του Digital Wellbeing.</translation>
 <translation id="6475951671322991020">Λήψη βίντεο</translation>
@@ -969,6 +970,7 @@
 <translation id="7242755609445462077">Στιλιζαρισμένη επισήμανση <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Βεβαιωθείτε ότι ο συγχρονισμός στο Chrome έχει ενεργοποιηθεί για τη συσκευή <ph name="TARGET_DEVICE_NAME" />.</translation>
 <translation id="7252076891734325316">Τοποθετήστε το τηλέφωνό σας κοντά στον υπολογιστή</translation>
+<translation id="727288900855680735">Υποβολή <ph name="ONE_TIME_CODE" /> σε <ph name="ORIGIN" />;</translation>
 <translation id="7274013316676448362">Αποκλεισμένος ιστότοπος</translation>
 <translation id="7286572596625053347">Αλλαγή <ph name="LANGUAGE" />;</translation>
 <translation id="7290209999329137901">Η μετονομασία δεν είναι διαθέσιμη</translation>

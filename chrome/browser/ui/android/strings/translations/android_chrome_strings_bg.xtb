@@ -853,6 +853,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6441734959916820584">Името е твърде дълго</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# изображение}other{# изображения}}</translation>
 <translation id="6447558397796644647">Отметката не бе намерена. Проверете изписването или добавете нова.</translation>
+<translation id="6459045781120991510">Анкети</translation>
 <translation id="6461962085415701688">Файлът не може да бъде отворен</translation>
 <translation id="6464977750820128603">Можете да преглеждате сайтовете, които посещавате в Chrome, и да задавате таймери за тях.\n\nGoogle получава информация относно сайтовете, за които задавате таймери, и продължителността на посещенията ви. Тези данни се използват за подобряването на „Дигитално благополучие“.</translation>
 <translation id="6475951671322991020">Изтегляне на видеоклипа</translation>
@@ -969,6 +970,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7242755609445462077">Стилизирано открояване – <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Поставете телефона си близо до компютъра</translation>
+<translation id="727288900855680735">Да се изпрати ли <ph name="ONE_TIME_CODE" /> до <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Блокиран сайт</translation>
 <translation id="7286572596625053347">Да се промени ли <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Преименуването не е възможно</translation>

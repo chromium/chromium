@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">برای خروج از «نمای کلی»، با سه انگشت تند به پایین بکشید</translation>
 <translation id="2208323208084708176">حالت میزکار یکپارچه</translation>
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
-<translation id="2222338659135520253">ورود به سیستم لازم است</translation>
 <translation id="2222841058024245321">میزکار ۷</translation>
 <translation id="2224075387478458881">ضبط صفحه‌نمایش هنگامی که محتوای محافظت‌شده نمایان باشد مجاز نیست</translation>
 <translation id="225680501294068881">درحال جستجو برای دستگاه‌ها...</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3712407551474845318">محدوده گرفتن عکس</translation>
 <translation id="371370241367527062">میکروفون جلو</translation>
+<translation id="3713734891607377840">بعداز تکمیل بارگیری باز می‌شود</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
 <translation id="3771549900096082774">حالت تضاد بالا</translation>
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">تنظیمات صوتی</translation>
 <translation id="3945319193631853098">برای تکمیل راه‌اندازی، ضربه بزنید</translation>
 <translation id="3945867833895287237">درحال اتصال به نقطه اتصال…</translation>
+<translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3958465044488004317">دیدن نتایج در «دستیار»</translation>
 <translation id="3962859241508114581">آهنگ قبلی</translation>
 <translation id="3969043077941541451">خاموش</translation>

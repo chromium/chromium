@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">최근 사용을 종료하려면 세 손가락을 사용해 아래로 스와이프하세요.</translation>
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
-<translation id="2222338659135520253">로그인 필요</translation>
 <translation id="2222841058024245321">데스크 7</translation>
 <translation id="2224075387478458881">보호된 콘텐츠가 보일 때는 화면 녹화를 할 수 없습니다.</translation>
 <translation id="225680501294068881">기기 검색 중...</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">로드 중...</translation>
 <translation id="3712407551474845318">영역 캡처</translation>
 <translation id="371370241367527062">전면 마이크</translation>
+<translation id="3713734891607377840">완료되면 열기</translation>
 <translation id="3742055079367172538">찍은 스크린샷</translation>
 <translation id="3771549900096082774">고대비 모드</translation>
 <translation id="3773700760453577392">관리자가 <ph name="USER_EMAIL" />의 멀티 로그인을 허용하지 않습니다. 계속하려면 모든 사용자가 로그아웃해야 합니다.</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">오디오 설정</translation>
 <translation id="3945319193631853098">설정을 완료하려면 탭하세요.</translation>
 <translation id="3945867833895287237">핫스팟에 연결 중...</translation>
+<translation id="3950820424414687140">로그인</translation>
 <translation id="3958465044488004317">어시스턴트를 통해 결과 보기</translation>
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3969043077941541451">사용 안함</translation>

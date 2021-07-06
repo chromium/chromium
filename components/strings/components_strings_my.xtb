@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">ရပ်ဆိုင်းထားသော ဝန်ဆောင်မှုများ</translation>
 <translation id="131405271941274527">သင့်ဖုန်းကို NFC စက်တစ်ခုအပေါ် တို့လိုက်သည့်အခါ <ph name="URL" /> သည် အချက်အလက် ပို့ခြင်းနှင့် လက်ခံခြင်းတို့ ပြုလုပ်လိုသည်</translation>
 <translation id="1314509827145471431">ညာဘက်တွင် တွဲချုပ်ရန်</translation>
+<translation id="1319245136674974084">ဤအက်ပ်အတွက် ထပ်မမေးပါနှင့်</translation>
 <translation id="1320233736580025032">Prc1 (စာအိတ်)</translation>
 <translation id="132301787627749051">ကလစ်ဘုတ်ပုံ ရှာဖွေမှု</translation>
 <translation id="1323433172918577554">ပိုပြပါ</translation>
@@ -743,6 +744,7 @@
 <translation id="3655670868607891010">သင်သည် ဒါကို မကြာခဏ မြင်နေရလျှင်၊ <ph name="HELP_LINK" />ဒါကို စမ်းကြည့်ပါ။</translation>
 <translation id="3658742229777143148">ပြင်ဆင်ချက်</translation>
 <translation id="3664782872746246217">အဓိကစကားလုံးများ-</translation>
+<translation id="3671540257457995106">အရွယ်အစားပြန်ပြင်ရန် ခွင့်ပြုမလား။</translation>
 <translation id="3676592649209844519">စက်ပစ္စည်း ID-</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ကို ဆိုလိုပါသလား။</translation>
 <translation id="3678029195006412963">တောင်းဆိုမှုကို လက်မှတ်ထိုး၍မရပါ</translation>
@@ -1104,6 +1106,7 @@
 <translation id="4953689047182316270">အများသုံးစွဲနိုင်မှု ဖြစ်ရပ်များကို တုန့်ပြန်ပါ</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">စာရင်းကို ချဲ့ပါ။</translation>
+<translation id="4968522289500246572">ဤအက်ပ်ကို မိုဘိုင်းအတွက် ထုတ်လုပ်ထားသဖြင့် ကောင်းစွာ အရွယ်အစားပြန်ပြင်နိုင်မည် မဟုတ်ပါ။ အက်ပ်တွင် ပြဿနာများ ဖြစ်နိုင်သည် (သို့) ပြန်စနိုင်သည်။</translation>
 <translation id="4973922308112707173">ထိပ်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="4974590756084640048">သတိပေးချက်များ ပြန်ဖွင့်ရန်</translation>
 <translation id="4984088539114770594">မိုက်ခရိုဖုန်းကို အသုံးပြုမလား။</translation>
@@ -1152,6 +1155,7 @@
 <translation id="5123063207673082822">စနေ၊ တနင်္ဂနွေ</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">သင့်ကတ်ကို အတည်ပြုပါ</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> ကို ကောင်းစွာ အရွယ်အစားပြန်ပြင်နိုင်မည် မဟုတ်ပါ။ အက်ပ်တွင် ပြဿနာများ မဖြစ်စေရန် အသင့်သုံးဝင်းဒိုး အရွယ်အစားများကို သုံးပါ။</translation>
 <translation id="5135404736266831032">လိပ်စာများကို စီမံရန်...</translation>
 <translation id="5138014172396933048">ပကတိအသွင်ကတ်ကို ယခု မရနိုင်ပါ။ သင်၏ဘဏ်ကို ဆက်သွယ်ပါ</translation>
 <translation id="5138227688689900538">လျှော့ပြရန်</translation>
@@ -1517,6 +1521,7 @@
 <translation id="647261751007945333">ကိရိယာ မူဝါဒများ</translation>
 <translation id="6476284679642588870">ငွေပေးချေနည်းလမ်းများကို စီမံရန်</translation>
 <translation id="6489534406876378309">ပျက်စီးမှုများ စတင် တင်မည်</translation>
+<translation id="6493924760403974580">ဤအက်ပ်က ယခုအရွယ်အစားကိုသာ ပံ့ပိုးသည်။</translation>
 <translation id="6499038740797743453">စကားဝှက် ပြင်ဆင်သတ်မှတ် လိုပါသလား။</translation>
 <translation id="6502991525169604759">သင့်အပြောင်းအလဲများ မပါဝင်ပါ</translation>
 <translation id="6508722015517270189">Chrome ကို ပိတ်ပြီးပြန်ဖွင့်ပါ</translation>
@@ -2172,6 +2177,7 @@
 <translation id="8975263830901772334">သင်ပုံနှိပ်ထုတ်ယူသည့် ဖိုင်များအမည်</translation>
 <translation id="8978053250194585037">Google Safe Browsing သည် <ph name="SITE" /> ပေါ်တွင် <ph name="BEGIN_LINK" />အချက်အလက်များခိုးယူရန် သွေးဆောင်ဖြားယောင်း<ph name="END_LINK" /> သည့် ဆိုက်များကို မကြာသေးမီက တွေ့ရှိထားပါသည်။ သွေးဆောင်ဖြားယောင်းသည့် ဆိုက်များသည် အခြားဝဘ်ဆိုက်များကဲ့သို့ ဟန်ဆောင်ကာ သင့်ကို လှည့်စားတတ်ပါသည်။</translation>
 <translation id="8983003182662520383">Google Pay ကို သုံးထားသော ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများ</translation>
+<translation id="8983369100812962543">အက်ပ်ကို ယခု အရွယ်အစားပြန်ပြင်နိုင်ပါပြီ</translation>
 <translation id="8987927404178983737">လ</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">ဤကိရိယာသုံးနေချိန်ကို <ph name="URL" /> က သိလိုသည်</translation>

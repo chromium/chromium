@@ -467,6 +467,7 @@
 <translation id="1507246803636407672">&amp;Descartar</translation>
 <translation id="1508491105858779599">Coloque o dedo no sensor de impressão digital para desbloquear o dispositivo.</translation>
 <translation id="1508575541972276599">A versão atual é Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Restaurar grupo</translation>
 <translation id="1509281256533087115">Acessar qualquer <ph name="DEVICE_NAME_AND_VENDOR" /> por USB</translation>
 <translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
 <translation id="1510238584712386396">Iniciador</translation>
@@ -589,6 +590,7 @@
 <translation id="1627408615528139100">Download já concluído</translation>
 <translation id="1628948239858170093">Verificar arquivo antes de abrir?</translation>
 <translation id="1629314197035607094">Senha expirada</translation>
+<translation id="1629451755632656601">Permitir que o Google encontre descontos personalizados para os itens nos seus carrinhos?</translation>
 <translation id="1630300831289687074">Você poderá usar o Chromebook em breve.</translation>
 <translation id="163072119192489970">Permitir o término do envio e recebimento de dados</translation>
 <translation id="1630768113285622200">Reiniciar e continuar</translation>
@@ -1306,6 +1308,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="236117173274098341">Otimizar</translation>
 <translation id="2361340419970998028">Enviando feedback…</translation>
 <translation id="236141728043665931">Sempre bloquear o acesso ao microfone</translation>
+<translation id="2363744066037724557">&amp;Restaurar janela</translation>
 <translation id="2364498172489649528">Aprovado</translation>
 <translation id="2365507699358342471">Este site pode ver textos e imagens copiados para a área de transferência.</translation>
 <translation id="2367972762794486313">Mostrar aplicativos</translation>
@@ -2690,6 +2693,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3857807444929313943">Tire o dedo e toque novamente</translation>
 <translation id="3861638017150647085">O nome de usuário "<ph name="USERNAME" />" não está disponível</translation>
 <translation id="3861977424605124250">Exibir na inicialização</translation>
+<translation id="386239283124269513">&amp;Restaurar grupo</translation>
 <translation id="3862788408946266506">O app com o atributo de manifesto "kiosk_only" precisa ser instalado no modo quiosque do Chrome OS</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="3866249974567520381">Descrição</translation>
@@ -3538,7 +3542,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4830502475412647084">Instalando atualização do SO</translation>
 <translation id="4830573902900904548">Não foi possível conectar seu <ph name="DEVICE_TYPE" /> à Internet usando <ph name="NETWORK_NAME" />. Escolha outra rede. <ph name="LEARN_MORE_LINK_START" />Saiba mais<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Uma impressora encontrada no servidor de impressão.</translation>
-<translation id="4834007576107377210">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável</translation>
 <translation id="4836046166855586901">Perguntar quando um site quiser saber os momentos em que você está usando este dispositivo</translation>
 <translation id="4836504898754963407">Gerenciar impressões digitais</translation>
 <translation id="4837128290434901661">Voltar a usar a Pesquisa Google?</translation>
@@ -4262,7 +4265,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5627832140542566187">Orientação da tela</translation>
 <translation id="562935524653278697">Seu administrador desativou a sincronização dos seus favoritos, histórico, senhas e outras configurações.</translation>
 <translation id="5631017369956619646">Uso da CPU</translation>
-<translation id="5631713186079911700">Limpa o histórico da caixa de pesquisa</translation>
 <translation id="5632059346822207074">Permissão solicitada, pressione Ctrl + Avançar para responder</translation>
 <translation id="5632566673632479864">Não é mais permitido usar sua conta <ph name="EMAIL" /> como a principal. Como essa conta é gerenciada por <ph name="DOMAIN" />, seus favoritos, histórico, senhas e outras configurações serão excluídos deste dispositivo.</translation>
 <translation id="5632592977009207922">Download em andamento, <ph name="PERCENT_REMAINING" />% restante(s)</translation>
@@ -5669,6 +5671,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7225179976675429563">Tipo de rede ausente</translation>
 <translation id="7228479291753472782">Manipular configurações que determinam se websites podem usar recursos, como geolocalização, microfone, câmera, etc.</translation>
 <translation id="7228523857728654909">Bloqueio de tela e login</translation>
+<translation id="7230222852462421043">&amp;Restaurar janela</translation>
 <translation id="7230787553283372882">Personalizar o tamanho do texto</translation>
 <translation id="7232750842195536390">Falha na renomeação</translation>
 <translation id="7234010996000898150">Cancelando restauração do Linux</translation>
@@ -6278,12 +6281,14 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7853747251428735">Mais &amp;ferramentas</translation>
 <translation id="7855678561139483478">Mover guia para uma nova janela</translation>
 <translation id="7857093393627376423">Sugestões de texto</translation>
+<translation id="7857675386615530425">Pesquisar parte da página com o Google Lens</translation>
 <translation id="7857949311770343000">Esta é a página "Nova guia" que você esperava?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Serviço: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Idioma da Conta do Google</translation>
 <translation id="7864539943188674973">Desativar bluetooth</translation>
+<translation id="7866230141401327032">Pesquisar parte da página com o Google Lens</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: pareado</translation>
 <translation id="7870730066603611552">Revisar as opções de sincronização após a configuração</translation>
 <translation id="7870790288828963061">Nenhum aplicativo de quiosque com versão mais recente foi encontrado. Não há nada para ser atualizado. Remova o pendrive.</translation>
@@ -6860,6 +6865,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="850875081535031620">Nenhum software perigoso encontrado</translation>
 <translation id="8509177919508253835">Redefinir chaves de segurança e criar PINs</translation>
 <translation id="8509646642152301857">Falha no download do dicionário de correção ortográfica.</translation>
+<translation id="8509967119010808787">Para pesquisar suas guias, clique aqui</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Nenhuma senha fraca encontrada}=1{{COUNT} senha fraca encontrada}one{{COUNT} senha fraca encontrada}other{{COUNT} senhas fracas encontradas}}</translation>
 <translation id="8512476990829870887">Encerrar processo</translation>
 <translation id="851263357009351303">Sempre permitir que <ph name="HOST" /> mostre imagens</translation>

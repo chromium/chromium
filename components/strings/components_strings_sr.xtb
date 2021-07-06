@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">Застареле функције</translation>
 <translation id="131405271941274527"><ph name="URL" /> жели да шаље и добија информације када телефоном додирнете NFC уређај</translation>
 <translation id="1314509827145471431">Повез на десној страни</translation>
+<translation id="1319245136674974084">Не питај поново за ову апликацију</translation>
 <translation id="1320233736580025032">Prc1 (коверат)</translation>
 <translation id="132301787627749051">Потражите слику у привременој меморији</translation>
 <translation id="1323433172918577554">Прикажи више</translation>
@@ -744,6 +745,7 @@
 <translation id="3655670868607891010">Ако вам се ово често приказује, можда вам помогну следећи <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3664782872746246217">Кључне речи:</translation>
+<translation id="3671540257457995106">Желите да дозволите промену величине?</translation>
 <translation id="3676592649209844519">ИД уређаја:</translation>
 <translation id="3677008721441257057">Да ли сте мислили &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Потписивање захтева није успело</translation>
@@ -1104,6 +1106,7 @@
 <translation id="4953689047182316270">одговара на догађаје приступачности</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Прошири листу</translation>
+<translation id="4968522289500246572">Ова апликација је дизајнирана за мобилне уређаје и можда неће променити величину на правилан начин. Можда ће имати проблеме или се рестартовати.</translation>
 <translation id="4973922308112707173">Двоструко бушење на врху</translation>
 <translation id="4974590756084640048">Поново омогући упозорења</translation>
 <translation id="4984088539114770594">Дозволићете коришћење микрофона?</translation>
@@ -1152,6 +1155,7 @@
 <translation id="5123063207673082822">Викенд</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Верификујте картицу</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> можда неће променити величину на правилан начин. Користите унапред одређене величине прозора да бисте спречили да апликација има проблеме.</translation>
 <translation id="5135404736266831032">Управљајте адресама...</translation>
 <translation id="5138014172396933048">Виртуелна картица тренутно није доступна. Обратите се банци.</translation>
 <translation id="5138227688689900538">Прикажи мање</translation>
@@ -1517,6 +1521,7 @@
 <translation id="647261751007945333">Смернице за уређај</translation>
 <translation id="6476284679642588870">Управљајте начинима плаћања</translation>
 <translation id="6489534406876378309">Покрени отпремање отказивања</translation>
+<translation id="6493924760403974580">Ова апликација подржава само ову величину.</translation>
 <translation id="6499038740797743453">Желите ли да ресетујете лозинку?</translation>
 <translation id="6502991525169604759">Без ваших промена</translation>
 <translation id="6508722015517270189">Поново покрените Chrome</translation>
@@ -2172,6 +2177,7 @@
 <translation id="8975263830901772334">Називи датотека које штампате</translation>
 <translation id="8978053250194585037">Google безбедно прегледање је недавно <ph name="BEGIN_LINK" />открило „пецање“<ph name="END_LINK" /> на <ph name="SITE" />. Сајтови са „пецањем“ се представљају као неки други веб-сајтови да би вас преварили.</translation>
 <translation id="8983003182662520383">Начини плаћања и адресе из Google Pay-а</translation>
+<translation id="8983369100812962543">Сада можете да промените величину апликације</translation>
 <translation id="8987927404178983737">Месец</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> жели да зна када активно користите овај уређај</translation>

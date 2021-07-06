@@ -466,6 +466,7 @@
 <translation id="1507246803636407672">Gooi weg</translation>
 <translation id="1508491105858779599">Plaas jou vinger op die vingerafdruksensor om die toestel te ontsluit.</translation>
 <translation id="1508575541972276599">Huidige weergawe is Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Laai groep terug</translation>
 <translation id="1509281256533087115">Kry toegang tot enige <ph name="DEVICE_NAME_AND_VENDOR" /> via USB</translation>
 <translation id="1509960214886564027">Kenmerke op baie werwe kan breek</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
@@ -588,6 +589,7 @@
 <translation id="1627408615528139100">Reeds afgelaai</translation>
 <translation id="1628948239858170093">Skandeer lêer voordat jy dit oopmaak?</translation>
 <translation id="1629314197035607094">Wagwoord het verstryk</translation>
+<translation id="1629451755632656601">Laat Google gepersonaliseerde afslag in jou mandjies soek?</translation>
 <translation id="1630300831289687074">Jy sal jou Chromebook binnekort kan gebruik.</translation>
 <translation id="163072119192489970">Mag data klaar stuur en ontvang</translation>
 <translation id="1630768113285622200">Herbegin en gaan voort</translation>
@@ -1305,6 +1307,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="236117173274098341">Optimeer</translation>
 <translation id="2361340419970998028">Stuur tans terugvoer …</translation>
 <translation id="236141728043665931">Blokkeer altyd toegang tot mikrofoon</translation>
+<translation id="2363744066037724557">&amp;Laai venster terug</translation>
 <translation id="2364498172489649528">Geslaag</translation>
 <translation id="2365507699358342471">Hierdie werf kan teks en prente wat na die knipbord gekopieer is, sien.</translation>
 <translation id="2367972762794486313">Wys programme</translation>
@@ -2688,6 +2691,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3857807444929313943">Lig en raak dan weer</translation>
 <translation id="3861638017150647085">Gebruikernaam "<ph name="USERNAME" />" is nie beskikbaar nie</translation>
 <translation id="3861977424605124250">Wys met afskop</translation>
+<translation id="386239283124269513">&amp;Laai groep terug</translation>
 <translation id="3862788408946266506">Program met "net_kiosk"-manifeseienskap moet in Chrome-bedryfstelsel se kioskmodus geïnstalleer word</translation>
 <translation id="3865414814144988605">Resolusie</translation>
 <translation id="3866249974567520381">Beskrywing</translation>
@@ -3536,7 +3540,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4830502475412647084">Installeer tans bedryfstelselopdatering</translation>
 <translation id="4830573902900904548">Jou <ph name="DEVICE_TYPE" /> kan nie met <ph name="NETWORK_NAME" /> aan die internet koppel nie. Kies 'n ander netwerk. <ph name="LEARN_MORE_LINK_START" />Kom meer te wete<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Het 1 drukker op die drukbediener gekry</translation>
-<translation id="4834007576107377210">Sien soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig</translation>
 <translation id="4836046166855586901">Vra as 'n werf wil weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="4836504898754963407">Bestuur vingerafdrukke</translation>
 <translation id="4837128290434901661">Verander terug na Google Search?</translation>
@@ -4260,7 +4263,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5627832140542566187">Skermoriëntasie</translation>
 <translation id="562935524653278697">Jou administrateur het die sinkronisering van jou boekmerke, geskiedenis, wagwoorde en ander instellings gedeaktiveer.</translation>
 <translation id="5631017369956619646">CPU-gebruik</translation>
-<translation id="5631713186079911700">Vee geskiedenis in die soekkassie uit</translation>
 <translation id="5632059346822207074">Toestemming is versoek; druk Ctrl + Forward om te antwoord</translation>
 <translation id="5632566673632479864">Jou rekening <ph name="EMAIL" /> word nie meer as die primêre rekening toegelaat nie. Omdat hierdie rekening deur <ph name="DOMAIN" /> bestuur word, sal jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel uitgevee word.</translation>
 <translation id="5632592977009207922">Laai tans af; <ph name="PERCENT_REMAINING" />% oor</translation>
@@ -5667,6 +5669,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7225179976675429563">Netwerktipe ontbreek</translation>
 <translation id="7228479291753472782">Manipuleer instellings wat spesifiseer of webwerwe kenmerke soos geoligging, mikrofoon, kamera, ens. kan gebruik.</translation>
 <translation id="7228523857728654909">Skermslot en aanmelding</translation>
+<translation id="7230222852462421043">&amp;Laai venster terug</translation>
 <translation id="7230787553283372882">Pasmaak jou teksgrootte</translation>
 <translation id="7232750842195536390">Kon nie hernoem nie</translation>
 <translation id="7234010996000898150">Kanselleer tans Linux-terugstelling</translation>
@@ -6276,12 +6279,14 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7853747251428735">Meer nutsgoed</translation>
 <translation id="7855678561139483478">Skuif oortjie na nuwe venster</translation>
 <translation id="7857093393627376423">Teksvoorstelle</translation>
+<translation id="7857675386615530425">Deursoek 'n deel van die bladsy met Google Lens</translation>
 <translation id="7857949311770343000">Is dit die nuwe oortjiebladsy wat jy verwag het?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Diens: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">Aflaaie</translation>
 <translation id="7861846108263890455">Google-rekeningtaal</translation>
 <translation id="7864539943188674973">Deaktiveer Bluetooth</translation>
+<translation id="7866230141401327032">Deursoek 'n deel van die bladsy met Google Lens</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – saamgebind</translation>
 <translation id="7870730066603611552">Hersien sinkroniseeropsies ná opstelling</translation>
 <translation id="7870790288828963061">Geen Kioskprogramme met nuwer weergawe gevind nie. Niks om op te dateer nie. Verwyder asseblief die USB-stokkie.</translation>
@@ -6857,6 +6862,7 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="850875081535031620">Geen skadelike sagteware gevind nie</translation>
 <translation id="8509177919508253835">Stel sekuriteitsleutels terug en skep PIN'e</translation>
 <translation id="8509646642152301857">Kon nie speltoetserwoordeboek aflaai nie.</translation>
+<translation id="8509967119010808787">Klik hier om jou oortjies te deursoek</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Geen swak wagwoorde gekry nie}=1{Het {COUNT} swak wagwoord gekry}other{Het {COUNT} swak wagwoorde gekry}}</translation>
 <translation id="8512476990829870887">Beëindig proses</translation>
 <translation id="851263357009351303">Laat <ph name="HOST" /> altyd toe om prente te wys</translation>

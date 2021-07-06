@@ -32,6 +32,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="150962533380566081">PUK tidak sah.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
+<translation id="1600964289716072707">Letakkan halaman lain di atas pengimbas dan pilih Imbas untuk menambah halaman.</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
 <translation id="1641857168437328880">Penyuap Dokumen (Satu sisi)</translation>
 <translation id="1644574205037202324">Sejarah</translation>
@@ -50,6 +51,7 @@
 <translation id="1947737735496445907">Dicetak</translation>
 <translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
 <translation id="1999615961760456652">Portal Terbolot</translation>
+<translation id="2006864819935886708">Kesambungan</translation>
 <translation id="2008685064673031089">Carian nombor perdana</translation>
 <translation id="2080070583977670716">Lagi tetapan</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
@@ -138,6 +140,7 @@
 <translation id="4176463684765177261">Dilumpuhkan</translation>
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
+<translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
@@ -285,6 +288,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6766275201586212568">Penyelesaian DNS gagal</translation>
 <translation id="6768237774506518020">Kadar kegagalan penyelesaian DNS tinggi</translation>
 <translation id="6853312040151791195">Kadar penyahcasan</translation>
+<translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Penutup pengimbas terbuka. Tutup penutup dan cuba lagi.</translation>
 <translation id="6911383237894364323">Tidak dapat menyambung kepada pelayan media</translation>
 <translation id="6957231940976260713">Nama perkhidmatan</translation>
@@ -329,6 +333,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7769672763586021400">ID Model</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA atau RSN)</translation>
+<translation id="7835501727204647447">Pasang CloudReady</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7936303884198020182">Pelayan tanpa nama ditemukan</translation>

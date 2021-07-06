@@ -853,6 +853,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6441734959916820584">Անունը չափազանց երկար է</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# պատկեր}one{# պատկեր}other{# պատկեր}}</translation>
 <translation id="6447558397796644647">Չհաջողվեց գտնել այդ էջանիշը։ Ստուգեք ուղղագրությունը կամ ավելացրեք նոր էջանիշ։</translation>
+<translation id="6459045781120991510">Հարցումներ</translation>
 <translation id="6461962085415701688">Չհաջողվեց բացել ֆայլը</translation>
 <translation id="6464977750820128603">Դուք կարող եք տեսնել Chrome-ում այցելած ձեր կայքերը և սահմանել ժամաչափեր դրանց համար։\n\nGoogle-ին կուղարկվեն տեղեկություններ ձեր այցելած կայքերի և դրանց համար սահմանված ժամաչափերի մասին։ Այս տվյալները հավաքվում են՝ «Թվային բարեկեցություն» գործառույթը կատարելագործելու համար։</translation>
 <translation id="6475951671322991020">Ներբեռնել տեսանյութը</translation>
@@ -969,6 +970,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7242755609445462077">Ոճավորված բովանդակություն՝ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքի Chrome դիտարկիչում միացված է համաժամացումը:</translation>
 <translation id="7252076891734325316">Հեռախոսը դրեք համակարգչի մոտ</translation>
+<translation id="727288900855680735">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="ORIGIN" /> կայքին</translation>
 <translation id="7274013316676448362">Արգելափակված կայք</translation>
 <translation id="7286572596625053347">Փոխե՞լ լեզուն (<ph name="LANGUAGE" />)</translation>
 <translation id="7290209999329137901">Հնարավոր չէ վերանվանել</translation>

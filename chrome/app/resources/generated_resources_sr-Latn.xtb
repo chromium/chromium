@@ -465,6 +465,7 @@
 <translation id="1507246803636407672">&amp;Odbaci</translation>
 <translation id="1508491105858779599">Stavite prst na senzor za otisak prsta da biste otključali uređaj.</translation>
 <translation id="1508575541972276599">Aktuelna verzija je Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Vrati grupu</translation>
 <translation id="1509281256533087115">Pristupaj bilo kom uređaju <ph name="DEVICE_NAME_AND_VENDOR" /> preko USB-a</translation>
 <translation id="1509960214886564027">Funkcije na mnogim sajtovima mogu da prestanu sa radom</translation>
 <translation id="1510238584712386396">Pokretač</translation>
@@ -584,6 +585,7 @@
 <translation id="1627408615528139100">Već je preuzeto</translation>
 <translation id="1628948239858170093">Želite li da skenirate datoteku pre otvaranja?</translation>
 <translation id="1629314197035607094">Lozinka je istekla</translation>
+<translation id="1629451755632656601">Dozvolićete Google-u da pronađe personalizovane popuste za vaše korpe?</translation>
 <translation id="1630300831289687074">Uskoro ćete moći da koristite Chromebook.</translation>
 <translation id="163072119192489970">Dozvoljeno im je da dovršavaju slanje i primanje podataka</translation>
 <translation id="1630768113285622200">Restartuj i nastavi</translation>
@@ -1289,6 +1291,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="236117173274098341">Optimizuj</translation>
 <translation id="2361340419970998028">Povratne informacije se šalju...</translation>
 <translation id="236141728043665931">Uvek blokiraj pristup mikrofonu</translation>
+<translation id="2363744066037724557">&amp;Vrati prozor</translation>
 <translation id="2364498172489649528">Prošlo</translation>
 <translation id="2365507699358342471">Ovaj sajt može da vidi tekst i slike koji su kopirani u privremenu memoriju.</translation>
 <translation id="2367972762794486313">Prikažite aplikacije</translation>
@@ -2672,6 +2675,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3857807444929313943">Podignite, pa opet dodirnite</translation>
 <translation id="3861638017150647085">Korisničko ime <ph name="USERNAME" /> nije dostupno</translation>
 <translation id="3861977424605124250">Prikaži pri pokretanju</translation>
+<translation id="386239283124269513">&amp;Vrati grupu</translation>
 <translation id="3862788408946266506">Aplikacija sa atributom manifesta „kiosk_only“ mora da se instalira u režimu kioska u Chrome OS-u</translation>
 <translation id="3865414814144988605">Rezolucija</translation>
 <translation id="3866249974567520381">Opis</translation>
@@ -3519,7 +3523,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4830502475412647084">Instalira se ažuriranje OS-a</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> ne može da se poveže na internet pomoću mreže <ph name="NETWORK_NAME" />. Izaberite neku drugu mrežu. <ph name="LEARN_MORE_LINK_START" />Saznajte više<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Pronađen je 1 štampač sa servera za štampanje</translation>
-<translation id="4834007576107377210">Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo</translation>
 <translation id="4836046166855586901">Pitaj kada sajt želi da zna kada aktivno koristim ovaj uređaj</translation>
 <translation id="4836504898754963407">Upravljajte otiscima prstiju</translation>
 <translation id="4837128290434901661">Želite li da se vratite na Google pretragu?</translation>
@@ -4243,7 +4246,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5627832140542566187">Položaj prikaza</translation>
 <translation id="562935524653278697">Administrator je onemogućio sinhronizaciju obeleživača, istorije, lozinki i drugih podešavanja.</translation>
 <translation id="5631017369956619646">Iskorišćenost procesora</translation>
-<translation id="5631713186079911700">Briše istoriju u okviru za pretragu</translation>
 <translation id="5632059346822207074">Zatražena je dozvola. Pritisnite Ctrl + Forward da biste odgovorili</translation>
 <translation id="5632566673632479864">Nalog <ph name="EMAIL" /> nije više dozvoljen kao primarni nalog. Pošto tim nalogom upravlja <ph name="DOMAIN" />, obeleživači, istorija, lozinke i druga podešavanja biće obrisani sa uređaja.</translation>
 <translation id="5632592977009207922">Preuzima se, još <ph name="PERCENT_REMAINING" />%</translation>
@@ -5647,6 +5649,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7225179976675429563">Nedostaje tip mreže</translation>
 <translation id="7228479291753472782">Upravljajte podešavanjima koja određuju da li veb-sajtovi mogu da koriste funkcije kao što su geolociranje, mikrofon, kamera itd.</translation>
 <translation id="7228523857728654909">Zaključavanje ekrana i prijavljivanje</translation>
+<translation id="7230222852462421043">&amp;Vrati prozor</translation>
 <translation id="7230787553283372882">Prilagodite veličinu teksta</translation>
 <translation id="7232750842195536390">Promena naziva nije uspela</translation>
 <translation id="7234010996000898150">Vraćanje Linux-a se otkazuje</translation>
@@ -6256,12 +6259,14 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7853747251428735">Još a&amp;latki</translation>
 <translation id="7855678561139483478">Premesti karticu u nov prozor</translation>
 <translation id="7857093393627376423">Tekstualni predlozi</translation>
+<translation id="7857675386615530425">Pretraži deo stranice pomoću Google objektiva</translation>
 <translation id="7857949311770343000">Da li je ovo stranica nove kartice koju ste očekivali?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Usluga: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Preuzimanja</translation>
 <translation id="7861846108263890455">Jezik Google naloga</translation>
 <translation id="7864539943188674973">Onemogući Bluetooth</translation>
+<translation id="7866230141401327032">Pretraži deo stranice pomoću Google objektiva</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – Uparen je</translation>
 <translation id="7870730066603611552">Pregleda opcije sinhronizacije posle podešavanja</translation>
 <translation id="7870790288828963061">Nije pronađena nijedna kiosk aplikacija sa novijom verzijom. Nema šta da se ažurira. Uklonite USB memoriju.</translation>
@@ -6837,6 +6842,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu</translation>
 <translation id="850875081535031620">Nije pronađen nikakav štetan softver</translation>
 <translation id="8509177919508253835">Resetujte bezbednosne ključeve i napravite PIN-ove</translation>
 <translation id="8509646642152301857">Preuzimanje rečnika za proveru pravopisa nije uspelo.</translation>
+<translation id="8509967119010808787">Da biste pretraživali kartice, kliknite ovde</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Nije pronađena nijedna slaba lozinka}=1{Pronađena je {COUNT} slaba lozinka}one{Pronađena je {COUNT} slaba lozinka}few{Pronađene su {COUNT} slabe lozinke}other{Pronađeno je {COUNT} slabih lozinki}}</translation>
 <translation id="8512476990829870887">Završi proces</translation>
 <translation id="851263357009351303">Uvek dozvoli sajtu <ph name="HOST" /> da prikazuje slike</translation>

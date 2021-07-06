@@ -161,7 +161,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2170530631236737939">Fes lliscar tres dits cap avall per sortir de Visió general</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
-<translation id="2222338659135520253">Cal iniciar la sessió</translation>
 <translation id="2222841058024245321">Escriptori 7</translation>
 <translation id="2224075387478458881">No es permet la gravació de pantalla quan es mostra contingut protegit</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
@@ -348,6 +347,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="370665806235115550">S'està carregant...</translation>
 <translation id="3712407551474845318">Captura una part</translation>
 <translation id="371370241367527062">Micròfon frontal</translation>
+<translation id="3713734891607377840">Obre'l en acabar</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
 <translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
@@ -377,6 +377,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="394485226368336402">Configuració d'àudio</translation>
 <translation id="3945319193631853098">Toca per completar la configuració</translation>
 <translation id="3945867833895287237">S'està connectant a un punt d'accés…</translation>
+<translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3958465044488004317">Mostra el resultat a l'Assistent</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">Desactivada</translation>
@@ -728,7 +729,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6751826523481687655">La traça del rendiment està activada</translation>
 <translation id="6752912906630585008">L'escriptori <ph name="REMOVED_DESK" /> s'ha suprimit i s'ha fusionat amb l'escriptori <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">No s'està reproduint res</translation>
-<translation id="6773040085467426602">Fes clic a Atura perquè s'interrompin les operacions en curs de captura de paquets.</translation>
+<translation id="6773040085467426602">Fes clic a Atura per interrompre les operacions de captura de paquets en curs.</translation>
 <translation id="6777216307882431711">S'estan alimentant els dispositius USB-C connectats</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>

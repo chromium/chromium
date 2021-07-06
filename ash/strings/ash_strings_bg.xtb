@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Прекарайте три пръста надолу, за да затворите общия преглед</translation>
 <translation id="2208323208084708176">Режим на обединен работен плот</translation>
 <translation id="2220572644011485463">ПИН код или парола</translation>
-<translation id="2222338659135520253">Изисква се вход в профила</translation>
 <translation id="2222841058024245321">Работен кът 7</translation>
 <translation id="2224075387478458881">Записването на екрана не е разрешено, когато се вижда защитено съдържание</translation>
 <translation id="225680501294068881">Сканира се за устройства...</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Зарежда се...</translation>
 <translation id="3712407551474845318">Заснемане на област</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
+<translation id="3713734891607377840">Отваряне, когато е завършено</translation>
 <translation id="3742055079367172538">Направена бе екранна снимка</translation>
 <translation id="3771549900096082774">Режим на висок контраст</translation>
 <translation id="3773700760453577392">Администратор е деактивирал централизирания вход за <ph name="USER_EMAIL" />. За да се продължи, всички потребители трябва да излязат от профилите си.</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">Настройки за звука</translation>
 <translation id="3945319193631853098">Докоснете, за да завършите настройването</translation>
 <translation id="3945867833895287237">Установява се връзка с точката за достъп...</translation>
+<translation id="3950820424414687140">Вход</translation>
 <translation id="3958465044488004317">Вижте резултата в Асистент</translation>
 <translation id="3962859241508114581">Предишен запис</translation>
 <translation id="3969043077941541451">Изключено</translation>

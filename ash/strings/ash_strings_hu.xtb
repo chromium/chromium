@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Ha szeretne kilépni az Áttekintés nézetből, csúsztasson lefelé három ujjával</translation>
 <translation id="2208323208084708176">Egységes asztali mód</translation>
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
-<translation id="2222338659135520253">Bejelentkezést igényel</translation>
 <translation id="2222841058024245321">7. asztal</translation>
 <translation id="2224075387478458881">Nem engedélyezett felvétel készítése a képernyőről, ha védett tartalom látható rajta</translation>
 <translation id="225680501294068881">Eszközök keresése...</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Betöltés...</translation>
 <translation id="3712407551474845318">Terület rögzítése</translation>
 <translation id="371370241367527062">Elülső mikrofon</translation>
+<translation id="3713734891607377840">Megnyitás, ha kész</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
 <translation id="3771549900096082774">Nagy kontrasztú mód</translation>
 <translation id="3773700760453577392">Egy rendszergazda letiltotta a többfiókos bejelentkezést <ph name="USER_EMAIL" /> számára.
@@ -378,6 +378,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="394485226368336402">Hangbeállítások</translation>
 <translation id="3945319193631853098">Koppintson a beállítás befejezéséhez</translation>
 <translation id="3945867833895287237">Csatlakozás a hotspothoz…</translation>
+<translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3958465044488004317">A találat megtekintése a Segédben</translation>
 <translation id="3962859241508114581">Előző szám</translation>
 <translation id="3969043077941541451">Kikapcsolva</translation>

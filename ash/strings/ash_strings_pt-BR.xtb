@@ -161,7 +161,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2170530631236737939">Deslize com três dedos para baixo para fechar a Visão geral</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
-<translation id="2222338659135520253">É necessário fazer login</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
 <translation id="2224075387478458881">A gravação de tela não é permitida quando conteúdo protegido está visível</translation>
 <translation id="225680501294068881">Procurando dispositivos...</translation>
@@ -348,6 +347,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3712407551474845318">Capturar região</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
+<translation id="3713734891607377840">Abrir quando o download for concluído</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador desativou o login múltiplo para <ph name="USER_EMAIL" />. Todos os usuários precisam sair para continuar.</translation>
@@ -377,6 +377,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="394485226368336402">Configurações de áudio</translation>
 <translation id="3945319193631853098">Toque para concluir a configuração</translation>
 <translation id="3945867833895287237">Conectando ao ponto de acesso…</translation>
+<translation id="3950820424414687140">Fazer login</translation>
 <translation id="3958465044488004317">Ver resultado no Google Assistente</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3969043077941541451">Desativado</translation>

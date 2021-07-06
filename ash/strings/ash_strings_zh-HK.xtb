@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">用三隻手指向下滑動即可結束「概覽」</translation>
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
-<translation id="2222338659135520253">必須登入</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2224075387478458881">當畫面上有受保護的內容時，就無法使用螢幕畫面錄影功能</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3712407551474845318">擷取畫面範圍</translation>
 <translation id="371370241367527062">前置麥克風</translation>
+<translation id="3713734891607377840">下載完成後開啟</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
 <translation id="3771549900096082774">高對比模式</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">音訊設定</translation>
 <translation id="3945319193631853098">輕按即可完成設定</translation>
 <translation id="3945867833895287237">正在連線至熱點…</translation>
+<translation id="3950820424414687140">登入</translation>
 <translation id="3958465044488004317">查看「Google 助理」中的結果</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3969043077941541451">關閉</translation>

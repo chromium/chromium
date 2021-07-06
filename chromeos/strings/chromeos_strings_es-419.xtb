@@ -50,6 +50,7 @@
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Está pendiente el cambio de contraseña</translation>
 <translation id="1999615961760456652">Portal cautivo</translation>
+<translation id="2006864819935886708">Conectividad</translation>
 <translation id="2008685064673031089">Búsqueda de números primos</translation>
 <translation id="2080070583977670716">Más opciones de configuración</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
@@ -138,6 +139,7 @@
 <translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="4227825898293920515">La contraseña caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay trabajos de impresión en curso</translation>
+<translation id="4289540628985791613">Descripción general</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imágenes</translation>
 <translation id="4378373042927530923">No se ejecutó la rutina</translation>

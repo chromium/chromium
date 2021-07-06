@@ -161,7 +161,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2170530631236737939">Prevucite nadolje s tri prsta da izađete iz Pregleda</translation>
 <translation id="2208323208084708176">Unificirani način rada na računaru</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
-<translation id="2222338659135520253">Potrebna je prijava</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
 <translation id="2224075387478458881">Snimanje ekrana nije dozvoljeno kada je prisutan zaštićeni sadržaj</translation>
 <translation id="225680501294068881">Traženje uređaja...</translation>
@@ -348,6 +347,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3712407551474845318">Snimi područje</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
+<translation id="3713734891607377840">Otvori kada se završi</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3771549900096082774">Način rada visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator nije dozvolio višestruku prijavu za korisnika <ph name="USER_EMAIL" />. Svi korisnici se moraju odjaviti kako bi se nastavilo.</translation>
@@ -377,6 +377,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="394485226368336402">Postavke zvuka</translation>
 <translation id="3945319193631853098">Dodirnite da završite postavljanje</translation>
 <translation id="3945867833895287237">Povezivanje s pristupnom tačkom...</translation>
+<translation id="3950820424414687140">Prijava</translation>
 <translation id="3958465044488004317">Pogledajte rezultat u Asistentu</translation>
 <translation id="3962859241508114581">Prethodna numera</translation>
 <translation id="3969043077941541451">Isključeno</translation>

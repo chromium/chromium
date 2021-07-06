@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">Հնացած գործառույթներ</translation>
 <translation id="131405271941274527"><ph name="URL" /> կայքը թույլտվություն է խնդրում՝ NFC-ի միջոցով տվյալներ փոխանակելու համար։</translation>
 <translation id="1314509827145471431">Ամրակար աջ կողմում</translation>
+<translation id="1319245136674974084">Այլևս չհարցնել այս հավելվածի համար</translation>
 <translation id="1320233736580025032">Prc1 (ծրար)</translation>
 <translation id="132301787627749051">Սեղմատախտակին պահված պատկերի որոնում</translation>
 <translation id="1323433172918577554">Ցույց տալ ավելին</translation>
@@ -744,6 +745,7 @@
 <translation id="3655670868607891010">Եթե հաճախակի եք տեսնում այս հաղորդագրությունը, փորձեք հետևյալ <ph name="HELP_LINK" />-ը:</translation>
 <translation id="3658742229777143148">Տարբերակ</translation>
 <translation id="3664782872746246217">Հիմնաբառեր՝</translation>
+<translation id="3671540257457995106">Թույլատրե՞լ չափի փոփոխումը</translation>
 <translation id="3676592649209844519">Սարքի ID-ն՝</translation>
 <translation id="3677008721441257057">Գուցե նկատի ունեիք &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;:</translation>
 <translation id="3678029195006412963">Չհաջողվեց ստորագրել հարցումը</translation>
@@ -1104,6 +1106,7 @@
 <translation id="4953689047182316270">Արձագանքել մատչելիության գործողություններին</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Ընդարձակել ցանկը</translation>
+<translation id="4968522289500246572">Այս հավելվածը նախատեսված է բջջային սարքերի համար։ Չափը փոխելուց հետո հավելվածը կարող է սխալներով աշխատել։</translation>
 <translation id="4973922308112707173">Երկու անցք վերևում</translation>
 <translation id="4974590756084640048">Միացնել զգուշացումները</translation>
 <translation id="4984088539114770594">Օգտագործե՞լ խոսափողը</translation>
@@ -1152,6 +1155,7 @@
 <translation id="5123063207673082822">Հանգստյան օրեր</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Հաստատեք ձեր քարտը</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> հավելվածը չի աջակցում չափի փոփոխումը։ Սխալներից խուսափելու համար օգտագործեք ստանդարտ չափեր։</translation>
 <translation id="5135404736266831032">Հասցեների կառավարում...</translation>
 <translation id="5138014172396933048">Վիրտուալ քարտն այս պահին անհասանելի է։ Դիմեք ձեր բանկ։</translation>
 <translation id="5138227688689900538">Ցույց տալ ավելի քիչ</translation>
@@ -1518,6 +1522,7 @@
 <translation id="647261751007945333">Սարքի քաղաքականություններ</translation>
 <translation id="6476284679642588870">Կառավարել վճարման եղանակները</translation>
 <translation id="6489534406876378309">Սկսել խափանումների մասին տեղեկությունների վերբեռնումը</translation>
+<translation id="6493924760403974580">Հավելվածն աջակցում է միայն այս չափը։</translation>
 <translation id="6499038740797743453">Վերակայե՞լ գաղտնաբառը</translation>
 <translation id="6502991525169604759">Առանց ձեր կատարած փոփոխությունների</translation>
 <translation id="6508722015517270189">Վերագործարկեք Chrome-ը</translation>
@@ -2172,6 +2177,7 @@
 <translation id="8975263830901772334">Ձեր տպած ֆայլերի անունները</translation>
 <translation id="8978053250194585037">Վերջերս Google Safe Browsing-ը <ph name="BEGIN_LINK" />ֆիշինգ է հայտնաբերել<ph name="END_LINK" /> <ph name="SITE" /> կայքում։ Նման կայքերը ներկայանում են այլ կայքերի անվան տակ` ձեր անձնական տվյալները հափշտակելու նպատակով:</translation>
 <translation id="8983003182662520383">Վճարման եղանակներ ու հասցեներ Google Pay-ից</translation>
+<translation id="8983369100812962543">Այժմ դուք կարող եք փոխել հավելվածի չափը</translation>
 <translation id="8987927404178983737">Ամիս</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> կայքն ուզում է տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>

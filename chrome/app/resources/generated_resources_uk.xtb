@@ -469,6 +469,7 @@
 <translation id="1507246803636407672">&amp;Відхилити</translation>
 <translation id="1508491105858779599">Щоб розблокувати пристрій, прикладіть палець до сканера відбитків пальців.</translation>
 <translation id="1508575541972276599">Поточна версія: Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Відновити групу</translation>
 <translation id="1509281256533087115">Отримувати доступ до будь-якого пристрою <ph name="DEVICE_NAME_AND_VENDOR" /> через USB</translation>
 <translation id="1509960214886564027">Функції на багатьох сайтах можуть не працювати</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
@@ -591,6 +592,7 @@
 <translation id="1627408615528139100">Уже завантажено</translation>
 <translation id="1628948239858170093">Cканувати файл, перш ніж відкрити?</translation>
 <translation id="1629314197035607094">Термін дії пароля закінчився</translation>
+<translation id="1629451755632656601">Дозволити Google знаходити персоналізовані знижки для ваших кошиків?</translation>
 <translation id="1630300831289687074">Незабаром ви зможете користуватися Chromebook.</translation>
 <translation id="163072119192489970">Дозволено завершувати надсилання й отримання даних</translation>
 <translation id="1630768113285622200">Перезапустити й продовжити</translation>
@@ -694,7 +696,7 @@
 <translation id="1725562816265788801">Прокручування вкладок</translation>
 <translation id="1727662110063605623">Відкрийте налаштування, щоб підключити пристрій <ph name="USB_DEVICE_NAME" /> до Parallels Desktop або Linux</translation>
 <translation id="1729533290416704613">Розширення також змінило сторінку, яка відкривається під час пошуку в універсальному вікні пошуку.</translation>
-<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Щоб видалити додатки, перейдіть у меню "Налаштування" &gt; "Google Play" &gt; "Змінити налаштування Android" &gt; "Додатки" або "Менеджер додатків". Торкніться додатка (якщо потрібно, проведіть пальцем управо або вліво, щоб знайти його) і натисніть "Видалити" або "Вимкнути".<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Щоб видалити додатки, перейдіть у меню "Налаштування" &gt; "Google Play" &gt; "Змінити налаштування Android" &gt; "Додатки" або "Менеджер додатків". Торкніться додатка (якщо потрібно, проведіть пальцем праворуч або ліворуч, щоб знайти його) і натисніть "Видалити" або "Вимкнути".<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">...</translation>
 <translation id="1733064249834771892">шрифти</translation>
 <translation id="1733383495376208985">Шифрувати синхронізовані дані за допомогою <ph name="BEGIN_LINK" />парольної фрази<ph name="END_LINK" />. Це не стосується способів оплати й адрес із Google Pay.</translation>
@@ -1308,6 +1310,7 @@
 <translation id="236117173274098341">Оптимізувати</translation>
 <translation id="2361340419970998028">Надсилається відгук…</translation>
 <translation id="236141728043665931">Завжди блокувати доступ до мікрофона</translation>
+<translation id="2363744066037724557">&amp;Відновити вікно</translation>
 <translation id="2364498172489649528">Виконано</translation>
 <translation id="2365507699358342471">Цей сайт може переглядати тексти й зображення в буфері обміну.</translation>
 <translation id="2367972762794486313">Показати програми</translation>
@@ -1931,7 +1934,7 @@
 <translation id="3021678814754966447">&amp;Переглянути джерело фрейму</translation>
 <translation id="3022978424994383087">Незрозуміло.</translation>
 <translation id="3023464535986383522">Читання з екрана</translation>
-<translation id="3023517118372899130">Призначити перемикачу дію "Вибрати"</translation>
+<translation id="3023517118372899130">Призначити перемикач для дії "Вибрати"</translation>
 <translation id="3024374909719388945">Використовувати 24-годинний формат</translation>
 <translation id="3027296729579831126">Увімкнути функцію "Передавання поблизу"</translation>
 <translation id="3029466929721441205">Показувати інструменти стилуса на панелі</translation>
@@ -2571,7 +2574,7 @@
 <translation id="3742235229730461951">Корейська розкладка клавіатури</translation>
 <translation id="3742666961763734085">Не вдається знайти організаційний підрозділ із такою назвою. Повторіть спробу.</translation>
 <translation id="3744111561329211289">Фонова синхронізація</translation>
-<translation id="3747077776423672805">Щоб видалити додатки, перейдіть у меню "Налаштування" &gt; "Google Play" &gt; "Змінити налаштування Android" &gt; "Додатки" або "Менеджер додатків". Торкніться додатка (якщо потрібно, проведіть пальцем управо або вліво, щоб знайти його) і натисніть "Видалити" або "Вимкнути".</translation>
+<translation id="3747077776423672805">Щоб видалити додатки, перейдіть у меню "Налаштування" &gt; "Google Play" &gt; "Змінити налаштування Android" &gt; "Додатки" або "Менеджер додатків". Торкніться додатка (якщо потрібно, проведіть пальцем праворуч або ліворуч, щоб знайти його) і натисніть "Видалити" або "Вимкнути".</translation>
 <translation id="3747220812138541072">Показувати вбудовані підказки під час введення тексту</translation>
 <translation id="3748706263662799310">Повідомити про помилку</translation>
 <translation id="3752582316358263300">ОК...</translation>
@@ -2606,7 +2609,7 @@
 <translation id="3778740492972734840">&amp;Інструменти розробника</translation>
 <translation id="3778868487658107119">Ставте запитання. Давайте завдання. Ваш персональний Google Асистент завжди готовий допомогти.</translation>
 <translation id="3781742599892759500">Доступ до мікрофона в Linux</translation>
-<translation id="3782795641773236652">Перемикачу або клавіші ще не призначено дію</translation>
+<translation id="3782795641773236652">Для цієї дії ще не призначено перемикачів чи клавіш</translation>
 <translation id="378312418865624974">Читати унікальний ідентифікатор для цього комп’ютера</translation>
 <translation id="3784372983762739446">Пристрої Bluetooth</translation>
 <translation id="3784472333786002075">Файли cookie – це файли, створені веб-сайтами. Їх є два види. Основні файли cookie створюються сайтом, який ви відвідуєте. Цей сайт указується в адресному рядку. Сторонні файли cookie створюються іншими сайтами. Ці сайти показують власний контент, як-от оголошення чи зображення, на веб-сторінці, яку ви відвідуєте.</translation>
@@ -2691,6 +2694,7 @@
 <translation id="3857807444929313943">Підніміть і опустіть палець</translation>
 <translation id="3861638017150647085">Ім'я користувача "<ph name="USERNAME" />" недоступне</translation>
 <translation id="3861977424605124250">Показувати під час запуску</translation>
+<translation id="386239283124269513">&amp;Відновити групу</translation>
 <translation id="3862788408946266506">Додаток з атрибутом маніфесту "kiosk_only" потрібно встановлювати в режимі термінала ОС Chrome</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="3866249974567520381">Опис</translation>
@@ -3539,7 +3543,6 @@
 <translation id="4830502475412647084">Установлюється оновлення ОС</translation>
 <translation id="4830573902900904548">Ваш <ph name="DEVICE_TYPE" /> не може під’єднатися до Інтернету через мережу "<ph name="NETWORK_NAME" />". Виберіть іншу. <ph name="LEARN_MORE_LINK_START" />Докладніше<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">На сервері для друку знайдено 1 принтер</translation>
-<translation id="4834007576107377210">Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є)</translation>
 <translation id="4836046166855586901">Запитувати, коли сайт хоче дізнатися, чи ви активно використовуєте цей пристрій</translation>
 <translation id="4836504898754963407">Керувати відбитками</translation>
 <translation id="4837128290434901661">Знову ввімкнути Пошук Google?</translation>
@@ -3839,7 +3842,7 @@
 <translation id="5161251470972801814">Пристрої USB від постачальника "<ph name="VENDOR_NAME" />"</translation>
 <translation id="5162905305237671850">Пристрій <ph name="DEVICE_TYPE" /> заблоковано</translation>
 <translation id="5163910114647549394">Вкладку переміщено на кінець панелі</translation>
-<translation id="5165085578392358314">Призначити перемикачу дію "<ph name="ACTION" />"</translation>
+<translation id="5165085578392358314">Призначити перемикач для дії "<ph name="ACTION" />"</translation>
 <translation id="5166596762332123936">Плагін <ph name="PLUGIN_NAME" /> заблоковано, оскільки він застарів</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
@@ -4262,7 +4265,6 @@
 <translation id="5627832140542566187">Орієнтація дисплея</translation>
 <translation id="562935524653278697">Адміністратор вимкнув синхронізацію закладок, історії, паролів та інших налаштувань.</translation>
 <translation id="5631017369956619646">Використання ЦП</translation>
-<translation id="5631713186079911700">Буде очищено історію в полі пошуку</translation>
 <translation id="5632059346822207074">Потрібен дозвіл. Натисніть Ctrl + стрілку вперед, щоб відповісти</translation>
 <translation id="5632566673632479864">Обліковий запис <ph name="EMAIL" /> більше не можна використовувати як основний. Оскільки цей обліковий запис зареєстровано в домені <ph name="DOMAIN" />, з цього пристрою буде видалено ваші закладки, історію, паролі й інші налаштування.</translation>
 <translation id="5632592977009207922">Завантажується, залишилося <ph name="PERCENT_REMAINING" />%</translation>
@@ -5669,6 +5671,7 @@
 <translation id="7225179976675429563">Відсутній тип мережі</translation>
 <translation id="7228479291753472782">Керувати налаштуваннями, які вказують, чи можуть веб-сайти використовувати такі функції, як геолокація, мікрофон, камера тощо.</translation>
 <translation id="7228523857728654909">Блокування екрана та вхід</translation>
+<translation id="7230222852462421043">&amp;Відновити вікно</translation>
 <translation id="7230787553283372882">Налаштувати розмір тексту</translation>
 <translation id="7232750842195536390">Не вдалося перейменувати</translation>
 <translation id="7234010996000898150">Скасовується відновлення Linux</translation>
@@ -6278,12 +6281,14 @@
 <translation id="7853747251428735">Інші інструменти</translation>
 <translation id="7855678561139483478">Перемістити вкладку в нове вікно</translation>
 <translation id="7857093393627376423">Підказки тексту</translation>
+<translation id="7857675386615530425">Шукати на сторінці за допомогою Google Об’єктива</translation>
 <translation id="7857949311770343000">Це сторінка нової вкладки, яку ви очікували?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Сервіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Завантаження</translation>
 <translation id="7861846108263890455">Мова облікового запису Google</translation>
 <translation id="7864539943188674973">Вимкнути Bluetooth</translation>
+<translation id="7866230141401327032">Шукати на сторінці за допомогою Google Об’єктива</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: підключено</translation>
 <translation id="7870730066603611552">Після налаштування перевірте параметри синхронізації</translation>
 <translation id="7870790288828963061">Новіші версії додатків-терміналів не знайдено. Помилка оновлення. Витягніть носій USB.</translation>
@@ -6570,7 +6575,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">За допомогою <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> команда Chrome розробляє нові технології, які захистять вас від механізмів відстеження на різних сайтах, зберігаючи відкритість і незалежність мережі Інтернет.</translation>
 <translation id="8161293209665121583">Режим читання для веб-сторінок</translation>
-<translation id="8162307956032783161">Призначити перемикачу дію "Далі"</translation>
+<translation id="8162307956032783161">Призначити перемикач для дії "Далі"</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перемістити вкладку в нове вікно}one{Перемістити вкладки в нове вікно}few{Перемістити вкладки в нове вікно}many{Перемістити вкладки в нове вікно}other{Перемістити вкладки в нове вікно}}</translation>
 <translation id="8165997195302308593">Переадресація порту в Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
@@ -6598,8 +6603,8 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">З'єднання з <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Керувати вашими програмами, розширеннями та темами</translation>
-<translation id="819137301779081601">Щоб почати призначення дій, натисніть новий перемикач
-Щоб видалити призначену дію, натисніть відповідний перемикач</translation>
+<translation id="819137301779081601">Щоб додати для цієї дії новий перемикач, натисніть його
+Щоб видалити для цієї дії вже призначений перемикач, натисніть його</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> хоче показувати вміст вашого екрана.</translation>
 <translation id="8195027750202970175">Розмір на диску</translation>
 <translation id="8198323535106903877">Ми встановимо для вас стільки додатків: <ph name="NUMBER_OF_APPS" /></translation>
@@ -6714,7 +6719,7 @@
 <translation id="8317671367883557781">Додати з’єднання з мережею</translation>
 <translation id="8319414634934645341">Використання розширеного ключа</translation>
 <translation id="8321476692217554900">сповіщення</translation>
-<translation id="8321492415476219409">Призначити перемикачу дію "Назад"</translation>
+<translation id="8321492415476219409">Призначити перемикач для дії "Назад"</translation>
 <translation id="8321837372750396788">Цим пристроєм <ph name="DEVICE_TYPE" /> керуватиме <ph name="MANAGER" />.</translation>
 <translation id="8322814362483282060">Доступ цієї сторінки до вашого мікрофона заблоковано.</translation>
 <translation id="8323167517179506834">Введіть URL-адресу</translation>
@@ -6860,6 +6865,7 @@
 <translation id="850875081535031620">Шкідливих програм не виявлено</translation>
 <translation id="8509177919508253835">Скинути ключі безпеки та створити PIN-коди</translation>
 <translation id="8509646642152301857">Помилка завантаження словника перевірки орфографії.</translation>
+<translation id="8509967119010808787">Щоб шукати вкладки, натисніть тут</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Усі паролі надійні}=1{Виявлено {COUNT} ненадійний пароль}one{Виявлено {COUNT} ненадійний пароль}few{Виявлено {COUNT} ненадійні паролі}many{Виявлено {COUNT} ненадійних паролів}other{Виявлено {COUNT} ненадійного пароля}}</translation>
 <translation id="8512476990829870887">Закінчити процес</translation>
 <translation id="851263357009351303">Завжди дозволяти хосту <ph name="HOST" /> показувати зображення</translation>
@@ -7362,7 +7368,7 @@
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269">Плагін <ph name="PLUGIN_NAME" /> більше не підтримується</translation>
 <translation id="9031549947500880805">Створювати резервні копії на Google Диску. Легко відновлюйте дані чи переносьте їх на інші пристрої. Резервні копії містять дані додатків.</translation>
-<translation id="9031811691986152304">повторіть спробу</translation>
+<translation id="9031811691986152304">повторити спробу</translation>
 <translation id="9033765790910064284">Усе одно продовжити</translation>
 <translation id="9033857511263905942">&amp;Вставити</translation>
 <translation id="9037640663275993951">Пристрій заборонений</translation>

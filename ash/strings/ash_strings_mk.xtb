@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Повлечете надолу со три прста за да излезете од „Преглед“</translation>
 <translation id="2208323208084708176">Режим на единствена работна површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
-<translation id="2222338659135520253">Потребно е најавување</translation>
 <translation id="2222841058024245321">Работна површина 7</translation>
 <translation id="2224075387478458881">Снимањето на екранот не е дозволено кога се видливи заштитени содржини</translation>
 <translation id="225680501294068881">Скенирање за уреди...</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Се вчитува...</translation>
 <translation id="3712407551474845318">Снимајте регион</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
+<translation id="3713734891607377840">Отвори кога ќе заврши преземањето</translation>
 <translation id="3742055079367172538">Направена е слика од екранот</translation>
 <translation id="3771549900096082774">Режим на голем контраст</translation>
 <translation id="3773700760453577392">Администраторот оневозможил повеќекратно најавување за <ph name="USER_EMAIL" />.
@@ -378,6 +378,7 @@
 <translation id="394485226368336402">Поставки за аудио</translation>
 <translation id="3945319193631853098">Допрете за да го завршите поставувањето</translation>
 <translation id="3945867833895287237">Се поврзува со точка на пристап…</translation>
+<translation id="3950820424414687140">Најави се</translation>
 <translation id="3958465044488004317">Видете ги резултатите во „Помошникот“</translation>
 <translation id="3962859241508114581">Претходна песна</translation>
 <translation id="3969043077941541451">Исклучи</translation>

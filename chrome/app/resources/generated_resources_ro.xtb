@@ -464,6 +464,7 @@
 <translation id="1507246803636407672">&amp;Renunțați</translation>
 <translation id="1508491105858779599">Pune degetul pe senzorul de amprentă pentru a debloca dispozitivul.</translation>
 <translation id="1508575541972276599">Versiunea actuală este Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Restabilește grupul</translation>
 <translation id="1509281256533087115">Accesează orice <ph name="DEVICE_NAME_AND_VENDOR" /> prin USB</translation>
 <translation id="1509960214886564027">Este posibil ca funcțiile de pe mai multe site-uri să fie întrerupte</translation>
 <translation id="1510238584712386396">Lansator</translation>
@@ -586,6 +587,7 @@
 <translation id="1627408615528139100">Descărcat deja</translation>
 <translation id="1628948239858170093">Scanezi fișierul înainte să îl deschizi?</translation>
 <translation id="1629314197035607094">Parola a expirat</translation>
+<translation id="1629451755632656601">Permiți ca Google să găsească reduceri personalizate pentru coșul tău de cumpărături?</translation>
 <translation id="1630300831289687074">Vei putea folosi Chromebookul în scurt timp.</translation>
 <translation id="163072119192489970">Au permisiunea de a finaliza trimiterea și primirea datelor</translation>
 <translation id="1630768113285622200">Repornește și continuă</translation>
@@ -1291,6 +1293,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="236117173274098341">Optimizează</translation>
 <translation id="2361340419970998028">Se trimite feedbackul...</translation>
 <translation id="236141728043665931">Blocați întotdeauna accesul la microfon</translation>
+<translation id="2363744066037724557">&amp;Restabilește fereastra</translation>
 <translation id="2364498172489649528">Reușită</translation>
 <translation id="2365507699358342471">Acest site poate să vadă textul și imaginile copiate în clipboard.</translation>
 <translation id="2367972762794486313">Afișați aplicații</translation>
@@ -2674,6 +2677,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3857807444929313943">Ridică, apoi atinge din nou</translation>
 <translation id="3861638017150647085">Numele de utilizator „<ph name="USERNAME" />” nu este disponibil</translation>
 <translation id="3861977424605124250">Afișează la pornire</translation>
+<translation id="386239283124269513">&amp;Restabilește grupul</translation>
 <translation id="3862788408946266506">Aplicația cu atributul „kiosk_only” din manifest trebuie să fie instalată în modul chioșc pentru sistemul de operare Chrome</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="3866249974567520381">Descriere</translation>
@@ -3521,7 +3525,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4830502475412647084">Se instalează actualizarea sistemului de operare</translation>
 <translation id="4830573902900904548">Dispozitivul <ph name="DEVICE_TYPE" /> nu se poate conecta la internet folosind <ph name="NETWORK_NAME" />. Alege altă rețea. <ph name="LEARN_MORE_LINK_START" />Află mai multe<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">S-a găsit o imprimantă de la serverul de imprimare</translation>
-<translation id="4834007576107377210">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul</translation>
 <translation id="4836046166855586901">Anunță-mă dacă un site vrea să afle când folosesc activ dispozitivul</translation>
 <translation id="4836504898754963407">Gestionează amprentele digitale</translation>
 <translation id="4837128290434901661">Revii la Căutarea Google?</translation>
@@ -4244,7 +4247,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5627832140542566187">Orientarea afișajului</translation>
 <translation id="562935524653278697">Administratorul a dezactivat sincronizarea marcajelor, istoricului, parolelor și a altor setări.</translation>
 <translation id="5631017369956619646">Utilizarea procesorului</translation>
-<translation id="5631713186079911700">Șterge istoricul din caseta de căutare</translation>
 <translation id="5632059346822207074">Permisiune necesară, apasă Ctrl + tasta Înainte pentru a răspunde</translation>
 <translation id="5632566673632479864">Contul tău <ph name="EMAIL" /> nu mai are permisiunea de a fi contul principal. Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv.</translation>
 <translation id="5632592977009207922">Se descarcă, a mai rămas <ph name="PERCENT_REMAINING" />%</translation>
@@ -5651,6 +5653,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7225179976675429563">Lipsește tipul de rețea</translation>
 <translation id="7228479291753472782">Controlează setările care precizează dacă site-urile pot utiliza funcții, cum ar fi localizarea geografică, microfonul, camera foto etc.</translation>
 <translation id="7228523857728654909">Blocarea ecranului și conectarea</translation>
+<translation id="7230222852462421043">&amp;Restabilește fereastra</translation>
 <translation id="7230787553283372882">Personalizează dimensiunea textului</translation>
 <translation id="7232750842195536390">Redenumirea nu a reușit</translation>
 <translation id="7234010996000898150">Se anulează restabilirea Linux</translation>
@@ -6260,12 +6263,14 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7853747251428735">Mai multe instru&amp;mente</translation>
 <translation id="7855678561139483478">Mută fila în fereastră nouă</translation>
 <translation id="7857093393627376423">Sugestii de text</translation>
+<translation id="7857675386615530425">Caută într-o secțiune a paginii cu Google Lens</translation>
 <translation id="7857949311770343000">Aceasta este pagina Filă nouă pe care o așteptați?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Serviciu: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descărcări</translation>
 <translation id="7861846108263890455">Limba Contului Google</translation>
 <translation id="7864539943188674973">Dezactivați Bluetooth</translation>
+<translation id="7866230141401327032">Caută într-o secțiune a paginii cu Google Lens</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – asociat</translation>
 <translation id="7870730066603611552">Examinează opțiunile de sincronizare după configurare</translation>
 <translation id="7870790288828963061">Nu s-a găsit nicio aplicație de tip chioșc cu o versiune mai recentă. Nimic de actualizat. Scoate stickul USB.</translation>
@@ -6841,6 +6846,7 @@ Apasă un comutator atribuit pentru a elimina atribuirea</translation>
 <translation id="850875081535031620">Nu s-a găsit software dăunător</translation>
 <translation id="8509177919508253835">Resetează cheile de securitate și creează coduri PIN</translation>
 <translation id="8509646642152301857">Descărcarea dicționarului de verificare ortografică nu a reușit.</translation>
+<translation id="8509967119010808787">Pentru a căuta filele, dă clic aici</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Nu s-au găsit parole slabe}=1{S-a găsit {COUNT} parolă slabă}few{S-au găsit {COUNT} parole slabe}other{S-au găsit {COUNT} de parole slabe}}</translation>
 <translation id="8512476990829870887">Opriți procesul</translation>
 <translation id="851263357009351303">Permite întotdeauna afișarea de imagini de la <ph name="HOST" /></translation>

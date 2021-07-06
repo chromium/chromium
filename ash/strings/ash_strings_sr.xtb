@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Превуците надоле помоћу три прста да бисте изашли из Прегледа</translation>
 <translation id="2208323208084708176">Режим спојених радних површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
-<translation id="2222338659135520253">Пријављивање је обавезно</translation>
 <translation id="2222841058024245321">Радна површина 7</translation>
 <translation id="2224075387478458881">Снимање екрана није дозвољено када је видљив заштићени садржај</translation>
 <translation id="225680501294068881">Скенирање уређаја...</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Учитава се...</translation>
 <translation id="3712407551474845318">Сними област</translation>
 <translation id="371370241367527062">Предњи микрофон</translation>
+<translation id="3713734891607377840">Отвори када буде завршено</translation>
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
 <translation id="3771549900096082774">Режим високог контраста</translation>
 <translation id="3773700760453577392">Администратор је забранио вишеструко пријављивање за <ph name="USER_EMAIL" />. Сви корисници морају да се одјаве да бисмо наставили са сесијом.</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">Подешавања звука</translation>
 <translation id="3945319193631853098">Додирните да бисте довршили подешавање</translation>
 <translation id="3945867833895287237">Успоставља се веза са хотспотом...</translation>
+<translation id="3950820424414687140">Пријави ме</translation>
 <translation id="3958465044488004317">Погледајте резултат у Помоћнику</translation>
 <translation id="3962859241508114581">Претходна песма</translation>
 <translation id="3969043077941541451">Искључи</translation>

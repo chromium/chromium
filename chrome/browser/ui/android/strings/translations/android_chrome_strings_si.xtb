@@ -853,6 +853,7 @@
 <translation id="6441734959916820584">නම දිග වැඩියි</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# රූපයක්}one{රූප #ක්}other{රූප #ක්}}</translation>
 <translation id="6447558397796644647">එම පිටුසන සොයාගත නොහැක. ඔබේ අක්‍ෂර වින්‍යාසය පරීක්‍ෂා කරන්න, නැති නම් නව පිටුසනක් එක් කරන්න.</translation>
+<translation id="6459045781120991510">සමීක්ෂණ</translation>
 <translation id="6461962085415701688">ගොනුව විවෘත කළ නොහැක</translation>
 <translation id="6464977750820128603">ඔබට ඔබ Chrome තුළ පිවිසෙන අඩවි බැලීමට සහ ඒවා සඳහා මුහුර්තක සැකසීමට හැකිය.\n\nGoogle ඔබ මුහුර්තක සකසන අඩවි සහ ඔබ ඒවාට කොපමණ කාලයක් පිවිසෙන්නේ ද යන්න පිළිබඳ තතු ලබා ගනී. මෙම තතු ඩිජිටල් සුවතාව වඩා හොඳ කිරීමට භාවිතා කරයි.</translation>
 <translation id="6475951671322991020">වීඩියෝව බාගන්න</translation>
@@ -969,6 +970,7 @@
 <translation id="7242755609445462077">විලාසගත උද්දීපනය <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome තුළ <ph name="TARGET_DEVICE_NAME" /> ට සමමුහූර්තය සක්‍රීය කර තිබීම තහවුරු කර ගන්න</translation>
 <translation id="7252076891734325316">ඔබගේ දුරකථනය පරිගණකයට ආසන්නව තබන්න</translation>
+<translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> <ph name="ORIGIN" /> වෙත ඉදිරිපත් කරන්නද?</translation>
 <translation id="7274013316676448362">අවහිර කළ අඩවිය</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> වෙනස් කරන්නද?</translation>
 <translation id="7290209999329137901">යළි නම් කිරීම නොලැබේ</translation>

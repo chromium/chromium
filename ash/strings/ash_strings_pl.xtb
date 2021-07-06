@@ -161,7 +161,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2170530631236737939">Aby zamknąć Przegląd, przesuń 3 palcami w dół</translation>
 <translation id="2208323208084708176">Tryb ujednoliconego pulpitu</translation>
 <translation id="2220572644011485463">Kod PIN lub hasło</translation>
-<translation id="2222338659135520253">Musisz się zalogować</translation>
 <translation id="2222841058024245321">Biurko 7</translation>
 <translation id="2224075387478458881">Gdy widoczne są treści chronione, nagrywanie ekranu jest niedozwolone</translation>
 <translation id="225680501294068881">Skanowanie w poszukiwaniu urządzeń...</translation>
@@ -348,6 +347,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="370665806235115550">Ładuję...</translation>
 <translation id="3712407551474845318">Zrzut obszaru ekranu</translation>
 <translation id="371370241367527062">Przedni mikrofon</translation>
+<translation id="3713734891607377840">Otwórz po pobraniu</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
 <translation id="3771549900096082774">Tryb wysokiego kontrastu</translation>
 <translation id="3773700760453577392">Administrator nie zezwolił na wielokrotne logowanie użytkownika <ph name="USER_EMAIL" />. Aby kontynuować, wszyscy użytkownicy muszą się wylogować.</translation>
@@ -377,6 +377,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="394485226368336402">Ustawienia dźwięku</translation>
 <translation id="3945319193631853098">Kliknij, aby dokończyć konfigurację</translation>
 <translation id="3945867833895287237">Łączę z hotspotem...</translation>
+<translation id="3950820424414687140">Zaloguj się</translation>
 <translation id="3958465044488004317">Zobacz wynik w Asystencie</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3969043077941541451">Wyłączone</translation>

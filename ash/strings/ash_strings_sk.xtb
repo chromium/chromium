@@ -161,7 +161,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2170530631236737939">Prehľad ukončíte potiahnutím troma prstami nadol</translation>
 <translation id="2208323208084708176">Režim zjednotenej pracovnej plochy</translation>
 <translation id="2220572644011485463">PIN alebo heslo</translation>
-<translation id="2222338659135520253">Vyžaduje sa prihlásenie</translation>
 <translation id="2222841058024245321">7. plocha</translation>
 <translation id="2224075387478458881">Nahrávanie obrazovky nie je povolené, keď je viditeľný chránený obsah</translation>
 <translation id="225680501294068881">Hľadajú sa zariadenia...</translation>
@@ -348,6 +347,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="370665806235115550">Načítava sa...</translation>
 <translation id="3712407551474845318">Nasnímať oblasť</translation>
 <translation id="371370241367527062">Predný mikrofón</translation>
+<translation id="3713734891607377840">Po dokončení otvoriť</translation>
 <translation id="3742055079367172538">Vytvorila sa snímka obrazovky</translation>
 <translation id="3771549900096082774">Režim s vysokým kontrastom</translation>
 <translation id="3773700760453577392">Správca zakázal viacnásobné prihlásenie pre používateľa <ph name="USER_EMAIL" />. Všetci používatelia sa musia odhlásiť a až potom môžu pokračovať.</translation>
@@ -377,6 +377,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="394485226368336402">Nastavenia zvuku</translation>
 <translation id="3945319193631853098">Klepnutím dokončite nastavovanie</translation>
 <translation id="3945867833895287237">Pripája sa k hotspotu…</translation>
+<translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="3958465044488004317">Zobrazte si výsledky v Asistentovi</translation>
 <translation id="3962859241508114581">Predchádzajúca stopa</translation>
 <translation id="3969043077941541451">Vypnuté</translation>

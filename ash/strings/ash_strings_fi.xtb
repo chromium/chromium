@@ -161,7 +161,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2170530631236737939">Poistu Viimeisimmät-osiosta pyyhkäisemällä kolmella sormella alaspäin</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
-<translation id="2222338659135520253">Sisäänkirjautuminen vaaditaan</translation>
 <translation id="2222841058024245321">Työpöytä 7</translation>
 <translation id="2224075387478458881">Näytön tallentajan käyttöä ei sallita, kun suojattua sisältöä on nähtävissä</translation>
 <translation id="225680501294068881">Etsitään laitteita...</translation>
@@ -348,6 +347,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="370665806235115550">Ladataan...</translation>
 <translation id="3712407551474845318">Tallenna kuvakaappaus alueesta</translation>
 <translation id="371370241367527062">Etumikrofoni</translation>
+<translation id="3713734891607377840">Avaa kun valmis</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
 <translation id="3771549900096082774">Suuri kontrasti ‑tila</translation>
 <translation id="3773700760453577392">Järjestelmänvalvoja on estänyt käyttäjää <ph name="USER_EMAIL" /> kirjautumasta sisään useille tileille. Kaikkien käyttäjien on kirjauduttava ulos jatkaakseen käyttöä.</translation>
@@ -377,6 +377,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="394485226368336402">Ääniasetukset</translation>
 <translation id="3945319193631853098">Viimeistele käyttöönotto napauttamalla</translation>
 <translation id="3945867833895287237">Yhdistetään hotspotiin…</translation>
+<translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="3958465044488004317">Katso tulos Assistantissa</translation>
 <translation id="3962859241508114581">Edellinen kappale</translation>
 <translation id="3969043077941541451">Pois päältä</translation>

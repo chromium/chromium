@@ -32,6 +32,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1600964289716072707">Leg een andere pagina op de scanner en selecteer Scannen om de pagina toe te voegen.</translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
 <translation id="1641857168437328880">Documentfeeder (enkelzijdig)</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
@@ -50,6 +51,7 @@
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
 <translation id="1999615961760456652">Captive portal</translation>
+<translation id="2006864819935886708">Connectiviteit</translation>
 <translation id="2008685064673031089">Priemgetallen zoeken</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" /></translation>
@@ -138,6 +140,7 @@
 <translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
+<translation id="4289540628985791613">Overzicht</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> afbeeldingen</translation>
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
@@ -285,6 +288,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
+<translation id="6905724422583748843">Terug naar <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">De klep van de scanner staat open. Sluit de klep en probeer het opnieuw.</translation>
 <translation id="6911383237894364323">Kan geen verbinding maken met mediaservers</translation>
 <translation id="6957231940976260713">Servicenaam</translation>
@@ -329,6 +333,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7769672763586021400">Model-ID</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>
+<translation id="7835501727204647447">CloudReady installeren</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type provider</translation>
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>

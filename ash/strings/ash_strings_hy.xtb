@@ -161,7 +161,6 @@
 <translation id="2170530631236737939">Համատեսքը փակելու համար երեք մատով սահեցրեք վար</translation>
 <translation id="2208323208084708176">Միասնական աշխատասեղանի ռեժիմ</translation>
 <translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
-<translation id="2222338659135520253">Անհրաժեշտ է մուտք գործել</translation>
 <translation id="2222841058024245321">Աշխատասեղան 7</translation>
 <translation id="2224075387478458881">Էկրանի տեսագրում չի թույլատրվում, երբ պաշտպանված բովանդակություն է տեսանելի</translation>
 <translation id="225680501294068881">Սարքերի որոնում…</translation>
@@ -348,6 +347,7 @@
 <translation id="370665806235115550">Բեռնում…</translation>
 <translation id="3712407551474845318">Հատվածի լուսանկարում</translation>
 <translation id="371370241367527062">Առջևի խոսափող</translation>
+<translation id="3713734891607377840">Բացել ներբեռնելուց հետո</translation>
 <translation id="3742055079367172538">Սքրինշոթը ստեղծված է</translation>
 <translation id="3771549900096082774">Բարձր կոնտրաստով ռեժիմ</translation>
 <translation id="3773700760453577392">Ադմինիստրատորն արգելել է բազմակի մուտքը <ph name="USER_EMAIL" />-ի հաշվի համար: Շարունակելու համար բոլոր օգտատերերը պետք է դուրս գրվեն:</translation>
@@ -377,6 +377,7 @@
 <translation id="394485226368336402">Ձայնի կարգավորումներ</translation>
 <translation id="3945319193631853098">Հպեք՝ կարգավորումն ավարտելու համար</translation>
 <translation id="3945867833895287237">Միացում թեժ կետին…</translation>
+<translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3958465044488004317">Դիտեք արդյունքն Օգնականում</translation>
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3969043077941541451">Անջատված է</translation>

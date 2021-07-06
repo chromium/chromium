@@ -463,6 +463,7 @@
 <translation id="1507246803636407672">捨棄(&amp;D)</translation>
 <translation id="1508491105858779599">將你的手指放在指紋感應器上即可解鎖裝置。</translation>
 <translation id="1508575541972276599">目前版本為 Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">還原群組 (&amp;R)</translation>
 <translation id="1509281256533087115">透過 USB 存取任何 <ph name="DEVICE_NAME_AND_VENDOR" /></translation>
 <translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
 <translation id="1510238584712386396">啟動器</translation>
@@ -585,6 +586,7 @@
 <translation id="1627408615528139100">已下載</translation>
 <translation id="1628948239858170093">要先掃描檔案再開啟嗎？</translation>
 <translation id="1629314197035607094">密碼已過期</translation>
+<translation id="1629451755632656601">要讓 Google 根據購物車中的商品尋找個人專屬折扣嗎？</translation>
 <translation id="1630300831289687074">你很快就能使用 Chromebook 了。</translation>
 <translation id="163072119192489970">可以完成資料的傳送和接收</translation>
 <translation id="1630768113285622200">重新啟動並繼續</translation>
@@ -1290,6 +1292,7 @@
 <translation id="236117173274098341">最佳化</translation>
 <translation id="2361340419970998028">正在傳送意見回饋…</translation>
 <translation id="236141728043665931">一律封鎖存取麥克風</translation>
+<translation id="2363744066037724557">還原視窗 (&amp;R)</translation>
 <translation id="2364498172489649528">已通過</translation>
 <translation id="2365507699358342471">這個網站可以讀取已複製到剪貼簿的文字和圖片。</translation>
 <translation id="2367972762794486313">顯示應用程式</translation>
@@ -2673,6 +2676,7 @@
 <translation id="3857807444929313943">移開手指，然後再次輕觸感應器</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
 <translation id="3861977424605124250">啟動時顯示</translation>
+<translation id="386239283124269513">還原群組 (&amp;R)</translation>
 <translation id="3862788408946266506">含有「kiosk_only」資訊清單屬性的應用程式只能在 Chrome 作業系統 Kiosk 模式中安裝</translation>
 <translation id="3865414814144988605">解析度</translation>
 <translation id="3866249974567520381">說明</translation>
@@ -3519,7 +3523,6 @@
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
 <translation id="4830573902900904548">您的 <ph name="DEVICE_TYPE" /> 無法透過 <ph name="NETWORK_NAME" /> 連線至網際網路，請選擇其他網路。<ph name="LEARN_MORE_LINK_START" />瞭解詳情<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">在列印伺服器上找到 1 台印表機</translation>
-<translation id="4834007576107377210">同時建議你查看搜尋引擎的操作說明 (如果有的話)，瞭解如何刪除搜尋記錄</translation>
 <translation id="4836046166855586901">允許網站詢問你使用這部裝置的時間</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回 Google 搜尋嗎？</translation>
@@ -4242,7 +4245,6 @@
 <translation id="5627832140542566187">螢幕方向</translation>
 <translation id="562935524653278697">你的管理員停用了書籤、歷史記錄、密碼和其他設定的同步功能。</translation>
 <translation id="5631017369956619646">CPU 使用率</translation>
-<translation id="5631713186079911700">清除搜尋框中的歷史記錄</translation>
 <translation id="5632059346822207074">已要求權限，按下 Ctrl + Forward 鍵即可回覆</translation>
 <translation id="5632566673632479864">你已不能再將 <ph name="EMAIL" /> 設為主要帳戶。這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將您的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。</translation>
 <translation id="5632592977009207922">下載中，還剩 <ph name="PERCENT_REMAINING" />%</translation>
@@ -5649,6 +5651,7 @@
 <translation id="7225179976675429563">找不到網路類型</translation>
 <translation id="7228479291753472782">控制可指定網站能否使用地理位置、麥克風、攝影機等功能的設定。</translation>
 <translation id="7228523857728654909">螢幕鎖定和登入</translation>
+<translation id="7230222852462421043">還原視窗 (&amp;R)</translation>
 <translation id="7230787553283372882">自訂文字大小</translation>
 <translation id="7232750842195536390">無法重新命名</translation>
 <translation id="7234010996000898150">正在取消 Linux 還原作業</translation>
@@ -6258,12 +6261,14 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">將分頁移到新視窗</translation>
 <translation id="7857093393627376423">文字建議</translation>
+<translation id="7857675386615530425">使用 Google 智慧鏡頭搜尋頁面上的部分內容</translation>
 <translation id="7857949311770343000">這是你想要的新分頁嗎？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帳戶語言</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
+<translation id="7866230141401327032">使用 Google 智慧鏡頭搜尋頁面上的部分內容</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7870730066603611552">設定後查看同步處理選項</translation>
 <translation id="7870790288828963061">找不到新版 Kiosk 應用程式，沒有可更新的內容。請移除 USB 隨身碟。</translation>
@@ -6840,6 +6845,7 @@
 <translation id="850875081535031620">未發現有害軟體</translation>
 <translation id="8509177919508253835">重設安全金鑰並建立 PIN 碼</translation>
 <translation id="8509646642152301857">拼字檢查字典下載失敗。</translation>
+<translation id="8509967119010808787">如要搜尋分頁，請按這裡</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{未發現任何低強度密碼}=1{發現 {COUNT} 組低強度密碼}other{發現 {COUNT} 組低強度密碼}}</translation>
 <translation id="8512476990829870887">結束處理程序</translation>
 <translation id="851263357009351303">永遠允許 <ph name="HOST" /> 顯示圖片</translation>

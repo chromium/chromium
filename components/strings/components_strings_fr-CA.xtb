@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">Fonctionnalités obsolètes</translation>
 <translation id="131405271941274527"><ph name="URL" /> souhaite vous envoyer et recevoir de l'information lorsque vous touchez votre téléphone sur un appareil NFC</translation>
 <translation id="1314509827145471431">Reliure à droite</translation>
+<translation id="1319245136674974084">Ne plus me poser la question pour cette application</translation>
 <translation id="1320233736580025032">Enveloppe Prc1</translation>
 <translation id="132301787627749051">Rechercher une image du presse-papiers</translation>
 <translation id="1323433172918577554">Afficher plus</translation>
@@ -740,6 +741,7 @@
 <translation id="3655670868607891010">Si ce message s'affiche souvent, essayez ces <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Révision</translation>
 <translation id="3664782872746246217">Mots clés :</translation>
+<translation id="3671540257457995106">Autoriser le redimensionnement?</translation>
 <translation id="3676592649209844519">Identifiant de l'appareil :</translation>
 <translation id="3677008721441257057">Vouliez-vous dire &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">La demande n'a pas pu être signée</translation>
@@ -1095,6 +1097,7 @@
 <translation id="4953689047182316270">Répondre aux événements d'accessibilité</translation>
 <translation id="4955242332710481440">A5 Extra</translation>
 <translation id="4958444002117714549">Développer la liste</translation>
+<translation id="4968522289500246572">Cette application est développée pour les appareils mobiles et elle ne sera peut-être pas bien redimensionnée. L'application peut rencontrer des problèmes ou redémarrer.</translation>
 <translation id="4973922308112707173">Double perforation en haut</translation>
 <translation id="4974590756084640048">Réactiver les avertissements</translation>
 <translation id="4984088539114770594">Utiliser le microphone?</translation>
@@ -1143,6 +1146,7 @@
 <translation id="5123063207673082822">Fin de semaine</translation>
 <translation id="5125394840236832993">B plus</translation>
 <translation id="5126510351761255129">Vérifier votre carte</translation>
+<translation id="512670116361803001">L'application <ph name="APP_NAME" /> ne sera peut-être pas bien redimensionnée. Utilisez des tailles de fenêtre préréglées pour éviter que l'application rencontre des problèmes.</translation>
 <translation id="5135404736266831032">Gérer les adresses</translation>
 <translation id="5138014172396933048">Votre carte virtuelle n'est pas accessible pour le moment, veuillez communiquer avec votre banque</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
@@ -1509,6 +1513,7 @@
 <translation id="647261751007945333">Règles relatives aux appareils</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
 <translation id="6489534406876378309">Lancer le téléversement des plantages</translation>
+<translation id="6493924760403974580">Cette application prend uniquement en charge cette taille.</translation>
 <translation id="6499038740797743453">Réinitialiser votre mot de passe?</translation>
 <translation id="6502991525169604759">Sans vos modifications</translation>
 <translation id="6508722015517270189">Redémarrer Google Chrome</translation>
@@ -2163,6 +2168,7 @@ Détails supplémentaires :
 <translation id="8975263830901772334">Les noms des fichiers que vous imprimez</translation>
 <translation id="8978053250194585037">La fonctionnalité de navigation sécurisée Google a récemment <ph name="BEGIN_LINK" />détecté une tentative d'hameçonnage<ph name="END_LINK" /> sur <ph name="SITE" />. Les sites d'hameçonnage tentent de tromper en prétendant être d'autres sites Web.</translation>
 <translation id="8983003182662520383">Modes de paiement et adresses utilisant Google Pay</translation>
+<translation id="8983369100812962543">Vous pouvez maintenant redimensionner l'application</translation>
 <translation id="8987927404178983737">Mois</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> veut savoir si vous êtes en train d'utiliser cet appareil</translation>

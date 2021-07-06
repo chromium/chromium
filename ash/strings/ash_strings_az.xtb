@@ -161,7 +161,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2170530631236737939">İcmaldan çıxmaq üçün üç barmaq ilə aşağı çəkin</translation>
 <translation id="2208323208084708176">Vahid masa üstü rejimi</translation>
 <translation id="2220572644011485463">PIN və ya parol</translation>
-<translation id="2222338659135520253">Giriş tələb olunur</translation>
 <translation id="2222841058024245321">Masa 7</translation>
 <translation id="2224075387478458881">Qorunan məzmun görünəndə ekranın yazılmasına icazə verilmir</translation>
 <translation id="225680501294068881">Cihazlar axtarılır...</translation>
@@ -348,6 +347,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="370665806235115550">Yüklənir...</translation>
 <translation id="3712407551474845318">Zonanın ani şəkli</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
+<translation id="3713734891607377840">Tamamlandıqda açın</translation>
 <translation id="3742055079367172538">Skrinşot çəkildi</translation>
 <translation id="3771549900096082774">Yüksək Kontrast Rejimi</translation>
 <translation id="3773700760453577392">Administrator <ph name="USER_EMAIL" /> üçün çoxsaylı girişə icazə verməyib. Bütün istifadəçilər davam etmək üçün çıxış etməlidir.</translation>
@@ -377,6 +377,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="394485226368336402">Audio ayarlar</translation>
 <translation id="3945319193631853098">Ayarlamanı bitirmək üçün toxunun</translation>
 <translation id="3945867833895287237">Hotspota qoşulur...</translation>
+<translation id="3950820424414687140">Giriş</translation>
 <translation id="3958465044488004317">Assistentdə nəticəyə baxın</translation>
 <translation id="3962859241508114581">Əvvəlki trek</translation>
 <translation id="3969043077941541451">Deaktiv</translation>
