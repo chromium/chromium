@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 
 class Profile;
 

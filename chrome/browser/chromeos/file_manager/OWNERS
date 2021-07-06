@@ -1,3 +1,0 @@
-# TODO(https://crbug.com/1164001): Share OWNERS until the migration of
-# //chrome/browser/chromeos/file_manager completes.
-file://chrome/browser/ash/file_manager/OWNERS

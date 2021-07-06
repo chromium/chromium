@@ -14,7 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 // TODO(b/174811949): Hide behind ChromeOS build flag.
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/devtools/devtools_window.h"

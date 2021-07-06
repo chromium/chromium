@@ -20,7 +20,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/arc_service_manager.h"

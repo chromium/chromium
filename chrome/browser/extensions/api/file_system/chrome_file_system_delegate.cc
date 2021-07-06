@@ -49,7 +49,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/extensions/api/file_system/consent_provider.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"

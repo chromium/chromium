@@ -13,7 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"

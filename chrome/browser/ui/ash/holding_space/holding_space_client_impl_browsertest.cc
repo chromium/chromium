@@ -19,7 +19,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"

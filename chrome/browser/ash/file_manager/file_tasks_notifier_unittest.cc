@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"

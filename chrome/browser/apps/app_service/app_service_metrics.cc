@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -16,6 +15,7 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -216,10 +216,12 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
   } else if (app_id == extension_misc::kTextEditorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kText, launch_source);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == file_manager::kVideoPlayerAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kVideoPlayer, launch_source);
   } else if (app_id == file_manager::kAudioPlayerAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kAudioPlayer, launch_source);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == web_app::kCanvasAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChromeCanvas, launch_source);
   } else if (app_id == extension_misc::kCameraAppId) {

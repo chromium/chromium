@@ -33,7 +33,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/drive/drive_notification_manager_factory.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/profiles/profile.h"

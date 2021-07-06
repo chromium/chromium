@@ -17,7 +17,7 @@
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
+#include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/dbus/seneschal/seneschal_service.pb.h"

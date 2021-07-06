@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_system_stat_collector.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/arc_features.h"

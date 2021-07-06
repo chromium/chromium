@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/recent_arc_media_source.h"
 #include "chrome/browser/chromeos/fileapi/recent_disk_source.h"
 #include "chrome/browser/chromeos/fileapi/recent_drive_source.h"
