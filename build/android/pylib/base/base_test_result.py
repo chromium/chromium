@@ -5,8 +5,8 @@
 """Module containing base test results classes."""
 
 
+import functools
 import threading
-import six
 
 from lib.results import result_types  # pylint: disable=import-error
 
@@ -32,6 +32,7 @@ class ResultType(object):
             ResultType.NOTRUN]
 
 
+@functools.total_ordering
 class BaseTestResult(object):
   """Base class for a single test result."""
 
@@ -58,9 +59,11 @@ class BaseTestResult(object):
   def __repr__(self):
     return self._name
 
-  def __cmp__(self, other):
-    # pylint: disable=W0212
-    return cmp(self._name, other._name)
+  def __eq__(self, other):
+    return self.GetName() == other.GetName()
+
+  def __lt__(self, other):
+    return self.GetName() == other.GetName()
 
   def __hash__(self):
     return hash(self._name)
@@ -133,7 +136,7 @@ class TestRunResults(object):
             log = t.GetLog()
             if log:
               s.append('[%s] %s:' % (test_type, t))
-              s.append(six.text_type(log, 'utf-8'))
+              s.append(log)
       return '\n'.join(s)
 
   def GetGtestForm(self):

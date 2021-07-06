@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -91,9 +91,6 @@ class Method(object):
 
   def __eq__(self, other):
     return self.serialize(self) == self.serialize(other)
-
-  def __ne__(self, other):
-    return self.serialize(self) != self.serialize(other)
 
   def __lt__(self, other):
     return self.serialize(self) < self.serialize(other)

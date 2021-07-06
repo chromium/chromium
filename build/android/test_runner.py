@@ -27,8 +27,6 @@ import unittest
 # See http://crbug.com/724524 and https://bugs.python.org/issue7980.
 import _strptime  # pylint: disable=unused-import
 
-# pylint: disable=redefined-builtin
-from six.moves import range  # Needed for python 3 compatibility.
 # pylint: disable=ungrouped-imports
 from pylib.constants import host_paths
 
