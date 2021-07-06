@@ -13,7 +13,8 @@
 // operations.
 //
 // Only supports |Credentials| of class |ArchivableCredential|.
-@interface UserDefaultsCredentialStore : MemoryCredentialStore <CredentialStore>
+@interface UserDefaultsCredentialStore
+    : MemoryCredentialStore <MutableCredentialStore>
 
 // Initializes the store. |userDefaults| is where the store will be persisted.
 - (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults

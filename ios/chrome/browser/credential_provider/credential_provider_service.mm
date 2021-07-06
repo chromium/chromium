@@ -132,7 +132,7 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
 CredentialProviderService::CredentialProviderService(
     scoped_refptr<PasswordStore> password_store,
     AuthenticationService* authentication_service,
-    id<CredentialStore> credential_store,
+    id<MutableCredentialStore> credential_store,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
     : password_store_(password_store),

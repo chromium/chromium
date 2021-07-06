@@ -13,6 +13,8 @@
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
+#import "ios/chrome/common/credential_provider/multi_store_credential_store.h"
+#import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -143,8 +146,22 @@
 
 - (id<CredentialStore>)credentialStore {
   if (!_credentialStore) {
-    _credentialStore = [[ArchivableCredentialStore alloc]
-        initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
+    ArchivableCredentialStore* archivableStore =
+        [[ArchivableCredentialStore alloc]
+            initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
+
+    if (IsPasswordCreationEnabled()) {
+      NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
+      UserDefaultsCredentialStore* defaultsStore =
+          [[UserDefaultsCredentialStore alloc]
+              initWithUserDefaults:app_group::GetGroupUserDefaults()
+                               key:key];
+      _credentialStore = [[MultiStoreCredentialStore alloc]
+          initWithStores:@[ defaultsStore, archivableStore ]];
+
+    } else {
+      _credentialStore = archivableStore;
+    }
   }
   return _credentialStore;
 }

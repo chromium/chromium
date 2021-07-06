@@ -14,7 +14,7 @@
 // Base Credential store, memory only and meant to be subclassed.
 //
 // Only supports |Credentials| of class |ArchivableCredential|.
-@interface MemoryCredentialStore : NSObject <CredentialStore>
+@interface MemoryCredentialStore : NSObject <MutableCredentialStore>
 
 // The in-memory storage.
 @property(nonatomic, readonly)
