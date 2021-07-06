@@ -216,7 +216,7 @@ class Persistent : public PtrEdge {
   LivenessKind Kind() override { return kRoot; }
   bool NeedsFinalization() override { return true; }
   TracingStatus NeedsTracing(NeedsTracingOption) override {
-    return TracingStatus::Unneeded();
+    return TracingStatus::Illegal();
   }
   void Accept(EdgeVisitor* visitor) override { visitor->VisitPersistent(this); }
 };
