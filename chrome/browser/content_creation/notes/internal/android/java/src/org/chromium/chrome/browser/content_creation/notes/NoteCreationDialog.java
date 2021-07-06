@@ -66,6 +66,18 @@ public class NoteCreationDialog extends DialogFragment {
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.creation_dialog, null);
         builder.setView(mContentView);
 
+        // Push down the note title depending on screensize.
+        int minTopMargin = getActivity().getResources().getDimensionPixelSize(
+                R.dimen.note_title_min_top_margin);
+        int screenHeight = getActivity().getResources().getDisplayMetrics().heightPixels;
+        int topMarginOffset = getActivity().getResources().getDimensionPixelSize(
+                R.dimen.note_title_top_margin_offset);
+        View titleView = mContentView.findViewById(R.id.title);
+        MarginLayoutParams params = (MarginLayoutParams) titleView.getLayoutParams();
+        params.topMargin = (int) (minTopMargin + (screenHeight - topMarginOffset) * 0.15f);
+        titleView.setLayoutParams(params);
+        titleView.requestLayout();
+
         if (mIsPublishAvailable) {
             Button publishButton = (Button) mContentView.findViewById(R.id.publish);
             publishButton.setVisibility(View.VISIBLE);
