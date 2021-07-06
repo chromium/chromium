@@ -45,7 +45,9 @@ bool IsIntegerArray(NotShared<DOMArrayBufferView> array) {
          type == DOMArrayBufferView::kTypeInt16 ||
          type == DOMArrayBufferView::kTypeUint16 ||
          type == DOMArrayBufferView::kTypeInt32 ||
-         type == DOMArrayBufferView::kTypeUint32;
+         type == DOMArrayBufferView::kTypeUint32 ||
+         type == DOMArrayBufferView::kTypeBigInt64 ||
+         type == DOMArrayBufferView::kTypeBigUint64;
 }
 
 }  // namespace
