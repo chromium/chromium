@@ -1,7 +1,10 @@
 <style>
   :host {
     --emoji-group-clear-recents-icon-size: 16px;
+    /*These padding values being discussed with UX*/
     --emoji-group-heading-size: 32px;
+    --emoji-group-heading-padding-bottom: 18px;
+    --emoji-group-heading-padding-top: 14px;
     margin-top: 10px;
     position: relative;
   }
@@ -10,8 +13,8 @@
     color: var(--cros-text-color-secondary);
     display: flex;
     font-size: 10pt;
-    padding-bottom: 0;
-    padding-top: 12px;
+    padding-bottom: var(--emoji-group-heading-padding-bottom);
+    padding-top: var(--emoji-group-heading-padding-top);
   }
   #heading:focus,
   #heading:active {
@@ -27,6 +30,7 @@
 
   #emoji {
     display: grid;
+    gap: var(--emoji-spacing);
     grid-auto-rows: max-content;
     grid-template-columns: repeat(var(--emoji-per-row), 1fr);
     justify-items: center;
@@ -34,9 +38,7 @@
 
   #show-clear {
     height: var(--emoji-group-heading-size);
-    left: calc((var(--emoji-picker-width)
-            - 2 * var(--emoji-picker-side-padding)) / 9 * 8
-            + var(--emoji-picker-side-padding));
+    left: var(--emoji-picker-last-emoji-left);
     margin: 0;
     width: var(--emoji-group-button-size);
   }
@@ -50,12 +52,15 @@
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
-    height: var(--emoji-group-heading-size);
+    height: var(--emoji-size);
     outline: none;
     padding: 0;
     position: absolute;
     right: calc(2px
       + 2*var(--emoji-picker-side-padding) - var(--emoji-picker-width));
+    top: calc(var(--emoji-group-heading-padding-top)
+      + var(--emoji-group-heading-padding-bottom)
+      + var(--emoji-group-heading-size));
     white-space: nowrap;
     width: fit-content;
     z-index: 200;

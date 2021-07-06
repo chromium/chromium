@@ -7,11 +7,16 @@
     --emoji-picker-top-padding: 0;
     --emoji-picker-width: 0;
     --emoji-size: 0;
+    --emoji-spacing: 0;
     --emoji-per-row: 0;
     /* Values set in css only. */
     --emoji-group-tabs-left: 0;
     --emoji-divider-color: var(--google-grey-200);
     --emoji-picker-bottom-padding: 14px;
+    --emoji-picker-last-emoji-left: calc(var(--emoji-picker-side-padding)
+            + var(--emoji-size) * (var(--emoji-per-row) - 1)
+            + var(--emoji-spacing) * (var(--emoji-per-row) - 1));
+    --emoji-picker-group-highlight-bar-width: 24px;
     /* Actual properties of the emoji picker */
     display: flex;
     flex-direction: column;
@@ -47,12 +52,15 @@
   }
 
   #tabs {
-    display: flex;
-    flex-shrink: 0;
+    display: grid;
+    grid-gap: var(--emoji-spacing);
+    grid-template-columns: repeat(18,1fr);
     left: var(--emoji-group-tabs-left);
     overflow-x: scroll;
+    padding-bottom: 10px;
+    padding-top: 18px;
     scroll-behavior: smooth;
-    scroll-padding: var(--emoji-group-button-size);
+    scroll-padding: var(--emoji-size);
     scroll-snap-type: x mandatory;
     width: 100%;
   }
@@ -86,22 +94,20 @@
   .chevron {
     background-color: var(--cros-bg-color);
     border-radius: 0;
-    height: var(--emoji-group-button-size);
+    height: var(--emoji--size);
     margin: 0;
     padding: 0;
     position: absolute;
-    width: var(--emoji-group-button-size);
+    width: var(--emoji-size);
     z-index: 2;
   }
 
   #right-chevron {
-    left: calc((var(--emoji-picker-width) -
-      2 * var(--emoji-picker-side-padding)) / 9 * 8
-      + var(--emoji-picker-side-padding));
+    left: var(--emoji-picker-last-emoji-left);
     /* Icons may become visible to the right of this during scrolling without
      * the additional padding.
      */
-    padding-inline-end: 5px;
+    padding-inline-end: var(--emoji-picker-side-padding);
   }
 
   #left-chevron {
@@ -134,13 +140,17 @@
      * time.
      */
     left: 0;
+    padding-inline-end: calc((var(--emoji-size)
+      - var(--emoji-picker-group-highlight-bar-width)) / 2);
+    padding-inline-start: calc((var(--emoji-size)
+      - var(--emoji-picker-group-highlight-bar-width)) / 2);
     position: relative;
-    width:  calc(312px / var(--emoji-per-row));
+    width: var(--emoji-picker-group-highlight-bar-width);
   }
 
   .fake {
     flex-shrink: 0;
-    width: var(--emoji-group-button-size);
+    width: var(--emoji-size);
   }
 
   .sr-only {
@@ -196,12 +206,9 @@
       <div class="fake"
         tabindex="-1">
       </div>
-      <div class="fake"
+      <div class="fake" id="RightChevronScrollTarget"
         tabindex="-1">
       </div>
-      <emoji-group-button id="RightChevronScrollTarget"
-        icon="[[emojiGroupTabs[0].icon]]" tabindex="-1">
-      </emoji-group-button>
       <cr-icon-button id="right-chevron" class="chevron"
         on-click="onRightChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_right">

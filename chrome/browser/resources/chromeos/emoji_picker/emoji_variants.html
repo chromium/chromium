@@ -1,12 +1,13 @@
 <style>
   :host {
     background: var(--cros-bg-color);
-    border-radius: 4px;
+    border-radius: 4px; /* TODO: might need to be 8 querying with UX */
     box-shadow: var(--cr-elevation-2);
     display: grid;
     grid-template-columns: max-content max-content max-content;
     grid-template-rows: max-content max-content;
     height: fit-content;
+    padding: 4px 10px 4px 10px;
     position: relative;
     width: fit-content;
     /** Increase z-index so it is above variant selection triangles. */
@@ -24,7 +25,7 @@
   #grid-skin-tone-top {
     display: flex;
     flex-direction: row;
-
+    gap: var(--emoji-spacing);
     grid-column: 3;
     grid-row: 1;
   }
@@ -53,6 +54,7 @@
   .variant-row {
     display: flex;
     flex-direction: row;
+    gap: var(--emoji-spacing);
     height: var(--emoji-size);
   }
 </style>

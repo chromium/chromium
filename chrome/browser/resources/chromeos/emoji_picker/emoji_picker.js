@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
+import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_TOTAL_EMOJI_WIDTH, EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, EMOJI_SPACING_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
@@ -229,6 +229,7 @@ export class EmojiPicker extends PolymerElement {
       '--emoji-per-row': EMOJI_PER_ROW,
       '--emoji-picker-side-padding': EMOJI_PICKER_SIDE_PADDING_PX,
       '--emoji-picker-top-padding': EMOJI_PICKER_TOP_PADDING_PX,
+      '--emoji-spacing': EMOJI_SPACING_PX,
     });
   }
 
@@ -302,10 +303,10 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onRightChevronClick() {
-    this.$.tabs.scrollLeft = GROUP_ICON_SIZE * 8;
+    this.$.tabs.scrollLeft = ((EMOJI_PICKER_TOTAL_EMOJI_WIDTH) * 8);
     this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 1].groupId);
     this.groupTabsMoving = true;
-    this.$.bar.style.left = EMOJI_GROUP_SIZE_PX;
+    this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
   }
 
   onLeftChevronClick() {
@@ -315,7 +316,7 @@ export class EmojiPicker extends PolymerElement {
     if (this.history.emoji.length > 0) {
       this.$.bar.style.left = '0';
     } else {
-      this.$.bar.style.left = '36px';
+      this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
     }
   }
 
@@ -416,23 +417,24 @@ export class EmojiPicker extends PolymerElement {
       // Update the scroll position of the emoji groups so that active group is
       // visible.
       let tabscrollLeft = this.$.tabs.scrollLeft;
-      if (tabscrollLeft > GROUP_ICON_SIZE * (index - 0.5)) {
+      if (tabscrollLeft > EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (index - 0.5)) {
         tabscrollLeft = 0;
       }
-      if (tabscrollLeft + GROUP_ICON_SIZE * (GROUP_PER_ROW - 2) <
+      if (tabscrollLeft + EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (GROUP_PER_ROW - 2) <
           GROUP_ICON_SIZE * index) {
         // 5 = We want the seventh icon to be first. Then -1 for chevron, -1 for
         // 1 based indexing.
-        tabscrollLeft = GROUP_ICON_SIZE * (7);
+        tabscrollLeft = EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (7);
       }
 
       if (updateTabsScroll) {
         this.$.tabs.scrollLeft = tabscrollLeft;
         this.$.bar.style.left =
-            ((index * GROUP_ICON_SIZE - tabscrollLeft)) + 'px';
+            ((index * EMOJI_PICKER_TOTAL_EMOJI_WIDTH - tabscrollLeft)) + 'px';
       } else {
-        this.$.bar.style.left =
-            ((index * GROUP_ICON_SIZE - this.$.tabs.scrollLeft)) + 'px';
+        this.$.bar.style.left = ((index * EMOJI_PICKER_TOTAL_EMOJI_WIDTH -
+                                  this.$.tabs.scrollLeft)) +
+            'px';
       }
     }
   }
