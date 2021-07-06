@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -58,7 +59,6 @@ import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -227,7 +227,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 menuGroup = MenuGroup.TABLET_EMPTY_MODE_MENU;
             }
         } else if (isOverview) {
-            menuGroup = StartSurfaceConfiguration.isStartSurfaceEnabled()
+            menuGroup = ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
                     ? MenuGroup.START_SURFACE_MODE_MENU
                     : MenuGroup.OVERVIEW_MODE_MENU;
         }

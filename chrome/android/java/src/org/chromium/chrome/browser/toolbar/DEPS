@@ -34,5 +34,8 @@ specific_include_rules = {
   ],
   'ToolbarControlContainer.java': [
     "+chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags",
-  ]
+  ],
+  'ToolbarColors.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeExperimentsUtil.java"
+  ],
 }

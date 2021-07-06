@@ -9,7 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
 /**
@@ -36,7 +36,7 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
 
         int expectedHeight = (int) (measuredWidth * 1.0 / mAspectRatio);
         if ((TabUiFeatureUtilities.isLaunchPolishEnabled()
-                    || StartSurfaceConfiguration.isStartSurfaceEnabled())
+                    || ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled())
                 && (getDrawable() == null
                         || (measureHeight != expectedHeight
                                 && getDrawable() instanceof ColorDrawable))) {

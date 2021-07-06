@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
@@ -447,8 +448,9 @@ public class StartSurfaceCoordinator implements StartSurface {
     private @SurfaceMode int computeSurfaceMode() {
         // Check the cached flag before getting the parameter to be consistent with the other
         // places. Note that the cached flag may have been set before native initialization.
-        return StartSurfaceConfiguration.isStartSurfaceEnabled() ? SurfaceMode.SINGLE_PANE
-                                                                 : SurfaceMode.NO_START_SURFACE;
+        return ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
+                ? SurfaceMode.SINGLE_PANE
+                : SurfaceMode.NO_START_SURFACE;
     }
 
     @VisibleForTesting

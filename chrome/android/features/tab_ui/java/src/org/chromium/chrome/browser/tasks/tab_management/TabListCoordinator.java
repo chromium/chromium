@@ -28,9 +28,9 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -315,7 +315,7 @@ public class TabListCoordinator
      *         animations for tab switcher.
      */
     int getTabListTopOffset() {
-        if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) return 0;
+        if (!ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) return 0;
         Rect tabListRect = getRecyclerViewLocation();
         Rect parentRect = new Rect();
         mRootView.getGlobalVisibleRect(parentRect);

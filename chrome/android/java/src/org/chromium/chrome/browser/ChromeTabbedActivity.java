@@ -736,7 +736,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     return;
                 }
 
-                if (isInOverviewMode() && !StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+                if (isInOverviewMode()
+                        && !ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
                     hideOverview();
                 } else {
                     showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
@@ -1698,7 +1699,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // tablet), a view-only start page created on Java will be shown before native is
         // initialized. The {@link prepareToShowStartPagePreNative()} is only called in a cold
         // start.
-        if (StartSurfaceConfiguration.isStartSurfaceEnabled()
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
                 && TabUiFeatureUtilities.supportInstantStart(isTablet()) && !hadWarmStart()) {
             prepareToShowStartPagePreNative();
         }
@@ -1815,7 +1816,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected Pair<ChromeTabCreator, ChromeTabCreator> createTabCreators() {
         ChromeTabCreator.OverviewNTPCreator overviewNTPCreator = null;
 
-        if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
             overviewNTPCreator = new ChromeTabCreator.OverviewNTPCreator() {
                 @Override
                 public boolean handleCreateNTPIfNeeded(boolean isNTP, boolean incognito,
@@ -2272,7 +2273,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             //                showing the overview list before going to the start surface.
             mOverviewModeController.showOverview(false);
         } else if (mStartSurfaceSupplier.get() != null) {
-            if (StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()) {
+            if (StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()
+                    || !HomepageManager.isHomepageEnabled()) {
                 state = StartSurfaceState.SHOWING_TABSWITCHER;
             }
             mStartSurfaceSupplier.get().getController().setOverviewState(state, launchOrigin);
