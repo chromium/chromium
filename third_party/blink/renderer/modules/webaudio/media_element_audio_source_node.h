@@ -30,6 +30,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"

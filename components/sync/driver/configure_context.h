@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/configure_reason.h"
 #include "google_apis/gaia/core_account_id.h"

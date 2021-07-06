@@ -13,6 +13,10 @@
 #include "components/arc/session/file_system_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace arc {
 
 struct UpgradeParams;

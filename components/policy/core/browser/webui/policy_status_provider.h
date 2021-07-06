@@ -10,6 +10,7 @@
 
 namespace base {
 class DictionaryValue;
+class Time;
 }
 
 namespace policy {

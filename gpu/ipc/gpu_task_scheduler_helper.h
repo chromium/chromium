@@ -10,6 +10,10 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 
+namespace base {
+class TimeTicks;
+}
+
 namespace viz {
 class VizProcessContextProvider;
 class DisplayCompositorMemoryAndTaskController;

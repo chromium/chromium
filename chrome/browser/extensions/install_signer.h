@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "extensions/common/extension_id.h"
 
 namespace base {

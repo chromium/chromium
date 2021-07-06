@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/throttle_observer.h"
 
 namespace content {

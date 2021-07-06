@@ -4,6 +4,8 @@
 
 #include "device/base/synchronization/one_writer_seqlock.h"
 
+#include "base/threading/platform_thread.h"
+
 namespace device {
 
 OneWriterSeqLock::OneWriterSeqLock() : sequence_(0) {}

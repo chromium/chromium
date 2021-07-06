@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_VR_SEQUENCE_H_
 
 #include <list>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/time/time.h"
 
 namespace vr {
 

@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "base/bind.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "mojo/core/core_test_base.h"
 #include "mojo/public/cpp/system/wait.h"

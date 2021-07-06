@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/der/parse_values.h"
 

@@ -28,6 +28,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"

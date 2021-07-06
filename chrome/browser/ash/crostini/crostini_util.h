@@ -24,6 +24,7 @@ class Window;
 
 namespace base {
 class FilePath;
+class TimeTicks;
 }  // namespace base
 
 namespace views {

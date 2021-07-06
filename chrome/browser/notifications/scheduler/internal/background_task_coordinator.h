@@ -15,6 +15,7 @@
 
 namespace base {
 class Clock;
+class TimeDelta;
 }  // namespace base
 
 namespace notifications {

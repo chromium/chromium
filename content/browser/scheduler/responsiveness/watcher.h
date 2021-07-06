@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 
 namespace content {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SESSION_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 

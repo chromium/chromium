@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/common/extension_id.h"

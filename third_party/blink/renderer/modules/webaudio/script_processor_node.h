@@ -37,6 +37,10 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace blink {
 
 class AudioBuffer;

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"

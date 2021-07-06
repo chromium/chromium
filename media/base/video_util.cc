@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/time/time.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/status_codes.h"

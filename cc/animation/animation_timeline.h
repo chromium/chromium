@@ -7,9 +7,14 @@
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "cc/animation/animation_export.h"
+
+namespace base {
+class TimeTicks;
+}
 
 namespace cc {
 

@@ -12,6 +12,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "media/base/audio_sample_types.h"

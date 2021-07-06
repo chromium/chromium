@@ -7,16 +7,17 @@
 #include <memory>
 
 #include "build/build_config.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
-#else
-#include "chrome/browser/device_identity/device_oauth2_token_store_desktop.h"
-#endif
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "components/policy/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
+#else
+#include "chrome/browser/device_identity/device_oauth2_token_store_desktop.h"
+#endif
 
 namespace {
 

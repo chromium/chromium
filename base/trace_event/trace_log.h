@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/category_registry.h"
 #include "base/trace_event/memory_dump_provider.h"

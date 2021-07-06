@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_value_map.h"
 

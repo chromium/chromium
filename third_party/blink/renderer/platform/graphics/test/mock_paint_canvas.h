@@ -9,6 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace cc {
 class SkottieWrapper;

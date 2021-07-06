@@ -5,6 +5,10 @@
 #ifndef UI_BASE_X_X11_MOVE_LOOP_DELEGATE_H_
 #define UI_BASE_X_X11_MOVE_LOOP_DELEGATE_H_
 
+namespace base {
+class TimeTicks;
+}
+
 namespace gfx {
 class Point;
 }

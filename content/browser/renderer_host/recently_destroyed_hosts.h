@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace base {

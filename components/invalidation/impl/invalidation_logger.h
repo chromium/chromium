@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 

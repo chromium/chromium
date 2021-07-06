@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"

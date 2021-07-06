@@ -5,7 +5,10 @@
 #include "cc/animation/animation_timeline.h"
 
 #include <algorithm>
+#include <utility>
+#include <vector>
 
+#include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/trees/property_tree.h"
