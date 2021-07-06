@@ -20,18 +20,12 @@ bindings_modules_v8_files =
           "to_v8_for_modules.h",
           "v8_binding_for_modules.cc",
           "v8_binding_for_modules.h",
-          "v8_context_snapshot_external_references.h",
+          "v8_context_snapshot_impl.cc",
+          "v8_context_snapshot_impl.h",
           "webgl_any.cc",
           "webgl_any.h",
         ],
         "abspath") + bindings_modules_v8_custom_files
-if (use_blink_v8_binding_new_idl_interface) {
-  bindings_modules_v8_files += get_path_info([
-                                               "v8_context_snapshot_impl.cc",
-                                               "v8_context_snapshot_impl.h",
-                                             ],
-                                             "abspath")
-}
 
 bindings_modules_v8_unittest_files =
     get_path_info(

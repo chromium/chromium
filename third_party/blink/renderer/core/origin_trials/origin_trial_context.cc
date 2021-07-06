@@ -366,11 +366,7 @@ bool OriginTrialContext::InstallFeature(OriginTrialFeature enabled_feature,
                                         ScriptState* script_state) {
   if (installed_features_.Contains(enabled_feature))
     return false;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE)
   InstallPropertiesPerFeature(script_state, enabled_feature);
-#else
-  InstallPendingOriginTrialFeature(enabled_feature, script_state);
-#endif
   installed_features_.insert(enabled_feature);
   return true;
 }

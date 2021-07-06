@@ -249,7 +249,6 @@ void LocalWindowProxy::InstallConditionalFeatures() {
   TRACE_EVENT1("v8", "InstallConditionalFeatures", "IsMainFrame",
                GetFrame()->IsMainFrame());
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE)
   if (context_was_created_from_snapshot_) {
     V8ContextSnapshot::InstallContextIndependentProps(script_state_);
   }
@@ -261,38 +260,6 @@ void LocalWindowProxy::InstallConditionalFeatures() {
   // and V8 can extend the context with origin trial features.
   script_state_->GetIsolate()->InstallConditionalFeatures(
       script_state_->GetContext());
-#else   // USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE
-  v8::Local<v8::Context> context = script_state_->GetContext();
-
-  // If the context was created from snapshot, all conditionally
-  // enabled features are installed in
-  // V8ContextSnapshot::InstallConditionalFeatures().
-  if (V8ContextSnapshot::InstallConditionalFeatures(
-          context, GetFrame()->GetDocument())) {
-    return;
-  }
-
-  v8::Local<v8::Object> global_proxy = context->Global();
-  const WrapperTypeInfo* wrapper_type_info =
-      GetFrame()->DomWindow()->GetWrapperTypeInfo();
-
-  v8::Local<v8::Object> unused_prototype_object;
-  v8::Local<v8::Function> unused_interface_object;
-  wrapper_type_info->InstallConditionalFeatures(
-      context, World(), global_proxy, unused_prototype_object,
-      unused_interface_object,
-      wrapper_type_info->DomTemplate(GetIsolate(), World()));
-
-  if (World().IsMainWorld()) {
-    // For the main world, install any remaining conditional bindings (i.e.
-    // for origin trials, which do not apply to extensions). Some conditional
-    // bindings cannot be enabled until the execution context is available
-    // (e.g. parsing the document, inspecting HTTP headers).
-    InstallOriginTrialFeatures(wrapper_type_info, script_state_,
-                               v8::Local<v8::Object>(),
-                               v8::Local<v8::Function>());
-  }
-#endif  // USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE
 }
 
 void LocalWindowProxy::SetupWindowPrototypeChain() {
@@ -324,10 +291,6 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
   v8::Local<v8::Object> window_prototype =
       window_wrapper->GetPrototype().As<v8::Object>();
   CHECK(!window_prototype.IsEmpty());
-#if !defined(USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE)
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_prototype, wrapper_type_info,
-                              window);
-#endif
 
   // The named properties object of Window interface.
   v8::Local<v8::Object> window_properties =
@@ -336,14 +299,12 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
   V8DOMWrapper::SetNativeInfo(GetIsolate(), window_properties,
                               wrapper_type_info, window);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE)
   // [CachedAccessor=kWindowProxy]
   V8PrivateProperty::GetCachedAccessor(
       GetIsolate(), V8PrivateProperty::CachedAccessor::kWindowProxy)
       .Set(window_wrapper, global_proxy);
-#endif
 
-  // TODO(keishi): Remove installPagePopupController and implement
+  // TODO(yukishiino): Remove installPagePopupController and implement
   // PagePopupController in another way.
   V8PagePopupControllerBinding::InstallPagePopupController(context,
                                                            window_wrapper);

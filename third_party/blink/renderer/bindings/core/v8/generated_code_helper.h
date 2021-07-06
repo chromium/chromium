@@ -28,11 +28,6 @@ class QualifiedName;
 class Range;
 class ScriptState;
 
-CORE_EXPORT void V8ConstructorAttributeGetter(
-    v8::Local<v8::Name> property_name,
-    const v8::PropertyCallbackInfo<v8::Value>&,
-    const WrapperTypeInfo*);
-
 // ExceptionToRejectPromiseScope converts a possible exception to a reject
 // promise and returns the promise instead of throwing the exception.
 //
@@ -84,19 +79,6 @@ using InstallRuntimeEnabledFeaturesFunction =
              v8::Local<v8::Function> interface_object);
 
 using InstallRuntimeEnabledFeaturesOnTemplateFunction = InstallTemplateFunction;
-
-// Helpers for [CEReactions, Reflect] IDL attributes.
-void V8SetReflectedBooleanAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const char* interface_name,
-    const char* idl_attribute_name,
-    const QualifiedName& content_attr);
-void V8SetReflectedDOMStringAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attr);
-void V8SetReflectedNullableDOMStringAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attr);
 
 namespace bindings {
 

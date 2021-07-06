@@ -253,39 +253,12 @@ void WorkerOrWorkletScriptController::PrepareForEvaluation() {
 
   v8::HandleScope handle_scope(isolate_);
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE)
   V8PerContextData* per_context_data = script_state_->PerContextData();
   ignore_result(per_context_data->ConstructorForType(
       global_scope_->GetWrapperTypeInfo()));
   // Inform V8 that origin trial information is now connected with the context,
   // and V8 can extend the context with origin trial features.
   isolate_->InstallConditionalFeatures(script_state_->GetContext());
-#else   // USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE
-  ScriptState::Scope scope(script_state_);
-  v8::Local<v8::Context> context = script_state_->GetContext();
-
-  auto* script_wrappable = static_cast<ScriptWrappable*>(global_scope_);
-  const WrapperTypeInfo* wrapper_type_info =
-      script_wrappable->GetWrapperTypeInfo();
-
-  // All interfaces must be registered to V8PerContextData.
-  // So we explicitly call constructorForType for the global object.
-  // This should be called after OriginTrialContext::AddTokens() in
-  // WorkerGlobalScope::Initialize() to install origin trial features.
-  V8PerContextData::From(context)->ConstructorForType(wrapper_type_info);
-
-  v8::Local<v8::Object> global_object =
-      context->Global()->GetPrototype().As<v8::Object>();
-  DCHECK(!global_object.IsEmpty());
-
-  v8::Local<v8::FunctionTemplate> global_interface_template =
-      wrapper_type_info->DomTemplate(isolate_, *world_);
-  DCHECK(!global_interface_template.IsEmpty());
-
-  wrapper_type_info->InstallConditionalFeatures(
-      context, *world_, global_object, v8::Local<v8::Object>(),
-      v8::Local<v8::Function>(), global_interface_template);
-#endif  // USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE
 }
 
 void WorkerOrWorkletScriptController::DisableEvalInternal(

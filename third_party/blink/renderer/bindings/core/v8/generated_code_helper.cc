@@ -21,20 +21,6 @@
 
 namespace blink {
 
-void V8ConstructorAttributeGetter(
-    v8::Local<v8::Name> property_name,
-    const v8::PropertyCallbackInfo<v8::Value>& info,
-    const WrapperTypeInfo* wrapper_type_info) {
-  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
-      info.GetIsolate(), "Blink_V8ConstructorAttributeGetter");
-  V8PerContextData* per_context_data =
-      V8PerContextData::From(info.Holder()->CreationContext());
-  if (!per_context_data)
-    return;
-  V8SetReturnValue(info,
-                   per_context_data->ConstructorForType(wrapper_type_info));
-}
-
 namespace {
 
 enum class IgnorePause { kDontIgnore, kIgnore };
@@ -101,57 +87,6 @@ bool IsCallbackFunctionRunnableIgnoringPause(
   return IsCallbackFunctionRunnableInternal(callback_relevant_script_state,
                                             incumbent_script_state,
                                             IgnorePause::kIgnore);
-}
-
-void V8SetReflectedBooleanAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const char* interface_name,
-    const char* idl_attribute_name,
-    const QualifiedName& content_attr) {
-  v8::Isolate* isolate = info.GetIsolate();
-  Element* impl = V8Element::ToImpl(info.Holder());
-
-  ExceptionState exception_state(isolate, ExceptionState::kSetterContext,
-                                 interface_name, idl_attribute_name);
-  CEReactionsScope ce_reactions_scope;
-
-  // Prepare the value to be set.
-  bool cpp_value = NativeValueTraits<IDLBoolean>::NativeValue(isolate, info[0],
-                                                              exception_state);
-  if (exception_state.HadException())
-    return;
-
-  impl->SetBooleanAttribute(content_attr, cpp_value);
-}
-
-void V8SetReflectedDOMStringAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attr) {
-  Element* impl = V8Element::ToImpl(info.Holder());
-
-  CEReactionsScope ce_reactions_scope;
-
-  // Prepare the value to be set.
-  V8StringResource<> cpp_value{info[0]};
-  if (!cpp_value.Prepare())
-    return;
-
-  impl->setAttribute(content_attr, cpp_value);
-}
-
-void V8SetReflectedNullableDOMStringAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attr) {
-  Element* impl = V8Element::ToImpl(info.Holder());
-
-  CEReactionsScope ce_reactions_scope;
-
-  // Prepare the value to be set.
-  V8StringResource<kTreatNullAndUndefinedAsNullString> cpp_value{info[0]};
-  if (!cpp_value.Prepare())
-    return;
-
-  impl->setAttribute(content_attr, cpp_value);
 }
 
 namespace bindings {
@@ -387,8 +322,6 @@ v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
   return v8::Array::New(isolate, elements.data(), elements.size());
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE)
-
 void InstallCSSPropertyAttributes(
     v8::Isolate* isolate,
     const DOMWrapperWorld& world,
@@ -530,8 +463,6 @@ void PerformAttributeSetCEReactionsReflectTypeStringOrNull(
       IDLNullable<IDLStringV2>, const AtomicString&, &Element::setAttribute>(
       info, content_attribute, interface_name, attribute_name);
 }
-
-#endif  // USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE
 
 }  // namespace bindings
 
