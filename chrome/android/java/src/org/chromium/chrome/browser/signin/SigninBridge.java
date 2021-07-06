@@ -85,8 +85,6 @@ final class SigninBridge {
         final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
                 AccountManagerFacadeProvider.getInstance().getAccounts());
         if (accounts.isEmpty()) {
-            // TODO(https://crbug.com/1119720): Show the bottom sheet when no accounts on device
-            //  in the future. This disabling is only temporary.
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS);
             return;
