@@ -78,10 +78,10 @@ public class UrlConstants {
             "https://myaccount.google.com/activitycontrols/search";
 
     public static final String GOOGLE_SEARCH_HISTORY_URL_IN_CBD =
-            "https://myactivity.google.com/myactivity?product=19&utm_source=chrome_cbd";
+            "https://myactivity.google.com/product/search?utm_source=chrome_cbd";
 
     public static final String MY_ACTIVITY_URL_IN_CBD =
-            "https://myactivity.google.com/myactivity/?utm_source=chrome_cbd";
+            "https://myactivity.google.com/myactivity?utm_source=chrome_cbd";
 
     public static final String MY_ACTIVITY_URL_IN_CBD_NOTICE =
             "https://myactivity.google.com/myactivity/?utm_source=chrome_n";
