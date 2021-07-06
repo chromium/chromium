@@ -1415,6 +1415,10 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
     // the new text if replacement text has already been inserted into Blink.
     if (new_text_inserted_ && (old_size > replace_text_range_.start()) &&
         !replace_text_range_.is_empty()) {
+      // Delete text that has already been inserted into blink.
+      text_input_client_->ExtendSelectionAndDelete(
+          replace_text_range_.end() - replace_text_range_.start(), 0);
+
       new_committed_string_offset = replace_text_range_.start();
       new_committed_string_size = replace_text_size_;
     }

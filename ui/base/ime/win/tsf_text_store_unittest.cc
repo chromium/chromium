@@ -4020,6 +4020,107 @@ TEST_F(TSFTextStoreTest, RegressionTest12) {
   EXPECT_EQ(S_OK, result);
 }
 
+// regression tests for crbug.com/1225896.
+// Some IMEs (e.g. voice typing panel) may remove text before active
+// composition. We should delete text before inserting new text.
+class RegressionTest13Callback : public TSFTextStoreTestCallback {
+ public:
+  explicit RegressionTest13Callback(TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  RegressionTest13Callback(const RegressionTest13Callback&) = delete;
+  RegressionTest13Callback& operator=(const RegressionTest13Callback&) = delete;
+
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"text ", S_OK);
+    SetTextTest(4, 5, L"", S_OK);
+    SetTextTest(4, 4, L" delete that ", S_OK);
+    SetSelectionTest(17, 17, S_OK);
+
+    text_spans()->clear();
+    ImeTextSpan text_span;
+    text_span.start_offset = 4;
+    text_span.end_offset = 17;
+    text_span.underline_color = SK_ColorBLACK;
+    text_span.thickness = ImeTextSpan::Thickness::kThin;
+    text_span.background_color = SK_ColorTRANSPARENT;
+    text_spans()->push_back(text_span);
+    *edit_flag() = true;
+    *composition_start() = 4;
+    composition_range()->set_start(4);
+    composition_range()->set_end(17);
+    // text_store_->OnKeyTraceDown(65u, 1966081u);
+    *has_composition_range() = true;
+
+    return S_OK;
+  }
+
+  void SetCompositionText1(const ui::CompositionText& composition) {
+    EXPECT_EQ(u" delete that ", composition.text);
+    EXPECT_EQ(13u, composition.selection.start());
+    EXPECT_EQ(13u, composition.selection.end());
+    ASSERT_EQ(1u, composition.ime_text_spans.size());
+    EXPECT_EQ(0u, composition.ime_text_spans[0].start_offset);
+    EXPECT_EQ(13u, composition.ime_text_spans[0].end_offset);
+    SetHasCompositionText(true);
+    SetTextRange(0, 17);
+    SetTextBuffer(u"text delete that ");
+    SetSelectionRange(17, 17);
+  }
+
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"text delete that ", 17);
+    SetTextTest(4, 17, L"", S_OK);
+    GetTextTest(0, -1, L"text", 4);
+    SetTextTest(0, 4, L"", S_OK);
+    GetTextTest(0, -1, L"", 0);
+    SetSelectionTest(0, 0, S_OK);
+
+    text_spans()->clear();
+    *edit_flag() = true;
+    *composition_start() = 3;
+    composition_range()->set_start(0);
+    composition_range()->set_end(0);
+    *has_composition_range() = false;
+
+    return S_OK;
+  }
+
+  HRESULT LockGranted3(DWORD flags) {
+    GetTextTest(0, -1, L"", 0);
+
+    return S_OK;
+  }
+};
+
+TEST_F(TSFTextStoreTest, RegressionTest13) {
+  RegressionTest13Callback callback(text_store_.get());
+  EXPECT_CALL(text_input_client_, ExtendSelectionAndDelete(_, _)).Times(1);
+  EXPECT_CALL(text_input_client_, InsertText(_, _)).Times(0);
+  EXPECT_CALL(text_input_client_, SetCompositionText(_))
+      .WillOnce(
+          Invoke(&callback, &RegressionTest13Callback::SetCompositionText1));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(&callback, &RegressionTest13Callback::LockGranted1))
+      .WillOnce(Invoke(&callback, &RegressionTest13Callback::LockGranted2))
+      .WillOnce(Invoke(&callback, &RegressionTest13Callback::LockGranted3));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+}
+
 // Test multiple |SetText| call in one edit session.
 class MultipleSetTextCallback : public TSFTextStoreTestCallback {
  public:
