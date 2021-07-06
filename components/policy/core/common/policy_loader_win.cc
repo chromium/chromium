@@ -186,8 +186,6 @@ void CollectEnterpriseUMAs() {
                             base::win::IsDeviceRegisteredWithManagement());
   base::UmaHistogramBoolean("EnterpriseCheck.IsEnterpriseUser",
                             base::IsMachineExternallyManaged());
-  base::UmaHistogramBoolean("EnterpriseCheck.IsJoinedToAzureAD",
-                            base::win::IsJoinedToAzureAD());
 
   std::wstring machine_name;
   if (GetName(

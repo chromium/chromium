@@ -160,10 +160,6 @@ BASE_EXPORT bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason);
 // Returns true if the machine is enrolled to a domain.
 BASE_EXPORT bool IsEnrolledToDomain();
 
-// Returns true if either the device is joined to Azure Active Directory (AD) or
-// one or more Azure AD work accounts have been added on the device.
-BASE_EXPORT bool IsJoinedToAzureAD();
-
 // Returns true if the machine is being managed by an MDM system.
 BASE_EXPORT bool IsDeviceRegisteredWithManagement();
 
@@ -252,21 +248,6 @@ class BASE_EXPORT ScopedDeviceRegisteredWithManagementForTesting {
  private:
   bool initial_state_;
   DISALLOW_COPY_AND_ASSIGN(ScopedDeviceRegisteredWithManagementForTesting);
-};
-
-// Allows changing the Azure Active Directory join state for the lifetime of the
-// object. The original state is restored upon destruction.
-class BASE_EXPORT ScopedAzureADJoinStateForTesting {
- public:
-  explicit ScopedAzureADJoinStateForTesting(bool state);
-  ScopedAzureADJoinStateForTesting(const ScopedAzureADJoinStateForTesting&) =
-      delete;
-  ScopedAzureADJoinStateForTesting& operator=(
-      const ScopedAzureADJoinStateForTesting&) = delete;
-  ~ScopedAzureADJoinStateForTesting();
-
- private:
-  const bool initial_state_;
 };
 
 }  // namespace win
