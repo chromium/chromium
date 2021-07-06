@@ -62,8 +62,6 @@ class PolicyDetails:
   # - the equivalent Protobuf field type
   # - the name of one of the protobufs for shared policy types
   # - the equivalent type in Android's App Restriction Schema
-  # TODO(joaodasilva): refactor the 'dict' type into a more generic 'json' type
-  # that can also be used to represent lists of other JSON objects.
   TYPE_MAP = {
       'dict': ('Type::DICTIONARY', 'string', 'String', 'string'),
       'external': ('TYPE_EXTERNAL', 'string', 'String', 'invalid'),
