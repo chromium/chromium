@@ -812,7 +812,7 @@ const char* LifecycleStateImplToString(
     case LifecycleStateImpl::kRunningUnloadHandlers:
       return "RunningUnloadHandlers";
     case LifecycleStateImpl::kReadyToBeDeleted:
-      return "ReadyToDeleted";
+      return "ReadyToBeDeleted";
   }
 }
 
@@ -2866,7 +2866,13 @@ void RenderFrameHostImpl::RenderProcessExited(
   if (IsPendingDeletion()) {
     // If the process has died, we don't need to wait for the ACK. Complete the
     // deletion immediately.
-    SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
+    // Note that it is possible for a frame to already be in kReadyToBeDeleted.
+    // This happens when this RenderFrameHost is pending deletion and is
+    // waiting on one of its children to run its unload handler. While running
+    // it, it can request its parent to detach itself.
+    if (lifecycle_state() != LifecycleStateImpl::kReadyToBeDeleted) {
+      SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
+    }
     DCHECK(children_.empty());
     PendingDeletionCheckCompleted();
     // |this| is deleted. Don't add any more code at this point in the function.
