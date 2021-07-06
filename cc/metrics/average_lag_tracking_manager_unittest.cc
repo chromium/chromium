@@ -157,35 +157,12 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
   EXPECT_EQ(gpu_swap_time, MillisecondsToTimeTicks(1030));
   EXPECT_EQ(presentation_time, MillisecondsToTimeTicks(1033));
 
-  // ScrollBegin AverageLag are the area between the event original component
-  // (time=15ms, delta=10px) to the gpu swap time (time=20ms, expect finger
-  // position at delta=15px). The AverageLag scaled to 1 second is
-  // (0.5*(10px+15px)*5ms)/5ms = 12.5px.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollBegin.Touch.AverageLag"),
-              ElementsAre(Bucket(12, 1)));
-
   // Using the presentation time (25ms) instead of gpu swap (20ms) the expected
   // finger position is delta = 16px. Then (0.5*(10px+18px)*10ms)/10ms = 14px.
   // UmaHistogramCounts1000's binning will round it to 12.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
                   "Event.Latency.ScrollBegin.Touch.AverageLagPresentation"),
               ElementsAre(Bucket(14, 1)));
-
-  // This ScrollUpdate AverageLag are calculated as the finger uniformly scroll
-  // 10px each frame. For scroll up/down frame, the Lag at the last frame swap
-  // is 5px, and Lag at this frame swap is 15px. For the one changing direction,
-  // the Lag is from 5 to 10 and down to 5 again. So total LagArea is 99 * 100,
-  // plus 75. the AverageLag in 1 second is 9.975px.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollUpdate.Touch.AverageLag"),
-              ElementsAre(Bucket(9, 1)));
-  EXPECT_THAT(
-      histogram_tester_->GetAllSamples(
-          "Event.Latency.ScrollUpdate.Touch.AverageLag.PredictionPositive"),
-      ElementsAre(Bucket(0, 1)));
-  histogram_tester_->ExpectTotalCount(
-      "Event.Latency.ScrollUpdate.Touch.AverageLag.PredictionNegative", 0);
 
   // As the presentation times are at 80% of the gap between 2 scroll events,
   // the Lag Area between 2 frames is define by the trapezoids: (time=event-2,
@@ -209,28 +186,6 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
       0);
 
   ResetHistograms();
-
-  // Send another ScrollBegin to end the unfinished ScrollUpdate report.
-  event_time += base::TimeDelta::FromMilliseconds(10);
-  gpu_swap_time += base::TimeDelta::FromMilliseconds(10);
-  presentation_time += base::TimeDelta::FromMilliseconds(10);
-  evt = PrepareScrollEvent(AverageLagTracker::EventType::ScrollBegin,
-                           event_time, 1, scroll_delta);
-  average_lag_tracking_manager_.CollectScrollEventsFromFrame(
-      frame_id, std::vector<ui::LatencyInfo>{evt});
-  average_lag_tracking_manager_.DidPresentCompositorFrame(
-      frame_id, PrepareFrameDetails(gpu_swap_time, presentation_time));
-
-  // The last ScrollUpdate's lag is 8.75px and truncated to 8.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollUpdate.Touch.AverageLag"),
-              ElementsAre(Bucket(8, 1)));
-  EXPECT_THAT(
-      histogram_tester_->GetAllSamples(
-          "Event.Latency.ScrollUpdate.Touch.AverageLag.PredictionPositive"),
-      ElementsAre(Bucket(0, 1)));
-  histogram_tester_->ExpectTotalCount(
-      "Event.Latency.ScrollUpdate.Touch.AverageLag.PredictionNegative", 0);
 }
 
 // This test creates 3 frames in order to check the submission of ScrollBegin
@@ -248,28 +203,11 @@ TEST_F(AverageLagTrackingManagerTest, MultipleEventsInSameFrame) {
   }
 
   // As the first frame is the ScrollBegin frame, the average lag is, using the
-  // gpu swap time, 0.5*(10 + 40) * 30 / 30 = 25. But UmaHistogramCounts1000's
-  // binning will round it to 23.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollBegin.Touch.AverageLag"),
-              ElementsAre(Bucket(23, 1)));
-
-  // As the first frame is the ScrollBegin frame, the average lag is, using the
   // presentation time, 0.5*(10 + 50) * 40 / 40 = 30. But
   // UmaHistogramCounts1000's binning will round it to 29.
   EXPECT_THAT(histogram_tester_->GetAllSamples(
                   "Event.Latency.ScrollBegin.Touch.AverageLagPresentation"),
               ElementsAre(Bucket(29, 1)));
-
-  // Only the ScrollUpdate events from frame 2 are sent (as the frame 3 is
-  // waiting for the next frame for sumission).
-  // As there is a scroll update right at the same time as the frame submission,
-  // using gpu swap time, frame 2 starts with 0 lag at 0.4s and finishes with
-  // 100 at 1.4, thus: 0.5 * (0 + 100) / 2 = 50. It gets into the same bin as
-  // 47.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollUpdate.Touch.AverageLag"),
-              ElementsAre(Bucket(47, 1)));
 
   // Only the ScrollUpdate events from frame 2 are sent (as the frame 3 is
   // waiting for the next frame for sumission).

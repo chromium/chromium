@@ -88,11 +88,8 @@ void AverageLagTrackingManager::DidPresentCompositorFrame(
               });
 
     for (AverageLagTracker::EventInfo info : infos) {
-      info.finish_timestamp = frame_details.swap_timings.swap_start;
-      lag_tracker_gpu_swap_.AddScrollEventInFrame(info);
-
       info.finish_timestamp = frame_details.presentation_feedback.timestamp;
-      lag_tracker_presentation_.AddScrollEventInFrame(info);
+      lag_tracker_.AddScrollEventInFrame(info);
     }
   }
 }

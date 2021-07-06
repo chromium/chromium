@@ -697,6 +697,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollBegin.Touch.AverageLag" units="pixels"
     expires_after="M97">
+  <obsolete>
+    Removed 2021.06.30 - replaced by AverageLagPresentation, which is more
+    accurate.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -727,10 +731,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     interaction there is a GSB followed by multiple Gesture Scroll Updates,
     which are separately logged by
     Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.
-
-    The difference between AverageLag and AverageLagPresentation is that the
-    former uses the Gpu Swap Begin Time as an approximation for the time the
-    frame is visible on the screen, while the latter uses the Presentation Time.
 
     Team: input-dev@chromium.org.
   </summary>
@@ -1223,6 +1223,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLag" units="pixels"
     expires_after="M97">
+  <obsolete>
+    Removed 2021.06.30 - replaced by AverageLagPresentation, which is more
+    accurate.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1241,6 +1245,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLag.PredictionNegative"
     units="pixels" expires_after="M97">
+  <obsolete>
+    Removed 2021.06.30 - replaced by AverageLagPresentation.PredictionNegative,
+    which is more accurate.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1263,6 +1271,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLag.PredictionPositive"
     units="pixels" expires_after="M97">
+  <obsolete>
+    Removed 2021.06.30 - replaced by AverageLagPresentation.PredictionPositive,
+    which is more accurate.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1295,10 +1307,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This is the lag caused by the Gesture Scroll Updates occurring in the
     lifetime of a scroll interaction.
 
-    The difference between AverageLag and AverageLagPresentation is that the
-    former uses the Gpu Swap Begin Time as an approximation for the time the
-    frame is visible on the screen, while the latter uses the Presentation Time.
-
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
@@ -1321,10 +1329,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the interaction/interval is either 1s, or the time from when the user starts
     scrolling to lifting the finger, whichever is smaller.
 
-    The difference between AverageLag and AverageLagPresentation is that the
-    former uses the Gpu Swap Begin Time as an approximation for the time the
-    frame is visible on the screen, while the latter uses the Presentation Time.
-
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
@@ -1346,10 +1350,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     of the finger) for a given interaction/interval. The duration of the
     interaction/interval is either 1s, or the time from when the user starts
     scrolling to lifting the finger, whichever is smaller.
-
-    The difference between AverageLag and AverageLagPresentation is that the
-    former uses the Gpu Swap Begin Time as an approximation for the time the
-    frame is visible on the screen, while the latter uses the Presentation Time.
 
     Team: input-dev@chromium.org.
   </summary>

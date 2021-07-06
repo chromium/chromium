@@ -11,8 +11,7 @@
 
 namespace cc {
 
-AverageLagTracker::AverageLagTracker(FinishTimeType finish_time_type)
-    : finish_time_type_(finish_time_type) {}
+AverageLagTracker::AverageLagTracker() = default;
 AverageLagTracker::~AverageLagTracker() = default;
 
 void AverageLagTracker::AddScrollEventInFrame(const EventInfo& event_info) {
@@ -28,9 +27,7 @@ void AverageLagTracker::AddScrollEventInFrame(const EventInfo& event_info) {
 }
 
 std::string AverageLagTracker::GetAverageLagMetricName(EventType event) const {
-  std::string metric_name = finish_time_type_ == FinishTimeType::GpuSwapBegin
-                                ? "AverageLag"
-                                : "AverageLagPresentation";
+  std::string metric_name = "AverageLagPresentation";
 
   std::string event_name =
       event == EventType::ScrollBegin ? "ScrollBegin" : "ScrollUpdate";

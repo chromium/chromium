@@ -18,7 +18,6 @@ namespace cc {
 // https://docs.google.com/document/d/1e8NuzPblIv2B9bz01oSj40rmlse7_PHq5oFS3lqz6N4/
 class CC_EXPORT AverageLagTracker {
  public:
-  enum class FinishTimeType { GpuSwapBegin, PresentationFeedback };
   enum class EventType { ScrollBegin, ScrollUpdate };
 
   struct EventInfo {
@@ -48,7 +47,7 @@ class CC_EXPORT AverageLagTracker {
     EventType event_type;
   };
 
-  explicit AverageLagTracker(FinishTimeType);
+  AverageLagTracker();
   ~AverageLagTracker();
 
   // Disallow copy and assign.
@@ -106,10 +105,6 @@ class CC_EXPORT AverageLagTracker {
                    float rendered_accumulated_delta);
 
   float LagForUnfinishedFrame(float rendered_accumulated_delta);
-
-  // Time in the frame lifecycle that EventInfo::finish_timestamp represents
-  // and defines which metric is tracked by this AverageLagTracker.
-  const FinishTimeType finish_time_type_;
 
   std::deque<LagAreaInFrame> frame_lag_infos_;
 
