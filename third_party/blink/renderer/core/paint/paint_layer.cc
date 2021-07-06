@@ -1976,8 +1976,8 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
 
   if (container_transform_state &&
       RuntimeEnabledFeatures::TransformInteropEnabled() &&
-      &container_layer->GetLayoutObject() !=
-          GetLayoutObject().NearestAncestorForElement()) {
+      (!container_layer || &container_layer->GetLayoutObject() !=
+                               GetLayoutObject().NearestAncestorForElement())) {
     // Our parent *layer* is preserve-3d, but that preserve-3d doesn't
     // apply to this layer because our element is not a child of our
     // parent layer's element.
