@@ -43,6 +43,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/sync",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
+      "//ios/chrome/common/credential_provider:ui",
       "//ios/public/provider/chrome/browser/signin",
       "//url",
     ]

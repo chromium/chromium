@@ -13,8 +13,7 @@
 #include "components/sync/driver/sync_service_observer.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 
-@class ArchivableCredential;
-@class ArchivableCredentialStore;
+@protocol CredentialStore;
 
 namespace syncer {
 class SyncService;
@@ -33,7 +32,7 @@ class CredentialProviderService
   CredentialProviderService(
       scoped_refptr<password_manager::PasswordStore> password_store,
       AuthenticationService* authentication_service,
-      ArchivableCredentialStore* credential_store,
+      id<CredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);
   ~CredentialProviderService() override;
@@ -107,7 +106,7 @@ class CredentialProviderService
   syncer::SyncService* sync_service_ = nullptr;
 
   // The interface for saving and updating credentials.
-  ArchivableCredentialStore* archivable_credential_store_ = nil;
+  id<CredentialStore> credential_store_ = nil;
 
   // The current validation ID or nil.
   NSString* account_validation_id_ = nil;

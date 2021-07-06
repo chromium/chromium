@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/common/credential_provider/archivable_credential_store.h"
+#import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
 #include "base/check.h"
-#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 
@@ -13,22 +12,20 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ArchivableCredentialStore ()
+@interface UserDefaultsCredentialStore ()
 
-// The fileURL to the disk file, can be nil.
-@property(nonatomic, strong) NSURL* fileURL;
-
+@property(nonatomic, strong) NSUserDefaults* userDefaults;
+@property(nonatomic, copy) NSString* key;
 @end
 
-@implementation ArchivableCredentialStore
+@implementation UserDefaultsCredentialStore
 
-#pragma mark - Public
-
-- (instancetype)initWithFileURL:(NSURL*)fileURL {
+- (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults
+                                 key:(NSString*)key {
   self = [super init];
   if (self) {
-    DCHECK(fileURL.isFileURL) << "URL must be a file URL.";
-    _fileURL = fileURL;
+    _userDefaults = userDefaults;
+    _key = key;
   }
   return self;
 }
@@ -56,46 +53,22 @@
       return;
     }
 
-    [[NSFileManager defaultManager]
-               createDirectoryAtURL:self.fileURL.URLByDeletingLastPathComponent
-        withIntermediateDirectories:YES
-                         attributes:nil
-                              error:&error];
-
-    if (error) {
-      executeCompletionIfPresent(error);
-      return;
-    }
-
-    [data writeToURL:self.fileURL options:NSDataWritingAtomic error:&error];
-    DCHECK(!error) << base::SysNSStringToUTF8(error.description);
-    executeCompletionIfPresent(error);
+    [self.userDefaults setObject:data forKey:self.key];
+    executeCompletionIfPresent(nil);
   });
 }
 
 #pragma mark - Subclassing
 
-// Loads the store from disk.
 - (NSMutableDictionary<NSString*, ArchivableCredential*>*)loadStorage {
 #if !defined(NDEBUG)
   dispatch_assert_queue(self.workingQueue);
 #endif  // !defined(NDEBUG)
-  if (!self.fileURL) {
+  NSData* data = [self.userDefaults dataForKey:self.key];
+  if (!data) {
     return [[NSMutableDictionary alloc] init];
   }
   NSError* error = nil;
-  [self.fileURL checkResourceIsReachableAndReturnError:&error];
-  if (error) {
-    if (error.code == NSFileReadNoSuchFileError) {
-      // File has not been created, return a fresh mutable set.
-      return [[NSMutableDictionary alloc] init];
-    }
-    NOTREACHED();
-  }
-  NSData* data = [NSData dataWithContentsOfURL:self.fileURL
-                                       options:0
-                                         error:&error];
-  DCHECK(!error) << base::SysNSStringToUTF8(error.description);
   NSSet* classes = [NSSet setWithObjects:[ArchivableCredential class],
                                          [NSMutableDictionary class], nil];
   NSMutableDictionary<NSString*, ArchivableCredential*>* dictionary =

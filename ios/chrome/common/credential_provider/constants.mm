@@ -45,6 +45,14 @@ NSString* AppGroupPrefix() {
 NSURL* CredentialProviderSharedArchivableStoreURL() {
   NSURL* groupURL = [[NSFileManager defaultManager]
       containerURLForSecurityApplicationGroupIdentifier:ApplicationGroup()];
+
+  // As of 2021Q4, Earl Grey build don't support security groups in their
+  // entitlements.
+  if (!groupURL &&
+      [[[NSBundle mainBundle] bundleIdentifier] containsString:@".gtest."]) {
+    groupURL = [NSURL fileURLWithPath:NSTemporaryDirectory()];
+  }
+
   NSURL* credentialProviderURL =
       [groupURL URLByAppendingPathComponent:kCredentialProviderContainer];
   NSString* filename =

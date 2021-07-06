@@ -24,9 +24,9 @@
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
-#import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/as_password_credential_identity+credential.h"
 #import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/credential_provider/credential_store.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -87,7 +87,7 @@ BOOL ShouldSyncASIdentityStore() {
   return !isIdentityStoreSynced && areCredentialsSynced;
 }
 
-void SyncASIdentityStore(ArchivableCredentialStore* credential_store) {
+void SyncASIdentityStore(id<CredentialStore> credential_store) {
   auto stateCompletion = ^(ASCredentialIdentityStoreState* state) {
 #if !defined(NDEBUG)
     dispatch_assert_queue_not(dispatch_get_main_queue());
@@ -132,14 +132,14 @@ void SyncASIdentityStore(ArchivableCredentialStore* credential_store) {
 CredentialProviderService::CredentialProviderService(
     scoped_refptr<PasswordStore> password_store,
     AuthenticationService* authentication_service,
-    ArchivableCredentialStore* credential_store,
+    id<CredentialStore> credential_store,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
     : password_store_(password_store),
       authentication_service_(authentication_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
-      archivable_credential_store_(credential_store) {
+      credential_store_(credential_store) {
   DCHECK(password_store_);
   password_store_->AddObserver(this);
 
@@ -182,7 +182,7 @@ void CredentialProviderService::RequestSyncAllCredentials() {
 
 void CredentialProviderService::RequestSyncAllCredentialsIfNeeded() {
   if (ShouldSyncASIdentityStore()) {
-    SyncASIdentityStore(archivable_credential_store_);
+    SyncASIdentityStore(credential_store_);
   }
   if (ShouldSyncAllCredentials()) {
     RequestSyncAllCredentials();
@@ -191,15 +191,14 @@ void CredentialProviderService::RequestSyncAllCredentialsIfNeeded() {
 
 void CredentialProviderService::SyncAllCredentials(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
-  [archivable_credential_store_ removeAllCredentials];
+  [credential_store_ removeAllCredentials];
   AddCredentials(std::move(forms));
   SyncStore(true);
 }
 
 void CredentialProviderService::SyncStore(bool set_first_time_sync_flag) {
-  __weak ArchivableCredentialStore* weak_archivable_credential_store =
-      archivable_credential_store_;
-  [archivable_credential_store_ saveDataWithCompletion:^(NSError* error) {
+  __weak id<CredentialStore> weak_credential_store = credential_store_;
+  [credential_store_ saveDataWithCompletion:^(NSError* error) {
     if (error) {
       return;
     }
@@ -211,8 +210,8 @@ void CredentialProviderService::SyncStore(bool set_first_time_sync_flag) {
       NSString* key = kUserDefaultsCredentialProviderFirstTimeSyncCompleted;
       [user_defaults setBool:YES forKey:key];
     }
-    if (weak_archivable_credential_store) {
-      SyncASIdentityStore(weak_archivable_credential_store);
+    if (weak_credential_store) {
+      SyncASIdentityStore(weak_credential_store);
     }
   }];
 }
@@ -225,7 +224,7 @@ void CredentialProviderService::AddCredentials(
                      favicon:nil
         validationIdentifier:account_validation_id_];
     DCHECK(credential);
-    [archivable_credential_store_ addCredential:credential];
+    [credential_store_ addCredential:credential];
   }
 }
 
@@ -234,8 +233,7 @@ void CredentialProviderService::RemoveCredentials(
   for (const auto& form : forms) {
     NSString* recordID = RecordIdentifierForPasswordForm(*form);
     DCHECK(recordID);
-    [archivable_credential_store_
-        removeCredentialWithRecordIdentifier:recordID];
+    [credential_store_ removeCredentialWithRecordIdentifier:recordID];
   }
 }
 

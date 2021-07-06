@@ -14,9 +14,9 @@
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
-#import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
+#import "ios/chrome/common/credential_provider/memory_credential_store.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -50,7 +50,7 @@ class CredentialProviderServiceTest : public PlatformTest {
     EXPECT_FALSE([user_defaults
         boolForKey:kUserDefaultsCredentialProviderFirstTimeSyncCompleted]);
 
-    credential_store_ = [[ArchivableCredentialStore alloc] initWithFileURL:nil];
+    credential_store_ = [[MemoryCredentialStore alloc] init];
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -87,7 +87,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   base::ScopedTempDir temp_dir_;
   web::WebTaskEnvironment task_environment_;
   scoped_refptr<PasswordStoreImpl> password_store_;
-  ArchivableCredentialStore* credential_store_;
+  id<CredentialStore> credential_store_;
   AuthenticationServiceFake* auth_service_;
   std::unique_ptr<CredentialProviderService> credential_provider_service_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
