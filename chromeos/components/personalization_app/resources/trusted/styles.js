@@ -19,10 +19,10 @@ styles.innerHTML = `
     }
     /* There is a corresponding media query for iframe grids because media
      * queries inside iframes reference width of the frame, not the entire
-     * window. */
+     * window. Use !important to make sure there are no css ordering issues. */
     @media (min-width: 720px) {
       .photo-container {
-        width: 25%;
+        width: 25% !important;
       }
     }
     iframe {

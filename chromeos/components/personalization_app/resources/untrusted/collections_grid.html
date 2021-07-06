@@ -7,12 +7,15 @@
   <template>
     <div class="photo-container" data-id$="[[item.id]]"
       on-click="onCollectionClicked_">
-      <template is="dom-if" if="[[item.preview]]">
-        <img src="[[item.preview.url]]">
-      </template>
-      <div class="photo-text-container">
-        <p>[[item.name]]</p>
-        <p>[[item.count]]</p>
+      <div class="padding-fix">
+        <template is="dom-if" if="[[item.preview]]">
+          <img src="[[item.preview.url]]">
+        </template>
+        <div class="photo-text-container">
+          <p title="[[item.name]]">[[item.name]]</p>
+          <p title="[[item.count]]">[[item.count]]</p>
+        </div>
+        <div hidden$="[[!item.preview]]" class="photo-gradient-mask"></div>
       </div>
     </div>
   </template>

@@ -6,8 +6,10 @@
 <iron-list scroll-target="document" grid items="[[images_]]">
   <template>
     <div class="photo-container">
-      <img data-id$="[[item.assetId]]" src="[[item.url.url]]"
-        on-click="onImageClicked_">
+      <div class="padding-fix">
+        <img data-id$="[[item.assetId]]" src="[[item.url.url]]"
+            on-click="onImageClicked_">
+      </div>
     </div>
   </template>
 </iron-list>

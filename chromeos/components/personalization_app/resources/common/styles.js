@@ -14,6 +14,9 @@ styles.innerHTML = `
 <template>
   <style>
     :host {
+      --personalization-app-text-shadow-elevation-1: 0 1px 3px
+          rgba(0, 0, 0, 15%), 0 1px 2px rgba(0, 0, 0, 30%);
+
       --personalization-app-font-google-sans: 'Google Sans', 'Noto Sans',
           sans-serif;
       --personalization-app-font-roboto: Roboto, 'Noto Sans', sans-serif;
@@ -36,6 +39,12 @@ styles.innerHTML = `
         font-size: 22px;
         line-height: 28px;
       };
+      --personalization-app-typeface-annotation-2: {
+        font-family: var(--personalization-app-font-roboto);
+        font-weight: 400;
+        font-size: 11px;
+        line-height: 16px;
+      };
     }
     iron-list {
       height: 100%;
@@ -50,14 +59,51 @@ styles.innerHTML = `
          correct widths */
       width: calc(100% / 3);
     }
-    .photo-container > img {
+    /* This extra position: relative element corrects for absolutely positioned
+       elements ignoring parent interior padding. */
+    .padding-fix {
+      border-radius: 12px;
+      height: 100%;
+      /* stop img and gradient-mask from ignoring above border-radius. */
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+    }
+    .photo-container img {
       height: 100%;
       object-fit: cover;
       width: 100%;
     }
     .photo-text-container {
-      bottom: 0;
+      box-sizing: border-box;
+      bottom: 8px;
       position: absolute;
+      width: 100%;
+      z-index: 2;
+    }
+    .photo-text-container > p {
+      @apply --personalization-app-typeface-annotation-2;
+      color: white;
+      margin: 0;
+      max-width: 100%;
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      text-shadow: var(--personalization-app-text-shadow-elevation-1);
+      white-space: nowrap;
+    }
+    .photo-text-container > p:first-child {
+      @apply --personalization-app-typeface-headline-1;
+    }
+    .photo-gradient-mask {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      z-index: 1;
+      background: linear-gradient(rgba(var(--google-grey-900-rgb), 0%),
+          rgba(var(--google-grey-900-rgb), 50%));
     }
   </style>
 </template>`;

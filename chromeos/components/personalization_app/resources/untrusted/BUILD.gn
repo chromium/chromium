@@ -5,6 +5,8 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_library("collections_grid") {
   deps = [
@@ -29,7 +31,7 @@ js_library("images_grid") {
 js_library("setup") {
   deps = [
     "../common:styles",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//third_party/polymer/v3_0/components-chromium/paper-styles:color",
     "//ui/webui/resources/js:load_time_data",
   ]
 }
@@ -37,6 +39,22 @@ js_library("setup") {
 js_library("styles") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+# TODO(cowmoo) remove this hack when there is a better way to access //resources
+# from untrusted. This is necessary for now to block unresolvable imports inside
+# the generated shared_vars_css.m.js file. The output
+# untrusted_shared_vars_css.js must be imported after polymer. For the full
+# range of color declarations, also manually import paper-styles/color.js.
+polymer_modulizer("shared_vars_css") {
+  js_file = "untrusted_shared_vars_css.js"
+  html_file =
+      "../../../../../ui/webui/resources/cr_elements/shared_vars_css.html"
+  html_type = "custom-style"
+  ignore_imports = [
+    "ui/webui/resources/html/polymer.html",
+    "third_party/polymer/v1_0/components-chromium/paper-styles/color.html",
   ]
 }
 
@@ -75,6 +93,7 @@ copy("copy_static") {
 preprocess_if_expr("preprocess") {
   deps = [
     ":copy_static",
+    ":shared_vars_css_module",
     ":web_components",
   ]
   in_folder = "$target_gen_dir/.."
@@ -87,5 +106,6 @@ preprocess_if_expr("preprocess") {
     "untrusted/images_grid.js",
     "untrusted/setup.js",
     "untrusted/styles.js",
+    "untrusted/untrusted_shared_vars_css.js",
   ]
 }

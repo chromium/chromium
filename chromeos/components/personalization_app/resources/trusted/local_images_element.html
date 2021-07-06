@@ -11,13 +11,12 @@
   <iron-list items="[[getImages_(hidden, images_)]]" grid>
     <template>
       <div class="photo-container">
-        <template is="dom-if"
-          if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
-          <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
-            src="[[getImageData_(item, imageData_)]]">
-        </template>
-        <div class="photo-text-container">
-          <p>[[item.name]]</p>
+        <div class="padding-fix">
+          <template is="dom-if"
+            if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
+            <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
+              src="[[getImageData_(item, imageData_)]]">
+          </template>
         </div>
       </div>
     </template>

@@ -9,10 +9,11 @@ const styles = document.createElement('dom-module');
 styles.innerHTML = `
 <template>
   <style>
-    /* Different breakpoint for inside the iframe. */
+    /* Different breakpoint for inside the iframe. Use !important to make sure
+     * there are no css ordering issues. */
     @media (min-width: 688px) {
       .photo-container {
-        width: 25%;
+        width: 25% !important;
       }
     }
   </style>
