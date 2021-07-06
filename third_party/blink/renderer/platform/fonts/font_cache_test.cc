@@ -145,4 +145,20 @@ TEST(FontCache, systemFont) {
 }
 #endif
 
+#if defined(OS_ANDROID)
+TEST(FontCache, Locale) {
+  FontCacheKey key1(FontFaceCreationParams(), /* font_size */ 16,
+                    /* options */ 0, /* device_scale_factor */ 1.0f,
+                    /* variation_settings */ nullptr,
+                    /* is_unique_match */ false);
+  FontCacheKey key2 = key1;
+  EXPECT_EQ(key1.GetHash(), key2.GetHash());
+  EXPECT_EQ(key1, key2);
+
+  key2.SetLocale("ja");
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+  EXPECT_NE(key1, key2);
+}
+#endif  // defined(OS_ANDROID)
+
 }  // namespace blink
