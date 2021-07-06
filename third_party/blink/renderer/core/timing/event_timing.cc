@@ -30,7 +30,8 @@ bool ShouldLogEvent(const Event& event) {
          event.type() == event_type_names::kPointerup ||
          event.type() == event_type_names::kClick ||
          event.type() == event_type_names::kKeydown ||
-         event.type() == event_type_names::kMousedown;
+         event.type() == event_type_names::kMousedown ||
+         event.type() == event_type_names::kMouseup;
 }
 
 bool ShouldReportForEventTiming(WindowPerformance* performance) {

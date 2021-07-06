@@ -29,6 +29,8 @@ class UkmRecorder;
 
 namespace blink {
 
+CORE_EXPORT extern const base::Feature kFixFirstInputDelayForDesktop;
+
 class Document;
 class Event;
 
@@ -121,7 +123,9 @@ class CORE_EXPORT InteractiveDetector
   absl::optional<base::TimeDelta> GetFirstScrollDelay() const;
 
   // Process an input event, updating first_input_delay and
-  // first_input_timestamp if needed.
+  // first_input_timestamp if needed. The event types we care about are
+  // pointerdown, pointerup, mousedown, keydown, click, mouseup. And we
+  // check the event types in the caller of this function.
   void HandleForInputDelay(const Event&,
                            base::TimeTicks event_platform_timestamp,
                            base::TimeTicks processing_start);
@@ -241,9 +245,11 @@ class CORE_EXPORT InteractiveDetector
   // for the previous pointer down. Only non-zero if we've received a pointer
   // down event, and haven't yet reported the first input delay.
   base::TimeDelta pending_pointerdown_delay_;
+  base::TimeDelta pending_mousedown_delay_;
   // The timestamp of a pending pointerdown event. Valid in the same cases as
   // pending_pointerdown_delay_.
   base::TimeTicks pending_pointerdown_timestamp_;
+  base::TimeTicks pending_mousedown_timestamp_;
 
   ukm::UkmRecorder* ukm_recorder_;
 };

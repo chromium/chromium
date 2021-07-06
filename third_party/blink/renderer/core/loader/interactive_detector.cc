@@ -36,6 +36,10 @@ constexpr base::TimeDelta kFirstInputDelayTraceEventThreshold =
 
 }  // namespace
 
+// A fix for FID computation.
+const base::Feature kFixFirstInputDelayForDesktop{
+    "FixFirstInputDelayForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Required length of main thread and network quiet window for determining
 // Time to Interactive.
 constexpr auto kTimeToInteractiveWindow = base::TimeDelta::FromSeconds(5);
@@ -202,11 +206,25 @@ void InteractiveDetector::HandleForInputDelay(
     base::TimeTicks event_platform_timestamp,
     base::TimeTicks processing_start) {
   DCHECK(event.isTrusted());
+  DCHECK(event.type() == event_type_names::kPointerdown ||
+         event.type() == event_type_names::kPointerup ||
+         event.type() == event_type_names::kMousedown ||
+         event.type() == event_type_names::kMouseup ||
+         event.type() == event_type_names::kKeydown ||
+         event.type() == event_type_names::kClick);
 
   // This only happens sometimes on tests unrelated to InteractiveDetector. It
   // is safe to ignore events that are not properly initialized.
   if (event_platform_timestamp.is_null())
     return;
+
+  if (event.type() == event_type_names::kMouseup &&
+      !base::FeatureList::IsEnabled(kFixFirstInputDelayForDesktop))
+    return;
+
+  // These variables track the values which will be reported to histograms.
+  base::TimeDelta delay;
+  base::TimeTicks event_timestamp;
 
   // We can't report a pointerDown until the pointerUp, in case it turns into a
   // scroll.
@@ -214,22 +232,7 @@ void InteractiveDetector::HandleForInputDelay(
     pending_pointerdown_delay_ = processing_start - event_platform_timestamp;
     pending_pointerdown_timestamp_ = event_platform_timestamp;
     return;
-  }
-
-  // We receive any event relevant for EventTiming, but we only care about
-  // events relevant for FirstInputDelay.
-  bool event_is_meaningful = event.type() == event_type_names::kPointerup ||
-                             event.type() == event_type_names::kClick ||
-                             event.type() == event_type_names::kKeydown ||
-                             event.type() == event_type_names::kMousedown;
-
-  if (!event_is_meaningful)
-    return;
-
-  // These variables track the values which will be reported to histograms.
-  base::TimeDelta delay;
-  base::TimeTicks event_timestamp;
-  if (event.type() == event_type_names::kPointerup) {
+  } else if (event.type() == event_type_names::kPointerup) {
     // PointerUp by itself is not considered a significant input.
     if (pending_pointerdown_timestamp_.is_null())
       return;
@@ -241,8 +244,27 @@ void InteractiveDetector::HandleForInputDelay(
     delay = pending_pointerdown_delay_;
     event_timestamp = pending_pointerdown_timestamp_;
   } else {
-    delay = processing_start - event_platform_timestamp;
-    event_timestamp = event_platform_timestamp;
+    if (base::FeatureList::IsEnabled(kFixFirstInputDelayForDesktop)) {
+      if (event.type() == event_type_names::kMousedown) {
+        pending_mousedown_delay_ = processing_start - event_platform_timestamp;
+        pending_mousedown_timestamp_ = event_platform_timestamp;
+        return;
+      } else if (event.type() == event_type_names::kMouseup) {
+        if (pending_mousedown_timestamp_.is_null())
+          return;
+        delay = pending_mousedown_delay_;
+        event_timestamp = pending_mousedown_timestamp_;
+        pending_mousedown_delay_ = base::TimeDelta();
+        pending_mousedown_timestamp_ = base::TimeTicks();
+      } else {
+        // Record delays for click, keydown.
+        delay = processing_start - event_platform_timestamp;
+        event_timestamp = event_platform_timestamp;
+      }
+    } else {
+      delay = processing_start - event_platform_timestamp;
+      event_timestamp = event_platform_timestamp;
+    }
   }
   pending_pointerdown_delay_ = base::TimeDelta();
   pending_pointerdown_timestamp_ = base::TimeTicks();
