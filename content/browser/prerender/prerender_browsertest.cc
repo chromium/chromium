@@ -372,6 +372,31 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 }
 
+// Tests that clicking a link can activate a prerender.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnLinkClick) {
+  const GURL kInitialUrl = GetUrl("/simple_links.html");
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+
+  // Navigate to an initial page which has a link to `kPrerenderingUrl`.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  const int prerender_host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerender_host_id);
+
+  // Click the link. It should activate the prerendered page.
+  TestNavigationObserver nav_observer(web_contents());
+  const std::string kLinkClickScript = R"(
+      const link = document.querySelector('#same_site_link');
+      link.click();
+  )";
+  EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_TRUE(prerender_observer.was_activated());
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/set-header?X-Foo: bar");

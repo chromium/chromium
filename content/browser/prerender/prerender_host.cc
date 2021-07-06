@@ -456,10 +456,10 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
-  if (potential_activation.request_context_type !=
-      begin_params_->request_context_type) {
-    return false;
-  }
+  // TODO(https://crbug.com/1181763): Determine if we should compare
+  // `request_context_type`. Just checking for equality is bad because
+  // the prerender has type LOCATION and a link click would have type
+  // HYPERLINK.
 
   if (potential_activation.request_destination !=
       begin_params_->request_destination) {
