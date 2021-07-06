@@ -107,7 +107,7 @@ constexpr base::FeatureParam<int> kUIThreadLogLevel{
     static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kThreadPoolLogLevel{
     &kEnableHangWatcher, "threadpool_log_level",
-    static_cast<int>(LoggingLevel::kNone)};
+    static_cast<int>(LoggingLevel::kUmaOnly)};
 
 // static
 const base::TimeDelta WatchHangsInScope::kDefaultHangWatchTime =
