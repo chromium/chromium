@@ -997,11 +997,6 @@ export function testZip(callback) {
         assertFalse(events.some(event => {
           return event.type === 'delete';
         }));
-
-        assertTrue(events.some(event => {
-          return event.type === 'entries-changed' &&
-              event.entries[0].fullPath === '/test.zip';
-        }));
       }),
       callback);
 

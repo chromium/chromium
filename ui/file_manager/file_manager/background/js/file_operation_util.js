@@ -1216,13 +1216,7 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
           throw util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
         }
 
-        // Get the created entry.
-        const entry = await new Promise(
-            (resolve, reject) => this.zipBaseDirEntry.getFile(
-                destPath, {create: false}, resolve, reject));
-
         this.processedBytes = this.totalBytes;
-        entryChangedCallback(util.EntryChangedKind.CREATED, entry);
       } catch (error) {
         // Don't display any error message if the task was cancelled.
         if (!this.cancelRequested_) {
