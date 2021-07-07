@@ -164,6 +164,13 @@ message OmniboxEventProto {
     // Android's Search Widget started directly from Launcher.
     ANDROID_SEARCH_WIDGET = 16;
 
+    // Android's Start surface homepage.
+    START_SURFACE_HOMEPAGE = 17;
+
+    // New Tab with Omnibox focused when Android's start surface finale is
+    // enabled.
+    START_SURFACE_NEW_TAB = 18;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.
