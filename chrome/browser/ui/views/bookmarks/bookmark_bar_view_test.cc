@@ -1035,12 +1035,7 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
     bb_view_->GetMenu()->GetMenuController()->Cancel(
         views::MenuController::ExitType::kAll);
 
-    // On linux, Cancelling menu will call Quit on the message loop,
-    // which can interfere with Done. We need to run Done in the
-    // next execution loop.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ViewEventTestBase::Done, base::Unretained(this)));
+    Done();
   }
 
   int start_y_;
