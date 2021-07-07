@@ -18,6 +18,28 @@
 
 namespace {
 
+// Helper for CreateBlobURL() and CreateFilesystemURL().
+// ASSERT_* macros can only be used in functions returning void.
+void AssertResultIsString(const content::EvalJsResult& result) {
+  // Verify no error.
+  ASSERT_EQ("", result.error);
+  // We could use result.value.is_string(), but this logs the actual type in
+  // case of mismatch.
+  ASSERT_EQ(base::Value::Type::STRING, result.value.type()) << result.value;
+}
+
+// Creates a blob containing dummy HTML, then returns its URL.
+// Executes javascript to do so in |rfh|.
+GURL CreateBlobURL(content::RenderFrameHost* rfh) {
+  content::EvalJsResult result = content::EvalJs(rfh, R"(
+    const blob = new Blob(["foo"], {type: "text/html"});
+    URL.createObjectURL(blob)
+  )");
+
+  AssertResultIsString(result);
+  return GURL(result.ExtractString());
+}
+
 // Tests of permissions behavior for an inheritance and embedding of an origin.
 // Test fixtures are run with and without the `PermissionsRevisedOriginHandling`
 // flag.
@@ -43,15 +65,18 @@ class PermissionsSecurityModelBrowserTest
         embedder_support::kDisablePopupBlocking);
   }
 
-  Browser* OpenPopup(Browser* browser) const {
-    auto* contents = browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* OpenPopup(Browser* browser, const GURL& url) const {
+    content::WebContents* contents =
+        browser->tab_strip_model()->GetActiveWebContents();
     content::ExecuteScriptAsync(
-        contents, "w = open('about:blank', '', 'width=200,height=200');");
+        contents, content::JsReplace("window.open($1, '', '[]');", url));
     Browser* popup = ui_test_utils::WaitForBrowserToOpen();
     EXPECT_NE(popup, browser);
-    auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* popup_contents =
+        popup->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetMainFrame()));
-    return popup;
+    WaitForLoadStop(popup_contents);
+    return popup_contents;
   }
 
   bool IsRevisedOriginHandlingEnabled() { return GetParam(); }
@@ -191,13 +216,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
-                       AboutBlankOriginEmbedder) {
+                       EmbedIframeAboutBlank) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/iframe_about_blank.html"));
-  content::RenderFrameHost* main_host =
+  content::RenderFrameHost* main_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
                                                                 1);
-  ASSERT_TRUE(main_host);
+  ASSERT_TRUE(main_rfh);
 
   content::WebContents* embedder_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -214,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
-                       AboutBlankOriginOpener) {
+                       WindowOpenAboutBlank) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -222,14 +247,84 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(opener_contents);
 
-  Browser* popup = OpenPopup(browser());
   content::WebContents* popup_contents =
-      popup->tab_strip_model()->GetActiveWebContents();
+      OpenPopup(browser(), GURL("about:blank"));
   ASSERT_TRUE(popup_contents);
 
   TestNotifications(opener_contents, popup_contents->GetMainFrame());
   TestGeolocation(opener_contents, popup_contents->GetMainFrame());
   TestCamera(opener_contents, popup_contents->GetMainFrame());
+}
+
+// `about:srcdoc` supports only embedder WebContents, hence no test for opener.
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest, EmbedIframeSrcDoc) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/iframe_srcdoc.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* srcdoc_iframe = content::FrameMatchingPredicate(
+      embedder_contents,
+      base::BindRepeating(&content::FrameMatchesName, "srcdoc_iframe"));
+  ASSERT_TRUE(srcdoc_iframe);
+
+  TestNotifications(embedder_contents, srcdoc_iframe);
+  TestGeolocation(embedder_contents, srcdoc_iframe);
+  TestCamera(embedder_contents, srcdoc_iframe);
+}
+
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest, EmbedIframeBlob) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/iframe_blob.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* blob_iframe_rfh = content::FrameMatchingPredicate(
+      embedder_contents,
+      base::BindRepeating(&content::FrameMatchesName, "blob_iframe"));
+  ASSERT_TRUE(blob_iframe_rfh);
+  EXPECT_TRUE(blob_iframe_rfh->GetLastCommittedURL().SchemeIsBlob());
+
+  TestNotifications(embedder_contents, blob_iframe_rfh);
+  TestGeolocation(embedder_contents, blob_iframe_rfh);
+  TestCamera(embedder_contents, blob_iframe_rfh);
+}
+
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest, WindowOpenBlob) {
+  if (GetParam()) {
+    // Blob iframe on an opener contents does not work if
+    // `kRevisedOriginHandling` feature enabled.
+    // TODO(crbug.com/698985): Remove when the bug is fixed.
+    return;
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), url, 1));
+  content::WebContents* opener_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(opener_contents);
+
+  content::WebContents* blob_popup_contents =
+      OpenPopup(browser(), CreateBlobURL(opener_contents->GetMainFrame()));
+  ASSERT_TRUE(blob_popup_contents);
+
+  EXPECT_TRUE(blob_popup_contents->GetLastCommittedURL().SchemeIsBlob());
+
+  TestNotifications(opener_contents, blob_popup_contents->GetMainFrame());
+  TestGeolocation(opener_contents, blob_popup_contents->GetMainFrame());
+  TestCamera(opener_contents, blob_popup_contents->GetMainFrame());
 }
 
 }  // anonymous namespace

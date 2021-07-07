@@ -1,0 +1,10 @@
+<html><head><title>Blob iframe test</title></head>
+<body>
+<script>
+  let f = document.createElement("iframe");
+  f.name = "blob_iframe";
+  document.body.appendChild(f);
+  let blob = new Blob(['foo'], {type : 'text/html'});
+  f.src = URL.createObjectURL(blob);
+</script>
+</body></html>
