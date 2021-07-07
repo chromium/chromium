@@ -121,6 +121,10 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   void TearDown() override {
+    // Cleanup any policies left from the test.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+
     [static_cast<SettingsTableViewController*>(controller())
         settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();

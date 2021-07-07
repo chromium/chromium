@@ -37,6 +37,18 @@ const char kEnrollmentTokenPolicyName[] = "CloudManagementEnrollmentToken";
 }  // namespace
 
 class BrowserDMTokenStorageIOSTest : public PlatformTest {
+ protected:
+  BrowserDMTokenStorageIOSTest() {
+    // Make sure there is no pre-existing policy present.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+  }
+  ~BrowserDMTokenStorageIOSTest() override {
+    // Cleanup any policies left from the test.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
 };

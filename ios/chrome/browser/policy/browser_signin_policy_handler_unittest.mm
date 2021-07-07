@@ -4,7 +4,10 @@
 
 #include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 
+#import <Foundation/Foundation.h>
+
 #include "components/policy/core/browser/policy_error_map.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/prefs/pref_value_map.h"
@@ -12,6 +15,10 @@
 #include "ios/chrome/browser/policy/policy_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace policy {
 namespace {
@@ -27,7 +34,20 @@ const char kTestSchema[] = R"(
       }
     })";
 
-using BrowserSigninPolicyHandlerTest = PlatformTest;
+class BrowserSigninPolicyHandlerTest : public PlatformTest {
+ protected:
+  BrowserSigninPolicyHandlerTest() {
+    // Make sure there is no pre-existing policy present.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+  }
+
+  ~BrowserSigninPolicyHandlerTest() override {
+    // Cleanup any policies left from the test.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+  }
+};
 
 const char* BrowserSigninModeToString(BrowserSigninMode mode) {
   switch (mode) {

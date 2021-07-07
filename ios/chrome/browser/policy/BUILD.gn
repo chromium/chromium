@@ -165,7 +165,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_dm_token_storage_ios_unittest.mm",
-    "browser_signin_policy_handler_unittest.cc",
+    "browser_signin_policy_handler_unittest.mm",
     "policy_unittest.mm",
     "policy_watcher_browser_agent_unittest.mm",
     "reporting/browser_report_generator_ios_unittest.mm",
