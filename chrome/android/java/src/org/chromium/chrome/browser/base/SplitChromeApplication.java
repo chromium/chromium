@@ -139,14 +139,15 @@ public class SplitChromeApplication extends SplitCompatApplication {
         });
     }
 
-    protected Impl createNonBrowserApplication() {
-        return new Impl();
-    }
-
-    /* package */ static void finishPreload(String name) {
+    /** Waits for the specified split to finish preloading if necessary. */
+    public static void finishPreload(String name) {
         if (sSplitPreloader != null) {
             sSplitPreloader.wait(name);
         }
+    }
+
+    protected Impl createNonBrowserApplication() {
+        return new Impl();
     }
 
     /**

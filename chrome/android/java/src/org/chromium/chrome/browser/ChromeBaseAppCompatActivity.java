@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -18,6 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,6 +45,15 @@ public class ChromeBaseAppCompatActivity
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
+
+        // Make sure the "chrome" split is loaded before checking if ClassLoaders are equal.
+        SplitChromeApplication.finishPreload(CHROME_SPLIT_NAME);
+        if (!ChromeBaseAppCompatActivity.class.getClassLoader().equals(
+                    ContextUtils.getApplicationContext().getClassLoader())) {
+            // This should only happen on Android O. See crbug.com/1146745 for more info.
+            throw new IllegalStateException("ClassLoader mismatch detected.");
+        }
+
         mNightModeStateProvider = createNightModeStateProvider();
 
         Configuration config = new Configuration();
