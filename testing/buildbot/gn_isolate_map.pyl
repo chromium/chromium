@@ -865,7 +865,7 @@
     "type": "console_test_launcher",
   },
   "gen_linux_ash_chromium_cipd_yaml": {
-    "label": "//chrome:gen_linux_ash_chromium_cipd_yaml",
+    "label": "//chrome/test:gen_linux_ash_chromium_cipd_yaml",
     "type": "additional_compile_target",
   },
   "gfx_unittests": {
