@@ -30,17 +30,12 @@ widevine_cdm_manifest_and_license_files = []
 # TODO(xhwang): widevine_cdm_version.h is only used in few places. Clean this up
 # so we don't need to copy it in most cases.
 if (bundle_widevine_cdm) {
-  widevine_os = target_os
-  if (is_chromeos_lacros) {
-    widevine_os = "linux"  # Bundle Linux CDM for Lacros builds.
-  }
-
   widevine_arch = target_cpu
   if (widevine_arch == "x86") {
     widevine_arch = "ia32"
   }
 
-  widevine_cdm_root = "${widevine_root}/${widevine_os}/${widevine_arch}"
+  widevine_cdm_root = "${widevine_root}/${target_os}/${widevine_arch}"
   cdm_file_name = "${shlib_prefix}widevinecdm${shlib_extension}"
 
   widevine_cdm_version_h_file = "${widevine_cdm_root}/widevine_cdm_version.h"

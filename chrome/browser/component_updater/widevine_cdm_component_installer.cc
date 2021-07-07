@@ -68,9 +68,9 @@ const char kWidevineCdmPlatform[] =
     "mac";
 #elif defined(OS_WIN)
     "win";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(OS_CHROMEOS)
     "cros";
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
     "linux";
 #else
 #error This file should only be included for supported platforms.
