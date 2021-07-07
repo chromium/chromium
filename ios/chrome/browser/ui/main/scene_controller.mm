@@ -431,22 +431,22 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       // Only one can be triggered.
       activityWithCompletion = activity;
     }
-    if (activityWithCompletion) {
-      // This function is called when the scene is activated (or unblocked).
-      // Consider the scene as still not active at this point as the handling
-      // of startup parameters is not yet done (and will be later in this
-      // function).
-      [UserActivityHandler
-           continueUserActivity:activityWithCompletion
-            applicationIsActive:NO
-                      tabOpener:self
-          connectionInformation:self
-             startupInformation:self.sceneState.appState.startupInformation
-                   browserState:self.currentInterface.browserState
-                      initStage:self.sceneState.appState.initStage];
-    }
-    self.sceneState.connectionOptions = nil;
   }
+  if (activityWithCompletion) {
+    // This function is called when the scene is activated (or unblocked).
+    // Consider the scene as still not active at this point as the handling
+    // of startup parameters is not yet done (and will be later in this
+    // function).
+    [UserActivityHandler
+         continueUserActivity:activityWithCompletion
+          applicationIsActive:NO
+                    tabOpener:self
+        connectionInformation:self
+           startupInformation:self.sceneState.appState.startupInformation
+                 browserState:self.currentInterface.browserState
+                    initStage:self.sceneState.appState.initStage];
+  }
+  self.sceneState.connectionOptions = nil;
 
   if (self.startupParameters) {
     if ([self isIncognitoForced]) {
