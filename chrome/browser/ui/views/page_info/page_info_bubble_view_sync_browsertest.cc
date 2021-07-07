@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_info/features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
@@ -86,11 +87,23 @@ views::View* GetView(Browser* browser, int view_id) {
 }  // namespace
 
 // This test suite tests functionality that requires Sync to be active.
-class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
+class PageInfoBubbleViewSyncBrowserTest
+    : public SyncTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  PageInfoBubbleViewSyncBrowserTest() : SyncTest(SINGLE_CLIENT) {}
+  PageInfoBubbleViewSyncBrowserTest() : SyncTest(SINGLE_CLIENT) {
+    feature_list_.InitWithFeatureState(page_info::kPageInfoV2Desktop,
+                                       is_page_info_v2_enabled());
+  }
+
+  PageInfoBubbleViewSyncBrowserTest(
+      const PageInfoBubbleViewSyncBrowserTest& chip) = delete;
+  PageInfoBubbleViewSyncBrowserTest& operator=(
+      const PageInfoBubbleViewSyncBrowserTest& chip) = delete;
 
  protected:
+  bool is_page_info_v2_enabled() const { return GetParam(); }
+
   void SetupSyncForAccount(Profile* profile) {
     syncer::SyncServiceImpl* sync_service =
         SyncServiceFactory::GetAsSyncServiceImplForProfile(profile);
@@ -130,18 +143,18 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
   }
 
   const std::u16string GetPageInfoBubbleViewDetailText() {
-    PageInfoBubbleView* page_info_bubble_view =
-        static_cast<PageInfoBubbleView*>(
-            PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    return page_info_bubble_view->details_text();
+    auto* label =
+        PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
+    return static_cast<views::StyledLabel*>(label)->GetText();
   }
 
-  DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewSyncBrowserTest);
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test opening page info bubble that matches
 // SB_THREAT_TYPE_GAIA_PASSWORD_REUSE threat type.
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewSyncBrowserTest,
                        VerifySignInPasswordReusePageInfoBubble) {
   Profile* profile = browser()->profile();
   // PageInfo calls GetPasswordProtectionReusedPasswordAccountType which checks
@@ -187,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
       security_state::MALICIOUS_CONTENT_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE,
       visible_security_state->malicious_content_status);
   ASSERT_EQ(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC) +
+          u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE),
       GetPageInfoBubbleViewDetailText());
 
   // Verify these two buttons are showing.
@@ -223,3 +237,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_NONE,
             visible_security_state->malicious_content_status);
 }
+
+// Run tests with kPageInfoV2Desktop flag enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewSyncBrowserTest,
+                         ::testing::Values(false, true));

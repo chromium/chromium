@@ -136,6 +136,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
             },
             this));
   }
+  PreferredSizeChanged();
 }
 
 void PageInfoSecurityContentView::ResetDecisionsClicked() {

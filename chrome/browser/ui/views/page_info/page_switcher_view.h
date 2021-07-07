@@ -12,7 +12,7 @@
 // TODO(crbug.com/1188101): Implement animation when switching.
 class PageSwitcherView : public views::View {
  public:
-  PageSwitcherView();
+  explicit PageSwitcherView(std::unique_ptr<views::View> initial_page);
   PageSwitcherView(const PageSwitcherView&) = delete;
   PageSwitcherView& operator=(const PageSwitcherView&) = delete;
   ~PageSwitcherView() override;

@@ -43,13 +43,6 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
   const int top_margin =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG).top();
   set_margins(gfx::Insets(top_margin, 0, bottom_margin, 0));
-
-  views::BubbleDialogDelegateView::CreateBubble(this);
-
-  // CreateBubble() may not set our size synchronously so explicitly set it here
-  // before PageInfo updates trigger child layouts.
-  SetSize(GetPreferredSize());
-
   ui_delegate_ = std::make_unique<ChromePageInfoUiDelegate>(profile, url);
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
@@ -59,9 +52,10 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  page_container_ = AddChildView(std::make_unique<PageSwitcherView>());
-  OpenMainPage();
-  SizeToContents();
+  page_container_ = AddChildView(
+      std::make_unique<PageSwitcherView>(view_factory_->CreateMainPageView()));
+
+  views::BubbleDialogDelegateView::CreateBubble(this);
 }
 
 PageInfoNewBubbleView::~PageInfoNewBubbleView() = default;
@@ -81,6 +75,10 @@ void PageInfoNewBubbleView::OpenPermissionPage(ContentSettingsType type) {
 void PageInfoNewBubbleView::CloseBubble() {
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
+void PageInfoNewBubbleView::DidChangeVisibleSecurityState() {
+  presenter_->UpdateSecurityState();
 }
 
 void PageInfoNewBubbleView::OnWidgetDestroying(views::Widget* widget) {

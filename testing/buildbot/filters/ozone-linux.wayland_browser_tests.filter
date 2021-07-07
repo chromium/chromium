@@ -33,8 +33,8 @@
 -BrowserViewTest.GetAccessibleTabModalDialogTree
 -OmniboxPopupContentsViewTest.ClickOmnibox
 -OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
--PageInfoBubbleViewBrowserTest.FocusDoesNotReturnToContentsOnReloadPrompt
--PageInfoBubbleViewBrowserTest.FocusReturnsToContentOnClose
+-All/PageInfoBubbleViewBrowserTest.FocusDoesNotReturnToContentsOnReloadPrompt/*
+-All/PageInfoBubbleViewBrowserTest.FocusReturnsToContentOnClose/*
 -PrintBrowserTest.PDFPluginNotKeyboardFocusable
 
 # These tests fail when run either with weston's test-plugin module or with

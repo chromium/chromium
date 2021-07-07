@@ -6,8 +6,9 @@
 
 #include "ui/views/layout/fill_layout.h"
 
-PageSwitcherView::PageSwitcherView() {
+PageSwitcherView::PageSwitcherView(std::unique_ptr<views::View> initial_page) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  current_page_ = AddChildView(std::move(initial_page));
 }
 
 PageSwitcherView::~PageSwitcherView() = default;
