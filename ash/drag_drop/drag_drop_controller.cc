@@ -561,7 +561,7 @@ void DragDropController::Drop(aura::Window* target,
       // not know that a drop resulted in a tab being moved and will temporarily
       // visually return the tab to its original position. (crbug.com/1081905)
       operation_ = DragOperation::kMove;
-      StartCanceledAnimation(kCancelAnimationDuration);
+      drag_image_widget_.reset();
     } else if (operation_ == DragOperation::kNone) {
       StartCanceledAnimation(kCancelAnimationDuration);
     } else {
