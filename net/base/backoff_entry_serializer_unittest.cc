@@ -141,8 +141,8 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
 
     // Check that the serialized backoff duration matches our expectation.
     double serialized_backoff_duration_double;
-    EXPECT_TRUE(serialized.GetList()[2].GetAsDouble(
-        &serialized_backoff_duration_double));
+    serialized_backoff_duration_double = serialized.GetList()[2].GetDouble();
+
     base::TimeDelta serialized_backoff_duration =
         base::TimeDelta::FromSecondsD(serialized_backoff_duration_double);
     EXPECT_EQ(serialized_backoff_duration, test_case.expected_backoff_duration);
