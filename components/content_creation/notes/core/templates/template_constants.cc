@@ -14,6 +14,7 @@ const uint16_t k400Weight = 400;
 const uint16_t k700Weight = 700;
 
 const int kDefaultMinTextSizeSP = 14;
+const int kFriendlyMinTextSizeSP = 9;
 const int kDefaultMaxTextSizeSP = 48;
 const int kFriendlyMaxSizeSP = 32;
 const int kBiggerMaxTextSizeSP = 60;
@@ -85,7 +86,7 @@ NoteTemplate GetFriendlyTemplate() {
       TextStyle(kRockSaltFontName,
                 /*font_color=*/kGrey900Color, k400Weight,
                 /*all_caps=*/false, TextAlignment::kStart,
-                kDefaultMinTextSizeSP, kFriendlyMaxSizeSP),
+                kFriendlyMinTextSizeSP, kFriendlyMaxSizeSP),
       /*footer_style=*/CreateLightBackgroundFooterStyle());
 }
 
