@@ -1035,12 +1035,6 @@ export class FileManager extends EventTarget {
       DialogType.FULL_PAGE,
     ]);
 
-    if (window.isSWA) {
-      // TODO: Verify that SWA will work with module version for dispatcher.
-      ContentMetadataProvider.configure(
-          'foreground/js/metadata/metadata_dispatcher.js');
-    }
-
     // Create the metadata cache.
     assert(this.volumeManager_);
     this.metadataModel_ = MetadataModel.create(this.volumeManager_);
