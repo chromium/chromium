@@ -20,8 +20,7 @@
   SourcesTestRunner.runDebuggerTestSuite([
     async function testSetNoneOfURLAndRegex(next) {
       var response = await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 1});
-      TestRunner.addResult(
-          response[ProtocolClient.InspectorBackend.ProtocolError]);
+      TestRunner.addResult(response.getError());
       next();
     },
 
@@ -29,8 +28,7 @@
       var url = 'debugger-set-breakpoint.js';
       var urlRegex = 'debugger-set-breakpoint.*';
       var response = await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 1, url, urlRegex});
-      TestRunner.addResult(
-          response[ProtocolClient.InspectorBackend.ProtocolError]);
+      TestRunner.addResult(response.getError());
       next();
     },
 

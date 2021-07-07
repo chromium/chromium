@@ -33,17 +33,13 @@
     async function disableAgent(agentName) {
       const agent = target.agents.get(agentName);
       const response = await agent.invoke_disable({});
-      printResult(
-          agentName, 'disable',
-          response[ProtocolClient.InspectorBackend.ProtocolError]);
+      printResult(agentName, 'disable', response.getError());
     }
 
     async function enableAgent(agentName) {
       const agent = target.agents.get(agentName);
       const response = await agent.invoke_enable({});
-      printResult(
-          agentName, 'enable',
-          response[ProtocolClient.InspectorBackend.ProtocolError]);
+      printResult(agentName, 'enable', response.getError());
     }
 
     for (const agentName of agentNames)
