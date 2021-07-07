@@ -1008,7 +1008,7 @@
       default_value: "Length()",
       include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
-      field_group: "*",
+      field_group: "*->math",
       getter: "GetMathBaseline",
     },
     {
@@ -1017,7 +1017,7 @@
       default_value: "Length()",
       include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
-      field_group: "*",
+      field_group: "*->math",
       getter: "GetMathFractionBarThickness",
     },
     {
@@ -1026,7 +1026,7 @@
       default_value: "Length()",
       include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
-      field_group: "*",
+      field_group: "*->math",
       getter: "GetMathLSpace",
     },
     {
@@ -1035,7 +1035,7 @@
       default_value: "Length()",
       include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
-      field_group: "*",
+      field_group: "*->math",
       getter: "GetMathRSpace",
     },
     {
@@ -1044,7 +1044,7 @@
       default_value: "Length()",
       include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
-      field_group: "*",
+      field_group: "*->math",
       getter: "GetMathPaddedVOffset",
     },
     {
@@ -1053,17 +1053,16 @@
       default_value: "Length()",
       include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
-      field_group: "*",
+      field_group: "*->math",
       getter: "GetMathPaddedDepth",
     },
-
     {
       name: "MathMinSize",
       field_template: "external",
       default_value: "Length()",
       include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
-      field_group: "*",
+      field_group: "*->math",
       getter: "GetMathMinSize",
     },
     {
@@ -1072,7 +1071,7 @@
       default_value: "Length()",
       include_paths: ["third_party/blink/renderer/platform/geometry/length.h"],
       type_name: "Length",
-      field_group: "*",
+      field_group: "*->math",
       getter: "GetMathMaxSize",
     },
     {
