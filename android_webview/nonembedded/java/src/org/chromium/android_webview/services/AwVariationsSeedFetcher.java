@@ -131,10 +131,12 @@ public class AwVariationsSeedFetcher extends JobService {
         ComponentName thisComponent = new ComponentName(context, AwVariationsSeedFetcher.class);
         PersistableBundle extras = new PersistableBundle(/*capacity=*/1);
         extras.putInt(JOB_REQUEST_COUNT_KEY, 0);
+        boolean requiresCharging =
+                !CommandLine.getInstance().hasSwitch(AwSwitches.FINCH_SEED_NO_CHARGING_REQUIREMENT);
         JobInfo job =
                 new JobInfo.Builder(JOB_ID, thisComponent)
                         .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                        .setRequiresCharging(true)
+                        .setRequiresCharging(requiresCharging)
                         .setBackoffCriteria(JOB_INITIAL_BACKOFF_TIME_IN_MS, JOB_BACKOFF_POLICY)
                         .setExtras(extras)
                         .build();

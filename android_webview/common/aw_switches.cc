@@ -37,6 +37,13 @@ const char kFinchSeedExpirationAge[] = "finch-seed-expiration-age";
 const char kFinchSeedIgnorePendingDownload[] =
     "finch-seed-ignore-pending-download";
 
+// Forces WebView's service to always schedule a new variations seed download
+// job, even if the device is not charging. Note this switch may be necessary
+// for testing on Android emulators as these are not always considered to be
+// charging.
+const char kFinchSeedNoChargingRequirement[] =
+    "finch-seed-no-charging-requirement";
+
 // The minimum amount of time in seconds that WebView's service will wait
 // between two variations seed downloads from the variations server.
 const char kFinchSeedMinDownloadPeriod[] = "finch-seed-min-download-period";

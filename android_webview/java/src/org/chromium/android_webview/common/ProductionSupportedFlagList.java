@@ -51,6 +51,11 @@ public final class ProductionSupportedFlagList {
             Flag.commandLine(AwSwitches.FINCH_SEED_IGNORE_PENDING_DOWNLOAD,
                     "Forces the WebView service to reschedule a variations seed download job even "
                             + "if one is already pending."),
+            Flag.commandLine(AwSwitches.FINCH_SEED_NO_CHARGING_REQUIREMENT,
+                    "Forces WebView's service to always schedule a new variations seed download "
+                            + "job, even if the device is not charging. Note this switch may be "
+                            + "necessary for testing on Android emulators as these are not always "
+                            + "considered to be charging."),
             Flag.commandLine(AwSwitches.FINCH_SEED_MIN_DOWNLOAD_PERIOD,
                     "Disables throttling of variations seed download jobs.", "0"),
             Flag.commandLine(AwSwitches.FINCH_SEED_MIN_UPDATE_PERIOD,

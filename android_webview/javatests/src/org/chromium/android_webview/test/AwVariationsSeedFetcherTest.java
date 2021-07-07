@@ -107,8 +107,6 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertEquals("Job scheduled with wrong ID", JOB_ID, job.getId());
             Assert.assertEquals("Job scheduled with wrong network type",
                     JobInfo.NETWORK_TYPE_ANY, job.getNetworkType());
-            Assert.assertTrue("Job scheduled without charging requirement",
-                    job.isRequireCharging());
             mJob = job;
             return JobScheduler.RESULT_SUCCESS;
         }
@@ -309,6 +307,40 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertNotSame(
                     "Rescheduled job should not be equal to the originally scheduled job",
                     originalJob, rescheduledJob);
+        } finally {
+            mScheduler.clear();
+        }
+    }
+
+    // Tests the default behavior (without --finch-seed-no-charging-requirement flag) requires the
+    // device to be charging.
+    @Test
+    @SmallTest
+    public void testFinchSeedChargingRequiredByDefault() {
+        File stamp = VariationsUtils.getStampFile();
+        try {
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            JobInfo job = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertNotNull("Job should have been scheduled", job);
+            Assert.assertTrue("Job should require charging but does not", job.isRequireCharging());
+        } finally {
+            mScheduler.clear();
+        }
+    }
+
+    // Tests that the --finch-seed-no-charging-requirement flag means the job does not require
+    // charging.
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(AwSwitches.FINCH_SEED_NO_CHARGING_REQUIREMENT)
+    public void testFinchSeedChargingNotRequiredWithSwitch() {
+        File stamp = VariationsUtils.getStampFile();
+        try {
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            JobInfo job = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertNotNull("Job should have been scheduled", job);
+            Assert.assertFalse("Job should not require charging when flag is set but it does",
+                    job.isRequireCharging());
         } finally {
             mScheduler.clear();
         }

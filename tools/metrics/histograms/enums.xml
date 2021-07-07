@@ -48414,6 +48414,7 @@ from previous Chrome versions.
       label="VmCameraMicIndicatorsAndNotifications:disabled"/>
   <int value="-175696105" label="MessagesForAndroidUpdatePassword:enabled"/>
   <int value="-175666252" label="Portals:disabled"/>
+  <int value="-175574799" label="finch-seed-no-charging-requirement"/>
   <int value="-174829803" label="TabOutlinesInLowContrastThemes:enabled"/>
   <int value="-174706795"
       label="WebPaymentsPerMethodCanMakePaymentQuota:enabled"/>
