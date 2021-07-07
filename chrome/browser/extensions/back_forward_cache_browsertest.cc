@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -196,14 +195,7 @@ IN_PROC_BROWSER_TEST_F(
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223240
-#define MAYBE_ScriptAllowed DISABLED_ScriptAllowed
-#else
-#define MAYBE_ScriptAllowed ScriptAllowed
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       MAYBE_ScriptAllowed) {
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, ScriptAllowed) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                                 .AppendASCII("content_script")));
 
@@ -249,13 +241,7 @@ IN_PROC_BROWSER_TEST_F(
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223240
-#define MAYBE_CSSAllowed DISABLED_CSSAllowed
-#else
-#define MAYBE_CSSAllowed CSSAllowed
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, MAYBE_CSSAllowed) {
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, CSSAllowed) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                                 .AppendASCII("content_css")));
 
@@ -279,14 +265,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, MAYBE_CSSAllowed) {
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223240
-#define MAYBE_UnloadExtensionFlushCache DISABLED_UnloadExtensionFlushCache
-#else
-#define MAYBE_UnloadExtensionFlushCache UnloadExtensionFlushCache
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       MAYBE_UnloadExtensionFlushCache) {
+                       UnloadExtensionFlushCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -319,14 +299,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223240
-#define MAYBE_LoadExtensionFlushCache DISABLED_LoadExtensionFlushCache
-#else
-#define MAYBE_LoadExtensionFlushCache LoadExtensionFlushCache
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       MAYBE_LoadExtensionFlushCache) {
+                       LoadExtensionFlushCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -616,19 +590,10 @@ IN_PROC_BROWSER_TEST_F(
           "BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature",
           blink::scheduler::WebSchedulerTrackedFeature::kIsolatedWorldScript));
 }
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223240
-#define MAYBE_MessageSentToAllFramesDoesNotSendToBackForwardCache \
-  DISABLED_MessageSentToAllFramesDoesNotSendToBackForwardCache
-#else
-#define MAYBE_MessageSentToAllFramesDoesNotSendToBackForwardCache \
-  MessageSentToAllFramesDoesNotSendToBackForwardCache
-#endif
 // Tests sending a message to all frames does not send it to back-forward
 // cached frames.
-IN_PROC_BROWSER_TEST_F(
-    ExtensionBackForwardCacheBrowserTest,
-    MAYBE_MessageSentToAllFramesDoesNotSendToBackForwardCache) {
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       MessageSentToAllFramesDoesNotSendToBackForwardCache) {
   const Extension* extension = extension =
       LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                         .AppendASCII("background_page"));
@@ -762,16 +727,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
                 base::StringPrintf(kScript, iframe_frame_tree_node_id)));
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223240
-#define MAYBE_StorageCallbackEvicts DISABLED_StorageCallbackEvicts
-#else
-#define MAYBE_StorageCallbackEvicts StorageCallbackEvicts
-#endif
 // Test that running extensions message dispatching via a ScriptContext::ForEach
 // for back forward cached pages causes eviction of that RenderFrameHost.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       MAYBE_StorageCallbackEvicts) {
+                       StorageCallbackEvicts) {
   const Extension* extension = extension =
       LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                         .AppendASCII("content_script_storage"));
