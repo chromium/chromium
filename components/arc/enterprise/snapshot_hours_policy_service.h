@@ -14,6 +14,7 @@
 #include "base/util/timer/wall_clock_timer.h"
 #include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/user_manager/user_manager.h"
 
 class PrefService;
 
@@ -24,7 +25,7 @@ namespace data_snapshotd {
 // data snapshot feature, handles ARC data snapshot update intervals.
 //
 // ArcDataSnapshotdManager is an owner of this object.
-class SnapshotHoursPolicyService {
+class SnapshotHoursPolicyService : public user_manager::UserManager::Observer {
  public:
   // Observer interface.
   class Observer : public base::CheckedObserver {
@@ -44,7 +45,7 @@ class SnapshotHoursPolicyService {
   SnapshotHoursPolicyService(const SnapshotHoursPolicyService&) = delete;
   SnapshotHoursPolicyService& operator=(const SnapshotHoursPolicyService&) =
       delete;
-  ~SnapshotHoursPolicyService();
+  ~SnapshotHoursPolicyService() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -53,6 +54,9 @@ class SnapshotHoursPolicyService {
   void StartObservingPrimaryProfilePrefs(PrefService* profile_prefs);
   // Stops observing primary profile prefs.
   void StopObservingPrimaryProfilePrefs();
+
+  // user_manager::UserManager::Observer overrides:
+  void LocalStateChanged(user_manager::UserManager* user_manager) override;
 
   // Returns the end time of the current interval when ARC data snapshot update
   // is possible.
@@ -101,6 +105,9 @@ class SnapshotHoursPolicyService {
   // Returns false if ARC is disabled for a logged-in MGS, otherwise returns
   // true.
   bool IsArcEnabled() const;
+
+  // Returns true if MGS is configured for a device, otherwise returns false.
+  bool IsMgsConfigured() const;
 
   // The feature is disabled when either kArcDataSnapshotHours policy is not set
   // or ARC is disabled by policy for MGS.

@@ -29,10 +29,17 @@ SnapshotHoursPolicyService::SnapshotHoursPolicyService(PrefService* local_state)
       prefs::kArcSnapshotHours,
       base::BindRepeating(&SnapshotHoursPolicyService::UpdatePolicy,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  DCHECK(user_manager::UserManager::Get());
+  user_manager::UserManager::Get()->AddObserver(this);
+
   UpdatePolicy();
 }
 
-SnapshotHoursPolicyService::~SnapshotHoursPolicyService() = default;
+SnapshotHoursPolicyService::~SnapshotHoursPolicyService() {
+  DCHECK(user_manager::UserManager::Get());
+  user_manager::UserManager::Get()->RemoveObserver(this);
+}
 
 void SnapshotHoursPolicyService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -44,8 +51,7 @@ void SnapshotHoursPolicyService::RemoveObserver(Observer* observer) {
 
 void SnapshotHoursPolicyService::StartObservingPrimaryProfilePrefs(
     PrefService* profile_prefs) {
-  if (!user_manager::UserManager::Get() ||
-      !user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+  if (!user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
     // Do not care about ArcEnabled policy for other than MGS.
     return;
   }
@@ -55,6 +61,7 @@ void SnapshotHoursPolicyService::StartObservingPrimaryProfilePrefs(
       prefs::kArcEnabled,
       base::BindRepeating(&SnapshotHoursPolicyService::UpdatePolicy,
                           weak_ptr_factory_.GetWeakPtr()));
+
   UpdatePolicy();
 }
 
@@ -66,11 +73,19 @@ void SnapshotHoursPolicyService::StopObservingPrimaryProfilePrefs() {
   UpdatePolicy();
 }
 
+void SnapshotHoursPolicyService::LocalStateChanged(
+    user_manager::UserManager* user_manager) {
+  UpdatePolicy();
+}
+
 void SnapshotHoursPolicyService::UpdatePolicy() {
   intervals_.clear();
   base::ScopedClosureRunner snapshot_disabler(
       base::BindOnce(&SnapshotHoursPolicyService::DisableSnapshots,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (!IsMgsConfigured())
+    return;
   if (!IsArcEnabled())
     return;
 
@@ -176,6 +191,14 @@ void SnapshotHoursPolicyService::NotifySnapshotUpdateEndTimeChanged() {
 bool SnapshotHoursPolicyService::IsArcEnabled() const {
   // Assume ARC is enabled if there is no profile prefs.
   return !profile_prefs_ || profile_prefs_->GetBoolean(prefs::kArcEnabled);
+}
+
+bool SnapshotHoursPolicyService::IsMgsConfigured() const {
+  for (auto* const user : user_manager::UserManager::Get()->GetUsers()) {
+    if (user->GetType() == user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace data_snapshotd

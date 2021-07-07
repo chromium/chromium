@@ -27,6 +27,7 @@ namespace data_snapshotd {
 namespace {
 
 constexpr char kPublicAccountEmail[] = "public-session-account@localhost";
+constexpr char kUserAccountEmail[] = "regular-user-account@localhost";
 
 // DeviceArcDataSnapshotHours policy with one correct interval.
 constexpr char kJsonPolicy[] =
@@ -146,14 +147,16 @@ class SnapshotHoursPolicyServiceTest
 
   void SetUp() override {
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
-    policy_service_ =
-        std::make_unique<SnapshotHoursPolicyService>(local_state());
-    observer_ = std::make_unique<FakeObserver>();
-    policy_service()->AddObserver(observer_.get());
 
     fake_user_manager_ = new user_manager::FakeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
+    fake_user_manager_->set_local_state(local_state());
+
+    policy_service_ =
+        std::make_unique<SnapshotHoursPolicyService>(local_state());
+    observer_ = std::make_unique<FakeObserver>();
+    policy_service()->AddObserver(observer_.get());
   }
 
   void TearDown() override {
@@ -183,9 +186,14 @@ class SnapshotHoursPolicyServiceTest
 
   // Enable feature and check.
   void EnableSnapshot(int enabled_calls_num = 1) {
+    auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
+    EXPECT_TRUE(fake_user_manager_->AddPublicAccountUser(account_id));
+    policy_service()->LocalStateChanged(user_manager());
+
     absl::optional<base::Value> policy = base::JSONReader::Read(kJsonPolicy);
     EXPECT_TRUE(policy.has_value());
     local_state()->Set(arc::prefs::kArcSnapshotHours, policy.value());
+
     EnsureSnapshotEnabled(enabled_calls_num);
   }
 
@@ -202,9 +210,28 @@ class SnapshotHoursPolicyServiceTest
 
   void LoginAsPublicSession() {
     auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
-    user_manager()->AddPublicAccountUser(account_id);
-    user_manager()->UserLoggedIn(account_id, account_id.GetUserEmail(), false,
+    const auto* user = fake_user_manager_->AddPublicAccountUser(account_id);
+    user_manager()->UserLoggedIn(account_id, user->username_hash(), false,
                                  false);
+    user_manager()->SwitchActiveUser(account_id);
+    EXPECT_EQ(user_manager()->GetActiveUser()->GetAccountId(), account_id);
+    policy_service()->LocalStateChanged(user_manager());
+  }
+
+  void RemovePublicSession() {
+    auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
+    user_manager()->RemoveUserFromList(account_id);
+    policy_service()->LocalStateChanged(user_manager());
+  }
+
+  void LoginAsRegularUser() {
+    auto account_id = AccountId::FromUserEmail(kUserAccountEmail);
+    const auto* user = user_manager()->AddUser(account_id);
+    user_manager()->UserLoggedIn(account_id, user->username_hash(), false,
+                                 false);
+    user_manager()->SwitchActiveUser(account_id);
+    EXPECT_EQ(user_manager()->GetActiveUser()->GetAccountId(), account_id);
+    policy_service()->LocalStateChanged(user_manager());
   }
 
   SnapshotHoursPolicyService* policy_service() { return policy_service_.get(); }
@@ -226,6 +253,15 @@ class SnapshotHoursPolicyServiceTest
 // Test that the feature is disabled by default.
 TEST_F(SnapshotHoursPolicyServiceTest, Disabled) {
   EnsureSnapshotDisabled();
+}
+
+// Test that the feature is disabled if MGS is not configured.
+TEST_F(SnapshotHoursPolicyServiceTest, MgsIsNotConfigured) {
+  EnableSnapshot();
+
+  RemovePublicSession();
+
+  EnsureSnapshotDisabled(1 /* disabled_calls_num */);
 }
 
 TEST_F(SnapshotHoursPolicyServiceTest, OneIntervalEnabled) {
@@ -304,6 +340,7 @@ TEST_F(SnapshotHoursPolicyServiceTest, InsideInterval) {
 TEST_F(SnapshotHoursPolicyServiceTest, DisableByUserPolicyForUser) {
   EnableSnapshot();
 
+  LoginAsRegularUser();
   TestingPrefServiceSimple profile_prefs;
   arc::prefs::RegisterProfilePrefs(profile_prefs.registry());
   profile_prefs.SetBoolean(arc::prefs::kArcEnabled, false);
