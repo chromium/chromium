@@ -58,10 +58,17 @@ public class CustomTabStatusBarColorProviderTest {
     }
 
     @Test
-    public void fallsBackWhenOpenedByChrome() {
+    public void undefinedWhenOpenedByChromeNoCustom() {
         when(mCustomTabIntentDataProvider.isOpenedByChrome()).thenReturn(true);
+        when(mColorProvider.hasCustomToolbarColor()).thenReturn(false);
+        Assert.assertEquals(UNDEFINED_STATUS_BAR_COLOR, getStatusBarColor(mTab));
+    }
 
-        Assert.assertEquals(FALLBACK_COLOR, getStatusBarColor(mTab));
+    @Test
+    public void openedByChromeWithCustom() {
+        when(mCustomTabIntentDataProvider.isOpenedByChrome()).thenReturn(true);
+        when(mColorProvider.hasCustomToolbarColor()).thenReturn(true);
+        Assert.assertEquals(USER_PROVIDED_COLOR, getStatusBarColor(mTab));
     }
 
     @Test
@@ -108,6 +115,6 @@ public class CustomTabStatusBarColorProviderTest {
     }
 
     private int getStatusBarColor(Tab tab) {
-        return mStatusBarColorProvider.getBaseStatusBarColor(tab, FALLBACK_COLOR);
+        return mStatusBarColorProvider.getBaseStatusBarColor(tab);
     }
 }

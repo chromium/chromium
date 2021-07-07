@@ -451,7 +451,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public int getBaseStatusBarColor(Tab tab) {
-        return mStatusBarColorProvider.getBaseStatusBarColor(tab, super.getBaseStatusBarColor(tab));
+        return mStatusBarColorProvider.getBaseStatusBarColor(tab);
     }
 
     @Override

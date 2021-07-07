@@ -78,6 +78,9 @@ public class CustomTabToolbarColorController {
     public static int computeToolbarColorType(BrowserServicesIntentDataProvider intentDataProvider,
             boolean useTabThemeColor, @Nullable Tab tab) {
         if (intentDataProvider.isOpenedByChrome()) {
+            if (intentDataProvider.getColorProvider().hasCustomToolbarColor()) {
+                return ToolbarColorType.INTENT_TOOLBAR_COLOR;
+            }
             return (tab == null) ? ToolbarColorType.DEFAULT_COLOR : ToolbarColorType.THEME_COLOR;
         }
 
