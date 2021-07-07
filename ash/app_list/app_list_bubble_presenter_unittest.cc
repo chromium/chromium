@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -66,6 +67,18 @@ TEST_F(AppListBubblePresenterTest, ShowOpensOneWidgetInAppListContainer) {
   presenter->Show(GetPrimaryDisplay().id());
 
   EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer());
+}
+
+TEST_F(AppListBubblePresenterTest, ShowRecordsCreationTimeHistogram) {
+  base::HistogramTester histogram_tester;
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+
+  presenter->Show(GetPrimaryDisplay().id());
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleCreationTime", 1);
+
+  presenter->Dismiss();
+  presenter->Show(GetPrimaryDisplay().id());
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleCreationTime", 2);
 }
 
 TEST_F(AppListBubblePresenterTest, DismissClosesWidget) {

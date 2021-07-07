@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,6 +39,8 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
   if (bubble_widget_)
     return;
+
+  base::Time time_shown = base::Time::Now();
 
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
   Shelf* shelf = Shelf::ForWindow(root_window);
@@ -63,6 +66,9 @@ void AppListBubblePresenter::Show(int64_t display_id) {
       bubble_widget_, home_button,
       base::BindRepeating(&AppListBubblePresenter::OnPressOutsideBubble,
                           base::Unretained(this)));
+
+  UmaHistogramTimes("Apps.AppListBubbleCreationTime",
+                    base::Time::Now() - time_shown);
 }
 
 ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {
