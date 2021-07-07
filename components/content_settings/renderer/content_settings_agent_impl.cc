@@ -312,6 +312,7 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   if (permissions != cached_storage_permissions_.end())
     return permissions->second;
 
+  SCOPED_UMA_HISTOGRAM_TIMER("ContentSettings.AllowStorageAccessSync");
   bool result = false;
   GetContentSettingsManager().AllowStorageAccess(
       routing_id(), ConvertToMojoStorageType(storage_type),
