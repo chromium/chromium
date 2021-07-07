@@ -55,8 +55,7 @@ const CGFloat kActivityIndicatorViewSize = 55;
     [activityView.bottomAnchor
         constraintEqualToAnchor:containerView.bottomAnchor
                        constant:-kContainerViewSpacing],
-    [activityView.centerXAnchor constraintEqualToAnchor:label.centerXAnchor
-                                               constant:0],
+    [activityView.centerXAnchor constraintEqualToAnchor:label.centerXAnchor],
     [activityView.heightAnchor
         constraintEqualToConstant:kActivityIndicatorViewSize],
     [activityView.widthAnchor

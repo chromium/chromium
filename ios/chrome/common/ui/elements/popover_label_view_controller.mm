@@ -179,8 +179,7 @@ constexpr CGFloat kVerticalDistance = 24;
   }
 
   NSLayoutConstraint* heightConstraint = [_scrollView.heightAnchor
-      constraintEqualToAnchor:_scrollView.contentLayoutGuide.heightAnchor
-                   multiplier:1];
+      constraintEqualToAnchor:_scrollView.contentLayoutGuide.heightAnchor];
 
   // UILayoutPriorityDefaultHigh is the default priority for content
   // compression. Setting this lower avoids compressing the content of the

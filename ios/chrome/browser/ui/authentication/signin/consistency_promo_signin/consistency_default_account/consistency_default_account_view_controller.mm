@@ -169,8 +169,7 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
   [self.contentView addArrangedSubview:self.identityButtonControl];
   [NSLayoutConstraint activateConstraints:@[
     [self.identityButtonControl.widthAnchor
-        constraintEqualToAnchor:self.contentView.widthAnchor
-                       constant:0]
+        constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
   // Add primary button.
   self.continueAsButton =
@@ -184,8 +183,7 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
   [self.contentView addArrangedSubview:self.continueAsButton];
   [NSLayoutConstraint activateConstraints:@[
     [self.continueAsButton.widthAnchor
-        constraintEqualToAnchor:self.contentView.widthAnchor
-                       constant:0]
+        constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
   // Adjust the identity button control rounded corners to the same value than
   // the "continue as" button.

@@ -230,8 +230,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   [scrollView addSubview:stackView];
 
   NSLayoutConstraint* heightConstraint = [scrollView.heightAnchor
-      constraintEqualToAnchor:scrollView.contentLayoutGuide.heightAnchor
-                   multiplier:1];
+      constraintEqualToAnchor:scrollView.contentLayoutGuide.heightAnchor];
   // UILayoutPriorityDefaultHigh is the default priority for content
   // compression. Setting this lower avoids compressing the content of the
   // scroll view.

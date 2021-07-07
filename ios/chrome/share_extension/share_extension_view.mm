@@ -211,7 +211,6 @@ const CGFloat kButtonFontSize = 17;
         constraintEqualToAnchor:_itemView.centerYAnchor],
     [_itemView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_titleURLContainer.heightAnchor
-                                  multiplier:1
                                     constant:2 * kShareExtensionPadding],
     [_titleURLContainer.leadingAnchor
         constraintEqualToAnchor:_itemView.leadingAnchor
@@ -221,7 +220,6 @@ const CGFloat kButtonFontSize = 17;
                        constant:-kShareExtensionPadding],
     [_itemView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_screenshotView.heightAnchor
-                                  multiplier:1
                                     constant:2 * kShareExtensionPadding],
     [_screenshotView.centerYAnchor
         constraintEqualToAnchor:_itemView.centerYAnchor],
