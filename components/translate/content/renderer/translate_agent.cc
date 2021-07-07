@@ -576,7 +576,6 @@ void TranslateAgent::ResetPage() {
   receiver_.reset();
   translate_callback_pending_.Reset();
   CancelPendingTranslation();
-  page_contents_length_ = 0;
 }
 
 void TranslateAgent::OnDestruct() {
