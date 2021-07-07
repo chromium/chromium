@@ -263,7 +263,8 @@ class ResourceLoader::CodeCacheRequest {
   };
 
   // Callback to receive data from WebCodeCacheLoader.
-  void DidReceiveCachedCode(ResourceLoader* loader,
+  void DidReceiveCachedCode(base::TimeTicks start_time,
+                            ResourceLoader* loader,
                             base::Time response_time,
                             mojo_base::BigBuffer data);
 
@@ -303,9 +304,9 @@ bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
   // through ResourceLoader.
   url_loader->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
 
-  WebCodeCacheLoader::FetchCodeCacheCallback callback =
-      base::BindOnce(&ResourceLoader::CodeCacheRequest::DidReceiveCachedCode,
-                     weak_ptr_factory_.GetWeakPtr(), resource_loader);
+  WebCodeCacheLoader::FetchCodeCacheCallback callback = base::BindOnce(
+      &ResourceLoader::CodeCacheRequest::DidReceiveCachedCode,
+      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(), resource_loader);
   auto cache_type = resource_loader->GetCodeCacheType();
   code_cache_loader_->FetchFromCodeCache(cache_type, url_, std::move(callback));
   return true;
@@ -352,9 +353,12 @@ bool ResourceLoader::CodeCacheRequest::SetDefersLoading(
 }
 
 void ResourceLoader::CodeCacheRequest::DidReceiveCachedCode(
+    base::TimeTicks start_time,
     ResourceLoader* resource_loader,
     base::Time response_time,
     mojo_base::BigBuffer data) {
+  UMA_HISTOGRAM_TIMES("Navigation.CodeCacheTime.Resource",
+                      base::TimeTicks::Now() - start_time);
   ProcessCodeCacheResponse(response_time, std::move(data), resource_loader);
   // Reset the deferred value to its original state.
   DCHECK(resource_loader);

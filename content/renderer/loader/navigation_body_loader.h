@@ -103,7 +103,8 @@ class CONTENT_EXPORT NavigationBodyLoader
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper);
+          resource_load_info_notifier_wrapper,
+      bool is_main_frame);
 
   // blink::WebNavigationBodyLoader
   void SetDefersLoading(blink::WebURLLoader::DeferType defers) override;
@@ -126,7 +127,8 @@ class CONTENT_EXPORT NavigationBodyLoader
       mojo::ScopedDataPipeConsumerHandle handle) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  void CodeCacheReceived(base::Time response_head_response_time,
+  void CodeCacheReceived(base::TimeTicks start_time,
+                         base::Time response_head_response_time,
                          base::Time response_time,
                          mojo_base::BigBuffer data);
   void BindURLLoaderAndContinue();
@@ -183,6 +185,8 @@ class CONTENT_EXPORT NavigationBodyLoader
 
   // The original navigation url to start with.
   const GURL original_url_;
+
+  const bool is_main_frame_;
 
   base::WeakPtrFactory<NavigationBodyLoader> weak_factory_{this};
 
