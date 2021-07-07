@@ -21,6 +21,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
+#include "ui/gfx/animation/keyframe/keyframe_model.h"
 
 namespace viz {
 
@@ -153,22 +154,19 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // produce a clean active frame without any interpolations.
   State state_ = State::kIdle;
 
-  // This is an animation state of a particular atom of the animation (root or a
-  // single shared element).
-  class AnimationState : public gfx::FloatAnimationCurve::Target,
-                         public gfx::TransformAnimationCurve::Target,
-                         public gfx::RectAnimationCurve::Target {
+  // This is the animation state for the root elements.
+  class RootAnimationState : public gfx::FloatAnimationCurve::Target,
+                             public gfx::TransformAnimationCurve::Target {
    public:
-    AnimationState();
-    AnimationState(AnimationState&&);
-    ~AnimationState() override;
+    RootAnimationState();
+    RootAnimationState(RootAnimationState&&);
+    ~RootAnimationState() override;
 
     enum TargetProperty : int {
       kSrcOpacity = 1,
       kDstOpacity,
       kSrcTransform,
       kDstTransform,
-      kRect
     };
 
     void OnFloatAnimated(const float& value,
@@ -178,10 +176,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
     void OnTransformAnimated(const gfx::TransformOperations& operations,
                              int target_property_id,
                              gfx::KeyframeModel* keyframe_model) override;
-
-    void OnRectAnimated(const gfx::Rect& value,
-                        int target_property_id,
-                        gfx::KeyframeModel* keyframe_model) override;
 
     void Reset();
 
@@ -197,25 +191,75 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
       return dst_transform_;
     }
 
-    const gfx::Rect& rect() const { return rect_; }
-
    private:
     gfx::KeyframeEffect driver_;
     float src_opacity_ = 1.0f;
     float dst_opacity_ = 1.0f;
     gfx::TransformOperations src_transform_;
     gfx::TransformOperations dst_transform_;
-    gfx::Rect rect_;
+  };
+
+  // This is the animation state for a pair of shared elements.
+  class SharedAnimationState : public gfx::FloatAnimationCurve::Target,
+                               public gfx::TransformAnimationCurve::Target,
+                               public gfx::SizeAnimationCurve::Target {
+   public:
+    SharedAnimationState();
+    SharedAnimationState(SharedAnimationState&&);
+    ~SharedAnimationState() override;
+
+    enum TargetProperty : int {
+      // The following properties are used to blend the content of src and dest
+      // textues to produce a combined image.
+      kContentOpacity = 1,
+      kContentSize,
+
+      // The following properties are used when drawing the combined image to
+      // the target buffer.
+      kCombinedOpacity,
+      kCombinedTransform,
+    };
+
+    void OnFloatAnimated(const float& value,
+                         int target_property_id,
+                         gfx::KeyframeModel* keyframe_model) override;
+
+    void OnTransformAnimated(const gfx::TransformOperations& operations,
+                             int target_property_id,
+                             gfx::KeyframeModel* keyframe_model) override;
+
+    void OnSizeAnimated(const gfx::SizeF& value,
+                        int target_property_id,
+                        gfx::KeyframeModel* keyframe_model) override;
+
+    void Reset();
+
+    gfx::KeyframeEffect& driver() { return driver_; }
+    const gfx::KeyframeEffect& driver() const { return driver_; }
+
+    float content_opacity() const { return content_opacity_; }
+    const gfx::SizeF& content_size() const { return content_size_; }
+    float combined_opacity() const { return combined_opacity_; }
+    const gfx::TransformOperations& combined_transform() const {
+      return combined_transform_;
+    }
+
+   private:
+    gfx::KeyframeEffect driver_;
+    float content_opacity_ = 1.0f;
+    gfx::SizeF content_size_;
+    float combined_opacity_ = 1.0f;
+    gfx::TransformOperations combined_transform_;
   };
 
   // This is the root animation state.
-  AnimationState root_animation_;
+  RootAnimationState root_animation_;
 
   // This is a vector of animation states for each of the shared elements. Note
   // that the position in the vector matches both the position of the shared
   // texture in the saved_textures_->shared vector and the corresponding
   // position in the animate_directive->shared_render_pass_ids() vector.
-  std::vector<AnimationState> shared_animations_;
+  std::vector<SharedAnimationState> shared_animations_;
 
   base::TimeTicks latest_time_;
 };

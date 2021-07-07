@@ -169,7 +169,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedColorAnimationCurve
   SkColor GetValue(base::TimeDelta t) const override;
 
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
-                                           SkColor new_target) const;
+                                           SkColor new_target);
 
   using Keyframes = std::vector<std::unique_ptr<ColorKeyframe>>;
   const Keyframes& keyframes_for_testing() const { return keyframes_; }
@@ -217,8 +217,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedFloatAnimationCurve
   // FloatAnimationCurve implementation
   float GetValue(base::TimeDelta t) const override;
 
-  std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
-                                           float new_target) const;
+  std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t, float new_target);
 
   using Keyframes = std::vector<std::unique_ptr<FloatKeyframe>>;
   const Keyframes& keyframes_for_testing() const { return keyframes_; }
@@ -267,7 +266,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedTransformAnimationCurve
 
   std::unique_ptr<AnimationCurve> Retarget(
       base::TimeDelta t,
-      const gfx::TransformOperations& new_target) const;
+      const gfx::TransformOperations& new_target);
 
  private:
   KeyframedTransformAnimationCurve();
@@ -309,7 +308,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedSizeAnimationCurve
   gfx::SizeF GetValue(base::TimeDelta t) const override;
 
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
-                                           const gfx::SizeF& new_target) const;
+                                           const gfx::SizeF& new_target);
 
  private:
   KeyframedSizeAnimationCurve();
@@ -351,7 +350,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedRectAnimationCurve
   gfx::Rect GetValue(base::TimeDelta t) const override;
 
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
-                                           const gfx::Rect& new_target) const;
+                                           const gfx::Rect& new_target);
 
  private:
   KeyframedRectAnimationCurve();
@@ -377,9 +376,15 @@ struct AnimationTraits {};
     static const CurveType* ToDerivedCurve(const AnimationCurve* curve) {   \
       return name##AnimationCurve::To##name##AnimationCurve(curve);         \
     }                                                                       \
+    static CurveType* ToDerivedCurve(AnimationCurve* curve) {               \
+      return name##AnimationCurve::To##name##AnimationCurve(curve);         \
+    }                                                                       \
     static const KeyframedCurveType* ToKeyframedCurve(                      \
         const AnimationCurve* curve) {                                      \
       return static_cast<const KeyframedCurveType*>(ToDerivedCurve(curve)); \
+    }                                                                       \
+    static KeyframedCurveType* ToKeyframedCurve(AnimationCurve* curve) {    \
+      return static_cast<KeyframedCurveType*>(ToDerivedCurve(curve));       \
     }                                                                       \
     static void OnValueAnimated(name##AnimationCurve::Target* target,       \
                                 const ValueType& target_value,              \
