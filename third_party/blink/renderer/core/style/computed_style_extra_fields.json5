@@ -88,6 +88,7 @@
     {
       name: "InForcedColorsMode",
       field_template: "primitive",
+      field_group: "inherited",
       default_value: "false",
       type_name: "bool",
       inherited: true,

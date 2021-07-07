@@ -994,6 +994,7 @@
     },
     {
       name: "forced-color-adjust",
+      field_group: "*",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
       runtime_flag: "ForcedColors",
@@ -6582,7 +6583,7 @@
     {
       name: "-internal-forced-background-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
-      field_group: "*",
+      field_group: "*->forced_colors",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/layout/layout_theme.h"],
       default_value: "StyleColor(CSSValueID::kCanvas)",
@@ -6600,7 +6601,7 @@
     {
       name: "-internal-forced-border-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
-      field_group: "*",
+      field_group: "*->forced_colors",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
@@ -6614,7 +6615,7 @@
       name: "-internal-forced-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       inherited: true,
-      field_group: "*",
+      field_group: "*->inherited_forced_colors",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/layout/layout_theme.h"],
       default_value: "StyleColor(CSSValueID::kCanvastext)",
@@ -6629,7 +6630,7 @@
     {
       name: "-internal-forced-outline-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
-      field_group: "*",
+      field_group: "*->forced_colors",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],
       default_value: "StyleColor::CurrentColor()",
@@ -6644,7 +6645,7 @@
       visited_property_for: "-internal-forced-color",
       property_methods: ["ParseSingleValue", "ColorIncludingFallback"],
       inherited: true,
-      field_group: "*",
+      field_group: "*->inherited_forced_colors",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/layout/layout_theme.h"],
       default_value: "StyleColor(CSSValueID::kCanvastext)",
