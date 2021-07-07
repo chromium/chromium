@@ -153,16 +153,16 @@ int PrerenderHostRegistry::ReserveHostToActivate(
                "navigation_url", navigation_request.GetURL().spec(),
                "render_frame_host", render_frame_host);
 
-  // Disallow activation when the navigation is for prerendering.
-  if (navigation_request.frame_tree_node()->frame_tree()->is_prerendering())
+  // Disallow activation when the navigation is for a nested browsing context
+  // (e.g., iframes). This is because nested browsing contexts are supposed to
+  // be created in the parent's browsing context group and can script with the
+  // parent, but prerendered pages are created in new browsing context groups.
+  if (!navigation_request.IsInMainFrame())
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  // Disallow activation when the render frame host is for a nested browsing
-  // context (e.g., iframes). This is because nested browsing contexts are
-  // supposed to be created in the parent's browsing context group and can
-  // script with the parent, but prerendered pages are created in new browsing
-  // context groups.
-  if (render_frame_host->GetParent())
+  // Disallow activation when the navigation happens in the prerendering frame
+  // tree.
+  if (navigation_request.IsInPrerenderedMainFrame())
     return RenderFrameHost::kNoFrameTreeNodeId;
 
   // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
