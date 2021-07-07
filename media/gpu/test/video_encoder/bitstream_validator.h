@@ -27,6 +27,7 @@
 
 namespace media {
 
+class MediaLog;
 class VideoFrame;
 class VideoDecoderConfig;
 
@@ -56,6 +57,7 @@ class BitstreamValidator : public BitstreamProcessor {
  private:
   BitstreamValidator(
       std::unique_ptr<VideoDecoder> decoder,
+      std::unique_ptr<MediaLog> media_log,
       size_t last_frame_index,
       absl::optional<size_t> num_vp9_temporal_layers_to_decode,
       std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors);
@@ -75,6 +77,7 @@ class BitstreamValidator : public BitstreamProcessor {
 
   // Validator components touched by validator_thread_ only.
   std::unique_ptr<VideoDecoder> decoder_;
+  const std::unique_ptr<MediaLog> media_log_;
   const size_t last_frame_index_;
   const absl::optional<size_t> num_vp9_temporal_layers_to_decode_;
   const std::vector<std::unique_ptr<VideoFrameProcessor>>

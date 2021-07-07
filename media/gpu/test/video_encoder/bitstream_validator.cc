@@ -10,7 +10,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/filters/ffmpeg_video_decoder.h"
@@ -25,7 +27,9 @@ namespace {
 
 constexpr int64_t kEOSTimeStamp = -1;
 
-std::unique_ptr<VideoDecoder> CreateDecoder(VideoCodec codec) {
+std::unique_ptr<VideoDecoder> CreateDecoder(
+    VideoCodec codec,
+    std::unique_ptr<MediaLog>* media_log) {
   std::unique_ptr<VideoDecoder> decoder;
 
   if (codec == kCodecVP8 || codec == kCodecVP9) {
@@ -37,7 +41,8 @@ std::unique_ptr<VideoDecoder> CreateDecoder(VideoCodec codec) {
 
   if (!decoder) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-    decoder = std::make_unique<FFmpegVideoDecoder>(nullptr);
+    *media_log = std::make_unique<NullMediaLog>();
+    decoder = std::make_unique<FFmpegVideoDecoder>(media_log->get());
 #endif
   }
 
@@ -51,16 +56,17 @@ std::unique_ptr<BitstreamValidator> BitstreamValidator::Create(
     size_t last_frame_index,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors,
     absl::optional<size_t> num_vp9_temporal_layers_to_decode) {
-  std::unique_ptr<VideoDecoder> decoder;
-  decoder = CreateDecoder(decoder_config.codec());
+  std::unique_ptr<MediaLog> media_log;
+  auto decoder = CreateDecoder(decoder_config.codec(), &media_log);
   if (!decoder)
     return nullptr;
 
   auto validator = base::WrapUnique(new BitstreamValidator(
-      std::move(decoder), last_frame_index, num_vp9_temporal_layers_to_decode,
-      std::move(video_frame_processors)));
+      std::move(decoder), std::move(media_log), last_frame_index,
+      num_vp9_temporal_layers_to_decode, std::move(video_frame_processors)));
   if (!validator->Initialize(decoder_config))
     return nullptr;
+
   return validator;
 }
 
@@ -105,10 +111,12 @@ void BitstreamValidator::InitializeVideoDecoder(
 
 BitstreamValidator::BitstreamValidator(
     std::unique_ptr<VideoDecoder> decoder,
+    std::unique_ptr<MediaLog> media_log,
     size_t last_frame_index,
     absl::optional<size_t> num_vp9_temporal_layers_to_decode,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors)
     : decoder_(std::move(decoder)),
+      media_log_(std::move(media_log)),
       last_frame_index_(last_frame_index),
       num_vp9_temporal_layers_to_decode_(num_vp9_temporal_layers_to_decode),
       video_frame_processors_(std::move(video_frame_processors)),
