@@ -68,23 +68,16 @@ namespace {
 std::string Serialize(const base::Value& value) {
   std::string json_output;
   JSONStringValueSerializer serializer(&json_output);
-  if (!serializer.Serialize(value))
-    LOG(ERROR) << "Could not serialize value:   " << value.DebugString();
-
+  serializer.Serialize(value);
   return json_output;
 }
-std::unique_ptr<base::Value> DeserializeValue(std::string serialized_value) {
+std::unique_ptr<base::Value> DeserializeValue(
+    const std::string& serialized_value) {
   if (serialized_value.empty())
     return {};
-  JSONStringValueDeserializer deserializer{base::StringPiece(serialized_value)};
-  std::string error_message;
-  std::unique_ptr<base::Value> result =
-      deserializer.Deserialize(nullptr, &error_message);
-  if (!result) {
-    LOG(ERROR) << "Could not deserialize value `" << serialized_value
-               << "`:   " << error_message;
-  }
-  return result;
+  JSONStringValueDeserializer deserializer(serialized_value);
+  return deserializer.Deserialize(/*error_code=*/nullptr,
+                                  /*error_message=*/nullptr);
 }
 
 std::string Serialize(const url::Origin& origin) {
@@ -96,7 +89,7 @@ url::Origin DeserializeOrigin(const std::string& serialized_origin) {
 
 std::string Serialize(const absl::optional<GURL>& url) {
   if (!url)
-    return "";
+    return std::string();
   return url->spec();
 }
 absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
@@ -113,17 +106,12 @@ base::Value ToValue(const ::blink::mojom::InterestGroupAd& ad) {
     dict.SetStringKey("metadata", ad.metadata.value());
   return dict;
 }
-InterestGroupAdPtr FromInterestGroupAdPtrValue(const base::Value* value) {
+InterestGroupAdPtr FromInterestGroupAdPtrValue(const base::Value& value) {
   InterestGroupAdPtr result = blink::mojom::InterestGroupAd::New();
-  if (!value) {
-    LOG(ERROR) << "converting InterestGroupAd from value";
-    return result;
-  }
-  const std::string* maybe_url = value->FindStringKey("url");
-  if (!maybe_url)
-    LOG(ERROR) << "url field not found in serialized InterestGroupAdPtrValue";
-  result->render_url = GURL(*maybe_url);
-  const std::string* maybe_metadata = value->FindStringKey("metadata");
+  const std::string* maybe_url = value.FindStringKey("url");
+  if (maybe_url)
+    result->render_url = GURL(*maybe_url);
+  const std::string* maybe_metadata = value.FindStringKey("metadata");
   if (maybe_metadata)
     result->metadata = *maybe_metadata;
   return result;
@@ -132,7 +120,7 @@ InterestGroupAdPtr FromInterestGroupAdPtrValue(const base::Value* value) {
 std::string Serialize(
     const absl::optional<std::vector<InterestGroupAdPtr>>& ads) {
   if (!ads)
-    return "";
+    return std::string();
   base::Value list(base::Value::Type::LIST);
   for (const auto& ad : ads.value()) {
     list.Append(ToValue(*ad));
@@ -140,29 +128,29 @@ std::string Serialize(
   return Serialize(list);
 }
 absl::optional<std::vector<InterestGroupAdPtr>>
-DeserializeInterestGroupAdPtrVector(std::string serialized_ads) {
+DeserializeInterestGroupAdPtrVector(const std::string& serialized_ads) {
   std::vector<InterestGroupAdPtr> result;
   std::unique_ptr<base::Value> ads_value = DeserializeValue(serialized_ads);
-  if (!ads_value) {
+  if (!ads_value || !ads_value->is_list())
     return absl::nullopt;
+  for (const auto& ad_value : ads_value->GetList()) {
+    result.push_back(FromInterestGroupAdPtrValue(ad_value));
   }
-  for (const auto& ad_value : ads_value->GetList())
-    result.push_back(FromInterestGroupAdPtrValue(&ad_value));
   return result;
 }
 
-std::string Serialize(const absl::optional<std::vector<std::string>> strings) {
+std::string Serialize(const absl::optional<std::vector<std::string>>& strings) {
   if (!strings)
-    return "";
+    return std::string();
   base::Value list(base::Value::Type::LIST);
   for (const auto& s : strings.value())
     list.Append(s);
   return Serialize(list);
 }
 absl::optional<std::vector<std::string>> DeserializeStringVector(
-    std::string serialized_vector) {
+    const std::string& serialized_vector) {
   std::unique_ptr<base::Value> list = DeserializeValue(serialized_vector);
-  if (!list)
+  if (!list || !list->is_list())
     return absl::nullopt;
   std::vector<std::string> result;
   for (const auto& value : list->GetList())
