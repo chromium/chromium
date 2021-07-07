@@ -95,6 +95,7 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(
       current_task_slice_start_time_(now),
       safepoints_in_current_toplevel_task_count_(0) {
   main_thread_load_tracker_.Resume(now);
+  random_generator_.Seed();
   if (renderer_backgrounded) {
     background_main_thread_load_tracker_.Resume(now);
   } else {
@@ -200,11 +201,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
 
   last_reported_task_ = task_timing.end_time();
 
-  UMA_HISTOGRAM_CUSTOM_COUNTS("RendererScheduler.TaskTime2",
-                              base::saturated_cast<base::HistogramBase::Sample>(
-                                  duration.InMicroseconds()),
-                              1, 1000 * 1000, 50);
-
   // We want to measure thread time here, but for efficiency reasons
   // we stick with wall time.
   main_thread_load_tracker_.RecordTaskTime(task_timing.start_time(),
@@ -213,6 +209,16 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
                                                       task_timing.end_time());
   background_main_thread_load_tracker_.RecordTaskTime(task_timing.start_time(),
                                                       task_timing.end_time());
+  // WARNING: All code below must be compatible with down-sampling.
+  constexpr double kSamplingProbabily = .01;
+  bool should_sample = random_generator_.RandDouble() < kSamplingProbabily;
+  if (!should_sample)
+    return;
+
+  UMA_HISTOGRAM_CUSTOM_COUNTS("RendererScheduler.TaskTime2",
+                              base::saturated_cast<base::HistogramBase::Sample>(
+                                  duration.InMicroseconds()),
+                              1, 1000 * 1000, 50);
 
   if (safepoints_in_current_toplevel_task_count_ > 0) {
     FrameStatus frame_status =
