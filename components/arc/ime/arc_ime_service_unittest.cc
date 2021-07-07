@@ -9,12 +9,10 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/arc/mojom/ime.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -568,10 +566,6 @@ TEST_F(ArcImeServiceTest, ExtendSelectionAndDeleteThenSetComposingRegion) {
 }
 
 TEST_F(ArcImeServiceTest, OnDispatchingKeyEventPostIME) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kArcPreImeKeyEventSupport);
-
   instance_->OnWindowFocused(arc_win_.get(), nullptr);
   instance_->OnTextInputTypeChanged(ui::TEXT_INPUT_TYPE_TEXT, true,
                                     mojom::TEXT_INPUT_FLAG_NONE);
@@ -623,9 +617,6 @@ TEST_F(ArcImeServiceTest, OnDispatchingKeyEventPostIME) {
 }
 
 TEST_F(ArcImeServiceTest, SendKeyEvent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kArcPreImeKeyEventSupport);
   base::test::SingleThreadTaskEnvironment task_environment;
 
   instance_->OnWindowFocused(arc_win_.get(), nullptr);

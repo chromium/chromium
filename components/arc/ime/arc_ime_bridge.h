@@ -47,7 +47,6 @@ class ArcImeBridge {
         const std::u16string& text_in_range,
         const gfx::Range& selection_range,
         bool is_screen_coordinates) = 0;
-    virtual bool ShouldEnableKeyEventForwarding() = 0;
     virtual void SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                               KeyEventDoneCallback callback) = 0;
   };

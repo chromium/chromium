@@ -6,10 +6,8 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
@@ -418,11 +416,6 @@ void ArcImeService::OnCursorRectChangedWithSurroundingText(
     input_method->OnCaretBoundsChanged(this);
 }
 
-bool ArcImeService::ShouldEnableKeyEventForwarding() {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kArcPreImeKeyEventSupport);
-}
-
 void ArcImeService::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                                  KeyEventDoneCallback callback) {
   ui::InputMethod* const input_method = GetInputMethod();
@@ -492,22 +485,6 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
     return;
 
   InvalidateSurroundingTextAndSelectionRange();
-
-  // For apps that doesn't handle hardware keyboard events well, keys that are
-  // typically on software keyboard and lack of them are fatal, namely,
-  // unmodified enter and backspace keys are sent through IME.
-  if (!HasModifier(&event) && !ShouldEnableKeyEventForwarding()) {
-    if (event.key_code() ==  ui::VKEY_RETURN) {
-      has_composition_text_ = false;
-      ime_bridge_->SendInsertText(u"\n", /*new_cursor_position=*/1);
-      return;
-    }
-    if (event.key_code() ==  ui::VKEY_BACK) {
-      has_composition_text_ = false;
-      ime_bridge_->SendInsertText(u"\b", /*new_cursor_position=*/1);
-      return;
-    }
-  }
 
   if (IsCharacterKeyEvent(&event)) {
     has_composition_text_ = false;
@@ -709,9 +686,6 @@ bool ArcImeService::AddGrammarFragments(
 }
 
 void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
-  if (!ShouldEnableKeyEventForwarding())
-    return;
-
   if (receiver_->HasCallback()) {
     receiver_->DispatchKeyEventPostIME(event);
     event->SetHandled();

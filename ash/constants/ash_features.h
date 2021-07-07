@@ -57,8 +57,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kArcAdbSideloadingFeature;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kArcManagedAdbSideloadingSupport;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kArcPreImeKeyEventSupport;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kArcResizeLock;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistAutoCorrect;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistEmojiEnhanced;

@@ -102,7 +102,6 @@ class ArcImeService : public KeyedService,
       const std::u16string& text_in_range,
       const gfx::Range& selection_range,
       bool is_screen_coordinates) override;
-  bool ShouldEnableKeyEventForwarding() override;
   void SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                     KeyEventDoneCallback callback) override;
 
