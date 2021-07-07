@@ -162,21 +162,26 @@ ALWAYS_INLINE bool IsReservationStart(const void* address) {
 }
 
 // Returns true if |address| belongs to a normal bucket super page.
-// |address| must belong to an allocated super page.
 ALWAYS_INLINE bool IsManagedByNormalBuckets(const void* address) {
   uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
-  PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
   return *offset_ptr == kOffsetTagNormalBuckets;
 }
 
 // Returns true if |address| belongs to a direct map region.
-// |address| must belong to an allocated super page.
 ALWAYS_INLINE bool IsManagedByDirectMap(const void* address) {
   uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
-  PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
-  return *offset_ptr != kOffsetTagNormalBuckets;
+  return *offset_ptr != kOffsetTagNormalBuckets &&
+         *offset_ptr != kOffsetTagNotAllocated;
+}
+
+// Returns true if |address| belongs to a normal bucket super page or a direct
+// map region, i.e. belongs to an allocated super page.
+ALWAYS_INLINE bool IsManagedByNormalBucketsOrDirectMap(const void* address) {
+  uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+  uint16_t* offset_ptr = ReservationOffsetPointer(address_as_uintptr);
+  return *offset_ptr != kOffsetTagNotAllocated;
 }
 
 }  // namespace internal

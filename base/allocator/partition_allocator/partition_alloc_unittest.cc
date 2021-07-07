@@ -3173,53 +3173,71 @@ TEST_F(PartitionAllocTest, CheckReservationType) {
   char* ptr = reinterpret_cast<char*>(
       allocator.root()->Alloc(kTestAllocSize, type_name));
   EXPECT_TRUE(ptr);
-  EXPECT_FALSE(IsReservationStart(ptr));
-  EXPECT_TRUE(IsManagedByNormalBuckets(ptr));
-  EXPECT_FALSE(IsManagedByDirectMap(ptr));
-  EXPECT_FALSE(IsReservationStart(ptr + kTestAllocSize - 1));
-  EXPECT_TRUE(IsManagedByNormalBuckets(ptr + kTestAllocSize - 1));
-  EXPECT_FALSE(IsManagedByDirectMap(ptr + kTestAllocSize - 1));
-  EXPECT_TRUE(IsReservationStart(bits::AlignDown(ptr, kSuperPageSize)));
-  EXPECT_TRUE(IsManagedByNormalBuckets(bits::AlignDown(ptr, kSuperPageSize)));
-  EXPECT_FALSE(IsManagedByDirectMap(bits::AlignDown(ptr, kSuperPageSize)));
+  void* ptr_to_check = ptr;
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = ptr + kTestAllocSize - 1;
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = bits::AlignDown(ptr, kSuperPageSize);
+  EXPECT_TRUE(IsReservationStart(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
   allocator.root()->Free(ptr);
   // Freeing keeps a normal-bucket super page in memory.
-  EXPECT_TRUE(IsReservationStart(bits::AlignDown(ptr, kSuperPageSize)));
+  ptr_to_check = bits::AlignDown(ptr, kSuperPageSize);
+  EXPECT_TRUE(IsReservationStart(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  // Pick a likely unallocated super page.
+  ptr_to_check = bits::AlignUp(ptr, kSuperPageSize) + 100 * kSuperPageSize;
 #if DCHECK_IS_ON()
   // Expect to DCHECK on unallocated region.
-  EXPECT_DEATH_IF_SUPPORTED(
-      IsReservationStart(bits::AlignUp(ptr, kSuperPageSize)), "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      IsManagedByNormalBuckets(bits::AlignUp(ptr, kSuperPageSize)), "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      IsManagedByDirectMap(bits::AlignUp(ptr, kSuperPageSize)), "");
+  EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(ptr_to_check), "");
 #endif
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
 
   size_t large_size = 2 * kSuperPageSize;
   ptr = reinterpret_cast<char*>(allocator.root()->Alloc(large_size, type_name));
   EXPECT_TRUE(ptr);
-  EXPECT_FALSE(IsReservationStart(ptr));
-  EXPECT_FALSE(IsManagedByNormalBuckets(ptr));
-  EXPECT_TRUE(IsManagedByDirectMap(ptr));
-  EXPECT_FALSE(IsReservationStart(bits::AlignUp(ptr, kSuperPageSize)));
-  EXPECT_FALSE(IsManagedByNormalBuckets(bits::AlignUp(ptr, kSuperPageSize)));
-  EXPECT_TRUE(IsManagedByDirectMap(bits::AlignUp(ptr, kSuperPageSize)));
-  EXPECT_FALSE(IsReservationStart(ptr + large_size - 1));
-  EXPECT_FALSE(IsManagedByNormalBuckets(ptr + large_size - 1));
-  EXPECT_TRUE(IsManagedByDirectMap(ptr + large_size - 1));
-  EXPECT_TRUE(IsReservationStart(bits::AlignDown(ptr, kSuperPageSize)));
-  EXPECT_FALSE(IsManagedByNormalBuckets(bits::AlignDown(ptr, kSuperPageSize)));
-  EXPECT_TRUE(IsManagedByDirectMap(bits::AlignDown(ptr, kSuperPageSize)));
+  ptr_to_check = ptr;
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = bits::AlignUp(ptr, kSuperPageSize);
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = ptr + large_size - 1;
+  EXPECT_FALSE(IsReservationStart(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
+  ptr_to_check = bits::AlignDown(ptr, kSuperPageSize);
+  EXPECT_TRUE(IsReservationStart(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_TRUE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_TRUE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
   allocator.root()->Free(ptr);
+  // Freeing releases direct-map super pages.
+  ptr_to_check = bits::AlignDown(ptr, kSuperPageSize);
 #if DCHECK_IS_ON()
-  // Freeing releases direct-map super pages. Expect to DCHECK.
-  EXPECT_DEATH_IF_SUPPORTED(
-      IsReservationStart(bits::AlignDown(ptr, kSuperPageSize)), "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      IsManagedByNormalBuckets(bits::AlignDown(ptr, kSuperPageSize)), "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      IsManagedByDirectMap(bits::AlignDown(ptr, kSuperPageSize)), "");
+  // Expect to DCHECK on unallocated region.
+  EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(ptr_to_check), "");
 #endif
+  EXPECT_FALSE(IsManagedByNormalBuckets(ptr_to_check));
+  EXPECT_FALSE(IsManagedByDirectMap(ptr_to_check));
+  EXPECT_FALSE(IsManagedByNormalBucketsOrDirectMap(ptr_to_check));
 }
 
 // Test for crash http://crbug.com/1169003.

@@ -852,6 +852,7 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   // kPartitionPastAllocationAdjustment takes care of that detail.
   ptr = reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
 
+  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(ptr));
 #if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   DCheckIfManagedByPartitionAllocBRPPool(ptr);
 #else
