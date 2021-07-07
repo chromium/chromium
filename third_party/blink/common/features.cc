@@ -1026,7 +1026,7 @@ const base::Feature kUACHPlatformEnabledByDefault{
 // When enabled, allow dropping alpha on media streams for rendering sinks if
 // other sinks connected do not use alpha.
 const base::Feature kAllowDropAlphaForMediaStream{
-    "AllowDropAlphaForMediaStream", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AllowDropAlphaForMediaStream", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink
