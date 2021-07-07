@@ -1092,7 +1092,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   background_tracing_helper.WaitForScenarioAborted();
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, CustomConfig) {
+// TODO(crbug.com/1227164): Test is flaky on Linux and Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_CustomConfig DISABLED_CustomConfig
+#else
+#define MAYBE_CustomConfig CustomConfig
+#endif
+IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
+                       MAYBE_CustomConfig) {
   TestBackgroundTracingHelper background_tracing_helper;
   TestTraceReceiverHelper trace_receiver_helper;
 
