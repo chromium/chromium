@@ -143,8 +143,8 @@ bool ManagedState::GetUInt32Value(const std::string& key,
   // uint32_t will automatically get converted to a double, which is why we try
   // to obtain the value as a double (see dbus/values_util.h).
   uint32_t new_value;
-  double double_value;
-  if (!value.GetAsDouble(&double_value) || double_value < 0) {
+  double double_value = value.GetIfDouble().value_or(-1);
+  if (double_value < 0) {
     NET_LOG(ERROR) << "Error parsing state value: " << NetworkPathId(path_)
                    << "." << key;
     return false;
