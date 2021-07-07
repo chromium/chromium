@@ -18,11 +18,14 @@ class FilePath;
 namespace win {
 
 // Adds allowed ACE entries to a file or directory |path| from a list of SIDs
-// with allowed |access_mask| and |inheritance| flags.
+// with allowed |access_mask| and |inheritance| flags. If |path| is a directory
+// and |recursive| is true then any inheritable ACEs granted will be propagated
+// to its children.
 BASE_EXPORT bool GrantAccessToPath(const FilePath& path,
                                    const std::vector<Sid>& sids,
                                    DWORD access_mask,
-                                   DWORD inheritance);
+                                   DWORD inheritance,
+                                   bool recursive = true);
 
 }  // namespace win
 }  // namespace base

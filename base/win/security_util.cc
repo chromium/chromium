@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
 
@@ -21,7 +22,8 @@ namespace win {
 bool GrantAccessToPath(const FilePath& path,
                        const std::vector<Sid>& sids,
                        DWORD access_mask,
-                       DWORD inheritance) {
+                       DWORD inheritance,
+                       bool recursive) {
   DCHECK(!path.empty());
   if (sids.empty())
     return true;
@@ -60,10 +62,24 @@ bool GrantAccessToPath(const FilePath& path,
     return false;
   }
   auto new_dacl_ptr = TakeLocalAlloc(new_dacl);
+  if (recursive) {
+    error = ::SetNamedSecurityInfo(&object_name[0], SE_FILE_OBJECT,
+                                   DACL_SECURITY_INFORMATION, nullptr, nullptr,
+                                   new_dacl_ptr.get(), nullptr);
+  } else {
+    ScopedHandle handle(::CreateFile(path.value().c_str(), WRITE_DAC, 0,
+                                     nullptr, OPEN_EXISTING,
+                                     FILE_FLAG_BACKUP_SEMANTICS, nullptr));
+    if (!handle.IsValid()) {
+      DPLOG(ERROR) << "Failed opening path \"" << path.value()
+                   << "\" to write DACL";
+      return false;
+    }
+    error = ::SetSecurityInfo(handle.Get(), SE_KERNEL_OBJECT,
+                              DACL_SECURITY_INFORMATION, nullptr, nullptr,
+                              new_dacl_ptr.get(), nullptr);
+  }
 
-  error = ::SetNamedSecurityInfo(&object_name[0], SE_FILE_OBJECT,
-                                 DACL_SECURITY_INFORMATION, nullptr, nullptr,
-                                 new_dacl_ptr.get(), nullptr);
   if (error != ERROR_SUCCESS) {
     ::SetLastError(error);
     DPLOG(ERROR) << "Failed setting DACL for path \"" << path.value() << "\"";
