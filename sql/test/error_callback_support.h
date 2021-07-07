@@ -5,7 +5,6 @@
 #ifndef SQL_TEST_ERROR_CALLBACK_SUPPORT_H_
 #define SQL_TEST_ERROR_CALLBACK_SUPPORT_H_
 
-#include "base/macros.h"
 #include "sql/database.h"
 
 namespace sql {
@@ -25,12 +24,12 @@ class ScopedErrorCallback {
  public:
   ScopedErrorCallback(sql::Database* db,
                       const sql::Database::ErrorCallback& cb);
+  ScopedErrorCallback(const ScopedErrorCallback&) = delete;
+  ScopedErrorCallback& operator=(const ScopedErrorCallback&) = delete;
   ~ScopedErrorCallback();
 
  private:
   sql::Database* db_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedErrorCallback);
 };
 
 }  // namespace sql

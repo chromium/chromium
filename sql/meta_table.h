@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace sql {
 
@@ -25,6 +24,8 @@ class Statement;
 class COMPONENT_EXPORT(SQL) MetaTable {
  public:
   MetaTable();
+  MetaTable(const MetaTable&) = delete;
+  MetaTable& operator=(const MetaTable&) = delete;
   ~MetaTable();
 
   // Values for Get/SetMmapStatus(). |kMmapFailure| indicates that there was at
@@ -121,8 +122,6 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   bool PrepareGetStatement(Statement* statement, const char* key);
 
   Database* db_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MetaTable);
 };
 
 }  // namespace sql

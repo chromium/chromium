@@ -50,12 +50,11 @@ class RefCounter {
   RefCounter(const RefCounter& other) : counter_(other.counter_) {
     (*counter_)++;
   }
+  RefCounter& operator=(const RefCounter&) = delete;
   ~RefCounter() { (*counter_)--; }
 
  private:
   size_t* counter_;
-
-  DISALLOW_ASSIGN(RefCounter);
 };
 
 // Empty callback for implementation of ErrorCallbackSetHelper().

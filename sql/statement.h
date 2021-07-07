@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -58,6 +57,10 @@ class COMPONENT_EXPORT(SQL) Statement {
   Statement();
 
   explicit Statement(scoped_refptr<Database::StatementRef> ref);
+
+  Statement(const Statement&) = delete;
+  Statement& operator=(const Statement&) = delete;
+
   ~Statement();
 
   // Initializes this object with the given statement, which may or may not
@@ -234,8 +237,6 @@ class COMPONENT_EXPORT(SQL) Statement {
   bool succeeded_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Statement);
 };
 
 }  // namespace sql

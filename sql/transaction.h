@@ -6,7 +6,6 @@
 #define SQL_TRANSACTION_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace sql {
 
@@ -22,6 +21,8 @@ class COMPONENT_EXPORT(SQL) Transaction {
   // Nested transactions are supported. See sql::Database::BeginTransaction
   // for details.
   explicit Transaction(Database* connection);
+  Transaction(const Transaction&) = delete;
+  Transaction& operator=(const Transaction&) = delete;
   ~Transaction();
 
   // Returns true when there is a transaction that has been successfully begun.
@@ -51,8 +52,6 @@ class COMPONENT_EXPORT(SQL) Transaction {
   // True when the transaction is open, false when it's already been committed
   // or rolled back.
   bool is_open_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Transaction);
 };
 
 }  // namespace sql

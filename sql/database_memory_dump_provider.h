@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 
@@ -25,6 +24,11 @@ class DatabaseMemoryDumpProvider
     : public base::trace_event::MemoryDumpProvider {
  public:
   DatabaseMemoryDumpProvider(sqlite3* db, const std::string& name);
+
+  DatabaseMemoryDumpProvider(const DatabaseMemoryDumpProvider&) = delete;
+  DatabaseMemoryDumpProvider& operator=(const DatabaseMemoryDumpProvider&) =
+      delete;
+
   ~DatabaseMemoryDumpProvider() override;
 
   void ResetDatabase();
@@ -47,8 +51,6 @@ class DatabaseMemoryDumpProvider
   sqlite3* db_;  // not owned.
   base::Lock lock_;
   std::string connection_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseMemoryDumpProvider);
 };
 
 }  // namespace sql
