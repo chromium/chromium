@@ -182,21 +182,11 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   bool requires_anonymized_data = (data_filtering == ANONYMIZE_DATA);
   config_impl->set_requires_anonymized_data(requires_anonymized_data);
 
-  // If the profile hasn't loaded or been created yet, this is a startup
-  // scenario and we have to wait until initialization is finished to validate
-  // that the scenario can run.
-  if (!delegate_ || delegate_->IsProfileLoaded()) {
-    // TODO(oysteine): Retry when time_until_allowed has elapsed.
-    if (config_impl && delegate_ &&
-        !delegate_->IsAllowedToBeginBackgroundScenario(
-            *config_impl.get(), requires_anonymized_data)) {
-      return false;
-    }
-  } else {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BackgroundTracingManagerImpl::ValidateStartupScenario,
-                       base::Unretained(this)));
+  // TODO(oysteine): Retry when time_until_allowed has elapsed.
+  if (config_impl && delegate_ &&
+      !delegate_->IsAllowedToBeginBackgroundScenario(
+          *config_impl.get(), requires_anonymized_data)) {
+    return false;
   }
 
   active_scenario_ = std::make_unique<BackgroundTracingActiveScenario>(
@@ -368,19 +358,6 @@ BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
 
   return BackgroundTracingConfig::FromDict(dict);
 }
-
-void BackgroundTracingManagerImpl::ValidateStartupScenario() {
-  if (!active_scenario_ || !delegate_) {
-    return;
-  }
-
-  if (!delegate_->IsAllowedToBeginBackgroundScenario(
-          *active_scenario_->GetConfig(),
-          active_scenario_->GetConfig()->requires_anonymized_data())) {
-    AbortScenario();
-  }
-}
-
 
 void BackgroundTracingManagerImpl::OnHistogramTrigger(
     const std::string& histogram_name) {

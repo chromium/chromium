@@ -965,6 +965,7 @@ extern const char kSecurityKeyPermitAttestation[];
 #endif
 
 extern const char kBackgroundTracingLastUpload[];
+extern const char kBackgroundTracingSessionState[];
 
 extern const char kAllowDinosaurEasterEgg[];
 

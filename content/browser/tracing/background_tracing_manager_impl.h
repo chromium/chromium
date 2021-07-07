@@ -157,7 +157,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   BackgroundTracingManagerImpl();
   ~BackgroundTracingManagerImpl() override;
 
-  void ValidateStartupScenario();
   bool IsSupportedConfig(BackgroundTracingConfigImpl* config);
   std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
   void GenerateMetadataProto(

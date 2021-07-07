@@ -31,10 +31,17 @@ class CONTENT_EXPORT BackgroundTracingConfig {
   };
   TracingMode tracing_mode() const { return tracing_mode_; }
 
+  const std::string& scenario_name() const { return scenario_name_; }
+  bool has_crash_scenario() const { return has_crash_scenario_; }
+
   static std::unique_ptr<BackgroundTracingConfig> FromDict(
       const base::DictionaryValue* dict);
 
   virtual void IntoDict(base::DictionaryValue* dict) = 0;
+
+ protected:
+  std::string scenario_name_;
+  bool has_crash_scenario_ = false;
 
  private:
   friend class BackgroundTracingConfigImpl;

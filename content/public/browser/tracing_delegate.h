@@ -42,8 +42,6 @@ class CONTENT_EXPORT TracingDelegate {
       bool requires_anonymized_data,
       bool is_crash_scenario);
 
-  virtual bool IsProfileLoaded();
-
   // Whether system-wide performance trace collection using the external system
   // tracing service is enabled.
   virtual bool IsSystemWideTracingEnabled();

@@ -391,6 +391,7 @@ BackgroundTracingRule* BackgroundTracingConfigImpl::AddRule(
   std::unique_ptr<BackgroundTracingRule> rule =
       BackgroundTracingRule::CreateRuleFromDict(dict);
   if (rule) {
+    has_crash_scenario_ = rule->is_crash();
     rules_.push_back(std::move(rule));
     return rules_.back().get();
   }

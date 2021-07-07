@@ -21,10 +21,6 @@ bool TracingDelegate::IsAllowedToEndBackgroundScenario(
   return false;
 }
 
-bool TracingDelegate::IsProfileLoaded() {
-  return false;
-}
-
 bool TracingDelegate::IsSystemWideTracingEnabled() {
   return false;
 }

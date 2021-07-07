@@ -2829,6 +2829,8 @@ const char kSecurityKeyPermitAttestation[] = "securitykey.permit_attestation";
 #endif
 
 const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
+const char kBackgroundTracingSessionState[] =
+    "background_tracing.session_state";
 
 const char kAllowDinosaurEasterEgg[] = "allow_dinosaur_easter_egg";
 

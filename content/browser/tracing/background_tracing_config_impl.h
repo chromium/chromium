@@ -44,7 +44,6 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   const std::vector<std::unique_ptr<BackgroundTracingRule>>& rules() const {
     return rules_;
   }
-  const std::string& scenario_name() const { return scenario_name_; }
 
   void AddPreemptiveRule(const base::DictionaryValue* dict);
   void AddReactiveRule(
@@ -110,7 +109,6 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   base::trace_event::TraceConfig trace_config_;
   CategoryPreset category_preset_;
   std::vector<std::unique_ptr<BackgroundTracingRule>> rules_;
-  std::string scenario_name_;
   std::string custom_categories_;
   std::string enabled_data_sources_;
 
