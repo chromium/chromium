@@ -157,9 +157,9 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final ObservableSupplierImpl<BrowserControlsStateProvider>
-            mBrowserControlsStateProviderSupplier = new ObservableSupplierImpl<>();
     private final CompositorModelChangeProcessor.FrameRequestSupplier mFrameRequestSupplier;
+
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     /** The overlays that can be drawn on top of the active layout. */
     protected final List<SceneOverlay> mSceneOverlays = new ArrayList<>();
@@ -468,18 +468,14 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             TopUiThemeColorProvider topUiColorProvider) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
+        mBrowserControlsStateProvider = mHost.getBrowserControlsManager();
+
         // Build Layouts
         mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProviderSupplier,
+                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProvider,
                 mTopUiThemeColorProvider);
 
         setNextLayout(null);
-
-        // Initialize Layouts
-        mStaticLayout.onFinishNativeInitialization();
-
-        // Initialize Layouts
-        mBrowserControlsStateProviderSupplier.set(mHost.getBrowserControlsManager());
 
         // Set the dynamic resource loader for all overlay panels.
         mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
@@ -594,9 +590,9 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 mCachedVisibleViewport, mLayerTitleCacheSupplier.get(), tabContentManager,
                 resourceManager, browserControlsManager);
 
-        float offsetPx = mBrowserControlsStateProviderSupplier.get() == null
+        float offsetPx = mBrowserControlsStateProvider == null
                 ? 0
-                : mBrowserControlsStateProviderSupplier.get().getTopControlOffset();
+                : mBrowserControlsStateProvider.getTopControlOffset();
 
         for (int i = 0; i < mSceneOverlays.size(); i++) {
             // If the SceneOverlay is not showing, don't bother adding it to the tree.

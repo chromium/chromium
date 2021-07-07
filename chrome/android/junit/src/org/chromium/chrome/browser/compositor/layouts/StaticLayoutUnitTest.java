@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.layouts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -34,7 +33,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -120,8 +118,6 @@ public class StaticLayoutUnitTest {
     private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private CompositorAnimationHandler mCompositorAnimationHandler;
-    private ObservableSupplierImpl<BrowserControlsStateProvider>
-            mBrowserControlsStateProviderSupplier = new ObservableSupplierImpl<>();
 
     private StaticLayout mStaticLayout;
     private PropertyModel mModel;
@@ -164,13 +160,11 @@ public class StaticLayoutUnitTest {
         doReturn(HEIGHT).when(mViewHost).getHeight();
         doReturn(mCompositorAnimationHandler).when(mUpdateHost).getAnimationHandler();
 
-        mStaticLayout = new StaticLayout(mContext, mUpdateHost, mRenderHost, mViewHost,
-                mRequestSupplier, mTabModelSelector, mTabContentManager,
-                mBrowserControlsStateProviderSupplier, () -> mTopUiThemeColorProvider);
+        mStaticLayout =
+                new StaticLayout(mContext, mUpdateHost, mRenderHost, mViewHost, mRequestSupplier,
+                        mTabModelSelector, mTabContentManager, mBrowserControlsStateProvider,
+                        () -> mTopUiThemeColorProvider, mStaticTabSceneLayer);
         mModel = mStaticLayout.getModelForTesting();
-
-        mStaticLayout.setSceneLayerForTesting(mStaticTabSceneLayer);
-        mStaticLayout.onFinishNativeInitialization();
 
         doReturn(BACKGROUND_COLOR).when(mTopUiThemeColorProvider).getBackgroundColor(any());
         doReturn(TOOLBAR_BACKGROUND_COLOR)
@@ -188,7 +182,6 @@ public class StaticLayoutUnitTest {
     @After
     public void tearDown() {
         CompositorAnimationHandler.setTestingMode(false);
-        mStaticLayout.setSceneLayerForTesting(null);
         mStaticLayout.setTextBoxBackgroundColorForTesting(null);
         mStaticLayout.setToolbarTextBoxAlphaForTesting(null);
         mStaticLayout.destroy();
@@ -198,8 +191,6 @@ public class StaticLayoutUnitTest {
         assertEquals(mTabModelSelector, mStaticLayout.getTabModelSelectorForTesting());
         assertEquals(mTabContentManager, mStaticLayout.getTabContentManagerForTesting());
 
-        assertNull(mStaticLayout.getBrowserControlsStateProviderForTesting());
-        mBrowserControlsStateProviderSupplier.set(mBrowserControlsStateProvider);
         assertEquals(mBrowserControlsStateProvider,
                 mStaticLayout.getBrowserControlsStateProviderForTesting());
     }
