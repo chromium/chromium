@@ -154,6 +154,24 @@ source_set("app_state_header") {
   ]
 }
 
+source_set("observing_app_state_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "observing_app_state_agent.h",
+    "observing_app_state_agent.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+
+  deps = [ "//base" ]
+
+  public_deps = [
+    ":app_state_header",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+  ]
+}
+
 source_set("application_delegate_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   public_deps = [ ":app_state_header" ]

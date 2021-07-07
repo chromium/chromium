@@ -150,10 +150,9 @@ source_set("content_suggestions_scheduler_app_state_agent") {
   deps = [
     "//components/ntp_snippets",
     "//components/previous_session_info",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/ntp_snippets",
-    "//ios/chrome/browser/ui/main:scene_state_header",
   ]
 }
 
@@ -165,11 +164,10 @@ source_set("app_metrics_app_state_agent") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/ui/main:scene",
-    "//ios/chrome/browser/ui/main:scene_state_header",
   ]
 }
 

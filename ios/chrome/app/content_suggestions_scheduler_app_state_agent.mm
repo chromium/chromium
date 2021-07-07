@@ -14,11 +14,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ContentSuggestionsSchedulerAppAgent () <AppStateObserver,
-                                                   SceneStateObserver>
-
-// Observed app state.
-@property(nonatomic, weak) AppState* appState;
+@interface ContentSuggestionsSchedulerAppAgent ()
 
 // Flag to keep track if we notified the service once at the cold app start.
 @property(nonatomic, assign) BOOL hasNotifiedColdStart;
@@ -27,29 +23,10 @@
 
 @implementation ContentSuggestionsSchedulerAppAgent
 
-#pragma mark - AppStateAgent
-
-- (void)setAppState:(AppState*)appState {
-  // This should only be called once!
-  DCHECK(!_appState);
-
-  _appState = appState;
-  [appState addObserver:self];
-}
-
-#pragma mark - AppStateObserver
-
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
-  [sceneState addObserver:self];
-}
-
 #pragma mark - SceneStateObserver
 
-- (void)sceneState:(SceneState*)sceneState
-    transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (level >= SceneActivationLevelForegroundInactive) {
-    [self notifyForeground];
-  }
+- (void)appDidEnterForeground {
+  [self notifyForeground];
 }
 
 #pragma mark - private
