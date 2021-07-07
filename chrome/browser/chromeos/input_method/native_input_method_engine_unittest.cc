@@ -395,6 +395,61 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
   InputMethodManager::Shutdown();
 }
 
+TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_method));
+  ui::MockIMEInputContextHandler mock_handler;
+  ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_input_method, OnFocus(_));
+
+    // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
+    // once the Mojo API is replaced with protos. GMock does not play well with
+    // move-only types like PhysicalKeyEvent.
+    EXPECT_CALL(mock_input_method, ProcessKeyEvent(_, _))
+        .Times(4)
+        .WillRepeatedly(::testing::Invoke(
+            [](ime::mojom::PhysicalKeyEventPtr event,
+               ime::mojom::InputMethod::ProcessKeyEventCallback callback) {
+              EXPECT_TRUE(event->key->is_named_key());
+              std::move(callback).Run(
+                  ime::mojom::KeyEventResult::kNeedsHandlingBySystem);
+            }));
+  }
+
+  engine.Enable(kEngineIdUs);
+  engine.FocusIn(ui::IMEEngineHandlerInterface::InputContext(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true));
+
+  // Enter and Backspace are named keys with Unicode representation.
+  engine.ProcessKeyEvent(
+      {ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::DomCode::ENTER, ui::EF_NONE,
+       ui::DomKey::ENTER, base::TimeTicks()},
+      base::DoNothing());
+  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_RETURN, ui::EF_NONE},
+                         base::DoNothing());
+  engine.ProcessKeyEvent(
+      {ui::ET_KEY_PRESSED, ui::VKEY_BACK, ui::DomCode::BACKSPACE, ui::EF_NONE,
+       ui::DomKey::BACKSPACE, base::TimeTicks()},
+      base::DoNothing());
+  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_BACK, ui::EF_NONE},
+                         base::DoNothing());
+  engine.FlushForTesting();
+
+  InputMethodManager::Shutdown();
+}
+
 // TODO(crbug.com/1148157): Refactor NativeInputMethodEngine etc. to avoid
 // hidden dependencies on globals such as ImeBridge.
 class NativeInputMethodEngineWithRenderViewHostTest

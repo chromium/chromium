@@ -290,12 +290,17 @@ absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
 // Returns nullptr if it's not convertible.
 // Not using a UnionTraits here because the mapping is not 1:1.
 mojom::DomKeyPtr DomKeyToMojom(const ui::DomKey& key) {
+  // `IsCharacter` may return true for named keys like Enter because they have a
+  // Unicode representation. Hence, try to convert the key into a named key
+  // first before trying to convert it to a character key.
+  absl::optional<mojom::NamedDomKey> named_key = NamedDomKeyToMojom(key);
+  if (named_key) {
+    return mojom::DomKey::NewNamedKey(*named_key);
+  }
   if (key.IsCharacter()) {
     return mojom::DomKey::NewCodepoint(key.ToCharacter());
   }
-
-  absl::optional<mojom::NamedDomKey> named_key = NamedDomKeyToMojom(key);
-  return named_key ? mojom::DomKey::NewNamedKey(*named_key) : nullptr;
+  return nullptr;
 }
 
 // Returns nullptr if it's not convertible.
