@@ -7046,3 +7046,6 @@ crbug.com/1226112 http/tests/text-autosizing/narrow-iframe.html [ Failure Pass ]
 
 # Sheriff 2021-07-05
 crbug.com/1226445 [ Mac ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
+
+# Sheriff 2021-07-07
+crbug.com/1227092 [ Win10 ] virtual/scroll-unification/fast/events/selection-autoscroll-borderbelt.html [ Failure Pass ]
