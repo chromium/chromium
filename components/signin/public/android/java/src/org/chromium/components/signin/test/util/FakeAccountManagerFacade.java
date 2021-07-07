@@ -113,6 +113,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public Optional<Boolean> canOfferExtendedSyncPromos(Account account) {
+        assert account != null;
         return Optional.absent();
     }
 
