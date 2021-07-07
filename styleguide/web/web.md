@@ -370,7 +370,7 @@ Also see the [Google Polymer Style Guide](http://go/polymer-style).
 
 * In new code, use class based syntax for custom elements. Example:
 ```js
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 class MyAppElement extends PolymerElement {
   static get is() {
