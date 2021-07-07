@@ -444,12 +444,14 @@ double ConvertCentimeterToInch(double centimeter) {
 
 namespace {
 
+// Deprecated. Please use GetOptionalValue.
+// See crbug.com/1187001 for the migration details.
 template <typename T>
-bool GetOptionalValue(const base::DictionaryValue* dict,
-                      base::StringPiece path,
-                      T* out_value,
-                      bool* has_value,
-                      bool (base::Value::*getter)(T*) const) {
+bool GetOptionalValueDeprecated(const base::DictionaryValue* dict,
+                                base::StringPiece path,
+                                T* out_value,
+                                bool* has_value,
+                                bool (base::Value::*getter)(T*) const) {
   if (has_value != nullptr)
     *has_value = false;
   const base::Value* value;
@@ -463,14 +465,39 @@ bool GetOptionalValue(const base::DictionaryValue* dict,
   return false;
 }
 
+template <typename T>
+bool GetOptionalValue(const base::Value* dict,
+                      base::StringPiece path,
+                      T* out_value,
+                      bool* has_value,
+                      absl::optional<T> (base::Value::*getter)() const) {
+  if (has_value != nullptr)
+    *has_value = false;
+
+  if (!dict->is_dict())
+    return false;
+
+  const base::Value* value = dict->FindPath(path);
+  if (!value)
+    return true;
+  absl::optional<T> maybe_value = (value->*getter)();
+  if (maybe_value.has_value()) {
+    *out_value = maybe_value.value();
+    if (has_value != nullptr)
+      *has_value = true;
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 bool GetOptionalBool(const base::DictionaryValue* dict,
                      base::StringPiece path,
                      bool* out_value,
                      bool* has_value) {
-  return GetOptionalValue(dict, path, out_value, has_value,
-                          &base::Value::GetAsBoolean);
+  return GetOptionalValueDeprecated(dict, path, out_value, has_value,
+                                    &base::Value::GetAsBoolean);
 }
 
 bool GetOptionalInt(const base::DictionaryValue* dict,
@@ -478,7 +505,7 @@ bool GetOptionalInt(const base::DictionaryValue* dict,
                     int* out_value,
                     bool* has_value) {
   if (GetOptionalValue(dict, path, out_value, has_value,
-                       &base::Value::GetAsInteger)) {
+                       &base::Value::GetIfInt)) {
     return true;
   }
   // See if we have a double that contains an int value.
@@ -500,32 +527,32 @@ bool GetOptionalDouble(const base::DictionaryValue* dict,
                        double* out_value,
                        bool* has_value) {
   // base::Value::GetAsDouble already converts int to double if needed.
-  return GetOptionalValue(dict, path, out_value, has_value,
-                          &base::Value::GetAsDouble);
+  return GetOptionalValueDeprecated(dict, path, out_value, has_value,
+                                    &base::Value::GetAsDouble);
 }
 
 bool GetOptionalString(const base::DictionaryValue* dict,
                        base::StringPiece path,
                        std::string* out_value,
                        bool* has_value) {
-  return GetOptionalValue(dict, path, out_value, has_value,
-                          &base::Value::GetAsString);
+  return GetOptionalValueDeprecated(dict, path, out_value, has_value,
+                                    &base::Value::GetAsString);
 }
 
 bool GetOptionalDictionary(const base::DictionaryValue* dict,
                            base::StringPiece path,
                            const base::DictionaryValue** out_value,
                            bool* has_value) {
-  return GetOptionalValue(dict, path, out_value, has_value,
-                          &base::Value::GetAsDictionary);
+  return GetOptionalValueDeprecated(dict, path, out_value, has_value,
+                                    &base::Value::GetAsDictionary);
 }
 
 bool GetOptionalList(const base::DictionaryValue* dict,
                      base::StringPiece path,
                      const base::ListValue** out_value,
                      bool* has_value) {
-  return GetOptionalValue(dict, path, out_value, has_value,
-                          &base::Value::GetAsList);
+  return GetOptionalValueDeprecated(dict, path, out_value, has_value,
+                                    &base::Value::GetAsList);
 }
 
 bool GetOptionalSafeInt(const base::DictionaryValue* dict,
@@ -535,8 +562,8 @@ bool GetOptionalSafeInt(const base::DictionaryValue* dict,
   // Check if we have a normal int, which is always a safe int.
   int temp_int;
   bool temp_has_value;
-  if (GetOptionalValue(dict, path, &temp_int, &temp_has_value,
-                       &base::Value::GetAsInteger)) {
+  if (GetOptionalValueDeprecated(dict, path, &temp_int, &temp_has_value,
+                                 &base::Value::GetAsInteger)) {
     if (has_value != nullptr)
       *has_value = temp_has_value;
     if (temp_has_value)
