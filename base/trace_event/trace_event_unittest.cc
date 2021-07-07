@@ -2142,7 +2142,6 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
   const Value* value = nullptr;
   std::string str_value;
   int int_value;
-  double double_value;
   bool bool_value;
 
   dict = FindNamePhase("event1", "X");
@@ -2166,8 +2165,7 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
   ASSERT_TRUE(args_dict);
   EXPECT_TRUE(args_dict->Get("float_one", &value));
   EXPECT_TRUE(value->is_double());
-  EXPECT_TRUE(value->GetAsDouble(&double_value));
-  EXPECT_EQ(1, double_value);
+  EXPECT_EQ(1, value->GetDouble());
 
   // .5f must be serlized to JSON as "0.5".
   dict = FindNamePhase("event4", "X");
@@ -2176,8 +2174,7 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
   ASSERT_TRUE(args_dict);
   EXPECT_TRUE(args_dict->Get("float_half", &value));
   EXPECT_TRUE(value->is_double());
-  EXPECT_TRUE(value->GetAsDouble(&double_value));
-  EXPECT_EQ(0.5, double_value);
+  EXPECT_EQ(0.5, value->GetDouble());
 
   // -.5f must be serlized to JSON as "-0.5".
   dict = FindNamePhase("event5", "X");
@@ -2186,8 +2183,7 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
   ASSERT_TRUE(args_dict);
   EXPECT_TRUE(args_dict->Get("float_neghalf", &value));
   EXPECT_TRUE(value->is_double());
-  EXPECT_TRUE(value->GetAsDouble(&double_value));
-  EXPECT_EQ(-0.5, double_value);
+  EXPECT_EQ(-0.5, value->GetDouble());
 
   // Infinity is serialized to JSON as a string.
   dict = FindNamePhase("event6", "X");
