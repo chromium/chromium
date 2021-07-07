@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -81,6 +82,14 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     // finishes. GetLogins() blocks until reading on the background thread is
     // finished
     passwords_helper::GetLogins(store_);
+
+    // At this point, the calculation on DB thread should have finished, and
+    // a callback should be scheduled on the UI thread. Process the tasks until
+    // we get a finished result.
+    if (finished_)
+      return;
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
 
   BrowsingDataCounter::ResultInt GetResult() {
@@ -104,11 +113,8 @@ class PasswordsCounterTest : public InProcessBrowserTest {
       result_ = password_result->Value();
       domain_examples_ = password_result->domain_examples();
     }
-  }
-
-  void WaitForUICallbacksFromAddingLogins() {
-    base::RunLoop loop;
-    loop.RunUntilIdle();
+    if (run_loop_ && finished_)
+      run_loop_->Quit();
   }
 
  private:
@@ -128,6 +134,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
 
   password_manager::PasswordStoreInterface* store_;
 
+  std::unique_ptr<base::RunLoop> run_loop_;
   base::Time time_;
   int times_used_;
 
@@ -144,7 +151,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, SameDomain) {
   AddLogin("https://www.google.com", "user3", false);
   AddLogin("https://www.chrome.com", "user1", false);
   AddLogin("https://www.chrome.com", "user2", false);
-  WaitForUICallbacksFromAddingLogins();
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
@@ -168,7 +174,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, blocklisted) {
   AddLogin("https://www.google.com", "user1", false);
   AddLogin("https://www.google.com", "user2", true);
   AddLogin("https://www.chrome.com", "user3", true);
-  WaitForUICallbacksFromAddingLogins();
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
@@ -194,7 +199,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PrefChanged) {
   SetPasswordsDeletionPref(false);
   AddLogin("https://www.google.com", "user", false);
   AddLogin("https://www.chrome.com", "user", false);
-  WaitForUICallbacksFromAddingLogins();
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
@@ -217,7 +221,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PrefChanged) {
 // the password store changes.
 IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, StoreChanged) {
   AddLogin("https://www.google.com", "user", false);
-  WaitForUICallbacksFromAddingLogins();
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
@@ -254,7 +257,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PeriodChanged) {
   AddLogin("https://example.com", "user2", false);
   RevertTimeInDays(30);
   AddLogin("https://www.chrome.com", "user", false);
-  WaitForUICallbacksFromAddingLogins();
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
@@ -304,7 +306,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MostCommonDomains) {
   AddLogin("https://www.example.com", "user", false);
   SetTimesUsed(2);
   AddLogin("https://www.chrome.com", "user", false);
-  WaitForUICallbacksFromAddingLogins();
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
