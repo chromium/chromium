@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 224 tests; 204 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 224 tests; 212 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS ReadableStreamDefaultReader includes ReadableStreamGenericReader: member names are unique
@@ -159,14 +159,14 @@ PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() m
 PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "releaseLock()" with the proper type
 PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "write(optional any)" with the proper type
 PASS WritableStreamDefaultWriter interface: calling write(optional any) on (new WritableStream()).getWriter() with too few arguments must throw TypeError
-FAIL WritableStreamDefaultController interface: existence and properties of interface object assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface object length assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface object name assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface: existence and properties of interface prototype object assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController interface: operation error(optional any) assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
-FAIL WritableStreamDefaultController must be primary interface of self.writableStreamDefaultController assert_own_property: self does not have own property "WritableStreamDefaultController" expected property "WritableStreamDefaultController" missing
+PASS WritableStreamDefaultController interface: existence and properties of interface object
+PASS WritableStreamDefaultController interface object length
+PASS WritableStreamDefaultController interface object name
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property
+PASS WritableStreamDefaultController interface: operation error(optional any)
+PASS WritableStreamDefaultController must be primary interface of self.writableStreamDefaultController
 PASS Stringification of self.writableStreamDefaultController
 PASS WritableStreamDefaultController interface: self.writableStreamDefaultController must inherit property "error(optional any)" with the proper type
 PASS WritableStreamDefaultController interface: calling error(optional any) on self.writableStreamDefaultController with too few arguments must throw TypeError

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This is only used when the new C++ implementation is enabled.
-
 // https://streams.spec.whatwg.org/#ws-default-controller-class-definition
+[
+    Exposed=(Window,Worker,Worklet)
+]
 interface WritableStreamDefaultController {
     [CallWith=ScriptState] void error(optional any e);
 };
