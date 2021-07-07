@@ -66,7 +66,7 @@ int ManagePasswordsUIController::save_fallback_timeout_in_seconds_ = 90;
 
 namespace {
 
-password_manager::PasswordStore* GetProfilePasswordStore(
+password_manager::PasswordStoreInterface* GetProfilePasswordStore(
     content::WebContents* web_contents) {
   return PasswordStoreFactory::GetForProfile(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
@@ -74,7 +74,7 @@ password_manager::PasswordStore* GetProfilePasswordStore(
       .get();
 }
 
-password_manager::PasswordStore* GetAccountPasswordStore(
+password_manager::PasswordStoreInterface* GetAccountPasswordStore(
     content::WebContents* web_contents) {
   return AccountPasswordStoreFactory::GetForProfile(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
@@ -109,11 +109,11 @@ ManagePasswordsUIController::ManagePasswordsUIController(
       are_passwords_revealed_when_next_bubble_is_opened_(false) {
   passwords_data_.set_client(
       ChromePasswordManagerClient::FromWebContents(web_contents));
-  password_manager::PasswordStore* profile_password_store =
+  password_manager::PasswordStoreInterface* profile_password_store =
       GetProfilePasswordStore(web_contents);
   if (profile_password_store)
     profile_password_store->AddObserver(this);
-  password_manager::PasswordStore* account_password_store =
+  password_manager::PasswordStoreInterface* account_password_store =
       GetAccountPasswordStore(web_contents);
   if (account_password_store)
     account_password_store->AddObserver(this);
@@ -790,11 +790,11 @@ void ManagePasswordsUIController::DestroyAccountChooser() {
 }
 
 void ManagePasswordsUIController::WebContentsDestroyed() {
-  password_manager::PasswordStore* profile_password_store =
+  password_manager::PasswordStoreInterface* profile_password_store =
       GetProfilePasswordStore(web_contents());
   if (profile_password_store)
     profile_password_store->RemoveObserver(this);
-  password_manager::PasswordStore* account_password_store =
+  password_manager::PasswordStoreInterface* account_password_store =
       GetAccountPasswordStore(web_contents());
   if (account_password_store)
     account_password_store->RemoveObserver(this);
