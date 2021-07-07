@@ -158,7 +158,8 @@ void ProtobufModelScorer::ApplyVisualTfLiteModel(
   DCHECK(content::RenderThread::IsMainThread());
   if (visual_tflite_model_.IsValid()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        FROM_HERE,
+        {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives()},
         base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
                        model_.tflite_metadata().input_width(),
                        model_.tflite_metadata().input_height(),

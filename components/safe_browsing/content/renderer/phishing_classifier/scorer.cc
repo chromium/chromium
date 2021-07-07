@@ -48,6 +48,10 @@ std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
                       tflite::ops::builtin::Register_MEAN());
   resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
                       tflite::ops::builtin::Register_SOFTMAX());
+  resolver.AddBuiltin(tflite::BuiltinOperator_DEQUANTIZE,
+                      tflite::ops::builtin::Register_DEQUANTIZE());
+  resolver.AddBuiltin(tflite::BuiltinOperator_QUANTIZE,
+                      tflite::ops::builtin::Register_QUANTIZE());
   return std::make_unique<tflite::MutableOpResolver>(resolver);
 }
 

@@ -192,7 +192,8 @@ void FlatBufferModelScorer::ApplyVisualTfLiteModel(
   DCHECK(content::RenderThread::IsMainThread());
   if (visual_tflite_model_.IsValid()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        FROM_HERE,
+        {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives()},
         base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
                        flatbuffer_model_->tflite_metadata()->input_width(),
                        flatbuffer_model_->tflite_metadata()->input_height(),
