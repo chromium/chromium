@@ -17,6 +17,7 @@
 class BrowserFrame;
 class BrowserView;
 class DesktopBrowserFrameAuraLinux;
+class DesktopBrowserFrameLacros;
 enum class TabDragKind;
 
 namespace views {
@@ -73,9 +74,14 @@ class BrowserDesktopWindowTreeHostLinux
 
 // TODO(crbug.com/1221374): Separate Lacros specific code into
 // browser_desktop_window_tree_host_lacros.cc.
-#if defined(OS_LINUX)
-  DesktopBrowserFrameAuraLinux* native_frame_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  using DesktopBrowserFrameAuraPlatform = DesktopBrowserFrameLacros;
+#elif defined(OS_LINUX)
+  using DesktopBrowserFrameAuraPlatform = DesktopBrowserFrameAuraLinux;
+#else
+#error Unknown platform
 #endif
+  DesktopBrowserFrameAuraPlatform* native_frame_ = nullptr;
 
 #if defined(USE_DBUS_MENU)
   // Each browser frame maintains its own menu bar object because the lower

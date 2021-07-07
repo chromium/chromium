@@ -62,11 +62,10 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
                                  desktop_native_widget_aura),
       browser_view_(browser_view),
       browser_frame_(browser_frame) {
-#if defined(OS_LINUX)
-  native_frame_ = static_cast<DesktopBrowserFrameAuraLinux*>(
+  native_frame_ = static_cast<DesktopBrowserFrameAuraPlatform*>(
       browser_frame->native_browser_frame());
   native_frame_->set_host(this);
-#endif
+
   browser_frame->set_frame_type(browser_frame->UseCustomFrame()
                                     ? views::Widget::FrameType::kForceCustom
                                     : views::Widget::FrameType::kForceNative);

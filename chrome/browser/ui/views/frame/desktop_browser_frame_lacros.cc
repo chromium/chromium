@@ -23,6 +23,12 @@ views::Widget::InitParams DesktopBrowserFrameLacros::GetWidgetParams() {
   return params;
 }
 
+void DesktopBrowserFrameLacros::TabDraggingKindChanged(
+    TabDragKind tab_drag_kind) {
+  if (host_)
+    host_->TabDraggingKindChanged(tab_drag_kind);
+}
+
 NativeBrowserFrame* NativeBrowserFrameFactory::Create(
     BrowserFrame* browser_frame,
     BrowserView* browser_view) {
