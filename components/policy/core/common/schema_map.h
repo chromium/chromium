@@ -28,9 +28,7 @@ typedef std::map<PolicyDomain, ComponentMap> DomainMap;
 class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
  public:
   SchemaMap();
-  // Takes ownership of |map| (its contents will be swapped).
-  // TODO(emaxx): Change to use move semantics.
-  explicit SchemaMap(DomainMap& map);
+  explicit SchemaMap(DomainMap map);
 
   const DomainMap& GetDomains() const;
 

@@ -65,7 +65,7 @@ class SchemaMapTest : public testing::Test {
     DomainMap domain_map;
     domain_map[POLICY_DOMAIN_EXTENSIONS] = component_map;
 
-    return new SchemaMap(domain_map);
+    return new SchemaMap(std::move(domain_map));
   }
 };
 
@@ -88,12 +88,13 @@ TEST_F(SchemaMapTest, HasComponents) {
   component_map[""] = schema;
   DomainMap domain_map;
   domain_map[POLICY_DOMAIN_CHROME] = component_map;
-  map = new SchemaMap(domain_map);
+  map = new SchemaMap(std::move(domain_map));
   EXPECT_FALSE(map->HasComponents());
 
   // An extension schema does.
+  domain_map.clear();
   domain_map[POLICY_DOMAIN_EXTENSIONS] = component_map;
-  map = new SchemaMap(domain_map);
+  map = new SchemaMap(std::move(domain_map));
   EXPECT_TRUE(map->HasComponents());
 }
 
@@ -132,7 +133,7 @@ TEST_F(SchemaMapTest, FilterBundle) {
 
   DomainMap domain_map;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["abc"] = schema;
-  scoped_refptr<SchemaMap> schema_map = new SchemaMap(domain_map);
+  scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 
   PolicyBundle bundle;
   schema_map->FilterBundle(&bundle, /*drop_invalid_component_policies=*/true);
@@ -232,7 +233,7 @@ TEST_F(SchemaMapTest, LegacyComponents) {
   DomainMap domain_map;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["with-schema"] = schema;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["without-schema"] = Schema();
-  scoped_refptr<SchemaMap> schema_map = new SchemaMap(domain_map);
+  scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 
   // |bundle| contains policies loaded by a policy provider.
   PolicyBundle bundle;
@@ -290,7 +291,7 @@ TEST_F(SchemaMapTest, FilterBundleInvalidatesPolicies) {
   DomainMap domain_map;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["with-schema"] = schema;
   domain_map[POLICY_DOMAIN_EXTENSIONS]["without-schema"] = Schema();
-  scoped_refptr<SchemaMap> schema_map = new SchemaMap(domain_map);
+  scoped_refptr<SchemaMap> schema_map = new SchemaMap(std::move(domain_map));
 
   // |bundle| contains policies loaded by a policy provider.
   PolicyBundle bundle;
@@ -349,9 +350,10 @@ TEST_F(SchemaMapTest, FilterBundleInvalidatesPolicies) {
 TEST_F(SchemaMapTest, GetChanges) {
   DomainMap map;
   map[POLICY_DOMAIN_CHROME][""] = Schema();
-  scoped_refptr<SchemaMap> older = new SchemaMap(map);
+  scoped_refptr<SchemaMap> older = new SchemaMap(std::move(map));
+  map.clear();
   map[POLICY_DOMAIN_CHROME][""] = Schema();
-  scoped_refptr<SchemaMap> newer = new SchemaMap(map);
+  scoped_refptr<SchemaMap> newer = new SchemaMap(std::move(map));
 
   PolicyNamespaceList removed;
   PolicyNamespaceList added;
@@ -359,17 +361,19 @@ TEST_F(SchemaMapTest, GetChanges) {
   EXPECT_TRUE(removed.empty());
   EXPECT_TRUE(added.empty());
 
+  map.clear();
   map[POLICY_DOMAIN_CHROME][""] = Schema();
   map[POLICY_DOMAIN_EXTENSIONS]["xyz"] = Schema();
-  newer = new SchemaMap(map);
+  newer = new SchemaMap(std::move(map));
   newer->GetChanges(older, &removed, &added);
   EXPECT_TRUE(removed.empty());
   ASSERT_EQ(1u, added.size());
   EXPECT_EQ(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz"), added[0]);
 
   older = newer;
+  map.clear();
   map[POLICY_DOMAIN_EXTENSIONS]["abc"] = Schema();
-  newer = new SchemaMap(map);
+  newer = new SchemaMap(std::move(map));
   newer->GetChanges(older, &removed, &added);
   ASSERT_EQ(2u, removed.size());
   EXPECT_EQ(PolicyNamespace(POLICY_DOMAIN_CHROME, ""), removed[0]);

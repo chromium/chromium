@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/schema_map.h"
 
+#include <utility>
+
 #include "base/values.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
@@ -12,9 +14,7 @@ namespace policy {
 
 SchemaMap::SchemaMap() {}
 
-SchemaMap::SchemaMap(DomainMap& map) {
-  map_.swap(map);
-}
+SchemaMap::SchemaMap(DomainMap map) : map_(std::move(map)) {}
 
 SchemaMap::~SchemaMap() {}
 
