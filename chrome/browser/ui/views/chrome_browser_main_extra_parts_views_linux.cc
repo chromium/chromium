@@ -10,7 +10,6 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/linux/fake_input_method_context_factory.h"
-#include "ui/display/screen.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
 #if BUILDFLAG(USE_GTK)
@@ -47,12 +46,7 @@ ChromeBrowserMainExtraPartsViewsLinux::ChromeBrowserMainExtraPartsViewsLinux() =
     default;
 
 ChromeBrowserMainExtraPartsViewsLinux::
-    ~ChromeBrowserMainExtraPartsViewsLinux() {
-  // It's not expected that the screen is destroyed by this point, but it can happen during fuzz
-  // tests.
-  if (display::Screen::GetScreen())
-    display::Screen::GetScreen()->RemoveObserver(this);
-}
+    ~ChromeBrowserMainExtraPartsViewsLinux() = default;
 
 void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
   ChromeBrowserMainExtraPartsViews::ToolkitInitialized();
@@ -97,7 +91,7 @@ void ChromeBrowserMainExtraPartsViewsLinux::PreCreateThreads() {
   // We could do that during the ToolkitInitialized call, which is called before
   // this method, but the display::Screen is only created after PreCreateThreads
   // is called. Thus, do that here instead.
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
 }
 
 void ChromeBrowserMainExtraPartsViewsLinux::OnCurrentWorkspaceChanged(

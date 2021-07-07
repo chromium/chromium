@@ -30,6 +30,8 @@ class ChromeBrowserMainExtraPartsViewsLinux
   // display::DisplayObserver:
   void OnCurrentWorkspaceChanged(const std::string& new_workspace) override;
 
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsViewsLinux);
 };
 
