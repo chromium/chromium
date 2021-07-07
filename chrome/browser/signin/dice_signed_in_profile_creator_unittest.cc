@@ -190,7 +190,6 @@ TEST_F(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(signed_in_profile()->GetPath());
   ASSERT_TRUE(entry);
-  ASSERT_EQ(entry->IsGuest(), use_guest_profile());
   if (!use_guest_profile()) {
     EXPECT_EQ(kProfileTestName, entry->GetLocalProfileName());
     EXPECT_EQ(kTestIcon, entry->GetAvatarIconIndex());

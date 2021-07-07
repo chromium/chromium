@@ -119,10 +119,6 @@ class ProfileAttributesEntry {
   std::string GetSupervisedUserId() const;
   // Returns true if the profile is an ephemeral profile.
   bool IsEphemeral() const;
-  // Returns true if the profile is a Guest profile.
-  // Only ephemeral Guest profiles are stored in profile attributes and
-  // therefore a Guest profile here is always ephemeral as well.
-  bool IsGuest() const;
   // Returns true if the profile is using a default name, typically of the
   // format "Person %d".
   bool IsUsingDefaultName() const;
@@ -176,7 +172,6 @@ class ProfileAttributesEntry {
   // responsibility of the caller to make sure that the entry is set as
   // non-ephemeral only if prefs::kForceEphemeralProfiles is false.
   void SetIsEphemeral(bool value);
-  void SetIsGuest(bool value);
   // TODO(msalama): Remove this function.
   void SetIsUsingDefaultName(bool value);
   void SetIsUsingDefaultAvatar(bool value);
@@ -215,7 +210,6 @@ class ProfileAttributesEntry {
   static const char kAvatarIconKey[];
   static const char kBackgroundAppsKey[];
   static const char kProfileIsEphemeral[];
-  static const char kProfileIsGuest[];
   static const char kUserNameKey[];
   static const char kGAIAIdKey[];
   static const char kIsConsentedPrimaryAccountKey[];

@@ -92,7 +92,6 @@ void VerifyInitialValues(ProfileAttributesEntry* entry,
                          bool is_consented_primary_account,
                          size_t icon_index,
                          const std::string& supervised_user_id,
-                         bool is_guest,
                          bool is_ephemeral,
                          bool is_omitted,
                          bool is_signed_in_with_credential_provider) {
@@ -104,7 +103,6 @@ void VerifyInitialValues(ProfileAttributesEntry* entry,
   EXPECT_EQ(is_consented_primary_account, entry->IsAuthenticated());
   EXPECT_EQ(icon_index, entry->GetAvatarIconIndex());
   EXPECT_EQ(supervised_user_id, entry->GetSupervisedUserId());
-  EXPECT_EQ(is_guest, entry->IsGuest());
   EXPECT_EQ(is_ephemeral, entry->IsEphemeral());
   EXPECT_EQ(is_omitted, entry->IsOmitted());
   EXPECT_EQ(is_signed_in_with_credential_provider,
@@ -370,7 +368,6 @@ TEST_F(ProfileAttributesStorageTest, InitialValues) {
   params.supervised_user_id = "testing_supervised_user_id";
   params.account_id = AccountId::FromUserEmailGaiaId(
       base::UTF16ToUTF8(params.user_name), params.gaia_id);
-  params.is_guest = true;
   params.is_ephemeral = true;
   params.is_omitted = true;
   params.is_signed_in_with_credential_provider = true;
@@ -385,7 +382,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues) {
       /*gaia_id=*/"testing_profile_gaia",
       /*user_name=*/u"testing_profile_username",
       /*is_consented_primary_account=*/true, /*icon_index=*/kIconIndex,
-      /*supervised_user_id=*/"testing_supervised_user_id", /*is_guest=*/true,
+      /*supervised_user_id=*/"testing_supervised_user_id",
       /*is_ephemeral=*/true, /*is_omitted=*/true,
       /*is_signed_in_with_credential_provider=*/true);
 }
@@ -405,7 +402,6 @@ TEST_F(ProfileAttributesStorageTest, InitialValues_Defaults) {
   EXPECT_EQ(0U, params.icon_index);
   EXPECT_TRUE(params.supervised_user_id.empty());
   EXPECT_TRUE(params.account_id.empty());
-  EXPECT_FALSE(params.is_guest);
   EXPECT_FALSE(params.is_ephemeral);
   EXPECT_FALSE(params.is_omitted);
   EXPECT_FALSE(params.is_signed_in_with_credential_provider);
@@ -419,7 +415,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues_Defaults) {
   VerifyInitialValues(entry, profile_path, /*profile_name=*/std::u16string(),
                       /*gaia_id=*/std::string(), /*user_name=*/std::u16string(),
                       /*is_consented_primary_account=*/false, /*icon_index=*/0,
-                      /*supervised_user_id=*/std::string(), /*is_guest=*/false,
+                      /*supervised_user_id=*/std::string(),
                       /*is_ephemeral=*/false, /*is_omitted=*/false,
                       /*is_signed_in_with_credential_provider=*/false);
 }

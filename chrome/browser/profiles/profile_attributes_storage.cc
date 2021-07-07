@@ -172,7 +172,7 @@ MultiProfileUserType GetMultiProfileUserType(
 
   int active_count = std::count_if(
       entries.begin(), entries.end(), [](ProfileAttributesEntry* entry) {
-        return ProfileMetrics::IsProfileActive(entry) && !entry->IsGuest();
+        return ProfileMetrics::IsProfileActive(entry);
       });
 
   if (active_count <= 1)
@@ -253,14 +253,12 @@ ProfileAttributesStorage::~ProfileAttributesStorage() {
 }
 
 std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributes(
-    bool include_guest_profile) const {
+ProfileAttributesStorage::GetAllProfilesAttributes() const {
   std::vector<ProfileAttributesEntry*> ret;
   for (auto& path_and_entry : profile_attributes_entries_) {
     ProfileAttributesEntry* entry = &path_and_entry.second;
     DCHECK(entry);
-    if (!entry->IsGuest() || include_guest_profile)
-      ret.push_back(entry);
+    ret.push_back(entry);
   }
   return ret;
 }
@@ -268,8 +266,7 @@ ProfileAttributesStorage::GetAllProfilesAttributes(
 std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributesSorted(
     bool use_local_profile_name) const {
-  std::vector<ProfileAttributesEntry*> ret =
-      GetAllProfilesAttributes(/*include_guest_profile=*/false);
+  std::vector<ProfileAttributesEntry*> ret = GetAllProfilesAttributes();
   // Do not allocate the collator and sort if it is not necessary.
   if (ret.size() < 2)
     return ret;
@@ -307,16 +304,8 @@ ProfileAttributesEntry* ProfileAttributesStorage::GetProfileAttributesWithPath(
   return &entry_iter->second;
 }
 
-size_t ProfileAttributesStorage::GetNumberOfProfiles(
-    bool include_guest_profile) const {
-  // Ephemeral Guest profile is registered in profile attributes storage,
-  // because if Chrome crashes we need the registry to find and delete it.
-  // But it should not be counted as a regular profile.
-  return std::count_if(
-      profile_attributes_entries_.begin(), profile_attributes_entries_.end(),
-      [include_guest_profile](const auto& key_value) {
-        return !key_value.second.IsGuest() || include_guest_profile;
-      });
+size_t ProfileAttributesStorage::GetNumberOfProfiles() const {
+  return profile_attributes_entries_.size();
 }
 
 std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
@@ -347,8 +336,7 @@ std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
 
     // Loop through previously named profiles to ensure we're not duplicating.
     std::vector<ProfileAttributesEntry*> entries =
-        const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes(
-            /*include_guest_profile=*/false);
+        const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
 
     if (std::none_of(entries.begin(), entries.end(),
                      [name](ProfileAttributesEntry* entry) {
@@ -395,8 +383,7 @@ size_t ProfileAttributesStorage::ChooseAvatarIconIndexForNewProfile() const {
   std::unordered_set<size_t> used_icon_indices;
 
   std::vector<ProfileAttributesEntry*> entries =
-      const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes(
-          /*include_guest_profile=*/false);
+      const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
   for (const ProfileAttributesEntry* entry : entries)
     used_icon_indices.insert(entry->GetAvatarIconIndex());
 
@@ -484,8 +471,7 @@ void ProfileAttributesStorage::RecordDeletedProfileState(
 #endif
 
 void ProfileAttributesStorage::RecordProfilesState() {
-  std::vector<ProfileAttributesEntry*> entries =
-      GetAllProfilesAttributes(/*include_guest_profile=*/false);
+  std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   if (entries.size() == 0)
     return;
 

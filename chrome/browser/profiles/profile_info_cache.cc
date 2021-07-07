@@ -90,8 +90,7 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
 
   // A profile name can depend on other profile names. Do an additional pass to
   // update last used profile names once all profiles are initialized.
-  for (ProfileAttributesEntry* entry :
-       GetAllProfilesAttributes(/*include_guest_profile=*/true)) {
+  for (ProfileAttributesEntry* entry : GetAllProfilesAttributes()) {
     entry->InitializeLastNameToDisplay();
   }
 
@@ -143,7 +142,6 @@ void ProfileInfoCache::AddProfileToCache(ProfileAttributesInitParams params) {
                   params.supervised_user_id);
   info->SetBoolean(ProfileAttributesEntry::kProfileIsEphemeral,
                    params.is_ephemeral);
-  info->SetBoolean(ProfileAttributesEntry::kProfileIsGuest, params.is_guest);
   // Either the user has provided a name manually on purpose, and in this case
   // we should not check for legacy profile names or this a new profile but then
   // it is not a legacy name, so we dont need to check for legacy names.
@@ -311,7 +309,7 @@ void ProfileInfoCache::AddProfile(ProfileAttributesInitParams params) {
 }
 
 void ProfileInfoCache::RemoveProfileByAccountId(const AccountId& account_id) {
-  for (ProfileAttributesEntry* entry : GetAllProfilesAttributes(true)) {
+  for (ProfileAttributesEntry* entry : GetAllProfilesAttributes()) {
     bool account_id_keys_match =
         account_id.HasAccountIdKey() &&
         account_id.GetAccountIdKey() == entry->GetAccountIdKey();

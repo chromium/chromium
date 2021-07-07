@@ -795,7 +795,7 @@ ProfilePickerHandler::GetProfileAttributes() {
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributesSortedByLocalProfilName();
   base::EraseIf(ordered_entries, [](const ProfileAttributesEntry* entry) {
-    return entry->IsGuest() || entry->IsOmitted();
+    return entry->IsOmitted();
   });
   size_t number_of_profiles = ordered_entries.size();
 
@@ -868,7 +868,7 @@ void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_path);
   CHECK(entry);
-  if (entry->IsGuest() || entry->IsOmitted())
+  if (entry->IsOmitted())
     return;
   AddProfileToList(profile_path);
   PushProfilesList();

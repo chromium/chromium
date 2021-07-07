@@ -60,8 +60,7 @@ class ProfileAttributesStorage
 
   // Returns a vector containing one attributes entry per known profile. They
   // are not sorted in any particular order.
-  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributes(
-      bool include_guest_profile = false) const;
+  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributes() const;
 
   // Returns all non-Guest profile attributes sorted by name.
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedByName()
@@ -79,7 +78,7 @@ class ProfileAttributesStorage
       const base::FilePath& path);
 
   // Returns the count of known profiles.
-  virtual size_t GetNumberOfProfiles(bool include_guest_profile = false) const;
+  virtual size_t GetNumberOfProfiles() const;
 
   // Returns a unique name that can be assigned to a newly created profile.
   std::u16string ChooseNameForNewProfile(size_t icon_index) const;

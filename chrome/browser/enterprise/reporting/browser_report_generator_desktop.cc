@@ -80,10 +80,9 @@ void BrowserReportGeneratorDesktop::GenerateProfileInfo(
   base::flat_set<base::FilePath> extension_request_profile_paths =
       throttler->GetProfiles();
 
-  for (const auto* entry :
-       g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetAllProfilesAttributes(/*include_guest_profile=*/false)) {
+  for (const auto* entry : g_browser_process->profile_manager()
+                               ->GetProfileAttributesStorage()
+                               .GetAllProfilesAttributes()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Skip sign-in and lock screen app profile on Chrome OS.
     if (!chromeos::ProfileHelper::IsRegularProfilePath(

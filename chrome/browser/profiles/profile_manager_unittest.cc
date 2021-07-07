@@ -1443,7 +1443,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
   storage.AddProfile(std::move(params));
   ASSERT_TRUE(base::CreateDirectory(path));
 
-  ASSERT_EQ(1u, storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
+  ASSERT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
   PrefService* local_state = g_browser_process->local_state();
@@ -1467,7 +1467,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
   EXPECT_TRUE(base::DirectoryExists(path));
   EXPECT_EQ(guest_profile_name,
             local_state->GetString(prefs::kProfileLastUsed));
-  ASSERT_EQ(1u, storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
+  ASSERT_EQ(1u, storage.GetNumberOfProfiles());
   ASSERT_EQ(2u, final_last_active_profile_list->GetSize());
   ASSERT_EQ(guest_path.BaseName().MaybeAsASCII(),
             (final_last_active_profile_list->GetList())[0].GetString());

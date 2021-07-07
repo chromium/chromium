@@ -84,6 +84,9 @@ const char kPasswordTokenKey[] = "gaia_password_token";
 const char kSigninRequiredKey[] = "signin_required";
 const char kIsAuthErrorKey[] = "is_auth_error";
 
+// Deprecated 7/2021.
+const char kProfileIsGuest[] = "is_guest";
+
 constexpr int kIntegerNotSet = -1;
 
 // Persisted in prefs.
@@ -117,7 +120,6 @@ const char ProfileAttributesEntry::kSupervisedUserId[] = "managed_user_id";
 const char ProfileAttributesEntry::kAvatarIconKey[] = "avatar_icon";
 const char ProfileAttributesEntry::kBackgroundAppsKey[] = "background_apps";
 const char ProfileAttributesEntry::kProfileIsEphemeral[] = "is_ephemeral";
-const char ProfileAttributesEntry::kProfileIsGuest[] = "is_guest";
 const char ProfileAttributesEntry::kUserNameKey[] = "user_name";
 const char ProfileAttributesEntry::kGAIAIdKey[] = "gaia_id";
 const char ProfileAttributesEntry::kIsConsentedPrimaryAccountKey[] =
@@ -438,10 +440,6 @@ bool ProfileAttributesEntry::IsEphemeral() const {
   return GetBool(kProfileIsEphemeral);
 }
 
-bool ProfileAttributesEntry::IsGuest() const {
-  return GetBool(kProfileIsGuest);
-}
-
 bool ProfileAttributesEntry::IsUsingDefaultName() const {
   return GetBool(kIsUsingDefaultNameKey);
 }
@@ -649,10 +647,6 @@ void ProfileAttributesEntry::SetIsEphemeral(bool value) {
   }
 
   SetBool(kProfileIsEphemeral, value);
-}
-
-void ProfileAttributesEntry::SetIsGuest(bool value) {
-  SetBool(kProfileIsGuest, value);
 }
 
 void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {
@@ -1010,6 +1004,9 @@ void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
   // Added 6/2021.
   ClearValue(kSigninRequiredKey);
   ClearValue(kIsAuthErrorKey);
+
+  // Added 7/2021.
+  ClearValue(kProfileIsGuest);
 }
 
 void ProfileAttributesEntry::SetIsOmittedInternal(bool is_omitted) {

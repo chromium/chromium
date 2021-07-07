@@ -739,8 +739,7 @@ Profile* ProfileManager::GetProfile(const base::FilePath& profile_dir) {
 }
 
 size_t ProfileManager::GetNumberOfProfiles() {
-  return GetProfileAttributesStorage().GetNumberOfProfiles(
-      /*include_guest_profile=*/false);
+  return GetProfileAttributesStorage().GetNumberOfProfiles();
 }
 
 bool ProfileManager::LoadProfile(const std::string& profile_base_name,
@@ -1088,7 +1087,7 @@ void ProfileManager::CleanUpEphemeralProfiles() {
   std::vector<base::FilePath> profiles_to_delete;
   ProfileAttributesStorage& storage = GetProfileAttributesStorage();
   std::vector<ProfileAttributesEntry*> entries =
-      storage.GetAllProfilesAttributes(/*include_guest_profile=*/true);
+      storage.GetAllProfilesAttributes();
   for (ProfileAttributesEntry* entry : entries) {
     base::FilePath profile_path = entry->GetPath();
     if (entry->IsEphemeral()) {
