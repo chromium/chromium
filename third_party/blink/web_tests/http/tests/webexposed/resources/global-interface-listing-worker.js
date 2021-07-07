@@ -4,8 +4,8 @@
   // Save the list of property names of the global object before loading other scripts.
   var propertyNamesInGlobal = Object.getOwnPropertyNames(globalObject);
 
-  importScripts('../../resources/js-test.js');
-  importScripts('../../resources/global-interface-listing.js');
+  importScripts('/js-test-resources/js-test.js');
+  importScripts('/js-test-resources/global-interface-listing.js');
 
   function runTest(platformSpecific) {
     globalInterfaceListing(
