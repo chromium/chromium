@@ -24,10 +24,10 @@ void OnStorageAccessed(int process_id,
                        const GURL& top_origin_url,
                        bool blocked_by_policy,
                        page_load_metrics::StorageType storage_type) {
-  content::RenderFrameHost* frame =
+  content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(process_id, frame_id);
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(frame);
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)
     return;
 
@@ -35,8 +35,9 @@ void OnStorageAccessed(int process_id,
       page_load_metrics::MetricsWebContentsObserver::FromWebContents(
           web_contents);
   if (metrics_observer) {
-    metrics_observer->OnStorageAccessed(origin_url, top_origin_url,
-                                        blocked_by_policy, storage_type);
+    metrics_observer->OnStorageAccessed(render_frame_host, origin_url,
+                                        top_origin_url, blocked_by_policy,
+                                        storage_type);
   }
 }
 

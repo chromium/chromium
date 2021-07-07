@@ -331,7 +331,8 @@ void PageLoadMetricsObserverTester::SimulateStorageAccess(
     bool blocked_by_policy,
     StorageType storage_type) {
   metrics_web_contents_observer_->OnStorageAccessed(
-      url, first_party_url, blocked_by_policy, storage_type);
+      metrics_web_contents_observer_->web_contents()->GetMainFrame(), url,
+      first_party_url, blocked_by_policy, storage_type);
 }
 
 void PageLoadMetricsObserverTester::SimulateMobileFriendlinessUpdate(

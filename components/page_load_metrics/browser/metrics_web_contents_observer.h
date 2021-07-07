@@ -140,7 +140,8 @@ class MetricsWebContentsObserver
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::RenderFrameHost* rfh,
                          const content::CookieAccessDetails& details) override;
-  void OnStorageAccessed(const GURL& url,
+  void OnStorageAccessed(content::RenderFrameHost* rfh,
+                         const GURL& url,
                          const GURL& first_party_url,
                          bool blocked_by_policy,
                          StorageType storage_type);
@@ -198,6 +199,10 @@ class MetricsWebContentsObserver
  private:
   friend class content::WebContentsUserData<MetricsWebContentsObserver>;
 
+  // Gets the PageLoadTracker associated with |rfh| if it exists, or nullptr
+  // otherwise.
+  PageLoadTracker* GetPageLoadTracker(content::RenderFrameHost* rfh);
+
   // Gets the memory tracker for the BrowserContext if it exists, or nullptr
   // otherwise. The tracker measures per-frame memory usage by V8.
   PageLoadMetricsMemoryTracker* GetMemoryTracker() const;
@@ -221,7 +226,7 @@ class MetricsWebContentsObserver
       base::ReadOnlySharedMemoryRegion shared_memory) override;
 
   // Common part for UpdateThroughput and OnTimingUpdated.
-  bool DoesTimingUpdateHaveError();
+  bool DoesTimingUpdateHaveError(PageLoadTracker* tracker);
 
   void HandleFailedNavigationForTrackedLoad(
       content::NavigationHandle* navigation_handle,
@@ -293,8 +298,9 @@ class MetricsWebContentsObserver
   bool MaybeActivatePageLoadTracker(
       content::NavigationHandle* navigation_handle);
 
-  // Notify PageLoadTrackers about cookie read or write.
-  void OnCookiesAccessedImpl(const content::CookieAccessDetails& details);
+  // Notify |tracker| about cookie read or write.
+  void OnCookiesAccessedImpl(PageLoadTracker& tracker,
+                             const content::CookieAccessDetails& details);
 
   // True if the web contents is currently in the foreground.
   bool in_foreground_;
@@ -318,6 +324,7 @@ class MetricsWebContentsObserver
   // navigation, stop button, etc.).
   std::vector<std::unique_ptr<PageLoadTracker>> aborted_provisional_loads_;
 
+  // Direct usage of this is discouraged. Use GetPageLoadTracker() instead.
   std::unique_ptr<PageLoadTracker> committed_load_;
 
   // Memory updates that are accumulated while there is no `committed_load_`.
@@ -325,8 +332,10 @@ class MetricsWebContentsObserver
   // render process is gone and/or web contents is destroyed.
   std::queue<std::vector<MemoryUpdate>> queued_memory_updates_;
 
-  // This is currently set only for the main frame.
-  base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;
+  // This is currently set only for the main frame of each page associated with
+  // the WebContents.
+  base::flat_map<content::RenderFrameHost*, base::ReadOnlySharedMemoryRegion>
+      ukm_smoothness_data_;
 
   // This stores the PageLoadTracker for each main frame of inactive pages,
   // including pages in the back/forward cache and prerendered pages. (The main
