@@ -16,6 +16,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
   // DevTools starts its remote debugging port listener asynchronously and
   // there is no reliable way to know when it is started, so resort to an
   // ugly wait then check captured stderr.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(5));
+  base::PlatformThread::Sleep(TestTimeouts::action_timeout());
   capture_stderr_.StopCapture();
 
   enum { kUnknown, kDisallowed, kListening } remote_debugging_state = kUnknown;
