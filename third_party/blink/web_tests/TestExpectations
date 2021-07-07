@@ -4393,9 +4393,6 @@ crbug.com/718155 payments/payment-request-in-iframe-nested-not-allowed.html [ Fa
 # Expect to fail. The test is applicable only when DigitalGoods flag is disabled.
 crbug.com/1080870 http/tests/payments/payment-request-app-store-billing-mandatory-total.html [ Failure ]
 
-# Disabled for rolling DevTools change.
-crbug.com/1172300 http/tests/devtools/agents-enable-disable.js [ Skip ]
-
 # Layout Tests on Swarming (Windows) - https://crbug.com/717347
 crbug.com/713094 [ Win ] fast/css/fontfaceset-check-platform-fonts.html [ Failure Pass ]
 
