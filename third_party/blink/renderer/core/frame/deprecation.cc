@@ -617,6 +617,9 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "errors when attempting to parse the a=extmap-allow-mixed "
               "line in the SDP remove the line from the SDP during "
               "signalling."};
+    case WebFeature::kXHRJSONEncodingDetection:
+      return {"XHRJSONEncodingDetection", kM93,
+              "UTF-16 is not supported by response json in XMLHttpRequest"};
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};

@@ -323,6 +323,15 @@ v8::Local<v8::String> XMLHttpRequest::responseText(
 v8::Local<v8::String> XMLHttpRequest::ResponseJSONSource() {
   DCHECK_EQ(response_type_code_, kResponseTypeJSON);
 
+  const auto& head = response_body_head_;
+  if (state_ == kDone && !error_ && head.size() >= 2) {
+    if ((head[0] == 0xfe && head[1] == 0xff) ||
+        (head[0] == 0xff && head[1] == 0xfe)) {
+      Deprecation::CountDeprecation(GetExecutionContext(),
+                                    WebFeature::kXHRJSONEncodingDetection);
+    }
+  }
+
   if (error_ || state_ != kDone)
     return v8::Local<v8::String>();
   return response_text_.V8Value(isolate_);
@@ -1720,13 +1729,6 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
   if (decoder_) {
     auto text = decoder_->Flush();
 
-    if (response_type_code_ == kResponseTypeJSON) {
-      // See https://crbug.com/1189627: We want to deprecate the BOM sniffing.
-      if (decoder_->Encoding() != UTF8Encoding()) {
-        GetExecutionContext()->CountUse(WebFeature::kXHRJSONEncodingDetection);
-      }
-    }
-
     if (!text.IsEmpty() && !response_text_overflow_) {
       response_text_.Concat(isolate_, text);
       response_text_overflow_ = response_text_.IsEmpty();
@@ -1848,11 +1850,9 @@ void XMLHttpRequest::ParseDocumentChunk(const char* data, unsigned len) {
 }
 
 std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
-  const TextResourceDecoderOptions decoder_options_for_utf8_plain_text(
-      TextResourceDecoderOptions::kPlainTextContent, UTF8Encoding());
   if (response_type_code_ == kResponseTypeJSON) {
-    return std::make_unique<TextResourceDecoder>(
-        decoder_options_for_utf8_plain_text);
+    return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+        TextResourceDecoderOptions::CreateUTF8Decode()));
   }
 
   WTF::TextEncoding final_response_charset = FinalResponseCharset();
@@ -1876,8 +1876,9 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
         return std::make_unique<TextResourceDecoder>(decoder_options_for_xml);
       FALLTHROUGH;
     case kResponseTypeText:
-      return std::make_unique<TextResourceDecoder>(
-          decoder_options_for_utf8_plain_text);
+      return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+          TextResourceDecoderOptions::kPlainTextContent, UTF8Encoding()));
+
     case kResponseTypeDocument:
       if (ResponseIsHTML()) {
         return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
@@ -1911,6 +1912,13 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
 
   if (!len)
     return;
+
+  // Store the first few bytes of the response body so that we can check the BOM
+  // later.
+  for (wtf_size_t i = 0;
+       i < len && response_body_head_.size() < kResponseBodyHeadSize; ++i) {
+    response_body_head_.push_back(static_cast<uint8_t>(data[i]));
+  }
 
   if (response_type_code_ == kResponseTypeDocument && ResponseIsHTML()) {
     ParseDocumentChunk(data, len);
