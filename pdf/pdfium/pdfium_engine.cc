@@ -258,7 +258,7 @@ void SetUpV8() {
   g_isolate_holder = new gin::IsolateHolder(
       base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kSingleThread,
       gin::IsolateHolder::IsolateType::kUtility);
-  g_isolate_holder->isolate()->Enter();
+
 #if defined(PDF_ENABLE_XFA)
   gin::InitializeCppgcFromV8Platform();
 #endif
@@ -268,7 +268,7 @@ void TearDownV8() {
 #if defined(PDF_ENABLE_XFA)
   cppgc::ShutdownProcess();
 #endif
-  g_isolate_holder->isolate()->Exit();
+
   delete g_isolate_holder;
   g_isolate_holder = nullptr;
 }
@@ -505,7 +505,7 @@ void InitializeSDK(bool enable_v8, FontMappingMode font_mapping_mode) {
 #if defined(PDF_ENABLE_V8)
   if (enable_v8) {
     SetUpV8();
-    config.m_pIsolate = v8::Isolate::GetCurrent();
+    config.m_pIsolate = g_isolate_holder->isolate();
     // NOTE: static_cast<> prior to assigning to (void*) is safer since it
     // will manipulate the pointer value should gin::V8Platform someday have
     // multiple base classes.
