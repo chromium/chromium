@@ -1199,9 +1199,19 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
   // Process X11-specific bits
   HandleEvent(xev);
 
+  x11::Event last_xev;
+  std::unique_ptr<ui::Event> last_motion;
+  if (CoalesceEventsIfNeeded(xev, event->type(), &last_xev)) {
+    last_motion = ui::BuildEventFromXEvent(last_xev);
+    event = last_motion.get();
+  }
+
   // If |event| is a located event (mouse, touch, etc) and another X11 window
   // is set as the current located events grabber, the |event| must be
   // re-routed to that grabber. Otherwise, just send the event.
+  // Note: We want to coalesce events before doing this, since this modifies our
+  // ui::Event's coordinates, and coalescing would simply undo the coordinate
+  // change.
   auto* located_events_grabber = window_manager->located_events_grabber();
   if (event->IsLocatedEvent() && located_events_grabber &&
       located_events_grabber != this) {
@@ -1214,13 +1224,6 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
                                            event->AsLocatedEvent());
     }
     return located_events_grabber->DispatchUiEvent(event, xev);
-  }
-
-  x11::Event last_xev;
-  std::unique_ptr<ui::Event> last_motion;
-  if (CoalesceEventsIfNeeded(xev, event->type(), &last_xev)) {
-    last_motion = ui::BuildEventFromXEvent(last_xev);
-    event = last_motion.get();
   }
 
   // If after CoalescePendingMotionEvents the type of xev is resolved to
