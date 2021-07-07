@@ -1853,11 +1853,12 @@ try_.chromium_win_builder(
     tryjob = try_.job(),
 )
 
-try_.chromium_linux_builder(
+try_.chromium_win_builder(
     name = "win10-rel-orchestrator",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
     cores = 2,
+    os = os.LINUX_BIONIC,
     executable = "recipe:chromium/orchestrator",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
