@@ -1398,7 +1398,7 @@ void ArcAppListPrefs::RemoveApp(const std::string& app_id) {
   // Remove from prefs.
   DictionaryPrefUpdate update(prefs_, arc::prefs::kArcApps);
   base::DictionaryValue* apps = update.Get();
-  const bool removed = apps->Remove(app_id, nullptr);
+  const bool removed = apps->RemoveKey(app_id);
   DCHECK(removed);
 
   // |tracked_apps_| contains apps that are reported externally as available.

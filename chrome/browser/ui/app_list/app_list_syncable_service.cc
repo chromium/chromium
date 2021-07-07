@@ -148,7 +148,7 @@ sync_pb::AppListSpecifics::AppListItemType GetAppListItemType(
 void RemoveSyncItemFromLocalStorage(Profile* profile,
                                     const std::string& item_id) {
   DictionaryPrefUpdate(profile->GetPrefs(), prefs::kAppListLocalState)
-      ->Remove(item_id, nullptr);
+      ->RemoveKey(item_id);
 }
 
 void UpdateSyncItemInLocalStorage(

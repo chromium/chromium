@@ -445,7 +445,7 @@ void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
   if (is_collapsed)
     update.Get()->SetBoolean(session_tag, true);
   else
-    update.Get()->Remove(session_tag, nullptr);
+    update.Get()->RemoveKey(session_tag);
 }
 
 }  // namespace browser_sync
