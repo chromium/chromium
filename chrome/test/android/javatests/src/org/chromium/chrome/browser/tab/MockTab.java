@@ -92,4 +92,9 @@ public class MockTab extends TabImpl {
     public void setIsInitialized(boolean isInitialized) {
         mIsInitialized = isInitialized;
     }
+
+    @Override
+    public boolean isCustomTab() {
+        return false;
+    }
 }

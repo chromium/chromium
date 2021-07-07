@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab.state;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import android.support.test.filters.SmallTest;
 
@@ -20,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.state.PriceDropMetricsLogger.MetricsResult;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -44,6 +47,7 @@ import org.chromium.url.GURL;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Test relating to {@link ShoppingPersistedTabData}
@@ -701,5 +705,33 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabData.NO_PRICE_KNOWN, shoppingPersistedTabData.getPriceMicros());
         Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
                 shoppingPersistedTabData.getPreviousPriceMicros());
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testIncognitoTabDisabled() throws TimeoutException {
+        TabImpl tab = mock(TabImpl.class);
+        doReturn(true).when(tab).isIncognito();
+        CallbackHelper callbackHelper = new CallbackHelper();
+        ShoppingPersistedTabData.from(tab, (res) -> {
+            Assert.assertNull(res);
+            callbackHelper.notifyCalled();
+        });
+        callbackHelper.waitForCallback(0);
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testCustomTabsDisabled() throws TimeoutException {
+        TabImpl tab = mock(TabImpl.class);
+        doReturn(true).when(tab).isCustomTab();
+        CallbackHelper callbackHelper = new CallbackHelper();
+        ShoppingPersistedTabData.from(tab, (res) -> {
+            Assert.assertNull(res);
+            callbackHelper.notifyCalled();
+        });
+        callbackHelper.waitForCallback(0);
     }
 }

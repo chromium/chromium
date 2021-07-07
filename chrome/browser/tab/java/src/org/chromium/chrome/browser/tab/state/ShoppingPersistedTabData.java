@@ -16,6 +16,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.page_annotations.BuyableProductPageAnnotation;
@@ -33,6 +34,7 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -311,9 +313,21 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     /**
      * Acquire {@link ShoppingPersistedTabData} for a {@link Tab}
      * @param tab {@link Tab} ShoppingPersistedTabData is acquired for
-     * @param callback {@link Callback} {@link ShoppingPersistedTabData is passed back in}
+     * @param callback {@link Callback} receiving the Tab's {@link ShoppingPersistedTabData}
+     * The result in the callback wil be null for a:
+     * - Custom Tab
+     * - Incognito Tab
+     * - Tab greater than 90 days old
+     * - Tab with a non-shopping related page currently navigated to
+     * - Tab with a shopping related page for which no shopping related data was found
      */
     public static void from(Tab tab, Callback<ShoppingPersistedTabData> callback) {
+        // Shopping related data is not available for incognito or Custom Tabs. For example,
+        // for incognito Tabs it is not possible to call a backend service with the user's URL.
+        if (tab.isIncognito() || tab.isCustomTab()) {
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+            return;
+        }
         PersistedTabData.from(tab,
                 (data, storage, id)
                         -> { return new ShoppingPersistedTabData(tab, data, storage, id); },
