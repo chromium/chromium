@@ -401,6 +401,12 @@ if (enable_scrambled_message_ids) {
 #             should be mapped in generated bindings. This is a string like
 #             "::base::Value" or "std::vector<::base::Value>".
 #
+#         forward_declaration (optional)
+#             A forward declaration of the C++ type, which bindings that don't
+#             need the full type definition can use to reduce the size of
+#             the generated code. This is a string like
+#             "namespace base { class Value; }".
+#
 #         move_only (optional)
 #             A boolean value (default false) which indicates whether the C++
 #             type is move-only. If true, generated bindings will pass the type
