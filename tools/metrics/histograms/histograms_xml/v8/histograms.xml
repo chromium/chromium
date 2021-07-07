@@ -1409,6 +1409,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="V8.WasmFunctionSizeBytes" units="bytes"
     expires_after="2021-08-01">
+  <obsolete>
+    Removed 07/2021 in favor of V8.WasmHugeFunctionSizeBytes which gives a
+    better overview about critical functions.
+  </obsolete>
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1426,6 +1430,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Function count per WebAssembly module. Recorded for each WebAssembly module
     which is decoded for validation, compilation, or deserialization.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmHugeFunctionSizeBytes" units="bytes"
+    expires_after="2022-07-01">
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>adamk@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <summary>
+    Size of a huge WebAssembly function in bytes. A function is considered huge
+    if it is larger than 100kB. Recorded on each compilation of a single
+    function, either synchronous, asynchronous, or lazily.
   </summary>
 </histogram>
 

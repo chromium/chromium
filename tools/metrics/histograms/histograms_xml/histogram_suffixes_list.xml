@@ -20029,8 +20029,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="V8.WasmDecodeFunctionMicroSeconds"/>
   <affected-histogram name="V8.WasmDecodeModuleMicroSeconds"/>
   <affected-histogram name="V8.WasmDecodeModulePeakMemoryBytes"/>
-  <affected-histogram name="V8.WasmFunctionSizeBytes"/>
   <affected-histogram name="V8.WasmFunctionsPerModule"/>
+  <affected-histogram name="V8.WasmHugeFunctionSizeBytes"/>
   <affected-histogram name="V8.WasmInstantiateModuleMicroSeconds"/>
   <affected-histogram name="V8.WasmMaxMemPagesCount"/>
   <affected-histogram name="V8.WasmMinMemPagesCount"/>
