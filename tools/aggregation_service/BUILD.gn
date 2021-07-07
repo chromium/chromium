@@ -1,0 +1,15 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("aggregation_service_tool") {
+  testonly = true
+
+  sources = [ "aggregation_service_tool_main.cc" ]
+
+  deps = [
+    "//base",
+    "//content/test:test_support",
+    "//url",
+  ]
+}

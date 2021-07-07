@@ -44,6 +44,8 @@ static_library("test_support") {
   sources = [
     "../browser/accessibility/test_browser_accessibility_delegate.cc",
     "../browser/accessibility/test_browser_accessibility_delegate.h",
+    "../browser/aggregation_service/aggregation_service_test_utils.cc",
+    "../browser/aggregation_service/aggregation_service_test_utils.h",
     "../browser/background_fetch/background_fetch_test_base.cc",
     "../browser/background_fetch/background_fetch_test_base.h",
     "../browser/background_fetch/background_fetch_test_browser_context.cc",
@@ -221,6 +223,8 @@ static_library("test_support") {
     "../public/test/slow_download_http_response.h",
     "../public/test/slow_http_response.cc",
     "../public/test/slow_http_response.h",
+    "../public/test/test_aggregation_service.cc",
+    "../public/test/test_aggregation_service.h",
     "../public/test/test_browser_context.cc",
     "../public/test/test_browser_context.h",
     "../public/test/test_content_client_initializer.cc",
@@ -346,6 +350,8 @@ static_library("test_support") {
     "stub_render_widget_host_owner_delegate.h",
     "task_runner_deferring_throttle.cc",
     "task_runner_deferring_throttle.h",
+    "test_aggregation_service_impl.cc",
+    "test_aggregation_service_impl.h",
     "test_background_sync_context.cc",
     "test_background_sync_context.h",
     "test_background_sync_manager.cc",
@@ -1823,6 +1829,8 @@ test("content_unittests") {
     "../browser/accessibility/browser_accessibility_unittest.cc",
     "../browser/accessibility/one_shot_accessibility_tree_search_unittest.cc",
     "../browser/accessibility/touch_passthrough_manager_unittest.cc",
+    "../browser/aggregation_service/aggregation_service_storage_unittest.cc",
+    "../browser/aggregation_service/public_key_parsing_utils_unittest.cc",
     "../browser/appcache/appcache_cache_test_helper.cc",
     "../browser/appcache/appcache_cache_test_helper.h",
     "../browser/appcache/appcache_cache_test_helper_unittest.cc",
@@ -2247,6 +2255,7 @@ test("content_unittests") {
     "../renderer/v8_value_converter_impl_unittest.cc",
     "../renderer/worker/worker_thread_registry_unittest.cc",
     "navigation_simulator_unittest.cc",
+    "test_aggregation_service_impl_unittest.cc",
     "test_render_frame_host_unittest.cc",
   ]
 
