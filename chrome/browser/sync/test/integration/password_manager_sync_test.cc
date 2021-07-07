@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -285,8 +286,8 @@ class PasswordManagerSyncTest : public SyncTest {
 
   // Adds a credential to the local store.
   void AddLocalCredential(const password_manager::PasswordForm& form) {
-    scoped_refptr<password_manager::PasswordStore> password_store =
-        passwords_helper::GetPasswordStore(0);
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        passwords_helper::GetProfilePasswordStoreInterface(0);
     password_store->AddLogin(form);
     // Do a roundtrip to the DB thread, to make sure the new password is stored
     // before doing anything else that might depend on it.
@@ -297,8 +298,8 @@ class PasswordManagerSyncTest : public SyncTest {
   // returns them.
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
   GetAllLoginsFromProfilePasswordStore() {
-    scoped_refptr<password_manager::PasswordStore> password_store =
-        passwords_helper::GetPasswordStore(0);
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        passwords_helper::GetProfilePasswordStoreInterface(0);
     PasswordStoreResultsObserver syncer;
     password_store->GetAllLoginsWithAffiliationAndBrandingInformation(&syncer);
     return syncer.WaitForResults();
@@ -308,8 +309,8 @@ class PasswordManagerSyncTest : public SyncTest {
   // returns them.
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
   GetAllLoginsFromAccountPasswordStore() {
-    scoped_refptr<password_manager::PasswordStore> password_store =
-        passwords_helper::GetAccountPasswordStore(0);
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        passwords_helper::GetAccountPasswordStoreInterface(0);
     PasswordStoreResultsObserver syncer;
     password_store->GetAllLoginsWithAffiliationAndBrandingInformation(&syncer);
     return syncer.WaitForResults();
