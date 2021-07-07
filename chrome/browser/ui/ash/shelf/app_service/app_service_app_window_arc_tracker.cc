@@ -129,6 +129,7 @@ void AppServiceAppWindowArcTracker::HandleWindowDestroying(
 
   auto session_id = arc::GetWindowSessionId(window);
   if (session_id.has_value()) {
+    OnSessionDestroyed(*session_id);
     session_id_to_arc_app_window_info_.erase(*session_id);
     if (session_id == active_session_id_)
       active_session_id_ = arc::kNoTaskId;
@@ -176,6 +177,12 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
   auto it = session_id_to_arc_app_window_info_.find(session_id);
   if (it != session_id_to_arc_app_window_info_.end()) {
     task_id_to_arc_app_window_info_[task_id]->set_window(it->second->window());
+
+    const auto app_shelf_id = it->second->app_shelf_id();
+    auto it_controller = app_shelf_group_to_controller_map_.find(app_shelf_id);
+    if (it_controller != app_shelf_group_to_controller_map_.end())
+      it_controller->second->RemoveSessionId(it->first);
+
     session_id_to_arc_app_window_info_.erase(it);
     if (session_id == active_session_id_)
       active_session_id_ = arc::kNoTaskId;
