@@ -12,9 +12,9 @@ PASS flexbox display (math)
 PASS flexbox display (mrow)
 PASS grid display (math)
 PASS grid display (mrow)
-FAIL ruby display (math) assert_approx_equals: block size expected 76 +/- 1 but got 29
-FAIL ruby display (mrow) assert_approx_equals: block size expected 76 +/- 1 but got 43
-FAIL block display with column width (math) assert_approx_equals: block size expected 76 +/- 1 but got 43
-FAIL block display with column width (mrow) assert_approx_equals: block size expected 76 +/- 1 but got 43
+FAIL ruby display (math) assert_approx_equals: block size expected 78 +/- 1 but got 29
+FAIL ruby display (mrow) assert_approx_equals: block size expected 78 +/- 1 but got 45
+FAIL block display with column width (math) assert_approx_equals: block size expected 78 +/- 1 but got 45
+FAIL block display with column width (mrow) assert_approx_equals: block size expected 78 +/- 1 but got 45
 Harness: the test ran to completion.
 
