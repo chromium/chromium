@@ -91,7 +91,8 @@ gfx::GpuMemoryBufferHandle ToGfxGpuMemoryBufferHandle(
 // mojo::Remote<crosapi::mojom::ScopedAccessPermission> pipes alive until
 // EraseAccessPermission() calls.
 class VideoFrameHandlerProxyLacros::AccessPermissionProxyMap
-    : public base::RefCountedThreadSafe<ScopedAccessPermissionMap> {
+    : public base::RefCountedThreadSafe<
+          VideoFrameHandlerProxyLacros::AccessPermissionProxyMap> {
  public:
   AccessPermissionProxyMap() = default;
 
@@ -99,8 +100,10 @@ class VideoFrameHandlerProxyLacros::AccessPermissionProxyMap
       int32_t buffer_id,
       mojo::PendingRemote<crosapi::mojom::ScopedAccessPermission>
           pending_remote_access_permission) {
-    mojo::Remote<crosapi::mojom::ScopedAccessPermission>
-        remote_access_permission(std::move(pending_remote_access_permission));
+    std::unique_ptr<mojo::Remote<crosapi::mojom::ScopedAccessPermission>>
+        remote_access_permission = std::make_unique<
+            mojo::Remote<crosapi::mojom::ScopedAccessPermission>>(
+            std::move(pending_remote_access_permission));
     auto result = access_permissions_by_buffer_ids_.insert(
         std::make_pair(buffer_id, std::move(remote_access_permission)));
     DCHECK(result.second);
@@ -116,10 +119,13 @@ class VideoFrameHandlerProxyLacros::AccessPermissionProxyMap
   }
 
  private:
-  friend class base::RefCountedThreadSafe<AccessPermissionProxyMap>;
+  friend class base::RefCountedThreadSafe<
+      VideoFrameHandlerProxyLacros::AccessPermissionProxyMap>;
   ~AccessPermissionProxyMap() = default;
 
-  std::map<int32_t, mojo::Remote<crosapi::mojom::ScopedAccessPermission>>
+  std::map<
+      int32_t,
+      std::unique_ptr<mojo::Remote<crosapi::mojom::ScopedAccessPermission>>>
       access_permissions_by_buffer_ids_;
 };
 
