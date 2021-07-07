@@ -31,6 +31,11 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   void GetPasswordForLogin(
       const Login& login,
       base::OnceCallback<void(bool, std::string)> callback) override;
+  void DeletePasswordForLogin(const Login& login,
+                              base::OnceCallback<void(bool)> callback) override;
+  void EditPasswordForLogin(const Login& login,
+                            const std::string& new_password,
+                            base::OnceCallback<void(bool)> callback) override;
   std::string GeneratePassword(autofill::FormSignature form_signature,
                                autofill::FieldSignature field_signature,
                                uint64_t max_length) override;
@@ -49,6 +54,8 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   class PendingFetchLoginsRequest;
   class PendingFetchPasswordRequest;
   class UpdatePasswordRequest;
+  class PendingDeletePasswordRequest;
+  class PendingEditPasswordRequest;
 
   void OnRequestFinished(const PendingRequest* request);
 

@@ -46,6 +46,17 @@ class WebsiteLoginManager {
       const Login& login,
       base::OnceCallback<void(bool, std::string)> callback) = 0;
 
+  // Deletes the password for |login|.
+  virtual void DeletePasswordForLogin(
+      const Login& login,
+      base::OnceCallback<void(bool)> callback) = 0;
+
+  // Edits the password for |login|.
+  virtual void EditPasswordForLogin(
+      const Login& login,
+      const std::string& new_password,
+      base::OnceCallback<void(bool)> callback) = 0;
+
   // Generates new strong password. |form/field_signature| are used to fetch
   // password requirements. |max_length| is the "max_length" attribute of input
   // field that limits the length of value.

@@ -38,6 +38,26 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
                void(const Login& login,
                     base::OnceCallback<void(bool, std::string)>&));
 
+  void DeletePasswordForLogin(
+      const Login& login,
+      base::OnceCallback<void(bool)> callback) override {
+    OnDeletePasswordForLogin(login, callback);
+  }
+
+  MOCK_METHOD2(OnDeletePasswordForLogin,
+               void(const Login& login, base::OnceCallback<void(bool)>&));
+
+  void EditPasswordForLogin(const Login& login,
+                            const std::string& new_password,
+                            base::OnceCallback<void(bool)> callback) override {
+    OnEditPasswordForLogin(login, new_password, callback);
+  }
+
+  MOCK_METHOD3(OnEditPasswordForLogin,
+               void(const Login& login,
+                    const std::string&,
+                    base::OnceCallback<void(bool)>&));
+
   std::string GeneratePassword(autofill::FormSignature form_signature,
                                autofill::FieldSignature field_signature,
                                uint64_t max_length) override {
