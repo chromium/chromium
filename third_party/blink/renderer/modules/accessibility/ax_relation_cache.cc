@@ -194,6 +194,10 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
       if (!newly_owned_ids.Contains(removed_child_id)) {
         if (AXObject* real_parent = RestoreParentOrPrune(removed_child))
           ChildrenChanged(real_parent);
+        // Now that the child is not owned, it's "included in tree" state must
+        // be recomputed because while owned children are always included in the
+        // tree, unowned children may not be included.
+        removed_child->UpdateCachedAttributeValuesIfNeeded(false);
       }
     }
   }
@@ -220,6 +224,9 @@ void AXRelationCache::MapOwnedChildren(const AXObject* owner,
       if (original_parent)
         ChildrenChanged(original_parent);
     }
+    // Now that the child is owned, it's "included in tree" state must be
+    // recomputed because owned children are always included in the tree.
+    added_child->UpdateCachedAttributeValuesIfNeeded(false);
   }
 }
 
@@ -362,6 +369,11 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
       (!force || previously_owned_child_ids.IsEmpty())) {
     return;
   }
+
+  // Incrementing the modification count ensures that cached "included in tree"
+  // state is recomputed on objects with changed ownership -- owned children
+  // must always be included in the tree.
+  object_cache_->IncrementModificationCount();
 
   // The list of owned children has changed. Even if they were just reordered,
   // to be safe and handle all cases we remove all of the current owned

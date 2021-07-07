@@ -1115,7 +1115,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
   node_object_mapping_.Set(node, ax_id);
   new_obj->Init(parent);
-  MaybeNewRelationTarget(*node, new_obj);
 
   return new_obj;
 }
@@ -1233,8 +1232,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
   const AXID axid = AssociateAXID(new_obj, use_axid);
   layout_object_mapping_.Set(layout_object, axid);
   new_obj->Init(parent);
-  if (node)  // There may not be a node, e.g. for an anonymous block.
-    MaybeNewRelationTarget(*node, new_obj);
 
   return new_obj;
 }
