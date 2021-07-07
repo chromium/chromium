@@ -226,7 +226,7 @@ TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
   std::vector<TestRulesetInfo> rulesets({CreateDefaultRuleset()});
   std::unique_ptr<base::DictionaryValue> manifest = CreateManifest(rulesets);
   // Remove "declarativeNetRequest" permission.
-  manifest->Remove(manifest_keys::kPermissions, nullptr);
+  manifest->RemoveKey(manifest_keys::kPermissions);
 
   WriteManifestAndRuleset(*manifest, rulesets);
 

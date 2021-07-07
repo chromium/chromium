@@ -177,7 +177,7 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   EXPECT_TRUE(app->ShouldDisplayInNewTabPage());
 
   // Value display_in_NTP = false only, overrides default = true.
-  manifest.Remove(keys::kDisplayInLauncher, NULL);
+  manifest.RemoveKey(keys::kDisplayInLauncher);
   manifest.SetBoolean(keys::kDisplayInNewTabPage, false);
   app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
                           manifest, 0, &error);

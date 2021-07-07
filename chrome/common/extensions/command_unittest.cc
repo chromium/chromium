@@ -246,29 +246,29 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
   // Misspell a platform.
   key_dict->SetString("windosw", "Ctrl+M");
   EXPECT_FALSE(command.Parse(input.get(), command_name, 0, &error));
-  EXPECT_TRUE(key_dict->Remove("windosw", NULL));
+  EXPECT_TRUE(key_dict->RemoveKey("windosw"));
 
   // Now remove platform specific keys (leaving just "default") and make sure
   // every platform falls back to the default.
-  EXPECT_TRUE(key_dict->Remove("windows", NULL));
-  EXPECT_TRUE(key_dict->Remove("mac", NULL));
-  EXPECT_TRUE(key_dict->Remove("linux", NULL));
-  EXPECT_TRUE(key_dict->Remove("chromeos", NULL));
+  EXPECT_TRUE(key_dict->RemoveKey("windows"));
+  EXPECT_TRUE(key_dict->RemoveKey("mac"));
+  EXPECT_TRUE(key_dict->RemoveKey("linux"));
+  EXPECT_TRUE(key_dict->RemoveKey("chromeos"));
   EXPECT_TRUE(command.Parse(input.get(), command_name, 0, &error));
   EXPECT_EQ(ui::VKEY_D, command.accelerator().key_code());
 
   // Now remove "default", leaving no option but failure. Or, in the words of
   // the immortal Adam Savage: "Failure is always an option".
-  EXPECT_TRUE(key_dict->Remove("default", NULL));
+  EXPECT_TRUE(key_dict->RemoveKey("default"));
   EXPECT_FALSE(command.Parse(input.get(), command_name, 0, &error));
 
   // Make sure Command is not supported for non-Mac platforms.
   key_dict->SetString("default", "Command+M");
   EXPECT_FALSE(command.Parse(input.get(), command_name, 0, &error));
-  EXPECT_TRUE(key_dict->Remove("default", NULL));
+  EXPECT_TRUE(key_dict->RemoveKey("default"));
   key_dict->SetString("windows", "Command+M");
   EXPECT_FALSE(command.Parse(input.get(), command_name, 0, &error));
-  EXPECT_TRUE(key_dict->Remove("windows", NULL));
+  EXPECT_TRUE(key_dict->RemoveKey("windows"));
 
   // Now add only a valid platform that we are not running on to make sure devs
   // are notified of errors on other platforms.

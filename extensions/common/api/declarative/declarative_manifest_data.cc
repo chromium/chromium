@@ -61,7 +61,7 @@ bool ConvertManifestRule(const DeclarativeManifestData::Rule& rule,
           }
           if (type == declarative_content_constants::kLegacyShowAction)
             type = declarative_content_constants::kShowAction;
-          dictionary->Remove("type", nullptr);
+          dictionary->RemoveKey("type");
           dictionary->SetString("instanceType", type);
         }
         return true;
