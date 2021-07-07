@@ -236,7 +236,7 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
         ApplyValueAsMandatoryPolicy(action.get(), key::kLidCloseAction,
                                     &user_policy_map);
       }
-      policy_value->Remove(kLidCloseAction, NULL);
+      policy_value->RemoveKey(kLidCloseAction);
     }
 
     if (policy_value->Get(kUserActivityScreenDimDelayScale,
@@ -244,7 +244,7 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
       ApplyValueAsMandatoryPolicy(screen_dim_delay_scale,
                                   key::kUserActivityScreenDimDelayScale,
                                   &user_policy_map);
-      policy_value->Remove(kUserActivityScreenDimDelayScale, NULL);
+      policy_value->RemoveKey(kUserActivityScreenDimDelayScale);
     }
 
     // |policy_value| is expected to be a valid value for the

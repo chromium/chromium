@@ -68,7 +68,7 @@ void UpdateDict(base::DictionaryValue* dict,
   if (set_or_clear)
     dict->SetPath(pref_path, base::Value::FromUniquePtrValue(std::move(value)));
   else
-    dict->Remove(pref_path, NULL);
+    dict->RemoveKey(pref_path);
 }
 
 // Converts a restore mode enum value from the DM protocol for FRE into the
