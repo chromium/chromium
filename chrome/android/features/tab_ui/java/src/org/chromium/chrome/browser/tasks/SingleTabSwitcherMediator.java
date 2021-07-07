@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.TITLE;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 
@@ -51,12 +52,14 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     private boolean mAddNormalTabModelObserverPending;
     private Long mTabTitleAvailableTime;
     private boolean mFaviconInitialized;
+    private Context mContext;
 
-    SingleTabSwitcherMediator(PropertyModel propertyModel, TabModelSelector tabModelSelector,
-            TabListFaviconProvider tabListFaviconProvider) {
+    SingleTabSwitcherMediator(Context context, PropertyModel propertyModel,
+            TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider) {
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
         mTabListFaviconProvider = tabListFaviconProvider;
+        mContext = context;
 
         mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
         mPropertyModel.set(CLICK_LISTENER, v -> {
@@ -188,7 +191,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
             PseudoTab activeTab;
             try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                activeTab = PseudoTab.getActiveTabFromStateFile();
+                activeTab = PseudoTab.getActiveTabFromStateFile(mContext);
             }
             if (activeTab != null) {
                 mPropertyModel.set(TITLE, activeTab.getTitle());

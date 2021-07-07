@@ -85,7 +85,8 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
     private void updateTheme() {
         final boolean shouldUseIncognitoBackground = mIsIncognito
                 && (!mIsOverviewVisible
-                        || ToolbarColors.canUseIncognitoToolbarThemeColorInOverview());
+                        || ToolbarColors.canUseIncognitoToolbarThemeColorInOverview(
+                                mActivityContext));
 
         updatePrimaryColor(
                 shouldUseIncognitoBackground ? mIncognitoPrimaryColor : mStandardPrimaryColor,

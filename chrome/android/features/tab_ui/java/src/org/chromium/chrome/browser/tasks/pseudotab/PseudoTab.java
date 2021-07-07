@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.pseudotab;
 
+import android.content.Context;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
@@ -61,7 +62,9 @@ public class PseudoTab {
     /**
      * An interface to get the title to be used for a tab.
      */
-    public interface TitleProvider { String getTitle(PseudoTab tab); }
+    public interface TitleProvider {
+        String getTitle(Context context, PseudoTab tab);
+    }
 
     /**
      * Construct from a tab ID. An earlier instance with the same ID can be returned.
@@ -155,11 +158,13 @@ public class PseudoTab {
      * Get the title of the {@link PseudoTab} through a {@link TitleProvider}.
      *
      * If the {@link TitleProvider} is {@code null}, fall back to {@link #getTitle()}.
+     *
+     * @param context The activity context.
      * @param titleProvider The {@link TitleProvider} to provide the title.
      * @return The title
      */
-    public String getTitle(@Nullable TitleProvider titleProvider) {
-        if (titleProvider != null) return titleProvider.getTitle(this);
+    public String getTitle(Context context, @Nullable TitleProvider titleProvider) {
+        if (titleProvider != null) return titleProvider.getTitle(context, this);
         return getTitle();
     }
 
@@ -257,12 +262,14 @@ public class PseudoTab {
     /**
      * Get related tabs of a certain {@link PseudoTab}, through {@link TabModelFilter}s if
      * available.
+     *
+     * @param context The activity context.
      * @param member The {@link PseudoTab} related to
      * @param tabModelSelector The {@link TabModelSelector} to query the tab relation
      * @return Related {@link PseudoTab}s
      */
     public static @NonNull List<PseudoTab> getRelatedTabs(
-            PseudoTab member, @NonNull TabModelSelector tabModelSelector) {
+            Context context, PseudoTab member, @NonNull TabModelSelector tabModelSelector) {
         synchronized (sLock) {
             List<Tab> relatedTabs = getRelatedTabList(tabModelSelector, member.getId());
             if (relatedTabs != null) return getListOfPseudoTab(relatedTabs);
@@ -270,7 +277,7 @@ public class PseudoTab {
             List<PseudoTab> related = new ArrayList<>();
             int rootId = member.getRootId();
             if (rootId == Tab.INVALID_TAB_ID
-                    || !TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+                    || !TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)) {
                 related.add(member);
                 return related;
             }
@@ -307,19 +314,22 @@ public class PseudoTab {
         }
     }
 
+    /**
+     * @param context The activity context.
+     */
     @Nullable
-    public static List<PseudoTab> getAllPseudoTabsFromStateFile() {
-        readAllPseudoTabsFromStateFile();
+    public static List<PseudoTab> getAllPseudoTabsFromStateFile(Context context) {
+        readAllPseudoTabsFromStateFile(context);
         return sAllTabsFromStateFile;
     }
 
     @Nullable
-    public static PseudoTab getActiveTabFromStateFile() {
-        readAllPseudoTabsFromStateFile();
+    public static PseudoTab getActiveTabFromStateFile(Context context) {
+        readAllPseudoTabsFromStateFile(context);
         return sActiveTabFromStateFile;
     }
 
-    private static void readAllPseudoTabsFromStateFile() {
+    private static void readAllPseudoTabsFromStateFile(Context context) {
         assert CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
                 || CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
         if (sReadStateFile) return;
@@ -366,7 +376,7 @@ public class PseudoTab {
                             sActiveTabFromStateFile = tab;
                         }
                         int rootId = tab.getRootId();
-                        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)
                                 && seenRootId.contains(rootId)) {
                             return;
                         }

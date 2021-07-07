@@ -195,13 +195,14 @@ class ChromeContextMenuItem {
 
     /**
      * Get string ID from the ID of the item.
+     * @param context The activity context.
      * @param item #Item Item ID.
      * @return Returns the string that describes the action of the item.
      */
-    private static @StringRes int getStringId(@Item int item) {
+    private static @StringRes int getStringId(Context context, @Item int item) {
         assert STRING_IDS.length == Item.NUM_ENTRIES;
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)
                 && TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()
                 && item == Item.OPEN_IN_NEW_TAB) {
             return R.string.contextmenu_open_in_new_tab_group;
@@ -224,7 +225,7 @@ class ChromeContextMenuItem {
             case Item.OPEN_IN_BROWSER_ID:
                 return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
             case Item.SEARCH_BY_IMAGE:
-                return context.getString(getStringId(item),
+                return context.getString(getStringId(context, item),
                         TemplateUrlServiceFactory.get()
                                 .getDefaultSearchEngineTemplateUrl()
                                 .getShortName());
@@ -255,7 +256,7 @@ class ChromeContextMenuItem {
                         ChromePreferenceKeys.CONTEXT_MENU_SEARCH_SIMILAR_PRODUCTS_CLICKED,
                         showInProductHelp);
             default:
-                return context.getString(getStringId(item));
+                return context.getString(getStringId(context, item));
         }
     }
 
@@ -265,7 +266,7 @@ class ChromeContextMenuItem {
      */
     private static CharSequence addOrRemoveNewLabel(
             Context context, @Item int item, @Nullable String prefKey, boolean showNewLabel) {
-        String menuTitle = context.getString(getStringId(item));
+        String menuTitle = context.getString(getStringId(context, item));
         if (!showNewLabel
                 || (prefKey != null
                         && SharedPreferencesManager.getInstance().readBoolean(prefKey, false))) {

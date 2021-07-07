@@ -32,6 +32,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -108,7 +109,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         doReturn(true).when(mIncognitoTabModel).isIncognito();
 
         mPropertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
-        mMediator = new SingleTabSwitcherMediator(
+        mMediator = new SingleTabSwitcherMediator(ContextUtils.getApplicationContext(),
                 mPropertyModel, mTabModelSelector, mTabListFaviconProvider);
     }
 

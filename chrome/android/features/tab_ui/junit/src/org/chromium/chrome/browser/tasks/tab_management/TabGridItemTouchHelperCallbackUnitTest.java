@@ -38,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -193,8 +194,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     private void setupItemTouchHelperCallback(boolean isDialog) {
-        mItemTouchHelperCallback = new TabGridItemTouchHelperCallback(mModel, mTabModelSelector,
-                mTabClosedListener, isDialog ? mTabGridDialogHandler : null, "", !isDialog);
+        mItemTouchHelperCallback = new TabGridItemTouchHelperCallback(
+                ContextUtils.getApplicationContext(), mModel, mTabModelSelector, mTabClosedListener,
+                isDialog ? mTabGridDialogHandler : null, "", !isDialog);
         mItemTouchHelperCallback.setupCallback(THRESHOLD, THRESHOLD, THRESHOLD, mProfile);
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
     }

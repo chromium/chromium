@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StreamUtil;
@@ -350,7 +351,7 @@ public class CustomTabTabPersistencePolicyTest {
         };
     }
 
-    private static CustomTabActivity buildTestCustomTabActivity(
+    private CustomTabActivity buildTestCustomTabActivity(
             final int taskId, int[] normalTabIds, int[] incognitoTabIds) {
         final TabModelSelectorImpl selectorImpl =
                 buildTestTabModelSelector(normalTabIds, incognitoTabIds);
@@ -430,7 +431,7 @@ public class CustomTabTabPersistencePolicyTest {
         };
     }
 
-    private static TabModelSelectorImpl buildTestTabModelSelector(
+    private TabModelSelectorImpl buildTestTabModelSelector(
             int[] normalTabIds, int[] incognitoTabIds) {
         MockTabModel.MockTabModelDelegate tabModelDelegate =
                 new MockTabModel.MockTabModelDelegate() {
@@ -453,16 +454,31 @@ public class CustomTabTabPersistencePolicyTest {
             for (int tabId : incognitoTabIds) incognitoTabModel.addTab(tabId);
         }
 
-        CustomTabActivity activity = new CustomTabActivity();
-        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        CustomTabActivity customTabActivity = new CustomTabActivity() {
+            // This is intended to pretend we've started the activity, so we can attach a base
+            // context to the activity.
+            @Override
+            public void onStart() {
+                attachBaseContext(mAppContext);
+            }
+        };
+        ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.CREATED);
+        ActivityStateListener stateListener = (activity, state) -> {
+            if (state == ActivityState.STARTED) {
+                customTabActivity.onStart();
+            }
+        };
+        ApplicationStatus.registerStateListenerForActivity(stateListener, customTabActivity);
+        ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.STARTED);
 
         CustomTabsTabModelOrchestrator orchestrator = new CustomTabsTabModelOrchestrator();
-        orchestrator.createTabModels(activity::getWindowAndroid, activity,
-                new ChromeTabModelFilterFactory(), buildTestPersistencePolicy(),
+        orchestrator.createTabModels(customTabActivity::getWindowAndroid, customTabActivity,
+                new ChromeTabModelFilterFactory(customTabActivity), buildTestPersistencePolicy(),
                 AsyncTabParamsManagerSingleton.getInstance());
         TabModelSelectorImpl selector = orchestrator.getTabModelSelector();
         selector.initializeForTesting(normalTabModel, incognitoTabModel);
-        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
+        ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.DESTROYED);
+        ApplicationStatus.unregisterActivityStateListener(stateListener);
         return selector;
     }
 }

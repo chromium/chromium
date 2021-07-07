@@ -595,7 +595,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     //  enabled, and tab switcher is not shown:
                     //   1. If the very last tab is closed.
                     //   2. If normal tab model is selected and no normal tabs.
-                    if (TabUiFeatureUtilities.isGridTabSwitcherEnabled()
+                    if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(ChromeTabbedActivity.this)
                             && !mOverviewModeController.overviewVisible()) {
                         if (getTabModelSelector().getTotalTabCount() == 0
                                 || (!getTabModelSelector().isIncognitoSelected()
@@ -641,7 +641,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             CompositorViewHolder compositorViewHolder = getCompositorViewHolder();
 
             // TODO(1169205): Remove all GTS enabled checks after M5 is default.
-            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled()) {
+            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
                 TabManagementDelegate tabManagementDelegate =
                         TabManagementModuleProvider.getDelegate();
                 if (tabManagementDelegate != null) {
@@ -762,7 +762,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             Supplier<Boolean> showStartSurfaceSupplier = () -> {
                 if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageOnPhone(
-                            isTablet())) {
+                            this, isTablet())) {
                     showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
                     return true;
                 }
@@ -785,7 +785,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (!CommandLine.getInstance().hasSwitch(
                         ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
                 IncognitoTabSnapshotController.createIncognitoTabSnapshotController(
-                        getWindow(), mLayoutManager, mTabModelSelectorImpl);
+                        this, getWindow(), mLayoutManager, mTabModelSelectorImpl);
             }
 
             mUIWithNativeInitialized = true;
@@ -1056,7 +1056,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 RecordHistogram.recordCountHistogram(
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
             }
-            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled() && !isTablet()) {
+            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this) && !isTablet()) {
                 mStartSurfaceSupplier.get().getController().enableRecordingFirstMeaningfulPaint(
                         getOnCreateTimestampMs());
             }
@@ -1103,12 +1103,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         if (isCanonicalizedNTPUrl
-                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage()) {
+                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(this)) {
             // Handle NTP intent.
             return true;
-        } else if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs()
+        } else if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs(this)
                 && IntentUtils.isMainIntentFromLauncher(getIntent())
-                && ReturnToChromeExperimentsUtil.getTotalTabCount(getTabModelSelector()) <= 0) {
+                && ReturnToChromeExperimentsUtil.getTotalTabCount(this, getTabModelSelector())
+                        <= 0) {
             // Handle initial tab creation.
             return true;
         }
@@ -1642,7 +1643,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mControlContainer = (ToolbarControlContainer) findViewById(R.id.control_container);
 
         Supplier<Boolean> dialogVisibilitySupplier = null;
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(this)) {
             dialogVisibilitySupplier = () -> {
                 assert mStartSurfaceSupplier.get() != null;
                 assert getToolbarManager().getTabGroupUi() != null;
@@ -2273,7 +2274,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             //                showing the overview list before going to the start surface.
             mOverviewModeController.showOverview(false);
         } else if (mStartSurfaceSupplier.get() != null) {
-            if (StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()
+            if (StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn(this)
                     || !HomepageManager.isHomepageEnabled()) {
                 state = StartSurfaceState.SHOWING_TABSWITCHER;
             }
@@ -2319,7 +2320,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             @NewTabPageLaunchOrigin int launchOrigin) {
         if (!isNTP
                 || !ReturnToChromeExperimentsUtil.shouldShowStartSurfaceHomeAsNTP(
-                        incognito, isTablet())) {
+                        this, incognito, isTablet())) {
             return false;
         }
 

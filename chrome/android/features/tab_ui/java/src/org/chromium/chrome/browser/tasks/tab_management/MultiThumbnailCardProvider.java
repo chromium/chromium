@@ -56,6 +56,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     private final List<RectF> mThumbnailRects = new ArrayList<>(4);
     private final List<RectF> mFaviconBackgroundRects = new ArrayList<>(4);
     private TabListFaviconProvider mTabListFaviconProvider;
+    private Context mContext;
 
     private class MultiThumbnailFetcher {
         private final PseudoTab mInitialTab;
@@ -89,7 +90,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
             mCanvas.drawColor(Color.TRANSPARENT);
 
             // Initialize Tabs.
-            List<PseudoTab> relatedTabList = PseudoTab.getRelatedTabs(tab, mTabModelSelector);
+            List<PseudoTab> relatedTabList =
+                    PseudoTab.getRelatedTabs(mContext, tab, mTabModelSelector);
             if (relatedTabList.size() <= 4) {
                 mThumbnailsToFetch.set(relatedTabList.size());
 
@@ -195,6 +197,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
 
     MultiThumbnailCardProvider(Context context, TabContentManager tabContentManager,
             TabModelSelector tabModelSelector) {
+        mContext = context;
         Resources resource = context.getResources();
         float expectedThumbnailAspectRatio =
                 (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
@@ -324,7 +327,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     public void getTabThumbnailWithCallback(
             int tabId, Callback<Bitmap> finalCallback, boolean forceUpdate, boolean writeToCache) {
         PseudoTab tab = PseudoTab.fromTabId(tabId);
-        if (tab == null || PseudoTab.getRelatedTabs(tab, mTabModelSelector).size() == 1) {
+        if (tab == null || PseudoTab.getRelatedTabs(mContext, tab, mTabModelSelector).size() == 1) {
             mTabContentManager.getTabThumbnailWithCallback(
                     tabId, finalCallback, forceUpdate, writeToCache);
             return;

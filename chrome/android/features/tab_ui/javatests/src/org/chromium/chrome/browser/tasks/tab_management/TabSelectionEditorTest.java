@@ -115,7 +115,8 @@ public class TabSelectionEditorTest {
     }
 
     private @TabListCoordinator.TabListMode int getMode() {
-        return TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()
+        return TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                       mActivityTestRule.getActivity())
                         && SysUtils.isLowEndDevice()
                 ? TabListCoordinator.TabListMode.LIST
                 : TabListCoordinator.TabListMode.GRID;

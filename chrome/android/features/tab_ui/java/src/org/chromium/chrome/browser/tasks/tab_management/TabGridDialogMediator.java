@@ -300,7 +300,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
         // Setup toolbar button click listeners.
         setupToolbarClickHandlers();
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             // Setup toolbar edit text.
             setupToolbarEditText();
 

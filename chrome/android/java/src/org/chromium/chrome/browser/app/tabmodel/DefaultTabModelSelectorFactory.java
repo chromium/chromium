@@ -26,7 +26,7 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
     @Override
     public TabModelSelector buildSelector(Activity activity, TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
-        TabModelFilterFactory tabModelFilterFactory = new ChromeTabModelFilterFactory();
+        TabModelFilterFactory tabModelFilterFactory = new ChromeTabModelFilterFactory(activity);
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
         return new TabModelSelectorImpl(/*windowAndroidSupplier=*/null, tabCreatorManager,

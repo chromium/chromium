@@ -267,10 +267,12 @@ public interface TabManagementDelegate {
 
     /**
      * Create a {@link TabSuggestions} for the given {@link Activity}
+     * @param context The activity context.
      * @param tabModelSelector Allows access to the current set of {@link TabModel}.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @return the {@link TabSuggestions} for the activity
      */
-    TabSuggestions createTabSuggestions(@NonNull TabModelSelector tabModelSelector,
+    TabSuggestions createTabSuggestions(@NonNull Context context,
+            @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher);
 }

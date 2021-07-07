@@ -30,6 +30,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
@@ -210,7 +211,8 @@ public class TabSuggestionsServerFetcherUnitTest {
     public void testServerFetcherEnabled() {
         for (boolean isSignedIn : new boolean[] {false, true}) {
             for (boolean isServerFetcherFlagEnabled : new boolean[] {false, true}) {
-                TabSuggestionsServerFetcher fetcher = spy(new TabSuggestionsServerFetcher());
+                TabSuggestionsServerFetcher fetcher =
+                        spy(new TabSuggestionsServerFetcher(ContextUtils.getApplicationContext()));
                 doReturn(isSignedIn).when(fetcher).isSignedIn();
                 doReturn(isServerFetcherFlagEnabled).when(fetcher).isServerFetcherFlagEnabled();
                 if (isSignedIn && isServerFetcherFlagEnabled) {
@@ -225,7 +227,8 @@ public class TabSuggestionsServerFetcherUnitTest {
     @Test
     @Features.DisableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void testServerFetcherDisabledWithDisableGroup() {
-        TabSuggestionsServerFetcher fetcher = spy(new TabSuggestionsServerFetcher());
+        TabSuggestionsServerFetcher fetcher =
+                spy(new TabSuggestionsServerFetcher(ContextUtils.getApplicationContext()));
         doReturn(true).when(fetcher).isSignedIn();
         doReturn(true).when(fetcher).isServerFetcherFlagEnabled();
         Assert.assertThat("The Fetcher is enabled", fetcher.isEnabled(), is(false));

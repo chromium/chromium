@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -195,10 +196,10 @@ public class StartSurfaceConfiguration {
      *         NTP is shown as homepage. Also, when time threshold is reached, grid tab switcher or
      *         overview list layout is shown instead of start surface.
      */
-    public static boolean shouldHideStartSurfaceWithAccessibilityOn() {
+    public static boolean shouldHideStartSurfaceWithAccessibilityOn(Context context) {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && !(SUPPORT_ACCESSIBILITY.getValue()
-                        && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
+                        && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context));
     }
 
     /**
