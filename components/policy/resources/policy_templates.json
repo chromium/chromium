@@ -14034,7 +14034,7 @@
     },
     {
       'name': 'AttestationEnabledForDevice',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['emaxx@chromium.org', 'file://chrome/browser/ash/attestation/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:28-'],
@@ -14053,7 +14053,7 @@
     },
     {
       'name': 'AttestationEnabledForUser',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['emaxx@chromium.org', 'file://chrome/browser/ash/attestation/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:28-'],
@@ -14071,7 +14071,7 @@
     },
     {
       'name': 'AttestationExtensionAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
+      'owners': ['emaxx@chromium.org', 'file://chrome/browser/extensions/api/enterprise_platform_keys/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14092,7 +14092,7 @@
     },
     {
       'name': 'AttestationExtensionWhitelist',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['emaxx@chromium.org', 'file://chrome/browser/extensions/api/enterprise_platform_keys/OWNERS'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -14116,7 +14116,7 @@
     },
     {
       'name': 'AttestationForContentProtectionEnabled',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['emaxx@chromium.org', 'file://chrome/browser/ash/attestation/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:31-'],
