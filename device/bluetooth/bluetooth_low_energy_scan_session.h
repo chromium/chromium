@@ -23,7 +23,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanSession {
   // Interface for reacting to BluetoothLowEnergyScanSession events.
   class Delegate {
    public:
-    Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate() = default;
 

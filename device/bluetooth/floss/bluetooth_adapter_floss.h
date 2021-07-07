@@ -18,6 +18,11 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+#endif
+
 namespace floss {
 
 // The BluetoothAdapterFloss class implements BluetoothAdapter for platforms
@@ -98,6 +103,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
+
+  std::unique_ptr<device::BluetoothLowEnergyScanSession>
+  StartLowEnergyScanSession(
+      std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
+      base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
+      override;
 #endif
 
  protected:

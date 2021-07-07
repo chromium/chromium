@@ -18,6 +18,10 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#endif
+
 namespace device {
 
 class MockBluetoothAdapter : public BluetoothAdapter {
@@ -118,6 +122,11 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                void(const UUIDList& uuids,
                     base::OnceClosure callback,
                     ErrorCallback error_callback));
+  MOCK_METHOD2(
+      StartLowEnergyScanSession,
+      std::unique_ptr<BluetoothLowEnergyScanSession>(
+          std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
+          base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate));
 #endif
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
   MOCK_METHOD4(

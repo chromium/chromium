@@ -27,6 +27,10 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+#endif
+
 namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
@@ -37,6 +41,9 @@ class BluetoothAdvertisement;
 class BluetoothDiscoveryFilter;
 class BluetoothDiscoverySession;
 class BluetoothLocalGattService;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class BluetoothLowEnergyScanFilter;
+#endif
 class BluetoothRemoteGattCharacteristic;
 class BluetoothRemoteGattDescriptor;
 class BluetoothRemoteGattService;
@@ -668,6 +675,29 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   virtual void SetServiceAllowList(const UUIDList& uuids,
                                    base::OnceClosure callback,
                                    ErrorCallback error_callback) = 0;
+
+  // Starts a low energy scanning session that will notify the client on session
+  // started, session invalidated, device found and device lost events via the
+  // |delegate|.
+  //
+  // The client controls the lifetime of the session (except on unexpected
+  // invalidation, see below). The client ends a scan session by destroying the
+  // returned instance.
+  //
+  // A session cannot recover once the
+  // BluetoothLowEnergyScanSession::Delegate::OnSessionInvalidated() callback
+  // has been invoked. Invalidation can happen if the platform unexpectedly
+  // cleans up the scan session due to a firmware crash, etc.. If a client wants
+  // an identical scanning session, it should discard its newly invalidated
+  // BluetoothLowEnergyScanSession and create a new one by calling
+  // StartLowEnergyScanSession() again.
+  //
+  // Returns a nullptr if the BluetoothAdvertisementMonitoring chrome flag is
+  // not enabled.
+  virtual std::unique_ptr<BluetoothLowEnergyScanSession>
+  StartLowEnergyScanSession(
+      std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
+      base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate) = 0;
 #endif
 
   // The timeout in seconds used by RemoveTimedOutDevices.

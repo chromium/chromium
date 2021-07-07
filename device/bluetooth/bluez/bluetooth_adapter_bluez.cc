@@ -12,9 +12,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -55,8 +57,13 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/devicetype.h"
+#include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/bluez/bluetooth_low_energy_scan_session_bluez.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
+#include "device/bluetooth/dbus/bluetooth_advertisement_monitor_application_service_provider.h"
+#include "device/bluetooth/dbus/bluetooth_advertisement_monitor_manager_client.h"
+#include "device/bluetooth/dbus/bluetooth_advertisement_monitor_service_provider.h"
 #endif
 
 using device::BluetoothAdapter;
@@ -73,6 +80,13 @@ namespace {
 // exist per D-Bus connection, it just has to be unique within Chromium.
 const char kAgentPath[] = "/org/chromium/bluetooth_agent";
 const char kGattApplicationObjectPath[] = "/gatt_application";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// This root path identifies the application registering low energy scanners
+// through D-Bus.
+constexpr char kAdvertisementMonitorApplicationObjectPath[] =
+    "/org/chromium/bluetooth_advertisement_monitor";
+#endif
 
 void OnUnregisterAgentError(const std::string& error_name,
                             const std::string& error_message) {
@@ -225,6 +239,9 @@ void BluetoothAdapterBlueZ::Shutdown() {
   if (IsPresent())
     RemoveAdapter();  // Also deletes devices_.
   DCHECK(devices_.empty());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  is_advertisement_monitor_application_provider_registered_ = false;
+#endif
 
   // profiles_ must be empty because all BluetoothSockets have been notified
   // that this adapter is disappearing.
@@ -309,6 +326,15 @@ void BluetoothAdapterBlueZ::Init() {
       system_bus, dbus::ObjectPath(kAgentPath), this));
   DCHECK(agent_.get());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+    advertisement_monitor_application_provider_ =
+        BluetoothAdvertisementMonitorApplicationServiceProvider::Create(
+            system_bus,
+            dbus::ObjectPath(kAdvertisementMonitorApplicationObjectPath));
+  }
+#endif
+
   std::vector<dbus::ObjectPath> object_paths = bluez::BluezDBusManager::Get()
                                                    ->GetBluetoothAdapterClient()
                                                    ->GetAdapters();
@@ -317,6 +343,9 @@ void BluetoothAdapterBlueZ::Init() {
   if (!object_paths.empty()) {
     BLUETOOTH_LOG(EVENT) << "BlueZ Adapters available: " << object_paths.size();
     SetAdapter(object_paths[0]);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    RegisterAdvertisementMonitorApplicationServiceProvider();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   initialized_ = true;
   std::move(init_callback_).Run();
@@ -660,6 +689,10 @@ void BluetoothAdapterBlueZ::AdapterAdded(const dbus::ObjectPath& object_path) {
   // Set the adapter to the newly added adapter only if no adapter is present.
   if (!IsPresent())
     SetAdapter(object_path);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  RegisterAdvertisementMonitorApplicationServiceProvider();
+#endif
 }
 
 void BluetoothAdapterBlueZ::AdapterRemoved(
@@ -1527,6 +1560,52 @@ void BluetoothAdapterBlueZ::SetServiceAllowList(const UUIDList& uuids,
                             base::BindOnce(&SetServiceAllowListErrorCallback,
                                            std::move(error_callback)));
 }
+
+std::unique_ptr<device::BluetoothLowEnergyScanSession>
+BluetoothAdapterBlueZ::StartLowEnergyScanSession(
+    std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
+    base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
+  if (!chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+    return nullptr;
+  }
+  dbus::ObjectPath monitor_path = dbus::ObjectPath(
+      static_cast<std::string>(kAdvertisementMonitorApplicationObjectPath) +
+      "/" + base::UnguessableToken::Create().ToString());
+  BLUETOOTH_LOG(EVENT) << __func__ << ": session_id = " << monitor_path.value();
+
+  // Client will take ownership of |low_energy_scan_session|.
+  // OnLowEnergyScanSessionDestroyed removes the session from the D-Bus
+  // application. |low_energy_scan_session| forwards callbacks from D-Bus to the
+  // client-owned |delegate|.
+  auto low_energy_scan_session =
+      std::make_unique<BluetoothLowEnergyScanSessionBlueZ>(
+          monitor_path.value(), weak_ptr_factory_.GetWeakPtr(), delegate,
+          base::BindOnce(
+              &BluetoothAdapterBlueZ::OnLowEnergyScanSessionDestroyed,
+              weak_ptr_factory_.GetWeakPtr()));
+
+  // Implements the advertisement monitor interface and forwards dbus callbacks
+  // to the |low_energy_scan_session|.
+  auto advertisement_monitor =
+      BluetoothAdvertisementMonitorServiceProvider::Create(
+          bluez::BluezDBusManager::Get()->GetSystemBus(), monitor_path,
+          std::move(filter), low_energy_scan_session->GetWeakPtr());
+
+  if (advertisement_monitor_application_provider_ &&
+      is_advertisement_monitor_application_provider_registered_) {
+    // Signals D-Bus that a new advertisement monitor is added.
+    advertisement_monitor_application_provider_->AddMonitor(
+        std::move(advertisement_monitor));
+  } else {
+    BLUETOOTH_LOG(EVENT) << __func__
+                         << ": Advertisement monitor application not yet "
+                            "registered. Queuing low energy scan session.";
+
+    pending_advertisement_monitors_.push(std::move(advertisement_monitor));
+  }
+
+  return low_energy_scan_session;
+}
 #endif
 
 dbus::ObjectPath BluetoothAdapterBlueZ::GetApplicationObjectPath() const {
@@ -2001,5 +2080,61 @@ void BluetoothAdapterBlueZ::UpdateDeviceBatteryLevelFromBatteryClient(
   // value as well.
   device->SetBatteryPercentage(absl::nullopt);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void BluetoothAdapterBlueZ::
+    RegisterAdvertisementMonitorApplicationServiceProvider() {
+  if (is_advertisement_monitor_application_provider_registered_ ||
+      !IsPresent() ||
+      !chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+    return;
+  }
+  BLUETOOTH_LOG(EVENT) << __func__;
+
+  auto err_callback = [](std::string error_name,
+                         const std::string error_message) {
+    LOG(ERROR) << "Error while registering advertisement monitor application "
+                  "service provider. error_name = "
+               << error_name << ", error_message = " << error_message;
+  };
+
+  // Registers root application path of advertisement monitors/low energy
+  // scanners.
+  bluez::BluezDBusManager::Get()
+      ->GetBluetoothAdvertisementMonitorManagerClient()
+      ->RegisterMonitor(
+          dbus::ObjectPath(kAdvertisementMonitorApplicationObjectPath),
+          object_path_,
+          base::BindOnce(
+              &BluetoothAdapterBlueZ::
+                  OnRegisterAdvertisementMonitorApplicationServiceProvider,
+              weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(err_callback));
+}
+
+void BluetoothAdapterBlueZ::
+    OnRegisterAdvertisementMonitorApplicationServiceProvider() {
+  is_advertisement_monitor_application_provider_registered_ = true;
+  BLUETOOTH_LOG(EVENT) << __func__;
+
+  while (!pending_advertisement_monitors_.empty()) {
+    // Signals D-Bus that a new advertisement monitor is added.
+    advertisement_monitor_application_provider_->AddMonitor(
+        std::move(pending_advertisement_monitors_.front()));
+    pending_advertisement_monitors_.pop();
+  }
+}
+
+void BluetoothAdapterBlueZ::OnLowEnergyScanSessionDestroyed(
+    const std::string& session_id) {
+  BLUETOOTH_LOG(EVENT) << __func__ << ": session_id = " << session_id;
+  if (!advertisement_monitor_application_provider_ ||
+      !is_advertisement_monitor_application_provider_registered_) {
+    return;
+  }
+  advertisement_monitor_application_provider_->RemoveMonitor(
+      dbus::ObjectPath(session_id));
+}
+#endif
 
 }  // namespace bluez

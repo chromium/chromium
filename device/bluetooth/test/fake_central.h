@@ -9,10 +9,16 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace bluetooth {
 
@@ -192,6 +198,11 @@ class FakeCentral final : public mojom::FakeCentral,
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
+  std::unique_ptr<device::BluetoothLowEnergyScanSession>
+  StartLowEnergyScanSession(
+      std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
+      base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
+      override;
 #endif
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
   bool SetPoweredImpl(bool powered) override;

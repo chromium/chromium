@@ -21,6 +21,10 @@
 #include "device/bluetooth/test/fake_remote_gatt_characteristic.h"
 #include "device/bluetooth/test/fake_remote_gatt_service.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#endif
+
 namespace bluetooth {
 
 namespace {
@@ -615,6 +619,14 @@ void FakeCentral::SetServiceAllowList(const UUIDList& uuids,
                                       base::OnceClosure callback,
                                       ErrorCallback error_callback) {
   NOTREACHED();
+}
+
+std::unique_ptr<device::BluetoothLowEnergyScanSession>
+FakeCentral::StartLowEnergyScanSession(
+    std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
+    base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
+  NOTREACHED();
+  return nullptr;
 }
 #endif
 

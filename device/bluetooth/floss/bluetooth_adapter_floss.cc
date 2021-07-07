@@ -145,6 +145,14 @@ void BluetoothAdapterFloss::SetServiceAllowList(const UUIDList& uuids,
                                                 ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
+
+std::unique_ptr<device::BluetoothLowEnergyScanSession>
+BluetoothAdapterFloss::StartLowEnergyScanSession(
+    std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
+    base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
 #endif
 
 void BluetoothAdapterFloss::RemovePairingDelegateInternal(
