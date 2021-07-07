@@ -252,6 +252,13 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     popup_->widget_base_->UpdateTooltipUnderCursor(tooltip_text, dir);
   }
 
+  void UpdateTooltipFromKeyboard(LocalFrame&,
+                                 const String& tooltip_text,
+                                 TextDirection dir,
+                                 const gfx::Rect& bounds) override {
+    popup_->widget_base_->UpdateTooltipFromKeyboard(tooltip_text, dir, bounds);
+  }
+
   void InjectGestureScrollEvent(LocalFrame& local_frame,
                                 WebGestureDevice device,
                                 const gfx::Vector2dF& delta,
