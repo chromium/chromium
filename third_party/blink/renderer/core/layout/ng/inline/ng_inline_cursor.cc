@@ -1345,10 +1345,8 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
     DCHECK(!is_descendants_cursor);
     while (item_index >= fragment_items_->EndItemIndex()) {
       MoveToNextFragmentainer();
-      if (!Current()) {
-        NOTREACHED();
+      if (!Current())
         return;
-      }
     }
     item_index -= fragment_items_->SizeOfEarlierFragments();
 #if DCHECK_IS_ON()

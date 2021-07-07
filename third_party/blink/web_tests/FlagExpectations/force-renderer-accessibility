@@ -10,7 +10,6 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ CRASH ]
 crbug.com/1225860 crbug.com/926685 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-010.html [ CRASH ]
 crbug.com/1225860 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-017.html [ CRASH ]
-crbug.com/1225858 virtual/layout_ng_block_frag/fast/multicol/change-column-rule.html [ CRASH ]
 crbug.com/1225860 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ CRASH ]
 
 # Slow
