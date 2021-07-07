@@ -156,10 +156,10 @@ class ContentAutofillRouter {
   // called last.
   ContentAutofillDriver* last_queried_source() const { return nullptr; }
 
-  void RegisterKeyPressHandler(
+  void SetKeyPressHandler(
       ContentAutofillDriver* source_driver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
-  void RemoveKeyPressHandler(ContentAutofillDriver* source_driver);
+  void UnsetKeyPressHandler(ContentAutofillDriver* source_driver);
 
   // Routing of events called by the renderer:
   void SetFormToBeProbablySubmitted(ContentAutofillDriver* source_driver,

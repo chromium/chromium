@@ -33,6 +33,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"

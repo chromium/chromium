@@ -138,7 +138,7 @@ void AutofillPopupControllerImpl::Show(
 
   absl::visit(
       [&](auto* driver) {
-        driver->RegisterKeyPressHandler(base::BindRepeating(
+        driver->SetKeyPressHandler(base::BindRepeating(
             // Cannot bind HandleKeyPressEvent() directly because of its
             // return value.
             [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
@@ -222,7 +222,7 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   if (delegate_) {
     delegate_->ClearPreviewedForm();
     delegate_->OnPopupHidden();
-    absl::visit([](auto* driver) { driver->RemoveKeyPressHandler(); },
+    absl::visit([](auto* driver) { driver->UnsetKeyPressHandler(); },
                 GetDriver());
   }
 

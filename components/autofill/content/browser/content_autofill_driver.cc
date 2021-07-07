@@ -80,7 +80,6 @@ ContentAutofillDriver::ContentAutofillDriver(
     : render_frame_host_(render_frame_host),
       autofill_router_(autofill_router),
       browser_autofill_manager_(nullptr),
-      key_press_handler_manager_(this),
       log_manager_(client->GetLogManager()) {
   // AutofillManager isn't used if provider is valid, Autofill provider is
   // currently used by Android WebView only.
@@ -601,7 +600,6 @@ void ContentAutofillDriver::SetBrowserAutofillManager(
 ContentAutofillDriver::ContentAutofillDriver(content::RenderFrameHost* rfh)
     : render_frame_host_(rfh),
       browser_autofill_manager_(nullptr),
-      key_press_handler_manager_(this),
       log_manager_(nullptr) {}
 
 const mojo::AssociatedRemote<mojom::AutofillAgent>&
@@ -615,38 +613,33 @@ ContentAutofillDriver::GetAutofillAgent() {
   return autofill_agent_;
 }
 
-void ContentAutofillDriver::RegisterKeyPressHandler(
+void ContentAutofillDriver::SetKeyPressHandler(
     const content::RenderWidgetHost::KeyPressEventCallback& handler) {
-  autofill_router_->RegisterKeyPressHandler(this, handler);
+  autofill_router_->SetKeyPressHandler(this, handler);
 }
 
-void ContentAutofillDriver::RemoveKeyPressHandler() {
-  autofill_router_->RemoveKeyPressHandler(this);
+void ContentAutofillDriver::UnsetKeyPressHandler() {
+  autofill_router_->UnsetKeyPressHandler(this);
 }
 
-void ContentAutofillDriver::RegisterKeyPressHandlerImpl(
+void ContentAutofillDriver::SetKeyPressHandlerImpl(
     const content::RenderWidgetHost::KeyPressEventCallback& handler) {
-  key_press_handler_manager_.RegisterKeyPressHandler(handler);
-}
-
-void ContentAutofillDriver::RemoveKeyPressHandlerImpl() {
-  key_press_handler_manager_.RemoveKeyPressHandler();
-}
-
-void ContentAutofillDriver::AddHandler(
-    const content::RenderWidgetHost::KeyPressEventCallback& handler) {
+  UnsetKeyPressHandlerImpl();
   content::RenderWidgetHostView* view = render_frame_host_->GetView();
   if (!view)
     return;
   view->GetRenderWidgetHost()->AddKeyPressEventCallback(handler);
+  key_press_handler_ = handler;
 }
 
-void ContentAutofillDriver::RemoveHandler(
-    const content::RenderWidgetHost::KeyPressEventCallback& handler) {
+void ContentAutofillDriver::UnsetKeyPressHandlerImpl() {
+  if (key_press_handler_.is_null())
+    return;
   content::RenderWidgetHostView* view = render_frame_host_->GetView();
   if (!view)
     return;
-  view->GetRenderWidgetHost()->RemoveKeyPressEventCallback(handler);
+  view->GetRenderWidgetHost()->RemoveKeyPressEventCallback(key_press_handler_);
+  key_press_handler_.Reset();
 }
 
 void ContentAutofillDriver::SetFrameAndFormMetaData(

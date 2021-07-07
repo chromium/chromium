@@ -30,20 +30,20 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
   NOTREACHED();
 }
 
-void ContentAutofillRouter::RegisterKeyPressHandler(
+void ContentAutofillRouter::SetKeyPressHandler(
     ContentAutofillDriver* source,
     const content::RenderWidgetHost::KeyPressEventCallback& handler) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    source->RegisterKeyPressHandlerImpl(handler);
+    source->SetKeyPressHandlerImpl(handler);
     return;
   }
   NOTREACHED();
 }
 
-void ContentAutofillRouter::RemoveKeyPressHandler(
+void ContentAutofillRouter::UnsetKeyPressHandler(
     ContentAutofillDriver* source) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    source->RemoveKeyPressHandlerImpl();
+    source->UnsetKeyPressHandlerImpl();
     return;
   }
   NOTREACHED();

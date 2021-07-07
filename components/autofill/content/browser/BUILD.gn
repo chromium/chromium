@@ -14,8 +14,6 @@ static_library("browser") {
     "content_autofill_driver_factory.h",
     "content_autofill_router.cc",
     "content_autofill_router.h",
-    "key_press_handler_manager.cc",
-    "key_press_handler_manager.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
   ]
@@ -85,7 +83,6 @@ source_set("unit_tests") {
   sources = [
     "autofill_internals_log_router_unittest.cc",
     "content_autofill_driver_unittest.cc",
-    "key_press_handler_manager_unittest.cc",
   ]
 
   deps = [

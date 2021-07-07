@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "components/autofill/content/browser/key_press_handler_manager.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -20,6 +19,8 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -35,8 +36,7 @@ enum class BadMessageReason;
 // The lifetime is managed by the ContentPasswordManagerDriverFactory.
 class ContentPasswordManagerDriver
     : public PasswordManagerDriver,
-      public autofill::mojom::PasswordManagerDriver,
-      public autofill::KeyPressHandlerManager::Delegate {
+      public autofill::mojom::PasswordManagerDriver {
  public:
   ContentPasswordManagerDriver(content::RenderFrameHost* render_frame_host,
                                PasswordManagerClient* client,
@@ -94,9 +94,9 @@ class ContentPasswordManagerDriver
   // Key-press handlers capture the user input into fields while an Autofill
   // popup is shown. Through these key presses, the user may select suggestions
   // from the Autofill popup, for example.
-  void RegisterKeyPressHandler(
+  void SetKeyPressHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
-  void RemoveKeyPressHandler();
+  void UnsetKeyPressHandler();
 
  protected:
   // autofill::mojom::PasswordManagerDriver:
@@ -132,12 +132,6 @@ class ContentPasswordManagerDriver
                              int32_t result) override;
 
  private:
-  // KeyPressHandlerManager::Delegate:
-  void AddHandler(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
-  void RemoveHandler(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
-
   const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
   GetAutofillAgent();
 
@@ -168,7 +162,7 @@ class ContentPasswordManagerDriver
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>
       password_manager_receiver_;
 
-  autofill::KeyPressHandlerManager key_press_handler_manager_;
+  content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
   base::WeakPtrFactory<ContentPasswordManagerDriver> weak_factory_{this};
 

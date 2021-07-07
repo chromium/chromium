@@ -11,7 +11,6 @@
 
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
-#include "components/autofill/content/browser/key_press_handler_manager.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -19,6 +18,7 @@
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -114,8 +114,7 @@ constexpr uint32_t kPhoneCollected = 1 << 2;
 //
 // See ContentAutofillRouter for further details.
 class ContentAutofillDriver : public AutofillDriver,
-                              public mojom::AutofillDriver,
-                              public KeyPressHandlerManager::Delegate {
+                              public mojom::AutofillDriver {
  public:
   // Gets the driver for |render_frame_host|.
   static ContentAutofillDriver* GetForRenderFrameHost(
@@ -327,17 +326,17 @@ class ContentAutofillDriver : public AutofillDriver,
   //
   // In a frame-transcending form, the <input> the user queried Autofill from
   // may be in a different frame than |render_frame_host_|. Therefore,
-  // RegisterKeyPressHandler() and RemoveKeyPressHandler() are forwarded to the
+  // SetKeyPressHandler() and UnsetKeyPressHandler() are forwarded to the
   // last-queried source remembered by ContentAutofillRouter.
   // For non-Autofill forms (i.e., password forms), which are not handled by
   // ContentAutofillDriver and ContentAutofillRouter and hence are not
   // frame-transcending, this routing must be skipped by setting |skip_routing|.
-  void RegisterKeyPressHandler(
+  void SetKeyPressHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
-  void RemoveKeyPressHandler();
-  void RegisterKeyPressHandlerImpl(
+  void UnsetKeyPressHandler();
+  void SetKeyPressHandlerImpl(
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
-  void RemoveKeyPressHandlerImpl();
+  void UnsetKeyPressHandlerImpl();
 
   // Sets the manager to |manager|. Takes ownership of |manager|.
   void SetBrowserAutofillManager(
@@ -360,12 +359,6 @@ class ContentAutofillDriver : public AutofillDriver,
 
  private:
   friend class ContentAutofillDriverTestApi;
-
-  // KeyPressHandlerManager::Delegate:
-  void AddHandler(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
-  void RemoveHandler(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler) override;
 
   // Sets parameters of |form| and |field| that can be extracted from
   // |render_frame_host_|. Setting |field|'s meta data also requires the
@@ -420,7 +413,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // Pointer to an implementation of InternalAuthenticator.
   std::unique_ptr<InternalAuthenticator> authenticator_impl_;
 
-  KeyPressHandlerManager key_press_handler_manager_;
+  content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
   LogManager* const log_manager_;
 
