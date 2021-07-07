@@ -222,6 +222,9 @@ std::vector<std::string> GenerateKernelCmdline(
                          start_params.arc_custom_tabs_experiment),
       base::StringPrintf("androidboot.image_copy_paste_compat=%d",
                          start_params.enable_image_copy_paste_compat),
+      base::StringPrintf(
+          "androidboot.keyboard_shortcut_helper_integration=%d",
+          start_params.enable_keyboard_shortcut_helper_integration),
       base::StringPrintf("androidboot.disable_system_default_app=%d",
                          start_params.arc_disable_system_default_app),
       "androidboot.chromeos_channel=" + channel,

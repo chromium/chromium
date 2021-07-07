@@ -208,6 +208,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "arc-keyboard-shortcut-helper-integration",
+    "owners": [ "tetsui" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "arc-native-bridge-64bit-support-experiment",
     "owners": [ "jhorwich" ],
     // Used on ChromeOS to experimentally enable 64-bit ARC native-bridge

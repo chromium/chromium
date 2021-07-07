@@ -454,6 +454,9 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   params.arc_custom_tabs_experiment = is_custom_tab_enabled;
   params.enable_image_copy_paste_compat =
       base::FeatureList::IsEnabled(arc::kImageCopyPasteCompatFeature);
+  params.enable_keyboard_shortcut_helper_integration =
+      base::FeatureList::IsEnabled(
+          arc::kKeyboardShortcutHelperIntegrationFeature);
   params.lcd_density = lcd_density_;
   params.num_cores_disabled = num_cores_disabled;
 
