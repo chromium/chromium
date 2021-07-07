@@ -73,9 +73,9 @@ struct StorageTraits<const T&> {
 
 template <typename... Ts>
 struct ParamTuple {
-  bool Parse(const base::ListValue& list,
-             const base::ListValue::const_iterator& it) {
-    return it == list.GetList().end();
+  bool Parse(const std::vector<base::Value>& list,
+             const std::vector<base::Value>::const_iterator& it) {
+    return it == list.end();
   }
 
   template <typename H, typename... As>
@@ -86,10 +86,9 @@ struct ParamTuple {
 
 template <typename T, typename... Ts>
 struct ParamTuple<T, Ts...> {
-  bool Parse(const base::ListValue& list,
-             const base::ListValue::const_iterator& it) {
-    return it != list.GetList().end() && GetValue(*it, &head) &&
-           tail.Parse(list, it + 1);
+  bool Parse(const std::vector<base::Value>& list,
+             const std::vector<base::Value>::const_iterator& it) {
+    return it != list.end() && GetValue(*it, &head) && tail.Parse(list, it + 1);
   }
 
   template <typename H, typename... As>
@@ -104,9 +103,9 @@ struct ParamTuple<T, Ts...> {
 template <typename... As>
 bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
                     DispatchCallback callback,
-                    const base::ListValue& list) {
+                    const std::vector<base::Value>& list) {
   ParamTuple<As...> tuple;
-  if (!tuple.Parse(list, list.GetList().begin()))
+  if (!tuple.Parse(list, list.begin()))
     return false;
   tuple.Apply(handler);
   return true;
@@ -116,9 +115,9 @@ template <typename... As>
 bool ParseAndHandleWithCallback(
     const base::RepeatingCallback<void(DispatchCallback, As...)>& handler,
     DispatchCallback callback,
-    const base::ListValue& list) {
+    const std::vector<base::Value>& list) {
   ParamTuple<As...> tuple;
-  if (!tuple.Parse(list, list.GetList().begin()))
+  if (!tuple.Parse(list, list.begin()))
     return false;
   tuple.Apply(handler, std::move(callback));
   return true;
@@ -140,10 +139,9 @@ class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
 
   bool Dispatch(DispatchCallback callback,
                 const std::string& method,
-                const base::ListValue* params) override {
+                const std::vector<base::Value>& params) override {
     auto it = handlers_.find(method);
-    return it != handlers_.end() &&
-           it->second.Run(std::move(callback), *params);
+    return it != handlers_.end() && it->second.Run(std::move(callback), params);
   }
 
   template<typename... As>
@@ -167,7 +165,8 @@ class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
 
  private:
   using Handler =
-      base::RepeatingCallback<bool(DispatchCallback, const base::ListValue&)>;
+      base::RepeatingCallback<bool(DispatchCallback,
+                                   const std::vector<base::Value>&)>;
   using HandlerMap = std::map<std::string, Handler>;
   HandlerMap handlers_;
 };

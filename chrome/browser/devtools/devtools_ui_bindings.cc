@@ -749,13 +749,10 @@ void DevToolsUIBindings::HandleMessageFromDevToolsFrontend(
     LOG(ERROR) << "Invalid message was sent to embedder: " << message;
     return;
   }
-  base::Value empty_params(base::Value::Type::LIST);
-  if (!params) {
-    params = &empty_params;
-  }
   int id = message.FindIntKey(kFrontendHostId).value_or(0);
-  base::ListValue* params_list;
-  params->GetAsList(&params_list);
+  std::vector<base::Value> params_list;
+  if (params)
+    params_list = std::move(*params).TakeList();
   embedder_message_dispatcher_->Dispatch(
       base::BindOnce(&DevToolsUIBindings::SendMessageAck,
                      weak_factory_.GetWeakPtr(), id),
