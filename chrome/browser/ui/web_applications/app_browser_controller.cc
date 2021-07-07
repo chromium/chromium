@@ -405,6 +405,15 @@ void AppBrowserController::DidStartNavigation(
   SetInitialURL(navigation_handle->GetURL());
 }
 
+void AppBrowserController::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame())
+    return;
+
+  // Reset the draggable regions so they are not cached on navigation.
+  draggable_region_ = absl::nullopt;
+}
+
 void AppBrowserController::DOMContentLoaded(
     content::RenderFrameHost* render_frame_host) {
   // We hold off changing theme color for a new tab until the page is loaded.

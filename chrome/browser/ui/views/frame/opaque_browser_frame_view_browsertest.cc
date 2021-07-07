@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/hit_test.h"
@@ -484,6 +485,14 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
             HTCAPTION);
   EXPECT_TRUE(browser_view_->ShouldDescendIntoChildForEventHandling(
       browser_view_->GetWidget()->GetNativeView(), kBorderPoint));
+
+  // Validate that the draggable region is reset on navigation and the point is
+  // no longer draggable.
+  ui_test_utils::NavigateToURL(browser_view_->browser(),
+                               GURL("http://example.test/"));
+  EXPECT_NE(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCAPTION);
+  EXPECT_TRUE(browser_view_->ShouldDescendIntoChildForEventHandling(
+      browser_view_->GetWidget()->GetNativeView(), kPoint));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
