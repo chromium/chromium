@@ -17,6 +17,7 @@ namespace cc {
 struct CC_EXPORT StickyPositionConstraint {
   StickyPositionConstraint();
   StickyPositionConstraint(const StickyPositionConstraint& other);
+  StickyPositionConstraint& operator=(const StickyPositionConstraint& other);
 
   bool is_anchored_left : 1;
   bool is_anchored_right : 1;

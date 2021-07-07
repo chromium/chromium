@@ -29,7 +29,9 @@ ScrollStateData::ScrollStateData()
       is_scroll_chain_cut(false),
       is_main_thread_hit_tested(false) {}
 
-ScrollStateData::ScrollStateData(const ScrollStateData& other) = default;
+ScrollStateData::ScrollStateData(const ScrollStateData&) = default;
+
+ScrollStateData& ScrollStateData::operator=(const ScrollStateData&) = default;
 
 ElementId ScrollStateData::current_native_scrolling_element() const {
   return current_native_scrolling_element_;

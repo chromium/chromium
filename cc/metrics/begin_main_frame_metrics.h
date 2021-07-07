@@ -33,6 +33,7 @@ struct CC_EXPORT BeginMainFrameMetrics {
   BeginMainFrameMetrics();
 
   BeginMainFrameMetrics(const BeginMainFrameMetrics& other);
+  BeginMainFrameMetrics& operator=(const BeginMainFrameMetrics& other);
 };
 
 }  // namespace cc

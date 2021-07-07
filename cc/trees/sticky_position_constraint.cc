@@ -19,6 +19,9 @@ StickyPositionConstraint::StickyPositionConstraint()
 StickyPositionConstraint::StickyPositionConstraint(
     const StickyPositionConstraint& other) = default;
 
+StickyPositionConstraint& StickyPositionConstraint::operator=(
+    const StickyPositionConstraint& other) = default;
+
 bool StickyPositionConstraint::operator==(
     const StickyPositionConstraint& other) const {
   return is_anchored_left == other.is_anchored_left &&

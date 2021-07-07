@@ -41,6 +41,7 @@ class CC_BASE_EXPORT ListContainerHelper final {
     char* item_iterator;
 
     PositionInCharAllocator(const PositionInCharAllocator& other);
+    PositionInCharAllocator& operator=(const PositionInCharAllocator& other);
 
     PositionInCharAllocator(CharAllocator* container,
                             size_t vector_ind,

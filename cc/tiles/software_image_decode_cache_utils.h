@@ -51,6 +51,7 @@ class SoftwareImageDecodeCacheUtils {
                                   SkColorType color_type);
 
     CacheKey(const CacheKey& other);
+    CacheKey& operator=(const CacheKey& other);
 
     bool operator==(const CacheKey& other) const {
       // The frame_key always has to be the same. However, after that all

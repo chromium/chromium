@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -269,6 +270,10 @@ class ListContainerHelper::CharAllocator {
 // PositionInCharAllocator
 //////////////////////////////////////////////////////
 ListContainerHelper::PositionInCharAllocator::PositionInCharAllocator(
+    const ListContainerHelper::PositionInCharAllocator& other) = default;
+
+ListContainerHelper::PositionInCharAllocator&
+ListContainerHelper::PositionInCharAllocator::operator=(
     const ListContainerHelper::PositionInCharAllocator& other) = default;
 
 ListContainerHelper::PositionInCharAllocator::PositionInCharAllocator(

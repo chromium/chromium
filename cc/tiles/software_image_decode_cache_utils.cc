@@ -289,6 +289,10 @@ SoftwareImageDecodeCacheUtils::CacheKey::CacheKey(
 SoftwareImageDecodeCacheUtils::CacheKey::CacheKey(const CacheKey& other) =
     default;
 
+SoftwareImageDecodeCacheUtils::CacheKey&
+SoftwareImageDecodeCacheUtils::CacheKey::operator=(const CacheKey& other) =
+    default;
+
 std::string SoftwareImageDecodeCacheUtils::CacheKey::ToString() const {
   std::ostringstream str;
   str << "frame_key[" << frame_key_.ToString() << "]\ntype[";

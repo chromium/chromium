@@ -39,6 +39,8 @@ TransformNode::TransformNode()
 
 TransformNode::TransformNode(const TransformNode&) = default;
 
+TransformNode& TransformNode::operator=(const TransformNode&) = default;
+
 #if DCHECK_IS_ON()
 bool TransformNode::operator==(const TransformNode& other) const {
   return id == other.id && parent_id == other.parent_id &&

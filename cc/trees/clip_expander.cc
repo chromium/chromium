@@ -14,6 +14,8 @@ ClipExpander::ClipExpander(int filter_effect_id)
 
 ClipExpander::ClipExpander(const ClipExpander& other) = default;
 
+ClipExpander& ClipExpander::operator=(const ClipExpander& other) = default;
+
 bool ClipExpander::operator==(const ClipExpander& other) const {
   return target_effect_id_ == other.target_effect_id_;
 }

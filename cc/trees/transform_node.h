@@ -23,6 +23,7 @@ namespace cc {
 struct CC_EXPORT TransformNode {
   TransformNode();
   TransformNode(const TransformNode&);
+  TransformNode& operator=(const TransformNode&);
 
   // The node index of this node in the transform tree node vector.
   int id;

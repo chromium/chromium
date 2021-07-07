@@ -16,6 +16,7 @@ class CC_EXPORT ClipExpander {
  public:
   explicit ClipExpander(int filter_effect_id);
   ClipExpander(const ClipExpander& other);
+  ClipExpander& operator=(const ClipExpander& other);
 
   bool operator==(const ClipExpander& other) const;
 
