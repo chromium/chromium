@@ -150,22 +150,24 @@ struct CordRepExternal;
 struct CordRepFlat;
 struct CordRepSubstring;
 class CordRepRing;
+class CordRepBtree;
 
 // Various representations that we allow
 enum CordRepKind {
   CONCAT = 0,
   SUBSTRING = 1,
-  RING = 2,
-  EXTERNAL = 3,
+  BTREE = 2,
+  RING = 3,
+  EXTERNAL = 4,
 
   // We have different tags for different sized flat arrays,
-  // starting with FLAT, and limited to MAX_FLAT_TAG. The 224 value is based on
+  // starting with FLAT, and limited to MAX_FLAT_TAG. The 225 value is based on
   // the current 'size to tag' encoding of 8 / 32 bytes. If a new tag is needed
   // in the future, then 'FLAT' and 'MAX_FLAT_TAG' should be adjusted as well
   // as the Tag <---> Size logic so that FLAT stil represents the minimum flat
   // allocation size. (32 bytes as of now).
-  FLAT = 4,
-  MAX_FLAT_TAG = 224
+  FLAT = 5,
+  MAX_FLAT_TAG = 225
 };
 
 // There are various locations where we want to check if some rep is a 'plain'
@@ -175,8 +177,9 @@ enum CordRepKind {
 // so likewise align RING to EXTERNAL.
 // Note that we can leave this optimization to the compiler. The compiler will
 // DTRT when it sees a condition like `tag == EXTERNAL || tag >= FLAT`.
-static_assert(EXTERNAL == RING + 1, "RING and EXTERNAL values not consecutive");
-static_assert(FLAT == EXTERNAL + 1, "EXTERNAL and FLAT values not consecutive");
+static_assert(RING == BTREE + 1, "BTREE and RING not consecutive");
+static_assert(EXTERNAL == RING + 1, "BTREE and EXTERNAL not consecutive");
+static_assert(FLAT == EXTERNAL + 1, "EXTERNAL and FLAT not consecutive");
 
 struct CordRep {
   CordRep() = default;
@@ -202,6 +205,9 @@ struct CordRep {
   inline const CordRepExternal* external() const;
   inline CordRepFlat* flat();
   inline const CordRepFlat* flat() const;
+
+  inline CordRepBtree* btree();
+  inline const CordRepBtree* btree() const;
 
   // --------------------------------------------------------------------
   // Memory management

@@ -189,6 +189,7 @@ if (build_with_chromium) {
         "absl/memory:memory_test",
         "absl/meta:type_traits_test",
         "absl/strings:ascii_test",
+        "absl/strings:cord_rep_consume_test",
         "absl/strings:cordz_functions_test",
         "absl/strings:cordz_info_statistics_test",
         "absl/strings:cordz_info_test",

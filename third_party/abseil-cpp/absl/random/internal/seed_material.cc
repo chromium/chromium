@@ -57,6 +57,12 @@
 #define ABSL_RANDOM_USE_GET_ENTROPY 1
 #endif
 
+#if defined(__EMSCRIPTEN__)
+#include <sys/random.h>
+// Emscripten has getentropy, but it resides in a different header.
+#define ABSL_RANDOM_USE_GET_ENTROPY 1
+#endif
+
 #if defined(ABSL_RANDOM_USE_BCRYPT)
 #include <bcrypt.h>
 

@@ -64,7 +64,7 @@ class ConvertibleToStringView {
   ConvertibleToStringView(const std::string& s)  // NOLINT(runtime/explicit)
       : value_(s) {}
 
-  // Matches rvalue strings and moves their data to a member.
+  // Disable conversion from rvalue strings.
   ConvertibleToStringView(std::string&& s) = delete;
   ConvertibleToStringView(const std::string&& s) = delete;
 

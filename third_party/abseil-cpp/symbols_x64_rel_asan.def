@@ -287,6 +287,7 @@ EXPORTS
     ?CompareSlowPath@Cord@absl@@AEBAHAEBV12@_K1@Z
     ?CompareSlowPath@Cord@absl@@AEBAHVstring_view@2@_K1@Z
     ?ConcatNodes@CordForest@absl@@QEAAPEAUCordRep@cord_internal@2@XZ
+    ?Consume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
     ?ConsumeUnboundConversion@str_format_internal@absl@@YAPEBDPEBD0PEAUUnboundConversion@12@PEAH@Z
     ?ConvertDateTime@absl@@YA?AUTimeConversion@1@_JHHHHHVTimeZone@1@@Z
     ?ConvertDeletedToEmptyAndFullToDeleted@container_internal@absl@@YAXPEAC_K@Z
@@ -630,6 +631,7 @@ EXPORTS
     ?ResetToBuiltinUTC@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NAEBV?$duration@_JV?$ratio@$00$00@__1@std@@@chrono@__1@std@@@Z
     ?ResourceExhaustedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Rethrow@variant_internal@absl@@YAXXZ
+    ?ReverseConsume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
     ?SafeToDelete@CordzHandle@cord_internal@absl@@QEBA_NXZ
     ?SafeWriteToStderr@raw_logging_internal@absl@@YAXPEBD_K@Z
     ?SampleSlow@container_internal@absl@@YAPEAUHashtablezInfo@12@PEA_J@Z

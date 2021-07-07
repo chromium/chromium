@@ -270,6 +270,7 @@ EXPORTS
     ?CompareSlowPath@Cord@absl@@ABEHABV12@II@Z
     ?CompareSlowPath@Cord@absl@@ABEHVstring_view@2@II@Z
     ?ConcatNodes@CordForest@absl@@QAEPAUCordRep@cord_internal@2@XZ
+    ?Consume@cord_internal@absl@@YAXPAUCordRep@12@V?$FunctionRef@$$A6AXPAUCordRep@cord_internal@absl@@II@Z@2@@Z
     ?ConsumeUnboundConversion@str_format_internal@absl@@YAPBDPBD0PAUUnboundConversion@12@PAH@Z
     ?ConvertDateTime@absl@@YA?AUTimeConversion@1@_JHHHHHVTimeZone@1@@Z
     ?ConvertDeletedToEmptyAndFullToDeleted@container_internal@absl@@YAXPACI@Z
@@ -353,7 +354,6 @@ EXPORTS
     ?Find@ByChar@absl@@QBE?AVstring_view@2@V32@I@Z
     ?Find@ByLength@absl@@QBE?AVstring_view@2@V32@I@Z
     ?Find@ByString@absl@@QBE?AVstring_view@2@V32@I@Z
-    ?FindFlatStartPiece@InlineRep@Cord@absl@@QBE?AVstring_view@3@XZ
     ?FindPath@GraphCycles@synchronization_internal@absl@@QBEHUGraphId@23@0HQAU423@@Z
     ?FindSlow@CordRepRing@cord_internal@absl@@ABE?AUPosition@123@II@Z
     ?FindTailSlow@CordRepRing@cord_internal@absl@@ABE?AUPosition@123@II@Z
@@ -613,6 +613,7 @@ EXPORTS
     ?ResetToBuiltinUTC@TimeZoneInfo@cctz@time_internal@absl@@AAE_NABV?$duration@_JV?$ratio@$00$00@__1@std@@@chrono@__1@std@@@Z
     ?ResourceExhaustedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Rethrow@variant_internal@absl@@YAXXZ
+    ?ReverseConsume@cord_internal@absl@@YAXPAUCordRep@12@V?$FunctionRef@$$A6AXPAUCordRep@cord_internal@absl@@II@Z@2@@Z
     ?SafeToDelete@CordzHandle@cord_internal@absl@@QBE_NXZ
     ?SafeWriteToStderr@raw_logging_internal@absl@@YAXPBDI@Z
     ?SampleSlow@container_internal@absl@@YAPAUHashtablezInfo@12@PA_J@Z

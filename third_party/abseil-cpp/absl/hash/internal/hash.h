@@ -856,8 +856,15 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   }
 
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Mix(uint64_t state, uint64_t v) {
+#if defined(__aarch64__)
+    // On AArch64, calculating a 128-bit product is inefficient, because it
+    // requires a sequence of two instructions to calculate the upper and lower
+    // halves of the result.
+    using MultType = uint64_t;
+#else
     using MultType =
         absl::conditional_t<sizeof(size_t) == 4, uint64_t, uint128>;
+#endif
     // We do the addition in 64-bit space to make sure the 128-bit
     // multiplication is fast. If we were to do it as MultType the compiler has
     // to assume that the high word is non-zero and needs to perform 2
