@@ -294,16 +294,15 @@ void HostBackendDelegateImpl::OnNewDevicesSynced() {
   if (host_from_last_sync_ == host_from_sync)
     return;
 
-  PA_LOG(VERBOSE) << "HostBackendDelegateImpl::OnNewDevicesSynced(): New host "
-                  << "device has been set."
-                  << "\n  Old host: "
-                  << (host_from_last_sync_
-                          ? host_from_last_sync_->GetInstanceIdDeviceIdForLogs()
-                          : kNoHostForLogging)
-                  << "\n  New host: "
-                  << (host_from_sync
-                          ? host_from_sync->GetInstanceIdDeviceIdForLogs()
-                          : kNoHostForLogging);
+  PA_LOG(INFO) << "HostBackendDelegateImpl::OnNewDevicesSynced(): New host "
+               << "device has been set. Old host: "
+               << (host_from_last_sync_
+                       ? host_from_last_sync_->GetInstanceIdDeviceIdForLogs()
+                       : kNoHostForLogging)
+               << ", New host: "
+               << (host_from_sync
+                       ? host_from_sync->GetInstanceIdDeviceIdForLogs()
+                       : kNoHostForLogging);
 
   host_from_last_sync_ = host_from_sync;
 
