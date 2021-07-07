@@ -238,6 +238,23 @@ void TestDanglingReference(PartitionAllocPCScanTest& test,
         IsInFreeList(value_root->AdjustPointerForExtrasSubtract(value)));
   }
 }
+
+void TestDanglingReferenceNotVisited(PartitionAllocPCScanTest& test,
+                                     void* value) {
+  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
+      reinterpret_cast<char*>(value));
+  value_root->Free(value);
+  // Check that |value| is in the quarantine now.
+  EXPECT_TRUE(test.IsInQuarantine(value));
+  // Run PCScan.
+  test.RunPCScan();
+  // Check that the object is no longer in the quarantine since the pointer to
+  // it was not scanned from the non-scannable partition.
+  EXPECT_FALSE(test.IsInQuarantine(value));
+  // Check that the object is in the freelist now.
+  EXPECT_TRUE(IsInFreeList(value_root->AdjustPointerForExtrasSubtract(value)));
+}
+
 }  // namespace
 
 TEST_F(PartitionAllocPCScanTest, DanglingReferenceSameBucket) {
@@ -398,6 +415,20 @@ TEST_F(PartitionAllocPCScanTest, DanglingInnerReference) {
   TestDanglingReference(*this, source, value);
 }
 
+TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromSingleSlotSlotSpan) {
+  using SourceList = List<kMaxBucketed - 4096>;
+  using ValueList = SourceList;
+
+  auto* source = SourceList::Create(root());
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(source);
+  ASSERT_TRUE(slot_span->CanStoreRawSize());
+
+  auto* value = ValueList::Create(root());
+  source->next = value;
+
+  TestDanglingReference(*this, source, value);
+}
+
 TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
   using SourceList = List<64>;
   using ValueList = SourceList;
@@ -476,17 +507,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
   auto* value = ValueList::Create(value_root);
   source->next = value;
 
-  // Free |value| and leave the dangling reference in |source|.
-  ValueList::Destroy(source_root, value);
-  // Check that |value| is in the quarantine now.
-  EXPECT_TRUE(IsInQuarantine(value));
-  // Run PCScan.
-  RunPCScan();
-  // Check that the object is no longer in the quarantine since the pointer to
-  // it was not scanned from the non-scannable partition.
-  EXPECT_FALSE(IsInQuarantine(value));
-  // Check that the object is in the freelist now.
-  EXPECT_TRUE(IsInFreeList(value_root.AdjustPointerForExtrasSubtract(value)));
+  TestDanglingReferenceNotVisited(*this, value);
 }
 
 // Death tests misbehave on Android, http://crbug.com/643760.
@@ -603,6 +624,28 @@ TEST_F(PartitionAllocPCScanTest, StackScanning) {
       }();
     }();
   }();
+}
+
+TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
+  using ValueList = List<8>;
+
+  // Make sure to commit more memory than requested and have slack for storing
+  // dangling reference outside of the raw size.
+  const size_t big_size = kMaxBucketed - SystemPageSize() + 1;
+  uint8_t* source = static_cast<uint8_t*>(root().Alloc(big_size, nullptr));
+
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(source);
+  ASSERT_TRUE(slot_span->CanStoreRawSize());
+
+  uint8_t* source_end =
+      static_cast<uint8_t*>(root().AdjustPointerForExtrasSubtract(source)) +
+      slot_span->GetRawSize();
+
+  auto* value = ValueList::Create(root());
+
+  *reinterpret_cast<ValueList**>(source_end) = value;
+
+  TestDanglingReferenceNotVisited(*this, value);
 }
 
 }  // namespace internal
