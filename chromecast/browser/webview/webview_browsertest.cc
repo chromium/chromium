@@ -780,7 +780,9 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, SendFocusEventWhenVKShouldBeShown) {
                                            ui::ET_TOUCH_PRESSED, 300, 300));
         SubmitWebviewRequest(&webview, GenerateTouchInputRequest(
                                            ui::ET_TOUCH_RELEASED, 300, 300));
-      });
+      })
+      .WillRepeatedly(
+          [](std::unique_ptr<webview::WebviewResponse> response) {});
 
   auto input_focus_none_check =
       [](const std::unique_ptr<webview::WebviewResponse>& response) {
