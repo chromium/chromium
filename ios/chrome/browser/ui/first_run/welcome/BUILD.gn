@@ -47,6 +47,7 @@ source_set("welcome_ui") {
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:first_run_ui",
     "//ios/chrome/browser/ui/first_run/resources:welcome_metrics_checkmark",
     "//ios/chrome/browser/ui/first_run/resources:welcome_screen_banner",

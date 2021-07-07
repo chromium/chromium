@@ -208,7 +208,10 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "first_run_egtest.mm" ]
+  sources = [
+    "first_run_egtest.mm",
+    "legacy_first_run_egtest.mm",
+  ]
   deps = [
     ":constants",
     ":eg_test_support+eg2",

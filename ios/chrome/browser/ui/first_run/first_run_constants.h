@@ -13,6 +13,15 @@ namespace first_run {
 // run.
 extern NSString* const kUMAMetricsButtonAccessibilityIdentifier;
 
+// The accessibility identifier for the Welcome screen shown in first run.
+extern NSString* const kFirstRunWelcomeScreenAccessibilityIdentifier;
+
+// The accessibility identifier for the Sign in screen shown in first run.
+extern NSString* const kFirstRunSignInScreenAccessibilityIdentifier;
+
+// The accessibility identifier for the Sync screen shown in first run.
+extern NSString* const kFirstRunSyncScreenAccessibilityIdentifier;
+
 }  // first_run
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_CONSTANTS_H_

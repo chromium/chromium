@@ -7,6 +7,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
+#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -41,6 +42,8 @@ const CGFloat kIdentityControlMaxWidth = 327;
 #pragma mark - Public
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier =
+      first_run::kFirstRunSignInScreenAccessibilityIdentifier;
   self.bannerImage = [UIImage imageNamed:@"signin_screen_banner"];
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;

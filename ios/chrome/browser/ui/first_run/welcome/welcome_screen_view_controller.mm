@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_view_controller.h"
 
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/first_run/welcome/checkbox_button.h"
 #import "ios/chrome/browser/ui/first_run/welcome/tos_commands.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
@@ -53,7 +54,8 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
 
 - (void)viewDidLoad {
   [self configureLabels];
-
+  self.view.accessibilityIdentifier =
+      first_run::kFirstRunWelcomeScreenAccessibilityIdentifier;
   self.bannerImage = [UIImage imageNamed:@"welcome_screen_banner"];
   self.isTallBanner = YES;
   self.scrollToEndMandatory = YES;

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
 
+#import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,6 +22,8 @@ constexpr CGFloat kMarginBetweenContents = 12;
 @dynamic delegate;
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier =
+      first_run::kFirstRunSyncScreenAccessibilityIdentifier;
   self.titleText =
       [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE];
   self.subtitleText =
