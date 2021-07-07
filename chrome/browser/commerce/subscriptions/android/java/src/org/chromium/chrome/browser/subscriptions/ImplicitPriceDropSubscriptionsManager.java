@@ -147,8 +147,8 @@ public class ImplicitPriceDropSubscriptionsManager {
     private boolean isStaleTab(Tab tab) {
         long tabLastOpenTime = System.currentTimeMillis()
                 - CriticalPersistedTabData.from(tab).getTimestampMillis();
-        return tabLastOpenTime <= TimeUnit.SECONDS.toMillis(
-                       ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS.getValue())
+        return tabLastOpenTime
+                <= TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
                 && tabLastOpenTime
                 >= TimeUnit.SECONDS.toMillis(CommerceSubscriptionsServiceConfig
                                                      .STALE_TAB_LOWER_BOUND_SECONDS.getValue());

@@ -868,9 +868,8 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
-    @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
     public void testPriceDropEndToEnd() {
+        ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
         PersistedTabDataConfiguration.setUseTestConfig(true);
         PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
         mockCurrencyFormatter();

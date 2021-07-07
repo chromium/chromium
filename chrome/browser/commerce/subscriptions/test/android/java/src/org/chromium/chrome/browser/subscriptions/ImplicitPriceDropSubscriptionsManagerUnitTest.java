@@ -116,8 +116,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         doReturn(OFFER1_ID).when(mShoppingPersistedTabData1).getMainOfferId();
         doReturn(OFFER2_ID).when(mShoppingPersistedTabData2).getMainOfferId();
         long fakeTimestamp = System.currentTimeMillis()
-                - TimeUnit.SECONDS.toMillis(
-                        ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS.getValue())
+                - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
                 + TimeUnit.DAYS.toMillis(7);
         doReturn(fakeTimestamp).when(mCriticalPersistedTabData1).getTimestampMillis();
         doReturn(fakeTimestamp).when(mCriticalPersistedTabData2).getTimestampMillis();
@@ -214,8 +213,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Test
     public void testInitialSubscription_TabTooOld() {
         doReturn(System.currentTimeMillis()
-                - TimeUnit.SECONDS.toMillis(
-                        ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS.getValue())
+                - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
                 - TimeUnit.DAYS.toMillis(7))
                 .when(mCriticalPersistedTabData1)
                 .getTimestampMillis();
