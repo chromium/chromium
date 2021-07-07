@@ -115,7 +115,7 @@ void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
   auto it = tasks_.find(app_id);
   if (it != tasks_.end()) {
     NotifyResult(it->second->url(), app_id,
-                 ManifestUpdateResult::kAppUninstalled);
+                 ManifestUpdateResult::kAppUninstalling);
     tasks_.erase(it);
   }
   DCHECK(!tasks_.contains(app_id));

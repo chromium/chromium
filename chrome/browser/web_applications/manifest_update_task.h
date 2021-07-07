@@ -53,7 +53,7 @@ enum ManifestUpdateResult {
   kNoAppInScope = 0,
   kThrottled = 1,
   kWebContentsDestroyed = 2,
-  kAppUninstalled = 3,
+  kAppUninstalling = 3,
   kAppIsPlaceholder = 4,
   kAppUpToDate = 5,
   kAppNotEligible = 6,

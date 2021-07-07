@@ -433,14 +433,23 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   GetManifestUpdateManager(browser()).hang_update_checks_for_testing();
 
   GURL url = GetAppURL();
-  UpdateCheckResultAwaiter awaiter(browser(), url);
   ui_test_utils::NavigateToURL(browser(), url);
+
+  base::RunLoop run_loop;
+  UpdateCheckResultAwaiter awaiter(browser(), url);
   GetProvider().install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu, base::DoNothing());
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](bool uninstalled) {
+        EXPECT_TRUE(uninstalled);
+        run_loop.Quit();
+      }));
+
   EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
-            ManifestUpdateResult::kAppUninstalled);
-  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUninstalled, 1);
+            ManifestUpdateResult::kAppUninstalling);
+
+  run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      kUpdateHistogramName, ManifestUpdateResult::kAppUninstalling, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
