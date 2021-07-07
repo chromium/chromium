@@ -117,7 +117,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   test_parameters_.profile = FF_PROFILE_AAC_HE;
   FFmpegAACBitstreamConverter converter_he(&test_parameters_);
 
-  test_packet.reset(new AVPacket());
+  test_packet.reset(av_packet_alloc());
   CreatePacket(test_packet.get(), dummy_packet,
                sizeof(dummy_packet));
 
@@ -130,7 +130,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   test_parameters_.profile = FF_PROFILE_AAC_ELD;
   FFmpegAACBitstreamConverter converter_eld(&test_parameters_);
 
-  test_packet.reset(new AVPacket());
+  test_packet.reset(av_packet_alloc());
   CreatePacket(test_packet.get(), dummy_packet,
                sizeof(dummy_packet));
 
