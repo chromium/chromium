@@ -15,6 +15,12 @@
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
+namespace blink {
+namespace scheduler {
+class UkmTaskSampler;
+}
+}  // namespace blink
+
 namespace base {
 
 // Returns a random number in range [0, UINT64_MAX]. Thread-safe.
@@ -144,6 +150,9 @@ class BASE_EXPORT InsecureRandomGenerator {
   // non-trivial amount of total CPU time in sampling profiling from the wild,
   // on Desktop and Android.
   friend class sequence_manager::internal::SequenceManagerImpl;
+  // Used to sub-sample metrics, called after each task, which is
+  // performance-sensitive (see above).
+  friend class blink::scheduler::UkmTaskSampler;
 
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest,
                            InsecureRandomGeneratorProducesBothValuesOfAllBits);
