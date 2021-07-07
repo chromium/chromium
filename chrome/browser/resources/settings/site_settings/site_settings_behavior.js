@@ -207,4 +207,16 @@ export class SiteSettingsBehaviorInterface {
    * @return {URL}
    */
   toUrl(originOrPattern) {}
+
+  /**
+   * @param {!RawSiteException} exception
+   * @return {!SiteException}
+   */
+  expandSiteException(exception) {}
+
+  /**
+   * @param {string} url
+   * @return {string}
+   */
+  sanitizePort(url) {}
 }

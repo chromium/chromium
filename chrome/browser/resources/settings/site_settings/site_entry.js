@@ -16,118 +16,139 @@ import '../site_favicon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {AllSitesAction2, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'site-entry',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BaseMixinInterface}
+ * @implements {SiteSettingsBehaviorInterface}
+ */
+const SiteEntryElementBase = mixinBehaviors(
+    [SiteSettingsBehavior, FocusRowBehavior], BaseMixin(PolymerElement));
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SiteEntryElement extends SiteEntryElementBase {
+  static get is() {
+    return 'site-entry';
+  }
 
-  behaviors: [SiteSettingsBehavior, FocusRowBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * An object representing a group of sites with the same eTLD+1.
-     * @type {!SiteGroup}
-     */
-    siteGroup: {
-      type: Object,
-      observer: 'onSiteGroupChanged_',
-    },
-
-    /**
-     * The name to display beside the icon. If grouped_() is true, it will be
-     * the eTLD+1 for all the origins, otherwise, it will return the host.
-     * @private
-     */
-    displayName_: String,
-
-    /**
-     * The string to display when there is a non-zero number of cookies.
-     * @private
-     */
-    cookieString_: String,
-
-    /**
-     * The position of this site-entry in its parent list.
-     */
-    listIndex: {
-      type: Number,
-      value: -1,
-    },
-
-    /**
-     * The string to display showing the overall usage of this site-entry.
-     * @private
-     */
-    overallUsageString_: String,
-
-    /**
-     * An array containing the strings to display showing the individual disk
-     * usage for each origin in |siteGroup|.
-     * @type {!Array<string>}
-     * @private
-     */
-    originUsages_: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /**
+       * An object representing a group of sites with the same eTLD+1.
+       * @type {!SiteGroup}
+       */
+      siteGroup: {
+        type: Object,
+        observer: 'onSiteGroupChanged_',
       },
-    },
 
-    /**
-     * An array containing the strings to display showing the individual cookies
-     * number for each origin in |siteGroup|.
-     * @type {!Array<string>}
-     * @private
-     */
-    cookiesNum_: {
-      type: Array,
-      value() {
-        return [];
+      /**
+       * The name to display beside the icon. If grouped_() is true, it will be
+       * the eTLD+1 for all the origins, otherwise, it will return the host.
+       * @private
+       */
+      displayName_: String,
+
+      /**
+       * The string to display when there is a non-zero number of cookies.
+       * @private
+       */
+      cookieString_: String,
+
+      /**
+       * The position of this site-entry in its parent list.
+       */
+      listIndex: {
+        type: Number,
+        value: -1,
       },
-    },
 
-    /**
-     * The selected sort method.
-     * @type {!SortMethod|undefined}
-     */
-    sortMethod: {type: String, observer: 'updateOrigins_'},
-  },
+      /**
+       * The string to display showing the overall usage of this site-entry.
+       * @private
+       */
+      overallUsageString_: String,
 
-  /** @private {?LocalDataBrowserProxy} */
-  localDataBrowserProxy_: null,
+      /**
+       * An array containing the strings to display showing the individual disk
+       * usage for each origin in |siteGroup|.
+       * @type {!Array<string>}
+       * @private
+       */
+      originUsages_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
-  /** @private {?Element} */
-  button_: null,
+      /**
+       * An array containing the strings to display showing the individual
+       * cookies number for each origin in |siteGroup|.
+       * @type {!Array<string>}
+       * @private
+       */
+      cookiesNum_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * The selected sort method.
+       * @type {!SortMethod|undefined}
+       */
+      sortMethod: {type: String, observer: 'updateOrigins_'},
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {?Element} */
+    this.button_ = null;
+
+    /** @private {!LocalDataBrowserProxy} */
     this.localDataBrowserProxy_ = LocalDataBrowserProxyImpl.getInstance();
-  },
+
+    /** @private {!EventTracker} */
+    this.eventTracker_ = new EventTracker();
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (this.button_) {
-      this.unlisten(this.button_, 'keydown', 'onButtonKeydown_');
+      this.eventTracker_.remove(this.button_, 'keydown');
     }
-  },
+  }
 
   /** @param {!KeyboardEvent} e */
   onButtonKeydown_(e) {
     if (e.shiftKey && e.key === 'Tab') {
       this.focus();
     }
-  },
+  }
 
   /**
    * Whether the list of origins displayed in this site-entry is a group of
@@ -145,7 +166,7 @@ Polymer({
       return true;
     }
     return false;
-  },
+  }
 
   /**
    * Returns a user-friendly name for the siteGroup.
@@ -167,7 +188,7 @@ Polymer({
       // was computed.
     }
     return this.originRepresentation(siteGroup.origins[0].origin);
-  },
+  }
 
   /**
    * @param {SiteGroup} siteGroup The eTLD+1 group of origins.
@@ -176,11 +197,12 @@ Polymer({
   onSiteGroupChanged_(siteGroup) {
     // Update the button listener.
     if (this.button_) {
-      this.unlisten(this.button_, 'keydown', 'onButtonKeydown_');
+      this.eventTracker_.remove(this.button_, 'keydown');
     }
     this.button_ = /** @type Element */
         (this.root.querySelector('#toggleButton *:not([hidden])'));
-    this.listen(assert(this.button_), 'keydown', 'onButtonKeydown_');
+    this.eventTracker_.add(
+        assert(this.button_), 'keydown', e => this.onButtonKeydown_(e));
 
     if (!this.grouped_(siteGroup)) {
       // Ensure ungrouped |siteGroup|s do not get stuck in an opened state.
@@ -198,7 +220,7 @@ Polymer({
     });
     this.updateOrigins_(this.sortMethod);
     this.displayName_ = this.siteGroupRepresentation_(siteGroup);
-  },
+  }
 
   /**
    * Returns any non-HTTPS scheme/protocol for the siteGroup that only contains
@@ -212,7 +234,7 @@ Polymer({
       return '';
     }
     return this.originScheme_(siteGroup.origins[0]);
-  },
+  }
 
   /**
    * Returns any non-HTTPS scheme/protocol for the origin. Otherwise, returns
@@ -229,7 +251,7 @@ Polymer({
       return '';
     }
     return scheme;
-  },
+  }
 
   /**
    * Get an appropriate favicon that represents this group of eTLD+1 sites as a
@@ -262,7 +284,7 @@ Polymer({
               originInfo);
     };
     return origins.reduce(getMaxStorage, origins[0]).origin;
-  },
+  }
 
   /**
    * Calculates the amount of disk storage used by the given eTLD+1.
@@ -278,7 +300,7 @@ Polymer({
     this.browserProxy.getFormattedBytes(overallUsage).then(string => {
       this.overallUsageString_ = string;
     });
-  },
+  }
 
   /**
    * Get display string for number of cookies.
@@ -290,7 +312,7 @@ Polymer({
       return Promise.resolve('');
     }
     return this.localDataBrowserProxy_.getNumCookiesString(numCookies);
-  },
+  }
 
   /**
    * Array binding for the |originUsages_| array for use in the HTML.
@@ -301,7 +323,7 @@ Polymer({
    */
   originUsagesItem_(change, index) {
     return change.base[index];
-  },
+  }
 
   /**
    * Array binding for the |cookiesNum_| array for use in the HTML.
@@ -312,7 +334,7 @@ Polymer({
    */
   originCookiesItem_(change, index) {
     return change.base[index];
-  },
+  }
 
   /**
    * Navigates to the corresponding Site Details page for the given origin.
@@ -326,7 +348,7 @@ Polymer({
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_SITE_DETAILS,
         new URLSearchParams('site=' + origin));
-  },
+  }
 
   /**
    * A handler for selecting a site (by clicking on the origin).
@@ -337,7 +359,7 @@ Polymer({
     this.navigateToSiteDetails_(this.siteGroup.origins[e.model.index].origin);
     this.browserProxy.recordAction(AllSitesAction2.ENTER_SITE_DETAILS);
     chrome.metricsPrivate.recordUserAction('AllSites_EnterSiteDetails');
-  },
+  }
 
   /**
    * A handler for clicking on a site-entry heading. This will either show a
@@ -357,7 +379,7 @@ Polymer({
     // Make sure the expanded origins can be viewed without further scrolling
     // (in case |this| is already at the bottom of the viewport).
     this.scrollIntoViewIfNeeded();
-  },
+  }
 
   /**
    * Toggles open and closed the list of origins if there is more than one.
@@ -371,7 +393,7 @@ Polymer({
     this.$.expandIcon.toggleClass('icon-expand-more');
     this.$.expandIcon.toggleClass('icon-expand-less');
     this.fire('iron-resize');
-  },
+  }
 
   /**
    * Fires a custom event when the menu button is clicked. Sends the details
@@ -387,7 +409,7 @@ Polymer({
       origin: e.target.dataset.origin,
       actionScope: e.target.dataset.context,
     });
-  },
+  }
 
   /**
    * Returns a valid index for an origin contained in |siteGroup.origins| by
@@ -400,7 +422,7 @@ Polymer({
    */
   getIndexBoundToOriginList_(siteGroup, index) {
     return Math.max(0, Math.min(index, siteGroup.origins.length - 1));
-  },
+  }
 
   /**
    * Returns the correct class to apply depending on this site-entry's position
@@ -410,7 +432,7 @@ Polymer({
    */
   getClassForIndex_(index) {
     return index > 0 ? 'hr' : '';
-  },
+  }
 
   /**
    * Update the order and data display text for origins.
@@ -439,7 +461,7 @@ Polymer({
         this.set(`cookiesNum_.${i}`, string);
       });
     });
-  },
+  }
 
   /**
    * Sort functions for sorting origins based on selected method.
@@ -461,5 +483,7 @@ Polymer({
         return origin1.origin.localeCompare(origin2.origin);
       };
     }
-  },
-});
+  }
+}
+
+customElements.define(SiteEntryElement.is, SiteEntryElement);

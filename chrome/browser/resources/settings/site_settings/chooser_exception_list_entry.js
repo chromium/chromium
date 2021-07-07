@@ -15,26 +15,33 @@ import '../settings_shared_css.js';
 import './site_list_entry.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
 import {ChooserException} from './site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'chooser-exception-list-entry',
+/** @polymer */
+class ChooserExceptionListEntryElement extends PolymerElement {
+  static get is() {
+    return 'chooser-exception-list-entry';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [SiteSettingsBehavior],
+  static get properties() {
+    return {
+      /**
+       * Chooser exception object to display in the widget.
+       * @type {!ChooserException}
+       */
+      exception: Object,
 
-  properties: {
-    /**
-     * Chooser exception object to display in the widget.
-     * @type {!ChooserException}
-     */
-    exception: Object,
+      /** @private */
+      lastFocused_: Object,
+    };
+  }
+}
 
-    /** @private */
-    lastFocused_: Object,
-  },
-});
+customElements.define(
+    ChooserExceptionListEntryElement.is, ChooserExceptionListEntryElement);

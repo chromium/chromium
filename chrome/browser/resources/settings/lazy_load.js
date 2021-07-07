@@ -97,10 +97,13 @@ export {SettingsEditExceptionDialogElement} from './site_settings/edit_exception
 export {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './site_settings/local_data_browser_proxy.js';
 export {HandlerEntry, ProtocolEntry} from './site_settings/protocol_handlers.js';
 export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings_category_default_radio_group.js';
+export {SiteListElement} from './site_settings/site_list.js';
 export {kControlledByLookup} from './site_settings/site_settings_behavior.js';
 export {ContentSettingProvider, DefaultContentSetting, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 export {WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
+export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
+export {SettingsSiteSettingsPageElement} from './site_settings_page/site_settings_page.js';
 // <if expr="not chromeos and not lacros">
 export {SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
 

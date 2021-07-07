@@ -13,75 +13,92 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared_css.js';
 import './chooser_exception_list_entry.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ChooserType, ContentSettingsTypes} from './constants.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 import {ChooserException, RawChooserException} from './site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'chooser-exception-list',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ * @implements {SiteSettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const ChooserExceptionListElementBase = mixinBehaviors(
+    [
+      I18nBehavior, ListPropertyUpdateBehavior, SiteSettingsBehavior,
+      WebUIListenerBehavior
+    ],
+    PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ChooserExceptionListElement extends ChooserExceptionListElementBase {
+  static get is() {
+    return 'chooser-exception-list';
+  }
 
-  behaviors: [
-    I18nBehavior,
-    ListPropertyUpdateBehavior,
-    SiteSettingsBehavior,
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Array of chooser exceptions to display in the widget.
-     * @type {!Array<ChooserException>}
-     */
-    chooserExceptions: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /**
+       * Array of chooser exceptions to display in the widget.
+       * @type {!Array<ChooserException>}
+       */
+      chooserExceptions: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /**
-     * The string ID of the chooser type that this element is displaying data
-     * for.
-     * See site_settings/constants.js for possible values.
-     * @type {!ChooserType}
-     */
-    chooserType: {
-      observer: 'chooserTypeChanged_',
-      type: String,
-      value: ChooserType.NONE,
-    },
+      /**
+       * The string ID of the chooser type that this element is displaying data
+       * for.
+       * See site_settings/constants.js for possible values.
+       * @type {!ChooserType}
+       */
+      chooserType: {
+        observer: 'chooserTypeChanged_',
+        type: String,
+        value: ChooserType.NONE,
+      },
 
-    /** @private */
-    emptyListMessage_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      emptyListMessage_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    hasIncognito_: Boolean,
+      /** @private */
+      hasIncognito_: Boolean,
 
-    /** @private */
-    tooltipText_: String,
-  },
+      /** @private */
+      tooltipText_: String,
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'contentSettingChooserPermissionChanged',
         this.objectWithinChooserTypeChanged_.bind(this));
     this.addWebUIListener(
         'onIncognitoStatusChanged', this.onIncognitoStatusChanged_.bind(this));
     this.browserProxy.updateIncognitoStatus();
-  },
+  }
 
   /**
    * Called when a chooser exception changes permission and updates the element
@@ -96,7 +113,7 @@ Polymer({
     if (category === this.category && chooserType === this.chooserType) {
       this.chooserTypeChanged_();
     }
-  },
+  }
 
   /**
    * Called for each chooser-exception-list when incognito is enabled or
@@ -107,7 +124,7 @@ Polymer({
   onIncognitoStatusChanged_(hasIncognito) {
     this.hasIncognito_ = hasIncognito;
     this.populateList_();
-  },
+  }
 
   /**
    * Configures the visibility of the widget and shows the list.
@@ -137,7 +154,7 @@ Polymer({
     }
 
     this.populateList_();
-  },
+  }
 
   /**
    * Returns true if there are any chooser exceptions for this chooser type.
@@ -146,7 +163,7 @@ Polymer({
    */
   hasExceptions_() {
     return this.chooserExceptions.length > 0;
-  },
+  }
 
   /**
    * Need to use a common tooltip since the tooltip in the entry is cut off from
@@ -173,7 +190,7 @@ Polymer({
     target.addEventListener('click', hide);
     this.$.tooltip.addEventListener('mouseenter', hide);
     this.$.tooltip.show();
-  },
+  }
 
   /**
    * Populate the chooser exception list for display.
@@ -182,7 +199,7 @@ Polymer({
   populateList_() {
     this.browserProxy.getChooserExceptionList(this.chooserType)
         .then(exceptionList => this.processExceptions_(exceptionList));
-  },
+  }
 
   /**
    * Process the chooser exception list returned from the native layer.
@@ -207,5 +224,8 @@ Polymer({
         this.updateList(propertyPath, siteUidGetter, exception.sites);
       }, this);
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    ChooserExceptionListElement.is, ChooserExceptionListElement);

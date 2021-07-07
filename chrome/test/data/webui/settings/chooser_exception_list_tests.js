@@ -214,26 +214,30 @@ suite('ChooserExceptionList', function() {
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.$$('chooser-exception-list-entry');
+                  testElement.shadowRoot.querySelector(
+                      'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
 
               const siteListEntry =
-                  chooserExceptionListEntry.$$('site-list-entry');
+                  chooserExceptionListEntry.shadowRoot.querySelector(
+                      'site-list-entry');
               assertTrue(!!siteListEntry);
 
               // Ensure that the action menu container is hidden.
-              const dotsMenu = siteListEntry.$$('#actionMenuButton');
+              const dotsMenu =
+                  siteListEntry.shadowRoot.querySelector('#actionMenuButton');
               assertTrue(!!dotsMenu);
               assertTrue(dotsMenu.hidden);
 
               // Ensure that the reset button is not hidden.
-              const resetButton = siteListEntry.$$('#resetSite');
+              const resetButton =
+                  siteListEntry.shadowRoot.querySelector('#resetSite');
               assertTrue(!!resetButton);
               assertFalse(resetButton.hidden);
 
               // Ensure that the policy enforced indicator is hidden.
-              const policyIndicator =
-                  siteListEntry.$$('cr-policy-pref-indicator');
+              const policyIndicator = siteListEntry.shadowRoot.querySelector(
+                  'cr-policy-pref-indicator');
               assertFalse(!!policyIndicator);
             });
       });
@@ -252,26 +256,30 @@ suite('ChooserExceptionList', function() {
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.$$('chooser-exception-list-entry');
+                  testElement.shadowRoot.querySelector(
+                      'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
 
               const siteListEntry =
-                  chooserExceptionListEntry.$$('site-list-entry');
+                  chooserExceptionListEntry.shadowRoot.querySelector(
+                      'site-list-entry');
               assertTrue(!!siteListEntry);
 
               // Ensure that the action menu container is hidden.
-              const dotsMenu = siteListEntry.$$('#actionMenuButton');
+              const dotsMenu =
+                  siteListEntry.shadowRoot.querySelector('#actionMenuButton');
               assertTrue(!!dotsMenu);
               assertTrue(dotsMenu.hidden);
 
               // Ensure that the reset button is hidden.
-              const resetButton = siteListEntry.$$('#resetSite');
+              const resetButton =
+                  siteListEntry.shadowRoot.querySelector('#resetSite');
               assertTrue(!!resetButton);
               assertTrue(resetButton.hidden);
 
               // Ensure that the policy enforced indicator not is hidden.
-              const policyIndicator =
-                  siteListEntry.$$('cr-policy-pref-indicator');
+              const policyIndicator = siteListEntry.shadowRoot.querySelector(
+                  'cr-policy-pref-indicator');
               assertTrue(!!policyIndicator);
             });
       });
@@ -303,33 +311,37 @@ suite('ChooserExceptionList', function() {
               // The first site exception is a policy provided exception, so
               // only the policy indicator should be visible;
               const policyProvidedDotsMenu =
-                  siteListEntries[0].$$('#actionMenuButton');
+                  siteListEntries[0].shadowRoot.querySelector(
+                      '#actionMenuButton');
               assertTrue(!!policyProvidedDotsMenu);
               assertTrue(policyProvidedDotsMenu.hidden);
 
               const policyProvidedResetButton =
-                  siteListEntries[0].$$('#resetSite');
+                  siteListEntries[0].shadowRoot.querySelector('#resetSite');
               assertTrue(!!policyProvidedResetButton);
               assertTrue(policyProvidedResetButton.hidden);
 
               const policyProvidedPolicyIndicator =
-                  siteListEntries[0].$$('cr-policy-pref-indicator');
+                  siteListEntries[0].shadowRoot.querySelector(
+                      'cr-policy-pref-indicator');
               assertTrue(!!policyProvidedPolicyIndicator);
 
               // The second site exception is a user provided exception, so only
               // the reset button should be visible.
               const userProvidedDotsMenu =
-                  siteListEntries[1].$$('#actionMenuButton');
+                  siteListEntries[1].shadowRoot.querySelector(
+                      '#actionMenuButton');
               assertTrue(!!userProvidedDotsMenu);
               assertTrue(userProvidedDotsMenu.hidden);
 
               const userProvidedResetButton =
-                  siteListEntries[1].$$('#resetSite');
+                  siteListEntries[1].shadowRoot.querySelector('#resetSite');
               assertTrue(!!userProvidedResetButton);
               assertFalse(userProvidedResetButton.hidden);
 
               const userProvidedPolicyIndicator =
-                  siteListEntries[1].$$('cr-policy-pref-indicator');
+                  siteListEntries[1].shadowRoot.querySelector(
+                      'cr-policy-pref-indicator');
               assertFalse(!!userProvidedPolicyIndicator);
             });
       });
@@ -343,7 +355,8 @@ suite('ChooserExceptionList', function() {
         .then(function(chooserType) {
           assertEquals(ChooserType.USB_DEVICES, chooserType);
           assertEquals(0, testElement.chooserExceptions.length);
-          const emptyListMessage = testElement.$$('#empty-list-message');
+          const emptyListMessage =
+              testElement.shadowRoot.querySelector('#empty-list-message');
           assertFalse(emptyListMessage.hidden);
           assertEquals(
               'No USB devices found', emptyListMessage.textContent.trim());
@@ -370,19 +383,24 @@ suite('ChooserExceptionList', function() {
           flush();
 
           const chooserExceptionListEntry =
-              testElement.$$('chooser-exception-list-entry');
+              testElement.shadowRoot.querySelector(
+                  'chooser-exception-list-entry');
           assertTrue(!!chooserExceptionListEntry);
 
-          const siteListEntry = chooserExceptionListEntry.$$('site-list-entry');
+          const siteListEntry =
+              chooserExceptionListEntry.shadowRoot.querySelector(
+                  'site-list-entry');
           assertTrue(!!siteListEntry);
 
           // Assert that the action button is hidden.
-          const dotsMenu = siteListEntry.$$('#actionMenuButton');
+          const dotsMenu =
+              siteListEntry.shadowRoot.querySelector('#actionMenuButton');
           assertTrue(!!dotsMenu);
           assertTrue(dotsMenu.hidden);
 
           // Assert that the reset button is visible.
-          const resetButton = siteListEntry.$$('#resetSite');
+          const resetButton =
+              siteListEntry.shadowRoot.querySelector('#resetSite');
           assertTrue(!!resetButton);
           assertFalse(resetButton.hidden);
 
@@ -420,11 +438,13 @@ suite('ChooserExceptionList', function() {
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.$$('chooser-exception-list-entry');
+                  testElement.shadowRoot.querySelector(
+                      'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
 
               const siteListEntry =
-                  chooserExceptionListEntry.$$('site-list-entry');
+                  chooserExceptionListEntry.shadowRoot.querySelector(
+                      'site-list-entry');
               assertTrue(!!siteListEntry);
 
               const tooltip = testElement.$.tooltip;
@@ -516,14 +536,17 @@ suite('ChooserExceptionList', function() {
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.$$('chooser-exception-list-entry');
+                  testElement.shadowRoot.querySelector(
+                      'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
 
               const siteListEntry =
-                  chooserExceptionListEntry.$$('site-list-entry');
+                  chooserExceptionListEntry.shadowRoot.querySelector(
+                      'site-list-entry');
               assertTrue(!!siteListEntry);
               // Ensure that the incognito tooltip is hidden.
-              const incognitoTooltip = siteListEntry.$$('#incognitoTooltip');
+              const incognitoTooltip =
+                  siteListEntry.shadowRoot.querySelector('#incognitoTooltip');
               assertFalse(!!incognitoTooltip);
 
               // Simulate an incognito session being created.
@@ -536,7 +559,8 @@ suite('ChooserExceptionList', function() {
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.$$('chooser-exception-list-entry');
+                  testElement.shadowRoot.querySelector(
+                      'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
               assertTrue(chooserExceptionListEntry.$.listContainer
                              .querySelector('iron-list')
@@ -559,7 +583,8 @@ suite('ChooserExceptionList', function() {
               Array.from(siteListEntries)
                   .filter(entry => entry.model.incognito)
                   .forEach(entry => {
-                    const incognitoTooltip = entry.$$('#incognitoTooltip');
+                    const incognitoTooltip =
+                        entry.shadowRoot.querySelector('#incognitoTooltip');
                     // Make sure it is not hidden if it is an incognito
                     // exception
                     assertTrue(!!incognitoTooltip);

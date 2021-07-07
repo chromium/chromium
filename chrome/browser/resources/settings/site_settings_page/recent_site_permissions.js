@@ -9,67 +9,86 @@ import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
-import {SiteSettingsBehavior} from '../site_settings/site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from '../site_settings/site_settings_behavior.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'settings-recent-site-permissions',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SiteSettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsRecentSitePermissionsElementBase = mixinBehaviors(
+    [
+      RouteObserverBehavior, SiteSettingsBehavior, WebUIListenerBehavior,
+      I18nBehavior
+    ],
+    PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class SettingsRecentSitePermissionsElement extends
+    SettingsRecentSitePermissionsElementBase {
+  static get is() {
+    return 'settings-recent-site-permissions';
+  }
 
-  behaviors: [
-    RouteObserverBehavior,
-    SiteSettingsBehavior,
-    WebUIListenerBehavior,
-    I18nBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type boolean */
-    noRecentPermissions: {
-      type: Boolean,
-      computed: 'computeNoRecentPermissions_(recentSitePermissionsList_)',
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /** @type boolean */
+      noRecentPermissions: {
+        type: Boolean,
+        computed: 'computeNoRecentPermissions_(recentSitePermissionsList_)',
+        notify: true,
+      },
+
+      /**
+       * @private {boolean}
+       */
+      shouldFocusAfterPopulation_: Boolean,
+
+      /**
+       * List of recent site permissions grouped by source.
+       * @type {!Array<RecentSitePermissions>}
+       * @private
+       */
+      recentSitePermissionsList_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /** @type {!Map<string, (string|Function)>} */
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * @private {boolean}
+     * When navigating to a site details sub-page, |lastSelected_| holds the
+     * origin and incognito bit associated with the link that sent the user
+     * there, as well as the index in recent permission list for that entry.
+     * This allows for an intelligent re-focus upon a back navigation.
+     * @private {!{origin: string, incognito: boolean, index: number}|null}
      */
-    shouldFocusAfterPopulation_: Boolean,
-
-    /**
-     * List of recent site permissions grouped by source.
-     * @type {!Array<RecentSitePermissions>}
-     * @private
-     */
-    recentSitePermissionsList_: {
-      type: Array,
-      value: () => [],
-    },
-
-    /** @type {!Map<string, (string|Function)>} */
-    focusConfig: {
-      type: Object,
-      observer: 'focusConfigChanged_',
-    },
-  },
-
-  /**
-   * When navigating to a site details sub-page, |lastSelected_| holds the
-   * origin and incognito bit associated with the link that sent the user there,
-   * as well as the index in recent permission list for that entry. This allows
-   * for an intelligent re-focus upon a back navigation.
-   * @private {!{origin: string, incognito: boolean, index: number}|null}
-   */
-  lastSelected_: null,
+    this.lastSelected_ = null;
+  }
 
   /**
    * @param {!Map<string, string>} newConfig
@@ -87,7 +106,7 @@ Polymer({
         () => {
           this.shouldFocusAfterPopulation_ = true;
         });
-  },
+  }
 
   /**
    * Reload the site recent site permission list whenever the user navigates
@@ -99,14 +118,16 @@ Polymer({
     if (currentRoute.path === routes.SITE_SETTINGS.path) {
       this.populateList_();
     }
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'onIncognitoStatusChanged', this.onIncognitoStatusChanged_.bind(this));
     this.browserProxy.updateIncognitoStatus();
-  },
+  }
 
   /**
    * Perform internationalization for the given content settings type.
@@ -183,7 +204,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * Returns a user-friendly name for the origin a set of recent permissions
@@ -195,7 +216,7 @@ Polymer({
   getDisplayName_(recentSitePermissions) {
     const url = this.toUrl(recentSitePermissions.origin);
     return url.host;
-  },
+  }
 
   /**
    * Returns the site scheme for the origin of a set of recent permissions.
@@ -207,7 +228,7 @@ Polymer({
     const url = this.toUrl(origin);
     const scheme = url.protocol.slice(0, -1);
     return scheme === 'https' ? '' : scheme;
-  },
+  }
 
   /**
    * Returns the display text which describes the set of recent permissions.
@@ -249,7 +270,7 @@ Polymer({
       finalText += this.i18n('sentenceEnd');
     }
     return finalText;
-  },
+  }
 
   /**
    * Returns the display sentence which groups the provided |exceptions|
@@ -276,7 +297,7 @@ Polymer({
     return this.i18n(
         `recentPermission${setting}MoreThanTwoItems`, typeStrings[0],
         exceptions.length - 1);
-  },
+  }
 
   /**
    * Returns the correct class to apply depending on this recent site
@@ -287,7 +308,7 @@ Polymer({
    */
   getClassForIndex_(index) {
     return index === 0 ? 'first' : '';
-  },
+  }
 
   /**
    * Returns true if there are no recent site permissions to display
@@ -296,7 +317,7 @@ Polymer({
    */
   computeNoRecentPermissions_() {
     return this.recentSitePermissionsList_.length === 0;
-  },
+  }
 
   /**
    * Called for when incognito is enabled or disabled. Only called on change
@@ -312,7 +333,7 @@ Polymer({
         this.recentSitePermissionsList_.some(p => p.incognito)) {
       this.populateList_();
     }
-  },
+  }
 
   /**
    * A handler for selecting a recent site permissions entry.
@@ -329,7 +350,7 @@ Polymer({
       origin: e.model.item.origin,
       incognito: e.model.item.incognito,
     };
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -355,7 +376,7 @@ Polymer({
     tooltip.addEventListener('mouseenter', hide);
 
     tooltip.show();
-  },
+  }
 
   /**
    * Called after the list has finished populating and |lastSelected_| contains
@@ -381,13 +402,15 @@ Polymer({
     const index = currentIndex > -1 ? currentIndex : fallbackIndex;
 
     if (this.recentSitePermissionsList_[index].incognito) {
-      focusWithoutInk(assert(/** @type {{getFocusableElement: Function}} */ (
-                                 this.$$(`#incognitoInfoIcon_${index}`))
-                                 .getFocusableElement()));
+      focusWithoutInk(assert(
+          /** @type {{getFocusableElement: Function}} */ (
+              this.shadowRoot.querySelector(`#incognitoInfoIcon_${index}`))
+              .getFocusableElement()));
     } else {
-      focusWithoutInk(assert(this.$$(`#siteEntryButton_${index}`)));
+      focusWithoutInk(
+          assert(this.shadowRoot.querySelector(`#siteEntryButton_${index}`)));
     }
-  },
+  }
 
   /**
    * Retrieve the list of recently changed permissions and implicitly trigger
@@ -397,7 +420,7 @@ Polymer({
   async populateList_() {
     this.recentSitePermissionsList_ =
         await this.browserProxy.getRecentSitePermissions(3);
-  },
+  }
 
   /**
    * Called when the dom-repeat DOM has changed. This allows updating the
@@ -409,5 +432,9 @@ Polymer({
       this.focusLastSelected_();
       this.shouldFocusAfterPopulation_ = false;
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsRecentSitePermissionsElement.is,
+    SettingsRecentSitePermissionsElement);

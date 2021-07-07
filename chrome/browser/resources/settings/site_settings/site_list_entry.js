@@ -17,100 +17,114 @@ import '../site_favicon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ChooserType, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
 import {SiteException} from './site_settings_prefs_browser_proxy.js';
 
-Polymer({
-  is: 'site-list-entry',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BaseMixinInterface}
+ * @implements {SiteSettingsBehaviorInterface}
+ */
+const SiteListEntryElementBase = mixinBehaviors(
+    [SiteSettingsBehavior, FocusRowBehavior], BaseMixin(PolymerElement));
 
-  behaviors: [
-    SiteSettingsBehavior,
-    FocusRowBehavior,
-  ],
+/** @polymer */
+class SiteListEntryElement extends SiteListEntryElementBase {
+  static get is() {
+    return 'site-list-entry';
+  }
 
-  properties: {
-    /**
-     * Some content types (like Location) do not allow the user to manually
-     * edit the exception list from within Settings.
-     * @private
-     */
-    readOnlyList: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Site to display in the widget.
-     * @type {!SiteException}
-     */
-    model: {
-      type: Object,
-      observer: 'onModelChanged_',
-    },
+  static get properties() {
+    return {
+      /**
+       * Some content types (like Location) do not allow the user to manually
+       * edit the exception list from within Settings.
+       * @private
+       */
+      readOnlyList: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * If the site represented is part of a chooser exception, the chooser type
-     * will be stored here to allow the permission to be manipulated.
-     * @private {!ChooserType}
-     */
-    chooserType: {
-      type: String,
-      value: ChooserType.NONE,
-    },
+      /**
+       * Site to display in the widget.
+       * @type {!SiteException}
+       */
+      model: {
+        type: Object,
+        observer: 'onModelChanged_',
+      },
 
-    /**
-     * If the site represented is part of a chooser exception, the chooser
-     * object will be stored here to allow the permission to be manipulated.
-     * @private
-     */
-    chooserObject: {
-      type: Object,
-      value: null,
-    },
+      /**
+       * If the site represented is part of a chooser exception, the chooser
+       * type will be stored here to allow the permission to be manipulated.
+       * @private {!ChooserType}
+       */
+      chooserType: {
+        type: String,
+        value: ChooserType.NONE,
+      },
 
-    /** @private */
-    showPolicyPrefIndicator_: {
-      type: Boolean,
-      computed: 'computeShowPolicyPrefIndicator_(model)',
-    },
+      /**
+       * If the site represented is part of a chooser exception, the chooser
+       * object will be stored here to allow the permission to be manipulated.
+       * @private
+       */
+      chooserObject: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private */
-    allowNavigateToSiteDetail_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @private */
+      showPolicyPrefIndicator_: {
+        type: Boolean,
+        computed: 'computeShowPolicyPrefIndicator_(model)',
+      },
+
+      /** @private */
+      allowNavigateToSiteDetail_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @private */
   onShowTooltip_() {
-    const indicator = assert(this.$$('cr-policy-pref-indicator'));
+    const indicator =
+        assert(this.shadowRoot.querySelector('cr-policy-pref-indicator'));
     // The tooltip text is used by an paper-tooltip contained inside the
     // cr-policy-pref-indicator. The text is currently held in a private
     // property. This text is needed here to send up to the common tooltip
     // component.
     const text = indicator.indicatorTooltip_;
     this.fire('show-tooltip', {target: indicator, text});
-  },
+  }
 
   /** @private */
-  onShowIncognitoTooltip_: function() {
-    const tooltip = assert(this.$$('#incognitoTooltip'));
+  onShowIncognitoTooltip_() {
+    const tooltip = assert(this.shadowRoot.querySelector('#incognitoTooltip'));
     // The tooltip text is used by an paper-tooltip contained inside the
     // cr-policy-pref-indicator. The text is currently held in a private
     // property. This text is needed here to send up to the common tooltip
     // component.
     const text = loadTimeData.getString('incognitoSiteExceptionDesc');
     this.fire('show-tooltip', {target: tooltip, text});
-  },
+  }
 
   /**
    * @return {boolean}
@@ -124,7 +138,7 @@ Polymer({
     return this.model.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED ||
         !(this.readOnlyList || !!this.model.embeddingOrigin);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -138,7 +152,7 @@ Polymer({
     return this.model.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED ||
         this.readOnlyList || !!this.model.embeddingOrigin;
-  },
+  }
 
   /**
    * A handler for selecting a site (by clicking on the origin).
@@ -151,7 +165,7 @@ Polymer({
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_SITE_DETAILS,
         new URLSearchParams('site=' + this.model.origin));
-  },
+  }
 
   /**
    * Returns the appropriate display name to show for the exception.
@@ -166,7 +180,7 @@ Polymer({
       return this.model.embeddingOrigin;
     }
     return this.model.displayName;
-  },
+  }
 
   /**
    * Returns the appropriate site description to display. This can, for example,
@@ -208,7 +222,7 @@ Polymer({
     // </if>
 
     return description;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -218,7 +232,7 @@ Polymer({
     return this.model.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED &&
         !!this.model.controlledBy;
-  },
+  }
 
   /** @private */
   onResetButtonTap_() {
@@ -233,7 +247,7 @@ Polymer({
     this.browserProxy.resetCategoryPermissionForPattern(
         this.model.origin, this.model.embeddingOrigin, this.model.category,
         this.model.incognito);
-  },
+  }
 
   /** @private */
   onShowActionMenuTap_() {
@@ -245,7 +259,7 @@ Polymer({
     this.fire(
         'show-action-menu',
         {anchor: this.$.actionMenuButton, model: this.model});
-  },
+  }
 
   /** @private */
   onModelChanged_() {
@@ -257,4 +271,6 @@ Polymer({
       this.allowNavigateToSiteDetail_ = valid;
     });
   }
-});
+}
+
+customElements.define(SiteListEntryElement.is, SiteListEntryElement);

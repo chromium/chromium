@@ -9,12 +9,13 @@ import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 import {Route, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
@@ -50,33 +51,58 @@ export function defaultSettingLabel(setting, enabled, disabled, other) {
   return other || enabled;
 }
 
-Polymer({
-  is: 'settings-site-settings-list',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {BaseMixinInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsSiteSettingsListElementBase = mixinBehaviors(
+    [WebUIListenerBehavior, I18nBehavior, PrefsBehavior],
+    BaseMixin(PolymerElement));
 
-  behaviors: [WebUIListenerBehavior, I18nBehavior, PrefsBehavior],
+/** @polymer */
+class SettingsSiteSettingsListElement extends
+    SettingsSiteSettingsListElementBase {
+  static get is() {
+    return 'settings-site-settings-list';
+  }
 
-  properties: {
-    /** @type {!Array<!CategoryListItem>} */
-    categoryList: Array,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!Map<string, (string|Function)>} */
-    focusConfig: {
-      type: Object,
-      observer: 'focusConfigChanged_',
-    },
-  },
+  static get properties() {
+    return {
+      /** @type {!Array<!CategoryListItem>} */
+      categoryList: Array,
 
-  observers: [
-    // The prefs object is only populated for the instance of this element
-    // which contains the notifications link row, avoiding non-actionable
-    // firing of the observer.
-    'updateNotificationsLabel_(prefs.generated.notification.*)'
-  ],
+      /** @type {!Map<string, (string|Function)>} */
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
+      },
+    };
+  }
 
-  /** @type {?SiteSettingsPrefsBrowserProxy} */
-  browserProxy: null,
+  static get observers() {
+    return [
+      // The prefs object is only populated for the instance of this element
+      // which contains the notifications link row, avoiding non-actionable
+      // firing of the observer.
+      'updateNotificationsLabel_(prefs.generated.notification.*)'
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?SiteSettingsPrefsBrowserProxy} */
+    this.browserProxy_ = null;
+  }
 
   /**
    * @param {!Map<string, string>} newConfig
@@ -92,14 +118,16 @@ Polymer({
     // element, with additional entries that correspond to subpage trigger
     // elements residing in this element's Shadow DOM.
     for (const item of this.categoryList) {
-      this.focusConfig.set(item.route.path, () => this.async(() => {
-        focusWithoutInk(assert(this.$$(`#${item.id}`)));
+      this.focusConfig.set(item.route.path, () => microTask.run(() => {
+        focusWithoutInk(assert(this.shadowRoot.querySelector(`#${item.id}`)));
       }));
     }
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
     Promise
@@ -138,7 +166,7 @@ Polymer({
           'cookieSettingDescriptionChanged',
           this.updateCookiesLabel_.bind(this));
     }
-  },
+  }
 
   /**
    * @param {!ContentSettingsTypes} category The category to refresh
@@ -172,7 +200,7 @@ Polymer({
         defaultValue => {
           this.updateDefaultValueLabel_(category, defaultValue.setting);
         });
-  },
+  }
 
   /**
    * Updates the DOM for the given |category| to display a label that
@@ -182,13 +210,14 @@ Polymer({
    * @private
    */
   updateDefaultValueLabel_(category, setting) {
-    const element = this.$$(`#${category}`);
+    const element = this.shadowRoot.querySelector(`#${category}`);
     if (!element) {
       // |category| is not part of this list.
       return;
     }
 
-    const index = this.$$('dom-repeat').indexForElement(element);
+    const index =
+        this.shadowRoot.querySelector('dom-repeat').indexForElement(element);
     const dataItem = this.categoryList[index];
     this.set(
         `categoryList.${index}.subLabel`,
@@ -197,7 +226,7 @@ Polymer({
             dataItem.enabledLabel ? this.i18n(dataItem.enabledLabel) : '',
             dataItem.disabledLabel ? this.i18n(dataItem.disabledLabel) : '',
             dataItem.otherLabel ? this.i18n(dataItem.otherLabel) : null));
-  },
+  }
 
   /**
    * Update the cookies link row label when the cookies setting description
@@ -206,9 +235,11 @@ Polymer({
    * @private
    */
   updateCookiesLabel_(label) {
-    const index = this.$$('dom-repeat').indexForElement(this.$$('#cookies'));
+    const index =
+        this.shadowRoot.querySelector('dom-repeat')
+            .indexForElement(this.shadowRoot.querySelector('#cookies'));
     this.set(`categoryList.${index}.subLabel`, label);
-  },
+  }
 
   /**
    * Update the notifications link row label when the notifications setting
@@ -237,7 +268,7 @@ Polymer({
                                 'siteSettingsAskBeforeSending';
     }
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -245,5 +276,8 @@ Polymer({
    */
   onClick_(event) {
     Router.getInstance().navigateTo(this.categoryList[event.model.index].route);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSiteSettingsListElement.is, SettingsSiteSettingsListElement);

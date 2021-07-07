@@ -22,9 +22,9 @@ import './site_list_entry.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -32,155 +32,183 @@ import {loadTimeData} from '../i18n_setup.js';
 import {AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './android_info_browser_proxy.js';
 // </if>
 import {ContentSetting, ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
-import {SiteSettingsBehavior} from './site_settings_behavior.js';
-import {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
+import {SiteSettingsBehavior, SiteSettingsBehaviorInterface} from './site_settings_behavior.js';
+import {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SiteSettingsBehaviorInterface}
+ * @implements {ListPropertyUpdateBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SiteListElementBase = mixinBehaviors(
+    [
+      SiteSettingsBehavior,
+      WebUIListenerBehavior,
+      ListPropertyUpdateBehavior,
+    ],
+    PolymerElement);
 
-Polymer({
-  is: 'site-list',
+/** @polymer */
+export class SiteListElement extends SiteListElementBase {
+  static get is() {
+    return 'site-list';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [
-    SiteSettingsBehavior,
-    WebUIListenerBehavior,
-    ListPropertyUpdateBehavior,
-  ],
-
-  properties: {
-    /**
-     * Some content types (like Location) do not allow the user to manually
-     * edit the exception list from within Settings.
-     */
-    readOnlyList: {
-      type: Boolean,
-      value: false,
-    },
-
-    categoryHeader: String,
-
-    /** @private */
-    enableContentSettingsRedesign_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableContentSettingsRedesign');
-      }
-    },
-
-    /**
-     * The site serving as the model for the currently open action menu.
-     * @private {?SiteException}
-     */
-    actionMenuSite_: Object,
-
-    /**
-     * Whether the "edit exception" dialog should be shown.
-     * @private
-     */
-    showEditExceptionDialog_: Boolean,
-
-    /**
-     * Array of sites to display in the widget.
-     * @type {!Array<SiteException>}
-     */
-    sites: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /**
+       * Some content types (like Location) do not allow the user to manually
+       * edit the exception list from within Settings.
+       */
+      readOnlyList: {
+        type: Boolean,
+        value: false,
       },
-    },
+
+      categoryHeader: String,
+
+      /** @private */
+      enableContentSettingsRedesign_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableContentSettingsRedesign');
+        }
+      },
+
+      /**
+       * The site serving as the model for the currently open action menu.
+       * @private {?SiteException}
+       */
+      actionMenuSite_: Object,
+
+      /**
+       * Whether the "edit exception" dialog should be shown.
+       * @private
+       */
+      showEditExceptionDialog_: Boolean,
+
+      /**
+       * Array of sites to display in the widget.
+       * @type {!Array<SiteException>}
+       */
+      sites: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * The type of category this widget is displaying data for. Normally
+       * either 'allow' or 'block', representing which sites are allowed or
+       * blocked respectively.
+       */
+      categorySubtype: {
+        type: String,
+        value: INVALID_CATEGORY_SUBTYPE,
+      },
+
+      /** @private */
+      hasIncognito_: Boolean,
+
+      /**
+       * Whether to show the Add button next to the header.
+       * @private
+       */
+      showAddSiteButton_: {
+        type: Boolean,
+        computed: 'computeShowAddSiteButton_(readOnlyList, category, ' +
+            'categorySubtype)',
+      },
+
+      /** @private */
+      showAddSiteDialog_: Boolean,
+
+      /**
+       * Whether to show the Allow action in the action menu.
+       * @private
+       */
+      showAllowAction_: Boolean,
+
+      /**
+       * Whether to show the Block action in the action menu.
+       * @private
+       */
+      showBlockAction_: Boolean,
+
+      /**
+       * Whether to show the 'Clear on exit' action in the action
+       * menu.
+       * @private
+       */
+      showSessionOnlyAction_: Boolean,
+
+      /**
+       * All possible actions in the action menu.
+       * @private
+       */
+      actions_: {
+        readOnly: true,
+        type: Object,
+        values: {
+          ALLOW: 'Allow',
+          BLOCK: 'Block',
+          RESET: 'Reset',
+          SESSION_ONLY: 'SessionOnly',
+        }
+      },
+
+      /** @private */
+      lastFocused_: Object,
+
+      /** @private */
+      listBlurred_: Boolean,
+
+      /** @private */
+      tooltipText_: String,
+
+      searchFilter: String,
+
+    };
+  }
+
+  static get observers() {
+    return ['configureWidget_(category, categorySubtype)'];
+  }
+
+  constructor() {
+    super();
+
+    // <if expr="chromeos">
+    /**
+     * Android messages info object containing messages feature state and
+     * exception origin.
+     * @private {?AndroidSmsInfo}
+     */
+    this.androidSmsInfo_ = null;
+    // </if>
 
     /**
-     * The type of category this widget is displaying data for. Normally
-     * either 'allow' or 'block', representing which sites are allowed or
-     * blocked respectively.
+     * The element to return focus to, when the currently active dialog is
+     * closed.
+     * @private {?HTMLElement}
      */
-    categorySubtype: {
-      type: String,
-      value: INVALID_CATEGORY_SUBTYPE,
-    },
+    this.activeDialogAnchor_ = null;
 
-    /** @private */
-    hasIncognito_: Boolean,
-
-    /**
-     * Whether to show the Add button next to the header.
-     * @private
-     */
-    showAddSiteButton_: {
-      type: Boolean,
-      computed: 'computeShowAddSiteButton_(readOnlyList, category, ' +
-          'categorySubtype)',
-    },
-
-    /** @private */
-    showAddSiteDialog_: Boolean,
-
-    /**
-     * Whether to show the Allow action in the action menu.
-     * @private
-     */
-    showAllowAction_: Boolean,
-
-    /**
-     * Whether to show the Block action in the action menu.
-     * @private
-     */
-    showBlockAction_: Boolean,
-
-    /**
-     * Whether to show the 'Clear on exit' action in the action
-     * menu.
-     * @private
-     */
-    showSessionOnlyAction_: Boolean,
-
-    /**
-     * All possible actions in the action menu.
-     * @private
-     */
-    actions_: {
-      readOnly: true,
-      type: Object,
-      values: {
-        ALLOW: 'Allow',
-        BLOCK: 'Block',
-        RESET: 'Reset',
-        SESSION_ONLY: 'SessionOnly',
-      }
-    },
-
-    /** @private */
-    lastFocused_: Object,
-
-    /** @private */
-    listBlurred_: Boolean,
-
-    /** @private */
-    tooltipText_: String,
-
-    searchFilter: String,
-  },
-
-  // <if expr="chromeos">
-  /**
-   * Android messages info object containing messages feature state and
-   * exception origin.
-   * @private {?AndroidSmsInfo}
-   */
-  androidSmsInfo_: null,
-  // </if>
-
-  /**
-   * The element to return focus to, when the currently active dialog is closed.
-   * @private {?HTMLElement}
-   */
-  activeDialogAnchor_: null,
-
-  observers: ['configureWidget_(category, categorySubtype)'],
+    /** @private {?SiteSettingsPrefsBrowserProxy} */
+    this.browserProxy_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'contentSettingSitePermissionChanged',
         this.siteWithinCategoryChanged_.bind(this));
@@ -193,7 +221,7 @@ Polymer({
     });
     // </if>
     this.browserProxy.updateIncognitoStatus();
-  },
+  }
 
   /**
    * Called when a site changes permission.
@@ -205,7 +233,7 @@ Polymer({
     if (category === this.category) {
       this.configureWidget_();
     }
-  },
+  }
 
   /**
    * Called for each site list when incognito is enabled or disabled. Only
@@ -225,7 +253,7 @@ Polymer({
     // A change notification is not sent for each site. So we repopulate the
     // whole list when the incognito profile is created or destroyed.
     this.populateList_();
-  },
+  }
 
   /**
    * Configures the action menu, visibility of the widget and shows the list.
@@ -238,7 +266,7 @@ Polymer({
 
     // The observer for All Sites fires before the attached/ready event, so
     // initialize this here.
-    if (this.browserProxy_ === undefined) {
+    if (this.browserProxy_ === null) {
       this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
     }
 
@@ -256,7 +284,7 @@ Polymer({
     if (this.categorySubtype === ContentSetting.SESSION_ONLY) {
       this.$.category.hidden = this.category !== ContentSettingsTypes.COOKIES;
     }
-  },
+  }
 
   /**
    * Whether there are any site exceptions added for this content setting.
@@ -265,7 +293,7 @@ Polymer({
    */
   hasSites_() {
     return this.sites.length > 0;
-  },
+  }
 
   /**
    * Whether the Add Site button is shown in the header for the current category
@@ -278,7 +306,7 @@ Polymer({
         this.readOnlyList ||
         (this.category === ContentSettingsTypes.FILE_SYSTEM_WRITE &&
          this.categorySubtype === ContentSetting.ALLOW));
-  },
+  }
 
   /**
    * @return {boolean}
@@ -286,7 +314,7 @@ Polymer({
    */
   showNoSearchResults_() {
     return this.sites.length > 0 && this.getFilteredSites_().length === 0;
-  },
+  }
 
   /**
    * A handler for the Add Site button.
@@ -295,13 +323,13 @@ Polymer({
   onAddSiteTap_() {
     assert(!this.readOnlyList);
     this.showAddSiteDialog_ = true;
-  },
+  }
 
   /** @private */
   onAddSiteDialogClosed_() {
     this.showAddSiteDialog_ = false;
     focusWithoutInk(assert(this.$.addSite));
-  },
+  }
 
   /**
    * Need to use common tooltip since the tooltip in the entry is cut off from
@@ -330,7 +358,7 @@ Polymer({
     target.addEventListener('click', hide);
     this.$.tooltip.addEventListener('mouseenter', hide);
     this.$.tooltip.show();
-  },
+  }
 
   // <if expr="chromeos">
   /**
@@ -352,7 +380,7 @@ Polymer({
     }
 
     return Promise.resolve();
-  },
+  }
 
   /**
    * Processes exceptions and adds showAndroidSmsNote field to
@@ -370,7 +398,7 @@ Polymer({
         return site;
       }
     });
-  },
+  }
   // </if>
 
   /**
@@ -382,7 +410,7 @@ Polymer({
       this.processExceptions_(exceptionList);
       this.closeActionMenu_();
     });
-  },
+  }
 
   /**
    * Process the exception list returned from the native layer.
@@ -400,7 +428,7 @@ Polymer({
     sites = this.processExceptionsForAndroidSmsInfo_(sites);
     // </if>
     this.updateList('sites', x => x.origin, sites);
-  },
+  }
 
   /**
    * Set up the values to use for the action menu.
@@ -412,7 +440,7 @@ Polymer({
     this.showSessionOnlyAction_ =
         this.categorySubtype !== ContentSetting.SESSION_ONLY &&
         this.category === ContentSettingsTypes.COOKIES;
-  },
+  }
 
   /**
    * @return {boolean} Whether to show the "Session Only" menu item for the
@@ -428,7 +456,7 @@ Polymer({
     }
 
     return this.showSessionOnlyAction_;
-  },
+  }
 
   /**
    * @param {!ContentSetting} contentSetting
@@ -439,33 +467,35 @@ Polymer({
     this.browserProxy.setCategoryPermissionForPattern(
         this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
         this.category, contentSetting, this.actionMenuSite_.incognito);
-  },
+  }
 
   /** @private */
   onAllowTap_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.ALLOW);
     this.closeActionMenu_();
-  },
+  }
 
   /** @private */
   onBlockTap_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.BLOCK);
     this.closeActionMenu_();
-  },
+  }
 
   /** @private */
   onSessionOnlyTap_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.SESSION_ONLY);
     this.closeActionMenu_();
-  },
+  }
 
   /** @private */
   onEditTap_() {
     // Close action menu without resetting |this.actionMenuSite_| since it is
     // bound to the dialog.
-    /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu')).close();
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('cr-action-menu'))
+        .close();
     this.showEditExceptionDialog_ = true;
-  },
+  }
 
   /** @private */
   onEditExceptionDialogClosed_() {
@@ -475,7 +505,7 @@ Polymer({
       this.activeDialogAnchor_.focus();
       this.activeDialogAnchor_ = null;
     }
-  },
+  }
 
   /** @private */
   onResetTap_() {
@@ -484,7 +514,7 @@ Polymer({
     this.browserProxy.resetCategoryPermissionForPattern(
         site.origin, site.embeddingOrigin, this.category, site.incognito);
     this.closeActionMenu_();
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -493,20 +523,22 @@ Polymer({
   onShowActionMenu_(e) {
     this.activeDialogAnchor_ = /** @type {!HTMLElement} */ (e.detail.anchor);
     this.actionMenuSite_ = e.detail.model;
-    /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('cr-action-menu'))
         .showAt(this.activeDialogAnchor_);
-  },
+  }
 
   /** @private */
   closeActionMenu_() {
     this.actionMenuSite_ = null;
     this.activeDialogAnchor_ = null;
     const actionMenu =
-        /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'));
+        /** @type {!CrActionMenuElement} */ (
+            this.shadowRoot.querySelector('cr-action-menu'));
     if (actionMenu.open) {
       actionMenu.close();
     }
-  },
+  }
 
   /**
    * @return {!Array<!SiteException>}
@@ -525,7 +557,7 @@ Polymer({
     return this.sites.filter(
         site => propNames.some(
             propName => site[propName].toLowerCase().includes(searchFilter)));
-  },
+  }
 
   /**
    * @return {string}
@@ -534,4 +566,6 @@ Polymer({
   getCssClass_() {
     return this.enableContentSettingsRedesign_ ? 'secondary' : '';
   }
-});
+}
+
+customElements.define(SiteListElement.is, SiteListElement);

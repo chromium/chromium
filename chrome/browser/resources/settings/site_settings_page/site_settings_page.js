@@ -17,7 +17,7 @@ import './recent_site_permissions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -389,93 +389,100 @@ function buildItemListFromIds(orderedIdList) {
   return orderedList;
 }
 
-Polymer({
-  is: 'settings-site-settings-page',
+/** @polymer */
+export class SettingsSiteSettingsPageElement extends PolymerElement {
+  static get is() {
+    return 'settings-site-settings-page';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
-    /**
-     * @private {{
-     *   all: (!Array<!CategoryListItem>|undefined),
-     *   permissionsBasic: (!Array<!CategoryListItem>|undefined),
-     *   permissionsAdvanced: (!Array<!CategoryListItem>|undefined),
-     *   contentBasic: (!Array<!CategoryListItem>|undefined),
-     *   contentAdvanced: (!Array<!CategoryListItem>|undefined)
-     * }}
-     */
-    lists_: {
-      type: Object,
-      value: function() {
-        return {
-          permissionsBasic: buildItemListFromIds([
-            Id.GEOLOCATION,
-            Id.CAMERA,
-            Id.MIC,
-            Id.NOTIFICATIONS,
-            Id.BACKGROUND_SYNC,
-          ]),
-          permissionsAdvanced: buildItemListFromIds([
-            Id.SENSORS,
-            Id.AUTOMATIC_DOWNLOADS,
-            Id.PROTOCOL_HANDLERS,
-            Id.MIDI_DEVICES,
-            Id.USB_DEVICES,
-            Id.SERIAL_PORTS,
-            Id.BLUETOOTH_DEVICES,
-            Id.FILE_SYSTEM_WRITE,
-            Id.HID_DEVICES,
-            Id.CLIPBOARD,
-            Id.PAYMENT_HANDLER,
-            Id.BLUETOOTH_SCANNING,
-            Id.AR,
-            Id.VR,
-            Id.IDLE_DETECTION,
-            Id.WINDOW_PLACEMENT,
-            Id.FONT_ACCESS,
-            Id.FILE_HANDLING,
-          ]),
-          contentBasic: buildItemListFromIds([
-            Id.COOKIES,
-            Id.JAVASCRIPT,
-            Id.IMAGES,
-            Id.POPUPS,
-          ]),
-          contentAdvanced: buildItemListFromIds([
-            Id.SOUND,
-            Id.ADS,
-            Id.ZOOM_LEVELS,
-            'pdfDocuments',
-            Id.PROTECTED_CONTENT,
-            Id.MIXEDSCRIPT,
-          ]),
-        };
-      }
-    },
+      /**
+       * @private {{
+       *   all: (!Array<!CategoryListItem>|undefined),
+       *   permissionsBasic: (!Array<!CategoryListItem>|undefined),
+       *   permissionsAdvanced: (!Array<!CategoryListItem>|undefined),
+       *   contentBasic: (!Array<!CategoryListItem>|undefined),
+       *   contentAdvanced: (!Array<!CategoryListItem>|undefined)
+       * }}
+       */
+      lists_: {
+        type: Object,
+        value: function() {
+          return {
+            permissionsBasic: buildItemListFromIds([
+              Id.GEOLOCATION,
+              Id.CAMERA,
+              Id.MIC,
+              Id.NOTIFICATIONS,
+              Id.BACKGROUND_SYNC,
+            ]),
+            permissionsAdvanced: buildItemListFromIds([
+              Id.SENSORS,
+              Id.AUTOMATIC_DOWNLOADS,
+              Id.PROTOCOL_HANDLERS,
+              Id.MIDI_DEVICES,
+              Id.USB_DEVICES,
+              Id.SERIAL_PORTS,
+              Id.BLUETOOTH_DEVICES,
+              Id.FILE_SYSTEM_WRITE,
+              Id.HID_DEVICES,
+              Id.CLIPBOARD,
+              Id.PAYMENT_HANDLER,
+              Id.BLUETOOTH_SCANNING,
+              Id.AR,
+              Id.VR,
+              Id.IDLE_DETECTION,
+              Id.WINDOW_PLACEMENT,
+              Id.FONT_ACCESS,
+              Id.FILE_HANDLING,
+            ]),
+            contentBasic: buildItemListFromIds([
+              Id.COOKIES,
+              Id.JAVASCRIPT,
+              Id.IMAGES,
+              Id.POPUPS,
+            ]),
+            contentAdvanced: buildItemListFromIds([
+              Id.SOUND,
+              Id.ADS,
+              Id.ZOOM_LEVELS,
+              'pdfDocuments',
+              Id.PROTECTED_CONTENT,
+              Id.MIXEDSCRIPT,
+            ]),
+          };
+        }
+      },
 
-    /** @type {!Map<string, (string|Function)>} */
-    focusConfig: {
-      type: Object,
-      observer: 'focusConfigChanged_',
-    },
+      /** @type {!Map<string, (string|Function)>} */
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
+      },
 
-    /** @private */
-    permissionsExpanded_: Boolean,
+      /** @private */
+      permissionsExpanded_: Boolean,
 
-    /** @private */
-    contentExpanded_: Boolean,
+      /** @private */
+      contentExpanded_: Boolean,
 
-    /* @private */
-    noRecentSitePermissions_: Boolean,
-  },
+      /* @private */
+      noRecentSitePermissions_: Boolean,
+    };
+  }
 
   /**
    * @param {!Map<string, string>} newConfig
@@ -487,14 +494,14 @@ Polymer({
     // only fire once.
     assert(!oldConfig);
     this.focusConfig.set(routes.SITE_SETTINGS_ALL.path, () => {
-      focusWithoutInk(assert(this.$$('#allSites')));
+      focusWithoutInk(assert(this.shadowRoot.querySelector('#allSites')));
     });
-  },
+  }
 
   /** @private */
   onSiteSettingsAllClick_() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
-  },
+  }
 
   /**
    * @return {string} Class for the all site settings link
@@ -502,5 +509,8 @@ Polymer({
    */
   getClassForSiteSettingsAllLink_() {
     return this.noRecentSitePermissions_ ? '' : 'hr';
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSiteSettingsPageElement.is, SettingsSiteSettingsPageElement);

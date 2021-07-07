@@ -8,7 +8,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AddSiteDialogElement, ContentSetting, ContentSettingsTypes, kControlledByLookup, SettingsEditExceptionDialogElement, SITE_EXCEPTION_WILDCARD, SiteException, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {AddSiteDialogElement, ContentSetting, ContentSettingsTypes, kControlledByLookup, SettingsEditExceptionDialogElement, SITE_EXCEPTION_WILDCARD, SiteException, SiteListElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs,Router} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
@@ -327,12 +327,6 @@ suite('SiteListEmbargoedOrigin', function() {
   function setUpCategory(category, subtype, prefs) {
     browserProxy.setPrefs(prefs);
     testElement.categorySubtype = subtype;
-    // Some route is needed, but the actual route doesn't matter.
-    testElement.currentRoute = {
-      page: 'dummy',
-      section: 'privacy',
-      subpage: ['site-settings', 'site-settings-category-location'],
-    };
     testElement.category = category;
   }
 
@@ -459,12 +453,6 @@ suite('SiteList', function() {
   function setUpCategory(category, subtype, prefs) {
     browserProxy.setPrefs(prefs);
     testElement.categorySubtype = subtype;
-    // Some route is needed, but the actual route doesn't matter.
-    testElement.currentRoute = {
-      page: 'dummy',
-      section: 'privacy',
-      subpage: ['site-settings', 'site-settings-category-location'],
-    };
     testElement.category = category;
   }
 
