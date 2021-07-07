@@ -18961,6 +18961,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="Webapp.SystemApps.BackgroundTaskStartDelay" units="ms"
+    expires_after="2022-01-05">
+  <owner>dominicschulz@google.com</owner>
+  <owner>qjw@chromium.org</owner>
+  <summary>
+    Records how long the SWA background task waits for the system to become idle
+    before starting to run. Recorded in milliseconds, from 1 millisecond to 1
+    hour. This is logged when a SWA background task starts.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.SystemApps.BadNavigate.Type" units="App ID"
     expires_after="2021-09-01">
   <owner>calamity@chromium.org</owner>

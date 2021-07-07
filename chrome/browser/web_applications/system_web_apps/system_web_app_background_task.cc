@@ -6,6 +6,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +27,9 @@ SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo(
     const GURL& url,
     bool open_immediately)
     : period(period), url(url), open_immediately(open_immediately) {}
+
+// static
+const char SystemAppBackgroundTask::kBackgroundStartDelayHistogramName[];
 
 SystemAppBackgroundTask::SystemAppBackgroundTask(
     Profile* profile,
@@ -104,6 +108,10 @@ void SystemAppBackgroundTask::MaybeOpenPage() {
                   base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
                                  weak_ptr_factory_.GetWeakPtr()));
   }
+
+  base::UmaHistogramLongTimes(kBackgroundStartDelayHistogramName,
+                              polling_duration);
+
   polling_since_time_ = base::Time();
   state_ = WAIT_PERIOD;
   NavigateBackgroundPage();

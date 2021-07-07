@@ -1471,6 +1471,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
   // a hook in the background pages to detect the navigation as an event. That's
   // a little too much work for one test though, and since this is mostly tested
   // in unittests, this is probably enough.
+  base::HistogramTester histograms;
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://test-system-app/page2.html"));
   navigation_observer.StartWatchingNewWebContents();
@@ -1497,6 +1498,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
   EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
             tasks[0]->get_state_for_testing());
   EXPECT_EQ(base::TimeDelta::FromDays(1), timer->GetCurrentDelay());
+
+  histograms.ExpectTotalCount("Webapp.SystemApps.BackgroundTaskStartDelay", 1);
+  histograms.ExpectUniqueSample("Webapp.SystemApps.BackgroundTaskStartDelay", 0,
+                                1);
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
