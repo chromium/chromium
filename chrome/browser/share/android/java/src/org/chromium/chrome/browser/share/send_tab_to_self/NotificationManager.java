@@ -191,8 +191,9 @@ public class NotificationManager {
                                            .setAction(NOTIFICATION_ACTION_TIMEOUT)
                                            .putExtra(NOTIFICATION_GUID_EXTRA, guid);
             alarmManager.set(AlarmManager.RTC, timeoutAtMillis,
-                    PendingIntent.getBroadcast(
-                            context, nextId, timeoutIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    PendingIntent.getBroadcast(context, nextId, timeoutIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                                    | IntentUtils.getPendingIntentMutabilityFlag(false)));
         }
         MetricsRecorder.recordNotificationShown();
         return true;
