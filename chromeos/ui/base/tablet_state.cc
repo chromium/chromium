@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -25,13 +24,11 @@ TabletState* TabletState::Get() {
 TabletState::TabletState() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 TabletState::~TabletState() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
-  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 bool TabletState::InTabletMode() const {

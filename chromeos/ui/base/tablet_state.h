@@ -35,6 +35,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
  private:
+  display::ScopedDisplayObserver display_observer_{this};
+
   display::TabletState state_ = display::TabletState::kInClamshellMode;
 };
 
