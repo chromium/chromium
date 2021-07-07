@@ -18,10 +18,17 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/command_line.h"
+#include "base/system/sys_info.h"
+#include "components/policy/core/common/policy_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace em = enterprise_management;
 
@@ -268,7 +275,20 @@ CloudPolicyValidatorBase::CloudPolicyValidatorBase(
       verification_key_(GetPolicyVerificationKey()),
       allow_key_rotation_(false),
       background_task_runner_(background_task_runner) {
-  DCHECK(!verification_key_.empty());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Empty `verification_key_` is only allowed on Chrome OS test image when
+  // policy key verification is disabled via command line flag.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kDisablePolicyKeyVerification)) {
+    base::SysInfo::CrashIfChromeOSNonTestImage();
+    // GetPolicyVerificationKey() returns a non-empty string.
+    verification_key_ = absl::nullopt;
+  } else {
+    DCHECK(verification_key_);
+  }
+#else
+  DCHECK(verification_key_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // static
@@ -373,6 +393,13 @@ void CloudPolicyValidatorBase::RunChecks() {
 // Verifies the |new_public_key_verification_signature_deprecated| for the
 // |new_public_key| in the policy blob.
 bool CloudPolicyValidatorBase::CheckNewPublicKeyVerificationSignature() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Skip verification if the key is empty (disabled via command line).
+  if (!verification_key_) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   if (!policy_->has_new_public_key_verification_signature_deprecated()) {
     // Policy does not contain a verification signature, so log an error.
     LOG(ERROR) << "Policy is missing public_key_verification_signature";
@@ -380,7 +407,7 @@ bool CloudPolicyValidatorBase::CheckNewPublicKeyVerificationSignature() {
   }
 
   if (!CheckVerificationKeySignature(
-          policy_->new_public_key(), verification_key_,
+          policy_->new_public_key(), verification_key_.value(),
           policy_->new_public_key_verification_signature_deprecated())) {
     LOG(ERROR) << "Signature verification failed";
     return false;
@@ -476,7 +503,14 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckInitialKey() {
 }
 
 CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckCachedKey() {
-  if (!CheckVerificationKeySignature(cached_key_, verification_key_,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Skip verification if the key is empty (disabled via command line).
+  if (!verification_key_) {
+    return VALIDATION_OK;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (!CheckVerificationKeySignature(cached_key_, verification_key_.value(),
                                      cached_key_signature_)) {
     LOG(ERROR) << "Cached key signature verification failed";
     return VALIDATION_BAD_KEY_VERIFICATION_SIGNATURE;
