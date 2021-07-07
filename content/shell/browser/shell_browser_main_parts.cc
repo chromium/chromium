@@ -51,21 +51,29 @@
 #if defined(USE_OZONE) || defined(USE_X11)
 #include "ui/base/ui_base_features.h"
 #endif
+
 #if defined(USE_X11)
 #include "ui/base/x/x11_util.h"  // nogncheck
 #endif
+
 #if defined(USE_AURA) && defined(USE_X11)
 #include "ui/events/devices/x11/touch_factory_x11.h"  // nogncheck
 #endif
+
 #if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "device/bluetooth/dbus/dbus_bluez_manager_wrapper_linux.h"
 #endif  // #elif (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_dbus_thread_manager.h"
+#endif
 
 #if BUILDFLAG(USE_GTK)
 #include "ui/gtk/gtk_ui_factory.h"
@@ -133,6 +141,9 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   bluez::BluezDBusManager::InitializeFake();
 #elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bluez::DBusBluezManagerWrapperLinux::Initialize();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosDBusThreadManager::Initialize();
 #endif
 }
 
@@ -225,6 +236,9 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 }
 
 void ShellBrowserMainParts::PostDestroyThreads() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosDBusThreadManager::Shutdown();
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   device::BluetoothAdapterFactory::Shutdown();
   bluez::BluezDBusManager::Shutdown();

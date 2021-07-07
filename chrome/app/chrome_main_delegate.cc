@@ -115,6 +115,10 @@
 #include "components/nacl/zygote/nacl_fork_delegate_linux.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/dbus/constants/dbus_paths.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
@@ -122,7 +126,6 @@
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/startup_settings_cache.h"
-#include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/hugepage_text/hugepage_text.h"
 #include "chromeos/memory/kstaled.h"
 #include "chromeos/memory/memory.h"
@@ -181,6 +184,7 @@
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_dbus_helper.h"
 #endif
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -538,6 +542,9 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Initialize D-Bus for Lacros.
+  chromeos::LacrosInitializeDBus();
+
   // LacrosChromeServiceImpl instance needs the sequence of the main thread,
   // and needs to be created earlier than incoming Mojo invitation handling.
   // This also needs ThreadPool sequences to post some tasks internally.
@@ -782,6 +789,8 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   chrome::RegisterPathProvider();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::RegisterPathProvider();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
 #if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))

@@ -30,7 +30,10 @@ declare_args() {
 
 component("chromeos") {
   public_deps = []
-  deps = [ "//chromeos/crosapi/mojom" ]
+  deps = [
+    "//chromeos/crosapi/mojom",
+    "//chromeos/dbus/constants",
+  ]
   sources = []
 
   if (is_chromeos_ash) {
@@ -48,7 +51,6 @@ component("chromeos") {
       "//base",
       "//base:i18n",
       "//chromeos/dbus",
-      "//chromeos/dbus/constants",
       "//google_apis",
       "//services/network/public/cpp:cpp",
       "//third_party/protobuf:protobuf_lite",

@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chromeos/lacros/lacros_dbus_helper.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -48,6 +49,12 @@ void ChromeBrowserMainPartsLacros::PreProfileInit() {
         KeepAliveOrigin::BROWSER_PROCESS_LACROS,
         KeepAliveRestartOption::ENABLED);
   }
+}
+
+void ChromeBrowserMainPartsLacros::PostDestroyThreads() {
+  chromeos::LacrosShutdownDBus();
+
+  ChromeBrowserMainPartsLinux::PostDestroyThreads();
 }
 
 void ChromeBrowserMainPartsLacros::OnBrowserAdded(Browser* browser) {

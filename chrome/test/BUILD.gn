@@ -439,6 +439,10 @@ static_library("test_support") {
     libs = [ "runtimeobject.lib" ]
   }
 
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    deps += [ "//chromeos/dbus/constants" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "../browser/ash/accessibility/speech_monitor.cc",

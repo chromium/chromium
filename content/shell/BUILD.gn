@@ -367,6 +367,13 @@ static_library("content_shell_lib") {
     deps += [ "//chromeos/dbus" ]
   }
 
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/dbus/constants",
+      "//chromeos/lacros",
+    ]
+  }
+
   if (is_linux || is_chromeos) {
     deps += [ "//build/config/freetype" ]
   }

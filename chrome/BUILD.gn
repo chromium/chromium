@@ -1359,6 +1359,10 @@ group("browser_dependencies") {
     public_deps += [ "//components/nacl/browser" ]
   }
 
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    public_deps += [ "//chromeos/dbus/constants" ]
+  }
+
   if (is_chromeos_lacros) {
     public_deps += [ "//chromeos/lacros" ]
   }
@@ -1368,7 +1372,6 @@ group("browser_dependencies") {
       "//ash/constants",
       "//chrome/browser/chromeos",
       "//chromeos",
-      "//chromeos/dbus/constants",
       "//chromeos/memory",
     ]
   }
