@@ -1377,9 +1377,17 @@ bool ExecuteScriptAndExtractDouble(const ToRenderFrameHost& adapter,
                                    const std::string& script, double* result) {
   DCHECK(result);
   std::unique_ptr<base::Value> value;
-  return ExecuteScriptHelper(adapter.render_frame_host(), script, true,
-                             ISOLATED_WORLD_ID_GLOBAL, &value) &&
-         value && value->GetAsDouble(result);
+  if (!ExecuteScriptHelper(adapter.render_frame_host(), script, true,
+                           ISOLATED_WORLD_ID_GLOBAL, &value))
+    return false;
+  if (!value)
+    return false;
+  absl::optional<double> maybe_value = value->GetIfDouble();
+  if (!maybe_value.has_value())
+    return false;
+
+  *result = maybe_value.value();
+  return true;
 }
 
 bool ExecuteScriptAndExtractInt(const ToRenderFrameHost& adapter,
