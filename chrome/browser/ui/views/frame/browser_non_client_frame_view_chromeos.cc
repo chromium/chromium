@@ -45,7 +45,6 @@
 #include "ui/base/layout.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/display/screen.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -110,8 +109,6 @@ BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
 }
 
 BrowserNonClientFrameViewChromeOS::~BrowserNonClientFrameViewChromeOS() {
-  display::Screen::GetScreen()->RemoveObserver(this);
-
   ImmersiveModeController* immersive_controller =
       browser_view()->immersive_mode_controller();
   if (immersive_controller)
@@ -145,7 +142,7 @@ void BrowserNonClientFrameViewChromeOS::Init() {
         chromeos::kBlockedForAssistantSnapshotKey, true);
   }
 
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
 
   if (frame()->ShouldDrawFrameHeader())
     frame_header_ = CreateFrameHeader();

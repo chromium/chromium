@@ -30,7 +30,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/display/screen.h"
+#include "ui/display/display.h"
 #include "ui/views/controls/native/native_view_host.h"
 
 namespace {
@@ -290,7 +290,6 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   observed_omni_box_->AddObserver(this);
 
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* accessibility_manager = ash::AccessibilityManager::Get();
@@ -308,7 +307,6 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
 TopControlsSlideControllerChromeOS::~TopControlsSlideControllerChromeOS() {
   OnEnabledStateChanged(false);
 
-  display::Screen::GetScreen()->RemoveObserver(this);
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
 
   if (observed_omni_box_)

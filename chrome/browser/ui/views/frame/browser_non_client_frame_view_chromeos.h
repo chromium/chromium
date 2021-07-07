@@ -224,6 +224,8 @@ class BrowserNonClientFrameViewChromeOS
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
 
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
+
   base::WeakPtrFactory<BrowserNonClientFrameViewChromeOS> weak_ptr_factory_{
       this};
 };

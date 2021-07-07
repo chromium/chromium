@@ -193,6 +193,8 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   base::CallbackListSubscription accessibility_status_subscription_;
 #endif
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   DISALLOW_COPY_AND_ASSIGN(TopControlsSlideControllerChromeOS);
 };
 
