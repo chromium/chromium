@@ -2,11 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//third_party/blink/renderer/bindings/generated_in_modules.gni")
-import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
-import("//third_party/blink/renderer/modules/modules_idl_files.gni")
 
 visibility = [ "//third_party/blink/renderer/*" ]
 
@@ -24,7 +21,6 @@ blink_modules_sources("v8") {
       generated_typedef_sources_in_modules + generated_union_sources_in_modules
 
   deps = [
-    ":generate_mojo_bindings",
     ":generated",
     "//third_party/blink/renderer/platform",
     "//v8",
@@ -62,27 +58,4 @@ group("generated") {
 
   public_deps =
       [ "//third_party/blink/renderer/bindings:generate_bindings_all" ]
-}
-
-# Note that this intentionally depends on the generator target of the mojom
-# target instead of the mojom target itself directly. This is to ensure that the
-# dependencies are header-only and don't link against any bindings code.
-group("generate_mojo_bindings") {
-  visibility = []  # Allow re-assignment of list.
-  visibility = [ ":*" ]
-
-  deps = [
-    "//device/gamepad/public/mojom:mojom_blink_headers",
-    "//device/vr/public/mojom:vr_service_blink_headers",
-    "//media/capture/mojom:image_capture_blink_headers",
-    "//media/midi:mojo_blink_headers",
-    "//services/device/public/mojom:generic_sensor_headers",
-    "//services/device/public/mojom:mojom_blink_headers",
-    "//services/device/public/mojom:usb_blink_headers",
-    "//services/shape_detection/public/mojom:mojom_blink_headers",
-
-    # IndexedDB Mojom Blink headers are provided by the mojom_modules
-    # target.
-    "//third_party/blink/public/mojom:mojom_modules_blink_headers",
-  ]
 }

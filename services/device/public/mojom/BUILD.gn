@@ -72,7 +72,6 @@ mojom("mojom") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   visibility_blink = [
-    "//third_party/blink/renderer/bindings/modules/v8:generate_mojo_bindings",
     "//third_party/blink/renderer/platform:blink_platform_public_deps",
     "//third_party/blink/public/mojom:mojom_platform_blink",
   ]
