@@ -11,6 +11,8 @@ use_ozone = true
 ozone_auto_platforms = false
 ozone_platform = "headless"
 ozone_platform_headless = true
+angle_enable_vulkan = true
+angle_enable_swiftshader = true
 
 # Embed resource.pak into binary to simplify deployment.
 headless_use_embedded_resources = true
