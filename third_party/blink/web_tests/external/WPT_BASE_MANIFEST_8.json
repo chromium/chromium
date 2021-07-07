@@ -83654,7 +83654,7 @@
       ]
      ],
      "contain-paint-clip-005.html": [
-      "ff6db1a73078c12e76a1f4f311d33b961dcd7711",
+      "fce4a89fbb8ac2c416798e8ccbc96998fa85b2a5",
       [
        null,
        [
@@ -96797,7 +96797,7 @@
       ]
      ],
      "flexbox_columns.html": [
-      "c89ace569f3833d3c3e1c3a9e7fd61b319293218",
+      "d39c2db55f2a144e5ab9efa713572bd27da72c07",
       [
        null,
        [
@@ -118280,7 +118280,7 @@
       ]
      ],
      "list-marker-alignment.html": [
-      "c147a5f7a717fea0656b2072c39c35994a5cdcb8",
+      "46f63a6981065fe5fce37e12b5022cda535842f0",
       [
        null,
        [
@@ -118293,7 +118293,7 @@
       ]
      ],
      "list-marker-symbol-bidi.html": [
-      "e82d9ae1567111038ee9927bda124956df1ebf03",
+      "47e77be8995331180530ae285f1aad85e7c60989",
       [
        null,
        [
@@ -118312,6 +118312,32 @@
        [
         [
          "/css/css-lists/list-marker-with-lineheight-and-overflow-hidden-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "list-style-image-gradients-dynamic.html": [
+      "eb96fdd444f34b5f3958516e70d8fe7bd5ab0068",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/list-style-image-gradients-dynamic-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "list-style-image-gradients.html": [
+      "eb797155643d725e526c17d803f77c2129dda59d",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/list-style-image-gradients-ref.html",
          "=="
         ]
        ],
@@ -123056,7 +123082,7 @@
       ]
      ],
      "multicol-list-item-001.xht": [
-      "8d32ac31bc49ed0fc21a983fcb89c52932b033f6",
+      "bcf3fa2613e417e691babd51f1d087cc4935768b",
       [
        null,
        [
@@ -128347,7 +128373,7 @@
       ]
      ],
      "position-absolute-dynamic-list-marker.html": [
-      "79535326396e451d0db5ae6b6a1cfe56b810c443",
+      "2e233e882e9469950385ed71515249023fda5733",
       [
        null,
        [
@@ -130901,7 +130927,7 @@
       ]
      ],
      "marker-content-008.tentative.html": [
-      "88aee13dc8c9530967d73da7f09a609a40e483ac",
+      "155b50ab6f0a9f633adbb65aaac0fd5fbdebb066",
       [
        null,
        [
@@ -178661,7 +178687,7 @@
       ]
      ],
      "block-flow-direction-vlr-022.xht": [
-      "abdc5708e1822b2b58edc8e5d2d90fbb1109c800",
+      "6c2f4d3b65514630b4537f0a807b2aaf5ef3a525",
       [
        null,
        [
@@ -178804,7 +178830,7 @@
       ]
      ],
      "block-flow-direction-vrl-021.xht": [
-      "3204969564b2d2979b46b82e22a221afc378fc6b",
+      "41a623db55c06b98211409b72192b187cdd13b62",
       [
        null,
        [
@@ -191635,7 +191661,7 @@
          ]
         ],
         "redefine-attr-mapping.html": [
-         "716b14383860c8061d1f7ca9567e860c529c3aaa",
+         "1656f9f33ebaf59c90849438196a57f072057ae6",
          [
           null,
           [
@@ -225863,7 +225889,7 @@
       []
      ],
      "display-flow-root-list-item-001-ref.html": [
-      "00bfbca26a6036692746a8c2689831f1fcc21427",
+      "7d9199af420f8c00fa18991a530977b91b5b446d",
       []
      ],
      "display-inline-dynamic-001-ref.html": [
@@ -238011,7 +238037,7 @@
       []
      ],
      "inline-list-ref.html": [
-      "ae1570a9703e52bdfdeb4a09b3c954ab92e7a59b",
+      "244aedac881f9b93ad10a3895bbe5ea9d9f6b4ff",
       []
      ],
      "inline-list-with-table-child-ref.html": [
@@ -238063,15 +238089,23 @@
       []
      ],
      "list-marker-alignment-ref.html": [
-      "afd21b0302201655d2f30c89d190dec6e7a1df1f",
+      "acbc73e284c05a74abbfb8ef9b482c1f0228c517",
       []
      ],
      "list-marker-symbol-bidi-ref.html": [
-      "cf213d731f33201fc6863544f18bf97c51eb2a3c",
+      "892933a48f8c28cc1e2eca762c36fff6dcf584db",
       []
      ],
      "list-marker-with-lineheight-and-overflow-hidden-001-ref.html": [
       "ae6486147e28502db80f6b887b1a6b16c30184f2",
+      []
+     ],
+     "list-style-image-gradients-dynamic-ref.html": [
+      "b8940767e741a363792076964525f154d260e82e",
+      []
+     ],
+     "list-style-image-gradients-ref.html": [
+      "21092dad6e1a71762d588940091d29fa98b84114",
       []
      ],
      "list-style-image-zoom-dynamic-ref.html": [
@@ -238119,7 +238153,7 @@
       []
      ],
      "list-type-none-style-image-ref.html": [
-      "9e72fb310233145c5a6c014c3febb2975586d76d",
+      "e54375fe9b6a899e10317c98a4f42ea87c592285",
       []
      ],
      "list-with-image-display-changed-001-ref.html": [
@@ -239415,11 +239449,11 @@
       []
      ],
      "multicol-span-all-list-item-001-ref.html": [
-      "4f3fe18a6d5804a4a7a6874fd46d5614c0a8dff2",
+      "ff69c3ba7529db6c064fb861bace5bd21f5aeea5",
       []
      ],
      "multicol-span-all-list-item-002-ref.html": [
-      "938dae654045c2cac2def96e42cea2d880ce9d64",
+      "d542342ace02f4040bebba958df2aefda0b596e4",
       []
      ],
      "multicol-span-all-margin-001-ref.xht": [
@@ -240969,7 +241003,7 @@
       []
      ],
      "marker-content-008-ref.html": [
-      "6d5052b378b7a5f626a51cb033fba8f7339192aa",
+      "3e80d5ff54dfd1ba3db54f39091ec93da122b39a",
       []
      ],
      "marker-content-009-ref.html": [
@@ -247383,6 +247417,10 @@
       ],
       "transform-interpolation-ref.html": [
        "2fee6f7c1fc46593f450fac606a651a12403ff72",
+       []
+      ],
+      "transform-perspective-composition-expected.txt": [
+       "5736b4f2a25b8520be5ad0a4efab3ed557225974",
        []
       ],
       "translate-interpolation-expected.txt": [
@@ -255758,7 +255796,7 @@
          []
         ],
         "redefine-attr-mapping-ref.html": [
-         "57d4fd0a7e206e0c7d90cfd9c6b1a64b8173b376",
+         "385efdf0181f8aea034762173c57386fbb1a157b",
          []
         ],
         "redefine-builtin-ref.html": [
@@ -266628,7 +266666,7 @@
          []
         ],
         "path-objects.yaml": [
-         "36194b19ce3c68aa08b33bfbf55e36d0c7d6c5d2",
+         "0e40e8bb88308a0078fde58f90a6cb3b69898fab",
          []
         ],
         "pixel-manipulation.yaml": [
@@ -266706,7 +266744,7 @@
          []
         ],
         "path-objects.yaml": [
-         "b8906eb650174e6a3625003e9cfa85aab71f7f94",
+         "c10b9d3053a3abb9ceb11eba46f5586cc1ead834",
          []
         ],
         "pixel-manipulation.yaml": [
@@ -266801,7 +266839,7 @@
         []
        ],
        "common.js": [
-        "0e7816d339010b4f4ec720c54c35dd5ca63d22d1",
+        "68f8782b3942ed5eff4bb17fe926a42dbe5bf451",
         []
        ],
        "dispatcher.js": [
@@ -272408,7 +272446,7 @@
        []
       ],
       "summary-text-decoration-ref.html": [
-       "8b6105fd2ec3eaa17ff9f18e50acfe989c4878af",
+       "ffdcfd25fb35bbc0db93bd9c746006d46e304846",
        []
       ]
      },
@@ -280353,6 +280391,10 @@
       ],
       "display-1-ref.html": [
        "ce65aba18c9483274765cde6f62bdf5fdeea001e",
+       []
+      ],
+      "display-2-expected.txt": [
+       "61433fd7ac22a82bc3f1fcabb831ecc1e9e45ce0",
        []
       ],
       "displaystyle-011-ref.html": [
@@ -290096,19 +290138,19 @@
      []
     ],
     "idlharness.any-expected.txt": [
-     "8e0e13d04f3bfff0982c7b495f7c31c8378873c0",
+     "a6650fa0772be58c08b633a61644fe445bd331c8",
      []
     ],
     "idlharness.any.serviceworker-expected.txt": [
-     "8e0e13d04f3bfff0982c7b495f7c31c8378873c0",
+     "a6650fa0772be58c08b633a61644fe445bd331c8",
      []
     ],
     "idlharness.any.sharedworker-expected.txt": [
-     "8e0e13d04f3bfff0982c7b495f7c31c8378873c0",
+     "a6650fa0772be58c08b633a61644fe445bd331c8",
      []
     ],
     "idlharness.any.worker-expected.txt": [
-     "8e0e13d04f3bfff0982c7b495f7c31c8378873c0",
+     "a6650fa0772be58c08b633a61644fe445bd331c8",
      []
     ],
     "readable-byte-streams": {
@@ -292395,7 +292437,7 @@
    "urlpattern": {
     "resources": {
      "urlpatterntestdata.json": [
-      "019bf4f9170abd0818b1b5e86396264691bc9211",
+      "8715b60bd85401eea104abe952a55d20fc63aa43",
       []
      ],
      "urlpatterntests.js": [
@@ -311704,6 +311746,17 @@
       ]
      ]
     },
+    "getRandomValues-bigint.tentative.any.js": [
+     "9daa92a83b6073f147913ac52325e297806f6c72",
+     [
+      "WebCryptoAPI/getRandomValues-bigint.tentative.any.html",
+      {}
+     ],
+     [
+      "WebCryptoAPI/getRandomValues-bigint.tentative.any.worker.html",
+      {}
+     ]
+    ],
     "getRandomValues.any.js": [
      "473d57fc460917535719607a4bd13fe8f8e9547f",
      [
@@ -347811,7 +347864,7 @@
        ]
       ],
       "transform-perspective-composition.html": [
-       "82f8dad59b6590c325ae7b4d2de7cf7b72959c71",
+       "f1b0256faa96e98e7c5615a1095518b671c87357",
        [
         null,
         {}
@@ -396382,6 +396435,13 @@
          {}
         ]
        ],
+       "2d.path.roundrect.radius.negative.html": [
+        "01ad92ea5c0a5b2730981f38f7708a955e5f1996",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.path.roundrect.radius.none.html": [
         "b55d1eca654065329ff34622d270f938aa2e7214",
         [
@@ -406408,6 +406468,20 @@
          {}
         ]
        ],
+       "2d.path.roundrect.radius.negative.html": [
+        "4c973738583f00755a45c218292633e38c0715b2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.negative.worker.js": [
+        "b941725dd30356e0ec46a7ea69cce4fc79a3c21f",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.negative.worker.html",
+         {}
+        ]
+       ],
        "2d.path.roundrect.radius.none.html": [
         "6defab24e32e0e5ab095ff78c1251454ac1d5085",
         [
@@ -410569,7 +410643,7 @@
      ],
      "credentialless": {
       "cache-storage.tentative.https.html": [
-       "d3278674be184bb499dc450a8c595e6ec0f5c750",
+       "230f1048a7230b6a936db0e16c18ba81853f5da5",
        [
         "html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.html?dedicated_worker",
         {
@@ -434045,7 +434119,7 @@
        ]
       ],
       "display-2.html": [
-       "35c46685aacb887f9289baf74f36077edc03dfda",
+       "570cf3e0ac2d4dbd0009cc6c91a6df95f789c230",
        [
         null,
         {}
@@ -442824,6 +442898,13 @@
     ],
     "permissions-query-feature-policy-attribute.https.sub.html": [
      "1d7333d9b5f67a405dc6979d5ddcfda444a04c39",
+     [
+      null,
+      {}
+     ]
+    ],
+    "screen-wake-lock-permission.html": [
+     "0fa69ff96a03b36d3fbd3de15a70f9b199074ebc",
      [
       null,
       {}
@@ -474496,14 +474577,14 @@
        ]
       ],
       "SVGGeometryElement.getPointAtLength-04.svg": [
-       "8d4ad294d0cce18de394316394d418daa0625500",
+       "cbff157c2dd71fb655333a18294eee6b564f83cb",
        [
         null,
         {}
        ]
       ],
       "SVGGeometryElement.getPointAtLength-05.svg": [
-       "50a713743d684e70f0aba780df4e858cb89dad9b",
+       "a8dc208fd58aa54e977f6d68ebb3dcb07bcd76ea",
        [
         null,
         {}
@@ -507518,7 +507599,7 @@
        ]
       ],
       "004.any.js": [
-       "963a9962d11f36f2a7fc01854b30d3a7477b7ef8",
+       "822379e2c90767ff8c37dde68d5419ef42927a51",
        [
         "workers/semantics/interface-objects/004.any.sharedworker.html",
         {
