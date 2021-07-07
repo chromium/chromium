@@ -7854,6 +7854,11 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     ldflags = []
 
+    allow_circular_includes_from = [
+      # Allows to include test util headers.
+      "//chrome/browser/web_applications:interactive_ui_tests",
+    ]
+
     deps = [
       ":test_support",
       ":test_support_ui",
@@ -7868,6 +7873,7 @@ if (!is_android) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/resource_coordinator/tab_ranker",
+      "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common:version_header",
       "//chrome/renderer",

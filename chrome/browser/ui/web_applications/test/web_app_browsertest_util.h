@@ -64,6 +64,10 @@ enum AppMenuCommandState {
 // For a non-app browser, determines if the command is enabled/disabled/absent.
 AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser);
 
+// Searches for a Browser window for a given |app_id|. browser->app_name() must
+// be defined.
+Browser* FindWebAppBrowser(Profile* profile, const AppId& app_id);
+
 void CloseAndWait(Browser* browser);
 
 void WaitForBrowserToBeClosed(Browser* browser);

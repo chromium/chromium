@@ -413,3 +413,24 @@ group("browser_tests") {
     "//chrome/browser/web_applications/components:browser_tests",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [ "web_app_notifications_interactive_uitest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":web_applications",
+    ":web_applications_test_support",
+    "//chrome/app:command_ids",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/permissions:permissions",
+    "//components/webapps/browser",
+    "//ui/base/idle:idle",
+    "//ui/base/idle:test_support",
+    "//ui/events/devices:test_support",
+  ]
+}

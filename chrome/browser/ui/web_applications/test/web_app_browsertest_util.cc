@@ -305,6 +305,18 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser) {
   return model->IsEnabledAt(index) ? kEnabled : kDisabled;
 }
 
+Browser* FindWebAppBrowser(Profile* profile, const AppId& app_id) {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (browser->profile() != profile)
+      continue;
+
+    if (AppBrowserController::IsForWebApp(browser, app_id))
+      return browser;
+  }
+
+  return nullptr;
+}
+
 void CloseAndWait(Browser* browser) {
   BrowserRemovedWaiter waiter(browser);
   browser->window()->Close();
