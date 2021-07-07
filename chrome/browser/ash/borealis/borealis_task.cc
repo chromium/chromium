@@ -192,11 +192,13 @@ void SyncBorealisDisk::RunInternal(BorealisContext* context) {
                      weak_factory_.GetWeakPtr(), context));
 }
 
-void SyncBorealisDisk::OnSyncBorealisDisk(BorealisContext* context,
-                                          std::string error) {
-  if (!error.empty()) {
+void SyncBorealisDisk::OnSyncBorealisDisk(
+    BorealisContext* context,
+    Expected<BorealisSyncDiskSizeResult, Described<BorealisSyncDiskSizeResult>>
+        result) {
+  if (!result) {
     Complete(BorealisStartupResult::kSyncDiskFailed,
-             "Failed to sync disk: " + error);
+             "Failed to sync disk: " + result.Error().description());
     return;
   }
   Complete(BorealisStartupResult::kSuccess, "");

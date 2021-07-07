@@ -106,7 +106,10 @@ class SyncBorealisDisk : public BorealisTask {
   void RunInternal(BorealisContext* context) override;
 
  private:
-  void OnSyncBorealisDisk(BorealisContext* context, std::string error);
+  void OnSyncBorealisDisk(
+      BorealisContext* context,
+      Expected<BorealisSyncDiskSizeResult,
+               Described<BorealisSyncDiskSizeResult>> result);
   base::WeakPtrFactory<SyncBorealisDisk> weak_factory_{this};
 };
 }  // namespace borealis

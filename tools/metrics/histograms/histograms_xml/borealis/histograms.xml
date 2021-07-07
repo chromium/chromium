@@ -100,6 +100,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Borealis.Disk.Startup.Result"
+    enum="BorealisSyncDiskSizeResult" expires_after="2022-04-08">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    The results of the disk sync process that is run when Borealis is launched.
+    This relays if the disk needed to be resized, if it was done successfully or
+    what error it faced. This is recorded each time the Borealis VM is launched,
+    if the disk management feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Disk.Startup.{TypeOfSpace}Space" units="MB"
+    expires_after="M95">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    {TypeOfSpace} This is recorded each time the Borealis VM is launched, if the
+    disk management feature is enabled.
+  </summary>
+  <token key="TypeOfSpace">
+    <variant name="Available"
+        summary="Amount of available space, in MB, that Borealis has on its
+                 VM disk when it starts up."/>
+    <variant name="Expandable"
+        summary="Amount of space, in MB, that Borealis can expand its VM disk
+                 by."/>
+    <variant name="Total"
+        summary="Total amount of disk space, in MB, that Borealis has on its
+                 VM disk when it starts up."/>
+  </token>
+</histogram>
+
 <histogram name="Borealis.EngagementTime.{Variant}" units="ms"
     expires_after="2022-04-08">
   <owner>lqu@google.com</owner>

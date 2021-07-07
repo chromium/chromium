@@ -9846,6 +9846,17 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="Failed awaiting startup"/>
 </enum>
 
+<enum name="BorealisSyncDiskSizeResult">
+  <int value="0" label="The disk is not fixed size"/>
+  <int value="1" label="No action needed"/>
+  <int value="2" label="Not enough space to expand"/>
+  <int value="3" label="Partially resized the disk"/>
+  <int value="4" label="Successfully resized the disk"/>
+  <int value="5" label="A sync disk process is already in progress"/>
+  <int value="6" label="Failed to get disk information"/>
+  <int value="7" label="Failed to resize the disk"/>
+</enum>
+
 <enum name="BoringSSLReasonCode">
   <obsolete>
     Removed in March 2016.

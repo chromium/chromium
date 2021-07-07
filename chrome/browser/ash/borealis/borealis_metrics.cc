@@ -22,6 +22,14 @@ const char kBorealisDiskClientAvailableSpaceAtRequestHistogram[] =
     "Borealis.Disk.Client.AvailableSpaceAtRequest";
 const char kBorealisDiskClientNumRequestsPerSessionHistogram[] =
     "Borealis.Disk.Client.NumRequestsPerSesssion";
+const char kBorealisDiskStartupAvailableSpaceHistogram[] =
+    "Borealis.Disk.Startup.AvailableSpace";
+const char kBorealisDiskStartupExpandableSpaceHistogram[] =
+    "Borealis.Disk.Startup.ExpandableSpace";
+const char kBorealisDiskStartupTotalSpaceHistogram[] =
+    "Borealis.Disk.Startup.TotalSpace";
+const char kBorealisDiskStartupResultHistogram[] =
+    "Borealis.Disk.Startup.Result";
 const char kBorealisInstallNumAttemptsHistogram[] =
     "Borealis.Install.NumAttempts";
 const char kBorealisInstallResultHistogram[] = "Borealis.Install.Result";
@@ -131,6 +139,37 @@ void RecordBorealisDiskClientAvailableSpaceAtRequestHistogram(
 void RecordBorealisDiskClientNumRequestsPerSessionHistogram(int num_requests) {
   base::UmaHistogramCounts100(kBorealisDiskClientNumRequestsPerSessionHistogram,
                               num_requests);
+}
+
+void RecordBorealisDiskStartupAvailableSpaceHistogram(
+    uint64_t available_bytes) {
+  uint64_t available_megabytes = available_bytes / (1024 * 1024);
+  base::UmaHistogramCustomCounts(kBorealisDiskStartupAvailableSpaceHistogram,
+                                 available_megabytes,
+                                 /*min=*/0, /*max=*/16000, /*buckets=*/100);
+}
+
+void RecordBorealisDiskStartupExpandableSpaceHistogram(
+    uint64_t expandable_bytes) {
+  uint64_t expandable_megabytes = expandable_bytes / (1024 * 1024);
+  base::UmaHistogramCustomCounts(kBorealisDiskStartupExpandableSpaceHistogram,
+                                 expandable_megabytes, /*min=*/0,
+                                 /*max=*/512000,
+                                 /*buckets=*/100);
+}
+
+void RecordBorealisDiskStartupTotalSpaceHistogram(uint64_t total_bytes) {
+  uint64_t total_megabytes = total_bytes / (1024 * 1024);
+  base::UmaHistogramCustomCounts(kBorealisDiskStartupTotalSpaceHistogram,
+                                 total_megabytes, /*min=*/0,
+                                 /*max=*/512000,
+                                 /*buckets=*/100);
+}
+
+void RecordBorealisDiskStartupResultHistogram(
+    BorealisSyncDiskSizeResult disk_result) {
+  base::UmaHistogramEnumeration(kBorealisDiskStartupResultHistogram,
+                                disk_result);
 }
 
 }  // namespace borealis

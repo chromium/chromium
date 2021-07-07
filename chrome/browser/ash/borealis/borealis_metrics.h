@@ -16,6 +16,10 @@ extern const char kBorealisDiskClientSpaceRequestedHistogram[];
 extern const char kBorealisDiskClientSpaceReleasedHistogram[];
 extern const char kBorealisDiskClientAvailableSpaceAtRequestHistogram[];
 extern const char kBorealisDiskClientNumRequestsPerSessionHistogram[];
+extern const char kBorealisDiskStartupAvailableSpaceHistogram[];
+extern const char kBorealisDiskStartupExpandableSpaceHistogram[];
+extern const char kBorealisDiskStartupResultHistogram[];
+extern const char kBorealisDiskStartupTotalSpaceHistogram[];
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
@@ -103,6 +107,20 @@ enum class BorealisResizeDiskResult {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class BorealisSyncDiskSizeResult {
+  kDiskNotFixed = 0,
+  kNoActionNeeded = 1,
+  kNotEnoughSpaceToExpand = 2,
+  kResizedPartially = 3,
+  kResizedSuccessfully = 4,
+  kAlreadyInProgress = 5,
+  kFailedToGetDiskInfo = 6,
+  kResizeFailed = 7,
+  kMaxValue = kResizeFailed,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class BorealisShutdownResult {
   kSuccess = 0,
   kInProgress = 1,
@@ -133,6 +151,12 @@ void RecordBorealisDiskClientSpaceReleasedHistogram(uint64_t bytes_released);
 void RecordBorealisDiskClientAvailableSpaceAtRequestHistogram(
     uint64_t available_bytes);
 void RecordBorealisDiskClientNumRequestsPerSessionHistogram(int num_requests);
+void RecordBorealisDiskStartupAvailableSpaceHistogram(uint64_t available_bytes);
+void RecordBorealisDiskStartupExpandableSpaceHistogram(
+    uint64_t expandable_bytes);
+void RecordBorealisDiskStartupTotalSpaceHistogram(uint64_t total_bytes);
+void RecordBorealisDiskStartupResultHistogram(
+    BorealisSyncDiskSizeResult disk_result);
 
 }  // namespace borealis
 

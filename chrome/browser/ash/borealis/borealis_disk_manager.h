@@ -14,6 +14,7 @@ namespace borealis {
 class BorealisContext;
 enum class BorealisGetDiskInfoResult;
 enum class BorealisResizeDiskResult;
+enum class BorealisSyncDiskSizeResult;
 
 // Service responsible for managing borealis' disk space.
 class BorealisDiskManager {
@@ -55,8 +56,16 @@ class BorealisDiskManager {
           callback) = 0;
 
   // Assesses the disk and resizes it so that it fits within the desired
-  // constraints. Returns an empty string on success or an error.
-  virtual void SyncDiskSize(base::OnceCallback<void(std::string)> callback) = 0;
+  // constraints. This only fails if the process fails to get information
+  // about the disk, the resize transition fails or if another SyncDiskSize
+  // is already in progress. This means that we consider partial resizes or
+  // cases where the disk size is inadequate, but we don't have room to expand
+  // it, as successes. It will return an enum on success or an enum, with an
+  // error string, on failure.
+  virtual void SyncDiskSize(
+      base::OnceCallback<void(Expected<BorealisSyncDiskSizeResult,
+                                       Described<BorealisSyncDiskSizeResult>>)>
+          callback) = 0;
 };
 
 }  // namespace borealis

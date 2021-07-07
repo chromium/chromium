@@ -46,10 +46,10 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
       base::OnceCallback<void(
           Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback)
       override;
-  // TODO(b/174592560): Since there are differing success criteria, we may wish
-  // to split this into Expected<SuccessEnum, ErrorEnum> when we expand on the
-  // error handling.
-  void SyncDiskSize(base::OnceCallback<void(std::string)> callback) override;
+  void SyncDiskSize(
+      base::OnceCallback<void(Expected<BorealisSyncDiskSizeResult,
+                                       Described<BorealisSyncDiskSizeResult>>)>
+          callback) override;
 
   void SetFreeSpaceProviderForTesting(
       std::unique_ptr<FreeSpaceProvider> provider) {
@@ -100,11 +100,14 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
       base::OnceCallback<void(
           Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback,
       Expected<std::unique_ptr<std::pair<BorealisDiskInfo, BorealisDiskInfo>>,
-               Described<BorealisResizeDiskResult>> disk_info_or_error);
+               Described<BorealisResizeDiskResult>> success_or_error);
 
-  void OnSyncDiskSize(base::OnceCallback<void(std::string)> callback,
-                      Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
-                          disk_info_or_error);
+  void OnSyncDiskSize(
+      base::OnceCallback<void(Expected<BorealisSyncDiskSizeResult,
+                                       Described<BorealisSyncDiskSizeResult>>)>
+          callback,
+      Expected<std::unique_ptr<BorealisSyncDiskSizeResult>,
+               Described<BorealisSyncDiskSizeResult>> success_or_error);
 
   const BorealisContext* const context_;
   int request_count_;
