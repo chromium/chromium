@@ -29,14 +29,11 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
       base::OnceCallback<void(uint32_t)>;
 
   struct RenderPassDrawData {
-    RenderPassDrawData() = default;
-    RenderPassDrawData(const gfx::Rect& rect,
-                       const gfx::Transform& target_transform,
-                       float opacity)
-        : rect(rect), target_transform(target_transform), opacity(opacity) {}
+    RenderPassDrawData();
+    RenderPassDrawData(const CompositorRenderPass& render_pass, float opacity);
 
-    // This represents the region for the pixel output.
-    gfx::Rect rect;
+    // This represents the size of the copied texture.
+    gfx::Size size;
     // This is a transform that takes `rect` into a root render pass space. Note
     // that this makes this result dependent on the structure of the compositor
     // frame render pass list used to request the copy output.
