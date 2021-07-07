@@ -37,7 +37,8 @@ class BFCachePolicyBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+           {"ignore_outstanding_network_request_for_testing", "true"}}}},
         {features::kBackForwardCacheMemoryControls});
 
     InProcessBrowserTest::SetUpCommandLine(command_line);
@@ -63,8 +64,7 @@ class BFCachePolicyBrowserTest
 
 }  // namespace
 
-// Disabled due to crash/pass flakiness. https://crbug.com/1225791
-IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, DISABLED_CacheFlushed) {
+IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, CacheFlushed) {
   util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
   const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
