@@ -363,8 +363,14 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, SecurityStateIsNone) {
   ASSERT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
+// TODO(crbug.com/1227141): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_FaviconFromOriginalPage DISABLED_FaviconFromOriginalPage
+#else
+#define MAYBE_FaviconFromOriginalPage FaviconFromOriginalPage
+#endif
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       FaviconFromOriginalPage) {
+                       MAYBE_FaviconFromOriginalPage) {
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
