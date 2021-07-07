@@ -1862,7 +1862,7 @@ try_.chromium_linux_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     properties = {
-        "compilator": "win10-compilator",
+        "compilator": "win10-rel-compilator",
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
 )
@@ -1878,7 +1878,7 @@ try_.chromium_win_builder(
     executable = "recipe:chromium/compilator",
     properties = {
         "orchestrator": {
-            "builder_name": "win10-orchestrator",
+            "builder_name": "win10-rel-orchestrator",
             "builder_group": "tryserver.chromium.win",
         },
     },
