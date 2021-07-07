@@ -46,7 +46,13 @@ template<> bool GetAs(const base::Value& in, bool* out) {
 }
 template <>
 bool GetAs(const base::Value& in, double* out) {
-  return in.GetAsDouble(out);
+  // `GetIfDouble()` incapsulates type verification logic.
+  const absl::optional<double> maybe_value = in.GetIfDouble();
+  if (maybe_value.has_value()) {
+    *out = maybe_value.value();
+    return true;
+  }
+  return false;
 }
 template<> bool GetAs(const base::Value& in, std::string* out) {
   return in.GetAsString(out);
