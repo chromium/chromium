@@ -19,8 +19,6 @@
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -90,18 +88,26 @@ void TextProtoFuzzer(const SanitizerConfigProto& proto,
   auto* sanitizer = MakeGarbageCollected<Sanitizer>(
       window->GetExecutionContext(), sanitizer_config);
 
-  // Sanitize string given in proto. Method depends on sanitize_to_string.
-  String str = proto.html_string().c_str();
-  if (proto.sanitize_to_string()) {
-    auto* str1 = MakeGarbageCollected<
-        V8UnionDocumentOrDocumentFragmentOrStringOrTrustedHTML>(str);
-    sanitizer->sanitize(script_state, str1, IGNORE_EXCEPTION_FOR_TESTING);
-  } else {
-    auto* str2 =
-        MakeGarbageCollected<V8UnionDocumentOrDocumentFragmentOrString>(str);
-    sanitizer->sanitizeToString(script_state, str2,
-                                IGNORE_EXCEPTION_FOR_TESTING);
+  // Sanitize string given in proto. Use proto.string_context to decide on
+  // parsing context for sanitizeFor.
+  // TODO(1225606): This needs to be updated to also support SVG & MathML
+  // contexts, once those are implemented.
+  String markup = proto.html_string().c_str();
+  const char* string_context = nullptr;
+  switch (proto.string_context()) {
+    case SanitizerConfigProto::DIV:
+      string_context = "div";
+      break;
+    case SanitizerConfigProto::TABLE:
+      string_context = "table";
+      break;
+    case SanitizerConfigProto::TEMPLATE:
+    default:
+      string_context = "template";
+      break;
   }
+  sanitizer->sanitizeFor(script_state, string_context, markup,
+                         IGNORE_EXCEPTION_FOR_TESTING);
 
   // The fuzzer will eventually run out of memory. Force the GC to run every
   // N-th time. This will trigger both V8 + Oilpan GC.

@@ -3261,6 +3261,7 @@ enum WebFeature {
   kDifferentPerspectiveCBOrParent = 3946,
   kWebkitImageSet = 3947,
   kRTCPeerConnectionWithBlockingCsp = 3948,
+  kSanitizerAPISanitizeFor = 3949,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

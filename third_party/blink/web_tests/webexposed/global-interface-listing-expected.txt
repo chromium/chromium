@@ -8153,6 +8153,7 @@ interface Sanitizer
     method config
     method constructor
     method sanitize
+    method sanitizeFor
     method sanitizeToString
 interface Scheduler
     attribute @@toStringTag

@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_node_filter.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment_string_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -111,42 +110,34 @@ String Sanitizer::sanitizeToString(ScriptState* script_state,
                       kChildrenOnly);
 }
 
-DocumentFragment* Sanitizer::sanitize(
-    ScriptState* script_state,
-    const V8SanitizerInputWithTrustedHTML* input,
-    ExceptionState& exception_state) {
-  V8SanitizerInput* new_input = nullptr;
-  switch (input->GetContentType()) {
-    case V8SanitizerInputWithTrustedHTML::ContentType::kDocument:
-      new_input =
-          MakeGarbageCollected<V8SanitizerInput>(input->GetAsDocument());
-      break;
-    case V8SanitizerInputWithTrustedHTML::ContentType::kDocumentFragment:
-      new_input = MakeGarbageCollected<V8SanitizerInput>(
-          input->GetAsDocumentFragment());
-      break;
-    case V8SanitizerInputWithTrustedHTML::ContentType::kString: {
-      LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-      if (!window) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                          "Cannot find current DOM window.");
-        return nullptr;
-      }
-      new_input =
-          MakeGarbageCollected<V8SanitizerInput>(TrustedTypesCheckForHTML(
-              input->GetAsString(), window->GetExecutionContext(),
-              exception_state));
-      if (exception_state.HadException()) {
-        return nullptr;
-      }
-      break;
-    }
-    case V8SanitizerInputWithTrustedHTML::ContentType::kTrustedHTML:
-      new_input = MakeGarbageCollected<V8SanitizerInput>(
-          input->GetAsTrustedHTML()->toString());
-      break;
+DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
+                                      const V8SanitizerInput* input,
+                                      ExceptionState& exception_state) {
+  return SanitizeImpl(script_state, input, exception_state);
+}
+
+Element* Sanitizer::sanitizeFor(ScriptState* script_state,
+                                const String& local_name,
+                                const String& markup,
+                                ExceptionState& exception_state) {
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  Element* element = window->document()->CreateElementForBinding(
+      AtomicString(local_name), exception_state);
+  if (exception_state.HadException()) {
+    exception_state.ClearException();
+    return nullptr;
   }
-  return SanitizeImpl(script_state, new_input, exception_state);
+  element->setInnerHTML(markup, exception_state);
+  if (exception_state.HadException()) {
+    exception_state.ClearException();
+    return nullptr;
+  }
+  DoSanitizing(element, window, exception_state);
+  if (exception_state.HadException()) {
+    exception_state.ClearException();
+    return nullptr;
+  }
+  return element;
 }
 
 DocumentFragment* Sanitizer::PrepareFragment(LocalDOMWindow* window,
@@ -195,9 +186,9 @@ DocumentFragment* Sanitizer::PrepareFragment(LocalDOMWindow* window,
   return nullptr;
 }
 
-DocumentFragment* Sanitizer::DoSanitizing(DocumentFragment* fragment,
-                                          LocalDOMWindow* window,
-                                          ExceptionState& exception_state) {
+void Sanitizer::DoSanitizing(ContainerNode* fragment,
+                             LocalDOMWindow* window,
+                             ExceptionState& exception_state) {
   Node* node = fragment->firstChild();
 
   while (node) {
@@ -260,8 +251,6 @@ DocumentFragment* Sanitizer::DoSanitizing(DocumentFragment* fragment,
       node = KeepElement(node, fragment, name, window);
     }
   }
-
-  return fragment;
 }
 
 DocumentFragment* Sanitizer::SanitizeImpl(ScriptState* script_state,
@@ -273,12 +262,13 @@ DocumentFragment* Sanitizer::SanitizeImpl(ScriptState* script_state,
   if (exception_state.HadException()) {
     return nullptr;
   }
-  return DoSanitizing(fragment, window, exception_state);
+  DoSanitizing(fragment, window, exception_state);
+  return fragment;
 }
 
 // If the current element needs to be dropped, remove current element entirely
 // and proceed to its next sibling.
-Node* Sanitizer::DropElement(Node* node, DocumentFragment* fragment) {
+Node* Sanitizer::DropElement(Node* node, ContainerNode* fragment) {
   Node* tmp = node;
   node = NodeTraversal::NextSkippingChildren(*node, fragment);
   tmp->remove();
@@ -288,7 +278,7 @@ Node* Sanitizer::DropElement(Node* node, DocumentFragment* fragment) {
 // If the current element should be blocked, append its children after current
 // node to parent node, remove current element and proceed to the next node.
 Node* Sanitizer::BlockElement(Node* node,
-                              DocumentFragment* fragment,
+                              ContainerNode* fragment,
                               ExceptionState& exception_state) {
   ContainerNode* parent = node->parentNode();
   Node* next_sibling = node->nextSibling();
@@ -307,7 +297,7 @@ Node* Sanitizer::BlockElement(Node* node,
 // Remove any attributes to be dropped from the current element, and proceed to
 // the next node (preorder, depth-first traversal).
 Node* Sanitizer::KeepElement(Node* node,
-                             DocumentFragment* fragment,
+                             ContainerNode* fragment,
                              String& node_name,
                              LocalDOMWindow* window) {
   Element* element = To<Element>(node);
