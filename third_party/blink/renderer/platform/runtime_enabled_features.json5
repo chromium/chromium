@@ -1892,6 +1892,10 @@
       name: "SanitizerAPI",
       status: "experimental",
     },
+    {
+      name: "SchedulerCurrentTaskSignal",
+      status: "experimental",
+    },
     // WebSpeech API with both speech recognition and synthesis functionality
     // is not fully enabled on all platforms.
     {
