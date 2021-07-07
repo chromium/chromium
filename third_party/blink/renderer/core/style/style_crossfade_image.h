@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_CROSSFADE_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_CROSSFADE_IMAGE_H_
 
-#include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -16,8 +15,7 @@ class CSSCrossfadeValue;
 }
 
 // This class represents a <cross-fade()> <image> function.
-class StyleCrossfadeImage final : public StyleImage,
-                                  public ImageResourceObserver {
+class StyleCrossfadeImage final : public StyleImage {
  public:
   StyleCrossfadeImage(cssvalue::CSSCrossfadeValue&,
                       StyleImage* from_image,
@@ -55,13 +53,6 @@ class StyleCrossfadeImage final : public StyleImage,
  private:
   bool IsEqual(const StyleImage&) const override;
 
-  // ImageResourceObserver:
-  void ImageChanged(ImageResourceContent*, CanDeferInvalidation) override;
-  bool WillRenderImage() override;
-  bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) override;
-  String DebugName() const override;
-
-  HashCountedSet<ImageResourceObserver*> clients_;
   Member<cssvalue::CSSCrossfadeValue> original_value_;
   Member<StyleImage> from_image_;
   Member<StyleImage> to_image_;

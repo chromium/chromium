@@ -33,6 +33,8 @@
 
 namespace blink {
 
+class ImageResourceObserver;
+
 namespace cssvalue {
 
 class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
@@ -46,6 +48,9 @@ class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
   CSSValue& To() const { return *to_value_; }
   CSSPrimitiveValue& Percentage() const { return *percentage_value_; }
 
+  bool HasClients() const { return !Clients().IsEmpty(); }
+  ImageResourceObserver* GetObserverProxy();
+
   String CustomCSSText() const;
   bool HasFailedOrCanceledSubresources() const;
   bool Equals(const CSSCrossfadeValue&) const;
@@ -53,9 +58,12 @@ class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
   void TraceAfterDispatch(Visitor*) const;
 
  private:
+  class ObserverProxy;
+
   Member<CSSValue> from_value_;
   Member<CSSValue> to_value_;
   Member<CSSPrimitiveValue> percentage_value_;
+  Member<ObserverProxy> observer_proxy_;
 };
 
 }  // namespace cssvalue

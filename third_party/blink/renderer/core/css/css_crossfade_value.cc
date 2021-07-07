@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 
+#include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -63,10 +64,60 @@ bool CSSCrossfadeValue::Equals(const CSSCrossfadeValue& other) const {
          DataEquivalent(percentage_value_, other.percentage_value_);
 }
 
+class CSSCrossfadeValue::ObserverProxy final
+    : public GarbageCollected<CSSCrossfadeValue::ObserverProxy>,
+      public ImageResourceObserver {
+ public:
+  explicit ObserverProxy(CSSCrossfadeValue* owner) : owner_(owner) {}
+
+  void ImageChanged(ImageResourceContent*,
+                    CanDeferInvalidation defer) override {
+    for (const ImageResourceObserver* const_observer : Clients().Keys()) {
+      auto* observer = const_cast<ImageResourceObserver*>(const_observer);
+      observer->ImageChanged(static_cast<WrappedImagePtr>(owner_), defer);
+    }
+  }
+
+  bool WillRenderImage() override {
+    for (const ImageResourceObserver* const_observer : Clients().Keys()) {
+      auto* observer = const_cast<ImageResourceObserver*>(const_observer);
+      if (observer->WillRenderImage())
+        return true;
+    }
+    return false;
+  }
+
+  bool GetImageAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy& animation_policy) override {
+    for (const ImageResourceObserver* const_observer : Clients().Keys()) {
+      auto* observer = const_cast<ImageResourceObserver*>(const_observer);
+      if (observer->GetImageAnimationPolicy(animation_policy))
+        return true;
+    }
+    return false;
+  }
+
+  String DebugName() const override { return "CrossfadeObserverProxy"; }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(owner_); }
+
+ private:
+  const ClientSizeCountMap& Clients() const { return owner_->Clients(); }
+
+  Member<CSSCrossfadeValue> owner_;
+};
+
+ImageResourceObserver* CSSCrossfadeValue::GetObserverProxy() {
+  if (!observer_proxy_)
+    observer_proxy_ = MakeGarbageCollected<ObserverProxy>(this);
+  return observer_proxy_;
+}
+
 void CSSCrossfadeValue::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(from_value_);
   visitor->Trace(to_value_);
   visitor->Trace(percentage_value_);
+  visitor->Trace(observer_proxy_);
   CSSImageGeneratorValue::TraceAfterDispatch(visitor);
 }
 

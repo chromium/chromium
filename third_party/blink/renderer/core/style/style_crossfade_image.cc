@@ -17,14 +17,12 @@ StyleCrossfadeImage::StyleCrossfadeImage(cssvalue::CSSCrossfadeValue& value,
   is_crossfade_ = true;
 }
 
-StyleCrossfadeImage::~StyleCrossfadeImage() {
-  DCHECK(clients_.IsEmpty());
-}
+StyleCrossfadeImage::~StyleCrossfadeImage() = default;
 
 bool StyleCrossfadeImage::IsEqual(const StyleImage& other) const {
-  // Since this object is used as a listener, and contains a listener set, we
-  // need to consider each instance unique.
-  return this == &other;
+  if (!other.IsCrossfadeImage())
+    return false;
+  return original_value_ == To<StyleCrossfadeImage>(other).original_value_;
 }
 
 CSSValue* StyleCrossfadeImage::CssValue() const {
@@ -98,24 +96,26 @@ bool StyleCrossfadeImage::HasIntrinsicSize() const {
 }
 
 void StyleCrossfadeImage::AddClient(ImageResourceObserver* observer) {
-  const bool clients_was_empty = clients_.IsEmpty();
-  clients_.insert(observer);
-  if (!clients_was_empty)
+  const bool had_clients = original_value_->HasClients();
+  original_value_->AddClient(observer);
+  if (had_clients)
     return;
+  ImageResourceObserver* proxy_observer = original_value_->GetObserverProxy();
   if (from_image_)
-    from_image_->AddClient(this);
+    from_image_->AddClient(proxy_observer);
   if (to_image_)
-    to_image_->AddClient(this);
+    to_image_->AddClient(proxy_observer);
 }
 
 void StyleCrossfadeImage::RemoveClient(ImageResourceObserver* observer) {
-  clients_.erase(observer);
-  if (!clients_.IsEmpty())
+  original_value_->RemoveClient(observer);
+  if (original_value_->HasClients())
     return;
+  ImageResourceObserver* proxy_observer = original_value_->GetObserverProxy();
   if (from_image_)
-    from_image_->RemoveClient(this);
+    from_image_->RemoveClient(proxy_observer);
   if (to_image_)
-    to_image_->RemoveClient(this);
+    to_image_->RemoveClient(proxy_observer);
 }
 
 scoped_refptr<Image> StyleCrossfadeImage::GetImage(
@@ -129,9 +129,11 @@ scoped_refptr<Image> StyleCrossfadeImage::GetImage(
     return Image::NullImage();
   const FloatSize resolved_size =
       ImageSize(style.EffectiveZoom(), target_size, kRespectImageOrientation);
+  const ImageResourceObserver* proxy_observer =
+      original_value_->GetObserverProxy();
   return CrossfadeGeneratedImage::Create(
-      from_image_->GetImage(*this, document, style, target_size),
-      to_image_->GetImage(*this, document, style, target_size),
+      from_image_->GetImage(*proxy_observer, document, style, target_size),
+      to_image_->GetImage(*proxy_observer, document, style, target_size),
       original_value_->Percentage().GetFloatValue(), resolved_size);
 }
 
@@ -143,33 +145,6 @@ bool StyleCrossfadeImage::KnownToBeOpaque(const Document& document,
                                           const ComputedStyle& style) const {
   return from_image_ && from_image_->KnownToBeOpaque(document, style) &&
          to_image_ && to_image_->KnownToBeOpaque(document, style);
-}
-
-void StyleCrossfadeImage::ImageChanged(ImageResourceContent*,
-                                       CanDeferInvalidation defer) {
-  for (auto& entry : clients_)
-    entry.key->ImageChanged(Data(), defer);
-}
-
-bool StyleCrossfadeImage::WillRenderImage() {
-  for (auto& entry : clients_) {
-    if (entry.key->WillRenderImage())
-      return true;
-  }
-  return false;
-}
-
-bool StyleCrossfadeImage::GetImageAnimationPolicy(
-    mojom::blink::ImageAnimationPolicy& animation_policy) {
-  for (auto& entry : clients_) {
-    if (entry.key->GetImageAnimationPolicy(animation_policy))
-      return true;
-  }
-  return false;
-}
-
-String StyleCrossfadeImage::DebugName() const {
-  return "StyleCrossfadeImage";
 }
 
 void StyleCrossfadeImage::Trace(Visitor* visitor) const {
