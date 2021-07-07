@@ -4,8 +4,6 @@
 
 #include "ui/color/color_mixers.h"
 
-#include "base/notreached.h"
-
 namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,

@@ -4,20 +4,16 @@
 
 #include "ui/color/color_mixers.h"
 
-#include "base/notreached.h"
-
 namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              bool dark_window,
                              bool high_contrast) {
-  NOTIMPLEMENTED();
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
                            bool dark_window,
                            bool high_contrast) {
-  NOTIMPLEMENTED();
 }
 
 void AddNativePostprocessingMixer(ColorProvider* provider) {}
