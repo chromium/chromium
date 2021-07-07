@@ -645,20 +645,15 @@ input[type="image" i] {
 /* TODO(crbug.com/880258): Use different styles for
   `-internal-autofill-previewed` and `-internal-autofill-selected`. */
 input:-internal-autofill-previewed,
-textarea:-internal-autofill-previewed,
-select:-internal-autofill-previewed,
 input:-internal-autofill-selected,
+textarea:-internal-autofill-previewed,
 textarea:-internal-autofill-selected,
+select:-internal-autofill-previewed,
 select:-internal-autofill-selected {
   appearance: menulist-button;
   background-image:none !important;
-  color: -internal-light-dark(black, white) !important;
-}
-
-select:-internal-autofill-previewed,
-select:-internal-autofill-selected {
-  /* The background color of <input> and <textarea> are determined by the native theme. */
   background-color: -internal-light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
+  color: -internal-light-dark(black, white) !important;
 }
 
 input[type="radio" i],
