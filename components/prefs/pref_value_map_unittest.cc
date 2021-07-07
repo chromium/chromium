@@ -43,9 +43,7 @@ TEST(PrefValueMapTest, SetDoubleValue) {
 
   const Value* result = nullptr;
   ASSERT_TRUE(map.GetValue("key", &result));
-  double double_value = 0.;
-  EXPECT_TRUE(result->GetAsDouble(&double_value));
-  EXPECT_DOUBLE_EQ(5.5, double_value);
+  EXPECT_DOUBLE_EQ(5.5, result->GetDouble());
 }
 
 TEST(PrefValueMapTest, RemoveValue) {
