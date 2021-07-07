@@ -42,7 +42,11 @@ FileChooser_Dev::FileChooser_Dev(const InstanceHandle& instance,
 }
 
 FileChooser_Dev::FileChooser_Dev(const FileChooser_Dev& other)
-    : Resource(other) {
+    : Resource(other) {}
+
+FileChooser_Dev& FileChooser_Dev::operator=(const FileChooser_Dev& other) {
+  Resource::operator=(other);
+  return *this;
 }
 
 int32_t FileChooser_Dev::Show(

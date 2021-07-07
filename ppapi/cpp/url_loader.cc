@@ -34,7 +34,11 @@ URLLoader::URLLoader(const InstanceHandle& instance) {
       instance.pp_instance()));
 }
 
-URLLoader::URLLoader(const URLLoader& other) : Resource(other) {
+URLLoader::URLLoader(const URLLoader& other) : Resource(other) {}
+
+URLLoader& URLLoader::operator=(const URLLoader& other) {
+  Resource::operator=(other);
+  return *this;
 }
 
 int32_t URLLoader::Open(const URLRequestInfo& request_info,

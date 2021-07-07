@@ -33,6 +33,7 @@ class URLResponseInfo : public Resource {
 
   /// The copy constructor for <code>URLResponseInfo</code>.
   URLResponseInfo(const URLResponseInfo& other);
+  URLResponseInfo& operator=(const URLResponseInfo& other);
 
   /// This function gets a response property.
   ///

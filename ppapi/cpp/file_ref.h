@@ -58,6 +58,7 @@ class FileRef : public Resource {
   ///
   /// @param[in] other A pointer to a <code>FileRef</code>.
   FileRef(const FileRef& other);
+  FileRef& operator=(const FileRef& other);
 
   /// GetFileSystemType() returns the type of the file system.
   ///

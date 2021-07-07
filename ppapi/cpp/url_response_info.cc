@@ -19,7 +19,11 @@ template <> const char* interface_name<PPB_URLResponseInfo_1_0>() {
 }  // namespace
 
 URLResponseInfo::URLResponseInfo(const URLResponseInfo& other)
-    : Resource(other) {
+    : Resource(other) {}
+
+URLResponseInfo& URLResponseInfo::operator=(const URLResponseInfo& other) {
+  Resource::operator=(other);
+  return *this;
 }
 
 URLResponseInfo::URLResponseInfo(PassRef, PP_Resource resource)

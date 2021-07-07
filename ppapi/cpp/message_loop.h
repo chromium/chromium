@@ -146,6 +146,7 @@ class MessageLoop : public Resource {
   explicit MessageLoop(const InstanceHandle& instance);
 
   MessageLoop(const MessageLoop& other);
+  MessageLoop& operator=(const MessageLoop& other);
 
   /// Takes an additional ref to the resource.
   explicit MessageLoop(PP_Resource pp_message_loop);

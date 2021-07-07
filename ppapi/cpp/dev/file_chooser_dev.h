@@ -51,6 +51,7 @@ class FileChooser_Dev : public Resource {
                   const Var& accept_types);
 
   FileChooser_Dev(const FileChooser_Dev& other);
+  FileChooser_Dev& operator=(const FileChooser_Dev& other);
 
   /// This function displays a previously created file chooser resource as a
   /// dialog box, prompting the user to choose a file or files. This function
