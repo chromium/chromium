@@ -231,7 +231,7 @@ const base::Feature kAutofillExtractAllDatalists{
 // field types that we don't fill (search term, price, ...) count towards that
 // counter, effectively reducing the threshold for some forms.
 const base::Feature kAutofillFixFillableFieldTypes{
-    "AutofillFixFillableFieldTypes", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillFixFillableFieldTypes", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // The autocomplete attribute may prevent Autofill import, crbug/1213301. This
 // feature addresses the issue. For now, the fix only concerns fields with the
