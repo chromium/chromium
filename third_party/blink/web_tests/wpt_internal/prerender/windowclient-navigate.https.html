@@ -1,19 +1,20 @@
 <!--
   This file cannot be upstreamed to WPT until:
   * startPrerendering() usage is replaced with a WebDriver API.
-  * The specification changes to disallow navigations after the initial
-  prerender navigation.
 -->
 <!DOCTYPE html>
 <title>WindowClient.navigate() for prerendered main page</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="resources/utils.js"></script>
 <body>
 <script>
-const PAGE_URL = 'resources/prerendered-page.html?prerendering';
+const PAGE_URL = 'resources/prerendered-page.html';
 const WORKER_URL = 'resources/windowclient-navigate-worker.js';
+const SAME_ORIGIN_DESTINATION =
+    get_host_info()['HTTPS_ORIGIN'] + base_path() + 'resources/empty.html';
 
 promise_test(async t => {
   const registration =
@@ -21,11 +22,11 @@ promise_test(async t => {
   t.add_cleanup(() => registration.unregister());
   await wait_for_state(t, get_newest_worker(registration), 'activated');
 
-  const bc = new BroadcastChannel('prerender-channel');
-  t.add_cleanup(_ => bc.close());
+  const readyChannel = new BroadcastChannel('prerender-channel');
+  t.add_cleanup(_ => readyChannel.close());
 
-  const gotMessage = new Promise(resolve => {
-    bc.addEventListener('message', e => {
+  const readyPromise = new Promise(resolve => {
+    readyChannel.addEventListener('message', e => {
       resolve(e.data);
     }, {
       once: true
@@ -34,17 +35,32 @@ promise_test(async t => {
 
   startPrerendering(PAGE_URL);
 
-  const prerenderResult = await gotMessage;
+  const prerenderResult = await readyPromise;
   assert_equals(prerenderResult, 'prerender success',
                 'should succeed to prerender a page');
 
-  const navigationResult = await new Promise(resolve => {
-    navigator.serviceWorker.onmessage = e => { resolve(e.data) };
-    registration.active.postMessage('empty.html');
-  });
-  assert_equals(navigationResult, 'navigate() failed with TypeError',
-                'should fail the navigation with TypeError');
+  const resultChannel = new BroadcastChannel('test-channel');
+  t.add_cleanup(_ => resultChannel.close());
 
+  const navigationPromise = new Promise(resolve => {
+    resultChannel.addEventListener('message', e => {
+      resolve(e.data);
+    }, {
+      once: true
+    });
+  });
+
+  // Asks the service worker to navigate the prerendered page to `navigationUrl`
+  // via `WindowClient.navigate(url)`.
+  registration.active.postMessage({
+    navigationUrl: SAME_ORIGIN_DESTINATION,
+    clientUrl: new URL(PAGE_URL, window.location).toString(),
+    respondTo: 'test-channel',
+  });
+
+  const navigationResult = await navigationPromise;
+  assert_equals(navigationResult, 'navigate() failed with TypeError',
+      'should fail the navigation with TypeError');
 }, 'WindowClient.navigate() for a prerendered main page should throw a' +
    'TypeError');
 </script>

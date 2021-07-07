@@ -1,26 +1,33 @@
 self.onmessage = e => {
-  const url = e.data;
+  const navigationUrl = e.data.navigationUrl;
+  const clientUrl = e.data.clientUrl;
+  const respondTo = e.data.respondTo;
 
   e.waitUntil(async function() {
     const source = e.source;
     const clients = await self.clients.matchAll();
-    const client = clients.find(c => c.url.includes('prerendering'));
+    const client = clients.find(c => c.url == clientUrl);
     if (!client) {
-      source.postMessage('Client was not found');
+      const bc = new BroadcastChannel(respondTo);
+      bc.postMessage('Client was not found');
+      bc.close();
       return;
     }
 
+    let result;
     try {
-      await client.navigate(url);
-      source.postMessage('navigate() succeeded');
-      return;
+      await client.navigate(navigationUrl);
+      result = 'navigate() succeeded';
     } catch (e) {
       if (e instanceof TypeError) {
-        source.postMessage('navigate() failed with TypeError');
+        result = 'navigate() failed with TypeError';
       } else {
-        source.postMessage('navigate() failed with unknown error');
+        result = 'navigate() failed with unknown error';
       }
-      return;
+    } finally {
+      const bc = new BroadcastChannel(respondTo);
+      bc.postMessage(result);
+      bc.close();
     }
   }());
 };
