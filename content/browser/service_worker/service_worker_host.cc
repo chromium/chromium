@@ -137,18 +137,16 @@ void ServiceWorkerHost::CreateCodeCacheHost(
   if (embedded_worker_status == EmbeddedWorkerStatus::STOPPING)
     return;
 
-  // Create a new CodeCacheHostImpl and bind it to the given receiver.
+  // It is possible that the RenderProcessHost is gone but we receive a request
+  // before we had the opportunity to Detach because the disconnect handler
+  // wasn't run yet. In such cases it is is safe to ignore these messages since
+  // we are about to stop the service worker.
   auto* process =
       RenderProcessHost::FromID(version_->embedded_worker()->process_id());
-  // TODO(crbug:1221042): Remove the following checks once the investigation of
-  // the crashes is done.
-  if (process == nullptr) {
-    SCOPED_CRASH_KEY_STRING32(
-        "SWHost::CreateCodeCacheHost", "info",
-        base::StringPrintf("status:%d,pid:%d", embedded_worker_status,
-                           version_->embedded_worker()->process_id()));
-    CHECK(false);
-  }
+  if (process == nullptr)
+    return;
+
+  // Create a new CodeCacheHostImpl and bind it to the given receiver.
   StoragePartition* storage_partition = process->GetStoragePartition();
   code_cache_host_receivers_.Add(
       std::make_unique<CodeCacheHostImpl>(
