@@ -108,7 +108,6 @@ typedef RTL_SRWLOCK SRWLOCK, *PSRWLOCK;
 
 typedef struct _GUID GUID;
 typedef GUID CLSID;
-typedef GUID IID;
 
 typedef struct tagLOGFONTW LOGFONTW, *PLOGFONTW, *NPLOGFONTW, *LPLOGFONTW;
 typedef LOGFONTW LOGFONT;
