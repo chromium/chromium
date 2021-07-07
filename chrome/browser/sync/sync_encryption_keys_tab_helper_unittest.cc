@@ -6,6 +6,8 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -48,7 +50,9 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {{SyncServiceFactory::GetInstance(),
-             SyncServiceFactory::GetDefaultFactory()}};
+             SyncServiceFactory::GetDefaultFactory()},
+            {ChromeSigninClientFactory::GetInstance(),
+             base::BindRepeating(&signin::BuildTestSigninClient)}};
   }
 
  private:

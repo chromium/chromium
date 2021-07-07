@@ -93,8 +93,8 @@ IdentityManagerObserver::IdentityManagerObserver(
 
   identity_manager_->AddObserver(this);
   UpdatePrimaryAccountIfNeeded();
-  // TODO(crbug.com/1148328): call UpdateAccountsInCookieJarInfoIfNotStale() if
-  // needed once tests are fixed.
+  UpdateAccountsInCookieJarInfoIfNotStale(
+      identity_manager_->GetAccountsInCookieJar());
 }
 
 IdentityManagerObserver::~IdentityManagerObserver() {

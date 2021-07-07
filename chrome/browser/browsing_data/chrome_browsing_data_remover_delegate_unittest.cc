@@ -55,6 +55,8 @@
 #include "chrome/browser/permissions/permission_actions_history.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -1086,7 +1088,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         }));
     profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                                       SyncServiceFactory::GetDefaultFactory());
-
+    profile_builder.AddTestingFactory(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&signin::BuildTestSigninClient));
     profile_ = profile_builder.Build();
 
     remover_ = profile_->GetBrowsingDataRemover();

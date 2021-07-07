@@ -19,6 +19,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
@@ -77,14 +79,20 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
   ~SaveUpdateBubbleControllerTest() override = default;
 
   void SetUp() override {
-    test_web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&signin::BuildTestSigninClient));
+    profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                                      SyncServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+
+    test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
     mock_delegate_ =
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), SyncServiceFactory::GetDefaultFactory());
     PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(
@@ -103,9 +111,9 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
     controller_.reset();
   }
 
-  PrefService* prefs() { return profile_.GetPrefs(); }
+  PrefService* prefs() { return profile_->GetPrefs(); }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
 
   password_manager::MockPasswordStore* GetStore() {
     return static_cast<password_manager::MockPasswordStore*>(
@@ -144,7 +152,7 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<SaveUpdateBubbleController> controller_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;

@@ -29,8 +29,10 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
@@ -103,6 +105,9 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
         ManagedBookmarkServiceFactory::GetDefaultFactory());
   }
 
+  profile_builder.AddTestingFactory(
+      ChromeSigninClientFactory::GetInstance(),
+      base::BindRepeating(&signin::BuildTestSigninClient));
   profile_builder.AddTestingFactories(
       IdentityTestEnvironmentProfileAdaptor::
           GetIdentityTestEnvironmentFactories());
@@ -348,7 +353,10 @@ void ExtensionServiceTestBase::SetUp() {
 
 void ExtensionServiceTestBase::TearDown() {
   if (profile_) {
-    auto* partition = profile_->GetDefaultStoragePartition();
+    content::StoragePartitionConfig default_storage_partition_config =
+        content::StoragePartitionConfig::CreateDefault(profile_.get());
+    auto* partition = profile_->GetStoragePartition(
+        default_storage_partition_config, /*can_create=*/false);
     if (partition)
       partition->WaitForDeletionTasksForTesting();
   }
