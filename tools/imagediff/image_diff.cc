@@ -70,6 +70,7 @@ class Image {
   }
 
   Image(const Image& image) = default;
+  Image& operator=(const Image& image) = default;
 
   bool has_image() const {
     return w_ > 0 && h_ > 0;
