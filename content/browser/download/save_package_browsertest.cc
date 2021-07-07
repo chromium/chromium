@@ -186,7 +186,7 @@ class SavePackageBrowserTest : public ContentBrowserTest {
       download_manager->AddObserver(&download_item_killer);
 
       scoped_refptr<SavePackage> save_package(
-          new SavePackage(shell()->web_contents()));
+          new SavePackage(shell()->web_contents()->GetPrimaryPage()));
       save_package->GetSaveInfo();
       run_loop.Run();
       download_manager->RemoveObserver(&download_item_killer);
@@ -219,9 +219,9 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, ImplicitCancel) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
   base::FilePath full_file_name, dir;
   GetDestinationPaths("a", &full_file_name, &dir);
-  scoped_refptr<SavePackage> save_package(new SavePackage(
-      shell()->web_contents(), SAVE_PAGE_TYPE_AS_ONLY_HTML, full_file_name,
-      dir));
+  scoped_refptr<SavePackage> save_package(
+      new SavePackage(shell()->web_contents()->GetPrimaryPage(),
+                      SAVE_PAGE_TYPE_AS_ONLY_HTML, full_file_name, dir));
 }
 
 // Create a SavePackage, call Cancel, then delete it.
@@ -232,9 +232,9 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, ExplicitCancel) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
   base::FilePath full_file_name, dir;
   GetDestinationPaths("a", &full_file_name, &dir);
-  scoped_refptr<SavePackage> save_package(new SavePackage(
-      shell()->web_contents(), SAVE_PAGE_TYPE_AS_ONLY_HTML, full_file_name,
-      dir));
+  scoped_refptr<SavePackage> save_package(
+      new SavePackage(shell()->web_contents()->GetPrimaryPage(),
+                      SAVE_PAGE_TYPE_AS_ONLY_HTML, full_file_name, dir));
   save_package->Cancel(true);
 }
 
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageWebBundleBrowserTest, OnePageSimple) {
     DownloadCompleteObserver observer(run_loop.QuitClosure());
     download_manager->AddObserver(&observer);
     scoped_refptr<SavePackage> save_package(
-        new SavePackage(shell()->web_contents()));
+        new SavePackage(shell()->web_contents()->GetPrimaryPage()));
     save_package->GetSaveInfo();
     run_loop.Run();
     download_manager->RemoveObserver(&observer);

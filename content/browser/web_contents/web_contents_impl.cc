@@ -1034,6 +1034,11 @@ WebContentsImpl::~WebContentsImpl() {
   ClearWebContentsAndroid();
 #endif
 
+  // |save_package_| is refcounted so make sure we clear the page before
+  // we toss out our reference.
+  if (save_package_)
+    save_package_->ClearPage();
+
   observers_.NotifyObservers(&WebContentsObserver::WebContentsDestroyed);
   if (display_cutout_host_impl_)
     display_cutout_host_impl_->WebContentsDestroyed();
@@ -4748,7 +4753,7 @@ void WebContentsImpl::OnSavePage() {
   // Create the save package and possibly prompt the user for the name to save
   // the page as. The user prompt is an asynchronous operation that runs on
   // another thread.
-  save_package_ = new SavePackage(this);
+  save_package_ = new SavePackage(GetPrimaryPage());
   save_package_->GetSaveInfo();
 }
 
@@ -4763,7 +4768,8 @@ bool WebContentsImpl::SavePage(const base::FilePath& main_file,
   // Stop the page from navigating.
   Stop();
 
-  save_package_ = new SavePackage(this, save_type, main_file, dir_path);
+  save_package_ =
+      new SavePackage(GetPrimaryPage(), save_type, main_file, dir_path);
   return save_package_->Init(SavePackageDownloadCreatedCallback());
 }
 
@@ -8901,6 +8907,12 @@ WebContentsImpl::GetRenderViewHostsIncludingBackForwardCached() {
 
 void WebContentsImpl::NotifyPageChanged() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::PrimaryPageChanged");
+
+  // Clear |save_package_| since the primary page changed.
+  if (save_package_) {
+    save_package_->ClearPage();
+    save_package_.reset();
+  }
 
   observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged);
 }
