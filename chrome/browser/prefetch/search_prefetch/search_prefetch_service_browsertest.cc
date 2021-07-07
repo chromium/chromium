@@ -2449,7 +2449,9 @@ class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {
         {{kSearchPrefetchServicePrefetching,
           {{"stream_responses", "true"}, {"cache_size", "1"}}},
          {{kSearchPrefetchService}, {}},
-         {{features::kBackForwardCache}, {{"enable_same_site", "true"}}}},
+         {{features::kBackForwardCache},
+          {{"enable_same_site", "true"},
+           {"ignore_outstanding_network_request_for_testing", "true"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
   }
@@ -2458,16 +2460,8 @@ class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1223445
-#define MAYBE_BackForwardPrefetchServedFromBFCache \
-  DISABLED_BackForwardPrefetchServedFromBFCache
-#else
-#define MAYBE_BackForwardPrefetchServedFromBFCache \
-  BackForwardPrefetchServedFromBFCache
-#endif
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
-                       MAYBE_BackForwardPrefetchServedFromBFCache) {
+                       BackForwardPrefetchServedFromBFCache) {
   // This test prefetches and serves two SRP responses. It then navigates back
   // then forward, the back navigation should not be cached, due to cache limit
   // size of 1, the second navigation should be cached.
