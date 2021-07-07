@@ -185,6 +185,9 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
     net::URLRequest* url_request) {
   url_request->SetUserData(WebSocket::kUserDataKey,
                            std::make_unique<UnownedPointer>(impl_));
+  impl_->net_log_source_id_ = url_request->net_log().source().id;
+  impl_->throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
+      impl_->net_log_source_id_, impl_->throttling_profile_id_);
 }
 
 void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
@@ -433,7 +436,8 @@ WebSocket::WebSocket(
                         mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                         base::ThreadTaskRunnerHandle::Get()),
       reassemble_short_messages_(base::FeatureList::IsEnabled(
-          network::features::kWebSocketReassembleShortMessages)) {
+          network::features::kWebSocketReassembleShortMessages)),
+      throttling_profile_id_(throttling_profile_id) {
   DCHECK(handshake_client_);
   // |delay| should be zero if this connection is not throttled.
   DCHECK(pending_connection_tracker.has_value() || delay.is_zero());

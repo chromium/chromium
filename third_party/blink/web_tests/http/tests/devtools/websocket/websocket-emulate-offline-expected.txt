@@ -1,0 +1,4 @@
+
+Running: testNoSocketOpenWhenOffline
+onerror onclose 
+

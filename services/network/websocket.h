@@ -26,6 +26,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
+#include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/websocket_throttler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -242,6 +243,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   // condition between the readable signal on the data pipe and the channel on
   // which StartClosingHandshake() is called.
   std::unique_ptr<CloseInfo> pending_start_closing_handshake_;
+
+  const absl::optional<base::UnguessableToken> throttling_profile_id_;
+  uint32_t net_log_source_id_ = net::NetLogSource::kInvalidId;
+  std::unique_ptr<ScopedThrottlingToken> throttling_token_;
 
   base::WeakPtrFactory<WebSocket> weak_ptr_factory_{this};
 
