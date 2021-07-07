@@ -229,11 +229,6 @@ const int kMinimumDelayBetweenLoadingUpdatesMS = 100;
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
-// TODO(crbug.com/1059903): Clean up after the initial investigation.
-constexpr base::Feature kCheckWebContentsAccessFromNonCurrentFrame{
-    "CheckWebContentsAccessFromNonCurrentFrame",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 base::LazyInstance<std::vector<
     WebContentsImpl::FriendWrapper::CreatedCallback>>::DestructorAtExit
     g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
@@ -625,11 +620,6 @@ WebContents* WebContents::FromRenderFrameHost(RenderFrameHost* rfh) {
                         rfh);
   if (!rfh)
     return nullptr;
-  if (!rfh->IsActive() && base::FeatureList::IsEnabled(
-                              kCheckWebContentsAccessFromNonCurrentFrame)) {
-    // TODO(crbug.com/1059903): return nullptr here eventually.
-    base::debug::DumpWithoutCrashing();
-  }
   return static_cast<RenderFrameHostImpl*>(rfh)->delegate()->GetAsWebContents();
 }
 
