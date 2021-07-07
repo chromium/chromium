@@ -289,6 +289,11 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Files on the disk remain as they were.
   void ReleaseAllFileInstances();
 
+  // Sequential task runner for all activities in this StorageQueue
+  // (must be first member in class).
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  SEQUENCE_CHECKER(storage_queue_sequence_checker_);
+
   // Immutable options, stored at the time of creation.
   const QueueOptions options_;
 
@@ -351,10 +356,8 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Test only: records specified to fail on reading.
   base::flat_set<int64_t> test_injected_fail_sequencing_ids_;
 
-  // Sequential task runner for all activities in this StorageQueue.
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-
-  SEQUENCE_CHECKER(storage_queue_sequence_checker_);
+  // Weak pointer factory (must be last member in class).
+  base::WeakPtrFactory<StorageQueue> weakptr_factory_{this};
 };
 
 }  // namespace reporting
