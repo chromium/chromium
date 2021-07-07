@@ -189,15 +189,15 @@ int DeviceMediaToMojoAdapter::max_buffer_pool_buffer_count() {
   // runs out of three when just displaying 60 FPS media in a video element.
   kMaxBufferCount = 10;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS with MIPI cameras running on HAL v3, there can be three
-  // concurrent streams of camera pipeline depth ~6. We allow at most 30 buffers
+  // On Chrome OS with MIPI cameras running on HAL v3, there can be four
+  // concurrent streams of camera pipeline depth ~6. We allow at most 36 buffers
   // here to take into account the delay caused by the consumer (e.g. display or
   // video encoder).
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kVideoCaptureUseGpuMemoryBuffer)) {
-    kMaxBufferCount = 30;
+    kMaxBufferCount = 36;
   }
 #elif defined(OS_WIN)
   // On Windows, for GMB backed zero-copy more buffers are needed because it's
