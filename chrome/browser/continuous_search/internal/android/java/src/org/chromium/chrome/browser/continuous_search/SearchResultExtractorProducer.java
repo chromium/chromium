@@ -101,7 +101,11 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         int urlCount = 0;
         List<PageGroup> groups = new ArrayList<PageGroup>();
         for (int i = 0; i < groupLabel.length; i++) {
-            if (isAdGroup[i]) continue;
+            if (isAdGroup[i]) {
+                // Account for the resulting group offset to ensure proper indexing.
+                groupOffset += groupSize[i];
+                continue;
+            }
 
             List<PageItem> results = new ArrayList<PageItem>();
             Set<GURL> groupUrls = new HashSet<>();
@@ -112,8 +116,8 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
                 results.add(new PageItem(urls[groupOffset + j], titles[groupOffset + j]));
                 urlCount++;
             }
-            groupOffset += groupSize[i];
 
+            groupOffset += groupSize[i];
             groups.add(new PageGroup(groupLabel[i], isAdGroup[i], results));
         }
 
