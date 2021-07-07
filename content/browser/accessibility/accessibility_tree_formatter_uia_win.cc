@@ -1229,8 +1229,7 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
       break;
     }
     case base::Value::Type::DOUBLE: {
-      double double_value = 0.0;
-      value->GetAsDouble(&double_value);
+      const double double_value = value->GetIfDouble().value_or(0.0);
       WriteAttribute(false,
                      base::StringPrintf("%s=%.2f", name.c_str(), double_value),
                      &line);
