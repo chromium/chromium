@@ -9,9 +9,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool_controller.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
