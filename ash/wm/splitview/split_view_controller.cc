@@ -1318,6 +1318,17 @@ void SplitViewController::OnWindowDragCanceled() {
     split_view_divider_->OnWindowDragEnded();
 }
 
+SplitViewController::SnapPosition SplitViewController::ComputeSnapPosition(
+    const gfx::Point& last_location_in_screen) {
+  const int divider_position = InSplitViewMode() ? this->divider_position()
+                                                 : GetDefaultDividerPosition();
+  const int position = IsLayoutHorizontal() ? last_location_in_screen.x()
+                                            : last_location_in_screen.y();
+  return (position <= divider_position) == IsLayoutRightSideUp()
+             ? SplitViewController::LEFT
+             : SplitViewController::RIGHT;
+}
+
 void SplitViewController::AddObserver(SplitViewObserver* observer) {
   observers_.AddObserver(observer);
 }
@@ -2342,17 +2353,6 @@ void SplitViewController::EndWindowDragImpl(
                      : SplitViewController::LEFT);
     }
   }
-}
-
-SplitViewController::SnapPosition SplitViewController::ComputeSnapPosition(
-    const gfx::Point& last_location_in_screen) {
-  const int divider_position = InSplitViewMode() ? this->divider_position()
-                                                 : GetDefaultDividerPosition();
-  const int position = IsLayoutHorizontal() ? last_location_in_screen.x()
-                                            : last_location_in_screen.y();
-  return (position <= divider_position) == IsLayoutRightSideUp()
-             ? SplitViewController::LEFT
-             : SplitViewController::RIGHT;
 }
 
 void SplitViewController::DoSplitDividerSpawnAnimation(aura::Window* window) {

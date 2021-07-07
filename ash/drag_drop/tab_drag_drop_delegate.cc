@@ -159,13 +159,26 @@ void TabDragDropDelegate::Drop(const gfx::Point& location_in_screen,
   // otherwise the SetBounds() call may have no effect.
   source_window_->ClearProperty(kIsSourceWindowForDrag);
 
+  SplitViewController* const split_view_controller =
+      SplitViewController::Get(new_window);
+
+  // If it's already in split view mode, either snap the new window
+  // to the left or the right depending on the drop location.
+  const bool in_split_view_mode = split_view_controller->InSplitViewMode();
+  if (in_split_view_mode) {
+    snap_position =
+        split_view_controller->ComputeSnapPosition(location_in_screen);
+  }
+
   if (snap_position == SplitViewController::SnapPosition::NONE)
     return;
 
-  SplitViewController* const split_view_controller =
-      SplitViewController::Get(new_window);
   split_view_controller->SnapWindow(new_window, snap_position,
                                     /*activate_window=*/true);
+
+  // Do not snap the source window if already in split view mode.
+  if (in_split_view_mode)
+    return;
 
   // The tab drag source window is the last window the user was
   // interacting with. When dropping into split view, it makes the most

@@ -237,6 +237,13 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                          const gfx::Point& last_location_in_screen);
   void OnWindowDragCanceled();
 
+  // Computes the snap position for a dragged window, based on the last
+  // mouse/gesture event location. Called by |EndWindowDragImpl| when
+  // desired_snap_position is |NONE| but because split view is already active,
+  // the dragged window needs to be snapped anyway.
+  SplitViewController::SnapPosition ComputeSnapPosition(
+      const gfx::Point& last_location_in_screen);
+
   void AddObserver(SplitViewObserver* observer);
   void RemoveObserver(SplitViewObserver* observer);
 
@@ -448,13 +455,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                          bool is_being_destroyed,
                          SnapPosition desired_snap_position,
                          const gfx::Point& last_location_in_screen);
-
-  // Computes the snap position for a dragged window, based on the last
-  // mouse/gesture event location. Called by |EndWindowDragImpl| when
-  // desired_snap_position is |NONE| but because split view is already active,
-  // the dragged window needs to be snapped anyway.
-  SplitViewController::SnapPosition ComputeSnapPosition(
-      const gfx::Point& last_location_in_screen);
 
   // Do the split divider spawn animation. It will add a finishing touch to the
   // |window| animation that generally accommodates snapping by dragging.

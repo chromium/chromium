@@ -225,8 +225,19 @@ aura::Window* ChromeShellDelegate::CreateBrowserForTabDrop(
   // failures can happen in valid states, and if so whether we need to
   // reflect failure in UX.
 
+  // TODO(crbug.com/1225667): Loosen restriction for SplitViewController to be
+  // able to snap a window without calling Show(). It will simplify the logic
+  // without having to set and clear ash::kIsDraggingTabsKey by calling Show()
+  // after snapping the window to the right place.
+
+  // We need to mark the newly created window with |ash::kIsDraggingTabsKey|
+  // and clear it afterwards in order to prevent
+  // SplitViewController::AutoSnapController from snapping it on Show().
+  aura::Window* window = browser->window()->GetNativeWindow();
+  window->SetProperty(ash::kIsDraggingTabsKey, true);
   browser->window()->Show();
-  return browser->window()->GetNativeWindow();
+  window->ClearProperty(ash::kIsDraggingTabsKey);
+  return window;
 }
 
 void ChromeShellDelegate::BindBluetoothSystemFactory(
