@@ -18,6 +18,7 @@ namespace auto_fetch {
 struct ClientIdMetadata {
   ClientIdMetadata();
   ClientIdMetadata(const ClientIdMetadata&);
+  ClientIdMetadata& operator=(const ClientIdMetadata&);
   explicit ClientIdMetadata(int android_tab_id)
       : android_tab_id(android_tab_id) {}
   // ID of the Android tab that initiated the request.

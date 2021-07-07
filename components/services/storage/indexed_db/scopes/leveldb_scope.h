@@ -116,7 +116,8 @@ class LevelDBScope {
     // This constructor is needed to satisfy the constraints of having default
     // construction of the |empty_ranges_| flat_map below.
     EmptyRangeLessThan();
-    EmptyRangeLessThan(const leveldb::Comparator* comparator);
+    explicit EmptyRangeLessThan(const leveldb::Comparator* comparator);
+    EmptyRangeLessThan(const EmptyRangeLessThan& other);
     EmptyRangeLessThan& operator=(const EmptyRangeLessThan& other);
 
     // The ranges are expected to be disjoint.

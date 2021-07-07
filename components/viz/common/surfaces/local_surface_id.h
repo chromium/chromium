@@ -68,10 +68,8 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
       : parent_sequence_number_(kInvalidParentSequenceNumber),
         child_sequence_number_(kInvalidChildSequenceNumber) {}
 
-  constexpr LocalSurfaceId(const LocalSurfaceId& other)
-      : parent_sequence_number_(other.parent_sequence_number_),
-        child_sequence_number_(other.child_sequence_number_),
-        embed_token_(other.embed_token_) {}
+  constexpr LocalSurfaceId(const LocalSurfaceId& other) = default;
+  constexpr LocalSurfaceId& operator=(const LocalSurfaceId& other) = default;
 
   constexpr LocalSurfaceId(uint32_t parent_sequence_number,
                            const base::UnguessableToken& embed_token)

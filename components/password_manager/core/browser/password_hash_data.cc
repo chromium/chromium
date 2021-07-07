@@ -33,6 +33,9 @@ PasswordHashData::PasswordHashData() = default;
 
 PasswordHashData::PasswordHashData(const PasswordHashData& other) = default;
 
+PasswordHashData& PasswordHashData::operator=(const PasswordHashData& other) =
+    default;
+
 PasswordHashData::PasswordHashData(const std::string& username,
                                    const std::u16string& password,
                                    bool force_update,

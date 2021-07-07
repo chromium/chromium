@@ -32,6 +32,7 @@ class AccountId {
   AccountId();
 
   AccountId(const AccountId& other);
+  AccountId& operator=(const AccountId& other);
 
   // If any of the comparable AccountIds has AccountType == UNKNOWN then it
   // compares emails.

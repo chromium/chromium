@@ -464,6 +464,7 @@ struct Media {
         int32_t height_um);
 
   Media(const Media& other);
+  Media& operator=(const Media& other);
 
   bool MatchBySize();
 

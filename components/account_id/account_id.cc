@@ -35,7 +35,7 @@ const char kKeyAdIdPrefix[] = "a-";
 
 }  // anonymous namespace
 
-AccountId::AccountId() {}
+AccountId::AccountId() = default;
 
 AccountId::AccountId(const std::string& id,
                      const std::string& user_email,
@@ -54,10 +54,9 @@ AccountId::AccountId(const std::string& id,
   // TODO(alemate): check gaia_id is not empty once it is required.
 }
 
-AccountId::AccountId(const AccountId& other)
-    : id_(other.id_),
-      user_email_(other.user_email_),
-      account_type_(other.account_type_) {}
+AccountId::AccountId(const AccountId& other) = default;
+
+AccountId& AccountId::operator=(const AccountId& other) = default;
 
 bool AccountId::operator==(const AccountId& other) const {
   if (this == &other)

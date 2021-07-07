@@ -16,6 +16,7 @@ namespace password_manager {
 struct PasswordHashData {
   PasswordHashData();
   PasswordHashData(const PasswordHashData& other);
+  PasswordHashData& operator=(const PasswordHashData& other);
   PasswordHashData(const std::string& username,
                    const std::u16string& password,
                    bool force_update,

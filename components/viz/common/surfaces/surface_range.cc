@@ -4,6 +4,8 @@
 
 #include "components/viz/common/surfaces/surface_range.h"
 
+#include <string>
+
 #include "base/strings/stringprintf.h"
 
 namespace viz {
@@ -18,6 +20,8 @@ SurfaceRange::SurfaceRange(const SurfaceId& surface_id)
     : start_(surface_id), end_(surface_id) {}
 
 SurfaceRange::SurfaceRange(const SurfaceRange& other) = default;
+
+SurfaceRange& SurfaceRange::operator=(const SurfaceRange& other) = default;
 
 bool SurfaceRange::operator==(const SurfaceRange& other) const {
   return start_ == other.start() && end_ == other.end();

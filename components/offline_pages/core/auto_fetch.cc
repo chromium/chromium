@@ -13,6 +13,8 @@ namespace offline_pages {
 namespace auto_fetch {
 ClientIdMetadata::ClientIdMetadata() = default;
 ClientIdMetadata::ClientIdMetadata(const ClientIdMetadata&) = default;
+ClientIdMetadata& ClientIdMetadata::operator=(const ClientIdMetadata&) =
+    default;
 
 ClientId MakeClientId(const ClientIdMetadata& metadata) {
   // Here, the 'A' prefix is used so that future versions can easily change the

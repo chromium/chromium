@@ -16,6 +16,7 @@ namespace chrome {
 struct ParsedFaviconPath {
   ParsedFaviconPath();
   ParsedFaviconPath(const ParsedFaviconPath& other);
+  ParsedFaviconPath& operator=(const ParsedFaviconPath& other);
 
   // URL pointing to the page whose favicon we want.
   std::string page_url;

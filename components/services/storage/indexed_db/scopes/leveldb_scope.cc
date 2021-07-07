@@ -109,6 +109,8 @@ LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan() = default;
 LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan(
     const leveldb::Comparator* comparator)
     : comparator_(comparator) {}
+LevelDBScope::EmptyRangeLessThan::EmptyRangeLessThan(
+    const LevelDBScope::EmptyRangeLessThan& other) = default;
 LevelDBScope::EmptyRangeLessThan& LevelDBScope::EmptyRangeLessThan::operator=(
     const LevelDBScope::EmptyRangeLessThan& other) = default;
 

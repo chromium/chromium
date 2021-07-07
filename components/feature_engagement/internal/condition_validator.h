@@ -35,6 +35,7 @@ class ConditionValidator {
   struct Result {
     explicit Result(bool initial_values);
     Result(const Result& other);
+    Result& operator=(const Result& other);
 
     // Whether the event model was ready.
     bool event_model_ready_ok;

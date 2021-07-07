@@ -137,6 +137,9 @@ ParsedFaviconPath::ParsedFaviconPath() = default;
 
 ParsedFaviconPath::ParsedFaviconPath(const ParsedFaviconPath& other) = default;
 
+ParsedFaviconPath& ParsedFaviconPath::operator=(
+    const ParsedFaviconPath& other) = default;
+
 bool ParseFaviconPath(const std::string& path,
                       FaviconUrlFormat format,
                       ParsedFaviconPath* parsed) {

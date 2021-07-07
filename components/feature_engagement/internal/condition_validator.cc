@@ -21,19 +21,10 @@ ConditionValidator::Result::Result(bool initial_values)
       availability_ok(initial_values),
       display_lock_ok(initial_values) {}
 
-ConditionValidator::Result::Result(const Result& other) {
-  event_model_ready_ok = other.event_model_ready_ok;
-  currently_showing_ok = other.currently_showing_ok;
-  feature_enabled_ok = other.feature_enabled_ok;
-  config_ok = other.config_ok;
-  used_ok = other.used_ok;
-  trigger_ok = other.trigger_ok;
-  preconditions_ok = other.preconditions_ok;
-  session_rate_ok = other.session_rate_ok;
-  availability_model_ready_ok = other.availability_model_ready_ok;
-  availability_ok = other.availability_ok;
-  display_lock_ok = other.display_lock_ok;
-}
+ConditionValidator::Result::Result(const Result& other) = default;
+
+ConditionValidator::Result& ConditionValidator::Result::operator=(
+    const Result& other) = default;
 
 bool ConditionValidator::Result::NoErrors() const {
   return event_model_ready_ok && currently_showing_ok && feature_enabled_ok &&

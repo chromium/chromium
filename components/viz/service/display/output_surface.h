@@ -66,6 +66,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   struct Capabilities {
     Capabilities();
     Capabilities(const Capabilities& capabilities);
+    Capabilities& operator=(const Capabilities& capabilities);
 
     int max_frames_pending = 1;
     // If set, should be the max number of pending frames when running at or
