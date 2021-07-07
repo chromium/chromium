@@ -311,10 +311,14 @@ class ManagedUserTosScreenTest : public OobeBaseTest {
         ->set_value(TestServerBaseUrl(embedded_test_server()));
   }
 
-  void SetUpExitCallback() {
-    TermsOfServiceScreen* screen = static_cast<TermsOfServiceScreen*>(
+  TermsOfServiceScreen* GetTosScreen() {
+    return static_cast<TermsOfServiceScreen*>(
         WizardController::default_controller()->screen_manager()->GetScreen(
             TermsOfServiceScreenView::kScreenId));
+  }
+
+  void SetUpExitCallback() {
+    auto* screen = GetTosScreen();
     original_callback_ = screen->get_exit_callback_for_testing();
     screen->set_exit_callback_for_testing(base::BindRepeating(
         &ManagedUserTosScreenTest::HandleScreenExit, base::Unretained(this)));
@@ -387,7 +391,6 @@ IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Skipped) {
 
 IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Accepted) {
   SetUpTermsOfServiceUrlPolicy();
-  EXPECT_FALSE(TosFileExists());
   StartManagedUserSession();
 
   WaitFosScreenShown();
@@ -396,8 +399,6 @@ IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Accepted) {
   test::OobeJS().TapOnPath({"terms-of-service", "acceptButton"});
   WaitForScreenExit();
 
-  EXPECT_TRUE(TosFileExists());
-  EXPECT_TRUE(SavedTosMatchString(std::string(kTosText)));
   EXPECT_EQ(result_.value(), TermsOfServiceScreen::Result::ACCEPTED);
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Terms-of-service.Accepted", 1);
@@ -410,7 +411,6 @@ IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Accepted) {
 
 IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Declined) {
   SetUpTermsOfServiceUrlPolicy();
-  EXPECT_FALSE(TosFileExists());
   StartManagedUserSession();
 
   WaitFosScreenShown();
@@ -419,8 +419,6 @@ IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Declined) {
   test::OobeJS().TapOnPath({"terms-of-service", "backButton"});
   WaitForScreenExit();
 
-  EXPECT_TRUE(TosFileExists());
-  EXPECT_TRUE(SavedTosMatchString(std::string(kTosText)));
   EXPECT_EQ(result_.value(), TermsOfServiceScreen::Result::DECLINED);
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Terms-of-service.Accepted", 0);
@@ -429,6 +427,20 @@ IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Declined) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Tos", 1);
 
   EXPECT_TRUE(session_manager_client()->session_stopped());
+}
+
+IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, TosSaved) {
+  SetUpTermsOfServiceUrlPolicy();
+  EXPECT_FALSE(TosFileExists());
+  base::RunLoop run_loop;
+  GetTosScreen()->set_tos_saved_callback_for_testing(run_loop.QuitClosure());
+  StartManagedUserSession();
+
+  WaitFosScreenShown();
+  run_loop.Run();
+
+  EXPECT_TRUE(TosFileExists());
+  EXPECT_TRUE(SavedTosMatchString(std::string(kTosText)));
 }
 
 }  // namespace

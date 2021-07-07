@@ -299,10 +299,18 @@ base::FilePath TermsOfServiceScreen::GetTosFilePath() {
 
 void TermsOfServiceScreen::SaveTos(const std::string& tos) {
   auto tos_path = GetTosFilePath();
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-                             base::BindOnce(&SaveTosToFile, tos, tos_path));
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&SaveTosToFile, tos, tos_path),
+      base::BindOnce(&TermsOfServiceScreen::OnTosSavedForTesting,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void TermsOfServiceScreen::OnTosSavedForTesting() {
+  if (tos_saved_for_testing_)
+    std::move(tos_saved_for_testing_).Run();
 }
 
 }  // namespace ash

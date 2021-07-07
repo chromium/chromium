@@ -54,6 +54,11 @@ class TermsOfServiceScreen : public BaseScreen {
   // Called when view is destroyed so there is no dead reference to it.
   void OnViewDestroyed(TermsOfServiceScreenView* view);
 
+  // Set callback to wait for file saving in tests.
+  void set_tos_saved_callback_for_testing(base::OnceClosure callback) {
+    tos_saved_for_testing_ = std::move(callback);
+  }
+
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
   }
@@ -64,7 +69,6 @@ class TermsOfServiceScreen : public BaseScreen {
 
   // Get path for a user terms of service file.
   static base::FilePath GetTosFilePath();
-
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext* context) override;
@@ -87,9 +91,12 @@ class TermsOfServiceScreen : public BaseScreen {
   void OnTosLoadedFromFile(absl::optional<std::string> tos);
   // Save terms as text to a local file.
   void SaveTos(const std::string& tos);
+  // Runs callback for tests.
+  void OnTosSavedForTesting();
 
   TermsOfServiceScreenView* view_;
   ScreenExitCallback exit_callback_;
+  base::OnceClosure tos_saved_for_testing_;
 
   std::unique_ptr<network::SimpleURLLoader> terms_of_service_loader_;
 
