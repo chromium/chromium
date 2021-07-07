@@ -103,6 +103,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1307966114820526988">Funciones obsoletas</translation>
 <translation id="131405271941274527"><ph name="URL" /> quiere enviar y recibir información cuando presionas tu teléfono en un dispositivo NFC</translation>
 <translation id="1314509827145471431">Encuadernado a la derecha</translation>
+<translation id="1319245136674974084">No volver a preguntar sobre esta app</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">Buscar imagen del portapapeles</translation>
 <translation id="1323433172918577554">Mostrar más</translation>
@@ -741,6 +742,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3655670868607891010">Si este mensaje aparece con frecuencia, haz clic aquí: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
+<translation id="3671540257457995106">¿Deseas permitir el cambio de tamaño?</translation>
 <translation id="3676592649209844519">ID de dispositivo:</translation>
 <translation id="3677008721441257057">¿Quisiste decir &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">La solicitud no se pudo firmar</translation>
@@ -1096,6 +1098,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4953689047182316270">Responder a los eventos de accesibilidad</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Mostrar lista</translation>
+<translation id="4968522289500246572">Esta app está diseñada para dispositivos móviles y es posible que el cambio de tamaño no funcione correctamente. Posiblemente la app se reiniciará o presentará problemas.</translation>
 <translation id="4973922308112707173">Perforación doble en la parte superior</translation>
 <translation id="4974590756084640048">Volver a habilitar las advertencias</translation>
 <translation id="4984088539114770594">¿Permitir el uso del micrófono?</translation>
@@ -1144,6 +1147,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifica tu tarjeta</translation>
+<translation id="512670116361803001">Es posible que el cambio de tamaño de <ph name="APP_NAME" /> no funcione correctamente. Utiliza los tamaños predeterminados de ventana para que no se generen problemas en la app.</translation>
 <translation id="5135404736266831032">Administrar direcciones…</translation>
 <translation id="5138014172396933048">La tarjeta virtual no está disponible ahora mismo; comunícate con tu banco.</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
@@ -1510,6 +1514,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="647261751007945333">Políticas de dispositivos</translation>
 <translation id="6476284679642588870">Administrar las formas de pago</translation>
 <translation id="6489534406876378309">Comenzar a cargar fallos</translation>
+<translation id="6493924760403974580">No se permite cambiar el tamaño de esta app.</translation>
 <translation id="6499038740797743453">¿Deseas restablecer la contraseña?</translation>
 <translation id="6502991525169604759">Sin tus cambios</translation>
 <translation id="6508722015517270189">Reinicia Chrome.</translation>
@@ -2165,6 +2170,7 @@ Detalles adicionales:
 <translation id="8975263830901772334">Nombres de los archivos que imprimes</translation>
 <translation id="8978053250194585037">Recientemente, la navegación segura de Google <ph name="BEGIN_LINK" />detectó un intento de suplantación de identidad (phishing)<ph name="END_LINK" /> en <ph name="SITE" />. Los sitios de suplantación de identidad imitan a otros sitios web para engañarte.</translation>
 <translation id="8983003182662520383">Formas de pago y direcciones con Google Pay</translation>
+<translation id="8983369100812962543">Ahora puedes cambiar el tamaño de la app.</translation>
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> quiere saber en qué momento estás usando activamente este dispositivo</translation>

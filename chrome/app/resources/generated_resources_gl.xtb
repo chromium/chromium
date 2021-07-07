@@ -463,6 +463,7 @@
 <translation id="1507246803636407672">&amp;Descartar</translation>
 <translation id="1508491105858779599">Coloca o dedo no sensor de impresión dixital para desbloquear o dispositivo.</translation>
 <translation id="1508575541972276599">A versión actual é Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Restaurar grupo</translation>
 <translation id="1509281256533087115">Acceda a calquera <ph name="DEVICE_NAME_AND_VENDOR" /> por USB</translation>
 <translation id="1509960214886564027">As funcións de moitos sitios poden deixar de funcionar</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
@@ -584,6 +585,7 @@
 <translation id="1627408615528139100">O ficheiro xa se descargou.</translation>
 <translation id="1628948239858170093">Queres analizar o ficheiro antes de abrilo?</translation>
 <translation id="1629314197035607094">Caducou o contrasinal</translation>
+<translation id="1629451755632656601">Queres permitir que Google busque descontos personalizados para os artigos dos teus carros?</translation>
 <translation id="1630300831289687074">Poderás usar o teu Chromebook en breve.</translation>
 <translation id="163072119192489970">Sitios que poden rematar de enviar ou recibir datos</translation>
 <translation id="1630768113285622200">Reiniciar e continuar</translation>
@@ -1289,6 +1291,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="236117173274098341">Optimizar</translation>
 <translation id="2361340419970998028">Enviando comentario…</translation>
 <translation id="236141728043665931">Bloquear sempre o acceso do micrófono</translation>
+<translation id="2363744066037724557">&amp;Restaurar ventá</translation>
 <translation id="2364498172489649528">Aprobou</translation>
 <translation id="2365507699358342471">Este sitio pode ver o texto e as imaxes que se copian no portapapeis.</translation>
 <translation id="2367972762794486313">Mostrar aplicacións</translation>
@@ -2671,6 +2674,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3857807444929313943">Levanta o dedo e volve tocar o sensor</translation>
 <translation id="3861638017150647085">O nome de usuario "<ph name="USERNAME" />" non está dispoñible</translation>
 <translation id="3861977424605124250">Mostrar ao inicio</translation>
+<translation id="386239283124269513">&amp;Restaurar grupo</translation>
 <translation id="3862788408946266506">É necesario instalar a aplicación co atributo de manifesto "kiosk_only" no modo de quiosco de Chrome OS</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3866249974567520381">Descrición</translation>
@@ -5646,6 +5650,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7225179976675429563">Non se atopa o tipo de rede</translation>
 <translation id="7228479291753472782">Manipula a configuración que determina se os sitios web poden utilizar funcións como a xeolocalización, o micrófono, a cámara etc.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla e inicio de sesión</translation>
+<translation id="7230222852462421043">&amp;Restaurar ventá</translation>
 <translation id="7230787553283372882">Personaliza o tamaño do texto</translation>
 <translation id="7232750842195536390">Produciuse un erro ao cambiar o nome</translation>
 <translation id="7234010996000898150">Cancelando a restauración de Linux</translation>
@@ -6255,12 +6260,14 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="7853747251428735">Máis ferrament&amp;as</translation>
 <translation id="7855678561139483478">Mover pestana a ventá nova</translation>
 <translation id="7857093393627376423">Suxestións de texto</translation>
+<translation id="7857675386615530425">Buscar parte da páxina con Google Lens</translation>
 <translation id="7857949311770343000">Esta é a páxina da pestana nova que esperabas?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Servizo: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descargas</translation>
 <translation id="7861846108263890455">Idioma da Conta de Google</translation>
 <translation id="7864539943188674973">Desactivar o Bluetooth</translation>
+<translation id="7866230141401327032">Buscar parte da páxina con Google Lens</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: sincronizado</translation>
 <translation id="7870730066603611552">Revisar opcións de sincronización despois da configuración</translation>
 <translation id="7870790288828963061">Non se atopou ningunha aplicación de quiosco cunha versión máis recente. Non hai nada para actualizar. Retira a memoria USB.</translation>
@@ -6835,6 +6842,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación</translation>
 <translation id="850875081535031620">Non se atopou software daniño</translation>
 <translation id="8509177919508253835">Restablece as chaves de seguranza e crea os PIN</translation>
 <translation id="8509646642152301857">Non se puido descargar o dicionario da verificación ortográfica.</translation>
+<translation id="8509967119010808787">Para buscar unha pestana, fai clic aquí</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Non se atopou ningún contrasinal pouco seguro}=1{Atopouse {COUNT} contrasinal pouco seguro}other{Atopáronse {COUNT} contrasinais pouco seguros}}</translation>
 <translation id="8512476990829870887">Finalizar proceso</translation>
 <translation id="851263357009351303">Permitir sempre a <ph name="HOST" /> mostrar imaxes</translation>

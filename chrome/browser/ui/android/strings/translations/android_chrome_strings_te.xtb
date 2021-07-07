@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">గణిస్తోంది...</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /> Google Lensతో ఇమేజ్‌ను అనువదించండి</translation>
-<translation id="1385855801883526502">హైలైట్ శైలిని మార్చండి</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />తో వెతకండి</translation>
 <translation id="1406000523432664303">“ట్రాక్ చేయవద్దు”</translation>
@@ -853,6 +852,7 @@
 <translation id="6441734959916820584">పేరు చాలా పొడువు ఉంది</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# ఫోటో}other{# ఫోటోలు}}</translation>
 <translation id="6447558397796644647">ఆ బుక్‌మార్క్‌ను కనుగొనడం సాధ్యం కాలేదు. మీ స్పెల్లింగ్‌ను తనిఖీ చేయండి లేదా కొత్త బుక్‌మార్క్‌ను జోడించండి.</translation>
+<translation id="6459045781120991510">సర్వేలు</translation>
 <translation id="6461962085415701688">ఫైల్‌ను తెరవడం సాధ్యపడదు</translation>
 <translation id="6464977750820128603">Chromeలో మీరు ఏయే సైట్‌లను సందర్శించారో చూడవచ్చు, వాటికి టైమర్‌లను సెట్ చేయవచ్చు.\n\nమీరు టైమర్‌లను సెట్ చేసిన సైట్‌ల సమాచారం, మీరు ఎంతసేపు వాటిని సందర్శించారనే వివరాలు Googleకు అందించబడతాయి. డిజిటల్ సంక్షేమాన్ని మరింత మెరుగుపరచడానికి ఈ సమాచారం ఉపయోగించబడుతుంది.</translation>
 <translation id="6475951671322991020">వీడియోను డౌన్‌లోడ్ చేయి</translation>
@@ -969,6 +969,7 @@
 <translation id="7242755609445462077">శైలీకరించిన హైలైట్ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="7252076891734325316">మీ ఫోన్‌ను కంప్యూటర్‌కు దగ్గరగా ఉంచండి</translation>
+<translation id="727288900855680735"><ph name="ORIGIN" />‌కు <ph name="ONE_TIME_CODE" />‌ను సమర్పించాలా?</translation>
 <translation id="7274013316676448362">బ్లాక్ చేసిన సైట్</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> మార్చాలా?</translation>
 <translation id="7290209999329137901">పేరు మార్పు అందుబాటులో లేదు</translation>

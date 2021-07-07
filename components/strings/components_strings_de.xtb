@@ -103,6 +103,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1307966114820526988">Eingestellte Funktionen</translation>
 <translation id="131405271941274527"><ph name="URL" /> möchte Informationen senden und empfangen, wenn Sie Ihr Smartphone an NFC-Geräte halten</translation>
 <translation id="1314509827145471431">Bindung rechts</translation>
+<translation id="1319245136674974084">Für diese App nicht mehr nachfragen</translation>
 <translation id="1320233736580025032">Prc1 (Umschlag)</translation>
 <translation id="132301787627749051">Nach Bild aus Zwischenablage suchen</translation>
 <translation id="1323433172918577554">Mehr anzeigen</translation>
@@ -738,6 +739,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3655670868607891010">Sollte Ihnen diese Meldung häufiger angezeigt werden, sehen Sie sich unsere <ph name="HELP_LINK" /> an.</translation>
 <translation id="3658742229777143148">Überarbeitung</translation>
 <translation id="3664782872746246217">Suchbegriffe:</translation>
+<translation id="3671540257457995106">Größenanpassung zulassen?</translation>
 <translation id="3676592649209844519">Geräte-ID:</translation>
 <translation id="3677008721441257057">Meinten Sie vielleicht &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Anfrage konnte nicht signiert werden</translation>
@@ -1093,6 +1095,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4953689047182316270">Auf Bedienungshilfen reagieren</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Liste einblenden</translation>
+<translation id="4968522289500246572">Diese App wurde für Mobilgeräte entwickelt. Ihre Größe kann deshalb eventuell nicht richtig angepasst werden. Außerdem können Probleme auftreten und sie wird möglicherweise neu gestartet.</translation>
 <translation id="4973922308112707173">Doppelte Lochung oben</translation>
 <translation id="4974590756084640048">Warnmeldungen wieder aktivieren</translation>
 <translation id="4984088539114770594">Mikrofon verwenden?</translation>
@@ -1141,6 +1144,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5123063207673082822">Wochenende</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Karte bestätigen</translation>
+<translation id="512670116361803001">Die Größe von <ph name="APP_NAME" /> kann eventuell nicht richtig angepasst werden. Verwenden Sie voreingestellte Fenstergrößen, damit die App ordnungsgemäß funktioniert.</translation>
 <translation id="5135404736266831032">Adressen verwalten…</translation>
 <translation id="5138014172396933048">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte kontaktieren Sie Ihre Bank</translation>
 <translation id="5138227688689900538">Weniger anzeigen</translation>
@@ -1507,6 +1511,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="647261751007945333">Geräterichtlinien</translation>
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6489534406876378309">Hochladen von Abstürzen starten</translation>
+<translation id="6493924760403974580">Diese App unterstützt nur diese Größe.</translation>
 <translation id="6499038740797743453">Passwort zurücksetzen?</translation>
 <translation id="6502991525169604759">Ohne meine Änderungen</translation>
 <translation id="6508722015517270189">Chrome neu starten</translation>
@@ -2162,6 +2167,7 @@ Weitere Details:
 <translation id="8975263830901772334">Namen von Dateien, die Sie drucken</translation>
 <translation id="8978053250194585037">Google Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Phishingaktivitäten<ph name="END_LINK" /> auf <ph name="SITE" /> festgestellt. Phishingwebsites geben sich als andere Websites aus, um Sie zu täuschen.</translation>
 <translation id="8983003182662520383">Bei Google Pay gespeicherte Zahlungsmethoden und Adressen</translation>
+<translation id="8983369100812962543">Sie können die Größe der App jetzt ändern</translation>
 <translation id="8987927404178983737">Monat</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> möchte Informationen zu Ihrer aktiven Nutzung dieses Geräts abrufen</translation>

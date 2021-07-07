@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">चल्तीबाट हटाइएका सुविधाहरू</translation>
 <translation id="131405271941274527"><ph name="URL" /> तपाईंले NFC यन्त्रहरूमा ट्याप गर्दा जानकारी पठाउन तथा प्राप्त गर्न चाहन्छ</translation>
 <translation id="1314509827145471431">दायाँ बाइन्ड</translation>
+<translation id="1319245136674974084">यो एपका हकमा फेरि नसोधियोस्</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">क्लिपबोर्डको छवि खोज्नुहोस्</translation>
 <translation id="1323433172918577554">थप देखाउनुहोस्</translation>
@@ -741,6 +742,7 @@
 <translation id="3655670868607891010">यदि तपाईं यो बारम्बार रूपमा देखिरहनुभएको छ भने, यिनीहरू गर्ने प्रयास गर्नुहोस् <ph name="HELP_LINK" />।</translation>
 <translation id="3658742229777143148">संशोधन</translation>
 <translation id="3664782872746246217">किवर्डहरू:</translation>
+<translation id="3671540257457995106">आकार बदल्न दिने हो?</translation>
 <translation id="3676592649209844519">यन्त्रको ID:</translation>
 <translation id="3677008721441257057">तपाईंले &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; भन्न खोज्नुभएको हो?</translation>
 <translation id="3678029195006412963">अनुरोधमा हस्ताक्षर गर्न सकिएन</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4953689047182316270">पहुँचसम्बन्धी कार्यक्रमहरूमा प्रतिक्रिया दिनुहोस्</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">सूची विस्तारित गर्नुहोस्</translation>
+<translation id="4968522289500246572">यो एप मोबाइलमा चलाउने प्रयोजनले बनाइएको हो र यसको आकार सही तरिकाले परिवर्तन नहुन सक्छ। यो एपमा समस्या देखिन सक्छ वा यो एप आफैँ रिस्टार्ट हुन सक्छ।</translation>
 <translation id="4973922308112707173">सिरानमा दुई प्वाल</translation>
 <translation id="4974590756084640048">चेतावनीहरूलाई पुन:सक्षम पार्नुहोस्</translation>
 <translation id="4984088539114770594">माइक्रोफोन प्रयोग गर्ने हो?</translation>
@@ -1148,6 +1151,7 @@
 <translation id="5123063207673082822">सप्ताहान्त</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">आफ्नो कार्ड पुष्टि गर्नुहोस्</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> को आकार सही तरिकाले परिवर्तन नहुन सक्छ। एपमा कुनै समस्या नआओस् भन्नाका खातिर विन्डोको पूर्वनिर्धारित आकार प्रयोग गर्नुहोस्।</translation>
 <translation id="5135404736266831032">ठेगानाहरू व्यवस्थित गर्नुहोस्...</translation>
 <translation id="5138014172396933048">भर्चुअल कार्ड हाल उपलब्ध छैन। कृपया आफ्नो बैंकमा सम्पर्क गर्नुहोस्</translation>
 <translation id="5138227688689900538">कम देखाउनुहोस्</translation>
@@ -1514,6 +1518,7 @@
 <translation id="647261751007945333">यन्त्र नीतिहरू</translation>
 <translation id="6476284679642588870">भुक्तानी विधिहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="6489534406876378309">क्रयासहरू अपलोड गर्न सुरु गर्नुहोस्</translation>
+<translation id="6493924760403974580">यो एप यो आकारमा मात्र चल्छ।</translation>
 <translation id="6499038740797743453">पासवर्ड रिसेट गर्ने हो?</translation>
 <translation id="6502991525169604759">तपाईंले गर्नुभएका परिवर्तन लागू नगरी</translation>
 <translation id="6508722015517270189">Chrome पुनः सुरु गर्नुहोस्</translation>
@@ -2168,6 +2173,7 @@
 <translation id="8975263830901772334">तपाईंले प्रिन्ट गर्ने फाइलका नामहरू</translation>
 <translation id="8978053250194585037">Google Safe Browsing ले हालै <ph name="SITE" /> मा <ph name="BEGIN_LINK" />फिसिङ पत्ता लगायो<ph name="END_LINK" />। फिसिङमार्फत आक्रमण गर्ने साइटहरूले तपाईंलाई झुक्याउन आफूलाई अन्य बेवसाइटका रूपमा प्रस्तुत गर्दछन्।</translation>
 <translation id="8983003182662520383">Google Pay को प्रयोग गर्ने भुक्तानी विधि र ठेगानाहरू</translation>
+<translation id="8983369100812962543">तपाईं अब एपको आकार बदल्न सक्नुहुन्छ</translation>
 <translation id="8987927404178983737">महिना</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> ले तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्छ भन्ने कुराको जानकारी माग्दै छ</translation>

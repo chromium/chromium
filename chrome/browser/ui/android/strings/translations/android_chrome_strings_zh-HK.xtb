@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">正在運算…</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384704387250346179">使用「Google 智能鏡頭」翻譯圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">風格化焦點內容</translation>
 <translation id="1386674309198842382">曾於 <ph name="LAST_UPDATED" /> 天前在線</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋內容</translation>
 <translation id="1406000523432664303">「不追蹤」</translation>
@@ -853,7 +852,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6441734959916820584">此名稱過長</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# 張圖片}other{# 張圖片}}</translation>
 <translation id="6447558397796644647">找不到該書籤。請檢查拼字或新增書籤。</translation>
-<translation id="6459045781120991510">問卷調查</translation>
+<translation id="6459045781120991510">問卷</translation>
 <translation id="6461962085415701688">無法開啟檔案</translation>
 <translation id="6464977750820128603">您可查看在 Chrome 上瀏覽的網站，並為這些網站設定計時器。\n\nGoogle 會收到這些設有計時器的網站相關資料，以及您的瀏覽時間長度。這些資料可協助我們改善「健康數碼生活」。</translation>
 <translation id="6475951671322991020">下載影片</translation>

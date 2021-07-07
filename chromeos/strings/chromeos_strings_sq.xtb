@@ -32,6 +32,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
+<translation id="1600964289716072707">Vendos një faqe tjetër në skaner dhe zgjidh "Skano" për të shtuar faqen.</translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1644574205037202324">Historiku</translation>
@@ -286,6 +287,7 @@
 <translation id="6766275201586212568">Rezolucione të dështuara të DNS-së</translation>
 <translation id="6768237774506518020">Normë e lartë e rezolucioneve të dështuara të DNS-së</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
+<translation id="6905724422583748843">Prapa te <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kapaku i skanerit është i hapur. Mbylle kapakun dhe provo përsëri.</translation>
 <translation id="6911383237894364323">Nuk mund të lidhet me serverët e medias.</translation>
 <translation id="6957231940976260713">Emri i shërbimit</translation>
@@ -330,6 +332,7 @@
 <translation id="7769672763586021400">ID-ja e modelit</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7819857487979277519">PSK (WPA ose RSN)</translation>
+<translation id="7835501727204647447">Instalo CloudReady</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Lloji i ofruesit</translation>
 <translation id="7936303884198020182">Nuk u gjetën serverë DNS</translation>

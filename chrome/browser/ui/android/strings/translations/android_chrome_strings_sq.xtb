@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">Po llogarit...</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1384704387250346179">Përkthe imazhin me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">Stilizo theksimin</translation>
 <translation id="1386674309198842382">Aktiv <ph name="LAST_UPDATED" /> ditë më parë</translation>
 <translation id="1397811292916898096">Kërko me <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">"Mos gjurmo"</translation>
@@ -853,6 +852,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6441734959916820584">Emri është tepër i gjatë</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# imazh}other{# Imazhe}}</translation>
 <translation id="6447558397796644647">Ai faqeshënues nuk mund të gjendet. Kontrollo nëse e ke shkruar saktë ose shto një faqeshënues të ri</translation>
+<translation id="6459045781120991510">Anketat</translation>
 <translation id="6461962085415701688">Skedari nuk mund të hapet</translation>
 <translation id="6464977750820128603">Mund të shikosh sajtet që viziton në Chrome dhe të caktosh kohëmatës për to.\n\nGoogle merr informacion rreth sajteve për të cilat cakton kohëmatës dhe për sa kohë i viziton ato. Ky informacion përdoret për të përmirësuar "Mirëqenien dixhitale".</translation>
 <translation id="6475951671322991020">Shkarko videon</translation>
@@ -969,6 +969,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7242755609445462077">Theksimi i stilizuar (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të ketë të aktivizuar sinkronizimin në Chrome</translation>
 <translation id="7252076891734325316">Vendose telefonin tënd pranë kompjuterit</translation>
+<translation id="727288900855680735">Të dërgohet <ph name="ONE_TIME_CODE" /> te <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sajt i bllokuar</translation>
 <translation id="7286572596625053347">Të ndryshohet <ph name="LANGUAGE" />?</translation>
 <translation id="7290209999329137901">Riemërtimi nuk ofrohet</translation>

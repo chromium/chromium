@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">فرسودہ خصوصیات</translation>
 <translation id="131405271941274527">‏آپ کے NFC آلہ پر تھپتھپاتے وقت <ph name="URL" /> معلومات بھیجنا اور وصول کرنا چاہتا ہے</translation>
 <translation id="1314509827145471431">دائیں طرف باندھیں</translation>
+<translation id="1319245136674974084">اس ایپ کیلئے دوبارہ نہ پوچھیں</translation>
 <translation id="1320233736580025032">Prc1 ‎(Envelope‎)‎</translation>
 <translation id="132301787627749051">کلپ بورڈ کی تصویر تلاش کریں</translation>
 <translation id="1323433172918577554">مزید دکھائیں</translation>
@@ -746,6 +747,7 @@
 <translation id="3655670868607891010">اگر یہ آپ کو اکثر نظر آتا ہے تو یہ <ph name="HELP_LINK" /> آزمائیں۔</translation>
 <translation id="3658742229777143148">نظرثانی</translation>
 <translation id="3664782872746246217">کلیدی الفاظ:</translation>
+<translation id="3671540257457995106">سائز تبدیل کرنے کی اجازت دیں؟</translation>
 <translation id="3676592649209844519">‏آلہ کی ID:</translation>
 <translation id="3677008721441257057">‏کیا آپ کا مطلب &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; تھا؟</translation>
 <translation id="3678029195006412963">درخواست پر دستخط نہیں کیا جا سکا</translation>
@@ -1106,6 +1108,7 @@
 <translation id="4953689047182316270">ایکسیسبیلٹی ایونٹس کا جواب دیں</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">فہرست پھیلائیں</translation>
+<translation id="4968522289500246572">یہ ایپ موبائل کیلئے ڈیزائن کی گئی ہے اور ممکن ہے کہ اس کا سائز صحیح طریقے سے تبدیل نہ ہو۔ اس کو استعمال کرنے میں مسائل کا سامنا ہو سکتا ہے یا ری اسٹارٹ کرنا پڑ سکتی ہے۔</translation>
 <translation id="4973922308112707173">اوپر دُہرا سوراخ</translation>
 <translation id="4974590756084640048">وارننگز کو دوبارہ فعال کریں</translation>
 <translation id="4984088539114770594">مائیکروفون کا استعمال کریں؟</translation>
@@ -1154,6 +1157,7 @@
 <translation id="5123063207673082822">ویک اینڈ</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">اپنے کارڈ کی توثیق کریں</translation>
+<translation id="512670116361803001">ہو سکتا ہے کہ <ph name="APP_NAME" /> کا سائز صحیح طریقے سے تبدیل نہ ہو۔ ایپ کو مسائل کا سامنا کرنے سے روکنے کیلئے ونڈو کے پری سیٹ سائز کا استعمال کریں۔</translation>
 <translation id="5135404736266831032">پتوں کا نظم کریں...</translation>
 <translation id="5138014172396933048">ورچوئل کارڈ ابھی دستیاب نہیں ہے، براہ کرم اپنے بینک سے رابطہ کریں</translation>
 <translation id="5138227688689900538">کم دکھائیں</translation>
@@ -1521,6 +1525,7 @@
 <translation id="647261751007945333">آلے کی پالیسیاں</translation>
 <translation id="6476284679642588870">ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="6489534406876378309">کریشز اپ لوڈ کرنا شروع کریں</translation>
+<translation id="6493924760403974580">یہ ایپ صرف اس سائز کو سپورٹ کرتی ہے۔</translation>
 <translation id="6499038740797743453">پاس ورڈ کو ری سیٹ کریں؟</translation>
 <translation id="6502991525169604759">آپ کی تبدیلیوں کے بغیر</translation>
 <translation id="6508722015517270189">‏Chrome کو دوبارہ شروع کریں</translation>
@@ -2175,6 +2180,7 @@
 <translation id="8975263830901772334">آپ کی پرنٹ کردہ فائلز کے نام</translation>
 <translation id="8978053250194585037">‏Google محفوظ براؤزنگ نے حال ہی میں <ph name="SITE" /> پر <ph name="BEGIN_LINK" />فریب دہی کا پتا لگایا ہے<ph name="END_LINK" />۔ فریب دہی والی سائٹس آپ کو پھنسانے کے لیے دوسری ویب سائٹس ہونے کا دکھاوا کرتی ہیں۔</translation>
 <translation id="8983003182662520383">‏Google Pay استعمال کرنے والے ادائیگی کے طریقے اور پتے</translation>
+<translation id="8983369100812962543">اب آپ ایپ کا سائز تبدیل کر سکتے ہیں</translation>
 <translation id="8987927404178983737">ماہ</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> جاننا چاہتا ہے کہ فعال طور پر آپ اس آلہ کا استعمال کب کر رہے ہیں</translation>

@@ -103,6 +103,7 @@
 <translation id="1307966114820526988">విస్మరించబడిన ఫీచర్‌లు</translation>
 <translation id="131405271941274527">మీరు NFC పరికరంలో మీ ఫోన్‌పై నొక్కినప్పుడు సమాచారం పంపడానికి, అందుకోవడానికి <ph name="URL" /> అనుమతి కోరుతోంది</translation>
 <translation id="1314509827145471431">కుడివైపున బైండ్</translation>
+<translation id="1319245136674974084">ఈ యాప్‌ కోసం మళ్లీ అడగవద్దు</translation>
 <translation id="1320233736580025032">Prc1 (ఎన్వలప్)</translation>
 <translation id="132301787627749051">క్లిప్‌బోర్డ్ చిత్రం కోసం వెతకండి</translation>
 <translation id="1323433172918577554">మరింత చూపు</translation>
@@ -746,6 +747,7 @@
 <translation id="3655670868607891010">మీరు దీన్ని తరచుగా చూస్తుంటే, ఈ <ph name="HELP_LINK" />ని ప్రయత్నించండి.</translation>
 <translation id="3658742229777143148">పునర్విమర్శ</translation>
 <translation id="3664782872746246217">కీవర్డ్‌లు:</translation>
+<translation id="3671540257457995106">పరిమాణం మార్చడానికి అనుమతించాలా?</translation>
 <translation id="3676592649209844519">పరికర ID:</translation>
 <translation id="3677008721441257057">మీరు &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; గురించి అభ్యర్థిస్తున్నారా?</translation>
 <translation id="3678029195006412963">అభ్యర్థనకు సంతకం అందించడం సాధ్యపడలేదు</translation>
@@ -1106,6 +1108,7 @@
 <translation id="4953689047182316270">యాక్సెస్ సామర్థ్యం ఉన్న ఈవెంట్‌లకు ప్రతిస్పందించండి</translation>
 <translation id="4955242332710481440">A5-అదనం</translation>
 <translation id="4958444002117714549">జాబితాను విస్తరించు</translation>
+<translation id="4968522289500246572">ఈ యాప్ మొబైల్ కోసం డిజైన్ చేయబడింది, పరిమాణాన్ని మార్చడం సాధ్యం కాకపోవచ్చు. యాప్‌ను ఉపయోగించేటప్పుడు సమస్యలు ఎదురుకావచ్చు లేదా మీరు రీస్టార్ట్ చేయవలసి రావచ్చు.</translation>
 <translation id="4973922308112707173">ఎగువ భాగంలో రెండు రంధ్రాలు</translation>
 <translation id="4974590756084640048">హెచ్చరికలను మళ్లీ ప్రారంభించు</translation>
 <translation id="4984088539114770594">మైక్రోఫోన్‌ను ఉపయోగించాలా?</translation>
@@ -1154,6 +1157,7 @@
 <translation id="5123063207673082822">వారాంతం</translation>
 <translation id="5125394840236832993">B-ప్లస్</translation>
 <translation id="5126510351761255129">మీ కార్డ్‌ను ధృవీకరించండి</translation>
+<translation id="512670116361803001"><ph name="APP_NAME" /> పరిమాణాన్ని మార్చడం సాధ్యం కాకపోవచ్చు. యాప్‌లో సమస్యలు ఎదురుకాకుండా నివారించడానికి, ప్రీసెట్ చేసిన విండో పరిమాణాలను ఉపయోగించండి.</translation>
 <translation id="5135404736266831032">చిరునామాలను నిర్వహించండి...</translation>
 <translation id="5138014172396933048">ప్రస్తుతానికి వర్చువల్ కార్డ్ అందుబాటులో లేదు, దయచేసి మీ బ్యాంకును సంప్రదించండి</translation>
 <translation id="5138227688689900538">తక్కువ చూపు</translation>
@@ -1520,6 +1524,7 @@
 <translation id="647261751007945333">పరికర విధానాలు</translation>
 <translation id="6476284679642588870">చెల్లింపు పద్ధతులను నిర్వహించండి</translation>
 <translation id="6489534406876378309">క్రాష్‌లను అప్‌లోడ్ చేయడాన్ని ప్రారంభించండి</translation>
+<translation id="6493924760403974580">ఈ యాప్ ఈ పరిమాణాన్ని మాత్రమే సపోర్ట్ చేస్తుంది.</translation>
 <translation id="6499038740797743453">పాస్‌వర్డ్‌ను రీసెట్ చేయాలా?</translation>
 <translation id="6502991525169604759">మీరు చేసిన మార్పులు లేకుండా డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="6508722015517270189">Chromeను పునఃప్రారంభించండి</translation>
@@ -2174,6 +2179,7 @@
 <translation id="8975263830901772334">మీరు ముద్రించే ఫైల్‌ల పేర్లు</translation>
 <translation id="8978053250194585037">Google సురక్షిత బ్రౌజింగ్ ఇటీవల <ph name="SITE" />లో <ph name="BEGIN_LINK" />ఫిషింగ్‌ని గుర్తించింది<ph name="END_LINK" />. ఫిషింగ్ సైట్‌లు వేరే వెబ్‌సైట్‌ల వలె ప్రవర్తించడం ద్వారా మిమ్మల్ని మాయ చేయవచ్చు.</translation>
 <translation id="8983003182662520383">Google Payని ఉపయోగిస్తున్న చెల్లింపు పద్ధతులు మరియు చిరునామాలు</translation>
+<translation id="8983369100812962543">మీరు ఇప్పుడు యాప్ పరిమాణం మార్చవచ్చు</translation>
 <translation id="8987927404178983737">నెల</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">మీరు ఈ పరికరాన్ని యాక్టివ్‌గా ఉపయోగిస్తున్నప్పుడు <ph name="URL" /> ఆ విషయాన్ని తెలుసుకోవాలనుకుంటుంది</translation>

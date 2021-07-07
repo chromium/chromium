@@ -3154,11 +3154,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5078623750797048009">Mengaktifkan Anotasi PDF</translation>
 <translation id="5082572440690475059">Izinkan akses baca melalui File System API di situs ini</translation>
 <translation id="5085647276663819155">Nonaktifkan Pratinjau Cetak</translation>
-<translation id="5087424855041813182">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang dapat menampilkan notifikasi.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="5090791951240382356">Mengizinkan penggabungan kebijakan kamus dari sumber berbeda</translation>
 <translation id="5091315650312105069">Mengizinkan autentikasi <ph name="BASIC_AUTH" /> untuk HTTP</translation>
 <translation id="5103112931744164177">Kebijakan ini mengontrol stack software yang digunakan untuk berkomunikasi dengan server DNS: klien DNS Sistem Operasi, atau klien DNS bawaan dari <ph name="PRODUCT_NAME" />. Kebijakan ini tidak memengaruhi server DNS mana yang digunakan: misalnya, jika sistem operasi dikonfigurasi untuk menggunakan server DNS perusahaan, server yang sama tersebut akan digunakan oleh klien DNS bawaan. Kebijakan ini juga tidak akan mengontrol jika DNS-over-HTTPS digunakan; <ph name="PRODUCT_NAME" /> akan selalu menggunakan resolver bawaan untuk permintaan DNS-over-HTTPS. Silakan lihat kebijakan <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> untuk mengetahui informasi mengenai pengontrolan DNS-over-HTTPS.
@@ -4833,11 +4828,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7126928806195745404">Setelan JavaScript</translation>
 <translation id="7127892035367404455">Rollback ke versi target</translation>
 <translation id="7127980134843952133">Histori download</translation>
-<translation id="7129052644387688634">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat menampilkan notifikasi.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="712963038874313213">Menyediakan playbook Ansible yang harus dijalankan di penampung Crostini default.
 
       Dengan kebijakan ini, playbook Ansible akan dapat diterapkan ke penampung Crostini default jika tersedia pada perangkat tertentu dan diizinkan oleh kebijakan.

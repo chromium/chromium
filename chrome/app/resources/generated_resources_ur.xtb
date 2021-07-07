@@ -463,6 +463,7 @@
 <translation id="1507246803636407672">&amp;مسترد کریں</translation>
 <translation id="1508491105858779599">آلہ غیر مقفل کرنے کیلئے اپنی انگلی کو فنگرپرنٹ سینسر پر رکھیں۔</translation>
 <translation id="1508575541972276599">‏موجودہ ورژن Debian 9 ‏(Stretch)‏ ہے‪</translation>
+<translation id="1509163368529404530">&amp;گروپ بحال کریں</translation>
 <translation id="1509281256533087115">‏USB کے ذریعے کسی بھی <ph name="DEVICE_NAME_AND_VENDOR" /> تک رسائی حاصل کریں</translation>
 <translation id="1509960214886564027">بہت سی سائٹس پر خصوصیات میں خلل ہو سکتا ہے</translation>
 <translation id="1510238584712386396">لانچر</translation>
@@ -585,6 +586,7 @@
 <translation id="1627408615528139100">پہلے ہی ڈاؤن لوڈ کردہ ہے</translation>
 <translation id="1628948239858170093">کھولنے سے پہلے فائل کو اسکین کریں؟</translation>
 <translation id="1629314197035607094">پاس ورڈ کی میعاد ختم ہو گئی</translation>
+<translation id="1629451755632656601">‏Google کو آپ کی کارٹس میں ذاتی نوعیت کی رعایتیں تلاش کرنے دیں؟</translation>
 <translation id="1630300831289687074">‏آپ جلد ہی اپنا Chromebook استعمال کر پائیں گے۔</translation>
 <translation id="163072119192489970">ڈیٹا بھیجنے اور موصول کرنے کو مکمل کرنے کی اجازت ہے</translation>
 <translation id="1630768113285622200">ری سٹارٹ کریں اور جاری رکھیں</translation>
@@ -1290,6 +1292,7 @@
 <translation id="236117173274098341">بہتر بنائیں</translation>
 <translation id="2361340419970998028">تاثرات بھیج رہا ہے…</translation>
 <translation id="236141728043665931">مائیکروفون رسائی کو ہمیشہ مسدود کریں</translation>
+<translation id="2363744066037724557">&amp;ونڈو بحال کریں</translation>
 <translation id="2364498172489649528">پاس ہو گیا</translation>
 <translation id="2365507699358342471">یہ سائٹ کلپ بورڈ میں کاپی کردہ متن اور تصاویر دیکھ سکتی ہے۔</translation>
 <translation id="2367972762794486313">ایپس دکھائیں</translation>
@@ -2672,6 +2675,7 @@
 <translation id="3857807444929313943">اٹھائیں، پھر دوبارہ ٹچ کریں</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" صارف نام دستیاب نہیں ہے</translation>
 <translation id="3861977424605124250">اسٹارٹ اپ پر دکھائیں</translation>
+<translation id="386239283124269513">&amp;گروپ بحال کریں</translation>
 <translation id="3862788408946266506">‏'kiosk_only' مینی فیسٹ انتساب والی ایپ کا  Chrome OS کیوسک وضع میں انسٹال ہونا ضروری ہے</translation>
 <translation id="3865414814144988605">ریزولیوشن</translation>
 <translation id="3866249974567520381">تفصیل</translation>
@@ -5647,6 +5651,7 @@
 <translation id="7225179976675429563">نیٹ ورک کی قسم غائب ہے</translation>
 <translation id="7228479291753472782">وہ ترتیبات استعمال کریں جو تعین کرتی ہیں کہ آیا ویب سائٹس جغرافیائی مقام، مائیکروفون، کیمرا وغیرہ جیسی خصوصیات استعمال کر سکتی ہیں۔</translation>
 <translation id="7228523857728654909">اسکرین لاک اور سائن ان</translation>
+<translation id="7230222852462421043">&amp;ونڈو بحال کریں</translation>
 <translation id="7230787553283372882">اپنے متن کے سائز کو حسب ضرورت بنائیں</translation>
 <translation id="7232750842195536390">نام کی تبدییلی ناکام ہو گئی</translation>
 <translation id="7234010996000898150">‏Linux کی بحالی کا عمل منسوخ ہو رہا ہے</translation>
@@ -6257,12 +6262,14 @@
 <translation id="7853747251428735">مزید ٹولز</translation>
 <translation id="7855678561139483478">ٹیب کو نئی ونڈو میں منتقل کریں</translation>
 <translation id="7857093393627376423">متنی تجاویز</translation>
+<translation id="7857675386615530425">‏Google لینز کے ساتھ صفحہ کا حصہ تلاش کریں</translation>
 <translation id="7857949311770343000">کیا یہی وہ نیا ٹیب صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="7858328180167661092">‎<ph name="APP_NAME" /> (Windows)‎</translation>
 <translation id="786073089922909430">سروس: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ڈاؤن لوڈز</translation>
 <translation id="7861846108263890455">‏Google اکاؤنٹ کی زبان</translation>
 <translation id="7864539943188674973">بلوٹوتھ غیر فعال کریں</translation>
+<translation id="7866230141401327032">‏Google لینز کے ساتھ صفحہ کا حصہ تلاش کریں</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - جوڑا بنایا گیا</translation>
 <translation id="7870730066603611552">سیٹ اپ کے بعد مطابقت پذیری کے اختیارات کا جائزہ لیں</translation>
 <translation id="7870790288828963061">‏نئے ورژن والی کوئی کیوسک ایپس نہیں ملیں۔ اپ ڈیٹ کرنے کیلئے کچھ بھی نہیں ہے۔ براہ کرم USB اسٹک ہٹائیں۔</translation>
@@ -6836,6 +6843,7 @@
 <translation id="850875081535031620">کوئی نقصان دہ سافٹ ویئر نہیں ملا</translation>
 <translation id="8509177919508253835">‏سیکیورٹی کلیدوں کو دوبارہ ترتیب دیں اور PINs تخلیق کریں</translation>
 <translation id="8509646642152301857">املا کی جانچ کی لغت کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
+<translation id="8509967119010808787">اپنے ٹیبز کو تلاش کرنے کیلئے یہاں کلک کریں</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{کوئی کمزور پاس ورڈز نہیں ملے}=1{{COUNT} کمزور پاس ورڈ ملا}other{{COUNT} کمزور پاس ورڈز ملے}}</translation>
 <translation id="8512476990829870887">کارروائی ختم کریں</translation>
 <translation id="851263357009351303"><ph name="HOST" /> کو تصاویر دکھانے کی ہمیشہ اجازت دیں</translation>

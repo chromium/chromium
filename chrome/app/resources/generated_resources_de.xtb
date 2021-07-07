@@ -463,6 +463,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1507246803636407672">&amp;Verwerfen</translation>
 <translation id="1508491105858779599">Legen Sie den Finger auf den Fingerabdrucksensor, um das Gerät zu entsperren.</translation>
 <translation id="1508575541972276599">Aktuell verwenden Sie Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">Gruppe wiederherstellen</translation>
 <translation id="1509281256533087115">Auf <ph name="DEVICE_NAME_AND_VENDOR" /> per USB zugreifen</translation>
 <translation id="1509960214886564027">Funktionen auf vielen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -582,6 +583,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1627408615528139100">Bereits heruntergeladen</translation>
 <translation id="1628948239858170093">Datei vor dem Öffnen scannen?</translation>
 <translation id="1629314197035607094">Passwort abgelaufen</translation>
+<translation id="1629451755632656601">Google personalisierte Rabatte für Ihre Einkaufswagen finden lassen?</translation>
 <translation id="1630300831289687074">Sie können Ihr Chromebook demnächst verwenden.</translation>
 <translation id="163072119192489970">Dürfen den Datenversand und ‑empfang abschließen</translation>
 <translation id="1630768113285622200">Neu starten und fortfahren</translation>
@@ -1287,6 +1289,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="236117173274098341">Optimieren</translation>
 <translation id="2361340419970998028">Feedback wird gesendet…</translation>
 <translation id="236141728043665931">Zugriff auf das Mikrofon immer blockieren</translation>
+<translation id="2363744066037724557">Fenster wiederherstellen</translation>
 <translation id="2364498172489649528">Bestanden</translation>
 <translation id="2365507699358342471">Diese Website kann Texte und Bilder aus der Zwischenablage abrufen.</translation>
 <translation id="2367972762794486313">Apps anzeigen</translation>
@@ -2670,6 +2673,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3857807444929313943">Anheben und erneut berühren</translation>
 <translation id="3861638017150647085">Der Nutzername "<ph name="USERNAME" />" ist nicht verfügbar</translation>
 <translation id="3861977424605124250">Beim Start anzeigen</translation>
+<translation id="386239283124269513">Gruppe wiederherstellen</translation>
 <translation id="3862788408946266506">App mit Manifest-Attribut "kiosk_only" muss im Chrome OS-Kioskmodus installiert werden</translation>
 <translation id="3865414814144988605">Auflösung</translation>
 <translation id="3866249974567520381">Beschreibung</translation>
@@ -5640,6 +5644,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7225179976675429563">Netzwerktyp fehlt.</translation>
 <translation id="7228479291753472782">Einstellungen bearbeiten, die festlegen, ob Websites Funktionen wie die Standortbestimmung, das Mikrofon, die Kamera usw. verwenden dürfen</translation>
 <translation id="7228523857728654909">Bildschirmsperre und Anmeldung</translation>
+<translation id="7230222852462421043">Fenster wiederherstellen</translation>
 <translation id="7230787553283372882">Textgröße anpassen</translation>
 <translation id="7232750842195536390">Fehler beim Umbenennen</translation>
 <translation id="7234010996000898150">Linux-Wiederherstellung wird abgebrochen</translation>
@@ -6249,12 +6254,14 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7853747251428735">Weitere Too&amp;ls</translation>
 <translation id="7855678561139483478">Tab in ein neues Fenster verschieben</translation>
 <translation id="7857093393627376423">Textvorschläge</translation>
+<translation id="7857675386615530425">Mit Google Lens auf einem Teil der Seite suchen</translation>
 <translation id="7857949311770343000">Ist das die "Neuer Tab"-Seite, die Sie erwartet hatten?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Dienst: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Sprache des Google-Kontos</translation>
 <translation id="7864539943188674973">Bluetooth deaktivieren</translation>
+<translation id="7866230141401327032">Mit Google Lens auf einem Teil der Seite suchen</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – gekoppelt</translation>
 <translation id="7870730066603611552">Synchronisierungsoptionen nach der Einrichtung überprüfen</translation>
 <translation id="7870790288828963061">Es wurden keine Kiosk-Apps mit neuerer Version gefunden. Es sind keine Updates vorhanden. Bitte entfernen Sie den USB-Stick.</translation>
@@ -6830,6 +6837,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
 <translation id="850875081535031620">Keine schädliche Software gefunden</translation>
 <translation id="8509177919508253835">Sicherheitsschlüssel zurücksetzen und PINs erstellen</translation>
 <translation id="8509646642152301857">Beim Herunterladen des Wörterbuchs für die Rechtschreibprüfung ist ein Fehler aufgetreten.</translation>
+<translation id="8509967119010808787">Zum Suchen auf Ihren Tabs hier klicken</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Keine schwachen Passwörter gefunden}=1{{COUNT} schwaches Passwort gefunden}other{{COUNT} schwache Passwörter gefunden}}</translation>
 <translation id="8512476990829870887">Prozess beenden</translation>
 <translation id="851263357009351303">Anzeige von Bildern für <ph name="HOST" /> immer zulassen</translation>

@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">കണക്കാക്കുന്നു…</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">Google Lens-ൽ ചിത്രം വിവർത്തനം ചെയ്യൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">ഹൈലൈറ്റ് മോടിയാക്കുക</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="1406000523432664303">“ട്രാക്ക് ചെയ്യരുത്”</translation>
@@ -853,6 +852,7 @@
 <translation id="6441734959916820584">പേര് വളരെ വലുതാണ്</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# ചിത്രം}other{# ചിത്രങ്ങൾ}}</translation>
 <translation id="6447558397796644647">ആ ബുക്‌മാർക്ക് കണ്ടെത്താനാവുന്നില്ല. അക്ഷരത്തെറ്റ് പരിശോധിക്കുക അല്ലെങ്കിൽ പുതിയ ബുക്‌മാർക്ക് ചേർക്കുക.</translation>
+<translation id="6459045781120991510">സർവേകൾ</translation>
 <translation id="6461962085415701688">ഫയൽ തുറക്കാൻ കഴിയില്ല</translation>
 <translation id="6464977750820128603">നിങ്ങൾ Chrome- ൽ സന്ദർശിക്കുന്ന സൈറ്റുകൾ കാണാനും അവയ്ക്ക് ടൈമറുകൾ സജ്ജീകരിക്കാനുമാവും.\n\nനിങ്ങൾ ടൈമറുകൾ സജ്ജീകരിക്കുന്ന സൈറ്റുകളെക്കുറിച്ചും നിങ്ങൾ എത്ര സമയം അവ സന്ദർശിക്കുന്നു എന്നതിനെക്കുറിച്ചും Google ന് വിവരങ്ങൾ ലഭിക്കുന്നു. ഡിജിറ്റൽ ആരോഗ്യം മെച്ചപ്പെടുത്താൻ ഈ വിവരം ഉപയോഗിക്കുന്നു.</translation>
 <translation id="6475951671322991020">വീഡിയോ ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -969,6 +969,7 @@
 <translation id="7242755609445462077">പ്രത്യേക സ്റ്റൈലിൽ ആക്കിയ ഹൈലൈറ്റ് <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome-ൽ <ph name="TARGET_DEVICE_NAME" /> ഉപകരണത്തിലെ സമന്വയിപ്പിക്കൽ ഓണാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="7252076891734325316">നിങ്ങളുടെ ഫോൺ കമ്പ്യൂട്ടറിന്റെ അടുത്ത് വയ്ക്കുക</translation>
+<translation id="727288900855680735"><ph name="ORIGIN" />-ലേക്ക് <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
 <translation id="7274013316676448362">സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> മാറ്റണോ?</translation>
 <translation id="7290209999329137901">പേര് മാറ്റൽ ലഭ്യമല്ല</translation>

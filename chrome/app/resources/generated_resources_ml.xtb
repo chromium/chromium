@@ -465,6 +465,7 @@
 <translation id="1507246803636407672">&amp;നിരസിക്കുക</translation>
 <translation id="1508491105858779599">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ വിരലടയാള സെൻസറിൽ നിങ്ങളുടെ വിരൽ വയ്‌ക്കുക.</translation>
 <translation id="1508575541972276599">Debian 9 (Stretch) ആണ് നിലവിലെ പതിപ്പ്</translation>
+<translation id="1509163368529404530">&amp;ഗ്രൂപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="1509281256533087115">USB വഴി ഏതൊരു <ph name="DEVICE_NAME_AND_VENDOR" /> ഉപകരണത്തെയും ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1509960214886564027">നിരവധി സൈറ്റുകളിലെ ഫീച്ചറുകൾക്ക് പ്രവർത്തനം നടത്താനായേക്കില്ല</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
@@ -584,6 +585,7 @@
 <translation id="1627408615528139100">നേരത്തേതന്നെ ഡൗൺലോഡുചെയ്‌തിട്ടുണ്ട്</translation>
 <translation id="1628948239858170093">തുറക്കുന്നതിന് മുമ്പ് ഫയൽ സ്കാൻ ചെയ്യണോ?</translation>
 <translation id="1629314197035607094">പാസ്‌വേഡ് കാലഹരണപ്പെട്ടു</translation>
+<translation id="1629451755632656601">നിങ്ങളുടെ കാർട്ടുകളിലുള്ള ഇനങ്ങൾക്കായി വ്യക്തിപരമാക്കിയ ഡിസ്‌കൗണ്ടുകൾ കണ്ടെത്താൻ Google-നെ അനുവദിക്കണോ?</translation>
 <translation id="1630300831289687074">നിങ്ങളുടെ Chromebook ഉടൻ തന്നെ ഉപയോഗിക്കാനാകും.</translation>
 <translation id="163072119192489970">ഡാറ്റ അയയ്ക്കുന്നതും സ്വീകരിക്കുന്നതും പൂർത്തിയാക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="1630768113285622200">റീസ്റ്റാർട്ട് ചെയ്‌ത ശേഷം തുടരുക</translation>
@@ -1289,6 +1291,7 @@
 <translation id="236117173274098341">Optimize</translation>
 <translation id="2361340419970998028">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുന്നു...</translation>
 <translation id="236141728043665931">എപ്പോഴും മൈക്രോഫോൺ ആക്‌സസ്സ് തടയുക</translation>
+<translation id="2363744066037724557">&amp;വിൻഡോ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="2364498172489649528">വിജയിച്ചു</translation>
 <translation id="2365507699358342471">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തിയിട്ടുള്ള ടെക്‌സ്‌റ്റും ചിത്രങ്ങളും ഈ സൈറ്റിന് കാണാനാകും.</translation>
 <translation id="2367972762794486313">അപ്ലിക്കേഷനുകൾ കാണിക്കുക</translation>
@@ -2671,6 +2674,7 @@
 <translation id="3857807444929313943">വിരൽ ഉയർത്തി, വീണ്ടും സ്‌പർശിക്കുക</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" എന്ന ഉപയോക്തൃനാമം ലഭ്യമല്ല</translation>
 <translation id="3861977424605124250">ആരംഭത്തിൽ കാണിക്കുക</translation>
+<translation id="386239283124269513">&amp;ഗ്രൂപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="3862788408946266506">Chrome OS കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
 <translation id="3865414814144988605">റെസല്യൂഷൻ</translation>
 <translation id="3866249974567520381">വിവരണം</translation>
@@ -5645,6 +5649,7 @@
 <translation id="7225179976675429563">നെറ്റ്‌വർക്ക് തരം നഷ്‌ടമായി</translation>
 <translation id="7228479291753472782">വെബ്‌സൈറ്റിന് ജിയോലൊക്കേഷൻ, മൈക്രോഫോൺ, ക്യാമറ എന്നിവ പോലുള്ള ഫീച്ചറുകൾ ഉപയോഗിക്കാൻ കഴിയുമോ എന്ന് വ്യക്തമാക്കുന്ന ക്രമീകരണം കൈകാര്യം ചെയ്യുക.</translation>
 <translation id="7228523857728654909">സ്‌ക്രീൻ ലോക്കും സൈൻ-ഇന്നും</translation>
+<translation id="7230222852462421043">&amp;വിൻഡോ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="7230787553283372882">നിങ്ങളുടെ ടെക്‌സ്‌‌റ്റ് വലുപ്പം ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
 <translation id="7232750842195536390">പേരുമാറ്റൽ പരാജയപ്പെട്ടു</translation>
 <translation id="7234010996000898150">Linux പുനഃസ്ഥാപിക്കൽ റദ്ദാക്കുന്നു</translation>
@@ -6254,12 +6259,14 @@
 <translation id="7853747251428735">കൂടുതൽ ഉപകരണങ്ങൾ</translation>
 <translation id="7855678561139483478">ടാബ് പുതിയ വിൻഡോയിലേക്ക് നീക്കുക</translation>
 <translation id="7857093393627376423">ടെക്‌സ്‌റ്റ് നിർദ്ദേശങ്ങൾ</translation>
+<translation id="7857675386615530425">Google Lens ഉപയോഗിച്ച് പേജിന്റെ ഭാഗം തിരയുക</translation>
 <translation id="7857949311770343000">നിങ്ങൾ ഉദ്ദേശിച്ച പുതിയ ടാബ് പേജ് ഇതാണോ?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">സേവനം: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ഡൌണ്‍ലോഡുകള്‍</translation>
 <translation id="7861846108263890455">Google അക്കൗണ്ടിന്റെ ഭാഷ</translation>
 <translation id="7864539943188674973">Bluetooth അപ്രാപ്‌തമാക്കുക</translation>
+<translation id="7866230141401327032">Google Lens ഉപയോഗിച്ച് പേജിന്റെ ഭാഗം തിരയുക</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ജോടിയാക്കി</translation>
 <translation id="7870730066603611552">സജ്ജീകരണത്തിന് ശേഷം സമന്വയ ഓപ്‌ഷനുകൾ അവലോകനം ചെയ്യുക</translation>
 <translation id="7870790288828963061">ഏറ്റവും പുതിയ പതിപ്പിലുള്ള കിയോസ്‌ക് ആപ്പുകളൊന്നും കണ്ടെത്തിയില്ല. USB സ്‌റ്റിക്ക് നീക്കംചെയ്യുക.</translation>
@@ -6835,6 +6842,7 @@
 <translation id="850875081535031620">ദോഷകരമായ സോഫ്‌റ്റ്‌വെയറൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="8509177919508253835">സുരക്ഷാ കീകൾ പുനഃക്രമീകരിച്ച്, പിന്നുകൾ സൃഷ്‌ടിക്കുക</translation>
 <translation id="8509646642152301857">സ്പെൽ ചെക്ക് നിഘണ്ടു ഡൗൺലോഡ് ചെയ്യുന്നത് പരാജയപ്പെട്ടു.</translation>
+<translation id="8509967119010808787">നിങ്ങളുടെ ടാബുകൾ തിരയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{ദുർബലമായ പാസ്‌വേഡുകളൊന്നും കണ്ടെത്തിയില്ല}=1{ദുർബലമായ {COUNT} പാസ്‌വേഡ് കണ്ടെത്തി}other{ദുർബലമായ {COUNT} പാസ്‌വേഡുകൾ കണ്ടെത്തി}}</translation>
 <translation id="8512476990829870887">പ്രോസസ്സ് അവസാനിപ്പിക്കുക</translation>
 <translation id="851263357009351303">ചിത്രങ്ങൾ‌ കാണിക്കുന്നതിന്<ph name="HOST" /> നെ എല്ലായ്‌പ്പോഴും അനുവദിക്കുക</translation>

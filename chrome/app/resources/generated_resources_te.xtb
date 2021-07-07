@@ -466,6 +466,7 @@
 <translation id="1507246803636407672">&amp;వదిలివేయి</translation>
 <translation id="1508491105858779599">పరికరాన్ని అన్‌లాక్ చేయడానికి వేలిముద్ర సెన్సార్‌పై మీ వేలిని ఉంచండి.</translation>
 <translation id="1508575541972276599">ప్రస్తుత వెర్షన్ Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;గ్రూప్‌ను రీస్టోర్ చేయండి</translation>
 <translation id="1509281256533087115">ఏ <ph name="DEVICE_NAME_AND_VENDOR" />ని అయినా USB ద్వారా యాక్సెస్ చేయడానికి అనుమతి</translation>
 <translation id="1509960214886564027">చాలా సైట్‌లలోని ఫీచర్‌లు పని చేయకుండాపోవచ్చు</translation>
 <translation id="1510238584712386396">లాంచర్</translation>
@@ -588,6 +589,7 @@
 <translation id="1627408615528139100">ఇప్పటికే డౌన్‌లోడ్ చేయబడింది</translation>
 <translation id="1628948239858170093">తెరవడానికి ముందు ఫైల్‌ను స్కాన్ చేయాలా?</translation>
 <translation id="1629314197035607094">పాస్‌వర్డ్ గడువు ముగిసింది</translation>
+<translation id="1629451755632656601">మీ కార్ట్‌లలో వ్యక్తిగతీకరించబడిన డిస్కౌంట్‌లను కనుగొనడానికి Googleను అనుమతించాలా?</translation>
 <translation id="1630300831289687074">త్వరలోనే మీరు మీ Chromebookను ఉపయోగించగలుగుతారు.</translation>
 <translation id="163072119192489970">డేటాను పంపడాన్ని, అలాగే అందుకోవడాన్ని పూర్తి చేయడానికి అనుమతించబడింది</translation>
 <translation id="1630768113285622200">రీస్టార్ట్ చేసి, కొనసాగించు</translation>
@@ -1304,6 +1306,7 @@
 <translation id="236117173274098341">ఆప్టిమైజ్ చేయండి</translation>
 <translation id="2361340419970998028">ఫీడ్‌బ్యాక్‌ను పంపుతోంది...</translation>
 <translation id="236141728043665931">ఎల్లప్పుడూ మైక్రోఫోన్ యాక్సెస్‌ను బ్లాక్ చేయి</translation>
+<translation id="2363744066037724557">&amp;విండోను రీస్టోర్ చేయండి</translation>
 <translation id="2364498172489649528">ఆమోదించినవి</translation>
 <translation id="2365507699358342471">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను ఈ సైట్ చూడగలదు.</translation>
 <translation id="2367972762794486313">అనువర్తనాలను చూపు</translation>
@@ -2687,6 +2690,7 @@
 <translation id="3857807444929313943">పైకి ఎత్తి, మళ్లీ తాకండి</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" యూజర్‌నేమ్ అందుబాటులో లేదు</translation>
 <translation id="3861977424605124250">ప్రారంభంలో చూపించు</translation>
+<translation id="386239283124269513">&amp;గ్రూప్‌ను రీస్టోర్ చేయండి</translation>
 <translation id="3862788408946266506">'kiosk_only' మానిఫెస్ట్ ఫీచర్ ఉన్న యాప్‌ను తప్పనిసరిగా Chrome OS కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
 <translation id="3865414814144988605">రిజల్యూషన్</translation>
 <translation id="3866249974567520381">వివరణ</translation>
@@ -5663,6 +5667,7 @@
 <translation id="7225179976675429563">నెట్‌వర్క్ రకం లేదు</translation>
 <translation id="7228479291753472782">వెబ్‌సైట్‌లు భౌగోళికస్థానం, మైక్రోఫోన్, కెమెరా మొదలైనటువంటి లక్షణాలను ఉపయోగించవచ్చా లేదా అనేది పేర్కొనే సెట్టింగ్‌లను సవరించండి</translation>
 <translation id="7228523857728654909">స్క్రీన్ లాక్ మరియు సైన్ ఇన్</translation>
+<translation id="7230222852462421043">&amp;విండోను రీస్టోర్ చేయండి</translation>
 <translation id="7230787553283372882">మీ వచన పరిమాణాన్ని అనుకూలీకరించండి</translation>
 <translation id="7232750842195536390">పేరు మార్చడం విఫలమైంది</translation>
 <translation id="7234010996000898150">Linux పునరుద్ధరణను రద్దు చేస్తోంది</translation>
@@ -6271,12 +6276,14 @@
 <translation id="7853747251428735">మరిన్ని సాధనా&amp;లు</translation>
 <translation id="7855678561139483478">ట్యాబ్‌ను కొత్త విండోకు తరలించు</translation>
 <translation id="7857093393627376423">టెక్స్ట్ సూచనలు</translation>
+<translation id="7857675386615530425">Google Lens సహాయంతో పేజీలోని భాగాన్ని సెర్చ్ చేయండి</translation>
 <translation id="7857949311770343000">మీరు ఆశిస్తున్న కొత్త ట్యాబ్ పేజీ ఇదేనా?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (విండోలు)</translation>
 <translation id="786073089922909430">సేవ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;డౌన్‌లోడ్‌లు</translation>
 <translation id="7861846108263890455">Google ఖాతా భాష</translation>
 <translation id="7864539943188674973">Bluetoothని నిలిపివేయి</translation>
+<translation id="7866230141401327032">Google Lens సహాయంతో పేజీలోని భాగాన్ని సెర్చ్ చేయండి</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - జత చేయబడింది</translation>
 <translation id="7870730066603611552">సెటప్ చేసిన తర్వాత సింక్ ఎంపికలను రివ్యూ చేయండి</translation>
 <translation id="7870790288828963061">సరికొత్త వెర్షన్ అందుబాటులో ఉన్న కియోస్క్ యాప్‌లేవీ కనుగొనబడలేదు. అప్‌డేట్ చేయడానికి ఏదీ లేదు. దయచేసి USB స్టిక్‌ను తీసివేయండి.</translation>
@@ -6850,6 +6857,7 @@
 <translation id="850875081535031620">హానికరమైన సాఫ్ట్‌వేర్ కనుగొనబడలేదు</translation>
 <translation id="8509177919508253835">సెక్యూరిటీ కీలు రీసెట్ చేసి, పిన్‌లను సృష్టించండి</translation>
 <translation id="8509646642152301857">స్పెల్ చెక్ తనిఖీ నిఘంటువును డౌన్‌లోడ్ చేయడం విఫలమైంది.</translation>
+<translation id="8509967119010808787">మీ ట్యాబ్‌లను సెర్చ్ చేయడానికి, ఇక్కడ క్లిక్ చేయండి</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{బలహీనమైన పాస్‌వర్డ్‌లు ఏవీ కనుగొనబడలేదు}=1{{COUNT} బలహీనమైన పాస్‌వర్డ్ కనుగొనబడింది}other{{COUNT} బలహీనమైన పాస్‌వర్డ్‌లు కనుగొనబడ్డాయి}}</translation>
 <translation id="8512476990829870887">ప్రాసెస్‌ని ముగించు</translation>
 <translation id="851263357009351303">చిత్రాలను చూపించడానికి ఎల్లప్పుడూ <ph name="HOST" />ను అనుమతించు</translation>

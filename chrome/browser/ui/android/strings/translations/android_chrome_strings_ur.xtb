@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">شمار کیا جا رہا ہے…</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1384704387250346179">‏Google لینز سے تصویر کا ترجمہ کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">ہائی لائٹ کو اسٹائلائز کریں</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> دن پہلے فعال تھا</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> کے ساتھ تلاش کریں</translation>
 <translation id="1406000523432664303">"ٹریک نہ کریں"</translation>
@@ -853,6 +852,7 @@
 <translation id="6441734959916820584">نام کافی بڑا ہے</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# تصویر}other{# تصاویر}}</translation>
 <translation id="6447558397796644647">وہ بُک مارک تلاش نہیں کیا جا سکا۔ اپنا املا چیک کریں یا ایک نیا بُک مارک شامل کریں۔</translation>
+<translation id="6459045781120991510">سرویز</translation>
 <translation id="6461962085415701688">فائل نہیں کھل سکتی</translation>
 <translation id="6464977750820128603">‏آپ Chrome میں اپنی ملاحظہ کردہ سائٹس کو دیکھ اور ان کے لیے ٹائمرز سیٹ کر سکتے ہیں۔\n\nجن سائٹس کے لیے آپ ٹائمرز سیٹ کرتے ہیں اور جتنی دیر تک آپ ان سائٹس کو ملاحظہ کرتے ہیں اس کے بارے میں Google معلومات حاصل کرتا ہے۔ ڈیجیٹل فلاح و بہبود کو بہتر بنانے کے لیے اس معلومات کا استعمال کیا جاتا ہے۔</translation>
 <translation id="6475951671322991020">ویڈیو ڈاؤن لوڈ کریں</translation>
@@ -969,6 +969,7 @@
 <translation id="7242755609445462077">اسٹائلائزڈ ہائی لائٹ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">‏یہ یقینی بنائیں کہ Chrome پر <ph name="TARGET_DEVICE_NAME" /> کی مطابقت پذیری آن ہے</translation>
 <translation id="7252076891734325316">اپنا فون کمپیوٹر کے قریب رکھیں</translation>
+<translation id="727288900855680735"><ph name="ORIGIN" /> میں <ph name="ONE_TIME_CODE" /> کو جمع کرائیں؟</translation>
 <translation id="7274013316676448362">مسدود سائٹ</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> تبدیل کریں؟</translation>
 <translation id="7290209999329137901">'نام تبدیل کریں' دستیاب نہیں ہے</translation>

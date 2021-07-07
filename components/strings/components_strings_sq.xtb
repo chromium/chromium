@@ -103,6 +103,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1307966114820526988">Veçori të vjetruara</translation>
 <translation id="131405271941274527"><ph name="URL" /> dëshiron që të dërgojë dhe të marrë informacion kur troket te telefoni në një pajisje me NFC</translation>
 <translation id="1314509827145471431">Lidhje djathtas</translation>
+<translation id="1319245136674974084">Mos pyet përsëri për këtë aplikacion</translation>
 <translation id="1320233736580025032">Prc1 (Zarf)</translation>
 <translation id="132301787627749051">Kërko për imazhin e kujtesës së fragmenteve</translation>
 <translation id="1323433172918577554">Shfaq më shumë</translation>
@@ -743,6 +744,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3655670868607891010">Nëse e shikon këtë vazhdimisht, provo këto <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Rishikim</translation>
 <translation id="3664782872746246217">Fjalët kyçe:</translation>
+<translation id="3671540257457995106">Të lejohet ndryshimi i përmasave?</translation>
 <translation id="3676592649209844519">ID-ja e pajisjes:</translation>
 <translation id="3677008721441257057">Mos dëshiron të thuash &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Kërkesa nuk mund të nënshkruhej</translation>
@@ -1101,6 +1103,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4953689047182316270">Reago ndaj ngjarjeve të qasshmërisë</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Zgjero listën</translation>
+<translation id="4968522289500246572">Ky aplikacion është projektuar për celular dhe përmasat mund të mos ndryshohen si duhet. Aplikacioni mund të ketë probleme ose të riniset.</translation>
 <translation id="4973922308112707173">Dy shpime lart</translation>
 <translation id="4974590756084640048">Aktivizo përsëri paralajmërimet</translation>
 <translation id="4984088539114770594">Të përdoret mikrofoni?</translation>
@@ -1149,6 +1152,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5123063207673082822">Fundjavë</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifiko kartën tënde</translation>
+<translation id="512670116361803001">Përmasat e <ph name="APP_NAME" /> mund të mos ndryshohen si duhet. Përdor madhësitë e paravendosura të dritares për të parandaluar problemet e aplikacionit.</translation>
 <translation id="5135404736266831032">Menaxho adresat...</translation>
 <translation id="5138014172396933048">Karta virtuale nuk ofrohet për momentin, kontakto me bankën tënde</translation>
 <translation id="5138227688689900538">Shfaq më pak</translation>
@@ -1514,6 +1518,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="647261751007945333">Politikat e pajisjes</translation>
 <translation id="6476284679642588870">Menaxho mënyrat e pagesës</translation>
 <translation id="6489534406876378309">Nis ngarkimin e ndërprerjeve aksidentale</translation>
+<translation id="6493924760403974580">Ky aplikacion mbështet vetëm këtë madhësi.</translation>
 <translation id="6499038740797743453">Të rivendoset fjalëkalimi?</translation>
 <translation id="6502991525169604759">Pa ndryshimet e tua</translation>
 <translation id="6508722015517270189">Rinis Chrome</translation>
@@ -2168,6 +2173,7 @@ Detaje shtesë:
 <translation id="8975263830901772334">Emrat e skedarëve që printon</translation>
 <translation id="8978053250194585037">"Shfletimi i sigurt i Google" <ph name="BEGIN_LINK" />zbuloi së fundi mashtrime<ph name="END_LINK" /> në <ph name="SITE" />. Sajtet mashtruese pretendojnë se janë sajte të tjera uebi për të të mashtruar.</translation>
 <translation id="8983003182662520383">Mënyrat e pagesës dhe adresat që përdorin Google Pay</translation>
+<translation id="8983369100812962543">Tani mund t'i ndryshosh përmasat e aplikacionit</translation>
 <translation id="8987927404178983737">Muaji</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> dëshiron të dijë kur ti e përdor këtë pajisje në mënyrë aktive</translation>

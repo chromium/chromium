@@ -366,6 +366,13 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces la política, <ph name="PRODUCT_NAME" /> intentará detectar si un servidor se encuentra en la intranet. Solo en ese caso responderá a las solicitudes de IWA. Si se detecta un servidor como Internet, <ph name="PRODUCT_NAME" /> ignorará las solicitudes de IWA que provengan de ese servidor.
 
       Nota: Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="1495817006535797003">Si estableces la política, se ejecutarán en su propios procesos los orígenes designados en una lista de elementos separados por comas. Además, se aislarán los orígenes designados a partir de subdominios. Por ejemplo, si especificas https://example.com/, también se aislará https://foo.example.com/ como parte del sitio https://example.com/.  Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" /> y que esta política extiende ese modo para aislar orígenes adicionales específicos.
+
+      Si inhabilitas la política, se desactivará toda forma de aislamiento de sitios, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento de sitios. Los usuarios aún podrán activar IsolateOrigins de forma manual usando esa función experimental de línea de comandos.
+
+      Si no estableces la política, los usuarios podrán cambiar esta configuración.
+
+      Nota: Si aíslas demasiados sitios en Android, es posible que se generen problemas de rendimiento, en especial en dispositivos con poca memoria. Esta política solo se aplica a Chrome cuando se ejecuta en dispositivos con Android que tienen exclusivamente más de 1 GB de RAM. Para aplicar la política en plataformas que no tienen Android, utiliza <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="1503969899251962413">Si estableces la política, se especificará la clave de licencia <ph name="PLUGIN_VM_NAME" /> para este dispositivo.
 
@@ -700,6 +707,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1930127294345368978">Cantidad máxima de hojas permitidas para un solo trabajo de impresión</translation>
 <translation id="193259052151668190">Lista blanca de dispositivos USB que se pueden separar</translation>
 <translation id="1933378685401357864">Imagen de fondo de pantalla</translation>
+<translation id="1942626390957213764">Inhabilitar el centro para compartir el escritorio</translation>
 <translation id="1945994447126139909">Esta política empresarial es una adaptación por corto plazo y se quitará en la versión 88 de <ph name="PRODUCT_NAME" />.
 
       Para fortalecer la política del referente predeterminado de Chrome, su valor actual de "sin referente cuando cambia a una versión inferior" cambia al valor más seguro "origen estricto cuando el origen es cruzado" mediante un lanzamiento gradual que apunta a la versión 85 estable.
@@ -2456,6 +2464,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="4086150283035515220">Si habilitas la política, se les preguntará a los usuarios dónde guardar los archivos antes de descargarlos. Si la inhabilitas, las descargas se iniciarán inmediatamente; no se les preguntará a los usuarios dónde guardar los archivos.
 
       Si no estableces la política, los usuarios podrán cambiar esta configuración.</translation>
+<translation id="4087476676669545471">Si estableces la política como verdadera o no la estableces, los usuarios podrán compartir o guardar la página web actual mediante acciones proporcionadas por el centro para compartir el escritorio. Se puede acceder al centro para compartir a través del cuadro multifunción o el menú de 3 puntos.
+
+       Si estableces la política como falsa, dejará de estar disponible el ícono para compartir en el cuadro multifunción y en el menú de 3 puntos.</translation>
 <translation id="4088589230932595924">Modo incógnito forzado</translation>
 <translation id="4089849819635523136">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> especificará la palabra clave o el atajo que se utilizará en la barra de direcciones para activar la búsqueda de este proveedor.
 
@@ -3130,11 +3141,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="5078623750797048009">Habilitar las anotaciones en archivos PDF</translation>
 <translation id="5082572440690475059">Permite el acceso de lectura a través de la API de File System en estos sitios</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
-<translation id="5087424855041813182">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden mostrar notificaciones.
-
-      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5090791951240382356">Permitir la combinación de políticas de diccionarios con diferentes fuentes</translation>
 <translation id="5091315650312105069">Permitir la autenticación <ph name="BASIC_AUTH" /> para HTTP</translation>
 <translation id="5103112931744164177">Esta política controla la pila de software que se utiliza para establecer la comunicación con el servidor DNS: el cliente DNS del sistema operativo o el cliente DNS integrado de <ph name="PRODUCT_NAME" />. Esta política no cambia los servidores DNS que se utilizan: si, por ejemplo, el sistema operativo está configurado para usar un servidor DNS empresarial, el cliente DNS integrado utilizará ese mismo servidor. Tampoco controla si se utiliza el protocolo DNS por HTTPS; <ph name="PRODUCT_NAME" /> siempre utilizará el agente de resolución integrado para las solicitudes del protocolo DNS por HTTPS. Para obtener información sobre el control de este protocolo, consulta la política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
@@ -3411,6 +3417,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
           Si la inhabilitas, se desactivará esta función de forma forzosa.
           </translation>
+<translation id="5435888298115339571">Habilitar el uso compartido del escritorio en el cuadro multifunción y el menú de 3 puntos</translation>
 <translation id="5442026853063570579">Esta política también controla el acceso a las Opciones para desarrolladores de Android. Si estableces esta política como "DeveloperToolsDisallowed" (valor 2), los usuarios no pueden acceder a las Opciones para desarrolladores. Si la estableces con otro valor o la dejas sin establecer, los usuarios pueden acceder a las Opciones para desarrolladores al presionar siete veces el número de versión en la app de Configuración de Android.</translation>
 <translation id="5445596354079213552">Esta política solo es válida si se alcanzó la fecha de vencimiento de las actualizaciones automáticas para el dispositivo y no se cumple el requisito de versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> que se estableció en la política <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
@@ -4283,6 +4290,17 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si no estableces la política o la defines con una lista vacía, no habrá ninguna cuenta local del dispositivo.</translation>
 <translation id="6584541828182430328">Inhabilita la alerta de pantalla completa</translation>
 <translation id="6598235178374410284">Imagen de avatar del usuario</translation>
+<translation id="6601311299236772162">Esta política controla la manera en la que <ph name="PRODUCT_NAME" /> interpreta las políticas de listas de sitios o listas grises para la función Compatibilidad con navegadores heredados. Afecta las siguientes políticas: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> y <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Si estableces la política como "Default" (0) o no la estableces, las coincidencias de URL serán menos estrictas. Las reglas que no incluyan "/" buscarán un substring en el nombre de host de la URL.
+
+      Si estableces la política como "Strict" (1), las coincidencias de URL serán más estrictas. Las reglas que no incluyan "/" solo buscarán coincidencias al final del nombre de host. Las reglas deben estar en el límite de un nombre de dominio. Es más compatible con <ph name="MS_IE_PRODUCT_NAME" /> y <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Por ejemplo, con la regla "example.com":
+
+      "http://example.com/" y "http://subdomain.example.com/" coinciden, independientemente del modo de análisis.
+
+      "http://notexample.com/", "http://example.com.invalid.com/" y "http://example.comabc/" solo coinciden en el modo "Default".</translation>
 <translation id="6603004149426829878">Enviar siempre cualquier señal de ubicación disponible al servidor mientras se determina la zona horaria</translation>
 <translation id="6604049565198492174">Si estableces la política, se podrá aplicar la configuración de red por usuario de cada dispositivo <ph name="PRODUCT_NAME" />. La configuración de red es una string en formato JSON, como la define el formato Open Network Configuration.</translation>
 <translation id="660567106648774919">Esta política dejó de estar disponible. En su lugar, utiliza <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
@@ -4791,11 +4809,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7126928806195745404">Configuración de JavaScript</translation>
 <translation id="7127892035367404455">Reversión a la versión objetivo</translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
-<translation id="7129052644387688634">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden mostrar notificaciones.
-
-      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="712963038874313213">Proporciona un playbook de Ansible que debe ejecutarse en el contenedor predeterminado de Crostini.
 
       Esta política proporciona un playbook de Ansible para aplicarlo en el contenedor predeterminado de Crostini si este está disponible en el dispositivo determinado y si lo permiten las políticas.
@@ -5222,6 +5235,13 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
           El valor de la política debe especificarse en milisegundos. Los valores deben ser menores o iguales que la demora de pantalla apagada (si está configurada) y la demora por inactividad.</translation>
 <translation id="7680437377926096177">No mostrar el diálogo de salida cuando se cierra la última ventana</translation>
+<translation id="7681958144280390173">Si habilitas la política, se aislarán todos los sitios (cada sitio se ejecutará en su propio proceso). Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" /> y que esta política extiende la aplicación de ese modo predeterminado de aislamiento de sitios a todos los sitios.
+
+      Si inhabilitas la política, se desactivará toda forma de aislamiento de sitios, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento de sitios. Los usuarios aún podrán activar la política manualmente.
+
+      Si no estableces la política, los usuarios podrán cambiar esta configuración.
+
+      Nota: Mejorará la compatibilidad para aislar todos los sitios en Android, pero, por el momento, es posible que esta acción genere problemas de rendimiento, en especial en dispositivos de gama baja. Esta política solo se aplica a Chrome cuando se ejecuta en dispositivos con Android que tienen exclusivamente más de 1 GB de RAM. Para aislar sitios específicos y limitar el impacto del rendimiento para los usuarios, utiliza <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> con una lista de los sitios que quieras aislar.  Para aplicar la política en plataformas que no tienen Android, utiliza <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="7683777542468165012">Actualizar política dinámica</translation>
 <translation id="7687943045976362719">Si se configura esta política, <ph name="PRODUCT_FRAME_NAME" /> determinará los tipos de contenido especificados.
 
@@ -5946,6 +5966,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no la estableces, se abrirá la página Nueva pestaña al iniciar el navegador.
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
+<translation id="8671119576957984818">Habilitar el centro para compartir el escritorio</translation>
 <translation id="8672321184841719703">Versión de destino para las actualizaciones automáticas</translation>
 <translation id="867410340948518937">U2F (segundo factor universal)</translation>
 <translation id="8676959842615154675">Si habilitas la política, el host de acceso remoto comparará el nombre del usuario local con el que está asociado el host y el nombre de la Cuenta de Google registrado como el propietario del host ("juanperez" si el host le pertenece a "juanperez@ejemplo.com"). No se iniciará el host si el nombre del propietario del host es diferente del nombre del usuario local con el que está asociado el host. Para asociar de forma forzosa la Cuenta de Google del propietario con un dominio específico, utiliza la política con <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.

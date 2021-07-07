@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">Calculando…</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traduce la foto con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">Estilizar el contenido destacado</translation>
 <translation id="1386674309198842382">Activo hace <ph name="LAST_UPDATED" /> días</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">No realizar seguimiento</translation>
@@ -853,6 +852,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6441734959916820584">El nombre es demasiado largo</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# imagen}other{# imágenes}}</translation>
 <translation id="6447558397796644647">No se puede encontrar ese favorito. Revisa la ortografía o agrega un nuevo favorito.</translation>
+<translation id="6459045781120991510">Encuestas</translation>
 <translation id="6461962085415701688">No se puede abrir el archivo</translation>
 <translation id="6464977750820128603">Puedes ver los sitios que visites en Chrome y establecer temporizadores para ellos.\n\nGoogle obtiene información sobre los sitios para los que estableces temporizadores y la duración de las visitas a ellos. Esta información se usa para mejorar Bienestar digital.</translation>
 <translation id="6475951671322991020">Descargar video</translation>
@@ -969,6 +969,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7242755609445462077">Nota estilizada con contenido destacado (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Comprueba que <ph name="TARGET_DEVICE_NAME" /> tenga activada la sincronización en Chrome</translation>
 <translation id="7252076891734325316">Coloca el teléfono cerca de la computadora</translation>
+<translation id="727288900855680735">¿Deseas enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sitio bloqueado</translation>
 <translation id="7286572596625053347">¿Quieres cambiar (<ph name="LANGUAGE" />)?</translation>
 <translation id="7290209999329137901">No se puede renombrar el elemento porque no está disponible</translation>

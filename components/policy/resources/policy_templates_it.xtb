@@ -2924,7 +2924,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4820432864264617413">È vietata l'esecuzione di <ph name="BOREALIS_NAME" /> per un utente</translation>
 <translation id="4826326557828204741">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della batteria</translation>
 <translation id="482803100714220060">Mostra URL completi</translation>
-<translation id="4832852360828533362">Rapporti su dispositivi e utenti</translation>
+<translation id="4832852360828533362">Report su dispositivi e utenti</translation>
 <translation id="4834526953114077364">Gli utenti utilizzati meno di recente che non hanno eseguito l'accesso negli ultimi tre mesi vengono rimossi fino alla disponibilità di spazio libero sufficiente</translation>
 <translation id="483544442646753291">Controlla l'esperienza utente delle funzionalità disattivate che sono elencate in <ph name="SYSTEM_FEATURES_DISABLE_LIST" />.
 
@@ -3128,11 +3128,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5078623750797048009">Attiva annotazioni PDF</translation>
 <translation id="5082572440690475059">Consenti l'accesso di lettura tramite l'API file system su questi siti</translation>
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
-<translation id="5087424855041813182">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono mostrare notifiche.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
 <translation id="5103112931744164177">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce sui server DNS utilizzati: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS-over-HTTPS. Per informazioni relative al controllo del protocollo DNS-over-HTTPS, consulta il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
@@ -4781,11 +4776,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="7126928806195745404">Impostazioni JavaScript</translation>
 <translation id="7127892035367404455">Rollback alla versione target</translation>
 <translation id="7127980134843952133">Cronologia download</translation>
-<translation id="7129052644387688634">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono mostrare notifiche.
-
-      Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="712963038874313213">Fornisce un playbook Ansible che deve essere eseguito nel contenitore Crostini predefinito.
 
       Questo criterio consente di specificare un playbook Ansible da applicare al contenitore Crostini predefinito, se disponibile sul dispositivo e se consentito dai criteri.

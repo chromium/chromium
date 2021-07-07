@@ -103,7 +103,7 @@
 <translation id="1307966114820526988">這些功能已被淘汰</translation>
 <translation id="131405271941274527"><ph name="URL" /> 想在您以手機觸踫 NFC 裝置時傳送和接收資料</translation>
 <translation id="1314509827145471431">釘裝 (右側)</translation>
-<translation id="1319245136674974084">不要再詢問是否允許調整這個應用程式的大小</translation>
+<translation id="1319245136674974084">使用這個應用程式時不要再問我</translation>
 <translation id="1320233736580025032">Prc1 (信封)</translation>
 <translation id="132301787627749051">搵剪貼簿嘅圖</translation>
 <translation id="1323433172918577554">顯示更多</translation>
@@ -1096,7 +1096,7 @@
 <translation id="4953689047182316270">回應無障礙功能事件</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">展開清單</translation>
-<translation id="4968522289500246572">這是專為行動裝置設計的應用程式，大小可能未妥善調整。此應用程式可能會發生問題，或是重新啟動。</translation>
+<translation id="4968522289500246572">此應用程式專為流動裝置而設，可能無法正常調整大小。應用程式可能會發生問題或重新啟動。</translation>
 <translation id="4973922308112707173">雙孔 (頂端)</translation>
 <translation id="4974590756084640048">重新啟用警告功能</translation>
 <translation id="4984088539114770594">要使用麥克風嗎？</translation>
@@ -1145,7 +1145,7 @@
 <translation id="5123063207673082822">週末</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">驗證信用卡</translation>
-<translation id="512670116361803001">「<ph name="APP_NAME" />」的大小可能未妥善調整。請採用預設的視窗大小，以免應用程式發生問題。</translation>
+<translation id="512670116361803001">「<ph name="APP_NAME" />」可能無法正常調整大小。請使用預設視窗大小，以免應用程式發生問題。</translation>
 <translation id="5135404736266831032">管理地址…</translation>
 <translation id="5138014172396933048">目前無法使用虛擬卡，請聯絡您的銀行</translation>
 <translation id="5138227688689900538">顯示較少</translation>
@@ -1512,7 +1512,7 @@
 <translation id="647261751007945333">裝置政策</translation>
 <translation id="6476284679642588870">管理付款方法</translation>
 <translation id="6489534406876378309">開始上載當機報告</translation>
-<translation id="6493924760403974580">這個應用程式僅支援此大小。</translation>
+<translation id="6493924760403974580">此應用程式只支援此大小。</translation>
 <translation id="6499038740797743453">要重設密碼嗎？</translation>
 <translation id="6502991525169604759">不包括您所作的變更</translation>
 <translation id="6508722015517270189">重新啟動 Chrome</translation>
@@ -2167,7 +2167,7 @@
 <translation id="8975263830901772334">您列印的檔案名稱</translation>
 <translation id="8978053250194585037">「Google 安全瀏覽」功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到網絡釣魚行為<ph name="END_LINK" />。網絡釣魚網站會偽裝成其他網站，藉此騙取您的資料。</translation>
 <translation id="8983003182662520383">使用 Google Pay 儲存的付款方法和地址</translation>
-<translation id="8983369100812962543">你現在可以調整應用程式大小</translation>
+<translation id="8983369100812962543">您現在可以調整應用程式大小</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想知道您是否正在使用此裝置</translation>

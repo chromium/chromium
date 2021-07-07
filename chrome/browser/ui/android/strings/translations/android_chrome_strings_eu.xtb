@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">Kalkulatzen…</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1384704387250346179">Itzuli irudia Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">Eman estiloa nabarmendutakoari</translation>
 <translation id="1386674309198842382">Aktibo duela <ph name="LAST_UPDATED" /> egun</translation>
 <translation id="1397811292916898096">Egin bilaketak <ph name="PRODUCT_NAME" /> zerbitzuarekin</translation>
 <translation id="1406000523432664303">"Ez jarraitu"</translation>
@@ -853,6 +852,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6441734959916820584">Izena luzeegia da</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# irudi}other{# irudi}}</translation>
 <translation id="6447558397796644647">Ezin da aurkitu laster-marka hori. Egiaztatu zuzen idatzi duzula edo gehitu laster-marka bat.</translation>
+<translation id="6459045781120991510">Inkestak</translation>
 <translation id="6461962085415701688">Ezin da ireki fitxategia</translation>
 <translation id="6464977750820128603">Chrome-n irekitako webguneak ikus ditzakezu, eta haiek erabiltzeko tenporizadoreak ezarri.\n\nGoogle-k informazioa jasotzen du tenporizadoreak ezarri dizkiezun webguneei buruz eta haietan zenbat denbora eman duzun kalkulatzen du. Ongizate digitala programa hobetzeko erabiltzen da informazio hori.</translation>
 <translation id="6475951671322991020">Deskargatu bideoa</translation>
@@ -969,6 +969,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7242755609445462077">Nabarmentze estilizatua <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> gailuak Chrome-ren sinkronizazioa aktibatuta daukala</translation>
 <translation id="7252076891734325316">Jarri telefonoa ordenagailutik gertu</translation>
+<translation id="727288900855680735"><ph name="ORIGIN" /> domeinura bidali nahi duzu <ph name="ONE_TIME_CODE" />?</translation>
 <translation id="7274013316676448362">Blokeatutako webgunea</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> aldatu nahi duzu?</translation>
 <translation id="7290209999329137901">Ezin da aldatu izena</translation>

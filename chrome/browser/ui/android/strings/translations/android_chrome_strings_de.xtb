@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">Berechnung läuft...</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1384704387250346179">Bild mit Google Lens übersetzen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">Markierung stilisieren</translation>
 <translation id="1386674309198842382">Vor <ph name="LAST_UPDATED" /> Tagen aktiv</translation>
 <translation id="1397811292916898096">Mit <ph name="PRODUCT_NAME" /> suchen</translation>
 <translation id="1406000523432664303">„Do Not Track“</translation>
@@ -853,6 +852,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6441734959916820584">Name ist zu lang</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# Bild}other{# Bilder}}</translation>
 <translation id="6447558397796644647">Das Lesezeichen wurde nicht gefunden. Prüfen Sie die Schreibweise oder fügen Sie ein neues Lesezeichen hinzu.</translation>
+<translation id="6459045781120991510">Umfragen</translation>
 <translation id="6461962085415701688">Datei kann nicht geöffnet werden</translation>
 <translation id="6464977750820128603">Sie sehen in Chrome besuchte Websites und können Timer einstellen.\n\nGoogle erhält Informationen zu den Websites, für die Sie Timer einstellen, sowie zur Dauer des Besuchs. Anhand dieser Informationen wird Digital Wellbeing optimiert.</translation>
 <translation id="6475951671322991020">Video herunterladen</translation>
@@ -969,6 +969,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7242755609445462077">Stilisierte Markierung <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Prüfen Sie, ob auf <ph name="TARGET_DEVICE_NAME" /> die Synchronisierung in Chrome aktiviert ist</translation>
 <translation id="7252076891734325316">Platzieren Sie Ihr Smartphone möglichst nah am Computer</translation>
+<translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> an <ph name="ORIGIN" /> senden?</translation>
 <translation id="7274013316676448362">Blockierte Website</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> ändern?</translation>
 <translation id="7290209999329137901">Umbenennen nicht verfügbar</translation>

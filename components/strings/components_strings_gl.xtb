@@ -103,6 +103,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1307966114820526988">Funcións obsoletas</translation>
 <translation id="131405271941274527"><ph name="URL" /> quere enviar e recibir información cando o teu teléfono toque un dispositivo NFC</translation>
 <translation id="1314509827145471431">Encadernación na parte dereita</translation>
+<translation id="1319245136674974084">Non volver preguntar para esta aplicación</translation>
 <translation id="1320233736580025032">Prc1 (sobre)</translation>
 <translation id="132301787627749051">Buscar imaxe do portapapeis</translation>
 <translation id="1323433172918577554">Mostrar máis</translation>
@@ -743,6 +744,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3655670868607891010">Se esta mensaxe aparece con frecuencia, proba a solucionalo con estas <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
+<translation id="3671540257457995106">Queres permitir que a aplicación cambie de tamaño?</translation>
 <translation id="3676592649209844519">Código de identificación do dispositivo:</translation>
 <translation id="3677008721441257057">Quizais querías dicir &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Non se puido asinar a solicitude</translation>
@@ -1103,6 +1105,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4953689047182316270">Responder a eventos de accesibilidade</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Ampliar lista</translation>
+<translation id="4968522289500246572">Esta aplicación está deseñada para dispositivos móbiles e pode que non cambie ben de tamaño. É posible que se reinicie ou que se produza algún problema co seu funcionamento.</translation>
 <translation id="4973922308112707173">Dúas perforacións na parte superior</translation>
 <translation id="4974590756084640048">Volver activar advertencias</translation>
 <translation id="4984088539114770594">Queres utilizar o micrófono?</translation>
@@ -1151,6 +1154,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verificar a túa tarxeta</translation>
+<translation id="512670116361803001">É posible que <ph name="APP_NAME" /> non cambie ben de tamaño. Para evitar que se produzan problemas co funcionamento da aplicación, usa os tamaños de ventá predeterminados.</translation>
 <translation id="5135404736266831032">Xestiona os enderezos…</translation>
 <translation id="5138014172396933048">A tarxeta virtual non está dispoñible neste intres. Ponte en contacto co teu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
@@ -1517,6 +1521,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="647261751007945333">Políticas de dispositivo</translation>
 <translation id="6476284679642588870">Xestionar métodos de pago</translation>
 <translation id="6489534406876378309">Comezar a cargar erros</translation>
+<translation id="6493924760403974580">Esta aplicación só admite este tamaño.</translation>
 <translation id="6499038740797743453">Queres restablecer o contrasinal?</translation>
 <translation id="6502991525169604759">Sen os teus cambios</translation>
 <translation id="6508722015517270189">Reinicia Chrome</translation>
@@ -2171,6 +2176,7 @@ Detalles adicionais:
 <translation id="8975263830901772334">Nomes dos ficheiros que imprimes</translation>
 <translation id="8978053250194585037">A función de navegación segura de Google <ph name="BEGIN_LINK" />detectou actividades de phishing<ph name="END_LINK" /> recentemente no sitio <ph name="SITE" />. Os sitios de phishing fanse pasar por outros sitios web para enganar os usuarios.</translation>
 <translation id="8983003182662520383">Métodos de pago e enderezos que usan Google Pay</translation>
+<translation id="8983369100812962543">Xa podes cambiar o tamaño da aplicación</translation>
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> quere saber se estás utilizando este dispositivo de maneira activa</translation>

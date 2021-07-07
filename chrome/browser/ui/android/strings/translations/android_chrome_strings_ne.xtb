@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">हिसाब गर्दै…</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1384704387250346179">Google लेन्स प्रयोग गरी फोटोमा भएका कुरा अनुवाद गर्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">हाइलाइट गरिएको पाठ अर्को शैलीको बनाउनुहोस्</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिनअघि सक्रिय</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
 <translation id="1406000523432664303">“ट्रयाक नगर्नुहोस्”</translation>
@@ -852,6 +851,7 @@
 <translation id="6441734959916820584">नाम अत्यन्तै लामो छ</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# छवि}other{# फोटो}}</translation>
 <translation id="6447558397796644647">उक्त पुस्तक चिन्ह फेला पार्न सकिएन। आफ्नो हिज्जे जाँच्नुहोस् वा कुनै नयाँ पुस्तक चिन्ह थप्नुहोस्।</translation>
+<translation id="6459045781120991510">सर्वेक्षणहरू</translation>
 <translation id="6461962085415701688">फाइल खोल्न सकिँदैन</translation>
 <translation id="6464977750820128603">तपाईं आफूले Chrome मार्फत भ्रमण गर्ने साइटहरू हेर्न र तिनमा टाइमर सेट गर्न सक्नुहुन्छ।\n\nGoogle ले तपाईंले टाइमर सेट गर्नुभएका साइटहरू तथा उक्त साइट भ्रमण गर्दा बिताउनुभएको समयसम्बन्धी जानकारी प्राप्त गर्छ। यो जानकारी डिजिटल वेलबिइङ सुविधालाई अझ राम्रो बनाउनका निम्ति प्रयोग गरिन्छ।</translation>
 <translation id="6475951671322991020">भिडियो डाउनलोड गर्नुहोस्</translation>
@@ -968,6 +968,7 @@
 <translation id="7242755609445462077">शैलीबद्ध हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक सुविधा सक्रिय गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7252076891734325316">आफ्नो फोन कम्प्युटरको छेउमा राख्नुहोस्</translation>
+<translation id="727288900855680735"><ph name="ORIGIN" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="7274013316676448362">रोक लगाइएका साइटहरू</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> परिवर्तन गर्ने हो?</translation>
 <translation id="7290209999329137901">नाम बदल्ने सुविधा उपलब्ध छैन</translation>

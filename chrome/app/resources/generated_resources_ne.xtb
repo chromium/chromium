@@ -462,6 +462,7 @@
 <translation id="1507246803636407672">&amp;नकार्नुहोस्</translation>
 <translation id="1508491105858779599">यन्त्रलाई अनलक गर्नका लागि फिंगरप्रिन्ट सेन्सरमा आफ्नो औंला राख्नुहोस्।</translation>
 <translation id="1508575541972276599">हालको संस्करण Debian 9 (Stretch) हो</translation>
+<translation id="1509163368529404530">&amp;समूह रिस्टोर गर्नुहोस्</translation>
 <translation id="1509281256533087115">USB मार्फत कुनै पनि <ph name="DEVICE_NAME_AND_VENDOR" /> पहुँच गर्नुहोस्</translation>
 <translation id="1509960214886564027">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="1510238584712386396">लन्चर</translation>
@@ -582,6 +583,7 @@
 <translation id="1627408615528139100">पहिल्यै डाउनलोड गरिएको छ</translation>
 <translation id="1628948239858170093">फाइल खोल्नुअघि उक्त फाइल स्क्यान गर्ने हो?</translation>
 <translation id="1629314197035607094">पासवर्डको म्याद सकिएको छ</translation>
+<translation id="1629451755632656601">Google लाई तपाईंका कार्टमा तपाईंले चाहेअनुसारको छुट खोज्ने अनुमति दिने हो?</translation>
 <translation id="1630300831289687074">तपाईं चाँडै नै आफ्नो Chromebook चलाउन सक्नु हुने छ।</translation>
 <translation id="163072119192489970">डेटा पठाउने तथा प्राप्त गर्ने कार्य पूरा गर्न अनुमति दिइएका साइटहरू</translation>
 <translation id="1630768113285622200">पुनः सुरु गरेर जारी राख्नुहोस्</translation>
@@ -1287,6 +1289,7 @@
 <translation id="236117173274098341">अप्टिमाइज गर्नुहोस्</translation>
 <translation id="2361340419970998028">प्रतिक्रिया पठाइँदै छ...</translation>
 <translation id="236141728043665931">माइक्रोफोन पहुँचलाई सँधै ब्लक गर्नुहोस्</translation>
+<translation id="2363744066037724557">&amp;विन्डो रिस्टोर गर्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
 <translation id="2365507699358342471">यो साइटले क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र फोटो हेर्न सक्छ।</translation>
 <translation id="2367972762794486313">एप्स देखाउनुहोस्</translation>
@@ -2671,6 +2674,7 @@
 <translation id="3857807444929313943">औँला उठाई फेरि छुनुहोस्</translation>
 <translation id="3861638017150647085">युजरनेम "<ph name="USERNAME" />" उपलब्ध छैन</translation>
 <translation id="3861977424605124250">ब्राउजर खोल्दा देखाइयोस्</translation>
+<translation id="386239283124269513">&amp;समूह रिस्टोर गर्नुहोस्</translation>
 <translation id="3862788408946266506">'Kiosk_only" नामक म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS को किओस्क मोडमा स्थापना गर्नु पर्छ</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
 <translation id="3866249974567520381">विवरण</translation>
@@ -5644,6 +5648,7 @@
 <translation id="7225179976675429563">नेटवर्क प्रकार छैन</translation>
 <translation id="7228479291753472782">वेबसाइटहरूले भूस्थान, माइक्रोफोन, क्यामेरा जस्ता सुविधाहरूको प्रयोग गर्न सक्छन् वा सक्दैनन् भन्ने कुरा निर्दिष्ट गर्ने सेटिङहरूलाई फेरबदल गर्नुहोस्।</translation>
 <translation id="7228523857728654909">स्क्रिन लक तथा साइन इन</translation>
+<translation id="7230222852462421043">&amp;विन्डो रिस्टोर गर्नुहोस्</translation>
 <translation id="7230787553283372882">आफ्नो पाठको आकार आफू अनुकूल पार्नुहोस्</translation>
 <translation id="7232750842195536390">पुनः नामकरण गर्न सकिएन</translation>
 <translation id="7234010996000898150">Linux को पुनर्स्थापना रद्द गरिँदै</translation>
@@ -6253,12 +6258,14 @@
 <translation id="7853747251428735">थप उपकरणहरू</translation>
 <translation id="7855678561139483478">ट्याब नयाँ विन्डोमा सार्नुहोस्</translation>
 <translation id="7857093393627376423">पाठसम्बन्धी सुझावहरू</translation>
+<translation id="7857675386615530425">Google Lens प्रयोग गरी पेजको कुनै भाग खोज्नुहोस्</translation>
 <translation id="7857949311770343000">के यो नै तपाईंले अपेक्षा गर्नुभएको नयाँ ट्याब पृष्ठ हो?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">सेवा: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;डाउनलोडहरू</translation>
 <translation id="7861846108263890455">Google खाताको भाषा</translation>
 <translation id="7864539943188674973">ब्लुटुथ अक्षम बनाउनुहोस्</translation>
+<translation id="7866230141401327032">Google Lens प्रयोग गरी पेजको कुनै भाग खोज्नुहोस्</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - जोडा बनाइयो</translation>
 <translation id="7870730066603611552">सेटअप गरेपश्चात् सिंकसम्बन्धी विकल्पहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="7870790288828963061">नयाँ संस्करणका कुनै पनि Kiosk एपहरू भेटिएन। अद्यावधिक गर्न कुनै चिज वाँकि छैन। कृपया USB स्टिक हटाउनुहोस्।</translation>
@@ -6834,6 +6841,7 @@
 <translation id="850875081535031620">कुनै पनि हानिकारक सफ्टवेयर भेटिएन</translation>
 <translation id="8509177919508253835">सुरक्षा साँचाहरू रिसेट गर्नुहोस् र PIN हरू सिर्जना गर्नुहोस्</translation>
 <translation id="8509646642152301857">हिज्जे जाँच शब्दकोशको डाउनलोड असफल भयो।</translation>
+<translation id="8509967119010808787">आफूले चाहेको ट्याब खोज्न यहाँ क्लिक गर्नुहोस्</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{कुनै कमजोर पासवर्ड भेट्टिएन}=1{{COUNT} वटा कमजोर पासवर्ड भेट्टियो}other{{COUNT} वटा कमजोर पासवर्ड भेट्टियो}}</translation>
 <translation id="8512476990829870887">प्रक्रिया समाप्त गर्नुहोस्</translation>
 <translation id="851263357009351303">फोटो देखाउन <ph name="HOST" /> लाई सधैँ अनुमति दिनुहोस्</translation>

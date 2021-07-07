@@ -3093,11 +3093,6 @@
 <translation id="5078623750797048009">启用 PDF 注释</translation>
 <translation id="5082572440690475059">允许在这些网站上通过 File System API 读取内容</translation>
 <translation id="5085647276663819155">停用打印预览</translation>
-<translation id="5087424855041813182">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以显示通知。
-
-      如果您未设置此政策，那么，倘若 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
 <translation id="5091315650312105069">允许通过 HTTP 进行<ph name="BASIC_AUTH" />身份验证</translation>
 <translation id="5103112931744164177">此政策用于控制使用哪个软件堆栈与 DNS 服务器通信：操作系统 DNS 客户端或 <ph name="PRODUCT_NAME" /> 的内置 DNS 客户端。此政策不会影响使用哪些 DNS 服务器：例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。此政策也不会控制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 将始终使用内置的解析器发送 DNS-over-HTTPS 请求。如需了解如何控制 DNS-over-HTTPS，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
@@ -4727,11 +4722,6 @@
 <translation id="7126928806195745404">JavaScript 设置</translation>
 <translation id="7127892035367404455">回滚到目标版本</translation>
 <translation id="7127980134843952133">下载记录</translation>
-<translation id="7129052644387688634">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法显示通知。
-
-      如果您未设置此政策，那么，倘若 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
-
-      如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="712963038874313213">提供应在默认 Crostini 容器中执行的 Ansible Playbook。
 
       此政策允许提供 Ansible Playbook 以应用到默认 Crostini 容器，前提是该容器在给定设备上可用且相关政策允许。

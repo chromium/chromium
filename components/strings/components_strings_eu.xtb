@@ -103,6 +103,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1307966114820526988">Eginbide zaharkituak</translation>
 <translation id="131405271941274527"><ph name="URL" /> webguneak informazioa bidali eta jaso nahi du telefonoarekin NFC bidezko gailu bat ukituz gero</translation>
 <translation id="1314509827145471431">Koadernatu eskuinetik</translation>
+<translation id="1319245136674974084">Ez galdetu berriro aplikazio honen kasuan</translation>
 <translation id="1320233736580025032">Prc1 (gutun-azala)</translation>
 <translation id="132301787627749051">Bilatu arbeleko irudia</translation>
 <translation id="1323433172918577554">Erakutsi gehiago</translation>
@@ -736,6 +737,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3655670868607891010">Hau maiz agertzen bazaizu, saiatu honekin: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
+<translation id="3671540257457995106">Tamaina aldatzeko baimena ematen duzu?</translation>
 <translation id="3676592649209844519">Gailuaren IDa:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; esan nahi al zenuen?</translation>
 <translation id="3678029195006412963">Ezin izan da sinatu eskaera</translation>
@@ -1091,6 +1093,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4953689047182316270">Erantzun erabilerraztasun-gertaerei</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Zabaldu zerrenda</translation>
+<translation id="4968522289500246572">Mugikorretan erabiltzeko dago diseinatuta aplikazioa, eta agian ez da behar bezala aldatuko tamaina. Litekeena da aplikazioak arazoak izatea edo berrabiaraztea.</translation>
 <translation id="4973922308112707173">Bi zulo goian</translation>
 <translation id="4974590756084640048">Gaitu berriro abisuak</translation>
 <translation id="4984088539114770594">Mikrofonoa erabili nahi duzu?</translation>
@@ -1139,6 +1142,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5123063207673082822">Asteburua</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Egiaztatu txartela</translation>
+<translation id="512670116361803001">Agian ez da behar bezala aldatuko <ph name="APP_NAME" /> aplikazioaren tamaina. Aplikazioak arazorik ez izateko, erabili aurrezarritako leiho-tamainak.</translation>
 <translation id="5135404736266831032">Kudeatu helbideak…</translation>
 <translation id="5138014172396933048">Txartel birtuala ez dago erabilgarri une honetan. Jarri bankuarekin harremanetan.</translation>
 <translation id="5138227688689900538">Erakutsi gutxiago</translation>
@@ -1504,6 +1508,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="647261751007945333">Gailuaren gidalerroak</translation>
 <translation id="6476284679642588870">Kudeatu ordainketa-metodoak</translation>
 <translation id="6489534406876378309">Hasi hutsegite-txostenak kargatzen</translation>
+<translation id="6493924760403974580">Tamaina honetan soilik dago erabilgarri aplikazioa.</translation>
 <translation id="6499038740797743453">Pasahitza berrezarri nahi duzu?</translation>
 <translation id="6502991525169604759">Aldaketarik gabe</translation>
 <translation id="6508722015517270189">Berrabiarazi Chrome</translation>
@@ -2158,6 +2163,7 @@ Xehetasun gehiago:
 <translation id="8975263830901772334">Inprimatzen dituzun fitxategien izenak</translation>
 <translation id="8978053250194585037">Berriki, Google-ren Arakatze seguruak <ph name="BEGIN_LINK" />phishinga hauteman du<ph name="END_LINK" /> <ph name="SITE" /> webgunean. Phishing-webguneek beste webgune batzuk direnaren plantak egiten dituzte zu iruzurtzeko.</translation>
 <translation id="8983003182662520383">Google Pay-rekin erabiltzen dituzun ordainketa-metodoak eta helbideak</translation>
+<translation id="8983369100812962543">Orain, aplikazioaren tamaina alda dezakezu</translation>
 <translation id="8987927404178983737">Hilabetea</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> (<ph name="COUNTRY" />)</translation>
 <translation id="899688752321268742">Gailua noiz erabiltzen ari zaren jakin nahi du <ph name="URL" /> webguneak</translation>

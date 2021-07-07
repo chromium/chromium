@@ -3124,11 +3124,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="5078623750797048009">PDF Ek Açıklamalarını etkinleştir</translation>
 <translation id="5082572440690475059">Bu sitelerde File System API üzerinden okuma erişimine izin ver</translation>
 <translation id="5085647276663819155">Baskı Önizlemeyi Devre Dışı Bırak</translation>
-<translation id="5087424855041813182">Politikayı ayarlamak bildirimleri görüntüleyebilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
-
-      Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
-
-      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="5090791951240382356">Farklı kaynaklara ait sözlük politikalarını birleştirmeye izin ver</translation>
 <translation id="5091315650312105069">HTTP için <ph name="BASIC_AUTH" /> kimlik doğrulamasına izin ver</translation>
 <translation id="5103112931744164177">Bu politika, DNS sunucusuyla iletişim kurmak için hangi yazılım yığınının kullanıldığını kontrol eder: İşletim Sistemi DNS istemcisi veya <ph name="PRODUCT_NAME" /> ürününün yerleşik DNS istemcisi. Bu politika hangi DNS sunucularının kullanıldığını etkilemez: Örneğin, işletim sistemi kurumsal DNS sunucusu kullanacak şekilde yapılandırılmışsa aynı sunucu, yerleşik DNS istemcisi tarafından da kullanılır. Ayrıca DNS-over-HTTPS kullanılıp kullanılmadığını da kontrol etmez; <ph name="PRODUCT_NAME" />, DNS-over-HTTPS istekleri için her zaman yerleşik çözümleyici kullanır. DNS-over-HTTPS'nin kontrolüyle ilgili bilgi için <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> politikasına bakın.
@@ -4771,11 +4766,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7126928806195745404">JavaScript ayarları</translation>
 <translation id="7127892035367404455">Hedef sürüme geri dönme</translation>
 <translation id="7127980134843952133">İndirme geçmişi</translation>
-<translation id="7129052644387688634">Politikayı ayarlamak bildirimleri görüntüleyemeyen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
-
-      Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
-
-      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.  <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="712963038874313213">Varsayılan Crostini kapsayıcısında uygulanması gereken bir Ansible başucu kitabı sağlar.
 
       Bu politika, belirtilen cihazda kullanılabiliyorsa ve politika tarafından izin veriliyorsa varsayılan Crostini kapsayıcısına uygulanacak bir Ansible başucu kitabının sağlanmasına olanak tanır.

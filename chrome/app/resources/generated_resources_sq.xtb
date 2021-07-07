@@ -463,6 +463,7 @@
 <translation id="1507246803636407672">&amp;Hidhi poshtë</translation>
 <translation id="1508491105858779599">Vendose gishtin mbi sensorin e gjurmës së gishtit për të shkyçur pajisjen.</translation>
 <translation id="1508575541972276599">Versioni aktual është Debian 9 (Stretch)</translation>
+<translation id="1509163368529404530">&amp;Restauro grupin</translation>
 <translation id="1509281256533087115">Qasu në çdo <ph name="DEVICE_NAME_AND_VENDOR" /> përmes USB</translation>
 <translation id="1509960214886564027">Veçoritë në shumë sajte mund të ndalojnë së funksionuari</translation>
 <translation id="1510238584712386396">Nisësi</translation>
@@ -582,6 +583,7 @@
 <translation id="1627408615528139100">Është shkarkuar tashmë</translation>
 <translation id="1628948239858170093">Do ta skanosh skedarin përpara se ta hapësh?</translation>
 <translation id="1629314197035607094">Fjalëkalimi ka skaduar</translation>
+<translation id="1629451755632656601">Të lejohet që Google të gjejë ulje çmimi të personalizuara në karrocat e tua?</translation>
 <translation id="1630300831289687074">Do të mund ta përdorësh pajisjen tënde Chromebook së shpejti.</translation>
 <translation id="163072119192489970">Lejohen të përfundojnë dërgimin dhe marrjen e të dhënave</translation>
 <translation id="1630768113285622200">Rinis dhe vazhdo</translation>
@@ -1288,6 +1290,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="236117173274098341">Optimizo</translation>
 <translation id="2361340419970998028">Komentet po dërgohen...</translation>
 <translation id="236141728043665931">Blloko gjithmonë qasjen te mikrofoni</translation>
+<translation id="2363744066037724557">&amp;Restauro dritaren</translation>
 <translation id="2364498172489649528">Kaloi</translation>
 <translation id="2365507699358342471">Ky sajt mund të shikojë tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve.</translation>
 <translation id="2367972762794486313">Shfaq aplikacionet</translation>
@@ -2670,6 +2673,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3857807444929313943">Ngrije dhe më pas prek përsëri</translation>
 <translation id="3861638017150647085">Emri i përdoruesit "<ph name="USERNAME" />" nuk ofrohet</translation>
 <translation id="3861977424605124250">Shfaq në momentin e nisjes</translation>
+<translation id="386239283124269513">&amp;Restauro grupin</translation>
 <translation id="3862788408946266506">Aplikacioni me cilësinë e shfaqjes "kiosk_only" duhet të instalohet në modalitetin "kioskë" të sistemit operativ Chrome</translation>
 <translation id="3865414814144988605">Rezolucioni</translation>
 <translation id="3866249974567520381">Përshkrimi</translation>
@@ -5645,6 +5649,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7225179976675429563">Mungon lloji i rrjetit</translation>
 <translation id="7228479291753472782">Manipulo cilësimet që specifikojnë nëse sajtet e uebit mund të përdorin funksione si vendndodhja gjeografike, mikrofoni, kamera etj.</translation>
 <translation id="7228523857728654909">Kyçja e ekranit dhe identifikimi</translation>
+<translation id="7230222852462421043">&amp;Restauro dritaren</translation>
 <translation id="7230787553283372882">Personalizo madhësinë e tekstit</translation>
 <translation id="7232750842195536390">Riemërtimi dështoi</translation>
 <translation id="7234010996000898150">Po anulohet restaurimi i Linux</translation>
@@ -6253,12 +6258,14 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7853747251428735">Vegla të tj&amp;era</translation>
 <translation id="7855678561139483478">Lëvize skedën në dritare të re</translation>
 <translation id="7857093393627376423">Sugjerimet e tekstit</translation>
+<translation id="7857675386615530425">Kërko në një pjesë të faqes me "Lenten e Google"</translation>
 <translation id="7857949311770343000">A është kjo faqja e skedës së re që po prisje?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Shërbimi: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Shkarkimet</translation>
 <translation id="7861846108263890455">Gjuha e "Llogarisë së Google"</translation>
 <translation id="7864539943188674973">Çaktivizo Bluetooth-in</translation>
+<translation id="7866230141401327032">Kërko në një pjesë të faqes me "Lenten e Google"</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - E çiftuar</translation>
 <translation id="7870730066603611552">Rishiko opsionet e sinkronizimit pas konfigurimit</translation>
 <translation id="7870790288828963061">Nuk u gjetën aplikacione kioskë me version më të ri. Nuk ka asgjë për të përditësuar. Hiqe memorien USB.</translation>
@@ -6833,6 +6840,7 @@ Shtyp një çelës të caktuar për të hequr caktimin</translation>
 <translation id="850875081535031620">Nuk u gjet asnjë softuer i dëmshëm</translation>
 <translation id="8509177919508253835">Rivendos çelësat e sigurisë dhe krijo kodet PIN</translation>
 <translation id="8509646642152301857">Dështoi shkarkimi i fjalorit të kontrollit të drejtshkrimit.</translation>
+<translation id="8509967119010808787">Për të kërkuar në skedat e tua, kliko këtu</translation>
 <translation id="8512396579636492893">{COUNT,plural, =0{Nuk u gjet asnjë fjalëkalim i dobët}=1{U gjet {COUNT} fjalëkalim i dobët}other{U gjetën {COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="8512476990829870887">Përfundo procesin</translation>
 <translation id="851263357009351303">Lejo gjithmonë që <ph name="HOST" /> të shfaqë imazhet</translation>

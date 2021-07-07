@@ -3109,11 +3109,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="5078623750797048009">Pdf-annotaties aanzetten</translation>
 <translation id="5082572440690475059">Alleen leestoegang via de File System API toestaan op deze sites</translation>
 <translation id="5085647276663819155">Afdrukvoorbeeld uitzetten</translation>
-<translation id="5087424855041813182">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die meldingen mogen weergeven.
-
-      Als je het beleid niet instelt, is <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
-
-      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" />-verificatie toestaan voor HTTP</translation>
 <translation id="5103112931744164177">Dit beleid beheert welke softwarestack wordt gebruikt voor communicatie met de DNS-server: de DNS-client van het besturingssysteem of de ingebouwde DNS-client van <ph name="PRODUCT_NAME" />. Dit beleid heeft geen invloed op welke DNS-servers worden gebruikt: als het besturingssysteem bijvoorbeeld is geconfigureerd voor gebruik van een zakelijke DNS-server, wordt diezelfde server gebruikt door de ingebouwde DNS-client. Ook wordt met dit beleid niet beheerd of DNS-over-HTTPS wordt gebruikt: <ph name="PRODUCT_NAME" /> gebruikt altijd de ingebouwde resolver voor DNS-over-HTTPS-verzoeken. Zie het <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />-beleid voor informatie over het beheer van DNS-over-HTTPS.
@@ -4753,11 +4748,6 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="7126928806195745404">Instellingen voor JavaScript</translation>
 <translation id="7127892035367404455">Doelversie herstellen</translation>
 <translation id="7127980134843952133">Downloadgeschiedenis</translation>
-<translation id="7129052644387688634">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die geen meldingen mogen weergeven.
-
-      Als je het beleid niet instelt, is <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
-
-      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="712963038874313213">Hiermee wordt een Ansible-playbook geboden dat moet worden uitgevoerd in de standaard Crostini-container.
 
       Dit beleid staat het bieden van een Ansible-playbook toe die mag worden toegepast op de standaard Crostini-container, als deze beschikbaar is op het opgegeven apparaat en is toegestaan door het beleid.

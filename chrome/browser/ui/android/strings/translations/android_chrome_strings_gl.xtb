@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">Calculando...</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">Estilizar texto destacado</translation>
 <translation id="1386674309198842382">Dispositivo activo hai <ph name="LAST_UPDATED" />días</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">Non facer seguimento</translation>
@@ -853,6 +852,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6441734959916820584">O nome é demasiado longo</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# imaxe}other{# imaxes}}</translation>
 <translation id="6447558397796644647">Non se puido atopar o marcador. Comproba a ortografía ou engade un marcador novo.</translation>
+<translation id="6459045781120991510">Enquisas</translation>
 <translation id="6461962085415701688">Non se puido abrir o ficheiro</translation>
 <translation id="6464977750820128603">Podes ver os sitios que visitas en Chrome e definirlles temporizadores.\n\nGoogle obtén información sobre os sitios para os que estableces temporizadores e sobre a duración da túa visita. Estes datos utilízanse para mellorar Benestar dixital.</translation>
 <translation id="6475951671322991020">Descargar vídeo</translation>
@@ -969,6 +969,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7242755609445462077">Nota estilizada (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Asegúrate de que a sincronización de Chrome do dispositivo <ph name="TARGET_DEVICE_NAME" /> estea activada</translation>
 <translation id="7252076891734325316">Coloca o teléfono preto do ordenador</translation>
+<translation id="727288900855680735">Queres enviar <ph name="ONE_TIME_CODE" /> a <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Bloqueouse o sitio</translation>
 <translation id="7286572596625053347">Queres cambiar o idioma (<ph name="LANGUAGE" />)?</translation>
 <translation id="7290209999329137901">Non está dispoñible a opción de cambiar o nome</translation>

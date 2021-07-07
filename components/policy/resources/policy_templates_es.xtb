@@ -3155,11 +3155,6 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="5078623750797048009">Habilitar anotaciones en PDF</translation>
 <translation id="5082572440690475059">Permitir el acceso de lectura a través de la API File System en estos sitios web</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
-<translation id="5087424855041813182">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios pueden mostrar notificaciones.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5090791951240382356">Permite combinar políticas de diccionario de fuentes distintas</translation>
 <translation id="5091315650312105069">Permitir la autenticación <ph name="BASIC_AUTH" /> para conexiones HTTP</translation>
 <translation id="5103112931744164177">Esta política controla qué pila de software se utiliza para comunicarse con el servidor DNS: el cliente DNS del sistema operativo o el cliente DNS integrado de <ph name="PRODUCT_NAME" />. Esta política no afecta a qué servidores DNS se utilizan. Por ejemplo, si el sistema operativo está configurado para utilizar un servidor DNS de empresa, el cliente DNS integrado usará ese mismo servidor. Tampoco controla si se usará DNS‑over‑HTTPS; <ph name="PRODUCT_NAME" /> siempre utilizará la resolución integrada para solicitudes DNS‑over‑HTTPS. Consulta la política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para obtener información sobre los controles de DNS‑over‑HTTPS.
@@ -4832,11 +4827,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7126928806195745404">Configuración de JavaScript</translation>
 <translation id="7127892035367404455">Vuelve a instalar la versión de destino</translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
-<translation id="7129052644387688634">Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden mostrar notificaciones.
-
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="712963038874313213">Proporciona un playbook de Ansible que debe ejecutarse en el contenedor de Crostini predeterminado.
 
       Esta política permite proporcionar un playbook de Ansible para que se aplique al contenedor de Crostini predeterminado (si está disponible en el dispositivo y las políticas lo permiten).

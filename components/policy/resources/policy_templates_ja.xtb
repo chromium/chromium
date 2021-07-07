@@ -3054,11 +3054,6 @@
 <translation id="5078623750797048009">PDF の注釈を有効にする</translation>
 <translation id="5082572440690475059">File System API 経由での読み取りアクセスを許可するサイトを指定する</translation>
 <translation id="5085647276663819155">印刷プレビューを無効にする</translation>
-<translation id="5087424855041813182">このポリシーでは、通知の表示を許可するサイトの URL パターンリストを指定できます。
-
-      このポリシーを未設定のままにした場合、<ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
-
-      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="5090791951240382356">ソースの異なる辞書ポリシーの統合を許可する</translation>
 <translation id="5091315650312105069">HTTP で <ph name="BASIC_AUTH" /> 認証を許可する</translation>
 <translation id="5103112931744164177">このポリシーでは、DNS サーバーとの通信にオペレーティング システムの DNS クライアントと <ph name="PRODUCT_NAME" /> の組み込みの DNS クライアントのどちらのソフトウェア スタックを使用するかを管理できます。このポリシーは、使用する DNS サーバーの選択には影響しません。たとえば、オペレーティング システムで企業の DNS サーバーを使用するよう設定されている場合、組み込みの DNS クライアントでも同じサーバーが使用されます。また、DNS-over-HTTPS が使用されている場合は、このポリシーの対象となりません。<ph name="PRODUCT_NAME" /> では DNS-over-HTTPS リクエストに対して、常に組み込みのリゾルバを使用します。DNS-over-HTTPS の管理については、<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> ポリシーをご覧ください。
@@ -4646,11 +4641,6 @@
 <translation id="7126928806195745404">JavaScript 設定</translation>
 <translation id="7127892035367404455">対象バージョンへのロールバック</translation>
 <translation id="7127980134843952133">ダウンロード履歴</translation>
-<translation id="7129052644387688634">このポリシーでは、通知の表示を許可しないサイトの URL パターンリストを指定できます。
-
-      このポリシーを未設定のままにした場合、<ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
-
-      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="712963038874313213">デフォルトの Crostini コンテナで実行する Ansible playbook を指定します。
 
       Crostini が対象デバイスで利用可能で、ポリシーで許可されている場合は、このポリシーを使用して、デフォルトの Crostini コンテナに適用する Ansible playbook を指定できます。

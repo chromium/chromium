@@ -68,7 +68,6 @@
 <translation id="1376578503827013741">Probíhá výpočet…</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384704387250346179">Přeložit obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
-<translation id="1385855801883526502">Stylizovat zvýraznění</translation>
 <translation id="1386674309198842382">Aktivní před tímto počtem dní: <ph name="LAST_UPDATED" /></translation>
 <translation id="1397811292916898096">Hledat pomocí vyhledávače <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">Do Not Track (Nesledovat)</translation>
@@ -236,7 +235,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="250020030759455918">Uvidíte stav přihlášení, údaje o prohlížení a data webu <ph name="SITE_NAME" /> v Chromu</translation>
 <translation id="2512164632052122970">Jazyky obsahu</translation>
 <translation id="2513403576141822879">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat naleznete v části <ph name="BEGIN_LINK" />Synchronizace a služby Google<ph name="END_LINK" /></translation>
-<translation id="2517472476991765520">Vyhledat</translation>
+<translation id="2517472476991765520">Naskenovat</translation>
 <translation id="2518590038762162553">Ve zjednodušeném režimu načítá Chrome stránky rychleji a používá až o 60 procent méně dat. Kvůli optimalizaci navštěvovaných stránek přijímá Chrome váš webový provoz přes Google. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Odesílá do Googlu adresy URL stránek, které navštěvujete</translation>
 <translation id="2527497042232966453">Přepnuto na anonymní karty</translation>
