@@ -515,6 +515,8 @@ class IdentityManager : public KeyedService,
       const GoogleServiceAuthError& auth_error);
 
   friend void DisableAccessTokenFetchRetries(IdentityManager* identity_manager);
+  friend void EnableAccountCapabilitiesFetches(
+      IdentityManager* identity_manager);
 
   friend void CancelAllOngoingGaiaCookieOperations(
       IdentityManager* identity_manager);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -21,10 +22,12 @@
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -56,13 +59,10 @@ class SignInTestObserver : public IdentityManager::Observer,
   explicit SignInTestObserver(IdentityManager* identity_manager,
                               AccountReconcilor* reconcilor)
       : identity_manager_(identity_manager), reconcilor_(reconcilor) {
-    identity_manager_->AddObserver(this);
-    reconcilor_->AddObserver(this);
+    identity_manager_observation_.Observe(identity_manager_);
+    account_reconcilor_observation_.Observe(reconcilor_);
   }
-  ~SignInTestObserver() override {
-    identity_manager_->RemoveObserver(this);
-    reconcilor_->RemoveObserver(this);
-  }
+  ~SignInTestObserver() override = default;
 
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -172,12 +172,54 @@ class SignInTestObserver : public IdentityManager::Observer,
 
   signin::IdentityManager* const identity_manager_;
   AccountReconcilor* const reconcilor_;
+  base::ScopedObservation<IdentityManager, IdentityManager::Observer>
+      identity_manager_observation_{this};
+  base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
+      account_reconcilor_observation_{this};
   base::RunLoop run_loop_;
 
   bool are_expectations_set = false;
   int expected_signed_in_accounts_ = 0;
   PrimarySyncAccountWait primary_sync_account_wait_ =
       PrimarySyncAccountWait::kNotWait;
+};
+
+// Observer class allowing to wait for account capabilities to be known.
+class AccountCapabilitiesObserver : public IdentityManager::Observer {
+ public:
+  explicit AccountCapabilitiesObserver(IdentityManager* identity_manager)
+      : identity_manager_(identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  }
+
+  // IdentityManager::Observer:
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override {
+    if (info.account_id != account_id_)
+      return;
+
+    if (info.capabilities.AreAllCapabilitiesKnown())
+      run_loop_.Quit();
+  }
+
+  // This should be called only once per AccountCapabilitiesObserver instance.
+  void WaitForAllCapabilitiesToBeKnown(CoreAccountId account_id) {
+    DCHECK(identity_manager_observation_.IsObservingSource(identity_manager_));
+    AccountInfo info =
+        identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+    if (info.capabilities.AreAllCapabilitiesKnown())
+      return;
+
+    account_id_ = account_id;
+    run_loop_.Run();
+    identity_manager_observation_.Reset();
+  }
+
+ private:
+  IdentityManager* identity_manager_ = nullptr;
+  CoreAccountId account_id_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<IdentityManager, IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 // Live tests for SignIn.
@@ -678,6 +720,28 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+}
+
+IN_PROC_BROWSER_TEST_F(LiveSignInTest,
+                       MANUAL_AccountCapabilities_FetchedOnSignIn) {
+  EnableAccountCapabilitiesFetches(identity_manager());
+  AccountCapabilitiesObserver capabilities_observer(identity_manager());
+
+  TestAccount ta;
+  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
+  SignInFromSettings(ta, 0);
+
+  CoreAccountInfo core_account_info =
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin);
+  EXPECT_TRUE(gaia::AreEmailsSame(core_account_info.email, ta.user));
+
+  capabilities_observer.WaitForAllCapabilitiesToBeKnown(
+      core_account_info.account_id);
+  AccountInfo account_info =
+      identity_manager()->FindExtendedAccountInfoByAccountId(
+          core_account_info.account_id);
+  EXPECT_EQ(account_info.capabilities.can_offer_extended_chrome_sync_promos(),
+            AccountCapabilities::Tribool::kTrue);
 }
 
 }  // namespace test

@@ -175,6 +175,9 @@ void WaitForErrorStateOfRefreshTokenUpdatedForAccount(
 // Disables internal retries of failed access token fetches.
 void DisableAccessTokenFetchRetries(IdentityManager* identity_manager);
 
+// Enables account capabilities fetches in AccountFetcherService.
+void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager);
+
 #if defined(OS_ANDROID)
 // Stubs AccountManagerFacade, which requires special initialization of the java
 // subsystems.

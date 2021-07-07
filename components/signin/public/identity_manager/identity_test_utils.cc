@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -454,6 +455,11 @@ void WaitForErrorStateOfRefreshTokenUpdatedForAccount(
 void DisableAccessTokenFetchRetries(IdentityManager* identity_manager) {
   identity_manager->GetTokenService()
       ->set_max_authorization_token_fetch_retries_for_testing(0);
+}
+
+void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager) {
+  identity_manager->GetAccountFetcherService()
+      ->EnableAccountCapabilitiesFetcherForTest(true);
 }
 
 #if defined(OS_ANDROID)
