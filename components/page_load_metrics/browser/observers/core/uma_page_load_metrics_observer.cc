@@ -523,6 +523,7 @@ void UmaPageLoadMetricsObserver::OnFirstImagePaintInPage(
 
 void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  DCHECK(timing.paint_timing->first_contentful_paint);
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstContentfulPaint,
@@ -537,7 +538,7 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
 
     // Emit a trace event to highlight a long navigation to first contentful
     // paint.
-    if (timing.paint_timing->first_contentful_paint >
+    if (timing.paint_timing->first_contentful_paint.value() >
         kFirstContentfulPaintTraceThreshold) {
       base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
