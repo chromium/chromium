@@ -104,5 +104,7 @@ TEST_F(SyncScreenMediatorTest, TestStartSyncService) {
   EXPECT_CALL(
       *sync_setup_service_mock_,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
-  [mediator_ startSyncWithConfirmationID:0 consentIDs:consentStringIDs];
+  [mediator_ startSyncWithConfirmationID:0
+                              consentIDs:consentStringIDs
+       advancedSyncSettingsLinkWasTapped:NO];
 }

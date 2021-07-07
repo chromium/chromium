@@ -40,7 +40,8 @@ class IdentityManager;
 // @param confirmationID: The confirmation string ID of sync.
 // @param consentIDs: The consent string IDs of sync screen.
 - (void)startSyncWithConfirmationID:(const int)confirmationID
-                         consentIDs:(NSArray<NSNumber*>*)consentIDs;
+                           consentIDs:(NSArray<NSNumber*>*)consentIDs
+    advancedSyncSettingsLinkWasTapped:(BOOL)advancedSyncSettingsLinkWasTapped;
 
 @end
 

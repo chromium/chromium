@@ -117,9 +117,10 @@
 - (void)didTapPrimaryActionButton {
   base::UmaHistogramEnumeration("FirstRun.Stage",
                                 first_run::kSyncScreenCompletionWithSync);
-  [self.mediator
-      startSyncWithConfirmationID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION
-                       consentIDs:self.consentStringIDs];
+  [self.mediator startSyncWithConfirmationID:
+                     IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION
+                                  consentIDs:self.consentStringIDs
+           advancedSyncSettingsLinkWasTapped:NO];
   [self.delegate willFinishPresenting];
 }
 
@@ -132,6 +133,10 @@
 - (void)showSyncSettings {
   base::UmaHistogramEnumeration(
       "FirstRun.Stage", first_run::kSyncScreenCompletionWithSyncSettings);
+  [self.mediator startSyncWithConfirmationID:
+                     IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS
+                                  consentIDs:self.consentStringIDs
+           advancedSyncSettingsLinkWasTapped:YES];
   [self.delegate skipAllAndShowSyncSettings];
 }
 

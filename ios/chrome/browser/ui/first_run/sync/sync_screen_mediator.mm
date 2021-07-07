@@ -48,7 +48,8 @@
 }
 
 - (void)startSyncWithConfirmationID:(const int)confirmationID
-                         consentIDs:(NSArray<NSNumber*>*)consentIDs {
+                           consentIDs:(NSArray<NSNumber*>*)consentIDs
+    advancedSyncSettingsLinkWasTapped:(BOOL)advancedSyncSettingsLinkWasTapped {
   ChromeIdentity* identity =
       self.authenticationService->GetAuthenticatedIdentity();
   DCHECK(identity);
@@ -69,12 +70,14 @@
   self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
   self.authenticationService->GrantSyncConsent(identity);
 
-  // Turn on FirstSetupComplete flag after the authentication service has
-  // granted user consent to start Sync.
-  self.syncSetupService->SetFirstSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+  if (!advancedSyncSettingsLinkWasTapped) {
+    // Turn on FirstSetupComplete flag after the authentication service has
+    // granted user consent to start Sync.
+    self.syncSetupService->SetFirstSetupComplete(
+        syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
-  self.syncSetupService->CommitSyncChanges();
+    self.syncSetupService->CommitSyncChanges();
+  }
 }
 
 @end
