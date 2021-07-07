@@ -2843,17 +2843,14 @@ TEST_F(WebSchedulingTaskQueueTest, DynamicTaskPriorityOrder) {
 TEST_F(WebSchedulingTaskQueueTest, DynamicTaskPriorityOrderDelayedTasks) {
   Vector<String> run_order;
 
-  // We're relying on all of the delays to expire at the same time, in which
-  // case the tasks will run in the updated priority order.
-  PostWebSchedulingTestTasks(&run_order, "B1 B2 V1 V2 U1 U2",
+  PostWebSchedulingTestTasks(&run_order, "U1 U2 V1 V2",
                              base::TimeDelta::FromMilliseconds(5));
   task_queues_[static_cast<int>(WebSchedulingPriority::kUserBlockingPriority)]
       ->SetPriority(WebSchedulingPriority::kBackgroundPriority);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
 
-  EXPECT_THAT(run_order,
-              testing::ElementsAre("V1", "V2", "B1", "B2", "U1", "U2"));
+  EXPECT_THAT(run_order, testing::ElementsAre("V1", "V2", "U1", "U2"));
 }
 
 // Verify that tasks posted with TaskType::kJavascriptTimerDelayed* and

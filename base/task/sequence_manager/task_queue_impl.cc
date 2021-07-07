@@ -548,8 +548,7 @@ absl::optional<DelayedWakeUp> TaskQueueImpl::GetNextScheduledWakeUpImpl() {
           : WakeUpResolution::kLow;
 
   const auto& top_task = main_thread_only().delayed_incoming_queue.top();
-  return DelayedWakeUp{top_task.delayed_run_time, top_task.sequence_num,
-                       resolution};
+  return DelayedWakeUp{top_task.delayed_run_time, resolution};
 }
 
 absl::optional<TimeTicks> TaskQueueImpl::GetNextScheduledWakeUp() {

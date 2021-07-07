@@ -54,16 +54,15 @@ void TimeDomain::UnregisterQueue(internal::TaskQueueImpl* queue) {
   SetNextWakeUpForQueue(queue, absl::nullopt, &lazy_now);
 }
 
-void TimeDomain::SetNextWakeUpForQueue(
-    internal::TaskQueueImpl* queue,
-    absl::optional<internal::DelayedWakeUp> wake_up,
-    LazyNow* lazy_now) {
+void TimeDomain::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
+                                       absl::optional<DelayedWakeUp> wake_up,
+                                       LazyNow* lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->GetTimeDomain(), this);
   DCHECK(queue->IsQueueEnabled() || !wake_up);
 
   absl::optional<TimeTicks> previous_wake_up;
-  absl::optional<internal::WakeUpResolution> previous_queue_resolution;
+  absl::optional<WakeUpResolution> previous_queue_resolution;
   if (!delayed_wake_up_queue_.empty())
     previous_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
   if (queue->heap_handle().IsValid()) {
@@ -92,10 +91,10 @@ void TimeDomain::SetNextWakeUpForQueue(
     new_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
 
   if (previous_queue_resolution &&
-      *previous_queue_resolution == internal::WakeUpResolution::kHigh) {
+      *previous_queue_resolution == WakeUpResolution::kHigh) {
     pending_high_res_wake_up_count_--;
   }
-  if (wake_up && wake_up->resolution == internal::WakeUpResolution::kHigh)
+  if (wake_up && wake_up->resolution == WakeUpResolution::kHigh)
     pending_high_res_wake_up_count_++;
   DCHECK_GE(pending_high_res_wake_up_count_, 0);
 

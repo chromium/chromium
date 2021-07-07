@@ -17,8 +17,6 @@ constexpr TaskType kTaskTypeNone = 0;
 
 namespace internal {
 
-enum class WakeUpResolution { kLow, kHigh };
-
 // Wrapper around PostTask method arguments and the assigned task type.
 // Eventually it becomes a PendingTask once accepted by a TaskQueueImpl.
 struct BASE_EXPORT PostedTask {
@@ -45,16 +43,17 @@ struct BASE_EXPORT PostedTask {
   TimeTicks queue_time;
 };
 
-// Represents a time at which a task wants to run. Tasks scheduled for the
-// same point in time will be ordered by their sequence numbers.
+}  // namespace internal
+
+enum class WakeUpResolution { kLow, kHigh };
+
+// Represents a time at which a task wants to run.
 struct DelayedWakeUp {
   TimeTicks time;
-  int sequence_num;
   WakeUpResolution resolution;
 
   bool operator!=(const DelayedWakeUp& other) const {
-    return time != other.time || other.sequence_num != sequence_num ||
-           resolution != other.resolution;
+    return time != other.time || resolution != other.resolution;
   }
 
   bool operator==(const DelayedWakeUp& other) const {
@@ -63,25 +62,14 @@ struct DelayedWakeUp {
 
   bool operator<=(const DelayedWakeUp& other) const {
     if (time == other.time) {
-      if (sequence_num == other.sequence_num) {
-        if (resolution == other.resolution) {
-          // Debug gcc builds can compare an element against itself.
-          DCHECK_EQ(this, &other);
-          return true;
-        }
+      if (resolution == other.resolution)
+        return true;
 
-        return resolution < other.resolution;
-      }
-
-      // |sequence_num| is int and might wrap around to a negative number when
-      // casted from EnqueueOrder. This way of comparison handles that properly.
-      return (sequence_num - other.sequence_num) < 0;
+      return resolution < other.resolution;
     }
     return time < other.time;
   }
 };
-
-}  // namespace internal
 
 // PendingTask with extra metadata for SequenceManager.
 struct BASE_EXPORT Task : public PendingTask {
@@ -89,8 +77,7 @@ struct BASE_EXPORT Task : public PendingTask {
        TimeTicks delayed_run_time,
        EnqueueOrder sequence_order,
        EnqueueOrder enqueue_order = EnqueueOrder(),
-       internal::WakeUpResolution wake_up_resolution =
-           internal::WakeUpResolution::kLow);
+       WakeUpResolution wake_up_resolution = WakeUpResolution::kLow);
   Task(Task&& move_from);
   ~Task();
   Task& operator=(Task&& other);

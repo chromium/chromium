@@ -750,6 +750,18 @@ TEST(IntrusiveHeapTest, Min) {
   EXPECT_EQ(2, heap.top().key);
 }
 
+TEST(IntrusiveHeapTest, MinDuplicates) {
+  IntrusiveHeap<TestElement> heap;
+
+  heap.insert({2, nullptr});
+  heap.insert({2, nullptr});
+  heap.insert({3, nullptr});
+
+  EXPECT_FALSE(heap.empty());
+  EXPECT_EQ(3u, heap.size());
+  EXPECT_EQ(2, heap.top().key);
+}
+
 TEST(IntrusiveHeapTest, InsertAscending) {
   IntrusiveHeap<TestElement> heap;
 
@@ -797,6 +809,23 @@ TEST(IntrusiveHeapTest, HeapIndex) {
   EXPECT_TRUE(index5.IsValid());
 
   EXPECT_FALSE(heap.empty());
+}
+
+TEST(IntrusiveHeapTest, HeapIndexDuplicates) {
+  HeapHandle index2;
+  HeapHandle index1;
+  IntrusiveHeap<TestElement> heap;
+
+  EXPECT_FALSE(index1.IsValid());
+  EXPECT_FALSE(index2.IsValid());
+
+  heap.insert({2, &index2});
+  heap.insert({2, &index1});
+
+  EXPECT_TRUE(index1.IsValid());
+  EXPECT_TRUE(index2.IsValid());
+
+  EXPECT_EQ(2U, heap.size());
 }
 
 TEST(IntrusiveHeapTest, Pop) {
