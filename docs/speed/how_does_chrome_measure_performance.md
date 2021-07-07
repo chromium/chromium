@@ -63,7 +63,9 @@ There are several other performance labs for specialized use:
 The **[Speed Launch Metrics](https://docs.google.com/document/d/1Ww487ZskJ-xBmJGwPO-XPz_QcJvw-kSNffm0nPhVpj8/edit)**
 doc explains metrics available in UMA for end user performance. If you want to
 test how your change impacts these metrics for end users, you'll probably want
-to **[Run a Finch Trial](http://goto.google.com/finch101)**.
+to **[Run a Finch Trial (Googlers only)](http://goto.google.com/finch101)**. If
+you want to run a trial and are not a Googler, you'll need a Google-internal partner
+to help you run it.
 
 The **[UMA Sampling Profiler (Googlers only)](http://goto.google.com/uma-sampling-profiler-overview)**
 measures Chrome execution using statistical profiling, producing aggregate
