@@ -163,6 +163,13 @@ source_set("host_settings") {
     deps += [ "//remoting/host/mac:constants" ]
   }
 }
+source_set("host_extension") {
+  sources = [
+    "client_session_details.h",
+    "host_extension.h",
+    "host_extension_session.h",
+  ]
+}
 
 # This must be a static library instead of a source set because
 # remoting_unittests requires that remoting_me2me_host.cc not be pulled in,
@@ -200,7 +207,6 @@ static_library("common") {
     "chromoting_param_traits_impl.h",
     "client_session.cc",
     "client_session.h",
-    "client_session_details.h",
     "config_file_watcher.cc",
     "config_file_watcher.h",
     "config_watcher.h",
@@ -256,8 +262,6 @@ static_library("common") {
     "host_experiment_session_plugin.cc",
     "host_experiment_session_plugin.h",
     "host_export.h",
-    "host_extension.h",
-    "host_extension_session.h",
     "host_extension_session_manager.cc",
     "host_extension_session_manager.h",
     "host_power_save_blocker.cc",
@@ -401,6 +405,7 @@ static_library("common") {
   ]
 
   public_deps = [
+    ":host_extension",
     "//ipc",
     "//remoting/proto",
     "//remoting/proto/remoting/v1:directory_proto",

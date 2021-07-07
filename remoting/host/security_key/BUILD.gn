@@ -39,6 +39,7 @@ source_set("security_key") {
     "//mojo/public/cpp/system",
     "//net:net",
     "//net/traffic_annotation:traffic_annotation",
+    "//remoting/host:host_extension",
     "//remoting/proto",
     "//remoting/protocol:protocol",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -145,6 +146,7 @@ static_library("test_support") {
   deps = [
     ":security_key",
     "//ipc",
+    "//remoting/host:common",
     "//remoting/proto",
     "//testing/gtest",
   ]

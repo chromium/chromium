@@ -11,12 +11,12 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "remoting/host/chromoting_messages.h"
-#include "remoting/host/ipc_constants.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 
 namespace remoting {
