@@ -13,6 +13,7 @@ class WebState;
 
 @class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
+@class ContentSuggestionsMetricsRecorder;
 @class DiscoverFeedMetricsRecorder;
 @protocol NewTabPageCommands;
 @protocol NewTabPageControllerDelegate;
@@ -64,6 +65,10 @@ class WebState;
 // Metrics recorder for the Discover feed events related to ContentSuggestions.
 @property(nonatomic, strong)
     DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+
+// Metrics recorder for the Zine feed events related to ContentSuggestions.
+@property(nonatomic, strong)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Dismisses all modals owned by the NTP mediator.
 - (void)dismissModals;

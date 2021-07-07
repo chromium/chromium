@@ -5,6 +5,8 @@
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_configuration.h"
@@ -20,6 +22,12 @@ DiscoverFeedService::DiscoverFeedService(
     signin::IdentityManager* identity_manager) {
   if (identity_manager)
     identity_manager_observation_.Observe(identity_manager);
+
+  if (!IsDiscoverFeedEnabled()) {
+    content_suggestions_metrics_recorder_ =
+        [[ContentSuggestionsMetricsRecorder alloc] init];
+    return;
+  }
 
   discover_feed_metrics_recorder_ = [[DiscoverFeedMetricsRecorder alloc] init];
 
@@ -39,6 +47,11 @@ DiscoverFeedService::GetDiscoverFeedMetricsRecorder() {
   return discover_feed_metrics_recorder_;
 }
 
+ContentSuggestionsMetricsRecorder*
+DiscoverFeedService::GetContentSuggestionsMetricsRecorder() {
+  return content_suggestions_metrics_recorder_;
+}
+
 void DiscoverFeedService::Shutdown() {
   identity_manager_observation_.Reset();
 
@@ -46,6 +59,7 @@ void DiscoverFeedService::Shutdown() {
   ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->StopFeed();
 
   discover_feed_metrics_recorder_ = nil;
+  content_suggestions_metrics_recorder_ = nil;
 }
 
 void DiscoverFeedService::OnPrimaryAccountChanged(

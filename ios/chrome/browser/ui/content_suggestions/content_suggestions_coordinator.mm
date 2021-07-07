@@ -118,7 +118,6 @@
     ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
-@property(nonatomic, strong) ContentSuggestionsMetricsRecorder* metricsRecorder;
 @property(nonatomic, strong) UIViewController* discoverFeedViewController;
 @property(nonatomic, strong) UIView* discoverFeedHeaderMenuButton;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
@@ -255,9 +254,8 @@
   self.headerController.promoCanShow =
       [self.contentSuggestionsMediator notificationPromo]->CanShow();
 
-  self.metricsRecorder = [[ContentSuggestionsMetricsRecorder alloc] init];
-  self.metricsRecorder.delegate = self.contentSuggestionsMediator;
-
+  self.contentSuggestionsMetricsRecorder.delegate =
+      self.contentSuggestionsMediator;
 
   // Offset to maintain Discover feed scroll position.
   CGFloat offset = 0;
@@ -284,7 +282,8 @@
   self.suggestionsViewController.audience = self;
   self.suggestionsViewController.overscrollDelegate = self;
   self.suggestionsViewController.themeChangeDelegate = self;
-  self.suggestionsViewController.metricsRecorder = self.metricsRecorder;
+  self.suggestionsViewController.metricsRecorder =
+      self.contentSuggestionsMetricsRecorder;
   id<SnackbarCommands> dispatcher =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.suggestionsViewController.dispatcher = dispatcher;
@@ -317,7 +316,7 @@
   self.ntpMediator.NTPMetrics = [[NTPHomeMetrics alloc]
       initWithBrowserState:self.browser->GetBrowserState()
                   webState:self.webState];
-  self.ntpMediator.metricsRecorder = self.metricsRecorder;
+  self.ntpMediator.metricsRecorder = self.contentSuggestionsMetricsRecorder;
   self.ntpMediator.suggestionsViewController = self.suggestionsViewController;
   self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
   self.ntpMediator.suggestionsService = contentSuggestionsService;
