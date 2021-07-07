@@ -57,7 +57,8 @@ void SafetyTipMessageDelegate::DisplaySafetyTipPrompt(
   message_->SetDuration(60000);
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION);
+      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
+      messages::MessagePriority::kUrgent);
 }
 
 void SafetyTipMessageDelegate::HandleLeaveSiteClick() {

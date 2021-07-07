@@ -19,7 +19,8 @@ class MockMessageDispatcherBridge : public MessageDispatcherBridge {
               EnqueueMessage,
               (MessageWrapper * message,
                content::WebContents* web_contents,
-               MessageScopeType scopeType),
+               MessageScopeType scope_type,
+               MessagePriority priority),
               (override));
   MOCK_METHOD(void,
               DismissMessage,

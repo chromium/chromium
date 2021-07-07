@@ -36,12 +36,13 @@ void MessageDispatcherBridge::SetInstanceForTesting(
 
 bool MessageDispatcherBridge::EnqueueMessage(MessageWrapper* message,
                                              content::WebContents* web_contents,
-                                             MessageScopeType scopeType) {
+                                             MessageScopeType scope_type,
+                                             MessagePriority priority) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (Java_MessageDispatcherBridge_enqueueMessage(
           env, message->GetJavaMessageWrapper(),
-          web_contents->GetJavaWebContents(), static_cast<int>(scopeType),
-          false) == JNI_TRUE) {
+          web_contents->GetJavaWebContents(), static_cast<int>(scope_type),
+          priority == MessagePriority::kUrgent) == JNI_TRUE) {
     message->SetMessageEnqueued();
     return true;
   }

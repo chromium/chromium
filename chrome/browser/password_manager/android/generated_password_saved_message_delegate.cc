@@ -60,5 +60,6 @@ void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
   message_->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-      message_.get(), web_contents, messages::MessageScopeType::NAVIGATION);
+      message_.get(), web_contents, messages::MessageScopeType::NAVIGATION,
+      messages::MessagePriority::kNormal);
 }
