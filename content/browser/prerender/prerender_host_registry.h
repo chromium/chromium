@@ -24,8 +24,8 @@ namespace content {
 class RenderFrameHostImpl;
 
 // PrerenderHostRegistry creates and retains a prerender host, and reserves it
-// for NavigationRequest to activate the prerendered page. This is created and
-// owned by WebContentsImpl.
+// for NavigationRequest to activate the prerendered page. This is created per
+// WebContentsImpl and owned by it.
 //
 // The APIs of this class are categorized into two: APIs for triggers and APIs
 // for activators.
@@ -134,6 +134,10 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
+
+  // Currently the number of speculationrules-triggered prerenders is limited to
+  // one per WebContentsImpl.
+  const size_t kMaxNumOfRunningPrerenders = 1;
 
   // Hosts that are not reserved for activation yet.
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are

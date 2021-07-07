@@ -7,14 +7,15 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service_base.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
+class RenderFrameHost;
 class PrerenderHostRegistry;
 
 // Receiver for speculation rules from the web platform. See
@@ -34,6 +35,9 @@ class CONTENT_EXPORT SpeculationHostImpl final
   SpeculationHostImpl(SpeculationHostImpl&&) = delete;
   SpeculationHostImpl& operator=(SpeculationHostImpl&&) = delete;
 
+  // WebContentsObserver implementation:
+  void PrimaryPageChanged() override;
+
  private:
   SpeculationHostImpl(
       RenderFrameHost* frame_host,
@@ -45,8 +49,13 @@ class CONTENT_EXPORT SpeculationHostImpl final
   void ProcessCandidatesForPrerender(
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
 
-  int started_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  void CancelStartedPrerenders();
+
   std::unique_ptr<SpeculationHostDelegate> delegate_;
+
+  // TODO(https://crbug.com/1197133): Record the prerendering URLs as well so
+  // that this can cancel started prerenders when candidates are updated.
+  base::flat_set<int> started_prerender_host_ids_;
   base::WeakPtr<PrerenderHostRegistry> registry_;
 };
 

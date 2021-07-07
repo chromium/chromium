@@ -101,29 +101,6 @@ TEST_F(SpeculationHostImplTest, StartPrerender) {
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
-// Tests that SpeculationHostImpl starts only one prerender when it receives
-// more than one prerender candidates.
-// TODO(crbug.com/1197133): Prerender the candidate with the highest score.
-TEST_F(SpeculationHostImplTest, StartOnePrerenderOnMultipleCandidates) {
-  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  mojo::Remote<blink::mojom::SpeculationHost> remote;
-  SpeculationHostImpl::Bind(render_frame_host,
-                            remote.BindNewPipeAndPassReceiver());
-
-  const std::vector<GURL> prerender_urls{GetSameOriginUrl("/empty.html?1"),
-                                         GetSameOriginUrl("/empty.html?2")};
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  for (const auto& url : prerender_urls) {
-    candidates.push_back(CreatePrerenderCandidate(url));
-  }
-
-  remote->UpdateSpeculationCandidates(std::move(candidates));
-  remote.FlushForTesting();
-  EXPECT_TRUE(registry->FindHostByUrlForTesting(prerender_urls[0]));
-  EXPECT_FALSE(registry->FindHostByUrlForTesting(prerender_urls[1]));
-}
-
 // Tests that SpeculationHostImpl will skip the prerender candidate if it is a
 // cross-origin url.
 TEST_F(SpeculationHostImplTest, SkipCrossOriginPrerenderCandidates) {
@@ -174,36 +151,6 @@ TEST_F(SpeculationHostImplTest, ProcessFirstSameOriginPrerenderCandidate) {
   // candidate, so SpeculationHostImpl should prerender this candidate.
   EXPECT_TRUE(
       registry->FindHostByUrlForTesting(kSecondPrerenderingUrlSameOrigin));
-}
-
-// Tests that SpeculationHostImpl will ignore prerender candidates if it has
-// started prerendering.
-// TODO(crbug.com/1197133): Cancel the started prerender and start a new
-// one if the score of the new candidate is higher than the started one's.
-TEST_F(SpeculationHostImplTest, PrerenderOnlyOnce) {
-  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  mojo::Remote<blink::mojom::SpeculationHost> remote;
-  SpeculationHostImpl::Bind(render_frame_host,
-                            remote.BindNewPipeAndPassReceiver());
-
-  const auto update_prerender_candidate = [&](const GURL& url) {
-    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-    candidates.push_back(CreatePrerenderCandidate(url));
-    remote->UpdateSpeculationCandidates(std::move(candidates));
-    remote.FlushForTesting();
-  };
-
-  const GURL kFirstPrerenderingUrl = GetSameOriginUrl("/empty.html?1");
-  update_prerender_candidate(kFirstPrerenderingUrl);
-  EXPECT_TRUE(registry->FindHostByUrlForTesting(kFirstPrerenderingUrl));
-
-  // If there is a started prerender, new prerender candidates should be
-  // ignored.
-  const GURL kSecondPrerenderingUrl = GetSameOriginUrl("/empty.html?2");
-  update_prerender_candidate(kSecondPrerenderingUrl);
-  EXPECT_FALSE(registry->FindHostByUrlForTesting(kSecondPrerenderingUrl));
-  EXPECT_TRUE(registry->FindHostByUrlForTesting(kFirstPrerenderingUrl));
 }
 
 // Tests that SpeculationHostImpl crash the renderer process if it receives

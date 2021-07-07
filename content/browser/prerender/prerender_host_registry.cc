@@ -74,6 +74,16 @@ int PrerenderHostRegistry::CreateAndStartHost(
       return iter.first;
   }
 
+  // TODO(crbug.com/1197133): Cancel the started prerender and start a new
+  // one if the score of the new candidate is higher than the started one's.
+  if (prerender_host_by_frame_tree_node_id_.size() ==
+      kMaxNumOfRunningPrerenders) {
+    base::UmaHistogramEnumeration(
+        "Prerender.Experimental.PrerenderHostFinalStatus",
+        PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
   auto prerender_host = std::make_unique<PrerenderHost>(
       std::move(attributes), initiator_render_frame_host);
   const int frame_tree_node_id = prerender_host->frame_tree_node_id();
