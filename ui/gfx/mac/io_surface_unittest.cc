@@ -33,6 +33,16 @@ TEST(IOSurface, HDRMetadata) {
   EXPECT_EQ(in, out);
 }
 
+TEST(IOSurface, OddSizeMultiPlanar) {
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
+      CreateIOSurface(gfx::Size(101, 99), gfx::BufferFormat::YUV_420_BIPLANAR));
+  DCHECK(io_surface);
+  // Plane sizes are rounded up.
+  // https://crbug.com/1226056
+  EXPECT_EQ(IOSurfaceGetWidthOfPlane(io_surface, 1), 51u);
+  EXPECT_EQ(IOSurfaceGetHeightOfPlane(io_surface, 1), 50u);
+}
+
 }  // namespace
 
 }  // namespace gfx

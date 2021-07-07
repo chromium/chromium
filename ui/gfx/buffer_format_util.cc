@@ -171,15 +171,15 @@ bool RowSizeForBufferFormatChecked(size_t width,
       *size_in_bytes = checked_size.ValueOrDie();
       return true;
     case BufferFormat::YVU_420:
-      DCHECK(MultiPlanarBufferFormatsAllowOddSizes() || width % 2 == 0);
+      DCHECK_EQ(width % 2, 0u);
       *size_in_bytes = width / SubsamplingFactorForBufferFormat(format, plane);
       return true;
     case BufferFormat::YUV_420_BIPLANAR:
-      DCHECK(MultiPlanarBufferFormatsAllowOddSizes() || width % 2 == 0);
+      DCHECK_EQ(width % 2, 0u);
       *size_in_bytes = width;
       return true;
     case BufferFormat::P010:
-      DCHECK(MultiPlanarBufferFormatsAllowOddSizes() || width % 2 == 0);
+      DCHECK_EQ(width % 2, 0u);
       *size_in_bytes = 2 * width;
       return true;
   }
@@ -315,9 +315,8 @@ const char* BufferPlaneToString(BufferPlane format) {
   return "Invalid Plane";
 }
 
-bool MultiPlanarBufferFormatsAllowOddSizes() {
-  return base::FeatureList::IsEnabled(
-      features::kEnableOddSizeMultiplanarBuffers);
+bool AllowOddHeightMultiPlanarBuffers() {
+  return base::FeatureList::IsEnabled(features::kOddHeightMultiPlanarBuffers);
 }
 
 }  // namespace gfx

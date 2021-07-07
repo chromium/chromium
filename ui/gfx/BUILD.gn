@@ -748,6 +748,7 @@ test("gfx_unittests") {
       "platform_font_mac_unittest.mm",
       "range/range_mac_unittest.mm",
     ]
+    frameworks = [ "IOSurface.framework" ]
   }
   if (is_win) {
     sources += [ "font_fallback_win_unittest.cc" ]

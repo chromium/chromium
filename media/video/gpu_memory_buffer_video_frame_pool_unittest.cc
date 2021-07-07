@@ -212,10 +212,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddOrigin) {
 
   RunUntilIdle();
 
-  if (gfx::MultiPlanarBufferFormatsAllowOddSizes())
-    EXPECT_NE(software_frame.get(), frame.get());
-  else
-    EXPECT_EQ(software_frame.get(), frame.get());
+  EXPECT_EQ(software_frame.get(), frame.get());
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOne10BppHardwareFrame) {

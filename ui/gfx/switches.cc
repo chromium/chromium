@@ -30,8 +30,8 @@ const char kHeadless[] = "headless";
 
 namespace features {
 
-const base::Feature kEnableOddSizeMultiplanarBuffers {
-  "EnableOddSizeMultiplanarBuffers",
+const base::Feature kOddHeightMultiPlanarBuffers {
+  "OddHeightMultiPlanarBuffers",
 #if defined(OS_MAC)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else

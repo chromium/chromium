@@ -46,9 +46,11 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
       // U and V planes are subsampled by a factor of 2.
-      if (gfx::MultiPlanarBufferFormatsAllowOddSizes())
-        return true;
-      return size.width() % 2 == 0 && size.height() % 2 == 0;
+      if (size.width() % 2)
+        return false;
+      if (size.height() % 2 && !gfx::AllowOddHeightMultiPlanarBuffers())
+        return false;
+      return true;
   }
 
   NOTREACHED();
