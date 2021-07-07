@@ -113,12 +113,14 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
     needs_text_metrics_update_ = false;
   }
 
+  FloatRect old_boundaries = ObjectBoundingBox();
+
   UpdateNGBlockLayout();
   needs_update_bounding_box_ = true;
 
-  // TODO(crbug.com/1179585): Pass |bounds_changed|, and check the return value
-  // of the function.
-  UpdateTransformAfterLayout(true);
+  // If our bounds changed, notify the parents.
+  if (UpdateTransformAfterLayout(old_boundaries != ObjectBoundingBox()))
+    SetNeedsBoundariesUpdate();
 }
 
 bool LayoutNGSVGText::IsObjectBoundingBoxValid() const {
