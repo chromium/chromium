@@ -44,24 +44,10 @@ void SendStoredIssuesForFrameToAgent(RenderFrameHostImpl* rfh,
                                      protocol::AuditsHandler* handler) {
   // Check the storage first. No need to do any work in case its empty.
   DevToolsIssueStorage* issue_storage =
-      DevToolsIssueStorage::GetForCurrentDocument(rfh->GetMainFrame());
+      DevToolsIssueStorage::GetForPage(rfh->GetPage());
   if (!issue_storage)
     return;
-
-  FrameTreeNode* local_root = rfh->frame_tree_node();
-
-  std::vector<int> frame_tree_node_ids;
-  for (FrameTreeNode* node : rfh->frame_tree()->SubtreeNodes(local_root)) {
-    // For each child we find the child's local root. Should the child's local
-    // root match |local_root|, the provided |AuditsHandler| is responsible and
-    // we collect the devtools_frame_token.
-    if (local_root == GetFrameTreeNodeAncestor(node)) {
-      frame_tree_node_ids.push_back(node->frame_tree_node_id());
-    }
-  }
-
-  base::flat_set<int> frame_ids_set(frame_tree_node_ids);
-  auto issues = issue_storage->FilterIssuesBy(std::move(frame_ids_set));
+  auto issues = issue_storage->FindIssuesForAgentOf(rfh);
   for (auto* const issue : issues) {
     handler->OnIssueAdded(issue);
   }

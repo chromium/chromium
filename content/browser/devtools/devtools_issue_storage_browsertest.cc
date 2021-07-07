@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
@@ -42,6 +43,13 @@ class DevToolsIssueStorageBrowserTest : public DevToolsProtocolTest {
 
   RenderFrameHostImpl* main_frame_host() {
     return web_contents()->GetFrameTree()->GetMainFrame();
+  }
+
+  void WaitForDummyIssueNotification() {
+    std::unique_ptr<base::DictionaryValue> notification =
+        WaitForNotification("Audits.issueAdded", true);
+    EXPECT_EQ(*(notification->FindDictPath("issue")->FindStringPath("code")),
+              protocol::Audits::InspectorIssueCodeEnum::SameSiteCookieIssue);
   }
 };
 
@@ -79,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
   SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
 
   // 6) Verify we have received the SameSite issue.
-  WaitForNotification("Audits.issueAdded", true);
+  WaitForDummyIssueNotification();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
@@ -98,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
   ReportDummyIssue(main_frame_host());
 
   // 5) Verify we have received the SameSite issue.
-  WaitForNotification("Audits.issueAdded", true);
+  WaitForDummyIssueNotification();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
@@ -127,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
   SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
 
   // 5) Verify we have received the SameSite issue on the main target.
-  WaitForNotification("Audits.issueAdded", true);
+  WaitForDummyIssueNotification();
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
@@ -203,7 +211,56 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageWithBackForwardCacheBrowserTest,
   SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
 
   // 6) Verify we have received the SameSite issue on the main target.
-  WaitForNotification("Audits.issueAdded", true);
+  WaitForDummyIssueNotification();
 }
 
+class DevToolsIssueStorageWithPrerenderBrowserTest
+    : public DevToolsIssueStorageBrowserTest {
+ public:
+  DevToolsIssueStorageWithPrerenderBrowserTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &DevToolsIssueStorageWithPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+
+  void SetUpOnMainThread() override {
+    DevToolsIssueStorageBrowserTest::SetUpOnMainThread();
+    prerender_test_helper().SetUpOnMainThread(embedded_test_server());
+  }
+
+  test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+ private:
+  WebContents* GetWebContents() { return web_contents(); }
+  test::PrerenderTestHelper prerender_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageWithPrerenderBrowserTest,
+                       IssueWhilePrerendering) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL main_url(embedded_test_server()->GetURL("/empty.html"));
+  GURL prerender_url(embedded_test_server()->GetURL("/title1.html"));
+
+  // 1) Navigate to |main_url|.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // 2) Prerender |prerender_url|.
+  int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  RenderFrameHostImpl* prerender_rfh = static_cast<RenderFrameHostImpl*>(
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id));
+
+  // 3) Report an empty SameSite cookie issue in prerendering page.
+  ReportDummyIssue(prerender_rfh);
+
+  // 4) Activate prerendering page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+
+  // 5) Open DevTools and enable Audits domain.
+  Attach();
+  SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
+
+  // 6) Verify we have received the SameSite issue on the main target.
+  WaitForDummyIssueNotification();
+}
 }  // namespace content

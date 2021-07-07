@@ -1030,16 +1030,14 @@ void ReportSameSiteCookieIssue(
 namespace {
 
 void AddIssueToIssueStorage(
-    RenderFrameHost* frame,
+    RenderFrameHost* rfh,
     std::unique_ptr<protocol::Audits::InspectorIssue> issue) {
-  // We only utilize a central storage on the main frame. Each issue is
-  // still associated with the originating |RenderFrameHost| though.
+  // We only utilize a central storage on the page. Each issue is still
+  // associated with the originating |RenderFrameHost| though.
   DevToolsIssueStorage* issue_storage =
-      DevToolsIssueStorage::GetOrCreateForCurrentDocument(
-          frame->GetMainFrame());
+      DevToolsIssueStorage::GetOrCreateForPage(rfh->GetPage());
 
-  issue_storage->AddInspectorIssue(frame->GetFrameTreeNodeId(),
-                                   std::move(issue));
+  issue_storage->AddInspectorIssue(rfh, std::move(issue));
 }
 
 }  // namespace

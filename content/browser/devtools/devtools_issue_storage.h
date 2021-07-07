@@ -7,7 +7,8 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/unguessable_token.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -19,31 +20,26 @@ class InspectorIssue;
 }  // namespace protocol
 
 // TODO(crbug.com/1063007): Attribute issues to ongoing navigations correctly.
-// TODO(crbug.com/1090679): Replace RenderDocumentHostUserData with
-//                          PageUserData.
 class DevToolsIssueStorage
-    : public content::RenderDocumentHostUserData<DevToolsIssueStorage>,
-      public WebContentsObserver {
+    : public content::PageUserData<DevToolsIssueStorage> {
  public:
   ~DevToolsIssueStorage() override;
 
   void AddInspectorIssue(
-      int frame_tree_node_id,
+      RenderFrameHost* render_frame_host,
       std::unique_ptr<protocol::Audits::InspectorIssue> issue);
-  std::vector<const protocol::Audits::InspectorIssue*> FilterIssuesBy(
-      const base::flat_set<int>& frame_tree_node_ids) const;
+  std::vector<const protocol::Audits::InspectorIssue*> FindIssuesForAgentOf(
+      RenderFrameHost* render_frame_host) const;
 
  private:
-  explicit DevToolsIssueStorage(RenderFrameHost* rfh);
-  friend class content::RenderDocumentHostUserData<DevToolsIssueStorage>;
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  explicit DevToolsIssueStorage(Page& page);
+  friend class content::PageUserData<DevToolsIssueStorage>;
+  PAGE_USER_DATA_KEY_DECL();
 
-  // WebContentsObserver overrides.
-  void FrameDeleted(int frame_tree_node_id) override;
-
-  using FrameAssociatedIssue =
-      std::pair<int, std::unique_ptr<protocol::Audits::InspectorIssue>>;
-  base::circular_deque<FrameAssociatedIssue> issues_;
+  using RenderFrameHostAssociatedIssue =
+      std::pair<GlobalRenderFrameHostId,
+                std::unique_ptr<protocol::Audits::InspectorIssue>>;
+  base::circular_deque<RenderFrameHostAssociatedIssue> issues_;
 };
 
 }  // namespace content
