@@ -319,7 +319,6 @@ js_library("volume_manager_types") {
 }
 
 js_test_gen_html("js_test_gen_html_modules") {
-  js_module = true
   deps = [
     ":file_type_unittest.m",
     ":files_app_entry_types_unittest.m",
