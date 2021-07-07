@@ -383,8 +383,8 @@ TEST_F(PolicyMapTest, MergeFrom) {
         POLICY_SOURCE_ENTERPRISE_DEFAULT, absl::nullopt,
         CreateExternalDataFetcher("b"));
   b.Set(kTestPolicyName4, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
-        base::Value(true), nullptr);
+        POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE, base::Value(true),
+        nullptr);
   b.Set(kTestPolicyName5, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
         POLICY_SOURCE_PLATFORM, base::Value(std::string()), nullptr);
   b.Set(kTestPolicyName6, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
@@ -430,8 +430,8 @@ TEST_F(PolicyMapTest, MergeFrom) {
       ->AddConflictingPolicy(b.Get(kTestPolicyName3)->DeepCopy());
   // POLICY_SCOPE_MACHINE over POLICY_SCOPE_USER for POLICY_LEVEL_RECOMMENDED.
   c.Set(kTestPolicyName4, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
-        POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
-        base::Value(true), nullptr);
+        POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE, base::Value(true),
+        nullptr);
   c.GetMutable(kTestPolicyName4)
       ->AddMessage(PolicyMap::MessageType::kWarning,
                    IDS_POLICY_CONFLICT_DIFF_VALUE);
@@ -609,7 +609,7 @@ TEST_F(PolicyMapTest, MergeValuesList) {
 
   case7.AddConflictingPolicy(
       PolicyMap::Entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                       POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
+                       POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
                        base::Value(list_dict_c), nullptr));
 
   PolicyMap::Entry expected_case7(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -697,10 +697,9 @@ TEST_F(PolicyMapTest, MergeDictionaryValues) {
   case1.AddConflictingPolicy(
       PolicyMap::Entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                        POLICY_SOURCE_PLATFORM, dict_b.Clone(), nullptr));
-  case1.AddConflictingPolicy(
-      PolicyMap::Entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                       POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
-                       dict_c.Clone(), nullptr));
+  case1.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+      POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE, dict_c.Clone(), nullptr));
   case1.AddConflictingPolicy(PolicyMap::Entry(
       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
       POLICY_SOURCE_ACTIVE_DIRECTORY, dict_d.Clone(), nullptr));

@@ -435,7 +435,7 @@ PolicySettings GetPolicySettings(const std::string& policy,
     else if (*source == "active_directory")
       settings.source = POLICY_SOURCE_ACTIVE_DIRECTORY;
     else if (*source == "local_account_override")
-      settings.source = POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED;
+      settings.source = POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE;
     else if (*source == "platform")
       settings.source = POLICY_SOURCE_PLATFORM;
     else if (*source == "priority_cloud")

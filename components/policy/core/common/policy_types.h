@@ -47,8 +47,7 @@ enum PolicySource {
 
   // Any non-platform policy was overridden because we are running in a
   // public session or kiosk mode.
-  // TODO(crbug/1225922): Remove deprecated policy source.
-  POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
+  POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
 
   // The policy was set by a platform source.
   POLICY_SOURCE_PLATFORM,

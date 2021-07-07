@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -24,10 +25,10 @@ namespace policy {
 DeviceLocalAccountPolicyProvider::DeviceLocalAccountPolicyProvider(
     const std::string& user_id,
     DeviceLocalAccountPolicyService* service,
-    DeviceLocalAccount::Type type)
+    std::unique_ptr<PolicyMap> chrome_policy_overrides)
     : user_id_(user_id),
       service_(service),
-      type_(type),
+      chrome_policy_overrides_(std::move(chrome_policy_overrides)),
       store_initialized_(false),
       waiting_for_policy_refresh_(false) {
   service_->AddObserver(this);
@@ -50,9 +51,28 @@ DeviceLocalAccountPolicyProvider::Create(
     return nullptr;
   }
 
+  std::unique_ptr<PolicyMap> chrome_policy_overrides;
+  if (type == DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
+    chrome_policy_overrides = std::make_unique<PolicyMap>();
+
+    // Force the |ShelfAutoHideBehavior| policy to |Never|, ensuring that the
+    // ash shelf does not auto-hide.
+    chrome_policy_overrides->Set(key::kShelfAutoHideBehavior,
+                                 POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                 POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
+                                 base::Value("Never"), nullptr);
+    // Force the |ShowLogoutButtonInTray| policy to |true|, ensuring that a big,
+    // red logout button is shown in the ash system tray.
+    chrome_policy_overrides->Set(key::kShowLogoutButtonInTray,
+                                 POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                 POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
+                                 base::Value(true), nullptr);
+  }
+
   std::unique_ptr<DeviceLocalAccountPolicyProvider> provider(
-      new DeviceLocalAccountPolicyProvider(
-          user_id, device_local_account_policy_service, type));
+      new DeviceLocalAccountPolicyProvider(user_id,
+                                           device_local_account_policy_service,
+                                           std::move(chrome_policy_overrides)));
   // In case of restore-after-restart broker should already be initialized.
   if (force_immediate_load && provider->GetBroker())
     provider->GetBroker()->LoadImmediately();
@@ -137,23 +157,12 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
   // administrator given that this is an enterprise user.
   SetEnterpriseUsersDefaults(&chrome_policy);
 
-  // Apply managed guest session specific default values if no value is fetched
-  // from the cloud.
-  if (type_ == DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
-    if (chrome_policy.GetValue(key::kShelfAutoHideBehavior) == nullptr) {
-      // Force the |ShelfAutoHideBehavior| policy to |Never|, ensuring that the
-      // ash shelf does not auto-hide.
-      chrome_policy.Set(key::kShelfAutoHideBehavior, POLICY_LEVEL_MANDATORY,
-                        POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                        base::Value("Never"), nullptr);
-    }
-
-    if (chrome_policy.GetValue(key::kShowLogoutButtonInTray) == nullptr) {
-      // Force the |ShowLogoutButtonInTray| policy to |true|, ensuring that a
-      // big, red logout button is shown in the ash system tray.
-      chrome_policy.Set(key::kShowLogoutButtonInTray, POLICY_LEVEL_MANDATORY,
-                        POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                        base::Value(true), nullptr);
+  // Apply overrides.
+  if (chrome_policy_overrides_) {
+    for (const auto& policy_override : *chrome_policy_overrides_) {
+      const PolicyMap::Entry& entry = policy_override.second;
+      chrome_policy.Set(policy_override.first, entry.level, entry.scope,
+                        entry.source, entry.value()->Clone(), nullptr);
     }
   }
 
