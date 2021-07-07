@@ -684,17 +684,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
 
 // The test makes sense on those platforms where the keychain exists.
 #if !defined(OS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Suddenly started failing on Linux, see http://crbug.com/660488.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DeletePasswords DISABLED_DeletePasswords
-#else
-#define MAYBE_DeletePasswords DeletePasswords
-#endif
-
-IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_DeletePasswords) {
+IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   ASSERT_TRUE(profile);
 
