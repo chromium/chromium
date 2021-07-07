@@ -760,6 +760,7 @@ message ActionProto {
     CheckOptionElementProto check_option_element = 76;
     SetPersistentUiProto set_persistent_ui = 77;
     ClearPersistentUiProto clear_persistent_ui = 78;
+    ScrollIntoViewIfNeededProto scroll_into_view_if_needed = 79;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1123,6 +1124,9 @@ message WebControllerErrorInfoProto {
 
     // Check the selected option of an element.
     CHECK_OPTION_ELEMENT = 24;
+
+    // Scroll an element into view only if needed.
+    SCROLL_INTO_VIEW_IF_NEEDED = 25;
   }
 
   // The web-action that failed. This is usually a step in an execution chain

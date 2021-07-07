@@ -234,6 +234,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kClearPersistentUi:
       out << "ClearPersistentUi";
       break;
+    case ActionProto::ActionInfoCase::kScrollIntoViewIfNeeded:
+      out << "ScrollIntoViewIfNeeded";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

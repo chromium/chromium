@@ -161,7 +161,7 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_web_controller_,
-              ScrollIntoView(false, EqualsElement(expected_element), _))
+              ScrollIntoViewIfNeeded(true, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(
       mock_web_controller_,

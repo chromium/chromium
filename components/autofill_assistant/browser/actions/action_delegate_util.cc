@@ -92,9 +92,11 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                      delegate->GetSettings().document_ready_check_timeout,
                      DOCUMENT_INTERACTIVE),
       actions);
-  actions->emplace_back(
-      base::BindOnce(&WebController::ScrollIntoView,
-                     delegate->GetWebController()->GetWeakPtr(), true));
+  actions->emplace_back(base::BindOnce(
+      &WebController::ScrollIntoView,
+      delegate->GetWebController()->GetWeakPtr(),
+      /* animation= */ std::string(), /* vertical_alignment= */ "center",
+      /* horizontal_alignment= */ "center"));
   if (click_type == ClickType::JAVASCRIPT) {
     actions->emplace_back(
         base::BindOnce(&WebController::JsClickElement,

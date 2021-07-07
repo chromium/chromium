@@ -94,9 +94,19 @@ class WebController {
   virtual void FindAllElements(const Selector& selector,
                                ElementFinder::Callback callback);
 
-  // Scroll the |element| into view if needed, center the element on the screen
-  // if specified.
+  // Scroll the |element| into view. |animation| defines the transition
+  // animation, |vertical_alignment| defines the vertical alignment,
+  // |horizontal_alignment| defines the horizontal alignment.
   virtual void ScrollIntoView(
+      const std::string& animation,
+      const std::string& vertical_alignment,
+      const std::string& horizontal_alignment,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
+  // Scroll the |element| into view only if needed. |center| the element if
+  // requested.
+  virtual void ScrollIntoViewIfNeeded(
       bool center,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);

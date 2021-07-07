@@ -74,15 +74,29 @@ const char* const kScrollIntoViewWithPaddingScript =
   })";
 
 // Scroll the window or any scrollable container as needed for the element to
-// appear, center if specified.
+// appear. Behave as specified according to |animation|, |verticalAlignment|
+// and |horizontalAlignment|.
 const char* const kScrollIntoViewScript =
-    R"(function(center) {
-      if (center) {
-        this.scrollIntoView({block: "center", inline: "center"});
-      } else {
-        this.scrollIntoViewIfNeeded();
+    R"(function(animation, verticalAlignment, horizontalAlignment) {
+      const options = {};
+      if (animation !== '') {
+        options.behavior = animation;
       }
+      if (verticalAlignment !== '') {
+        options.block = verticalAlignment;
+      }
+      if (horizontalAlignment !== '') {
+        options.inline = horizontalAlignment;
+      }
+      this.scrollIntoView(options);
   })";
+
+// Scroll the window or any scrollable container as needed for the element to
+// appear. Center the element if specified.
+const char* const kScrollIntoViewIfNeededScript =
+    R"(function(center) {
+      this.scrollIntoViewIfNeeded(center);
+    })";
 
 // Javascript to select a value from a select box. Also fires a "change" event
 // to trigger any listeners. Changing the index directly does not trigger this.
@@ -453,15 +467,19 @@ void WebController::OnJavaScriptResultForStringArray(
 }
 
 void WebController::ScrollIntoView(
-    bool center,
+    const std::string& animation,
+    const std::string& vertical_alignment,
+    const std::string& horizontal_alignment,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-  AddRuntimeCallArgument(center, &argument);
+  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
+  AddRuntimeCallArgument(animation, &arguments);
+  AddRuntimeCallArgument(vertical_alignment, &arguments);
+  AddRuntimeCallArgument(horizontal_alignment, &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
-          .SetArguments(std::move(argument))
+          .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kScrollIntoViewScript))
           .SetReturnByValue(true)
           .Build(),
@@ -471,6 +489,28 @@ void WebController::ScrollIntoView(
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::SCROLL_INTO_VIEW,
                          std::move(callback))));
+}
+
+void WebController::ScrollIntoViewIfNeeded(
+    bool center,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  std::vector<std::unique_ptr<runtime::CallArgument>> argument;
+  AddRuntimeCallArgument(center, &argument);
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id())
+          .SetArguments(std::move(argument))
+          .SetFunctionDeclaration(std::string(kScrollIntoViewIfNeededScript))
+          .SetReturnByValue(true)
+          .Build(),
+      element.node_frame_id(),
+      base::BindOnce(
+          &WebController::OnJavaScriptResult, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(
+              &DecorateWebControllerStatus,
+              WebControllerErrorInfoProto::SCROLL_INTO_VIEW_IF_NEEDED,
+              std::move(callback))));
 }
 
 void WebController::CheckOnTop(

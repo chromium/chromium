@@ -122,8 +122,8 @@ void ShowCastAction::ScrollToElement(
   }
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,
-      base::BindOnce(&WebController::ScrollIntoView,
-                     delegate_->GetWebController()->GetWeakPtr(), false),
+      base::BindOnce(&WebController::ScrollIntoViewIfNeeded,
+                     delegate_->GetWebController()->GetWeakPtr(), true),
       actions.get());
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,

@@ -252,9 +252,10 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       actions->emplace_back(base::BindOnce(&WebController::JsClickElement,
                                            web_controller_->GetWeakPtr()));
     } else {
-      actions->emplace_back(base::BindOnce(&WebController::ScrollIntoView,
-                                           web_controller_->GetWeakPtr(),
-                                           /* center= */ true));
+      actions->emplace_back(base::BindOnce(
+          &WebController::ScrollIntoView, web_controller_->GetWeakPtr(),
+          /* animation= */ std::string(), /* vertical_alignment= */ "center",
+          /* horizontal_alignment= */ "center"));
       actions->emplace_back(base::BindOnce(&WebController::ClickOrTapElement,
                                            web_controller_->GetWeakPtr(),
                                            click_type));
@@ -611,9 +612,11 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
           actions->emplace_back(
               base::BindOnce(&WebController::SetValueAttribute,
                              web_controller_->GetWeakPtr(), std::string()));
-          actions->emplace_back(base::BindOnce(&WebController::ScrollIntoView,
-                                               web_controller_->GetWeakPtr(),
-                                               /* center= */ true));
+          actions->emplace_back(base::BindOnce(
+              &WebController::ScrollIntoView, web_controller_->GetWeakPtr(),
+              /* animation= */ std::string(),
+              /* vertical_alignment= */ "center",
+              /* horizontal_alignment= */ "center"));
           actions->emplace_back(
               base::BindOnce(&WebController::ClickOrTapElement,
                              web_controller_->GetWeakPtr(), ClickType::CLICK));
@@ -654,9 +657,10 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       actions->emplace_back(base::BindOnce(&WebController::FocusField,
                                            web_controller_->GetWeakPtr()));
     } else {
-      actions->emplace_back(base::BindOnce(&WebController::ScrollIntoView,
-                                           web_controller_->GetWeakPtr(),
-                                           /* center= */ true));
+      actions->emplace_back(base::BindOnce(
+          &WebController::ScrollIntoView, web_controller_->GetWeakPtr(),
+          /* animation= */ std::string(), /* vertical_alignment= */ "center",
+          /* horizontal_alignment= */ "center"));
       actions->emplace_back(base::BindOnce(&WebController::ClickOrTapElement,
                                            web_controller_->GetWeakPtr(),
                                            ClickType::CLICK));
@@ -2662,6 +2666,47 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FindUserDataElement) {
   FindElement(Selector(failing_selector_proto), &failing_option_status,
               &failing_option);
   ASSERT_EQ(PRECONDITION_FAILED, failing_option_status.proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ScrollIntoViewIfNeeded) {
+  EXPECT_EQ(content::EvalJs(shell(), "window.scrollY").ExtractInt(), 0);
+
+  // Make sure the target element is on top, such that no scrolling is
+  // necessary.
+  ClientStatus no_scroll_element_status;
+  ElementFinder::Result no_scroll_element;
+  FindElement(Selector({"#trigger-keyboard"}), &no_scroll_element_status,
+              &no_scroll_element);
+  EXPECT_EQ(ACTION_APPLIED, no_scroll_element_status.proto_status());
+
+  ClientStatus no_scroll_status;
+  base::RunLoop no_scroll_run_loop;
+  web_controller_->ScrollIntoViewIfNeeded(
+      true, no_scroll_element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), no_scroll_run_loop.QuitClosure(),
+                     &no_scroll_status));
+  no_scroll_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, no_scroll_status.proto_status());
+  EXPECT_EQ(content::EvalJs(shell(), "window.scrollY").ExtractInt(), 0);
+
+  // Make sure the target element is after the full height view.
+  ClientStatus scroll_element_status;
+  ElementFinder::Result scroll_element;
+  FindElement(Selector({"#touch_area_five"}), &scroll_element_status,
+              &scroll_element);
+  EXPECT_EQ(ACTION_APPLIED, scroll_element_status.proto_status());
+
+  ClientStatus scroll_status;
+  base::RunLoop scroll_run_loop;
+  web_controller_->ScrollIntoViewIfNeeded(
+      true, scroll_element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), scroll_run_loop.QuitClosure(),
+                     &scroll_status));
+  scroll_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, scroll_status.proto_status());
+  EXPECT_GT(content::EvalJs(shell(), "window.scrollY").ExtractDouble(), 0);
 }
 
 }  // namespace autofill_assistant

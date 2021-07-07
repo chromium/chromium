@@ -566,8 +566,9 @@ TEST_F(UseAddressActionTest, ForcedFallbackWithKeystrokes) {
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_web_controller_,
-              ScrollIntoView(true, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+              ScrollIntoView(std::string(), "center", "center",
+                             EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
   EXPECT_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));

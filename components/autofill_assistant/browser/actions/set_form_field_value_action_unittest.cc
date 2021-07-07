@@ -84,8 +84,8 @@ class SetFormFieldValueActionTest : public testing::Test {
     ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
-    ON_CALL(mock_web_controller_, ScrollIntoView(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, ScrollIntoView(_, _, _, _, _))
+        .WillByDefault(RunOnceCallback<4>(OkClientStatus()));
     ON_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
@@ -394,8 +394,9 @@ TEST_F(SetFormFieldValueActionTest, KeyboardInputHasExpectedCallChain) {
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_web_controller_,
-              ScrollIntoView(true, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+              ScrollIntoView(std::string(), "center", "center",
+                             EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
   EXPECT_CALL(
       mock_web_controller_,
       ClickOrTapElement(ClickType::TAP, EqualsElement(expected_element), _))
@@ -455,8 +456,9 @@ TEST_F(SetFormFieldValueActionTest, TextWithKeystrokeHasExpectedCallChain) {
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
   EXPECT_CALL(mock_web_controller_,
-              ScrollIntoView(true, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+              ScrollIntoView(std::string(), "center", "center",
+                             EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
   EXPECT_CALL(
       mock_web_controller_,
       ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))

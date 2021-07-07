@@ -22,6 +22,22 @@ message ClientIdProto {
 // Scroll the element into the view center.
 message ScrollIntoViewProto {
   optional ClientIdProto client_id = 1;
+  // Defines the transition animation. One of "auto" or "smooth". Defaults to
+  // "auto".
+  optional string animation = 2;
+  // Defines vertical alignment. One of "start", "center", "end" or "nearest".
+  // Defaults to "center".
+  optional string vertical_alignment = 3;
+  // Defines horizontal alignment. One of "start", "center", "end" or "nearest".
+  // Defaults to "center".
+  optional string horizontal_alignment = 4;
+}
+
+// Scroll the element into view only if necessary. Do not do anything otherwise.
+message ScrollIntoViewIfNeededProto {
+  optional ClientIdProto client_id = 1;
+  // Defines whether to center or scroll to the nearest edge. Defaults to true.
+  optional bool center = 2;
 }
 
 // Wait for the document ready status to be at least "interactive".

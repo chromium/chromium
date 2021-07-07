@@ -236,7 +236,14 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.scroll_into_view().client_id(),
           base::BindOnce(&WebController::ScrollIntoView,
-                         delegate->GetWebController()->GetWeakPtr(), true));
+                         delegate->GetWebController()->GetWeakPtr(),
+                         action.scroll_into_view().animation(),
+                         action.scroll_into_view().has_vertical_alignment()
+                             ? action.scroll_into_view().vertical_alignment()
+                             : "center",
+                         action.scroll_into_view().has_horizontal_alignment()
+                             ? action.scroll_into_view().horizontal_alignment()
+                             : "center"));
     case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeInteractive:
       return PerformOnSingleElementAction::WithOptionalClientIdTimed(
           delegate, action,
@@ -354,6 +361,14 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<SetPersistentUiAction>(delegate, action);
     case ActionProto::ActionInfoCase::kClearPersistentUi:
       return std::make_unique<ClearPersistentUiAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kScrollIntoViewIfNeeded:
+      return PerformOnSingleElementAction::WithClientId(
+          delegate, action, action.scroll_into_view_if_needed().client_id(),
+          base::BindOnce(&WebController::ScrollIntoViewIfNeeded,
+                         delegate->GetWebController()->GetWeakPtr(),
+                         action.scroll_into_view_if_needed().has_center()
+                             ? action.scroll_into_view_if_needed().center()
+                             : true));
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
