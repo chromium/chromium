@@ -26,6 +26,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/url_constants.h"
@@ -168,6 +169,60 @@ void RecordDisableReasons(int reasons) {
     if (reasons & reason)
       RecordDisbleReasonHistogram(reason);
   }
+}
+
+// Returns the current access level for the given `extension`.
+HostPermissionsAccess GetHostPermissionAccessLevelForExtension(
+    const Extension& extension) {
+  if (!util::CanWithholdPermissionsFromExtension(extension))
+    return HostPermissionsAccess::kCannotAffect;
+
+  bool has_active_hosts = !extension.permissions_data()
+                               ->active_permissions()
+                               .effective_hosts()
+                               .is_empty();
+  size_t active_hosts_size = extension.permissions_data()
+                                 ->active_permissions()
+                                 .effective_hosts()
+                                 .size();
+  bool has_withheld_hosts = !extension.permissions_data()
+                                 ->withheld_permissions()
+                                 .effective_hosts()
+                                 .is_empty();
+
+  if (!has_active_hosts && !has_withheld_hosts) {
+    // No hosts are granted or withheld, so none were requested.
+    // Check if the extension is using activeTab.
+    return extension.permissions_data()->HasAPIPermission(
+               mojom::APIPermissionID::kActiveTab)
+               ? HostPermissionsAccess::kOnActiveTabOnly
+               : HostPermissionsAccess::kNotRequested;
+  }
+
+  if (!has_withheld_hosts) {
+    // No hosts were withheld; the extension is running all requested sites.
+    return HostPermissionsAccess::kOnAllRequestedSites;
+  }
+
+  // The extension is running automatically on some of the requested sites.
+  // <all_urls> (strangely) includes the chrome://favicon/ permission. Thus,
+  // we avoid counting the favicon pattern in the active hosts.
+  if (active_hosts_size > 1) {
+    return HostPermissionsAccess::kOnSpecificSites;
+  }
+  if (active_hosts_size == 1) {
+    const URLPattern& single_pattern = *extension.permissions_data()
+                                            ->active_permissions()
+                                            .effective_hosts()
+                                            .begin();
+    if (single_pattern.scheme() != content::kChromeUIScheme ||
+        single_pattern.host() != chrome::kChromeUIFaviconHost)
+      return HostPermissionsAccess::kOnSpecificSites;
+  }
+
+  // The extension is not running automatically anywhere. All its hosts were
+  // withheld.
+  return HostPermissionsAccess::kOnClick;
 }
 
 }  // namespace
@@ -608,6 +663,13 @@ void InstalledLoader::RecordExtensionsMetrics() {
             num_granted_hosts);
       }
     }
+
+    HostPermissionsAccess access_level =
+        GetHostPermissionAccessLevelForExtension(*extension);
+    // Extensions.HostPermissions.GrantedAccess is emitted for every
+    // extension.
+    base::UmaHistogramEnumeration("Extensions.HostPermissions.GrantedAccess",
+                                  access_level);
 
     if (extension_service_->allowlist()->GetExtensionAllowlistState(
             extension->id()) == ALLOWLIST_NOT_ALLOWLISTED) {

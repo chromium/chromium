@@ -22,6 +22,14 @@ constexpr const char kHasWithheldHostsHistogram[] =
     "Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts";
 constexpr const char kGrantedHostCountHistogram[] =
     "Extensions.RuntimeHostPermissions.GrantedHostCount";
+constexpr const char kGrantedAccessHistogram[] =
+    "Extensions.HostPermissions.GrantedAccess";
+// Use an internal location for extensions since metrics aren't recorded for
+// unpacked extensions.
+constexpr mojom::ManifestLocation kManifestInternal =
+    mojom::ManifestLocation::kInternal;
+constexpr mojom::ManifestLocation kManifestExternalPolicy =
+    mojom::ManifestLocation::kExternalPolicy;
 
 }  // namespace
 
@@ -35,20 +43,19 @@ class InstalledLoaderUnitTest : public ExtensionServiceTestBase {
     InitializeEmptyExtensionService();
   }
 
-  const Extension* AddExtension();
+  const Extension* AddExtension(const std::vector<std::string>& permissions,
+                                mojom::ManifestLocation location);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(InstalledLoaderUnitTest);
 };
 
-const Extension* InstalledLoaderUnitTest::AddExtension() {
-  // Metrics aren't recorded for unpacked extensions, so we need to make sure
-  // the extension has an INTERNAL location.
-  constexpr mojom::ManifestLocation kManifestLocation =
-      mojom::ManifestLocation::kInternal;
+const Extension* InstalledLoaderUnitTest::AddExtension(
+    const std::vector<std::string>& permissions,
+    mojom::ManifestLocation location) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("test")
-                                                 .AddPermissions({"<all_urls>"})
-                                                 .SetLocation(kManifestLocation)
+                                                 .AddPermissions(permissions)
+                                                 .SetLocation(location)
                                                  .Build();
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
@@ -60,7 +67,7 @@ const Extension* InstalledLoaderUnitTest::AddExtension() {
 
 TEST_F(InstalledLoaderUnitTest,
        RuntimeHostPermissions_Metrics_HasWithheldHosts_False) {
-  AddExtension();
+  AddExtension({"<all_urls>"}, kManifestInternal);
 
   base::HistogramTester histograms;
   InstalledLoader loader(service());
@@ -76,7 +83,7 @@ TEST_F(InstalledLoaderUnitTest,
 
 TEST_F(InstalledLoaderUnitTest,
        RuntimeHostPermissions_Metrics_HasWithheldHosts_True) {
-  const Extension* extension = AddExtension();
+  const Extension* extension = AddExtension({"<all_urls>"}, kManifestInternal);
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
 
@@ -96,7 +103,7 @@ TEST_F(InstalledLoaderUnitTest,
 
 TEST_F(InstalledLoaderUnitTest,
        RuntimeHostPermissions_Metrics_GrantedHostCount) {
-  const Extension* extension = AddExtension();
+  const Extension* extension = AddExtension({"<all_urls>"}, kManifestInternal);
   ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
   modifier.GrantHostPermission(GURL("https://example.com/"));
@@ -112,6 +119,114 @@ TEST_F(InstalledLoaderUnitTest,
   constexpr int kEmitCount = 1;
   histograms.ExpectUniqueSample(kGrantedHostCountHistogram, kGrantedHostCount,
                                 kEmitCount);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       HostPermissions_Metrics_GrantedAccess_CannotAffect) {
+  // The extension is loaded from an external policy, so the user cannot
+  // configure the host permissions that affect the extension.
+  AddExtension({}, kManifestExternalPolicy);
+
+  base::HistogramTester histograms;
+  InstalledLoader loader(service());
+  loader.RecordExtensionsMetricsForTesting();
+
+  histograms.ExpectUniqueSample(kGrantedAccessHistogram,
+                                HostPermissionsAccess::kCannotAffect, 1);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       HostPermissions_Metrics_GrantedAccess_NotRequested) {
+  // The extension has no host permissions, so host permissions cannot be
+  // requested.
+  AddExtension({}, kManifestInternal);
+
+  base::HistogramTester histograms;
+  InstalledLoader loader(service());
+  loader.RecordExtensionsMetricsForTesting();
+
+  histograms.ExpectUniqueSample(kGrantedAccessHistogram,
+                                HostPermissionsAccess::kNotRequested, 1);
+}
+
+TEST_F(InstalledLoaderUnitTest, HostPermissions_Metrics_GrantedAccess_OnClick) {
+  const Extension* extension = AddExtension({"<all_urls>"}, kManifestInternal);
+
+  // The user withhelds all host permissions.
+  ScriptingPermissionsModifier modifier(profile(), extension);
+  modifier.SetWithholdHostPermissions(true);
+
+  base::HistogramTester histograms;
+  InstalledLoader loader(service());
+  loader.RecordExtensionsMetricsForTesting();
+
+  histograms.ExpectUniqueSample(kGrantedAccessHistogram,
+                                HostPermissionsAccess::kOnClick, 1);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       HostPermissions_Metrics_GrantedAccess_OnSpecificSites) {
+  const Extension* extension = AddExtension({"<all_urls>"}, kManifestInternal);
+
+  // The user grants host permisions to one of all the urls requested.
+  ScriptingPermissionsModifier modifier(profile(), extension);
+  modifier.SetWithholdHostPermissions(true);
+  modifier.GrantHostPermission(GURL("https://example.com/"));
+
+  base::HistogramTester histograms;
+  InstalledLoader loader(service());
+  loader.RecordExtensionsMetricsForTesting();
+
+  histograms.ExpectUniqueSample(kGrantedAccessHistogram,
+                                HostPermissionsAccess::kOnSpecificSites, 1);
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       HostPermissions_Metrics_GrantedAccess_OnAllRequestedSites) {
+  {
+    AddExtension({"<all_urls>"}, kManifestInternal);
+
+    // The user doesn't withheld any host permissions.
+    base::HistogramTester histograms;
+    InstalledLoader loader(service());
+    loader.RecordExtensionsMetricsForTesting();
+
+    histograms.ExpectUniqueSample(kGrantedAccessHistogram,
+                                  HostPermissionsAccess::kOnAllRequestedSites,
+                                  1);
+  }
+
+  {
+    const Extension* extension =
+        AddExtension({"https://example.com/"}, kManifestInternal);
+
+    // The user grants host permisions to all requested urls.
+    ScriptingPermissionsModifier modifier(profile(), extension);
+    modifier.SetWithholdHostPermissions(true);
+    modifier.GrantHostPermission(GURL("https://example.com/"));
+
+    base::HistogramTester histograms;
+    InstalledLoader loader(service());
+    loader.RecordExtensionsMetricsForTesting();
+
+    histograms.ExpectUniqueSample(kGrantedAccessHistogram,
+                                  HostPermissionsAccess::kOnAllRequestedSites,
+                                  1);
+  }
+}
+
+TEST_F(InstalledLoaderUnitTest,
+       HostPermissions_Metrics_GrantedAccess_OnActiveTabOnly) {
+  // The extension has activeTab API permission and no host permissions, so host
+  // permission access is on active tab only.
+  AddExtension({"activeTab"}, kManifestInternal);
+
+  base::HistogramTester histograms;
+  InstalledLoader loader(service());
+  loader.RecordExtensionsMetricsForTesting();
+
+  histograms.ExpectUniqueSample(kGrantedAccessHistogram,
+                                HostPermissionsAccess::kOnActiveTabOnly, 1);
 }
 
 }  // namespace extensions
