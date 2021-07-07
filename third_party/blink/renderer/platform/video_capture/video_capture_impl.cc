@@ -486,7 +486,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   }
 #endif  // defined(OS_WIN)
   if (planes.empty()) {
-    if (base::FeatureList::IsEnabled(media::kMultiPlaneSharedImageVideo)) {
+    if (base::FeatureList::IsEnabled(media::kMultiPlaneVideoSharedImages)) {
       planes.push_back(gfx::BufferPlane::Y);
       planes.push_back(gfx::BufferPlane::UV);
     } else {

@@ -50,8 +50,8 @@ namespace media {
 
 namespace {
 
-bool MultiPlaneSharedImagesEnabled() {
-  return base::FeatureList::IsEnabled(kMultiPlaneSharedImageVideo);
+bool MultiPlaneVideoSharedImagesEnabled() {
+  return base::FeatureList::IsEnabled(kMultiPlaneVideoSharedImages);
 }
 
 }  // namespace
@@ -366,7 +366,7 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
 // The number of shared images for a given format. Note that a single
 // GpuMemoryBuffer can be mapped to several SharedImages (one for each plane).
 size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
-  if (MultiPlaneSharedImagesEnabled()) {
+  if (MultiPlaneVideoSharedImagesEnabled()) {
     if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
       return 2;
     }
@@ -380,7 +380,7 @@ size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
 size_t GpuMemoryBufferPlaneResourceIndexForPlane(
     GpuVideoAcceleratorFactories::OutputFormat format,
     size_t plane) {
-  if (MultiPlaneSharedImagesEnabled()) {
+  if (MultiPlaneVideoSharedImagesEnabled()) {
     if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
       return 0;
     }
@@ -393,7 +393,7 @@ size_t GpuMemoryBufferPlaneResourceIndexForPlane(
 gfx::BufferPlane GetSharedImageBufferPlane(
     GpuVideoAcceleratorFactories::OutputFormat format,
     size_t plane) {
-  if (MultiPlaneSharedImagesEnabled()) {
+  if (MultiPlaneVideoSharedImagesEnabled()) {
     if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
       switch (plane) {
         case 0:
