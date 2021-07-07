@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,9 +66,8 @@ DMToken GetDMToken(Profile* const profile, bool only_affiliated) {
   }
 
 #elif !defined(OS_ANDROID)
-  if (dm_token.is_empty() && g_browser_process->browser_policy_connector()
-                                 ->chrome_browser_cloud_management_controller()
-                                 ->IsEnabled()) {
+  if (dm_token.is_empty() &&
+      ChromeBrowserCloudManagementController::IsEnabled()) {
     dm_token = BrowserDMTokenStorage::Get()->RetrieveDMToken();
   }
 #endif

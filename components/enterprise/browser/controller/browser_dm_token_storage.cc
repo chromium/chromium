@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include <stddef.h>
 
 #include <memory>
 #include <string>
@@ -21,6 +22,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
 namespace policy {
 
@@ -153,6 +155,13 @@ void BrowserDMTokenStorage::InitIfNeeded() {
     return;
 
   is_initialized_ = true;
+
+  // When CBCM is not enabled, set the DM token to empty directly withtout
+  // actually read it.
+  if (!ChromeBrowserCloudManagementController::IsEnabled()) {
+    dm_token_ = CreateEmptyToken();
+    return;
+  }
 
   // Only supported in official builds.
   client_id_ = delegate_->InitClientId();

@@ -191,7 +191,7 @@ class ChromeBrowserCloudManagementController
   // The Chrome browser cloud management is only enabled on Chrome by default.
   // However, it can be enabled on Chromium by command line switch for test and
   // development purpose.
-  bool IsEnabled();
+  static bool IsEnabled();
 
   // Returns a MachineLevelUserCloudPolicyManager instance if cloud management
   // is enabled, or nullptr otherwise.

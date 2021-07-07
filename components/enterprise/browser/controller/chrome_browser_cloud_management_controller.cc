@@ -91,6 +91,7 @@ ChromeBrowserCloudManagementController::
     cloud_policy_client_->RemoveObserver(this);
 }
 
+// static
 bool ChromeBrowserCloudManagementController::IsEnabled() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;

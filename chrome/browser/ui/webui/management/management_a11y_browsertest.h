@@ -19,7 +19,9 @@ class ManagementA11yUIBrowserTest : public WebUIBrowserTest {
  protected:
   void InstallPowerfulPolicyEnforcedExtension();
   const base::FilePath test_data_dir_;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_A11Y_BROWSERTEST_H_

@@ -185,7 +185,9 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
+#endif
 };
 
 // Verify that there's no Trusted Types violation in chrome://chrome-urls

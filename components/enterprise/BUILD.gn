@@ -6,15 +6,20 @@ import("//build/config/chromeos/ui_mode.gni")
 
 static_library("enterprise") {
   sources = [
-    "browser/controller/browser_dm_token_storage.cc",
-    "browser/controller/browser_dm_token_storage.h",
-    "browser/controller/chrome_browser_cloud_management_helper.cc",
-    "browser/controller/chrome_browser_cloud_management_helper.h",
-    "browser/enterprise_switches.cc",
-    "browser/enterprise_switches.h",
     "browser/reporting/common_pref_names.cc",
     "browser/reporting/common_pref_names.h",
   ]
+
+  if (!is_chromeos_ash) {
+    sources += [
+      "browser/controller/browser_dm_token_storage.cc",
+      "browser/controller/browser_dm_token_storage.h",
+      "browser/controller/chrome_browser_cloud_management_helper.cc",
+      "browser/controller/chrome_browser_cloud_management_helper.h",
+      "browser/enterprise_switches.cc",
+      "browser/enterprise_switches.h",
+    ]
+  }
 
   deps = [
     "//base",
@@ -72,44 +77,49 @@ static_library("enterprise") {
 
 static_library("test_support") {
   testonly = true
-  sources = [
-    "browser/controller/fake_browser_dm_token_storage.cc",
-    "browser/controller/fake_browser_dm_token_storage.h",
-  ]
-  deps = [
-    ":enterprise",
-    "//base",
-  ]
+
+  if (!is_chromeos_ash) {
+    sources = [
+      "browser/controller/fake_browser_dm_token_storage.cc",
+      "browser/controller/fake_browser_dm_token_storage.h",
+    ]
+    deps = [
+      ":enterprise",
+      "//base",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "browser/controller/browser_dm_token_storage_unittest.cc" ]
+  if (!is_chromeos_ash) {
+    sources = [ "browser/controller/browser_dm_token_storage_unittest.cc" ]
 
-  deps = [
-    ":enterprise",
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-
-  if (!is_android) {
-    sources += [
-      "browser/reporting/cloud_reporting_policy_handler_unittest.cc",
-      "browser/reporting/real_time_uploader_unittest.cc",
-      "browser/reporting/report_uploader_unittest.cc",
+    deps = [
+      ":enterprise",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
 
-    deps += [
-      "//build:chromeos_buildflags",
-      "//components/enterprise/common/proto:extensions_workflow_events_proto",
-      "//components/policy/core/browser:test_support",
-      "//components/policy/core/common:test_support",
-      "//components/prefs:test_support",
-      "//components/reporting/client:test_support",
-    ]
+    if (!is_android) {
+      sources += [
+        "browser/reporting/cloud_reporting_policy_handler_unittest.cc",
+        "browser/reporting/real_time_uploader_unittest.cc",
+        "browser/reporting/report_uploader_unittest.cc",
+      ]
+
+      deps += [
+        "//build:chromeos_buildflags",
+        "//components/enterprise/common/proto:extensions_workflow_events_proto",
+        "//components/policy/core/browser:test_support",
+        "//components/policy/core/common:test_support",
+        "//components/prefs:test_support",
+        "//components/reporting/client:test_support",
+      ]
+    }
   }
 }

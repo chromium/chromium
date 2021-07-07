@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_signal_reporter.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -112,7 +113,9 @@ class DeviceTrustSignalReporterTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
+#endif
   content::BrowserTaskEnvironment task_environment_;
 };
 

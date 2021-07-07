@@ -155,8 +155,10 @@ class ReportSchedulerTest : public ::testing::Test {
             const std::string& dm_token,
             const std::string& client_id) {
     ToggleCloudReport(policy_enabled);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     storage_.SetDMToken(dm_token);
     storage_.SetClientId(client_id);
+#endif
   }
 
   void CreateScheduler() {
@@ -247,7 +249,9 @@ class ReportSchedulerTest : public ::testing::Test {
   MockReportUploader* uploader_;
   MockRealTimeReportGenerator* real_time_generator_;
   MockRealTimeUploader* extension_request_uploader_;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage_;
+#endif
   base::Time previous_set_last_upload_timestamp_;
   base::HistogramTester histogram_tester_;
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 
+#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
 namespace {
@@ -125,7 +126,11 @@ void DeviceTrustSignalReporter::OnCreateReportQueueResponse(
 }
 
 policy::DMToken DeviceTrustSignalReporter::GetDmToken() const {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   return policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
+#else
+  return policy::DMToken();
+#endif
 }
 
 DeviceTrustSignalReporter::QueueConfigStatusOr

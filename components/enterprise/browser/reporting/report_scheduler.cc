@@ -172,6 +172,7 @@ bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
   if (cloud_policy_client_->is_registered())
     return true;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::DMToken browser_dm_token =
       policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
   std::string client_id =
@@ -186,6 +187,10 @@ bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
   cloud_policy_client_->SetupRegistration(browser_dm_token.value(), client_id,
                                           std::vector<std::string>());
   return true;
+#else
+  NOTREACHED();
+  return true;
+#endif
 }
 
 void ReportScheduler::Start(base::Time last_upload_time) {
