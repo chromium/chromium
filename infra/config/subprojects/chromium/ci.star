@@ -4065,6 +4065,15 @@ ci.fyi_windows_builder(
 )
 
 ci.fyi_builder(
+    name = "chromeos-amd64-generic-rel (goma cache silo)",
+    console_view_entry = consoles.console_view_entry(
+        category = "cros x64",
+        short_name = "cgc",
+    ),
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+ci.fyi_builder(
     name = "chromeos-amd64-generic-rel (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "cros x64",
