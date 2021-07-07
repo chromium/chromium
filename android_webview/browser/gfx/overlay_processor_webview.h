@@ -92,7 +92,7 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   };
 
   LockResult LockResource(Overlay& overlay);
-  void ReturnResource(viz::ResourceId resource_id);
+  void ReturnResource(viz::ResourceId resource_id, viz::SurfaceId surface_id);
 
   void CreateManagerOnRT(
       gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* controller_on_gpu,
@@ -110,6 +110,8 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   base::flat_map<viz::FrameSinkId, Overlay> overlays_;
   uint64_t next_overlay_id_ = 1;
   std::multimap<viz::ResourceId, OverlayResourceLock> locked_resources_;
+
+  base::flat_map<viz::FrameSinkId, int> resource_lock_count_;
 
   // Overlay candidates for the current frame.
   viz::OverlayCandidateList overlay_candidates_;

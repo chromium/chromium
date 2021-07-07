@@ -32,6 +32,8 @@ namespace {
 constexpr gpu::CommandBufferNamespace kOverlayProcessorNamespace =
     gpu::CommandBufferNamespace::IN_PROCESS;
 
+constexpr int kMaxBuffersInFlight = 3;
+
 scoped_refptr<gpu::SyncPointClientState> CreateSyncPointClientState(
     gpu::CommandBufferId command_buffer_id,
     gpu::SequenceId sequence_id) {
@@ -782,6 +784,8 @@ OverlayProcessorWebView::LockResult OverlayProcessorWebView::LockResource(
   LockResult result{};
   auto resource_id = overlay.resource_id;
 
+  resource_lock_count_[overlay.surface_id.frame_sink_id()]++;
+
   OverlayResourceLock lock = OverlayResourceLock(
       static_cast<viz::DisplayResourceProviderSkia*>(resource_provider_),
       resource_id);
@@ -791,7 +795,8 @@ OverlayProcessorWebView::LockResult OverlayProcessorWebView::LockResource(
   locked_resources_.insert(std::make_pair(resource_id, std::move(lock)));
 
   auto return_cb = base::BindOnce(&OverlayProcessorWebView::ReturnResource,
-                                  weak_ptr_factory_.GetWeakPtr(), resource_id);
+                                  weak_ptr_factory_.GetWeakPtr(), resource_id,
+                                  overlay.surface_id);
   auto return_cb_on_thread = base::BindPostTask(
       base::ThreadTaskRunnerHandle::Get(), std::move(return_cb));
 
@@ -821,7 +826,8 @@ void OverlayProcessorWebView::UpdateOverlayResource(
   }
 }
 
-void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id) {
+void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id,
+                                             viz::SurfaceId surface_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // |locked_resources_| is multimap and can contain multiple locks of the same
@@ -832,6 +838,27 @@ void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id) {
   auto it = locked_resources_.find(resource_id);
   DCHECK(it != locked_resources_.end());
   locked_resources_.erase(it);
+
+  DCHECK(resource_lock_count_.contains(surface_id.frame_sink_id()));
+  auto& count = resource_lock_count_[surface_id.frame_sink_id()];
+  DCHECK_GT(count, 0);
+
+  // When the lock count reaches kMaxBuffersInFlight, we don't send acks to the
+  // client in the ProcessForFrameSinkId. In this case we send ack here when the
+  // lock count drops below the threshold. Note, that because we still lock
+  // resource and schedule buffer update, the lock count can be larger than
+  // kMaxBuffersInFlight in certain cases, like quick overlay demotion and
+  // promotion again.
+  if (count == kMaxBuffersInFlight) {
+    auto* surface =
+        frame_sink_manager_->surface_manager()->GetSurfaceForId(surface_id);
+    if (surface) {
+      surface->SendAckToClient();
+    }
+  }
+
+  if (!--count)
+    resource_lock_count_.erase(surface_id.frame_sink_id());
 }
 
 void OverlayProcessorWebView::ProcessForFrameSinkId(
@@ -859,8 +886,13 @@ void OverlayProcessorWebView::ProcessForFrameSinkId(
     UpdateOverlayResource(frame_sink_id,
                           pass.draw_quads.front().remapped_resources.ids[0],
                           uv_rect);
-    // TODO(vasilyt): Implement back pressure
-    surface->SendAckToClient();
+    // If resource lock count reached kMaxBuffersInFlight it means we can't
+    // schedule any more frames right away, in this case we delay sending ack to
+    // the client and will send it in ReturnResources after OverlayManager will
+    // process previous update.
+    if (resource_lock_count_[frame_sink_id] < kMaxBuffersInFlight) {
+      surface->SendAckToClient();
+    }
   }
 }
 
