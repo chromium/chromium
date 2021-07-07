@@ -237,6 +237,33 @@ void TrustSafetySentimentService::RanSafetyCheck() {
                       profile_, /*ran_safety_check=*/true));
 }
 
+void TrustSafetySentimentService::PageInfoOpened() {
+  // Only one Page Info should ever be open.
+  DCHECK(!page_info_state_);
+  page_info_state_ = std::make_unique<PageInfoState>();
+}
+
+void TrustSafetySentimentService::InteractedWithPageInfo() {
+  DCHECK(page_info_state_);
+  page_info_state_->interacted = true;
+}
+
+void TrustSafetySentimentService::PageInfoClosed() {
+  DCHECK(page_info_state_);
+
+  // Record a trigger if either the user had page info open for the required
+  // time, or if they interacted with it.
+  if (base::Time::Now() - page_info_state_->opened_time >=
+          features::kTrustSafetySentimentSurveyTrustedSurfaceTime.Get() ||
+      page_info_state_->interacted) {
+    TriggerOccurred(
+        FeatureArea::kTrustedSurface,
+        {{"Interacted with Page Info", page_info_state_->interacted}});
+  }
+
+  page_info_state_.reset();
+}
+
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
   // Only interested in the primary OTR profile i.e. the one used for incognito
@@ -302,6 +329,9 @@ void TrustSafetySentimentService::SettingsWatcher::TimerComplete() {
           chrome::kChromeUISettingsHost;
   std::move(complete_callback_).Run(stayed_on_settings);
 }
+
+TrustSafetySentimentService::PageInfoState::PageInfoState()
+    : opened_time(base::Time::Now()) {}
 
 void TrustSafetySentimentService::SettingsWatcherComplete(
     bool stayed_on_settings) {

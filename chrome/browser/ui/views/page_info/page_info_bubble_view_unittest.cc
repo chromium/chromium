@@ -13,6 +13,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
@@ -213,6 +215,12 @@ class PageInfoBubbleViewTest : public testing::Test {
     parent_window_ = new views::Widget();
     parent_window_->Init(std::move(parent_params));
 
+    mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+        TrustSafetySentimentServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                web_contents_helper_.profile(),
+                base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+
     content::WebContents* web_contents = web_contents_helper_.web_contents();
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents,
@@ -232,6 +240,7 @@ class PageInfoBubbleViewTest : public testing::Test {
   ScopedWebContentsTestHelper web_contents_helper_;
   views::ScopedViewsTestHelper views_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
+  MockTrustSafetySentimentService* mock_sentiment_service_;
 
   views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
   std::unique_ptr<test::PageInfoBubbleViewTestApi> api_;
@@ -371,6 +380,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
 
 // Test UI construction and reconstruction with USB devices.
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
   constexpr size_t kExpectedChildren = 0;
   EXPECT_EQ(kExpectedChildren, api_->permissions_view()->children().size());
 
@@ -466,6 +476,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
 // Test UI construction and reconstruction with both user and policy USB
 // devices.
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
   constexpr size_t kExpectedChildren = 0;
   EXPECT_EQ(kExpectedChildren, api_->permissions_view()->children().size());
 
@@ -709,6 +720,16 @@ TEST_F(PageInfoBubbleViewTest, EnsureCloseCallback) {
   EXPECT_EQ(false, api_->reload_prompt());
   EXPECT_EQ(views::Widget::ClosedReason::kCloseButtonClicked,
             api_->closed_reason());
+}
+
+TEST_F(PageInfoBubbleViewTest, CheckHeaderInteractions) {
+  // Confirm that interactions with the header tips are reported to the
+  // sentiment service correctly.
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(2);
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  api_->view()->SecurityDetailsClicked(event);
+  api_->view()->ResetDecisionsClicked();
 }
 
 TEST_F(PageInfoBubbleViewTest, CertificateButtonShowsEvCertDetails) {

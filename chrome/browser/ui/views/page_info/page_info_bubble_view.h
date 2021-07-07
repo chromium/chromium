@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/hover_button.h"
@@ -101,6 +102,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   friend class PageInfoBubbleViewDialogBrowserTest;
   friend class PageInfoBubbleViewSyncBrowserTest;
   friend class test::PageInfoBubbleViewTestApi;
+  friend class TrustSafetySentimentServiceBrowserTest;
 
   PageInfoBubbleView(
       views::View* anchor_view,

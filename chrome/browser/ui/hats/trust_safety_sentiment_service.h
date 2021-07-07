@@ -21,24 +21,33 @@ class TrustSafetySentimentService : public KeyedService,
   explicit TrustSafetySentimentService(Profile* profile);
   ~TrustSafetySentimentService() override;
 
-  // Called to indicate to the service that the user opened an NTP. This allows
-  // the service to update its eligibility logic, and potentially show a
-  // survey. Virtual to allow mocking in tests.
+  // Called when the user opens an NTP. This allows the service to update its
+  // eligibility logic, and potentially show a survey. Virtual to allow mocking
+  // in tests.
   virtual void OpenedNewTabPage();
 
-  // Called to indicate to the service that the user has interacted with the
-  // privacy settings on chrome://settings in |web_contents|. Interaction in
-  // this context could be using a link row on the privacy settings card.
-  // Calling this allows the service to monitor |web_contents| to determine
-  // if the user stays on settings for the required time. Virtual to allow
-  // mocking in tests.
+  // Called when the user interacts with the privacy settings on
+  // chrome://settings in |web_contents|. Interaction in this context could be
+  // using a link row on the privacy settings card. Calling this allows the
+  // service to monitor |web_contents| to determine if the user stays on
+  // settings for the required time. Virtual to allow mocking in tests.
   virtual void InteractedWithPrivacySettings(
       content::WebContents* web_contents);
 
-  // Called to indicate to the service that the user has run safety check. This
-  // is immediately considered as a trigger action. Virtual to allow mocking in
-  // tests.
+  // Called when the user runs safety check. This is immediately considered as a
+  // trigger action. Virtual to allow mocking in tests.
   virtual void RanSafetyCheck();
+
+  // Called when the user opens Page Info.
+  virtual void PageInfoOpened();
+
+  // Called when the user interacts in some way with Page Info.
+  virtual void InteractedWithPageInfo();
+
+  // Called when the user closes Page Info. If Page Info was opened for the
+  // target time, or the user interacted with it while it was open, a trigger
+  // action is recorded.
+  virtual void PageInfoClosed();
 
   // Profile Observer:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
@@ -107,6 +116,13 @@ class TrustSafetySentimentService : public KeyedService,
     base::WeakPtrFactory<SettingsWatcher> weak_ptr_factory_{this};
   };
 
+  // Struct which represents the PageInfo state of interest to the service.
+  struct PageInfoState {
+    PageInfoState();
+    base::Time opened_time;
+    bool interacted = false;
+  };
+
   void SettingsWatcherComplete(bool stayed_on_settings);
 
   // Record that a trigger occurred, placing it in the set of pending triggers.
@@ -127,6 +143,7 @@ class TrustSafetySentimentService : public KeyedService,
   Profile* const profile_;
   std::map<FeatureArea, PendingTrigger> pending_triggers_;
   std::unique_ptr<SettingsWatcher> settings_watcher_;
+  std::unique_ptr<PageInfoState> page_info_state_;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
   base::WeakPtrFactory<TrustSafetySentimentService> weak_ptr_factory_{this};

@@ -972,6 +972,13 @@ const base::FeatureParam<base::TimeDelta>
     kTrustSafetySentimentSurveyPrivacySettingsTime{
         &kTrustSafetySentimentSurvey, "privacy-settings-time",
         base::TimeDelta::FromSeconds(20)};
+// The time the user must have the Trusted Surface bubble open to be considered.
+// Alternatively the user can interact with the bubble, in which case this time
+// is irrelevant.
+const base::FeatureParam<base::TimeDelta>
+    kTrustSafetySentimentSurveyTrustedSurfaceTime{
+        &kTrustSafetySentimentSurvey, "trusted-surface-time",
+        base::TimeDelta::FromSeconds(5)};
 
 #endif
 

@@ -12,6 +12,8 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -126,6 +128,14 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
   PageInfoBubbleViewBrowserTest() = default;
 
+  void SetUpOnMainThread() override {
+    mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+        TrustSafetySentimentServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                browser()->profile(),
+                base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+  }
+
  protected:
   GURL GetSimplePageUrl() const {
     return ui_test_utils::GetTestUrl(
@@ -201,6 +211,22 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     return page_info_bubble_view->details_text();
   }
 
+  SecurityInformationView* GetPageInfoHeader() {
+    return static_cast<PageInfoBubbleView*>(
+               PageInfoBubbleView::GetPageInfoBubbleForTesting())
+        ->header_;
+  }
+
+  void SetupSentimentServiceExpectations(bool interacted) {
+    testing::InSequence sequence;
+    EXPECT_CALL(*mock_sentiment_service_, PageInfoOpened);
+    EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo)
+        .Times(interacted ? testing::Exactly(1) : testing::Exactly(0));
+    EXPECT_CALL(*mock_sentiment_service_, PageInfoClosed);
+  }
+
+  MockTrustSafetySentimentService* mock_sentiment_service_;
+
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
 
@@ -208,6 +234,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ShowBubble) {
+  SetupSentimentServiceExpectations(/*interacted=*/false);
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
             PageInfoBubbleView::GetShownBubbleType());
@@ -251,6 +278,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ViewSourceURL) {
 // Test opening "Site Details" via Page Info from an ASCII origin does the
 // correct URL canonicalization.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, SiteSettingsLink) {
+  SetupSentimentServiceExpectations(/*interacted=*/true);
   GURL url = GURL("https://www.google.com/");
   std::string expected_origin = "https%3A%2F%2Fwww.google.com";
   EXPECT_EQ(GURL(chrome::kChromeUISiteDetailsPrefixURL + expected_origin),
@@ -334,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   EXPECT_TRUE(change_password_button->GetVisible());
   EXPECT_TRUE(allowlist_password_reuse_button->GetVisible());
 
-  // Verify clicking on button will increment corresponding bucket of
+  // Verify clicking on button will increment corresponding bucket
   // PasswordProtection.PageInfoAction.NonGaiaEnterprisePasswordEntry histogram.
   PerformMouseClickOnView(change_password_button);
   EXPECT_THAT(
@@ -412,8 +440,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   EXPECT_TRUE(change_password_button->GetVisible());
   EXPECT_TRUE(allowlist_password_reuse_button->GetVisible());
 
-  // Verify clicking on button will increment corresponding bucket of
+  // Verify clicking on each button will both inform the sentiment service, and
+  // increment the corresponding bucket of
   // PasswordProtection.PageInfoAction.NonGaiaEnterprisePasswordEntry histogram.
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(2);
   PerformMouseClickOnView(change_password_button);
   EXPECT_THAT(
       histograms.GetAllSamples(safe_browsing::kSavedPasswordPageInfoHistogram),
@@ -485,6 +515,17 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
             PageInfoBubbleView::GetShownBubbleType());
 }
 
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       InteractedWithCookiesButton) {
+  SetupSentimentServiceExpectations(/*interacted=*/true);
+  OpenPageInfoBubble(browser());
+
+  views::View* cookies_button = GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
+  PerformMouseClickOnView(cookies_button);
+}
+
 class PageInfoBubbleViewBrowserTestWithAutoupgradesDisabled
     : public PageInfoBubbleViewBrowserTest {
  public:
@@ -524,6 +565,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestWithAutoupgradesDisabled,
 // Ensure a page can both have an invalid certificate *and* be blocked by Safe
 // Browsing.  Regression test for bug 869925.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, BlockedAndInvalidCert) {
+  SetupSentimentServiceExpectations(/*interacted=*/true);
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
@@ -554,6 +596,13 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, BlockedAndInvalidCert) {
   EXPECT_EQ(GetCertificateButtonTitle(),
             l10n_util::GetStringFUTF16(IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT,
                                        invalid_parens));
+
+  // Check that clicking the certificate viewer button is reported to the
+  // sentiment service.
+  views::View* certificates_button = GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER);
+  PerformMouseClickOnView(certificates_button);
 }
 
 // Ensure a page that has an EV certificate *and* is blocked by Safe Browsing
