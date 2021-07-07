@@ -530,4 +530,45 @@ TEST_F(VideoDecoderPipelineTest, TranscryptError) {
   task_environment_.RunUntilIdle();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Verifies the algorithm for choosing formats in PickDecoderOutputFormat works
+// as expected.
+TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
+  constexpr gfx::Size kSize(320, 240);
+  constexpr gfx::Rect kVisibleRect(320, 240);
+
+  const struct {
+    std::vector<std::pair<Fourcc, gfx::Size>> input_candidates;
+    std::pair<Fourcc, gfx::Size> expected_chosen_candidate;
+  } test_vectors[] = {
+      // Easy cases: one candidate that is supported, should be chosen.
+      {{std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
+       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
+      {{std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
+       std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
+      // Two candidates, both supported: pick as per implementation.
+      {{std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize),
+        std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
+       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
+      {{std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize),
+        std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
+       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
+      // Two candidates, only one supported, the supported one should be picked.
+      {{std::pair<Fourcc, gfx::Size>(Fourcc::P010, kSize),
+        std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
+       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
+      {{std::pair<Fourcc, gfx::Size>(Fourcc::P010, kSize),
+        std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
+       std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)}};
+
+  for (const auto& test_vector : test_vectors) {
+    const auto chosen_candidate = decoder_->PickDecoderOutputFormat(
+        test_vector.input_candidates, kVisibleRect);
+    EXPECT_EQ(test_vector.expected_chosen_candidate, chosen_candidate)
+        << " expected: "
+        << test_vector.expected_chosen_candidate.first.ToString()
+        << ", actual: " << chosen_candidate->first.ToString();
+  }
+}
+
 }  // namespace media

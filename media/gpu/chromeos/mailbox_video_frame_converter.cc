@@ -85,8 +85,9 @@ std::unique_ptr<VideoFrameConverter> MailboxVideoFrameConverter::Create(
     UnwrapFrameCB unwrap_frame_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferStubCB get_stub_cb) {
-  if (!unwrap_frame_cb || !gpu_task_runner || !get_stub_cb)
-    return nullptr;
+  DCHECK(unwrap_frame_cb);
+  DCHECK(gpu_task_runner);
+  DCHECK(get_stub_cb);
 
   auto get_gpu_channel_cb = base::BindRepeating(
       [](base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb) {

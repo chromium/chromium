@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
@@ -41,12 +42,8 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
   std::vector<Fourcc> supported_fourccs;
   for (const auto& format : supported_output_formats) {
     const auto fourcc = Fourcc::FromV4L2PixFmt(format);
-    if (!fourcc) {
-      VLOGF(1) << "unsupported image processor format "
-               << FourccToString(format) << ", skipping...";
-      continue;
-    }
-    supported_fourccs.push_back(*fourcc);
+    if (fourcc.has_value())
+      supported_fourccs.push_back(*fourcc);
   }
 
   const auto output_fourcc = out_format_picker.Run(supported_fourccs);
@@ -59,14 +56,11 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
     const Fourcc input_fourcc = input_candidate.first;
     const gfx::Size& input_size = input_candidate.second;
 
-    if (std::find(supported_input_pixfmts.begin(),
-                  supported_input_pixfmts.end(), input_fourcc.ToV4L2PixFmt()) ==
-        supported_input_pixfmts.end()) {
+    if (!base::Contains(supported_input_pixfmts, input_fourcc.ToV4L2PixFmt()))
       continue;
-    }
 
     // Try to get an image size as close as possible to the final size.
-    gfx::Size output_size(visible_size.width(), visible_size.height());
+    gfx::Size output_size = visible_size;
     size_t num_planes = 0;
     if (!V4L2ImageProcessorBackend::TryOutputFormat(
             input_fourcc.ToV4L2PixFmt(), output_fourcc->ToV4L2PixFmt(),

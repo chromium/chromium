@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -31,28 +32,19 @@ namespace {
 // number of frames in media::Pipeline plus the current processing frame.
 constexpr size_t kNumFramesForImageProcessor = limits::kMaxVideoFrames + 1;
 
-// Pick a compositor renderable format from |candidates|.
-// Return zero if not found.
-absl::optional<Fourcc> PickRenderableFourcc(
-    const std::vector<Fourcc>& candidates) {
-  // Hardcode compositor renderable format now.
-  // TODO: figure out a way to pick the best one dynamically.
-  // Prefer YVU420 and NV12 because ArcGpuVideoDecodeAccelerator only supports
-  // single physical plane.
-  constexpr Fourcc::Value kPreferredFourccValues[] = {
-#if defined(ARCH_CPU_ARM_FAMILY)
+// Preferred output formats in order of preference.
+// TODO(mcasas): query the platform for its preferred formats and modifiers.
+constexpr Fourcc::Value kPreferredRenderableFourccs[] = {
     Fourcc::NV12,
     Fourcc::YV12,
-#endif
-    // For kepler.
-    Fourcc::AR24,
-  };
+};
 
-  for (const auto& value : kPreferredFourccValues) {
-    if (std::find(candidates.begin(), candidates.end(), Fourcc(value)) !=
-        candidates.end()) {
+// Picks the preferred compositor renderable format from |candidates|, if any.
+absl::optional<Fourcc> PickRenderableFourcc(
+    const std::vector<Fourcc>& candidates) {
+  for (const auto value : kPreferredRenderableFourccs) {
+    if (base::Contains(candidates, Fourcc(value)))
       return Fourcc(value);
-    }
   }
   return absl::nullopt;
 }
@@ -77,16 +69,15 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     std::unique_ptr<VideoFrameConverter> frame_converter,
     std::unique_ptr<MediaLog> /*media_log*/,
     CreateDecoderFunctionCB create_decoder_function_cb) {
-  if (!client_task_runner || !frame_pool || !frame_converter) {
-    VLOGF(1) << "One of arguments is nullptr.";
-    return nullptr;
-  }
+  DCHECK(client_task_runner);
+  DCHECK(frame_pool);
+  DCHECK(frame_converter);
 
-  auto* decoder = new VideoDecoderPipeline(
+  auto* pipeline = new VideoDecoderPipeline(
       std::move(client_task_runner), std::move(frame_pool),
       std::move(frame_converter), std::move(create_decoder_function_cb));
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
-      base::WrapUnique(decoder));
+      base::WrapUnique(pipeline));
 }
 
 VideoDecoderPipeline::VideoDecoderPipeline(
@@ -134,14 +125,15 @@ VideoDecoderPipeline::~VideoDecoderPipeline() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+// static
 void VideoDecoderPipeline::DestroyAsync(
-    std::unique_ptr<VideoDecoderPipeline> decoder) {
+    std::unique_ptr<VideoDecoderPipeline> pipeline) {
   DVLOGF(2);
-  DCHECK(decoder);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder->client_sequence_checker_);
+  DCHECK(pipeline);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(pipeline->client_sequence_checker_);
 
-  auto* decoder_task_runner = decoder->decoder_task_runner_.get();
-  decoder_task_runner->DeleteSoon(FROM_HERE, std::move(decoder));
+  auto* decoder_task_runner = pipeline->decoder_task_runner_.get();
+  decoder_task_runner->DeleteSoon(FROM_HERE, std::move(pipeline));
 }
 
 VideoDecoderType VideoDecoderPipeline::GetDecoderType() const {
@@ -265,9 +257,8 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4) << "Initialization status = " << status.code();
 
-  if (!status.is_ok()) {
+  if (!status.is_ok())
     decoder_ = nullptr;
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (decoder_ && decoder_->NeedsTranscryption()) {
@@ -526,18 +517,12 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 
   image_processor_.reset();
 
-  // Check if any candidate format is renderable without the need of
-  // ImageProcessor.
-  std::vector<Fourcc> fourccs;
-  for (const auto& candidate : candidates)
-    fourccs.push_back(candidate.first);
-  const auto renderable_fourcc = PickRenderableFourcc(fourccs);
-  if (renderable_fourcc) {
-    for (const auto& candidate : candidates)
-      if (candidate.first == renderable_fourcc)
+  // Check if any of the |candidates| formats is directly renderable.
+  for (const auto preferred_fourcc : kPreferredRenderableFourccs) {
+    for (const auto& candidate : candidates) {
+      if (candidate.first == Fourcc(preferred_fourcc))
         return candidate;
-    DVLOGF(2) << "Renderable Fourcc not in candidates list. This is a bug.";
-    return absl::nullopt;
+    }
   }
 
   std::unique_ptr<ImageProcessor> image_processor =
