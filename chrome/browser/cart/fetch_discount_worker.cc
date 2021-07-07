@@ -5,18 +5,22 @@
 #include "chrome/browser/cart/fetch_discount_worker.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-// TODO(meiliang): Make it configurable via finch parameter.
-// 30 minutes.
-const int64_t kDelayFetchMs = 1800000;
-const int kImmediateFetchMs = 0;
+// Default value is 6 hours.
+constexpr base::FeatureParam<base::TimeDelta> kDelayFetchSecParam(
+    &ntp_features::kNtpChromeCartModule,
+    "delay-fetch-discount-sec",
+    base::TimeDelta::FromSeconds(6 * 60 * 60));
+const int kImmediateFetchSec = 0;
 }  // namespace
 
 CartLoader::CartLoader(Profile* profile)
@@ -70,30 +74,31 @@ FetchDiscountWorker::FetchDiscountWorker(
 
 FetchDiscountWorker::~FetchDiscountWorker() = default;
 
-void FetchDiscountWorker::Start(base::TimeDelta delay) {
+void FetchDiscountWorker::Start(base::TimeDelta delay_in_ms) {
   // Post a delay task to avoid an infinite loop for creating the CartService.
   // Since CartLoader and CartDiscountUpdater both depend on CartService.
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&FetchDiscountWorker::PrepareToFetch,
-                         weak_ptr_factory_.GetWeakPtr(), kImmediateFetchMs),
-          delay);
+                         weak_ptr_factory_.GetWeakPtr(),
+                         base::TimeDelta::FromSeconds(kImmediateFetchSec)),
+          delay_in_ms);
 }
 
-void FetchDiscountWorker::PrepareToFetch(unsigned int delay_fetch_ms) {
+void FetchDiscountWorker::PrepareToFetch(base::TimeDelta delay_fetch_sec) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   // Load all active carts.
-  auto cart_loaded_callback =
-      base::BindOnce(&FetchDiscountWorker::ReadyToFetch,
-                     weak_ptr_factory_.GetWeakPtr(), delay_fetch_ms);
+  auto cart_loaded_callback = base::BindOnce(&FetchDiscountWorker::ReadyToFetch,
+                                             weak_ptr_factory_.GetWeakPtr(),
+                                             std::move(delay_fetch_sec));
   auto loader = cart_loader_and_updater_factory_->createCartLoader();
   loader->LoadAllCarts(std::move(cart_loaded_callback));
 }
 
 void FetchDiscountWorker::ReadyToFetch(
-    int delay_fetch_ms,
+    base::TimeDelta delay_fetch_sec,
     bool success,
     std::vector<CartDB::KeyAndValue> proto_pairs) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -109,7 +114,7 @@ void FetchDiscountWorker::ReadyToFetch(
       base::BindOnce(&FetchInBackground, std::move(pending_factory),
                      std::move(fetcher), std::move(done_fetching_callback),
                      std::move(proto_pairs)),
-      base::TimeDelta::FromMilliseconds(delay_fetch_ms));
+      delay_fetch_sec);
 }
 
 void FetchDiscountWorker::FetchInBackground(
@@ -196,5 +201,5 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
   }
 
   // Continue to work
-  PrepareToFetch(kDelayFetchMs);
+  PrepareToFetch(kDelayFetchSecParam.Get());
 }
