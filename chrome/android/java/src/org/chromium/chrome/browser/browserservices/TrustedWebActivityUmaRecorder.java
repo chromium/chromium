@@ -11,6 +11,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
+import org.chromium.chrome.browser.browserservices.constants.QualityEnforcementViolationType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSettingsType;

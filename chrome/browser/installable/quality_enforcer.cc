@@ -22,7 +22,8 @@ namespace {
 // Do not modify or reuse existing entries; they are used in a UMA histogram.
 // Please also edit TrustedWebActivityQualityEnforcementViolationType in the
 // enums.xml if adding new value.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browserservices
+// GENERATED_JAVA_ENUM_PACKAGE: (
+// org.chromium.chrome.browser.browserservices.constants)
 enum class QualityEnforcementViolationType {
   kHttpError404 = 0,
   kHttpError5xx = 1,

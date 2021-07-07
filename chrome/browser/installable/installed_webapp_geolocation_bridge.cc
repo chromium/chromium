@@ -22,7 +22,8 @@ const char kLocationUpdateHistogramName[] =
 // Do not modify or reuse existing entries; they are used in a UMA histogram.
 // Please edit TrustedWebActivityLocationErrorCode in the enums.xml if a value
 // is added.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browserservices
+// GENERATED_JAVA_ENUM_PACKAGE: (
+// org.chromium.chrome.browser.browserservices.constants)
 enum class LocationUpdateError {
   // There was no error.
   kNone = 0,
