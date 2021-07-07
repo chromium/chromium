@@ -2067,10 +2067,10 @@ TEST(ValuesTest, RemoveEmptyChildren) {
 
     ListValue* inner_value;
     EXPECT_TRUE(root->GetList("list_with_empty_children", &inner_value));
-    EXPECT_EQ(1U, inner_value->GetSize());  // Dictionary was pruned.
-    ListValue* inner_value2;
-    EXPECT_TRUE(inner_value->GetList(0, &inner_value2));
-    EXPECT_EQ(1U, inner_value2->GetSize());
+    ASSERT_EQ(1U, inner_value->GetSize());  // Dictionary was pruned.
+    const Value& inner_value2 = inner_value->GetList()[0];
+    ASSERT_TRUE(inner_value2.is_list());
+    EXPECT_EQ(1U, inner_value2.GetList().size());
   }
 }
 
@@ -2481,15 +2481,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_TRUE(main_list.GetDictionary(5, nullptr));
   EXPECT_FALSE(main_list.GetDictionary(6, nullptr));
   EXPECT_FALSE(main_list.GetDictionary(7, nullptr));
-
-  EXPECT_FALSE(main_list.GetList(0, nullptr));
-  EXPECT_FALSE(main_list.GetList(1, nullptr));
-  EXPECT_FALSE(main_list.GetList(2, nullptr));
-  EXPECT_FALSE(main_list.GetList(3, nullptr));
-  EXPECT_FALSE(main_list.GetList(4, nullptr));
-  EXPECT_FALSE(main_list.GetList(5, nullptr));
-  EXPECT_TRUE(main_list.GetList(6, nullptr));
-  EXPECT_FALSE(main_list.GetList(7, nullptr));
 }
 
 TEST(ValuesTest, SelfSwap) {

@@ -1575,23 +1575,6 @@ bool ListValue::GetDictionary(size_t index, DictionaryValue** out_value) {
       index, const_cast<const DictionaryValue**>(out_value));
 }
 
-bool ListValue::GetList(size_t index, const ListValue** out_value) const {
-  const Value* value;
-  bool result = Get(index, &value);
-  if (!result || !value->is_list())
-    return false;
-
-  if (out_value)
-    *out_value = static_cast<const ListValue*>(value);
-
-  return true;
-}
-
-bool ListValue::GetList(size_t index, ListValue** out_value) {
-  return as_const(*this).GetList(index,
-                                 const_cast<const ListValue**>(out_value));
-}
-
 void ListValue::Append(std::unique_ptr<Value> in_value) {
   list().push_back(std::move(*in_value));
 }

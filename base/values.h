@@ -878,11 +878,6 @@ class BASE_EXPORT ListValue : public Value {
   bool GetDictionary(size_t index, const DictionaryValue** out_value) const;
   bool GetDictionary(size_t index, DictionaryValue** out_value);
 
-  using Value::GetList;
-  // DEPRECATED, use `GetList()::operator[]::GetList()` instead.
-  bool GetList(size_t index, const ListValue** out_value) const;
-  bool GetList(size_t index, ListValue** out_value);
-
   using Value::Append;
   // Appends a Value to the end of the list.
   // DEPRECATED, use `Value::Append()` instead.
