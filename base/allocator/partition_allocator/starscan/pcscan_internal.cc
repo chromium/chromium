@@ -1031,6 +1031,8 @@ void PCScanInternal::Initialize(PCScan::WantedWriteProtectionMode wpmode) {
   write_protector_ = std::make_unique<NoWriteProtector>();
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
   PCScan::SetClearType(write_protector_->SupportedClearType());
+  scannable_roots_ = RootsMap();
+  nonscannable_roots_ = RootsMap();
   is_initialized_ = true;
 }
 
@@ -1294,8 +1296,12 @@ void PCScanInternal::ClearRootsForTesting() {
     Root* root = pair.first;
     root->quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
-  scannable_roots_.clear();     // IN-TEST
-  nonscannable_roots_.clear();  // IN-TEST
+  // Make sure to destroy maps so that on the following ReinitForTesting() call
+  // the maps don't attempt to destroy the backing.
+  scannable_roots_.clear();
+  scannable_roots_.~RootsMap();
+  nonscannable_roots_.clear();
+  nonscannable_roots_.~RootsMap();
   // Destroy write protector object, so that there is no double free on the next
   // call to ReinitForTesting();
   write_protector_.reset();
@@ -1303,7 +1309,8 @@ void PCScanInternal::ClearRootsForTesting() {
 
 void PCScanInternal::ReinitForTesting(PCScan::WantedWriteProtectionMode mode) {
   is_initialized_ = false;
-  Initialize(mode);
+  auto* new_this = new (this) PCScanInternal;
+  new_this->Initialize(mode);
 }
 
 void PCScanInternal::FinishScanForTesting() {
