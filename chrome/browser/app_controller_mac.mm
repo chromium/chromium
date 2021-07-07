@@ -1128,15 +1128,17 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
                             attachedSheet] isKindOfClass:[NSWindow class]];
 }
 
-// Called to validate menu items when there are no key windows. All the
-// items we care about have been set with the |commandDispatch:| action and
-// a target of FirstResponder in IB. If it's not one of those, let it
-// continue up the responder chain to be handled elsewhere. We pull out the
-// tag as the cross-platform constant to differentiate and dispatch the
-// various commands.
+// Validates menu items in the dock (always) and in the menu bar (if there is no
+// browser).
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
   SEL action = [item action];
   BOOL enable = NO;
+  // Whether the profile is loaded and opening a new browser window is allowed.
+  BOOL canOpenNewBrowser =
+      [self safeProfileForNewWindows:[self lastProfileIfLoaded]] ? YES : NO;
+  // Commands from dock are always handled by commandFromDock:, but commands
+  // from the menu bar are only handled by commandDispatch: if there is no key
+  // window.
   if (action == @selector(commandDispatch:) ||
       action == @selector(commandFromDock:)) {
     NSInteger tag = [item tag];
@@ -1151,23 +1153,37 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
         case IDC_RESTORE_TAB:
           enable = ![self keyWindowIsModal] && [self canRestoreTab];
           break;
-        // Browser-level items that open in new tabs should not open if there's
-        // a window- or app-modal dialog.
+        // Browser-level items that open in new tabs or perform an action in a
+        // current tab should not open if there's a window- or app-modal dialog.
         case IDC_OPEN_FILE:
         case IDC_NEW_TAB:
+        case IDC_FOCUS_LOCATION:
+        case IDC_FOCUS_SEARCH:
         case IDC_SHOW_HISTORY:
         case IDC_SHOW_BOOKMARK_MANAGER:
-          enable = ![self keyWindowIsModal];
+        case IDC_CLEAR_BROWSING_DATA:
+        case IDC_SHOW_DOWNLOADS:
+        case IDC_IMPORT_SETTINGS:
+        case IDC_MANAGE_EXTENSIONS:
+        case IDC_HELP_PAGE_VIA_MENU:
+        case IDC_OPTIONS:
+          enable = canOpenNewBrowser && ![self keyWindowIsModal];
           break;
-        // Browser-level items that open in new windows.
+        // Browser-level items that open in new windows: allow the user to open
+        // a new window even if there's a window-modal dialog.
+        case IDC_NEW_WINDOW:
+          enable = canOpenNewBrowser;
+          break;
         case IDC_TASK_MANAGER:
-          // Allow the user to open a new window if there's a window-modal
-          // dialog.
-          enable = ![self keyWindowIsModal];
+          enable = YES;
+          break;
+        case IDC_NEW_INCOGNITO_WINDOW:
+          enable = _menuState->IsCommandEnabled(tag) ? canOpenNewBrowser : NO;
           break;
         default:
           enable = _menuState->IsCommandEnabled(tag) ?
                    ![self keyWindowIsModal] : NO;
+          break;
       }
     }
 
@@ -1183,11 +1199,9 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   } else if (action == @selector(terminate:)) {
     enable = YES;
   } else if (action == @selector(showPreferences:)) {
-    enable = YES;
+    enable = canOpenNewBrowser;
   } else if (action == @selector(orderFrontStandardAboutPanel:)) {
-    enable = YES;
-  } else if (action == @selector(commandFromDock:)) {
-    enable = YES;
+    enable = canOpenNewBrowser;
   } else if (action == @selector(toggleConfirmToQuit:)) {
     [self updateConfirmToQuitPrefMenuItem:static_cast<NSMenuItem*>(item)];
     enable = YES;
