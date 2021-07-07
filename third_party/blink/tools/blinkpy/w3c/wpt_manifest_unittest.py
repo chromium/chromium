@@ -31,6 +31,8 @@ class WPTManifestUnitTest(unittest.TestCase):
             '--no-download',
             '--tests-root',
             WEB_TEST_DIR + '/external/wpt',
+            '--path',
+            WEB_TEST_DIR + '/external/wpt/MANIFEST.json'
         ]])
 
     def test_ensure_manifest_updates_manifest_if_it_exists(self):
@@ -55,6 +57,8 @@ class WPTManifestUnitTest(unittest.TestCase):
             '--no-download',
             '--tests-root',
             WEB_TEST_DIR + '/external/wpt',
+            '--path',
+            WEB_TEST_DIR + '/external/wpt/MANIFEST.json'
         ]])
 
     def test_ensure_manifest_raises_exception(self):
@@ -77,6 +81,8 @@ class WPTManifestUnitTest(unittest.TestCase):
             '--no-download',
             '--tests-root',
             WEB_TEST_DIR + '/wpt_internal',
+            '--path',
+            WEB_TEST_DIR + '/wpt_internal/MANIFEST.json',
         ]])
 
     def test_does_not_throw_when_missing_some_test_types(self):

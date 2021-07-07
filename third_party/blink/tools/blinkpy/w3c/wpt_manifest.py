@@ -102,9 +102,10 @@ class WPTManifest(object):
 
     @property
     def wpt_dir(self):
-        return self.host.filesystem.dirname(
-            self.host.filesystem.relpath(
-                self.wpt_manifest_path, self.port.web_tests_dir()))
+        if 'external' in self.wpt_manifest_path:
+            return 'external/wpt'
+        else:
+            return 'wpt_internal'
 
     def _items_for_file_path(self, path_in_wpt):
         """Finds manifest items for the given WPT path.
@@ -285,18 +286,21 @@ class WPTManifest(object):
         return self.test_name_to_file.get(url)
 
     @staticmethod
-    def ensure_manifest(port, path=None):
+    def ensure_manifest(port, path=None, manifest_path=None):
         """Regenerates the WPT MANIFEST.json file.
 
         Args:
             port: A blinkpy.web_tests.port.Port object.
             path: The path to a WPT root (relative to web_tests, optional).
+            manifest_path: The path to the new manifest file
         """
         fs = port.host.filesystem
         if path is None:
             path = fs.join('external', 'wpt')
         wpt_path = fs.join(port.web_tests_dir(), path)
-        manifest_path = fs.join(wpt_path, MANIFEST_NAME)
+        if manifest_path is None:
+            manifest_path = fs.join(wpt_path, MANIFEST_NAME)
+        fs.maybe_make_directory(fs.dirname(manifest_path))
 
         # Unconditionally delete local MANIFEST.json to avoid regenerating the
         # manifest from scratch (when version is bumped) or invalid/out-of-date
@@ -317,7 +321,7 @@ class WPTManifest(object):
                 _log.error('Manifest base not found at "%s".',
                            base_manifest_path)
 
-        WPTManifest.generate_manifest(port, wpt_path)
+        WPTManifest.generate_manifest(port, wpt_path, manifest_path)
 
         if fs.isfile(manifest_path):
             _log.debug('Manifest generation completed.')
@@ -328,14 +332,17 @@ class WPTManifest(object):
             fs.write_text_file(manifest_path, '{}')
 
     @staticmethod
-    def generate_manifest(port, dest_path):
+    def generate_manifest(port, dest_path, manifest_path=None):
         """Generates MANIFEST.json on the specified directory."""
+        if manifest_path is None:
+            fs = port.host.filesystem
+            manifest_path = fs.join(dest_path, MANIFEST_NAME)
         wpt_exec_path = PathFinder(
             port.host.filesystem).path_from_chromium_base(
                 'third_party', 'wpt_tools', 'wpt', 'wpt')
         cmd = [
             port.python3_command(), wpt_exec_path, 'manifest', '-v',
-            '--no-download', '--tests-root', dest_path
+            '--no-download', '--tests-root', dest_path, '--path', manifest_path
         ]
 
         # ScriptError will be raised if the command fails.

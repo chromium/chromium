@@ -1021,12 +1021,11 @@ class Port(object):
         assert path in self.WPT_DIRS
         # Convert '/' to the platform-specific separator.
         path = self._filesystem.normpath(path)
-        manifest_path = self._filesystem.join(self.web_tests_dir(), path,
-                                              MANIFEST_NAME)
+        manifest_path = self._build_path('gen', path, MANIFEST_NAME)
         if not self._filesystem.exists(manifest_path) or self.get_option(
                 'manifest_update', False):
             _log.debug('Generating MANIFEST.json for %s...', path)
-            WPTManifest.ensure_manifest(self, path)
+            WPTManifest.ensure_manifest(self, path, manifest_path)
         return WPTManifest(self.host, manifest_path)
 
     def is_wpt_crash_test(self, test_name):

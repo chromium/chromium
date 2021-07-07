@@ -26,6 +26,7 @@ from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
+MOCK_GEN = '/mock-checkout/out/Release/gen/'
 
 class WPTExpectationsUpdaterTest(LoggingTestCase):
     def mock_host(self):
@@ -824,7 +825,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host.filesystem.maybe_make_directory(
             port.web_tests_dir(), 'wpt_internal')
         host.filesystem.copyfile(
-            host.filesystem.join(port.web_tests_dir(),
+            host.filesystem.join(MOCK_GEN,
                                  'external', 'wpt', MANIFEST_NAME),
             host.filesystem.join(port.web_tests_dir(), 'wpt_internal',
                                  MANIFEST_NAME))

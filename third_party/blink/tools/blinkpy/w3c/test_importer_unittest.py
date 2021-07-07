@@ -27,9 +27,11 @@ from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
+MOCK_GEN = '/mock-checkout/out/Release/gen/'
 MANIFEST_INSTALL_CMD = [
     'python3', '/mock-checkout/third_party/wpt_tools/wpt/wpt', 'manifest',
-    '-v', '--no-download', '--tests-root', MOCK_WEB_TESTS + 'external/wpt'
+    '-v', '--no-download', '--tests-root', MOCK_WEB_TESTS + 'external/wpt',
+    '--path', MOCK_GEN + 'external/wpt/MANIFEST.json'
 ]
 
 
@@ -526,7 +528,12 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json', '{}')
         importer._generate_manifest()
-        self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD] * 2)
+        install_cmd = [
+            'python3', '/mock-checkout/third_party/wpt_tools/wpt/wpt', 'manifest',
+            '-v', '--no-download', '--tests-root', MOCK_WEB_TESTS + 'external/wpt',
+            '--path', MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json'
+        ]
+        self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD, install_cmd])
         self.assertEqual(importer.chromium_git.added_paths,
                          {MOCK_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME})
 
