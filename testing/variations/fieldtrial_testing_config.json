@@ -1246,6 +1246,8 @@
     "BackForwardCacheDesktop": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
@@ -1258,6 +1260,7 @@
                         "blocked_websites": "https://domain1.org,https://domain2.org",
                         "cache_size": "6",
                         "check_eligibility_after_pagehide": "true",
+                        "content_injection_supported": "true",
                         "enable_same_site": "false",
                         "file_system_api_supported": "true",
                         "foreground_cache_size": "2",
