@@ -2603,30 +2603,37 @@ Status ExecuteSetWindowRect(Session* session,
 
   bool has_x = params.Get("x", &temp) && !temp->is_none();
   if (has_x) {
-    if (!temp->GetAsDouble(&x))
+    if (!temp->is_double() && !temp->is_int())
       return Status(kInvalidArgument, "'x' must be a number");
+    x = temp->GetDouble();
     if (x > max_range || x < min_range)
       return Status(kInvalidArgument, "'x' out of range");
   }
+
   bool has_y = params.Get("y", &temp) && !temp->is_none();
   if (has_y) {
-    if (!temp->GetAsDouble(&y))
+    if (!temp->is_double() && !temp->is_int())
       return Status(kInvalidArgument, "'y' must be a number");
-    if (y > max_range || y < min_range )
+    y = temp->GetDouble();
+    if (y > max_range || y < min_range)
       return Status(kInvalidArgument, "'y' out of range");
   }
+
   bool has_width = params.Get("width", &temp) && !temp->is_none();
   if (has_width) {
-    if (!temp->GetAsDouble(&width))
+    if (!temp->is_double() && !temp->is_int())
       return Status(kInvalidArgument, "'width' must be a number");
-    if (width > max_range || width < 0 )
+    width = temp->GetDouble();
+    if (width > max_range || width < 0)
       return Status(kInvalidArgument, "'width' out of range");
   }
+
   bool has_height = params.Get("height", &temp) && !temp->is_none();
   if (has_height) {
-    if (!temp->GetAsDouble(&height))
+    if (!temp->is_double() && !temp->is_int())
       return Status(kInvalidArgument, "'height' must be a number");
-    if (height > max_range || height < 0 )
+    height = temp->GetDouble();
+    if (height > max_range || height < 0)
       return Status(kInvalidArgument, "'height' out of range");
   }
 
