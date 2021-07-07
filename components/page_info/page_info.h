@@ -276,8 +276,6 @@ class PageInfo : public content::WebContentsObserver {
   // Exposed for testing.
   static std::vector<ContentSettingsType> GetAllPermissionsForTesting();
 
-  PageInfoUI* ui_for_testing() const { return ui_; }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            NonFactoryDefaultAndRecentlyChangedPermissionsShown);

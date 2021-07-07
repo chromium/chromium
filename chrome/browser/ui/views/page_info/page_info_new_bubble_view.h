@@ -37,13 +37,7 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
   void OpenPermissionPage(ContentSettingsType type) override;
   void CloseBubble() override;
 
-  // WebContentsObserver:
-  void DidChangeVisibleSecurityState() override;
-
  private:
-  friend class PageInfoBubbleViewBrowserTest;
-  friend class PageInfoBubbleViewDialogBrowserTest;
-
   // PageInfoBubbleViewBase:
   gfx::Size CalculatePreferredSize() const override;
   void OnWidgetDestroying(views::Widget* widget) override;

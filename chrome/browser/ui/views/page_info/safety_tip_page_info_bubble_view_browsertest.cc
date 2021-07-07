@@ -26,11 +26,9 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
-#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lookalikes/core/features.h"
@@ -403,13 +401,8 @@ class SafetyTipPageInfoBubbleViewBrowserTest
         NOTREACHED();
         break;
     }
-    content::WebContentsAddedObserver new_tab_observer;
-    static_cast<views::StyledLabel*>(
-        page_info->GetViewByID(
-            PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL))
-        ->ClickLinkForTesting();
-    EXPECT_EQ(chrome::kSafetyTipHelpCenterURL,
-              new_tab_observer.GetWebContents()->GetURL());
+    EXPECT_EQ(page_info->GetSecurityDescriptionType(),
+              PageInfoUI::SecurityDescriptionType::SAFETY_TIP);
   }
 
   void CheckPageInfoDoesNotShowSafetyTipInfo(Browser* browser) {
@@ -424,13 +417,9 @@ class SafetyTipPageInfoBubbleViewBrowserTest
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_INTERNAL_PAGE));
     if (PageInfoBubbleViewBase::GetShownBubbleType() ==
         PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO) {
-      content::WebContentsAddedObserver new_tab_observer;
-      static_cast<views::StyledLabel*>(
-          page_info->GetViewByID(
-              PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL))
-          ->ClickLinkForTesting();
-      EXPECT_EQ(chrome::kPageInfoHelpCenterURL,
-                new_tab_observer.GetWebContents()->GetURL());
+      EXPECT_NE(static_cast<PageInfoBubbleView*>(page_info)
+                    ->GetSecurityDescriptionType(),
+                PageInfoUI::SecurityDescriptionType::SAFETY_TIP);
     }
   }
 
