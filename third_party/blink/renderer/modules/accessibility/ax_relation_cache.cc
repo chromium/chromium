@@ -166,8 +166,11 @@ bool AXRelationCache::IsValidOwnedChild(AXObject* child) {
 }
 
 void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
-                                         const Vector<AXID> child_ids) {
-  for (AXID removed_child_id : child_ids) {
+                                         const Vector<AXID>& removed_child_ids,
+                                         const Vector<AXID>& newly_owned_ids) {
+  DCHECK(owner);
+  DCHECK(!owner->IsDetached());
+  for (AXID removed_child_id : removed_child_ids) {
     // Find the AXObject for the child that this owner no longer owns.
     AXObject* removed_child = ObjectFromAXID(removed_child_id);
 
@@ -186,16 +189,24 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
       // parent and calling childrenChanged on its real parent.
       removed_child->DetachFromParent();
       // Recompute the real parent and cache it.
-      if (AXObject* real_parent = RestoreParentOrPrune(removed_child))
-        ChildrenChanged(real_parent);
+      // Don't do this if it's also in the newly owned ids, as it's about to
+      // get a new parent, and we want to avoid accidentally pruning it.
+      if (!newly_owned_ids.Contains(removed_child_id)) {
+        if (AXObject* real_parent = RestoreParentOrPrune(removed_child))
+          ChildrenChanged(real_parent);
+      }
     }
   }
 }
 
 void AXRelationCache::MapOwnedChildren(const AXObject* owner,
-                                       const Vector<AXID> child_ids) {
+                                       const Vector<AXID>& child_ids) {
+  DCHECK(owner);
+  DCHECK(!owner->IsDetached());
   for (AXID added_child_id : child_ids) {
     AXObject* added_child = ObjectFromAXID(added_child_id);
+    DCHECK(added_child);
+    DCHECK(!added_child->IsDetached());
 
     // Add this child to the mapping from child to owner.
     aria_owned_child_to_owner_mapping_.Set(added_child_id, owner->AXObjectID());
@@ -342,20 +353,21 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
 
   // Compare this to the current list of owned children, and exit early if
   // there are no changes.
-  Vector<AXID> current_child_axids =
+  Vector<AXID> previously_owned_child_ids =
       aria_owner_to_children_mapping_.at(owner->AXObjectID());
 
   // Only force the refresh if there was or will be owned children; otherwise,
   // there is nothing to refresh even for a new AXObject replacing an old owner.
-  if (current_child_axids == validated_owned_child_axids &&
-      (!force || current_child_axids.IsEmpty())) {
+  if (previously_owned_child_ids == validated_owned_child_axids &&
+      (!force || previously_owned_child_ids.IsEmpty())) {
     return;
   }
 
   // The list of owned children has changed. Even if they were just reordered,
   // to be safe and handle all cases we remove all of the current owned
   // children and add the new list of owned children.
-  UnmapOwnedChildren(owner, current_child_axids);
+  UnmapOwnedChildren(owner, previously_owned_child_ids,
+                     validated_owned_child_axids);
   MapOwnedChildren(owner, validated_owned_child_axids);
 
 #if DCHECK_IS_ON()

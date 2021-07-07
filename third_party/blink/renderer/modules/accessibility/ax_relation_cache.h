@@ -107,8 +107,11 @@ class AXRelationCache {
   void UpdateRelatedText(Node*);
 
   bool IsValidOwnsRelation(AXObject* owner, AXObject* child) const;
-  void UnmapOwnedChildren(const AXObject* owner, Vector<AXID>);
-  void MapOwnedChildren(const AXObject* owner, Vector<AXID>);
+  void UnmapOwnedChildren(const AXObject* owner,
+                          const Vector<AXID>& removed_child_ids,
+                          const Vector<AXID>& newly_owned_ids);
+
+  void MapOwnedChildren(const AXObject* owner, const Vector<AXID>&);
   void GetReverseRelated(Node*, HeapVector<Member<AXObject>>& sources);
 
   // Set the parent of |child| to its natural parent, without any aria-owns.
