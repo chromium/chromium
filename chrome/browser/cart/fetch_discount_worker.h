@@ -74,7 +74,7 @@ class FetchDiscountWorker {
       std::unique_ptr<CartLoaderAndUpdaterFactory> cartLoaderAndUpdaterFactory);
   ~FetchDiscountWorker();
   // Starts the worker to work.
-  void Start(base::TimeDelta delay_in_ms);
+  void Start(base::TimeDelta delay);
 
  private:
   using AfterFetchingCallback =
@@ -93,11 +93,11 @@ class FetchDiscountWorker {
 
   // This is run in the UI thread, it creates a `CartLoader` and loads all
   // active carts.
-  void PrepareToFetch(base::TimeDelta delay_fetch_sec);
+  void PrepareToFetch(base::TimeDelta delay_fetch);
 
   // This is run in the UI thread, it posts the discount fetching work,
   // FetchInBackground(), to another thread as a delayed background task.
-  void ReadyToFetch(base::TimeDelta delay_fetch_sec,
+  void ReadyToFetch(base::TimeDelta delay_fetch,
                     bool success,
                     std::vector<CartDB::KeyAndValue> proto_pairs);
 
