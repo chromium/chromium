@@ -5,8 +5,11 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_
 
+#include <vector>
+
 #include "services/network/public/mojom/ip_address_space.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "services/network/public/mojom/parsed_headers.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -47,13 +50,30 @@ bool COMPONENT_EXPORT(NETWORK_CPP)
     IsLessPublicAddressSpace(mojom::IPAddressSpace lhs,
                              mojom::IPAddressSpace rhs);
 
-// Given a request URL and response information, this function calculates the
+// Represents optional parameters of CalculateClientAddressSpace().
+// This is effectively a subset of network::mojom::URLResponseHead.
+// WARNING: This struct just keeps references to parameters and does not own
+// them nor make copy of them. Parameters must outlive this struct. For example,
+// passing net::IPEndPoint() as `remote_endpoint` is invalid.
+struct COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpaceParams {
+  CalculateClientAddressSpaceParams(
+      const std::vector<GURL>& url_list_via_service_worker,
+      const mojom::ParsedHeadersPtr& parsed_headers,
+      const net::IPEndPoint& remote_endpoint);
+  ~CalculateClientAddressSpaceParams();
+
+  const std::vector<GURL>& url_list_via_service_worker;
+  const mojom::ParsedHeadersPtr& parsed_headers;
+  const net::IPEndPoint& remote_endpoint;
+};
+
+// Given a request URL and `params`, this function calculates the
 // IPAddressSpace which should be associated with documents or worker global
 // scopes (collectively: request clients) instantiated from this resource.
 //
-// |response_head| may be nullptr. Caller retains ownership. If not nullptr,
-// then |response_head->parsed_headers| must be populated with the result of
-// parsing |response->headers|.
+// `params` is optional. If `params` contain values, values must be valid and
+// `params.value().parsed_headers` must be populated with the result of
+// parsing the corresponding response headers.
 //
 // WARNING: This function is defined here for proximity with related code and
 // the data structures involved. However since it deals with higher-level
@@ -61,15 +81,9 @@ bool COMPONENT_EXPORT(NETWORK_CPP)
 // used at the content/ layer or above.
 //
 // See: https://wicg.github.io/cors-rfc1918/#address-space
-//
-// TODO(https://crbug.com/1134601): This implementation treats requests that
-// don't use a URL loader (`about:blank`), as well as requests whose IP address
-// is invalid (`about:srcdoc`, `blob:`, etc.) as `kUnknown`. This is incorrect.
-// We'll eventually want to make sure we inherit from the client's creator
-// in some cases), but safe, as `kUnknown` is treated the same as `kPublic`.
-mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
-    CalculateClientAddressSpace(const GURL& url,
-                                const mojom::URLResponseHead* response_head);
+mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpace(
+    const GURL& url,
+    absl::optional<CalculateClientAddressSpaceParams> params);
 
 // Given a response URL and the IP endpoint the requested resource was fetched
 // from, this function calculates the IPAddressSpace of the requested resource.

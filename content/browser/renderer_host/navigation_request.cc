@@ -765,8 +765,16 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
     network::mojom::URLResponseHead* response_head) {
   // Determine the IPAddressSpace, based on the IP address and the response
   // headers received.
+  absl::optional<network::CalculateClientAddressSpaceParams> params =
+      absl::nullopt;
+  if (response_head) {
+    params.emplace(response_head->url_list_via_service_worker,
+                   response_head->parsed_headers,
+                   response_head->remote_endpoint);
+  }
   network::mojom::IPAddressSpace computed_ip_address_space =
-      network::CalculateClientAddressSpace(url, response_head);
+      network::CalculateClientAddressSpace(url, params);
+
   if (computed_ip_address_space != network::mojom::IPAddressSpace::kUnknown) {
     return computed_ip_address_space;
   }
