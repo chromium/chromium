@@ -7,11 +7,11 @@ package org.chromium.components.browser_ui.widget.promo;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -19,7 +19,7 @@ import org.chromium.ui.widget.ButtonCompat;
  * A promo card view that contains an image view in the top center, a block of short description,
  * two button compat and a close button.
  */
-class PromoCardView extends LinearLayout {
+class PromoCardView extends MaterialCardViewNoShadow {
     ImageView mPromoImage;
     TextView mTitle;
     ButtonCompat mPrimaryButton;

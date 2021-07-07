@@ -12,6 +12,13 @@
         <item name="android:background">@drawable/hairline_border_card_dark_transparent_bg</item>
     </style>
 
+    <style name="MaterialCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="shapeAppearance">@style/MaterialCardShape</item>
+    </style>
+
+    <style name="MaterialCardShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">16dp</item>
+    </style>
 
     <style name="ListActionButton" parent="@style/TextButton">
         <item name="android:minHeight">48dp</item>

@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.promo;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.test.InstrumentationRegistry;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -49,8 +50,15 @@ public class PromoCardCoordinatorTest {
     }
 
     private void setupCoordinator(@LayoutStyle int layoutStyle) {
+        // TODO(https://crbug.com/1217140): Remove this theme wrapper after dummy ui activity
+        //  is based on material theme. For now we need the theme wrapper to inflate the layout;
+        //  because we are not setting our theme overlay for the test apk
+        ContextThemeWrapper wrapperColor = new ContextThemeWrapper(
+                mContext, org.chromium.components.browser_ui.widget.R.style.ColorOverlay);
+        ContextThemeWrapper wrapperTheme = new ContextThemeWrapper(
+                wrapperColor, org.chromium.components.browser_ui.widget.R.style.Theme_BrowserUI);
         mPromoCardCoordinator =
-                new PromoCardCoordinator(mContext, mModel, "test-feature", layoutStyle);
+                new PromoCardCoordinator(wrapperTheme, mModel, "test-feature", layoutStyle);
         mView = (PromoCardView) mPromoCardCoordinator.getView();
 
         Assert.assertNotNull("PromoCardView is null", mView);
