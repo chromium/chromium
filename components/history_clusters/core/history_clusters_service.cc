@@ -159,7 +159,7 @@ HistoryClustersService::HistoryClustersService(
   }
 #endif
 
-  if (!backend_ && RemoteModelEndpoint().is_valid()) {
+  if (!backend_ && RemoteModelEndpoint().is_valid() && url_loader_factory) {
     backend_ = std::make_unique<RemoteClusteringBackend>(
         url_loader_factory,
         base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,

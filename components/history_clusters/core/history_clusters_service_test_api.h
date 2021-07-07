@@ -56,6 +56,9 @@ class HistoryClustersServiceTestApi {
   history::HistoryService* const history_service_;
 };
 
+// Fetches two hardcoded test visits.
+std::vector<history::AnnotatedVisit> GetHardcodedTestVisits();
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_TEST_API_H_

@@ -35,6 +35,9 @@ class HistoryClustersService : public KeyedService {
     virtual void OnMemoriesDebugMessage(const std::string& message) = 0;
   };
 
+  // `url_loader_factory` is allowed to be nullptr, like in unit tests.
+  // In that case, HistoryClustersService will never instantiate a clustering
+  // backend that requires it, such as the RemoteClusteringBackend.
   explicit HistoryClustersService(
       history::HistoryService* history_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

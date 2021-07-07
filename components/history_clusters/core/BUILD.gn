@@ -68,7 +68,10 @@ mojom("mojo_bindings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "history_clusters_service_unittest.cc" ]
+  sources = [
+    "history_clusters_service_unittest.cc",
+    "remote_clustering_backend_unittest.cc",
+  ]
   deps = [
     ":clustering_backend",
     ":core",
@@ -85,7 +88,10 @@ source_set("unit_tests") {
 
 source_set("test_support") {
   testonly = true
-  sources = [ "history_clusters_service_test_api.h" ]
+  sources = [
+    "history_clusters_service_test_api.cc",
+    "history_clusters_service_test_api.h",
+  ]
   deps = [
     ":clustering_backend",
     ":core",
