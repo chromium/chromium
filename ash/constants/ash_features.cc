@@ -886,6 +886,14 @@ const base::Feature kSeparateNetworkIcons{"SeparateNetworkIcons",
 const base::Feature kSessionManagerLongKillTimeout{
     "SessionManagerLongKillTimeout", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the session manager daemon will abort the browser if its
+// liveness checker detects a hang, i.e. the browser fails to acknowledge and
+// respond sufficiently to periodic pings.  IMPORTANT NOTE: the feature name
+// here must match exactly the name of the feature in the open-source ChromeOS
+// file session_manager_service.cc.
+const base::Feature kSessionManagerLivenessCheck{
+    "SessionManagerLivenessCheck", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Removes notifier settings from quick settings view.
 const base::Feature kSettingsAppNotificationSettings{
     "SettingsAppNotificationSettings", base::FEATURE_DISABLED_BY_DEFAULT};

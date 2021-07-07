@@ -162,6 +162,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
       &arc::kFilePickerExperimentFeature,
       &arc::kNativeBridgeToggleFeature,
       &features::kSessionManagerLongKillTimeout,
+      &features::kSessionManagerLivenessCheck,
   };
 
   dbus::MessageReader reader(method_call);
