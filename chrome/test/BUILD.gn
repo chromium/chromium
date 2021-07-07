@@ -1589,6 +1589,7 @@ if (!is_android) {
       "../browser/net/samesite_cookies_policy_browsertest.cc",
       "../browser/net/storage_test_utils.cc",
       "../browser/net/storage_test_utils.h",
+      "../browser/net/stub_resolver_config_reader_browsertest.cc",
       "../browser/net/system_network_context_manager_browsertest.cc",
       "../browser/net/trust_token_usecounter_browsertest.cc",
       "../browser/net/websocket_browsertest.cc",
