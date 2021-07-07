@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -213,13 +214,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
                        MAYBE_NavigateBackWithKeyboard) {
   // Simulate walking through the flow starting at the picker so that navigating
-  // back to the picker makes sense.
+  // back to the picker makes sense. Check that the navigation list is populated
+  // correctly.
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
+  EXPECT_EQ(1, web_contents()->GetController().GetEntryCount());
+  EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());
   web_contents()->GetController().LoadURL(
       GURL("chrome://profile-picker/new-profile"), content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker/new-profile"));
+  EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
+  EXPECT_EQ(1, web_contents()->GetController().GetLastCommittedEntryIndex());
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
@@ -235,10 +241,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   SendBackKeyboardCommand();
   WaitForLayoutWithoutToolbar();
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker/new-profile"));
+  EXPECT_EQ(1, web_contents()->GetController().GetLastCommittedEntryIndex());
 
   // Navigate again back with the keyboard.
   SendBackKeyboardCommand();
   WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
+  EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());
 
   // Navigating back once again does nothing.
   SendBackKeyboardCommand();
