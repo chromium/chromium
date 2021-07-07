@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/shadow_value.h"
@@ -38,7 +39,7 @@ ASH_EXPORT const gfx::FontList& GetDefaultFontlist();
 // which kPlaceholderColor will be used for the shadow color.
 ASH_EXPORT gfx::ShadowValues GetTextShadowValues(const ui::NativeTheme* theme);
 
-ASH_EXPORT bool IsAmbientModeTopicTypeAllowed(AmbientModeTopicType topic);
+ASH_EXPORT bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic);
 
 }  // namespace util
 }  // namespace ambient

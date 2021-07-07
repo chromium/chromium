@@ -14,14 +14,14 @@
 namespace ash {
 
 namespace {
-int TypeToIndex(AmbientModeTopicType topic_type) {
+int TypeToIndex(::ambient::TopicType topic_type) {
   int index = static_cast<int>(topic_type);
   DCHECK_GE(index, 0);
   return index;
 }
 
-AmbientModeTopicType IndexToType(int index) {
-  AmbientModeTopicType topic_type = static_cast<AmbientModeTopicType>(index);
+::ambient::TopicType IndexToType(int index) {
+  ::ambient::TopicType topic_type = static_cast<::ambient::TopicType>(index);
   return topic_type;
 }
 
@@ -29,16 +29,18 @@ std::vector<AmbientModeTopic> CreatePairedTopics(
     const std::vector<AmbientModeTopic>& topics) {
   // We pair two topics if:
   // 1. They are in the landscape orientation.
-  // 2. They are in the same category;
+  // 2. They are in the same category.
+  // 3. They are not Geo photos.
   base::flat_map<int, std::vector<int>> topics_by_type;
   std::vector<AmbientModeTopic> paired_topics;
   int topic_idx = -1;
   for (const auto& topic : topics) {
     topic_idx++;
 
+    // Do not pair Geo photos, which will be rotate to fill the screen.
     // If a photo is portrait, it is from Google Photos and should have a paired
     // photo already.
-    if (topic.is_portrait) {
+    if (topic.topic_type == ::ambient::TopicType::kGeo || topic.is_portrait) {
       paired_topics.emplace_back(topic);
       continue;
     }

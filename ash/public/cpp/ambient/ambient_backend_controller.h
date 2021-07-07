@@ -10,22 +10,12 @@
 #include <vector>
 
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
-
-enum class AmbientModeTopicType {
-  kCurated = 0,
-  kPersonal,
-  kFeatured,
-  kGeo,
-  kCulturalInstitute,
-  kRss,
-  kCapturedOnPixel,
-  kOther,
-};
 
 // AmbientModeTopic contains the information we need for rendering photo frame
 // for Ambient Mode. Corresponding to the |backdrop::ScreenUpdate::Topic| proto.
@@ -46,7 +36,7 @@ struct ASH_PUBLIC_EXPORT AmbientModeTopic {
 
   std::string related_details;
 
-  AmbientModeTopicType topic_type = AmbientModeTopicType::kOther;
+  ::ambient::TopicType topic_type = ::ambient::TopicType::kOther;
 
   // Whether the original image is portrait or not. Cannot use aspect ratio of
   // the fetched image to determine it because the fetched image could be

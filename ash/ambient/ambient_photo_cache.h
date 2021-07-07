@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 

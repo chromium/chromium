@@ -8,8 +8,8 @@
 #include <iostream>
 
 #include "ash/ambient/ambient_constants.h"
-#include "ash/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"

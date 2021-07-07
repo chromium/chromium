@@ -94,7 +94,7 @@ void PhotoView::UpdateImage(const PhotoWithDetails& next_image) {
 
   image_views_.at(image_index_)
       ->UpdateImage(next_image.photo, next_image.related_photo,
-                    next_image.is_portrait);
+                    next_image.is_portrait, next_image.topic_type);
   image_views_.at(image_index_)
       ->UpdateImageDetails(base::UTF8ToUTF16(next_image.details),
                            base::UTF8ToUTF16(next_image.related_details));

@@ -17,6 +17,7 @@
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -106,28 +107,28 @@ std::string BuildBackdropTopicDetails(
   return result;
 }
 
-AmbientModeTopicType ToAmbientModeTopicType(
+::ambient::TopicType ToAmbientModeTopicType(
     const backdrop::ScreenUpdate_Topic& topic) {
   if (!topic.has_topic_type())
-    return AmbientModeTopicType::kOther;
+    return ::ambient::TopicType::kOther;
 
   switch (topic.topic_type()) {
     case backdrop::CURATED:
-      return AmbientModeTopicType::kCurated;
+      return ::ambient::TopicType::kCurated;
     case backdrop::PERSONAL_PHOTO:
-      return AmbientModeTopicType::kPersonal;
+      return ::ambient::TopicType::kPersonal;
     case backdrop::FEATURED_PHOTO:
-      return AmbientModeTopicType::kFeatured;
+      return ::ambient::TopicType::kFeatured;
     case backdrop::GEO_PHOTO:
-      return AmbientModeTopicType::kGeo;
+      return ::ambient::TopicType::kGeo;
     case backdrop::CULTURAL_INSTITUTE:
-      return AmbientModeTopicType::kCulturalInstitute;
+      return ::ambient::TopicType::kCulturalInstitute;
     case backdrop::RSS_TOPIC:
-      return AmbientModeTopicType::kRss;
+      return ::ambient::TopicType::kRss;
     case backdrop::CAPTURED_ON_PIXEL:
-      return AmbientModeTopicType::kCapturedOnPixel;
+      return ::ambient::TopicType::kCapturedOnPixel;
     default:
-      return AmbientModeTopicType::kOther;
+      return ::ambient::TopicType::kOther;
   }
 }
 

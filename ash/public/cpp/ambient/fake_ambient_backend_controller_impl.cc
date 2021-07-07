@@ -91,8 +91,9 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
     topic.url = kFakeUrl;
     topic.details = kFakeDetails;
     topic.is_portrait = is_portrait_;
-    topic.related_image_url = kFakeUrl;
-    topic.topic_type = AmbientModeTopicType::kCulturalInstitute;
+    if (has_related_image_)
+      topic.related_image_url = kFakeUrl;
+    topic.topic_type = topic_type_;
 
     update.next_topics.emplace_back(topic);
   }
@@ -202,6 +203,12 @@ void FakeAmbientBackendControllerImpl::SetWeatherInfo(
 
 void FakeAmbientBackendControllerImpl::SetPhotoOrientation(bool portrait) {
   is_portrait_ = portrait;
+}
+
+void FakeAmbientBackendControllerImpl::SetPhotoTopicType(
+    ::ambient::TopicType topic_type) {
+  has_related_image_ = false;
+  topic_type_ = topic_type;
 }
 
 }  // namespace ash

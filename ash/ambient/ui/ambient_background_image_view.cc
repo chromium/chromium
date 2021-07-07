@@ -12,12 +12,18 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/shell.h"
 #include "base/rand_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/display.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/managed_display_info.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -67,6 +73,55 @@ gfx::ImageSkia ResizeImage(const gfx::ImageSkia& image,
       image, skia::ImageOperations::RESIZE_BEST, resized);
 }
 
+gfx::ImageSkia MaybeRotateImage(const gfx::ImageSkia& image,
+                                const gfx::Size& view_size,
+                                views::Widget* widget) {
+  if (image.isNull())
+    return image;
+
+  const double image_width = image.width();
+  const double image_height = image.height();
+  const double view_width = view_size.width();
+  const double view_height = view_size.height();
+  const double image_ratio = image_height / image_width;
+  const double view_ratio = view_height / view_width;
+
+  // Rotate the image to have the same orientation as the display.
+  // Keep the relative orientation between the image and the display in portrait
+  // mode.
+  if ((image_ratio - 1) * (view_ratio - 1) < 0) {
+    bool should_rotate = false;
+    SkBitmapOperations::RotationAmount rotation_amount;
+    const int64_t display_id =
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(widget->GetNativeWindow())
+            .id();
+    const auto active_rotation = Shell::Get()
+                                     ->display_manager()
+                                     ->GetDisplayInfo(display_id)
+                                     .GetActiveRotation();
+    switch (active_rotation) {
+      case display::Display::ROTATE_90:
+        should_rotate = true;
+        rotation_amount = SkBitmapOperations::RotationAmount::ROTATION_270_CW;
+        break;
+      case display::Display::ROTATE_270:
+        should_rotate = true;
+        rotation_amount = SkBitmapOperations::RotationAmount::ROTATION_90_CW;
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+    if (should_rotate) {
+      return gfx::ImageSkiaOperations::CreateRotatedImage(image,
+                                                          rotation_amount);
+    }
+  }
+
+  return image;
+}
+
 }  // namespace
 
 AmbientBackgroundImageView::AmbientBackgroundImageView(
@@ -105,10 +160,12 @@ void AmbientBackgroundImageView::OnViewBoundsChanged(
 void AmbientBackgroundImageView::UpdateImage(
     const gfx::ImageSkia& image,
     const gfx::ImageSkia& related_image,
-    bool is_portrait) {
+    bool is_portrait,
+    ::ambient::TopicType type) {
   image_unscaled_ = image;
   related_image_unscaled_ = related_image;
   is_portrait_ = is_portrait;
+  topic_type_ = type;
 
   UpdateGlanceableInfoPosition();
 
@@ -288,7 +345,11 @@ void AmbientBackgroundImageView::SetResizedImage(
   if (image_unscaled.isNull())
     return;
 
-  image_view->SetImage(ResizeImage(image_unscaled, image_view->size()));
+  gfx::ImageSkia image_rotated =
+      topic_type_ == ::ambient::TopicType::kGeo
+          ? MaybeRotateImage(image_unscaled, image_view->size(), GetWidget())
+          : image_unscaled;
+  image_view->SetImage(ResizeImage(image_rotated, image_view->size()));
 
   // Intend to update the image origin in image view.
   // There is no bounds change or preferred size change when updating image from

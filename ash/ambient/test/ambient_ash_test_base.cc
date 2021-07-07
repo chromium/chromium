@@ -13,7 +13,6 @@
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
-#include "ash/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_container_view.h"
@@ -23,6 +22,7 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -298,6 +298,10 @@ void AmbientAshTestBase::SetDecodedPhotoSize(int width, int height) {
 
 void AmbientAshTestBase::SetPhotoOrientation(bool portrait) {
   backend_controller()->SetPhotoOrientation(portrait);
+}
+
+void AmbientAshTestBase::SetPhotoTopicType(::ambient::TopicType topic_type) {
+  backend_controller()->SetPhotoTopicType(topic_type);
 }
 
 std::vector<AmbientBackgroundImageView*>

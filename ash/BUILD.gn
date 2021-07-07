@@ -1829,7 +1829,6 @@ component("ash") {
     "//ui/wm",
   ]
   deps = [
-    "//ash/ambient/proto",
     "//ash/app_list",
     "//ash/app_menu",
     "//ash/assistant/model",
@@ -1841,6 +1840,7 @@ component("ash") {
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/login/resources:resources_grit",
+    "//ash/public/cpp/ambient/proto",
     "//ash/quick_pair",
     "//ash/services/recording",
     "//ash/services/recording/public/mojom",
@@ -2466,7 +2466,6 @@ test("ash_unittests") {
   deps = [
     ":ash",
     ":test_support",
-    "//ash/ambient/proto",
     "//ash/app_list",
     "//ash/app_list:test_support",
     "//ash/app_list:unit_tests",
@@ -2484,6 +2483,7 @@ test("ash_unittests") {
     "//ash/public/cpp",
     "//ash/public/cpp:test_support",
     "//ash/public/cpp:unit_tests",
+    "//ash/public/cpp/ambient/proto",
     "//ash/public/cpp/external_arc:test_support",
     "//ash/public/cpp/external_arc:unit_tests",
     "//ash/public/cpp/holding_space:test_support",
@@ -2840,7 +2840,6 @@ static_library("test_support") {
   ]
   deps = [
     "//ash",
-    "//ash/ambient/proto",
     "//ash/app_list",
     "//ash/app_list:test_support",
     "//ash/app_menu",
@@ -2852,6 +2851,7 @@ static_library("test_support") {
     "//ash/keyboard/ui:test_support",
     "//ash/public/cpp",
     "//ash/public/cpp:test_support",
+    "//ash/public/cpp/ambient/proto",
     "//ash/services/recording:test_support",
     "//ash/services/recording/public/mojom",
     "//base",

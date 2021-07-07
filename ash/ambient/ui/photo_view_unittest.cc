@@ -9,6 +9,9 @@
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/image_view.h"
 
@@ -257,6 +260,42 @@ TEST_F(AmbientPhotoViewTest,
             gfx::Rect(/*x=*/-100, /*y=*/0, /*width=*/800, /*height=*/400));
   ASSERT_EQ(image_view->GetRelatedImageBoundsInScreenForTesting(),
             gfx::Rect(/*x=*/-100, /*y=*/408, /*width=*/800, /*height=*/400));
+}
+
+// Test that when rotates to portrait screen, will rotate Geo landscape images.
+TEST_F(AmbientPhotoViewTest,
+       ShouldRotateGeoLandscapeImageWhenRotateToPortraitScreen) {
+  SetDecodedPhotoSize(/*width=*/20, /*height=*/10);
+  SetPhotoTopicType(::ambient::TopicType::kGeo);
+
+  UpdateDisplay("808x600");
+
+  ShowAmbientScreen();
+
+  FastForwardToNextImage();
+
+  auto* image_view = GetAmbientBackgroundImageView();
+
+  // Will show one landscape image.
+  // Image should be full height. Image height should extend left and right the
+  // visible part of the view.
+  ASSERT_EQ(image_view->GetImageBoundsInScreenForTesting(),
+            gfx::Rect(/*x=*/-196, /*y=*/0, /*width=*/1200, /*height=*/600));
+  ASSERT_EQ(image_view->GetRelatedImageBoundsInScreenForTesting(), gfx::Rect());
+
+  // Rotate screen.
+  int64_t internal_display_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .SetFirstDisplayAsInternalDisplay();
+  display_manager()->SetDisplayRotation(internal_display_id,
+                                        display::Display::Rotation::ROTATE_90,
+                                        display::Display::RotationSource::USER);
+  // Will show one rotated image.
+  // Image should be full width. Image height should extend above and below the
+  // visible part of the screen.
+  ASSERT_EQ(image_view->GetImageBoundsInScreenForTesting(),
+            gfx::Rect(/*x=*/0, /*y=*/-196, /*width=*/600, /*height=*/1200));
+  ASSERT_EQ(image_view->GetRelatedImageBoundsInScreenForTesting(), gfx::Rect());
 }
 
 // Test that when rotates to landscape screen, will dynamically tile two

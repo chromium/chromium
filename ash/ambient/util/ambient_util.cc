@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/no_destructor.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -65,24 +66,24 @@ gfx::ShadowValues GetTextShadowValues(const ui::NativeTheme* theme) {
       kTextShadowElevation, shadow_base_color, shadow_base_color);
 }
 
-bool IsAmbientModeTopicTypeAllowed(AmbientModeTopicType topic_type) {
+bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic_type) {
   switch (topic_type) {
-    case ash::AmbientModeTopicType::kCurated:
+    case ::ambient::TopicType::kCurated:
       return chromeos::features::kAmbientModeDefaultFeedEnabled.Get();
-    case ash::AmbientModeTopicType::kCapturedOnPixel:
+    case ::ambient::TopicType::kCapturedOnPixel:
       return chromeos::features::kAmbientModeCapturedOnPixelPhotosEnabled.Get();
-    case ash::AmbientModeTopicType::kCulturalInstitute:
+    case ::ambient::TopicType::kCulturalInstitute:
       return chromeos::features::kAmbientModeCulturalInstitutePhotosEnabled
           .Get();
-    case ash::AmbientModeTopicType::kFeatured:
+    case ::ambient::TopicType::kFeatured:
       return chromeos::features::kAmbientModeFeaturedPhotosEnabled.Get();
-    case ash::AmbientModeTopicType::kGeo:
+    case ::ambient::TopicType::kGeo:
       return chromeos::features::kAmbientModeGeoPhotosEnabled.Get();
-    case ash::AmbientModeTopicType::kPersonal:
+    case ::ambient::TopicType::kPersonal:
       return chromeos::features::kAmbientModePersonalPhotosEnabled.Get();
-    case ash::AmbientModeTopicType::kRss:
+    case ::ambient::TopicType::kRss:
       return chromeos::features::kAmbientModeRssPhotosEnabled.Get();
-    case ash::AmbientModeTopicType::kOther:
+    case ::ambient::TopicType::kOther:
       return false;
   }
 }

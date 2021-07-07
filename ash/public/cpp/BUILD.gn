@@ -333,6 +333,7 @@ component("cpp") {
 
   deps = [
     "//ash/constants",
+    "//ash/public/cpp/ambient/proto",
     "//base/util/values:values_util",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/dbus/power:power_manager_proto",

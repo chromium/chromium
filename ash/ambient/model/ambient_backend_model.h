@@ -42,6 +42,7 @@ struct ASH_EXPORT PhotoWithDetails {
   std::string hash;
   // Whether the image is portrait or not.
   bool is_portrait = false;
+  ::ambient::TopicType topic_type = ::ambient::TopicType::kOther;
 };
 
 // Stores necessary information fetched from the backdrop server to render

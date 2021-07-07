@@ -10,6 +10,7 @@
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -39,7 +40,7 @@ ash::AmbientModeTopic CreateTopic(const std::string& url,
                                   bool is_portrait,
                                   const std::string& related_url,
                                   const std::string& related_details,
-                                  AmbientModeTopicType topic_type) {
+                                  ::ambient::TopicType topic_type) {
   ash::AmbientModeTopic topic;
   topic.url = url;
   topic.details = details;
@@ -245,29 +246,29 @@ TEST_F(AmbientBackendModelTest, ShouldPairLandscapeImages) {
   topics.emplace_back(CreateTopic(
       /*url=*/"topic1_url", /*details=*/"topic1_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kPersonal));
+      /*related_details=*/"", ::ambient::TopicType::kPersonal));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic2_url", /*details=*/"topic2_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kPersonal));
+      /*related_details=*/"", ::ambient::TopicType::kPersonal));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic3_url", /*details=*/"topic3_details", /*is_portrait=*/false,
       /*related_url=*/"",
       /*related_details=*/"topic3_related_details",
-      AmbientModeTopicType::kPersonal));
+      ::ambient::TopicType::kPersonal));
 
   topics.emplace_back(CreateTopic(
       /*url=*/"topic4_url", /*details=*/"topic4_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kFeatured));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic5_url", /*details=*/"topic5_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kFeatured));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic6_url", /*details=*/"topic6_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kFeatured));
 
   AppendTopics(topics);
   EXPECT_EQ(fetched_topics().size(), 2u);
@@ -275,14 +276,14 @@ TEST_F(AmbientBackendModelTest, ShouldPairLandscapeImages) {
   EXPECT_EQ(fetched_topics()[0].url, "topic1_url");
   EXPECT_EQ(fetched_topics()[0].details, "topic1_details");
   EXPECT_FALSE(fetched_topics()[0].is_portrait);
-  EXPECT_EQ(fetched_topics()[0].topic_type, AmbientModeTopicType::kPersonal);
+  EXPECT_EQ(fetched_topics()[0].topic_type, ::ambient::TopicType::kPersonal);
   EXPECT_EQ(fetched_topics()[0].related_image_url, "topic2_url");
   EXPECT_EQ(fetched_topics()[0].related_details, "topic2_details");
 
   EXPECT_EQ(fetched_topics()[1].url, "topic4_url");
   EXPECT_EQ(fetched_topics()[1].details, "topic4_details");
   EXPECT_FALSE(fetched_topics()[1].is_portrait);
-  EXPECT_EQ(fetched_topics()[1].topic_type, AmbientModeTopicType::kFeatured);
+  EXPECT_EQ(fetched_topics()[1].topic_type, ::ambient::TopicType::kFeatured);
   EXPECT_EQ(fetched_topics()[1].related_image_url, "topic5_url");
   EXPECT_EQ(fetched_topics()[1].related_details, "topic5_details");
 }
@@ -295,30 +296,30 @@ TEST_F(AmbientBackendModelTest, ShouldNotPairPortraitImages) {
       /*url=*/"topic1_url", /*details=*/"topic1_details", /*is_portrait=*/true,
       /*related_url=*/"topic1_related_url",
       /*related_details=*/"topic1_related_details",
-      AmbientModeTopicType::kPersonal));
+      ::ambient::TopicType::kPersonal));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic2_url", /*details=*/"topic2_details", /*is_portrait=*/true,
       /*related_url=*/"topic2_related_url",
       /*related_details=*/"topic2_related_details",
-      AmbientModeTopicType::kPersonal));
+      ::ambient::TopicType::kPersonal));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic3_url", /*details=*/"topic3_details", /*is_portrait=*/true,
       /*related_url=*/"topic3_related_url",
       /*related_details=*/"topic3_related_details",
-      AmbientModeTopicType::kPersonal));
+      ::ambient::TopicType::kPersonal));
 
   topics.emplace_back(CreateTopic(
       /*url=*/"topic4_url", /*details=*/"topic4_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kFeatured));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic5_url", /*details=*/"topic5_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kFeatured));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic6_url", /*details=*/"topic6_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kFeatured));
 
   AppendTopics(topics);
   EXPECT_EQ(fetched_topics().size(), 4u);
@@ -326,28 +327,28 @@ TEST_F(AmbientBackendModelTest, ShouldNotPairPortraitImages) {
   EXPECT_EQ(fetched_topics()[0].url, "topic1_url");
   EXPECT_EQ(fetched_topics()[0].details, "topic1_details");
   EXPECT_TRUE(fetched_topics()[0].is_portrait);
-  EXPECT_EQ(fetched_topics()[0].topic_type, AmbientModeTopicType::kPersonal);
+  EXPECT_EQ(fetched_topics()[0].topic_type, ::ambient::TopicType::kPersonal);
   EXPECT_EQ(fetched_topics()[0].related_image_url, "topic1_related_url");
   EXPECT_EQ(fetched_topics()[0].related_details, "topic1_related_details");
 
   EXPECT_EQ(fetched_topics()[1].url, "topic2_url");
   EXPECT_EQ(fetched_topics()[1].details, "topic2_details");
   EXPECT_TRUE(fetched_topics()[1].is_portrait);
-  EXPECT_EQ(fetched_topics()[1].topic_type, AmbientModeTopicType::kPersonal);
+  EXPECT_EQ(fetched_topics()[1].topic_type, ::ambient::TopicType::kPersonal);
   EXPECT_EQ(fetched_topics()[1].related_image_url, "topic2_related_url");
   EXPECT_EQ(fetched_topics()[1].related_details, "topic2_related_details");
 
   EXPECT_EQ(fetched_topics()[2].url, "topic3_url");
   EXPECT_EQ(fetched_topics()[2].details, "topic3_details");
   EXPECT_TRUE(fetched_topics()[2].is_portrait);
-  EXPECT_EQ(fetched_topics()[2].topic_type, AmbientModeTopicType::kPersonal);
+  EXPECT_EQ(fetched_topics()[2].topic_type, ::ambient::TopicType::kPersonal);
   EXPECT_EQ(fetched_topics()[2].related_image_url, "topic3_related_url");
   EXPECT_EQ(fetched_topics()[2].related_details, "topic3_related_details");
 
   EXPECT_EQ(fetched_topics()[3].url, "topic4_url");
   EXPECT_EQ(fetched_topics()[3].details, "topic4_details");
   EXPECT_FALSE(fetched_topics()[3].is_portrait);
-  EXPECT_EQ(fetched_topics()[3].topic_type, AmbientModeTopicType::kFeatured);
+  EXPECT_EQ(fetched_topics()[3].topic_type, ::ambient::TopicType::kFeatured);
   EXPECT_EQ(fetched_topics()[3].related_image_url, "topic5_url");
   EXPECT_EQ(fetched_topics()[3].related_details, "topic5_details");
 }
@@ -361,25 +362,53 @@ TEST_F(AmbientBackendModelTest,
   topics.emplace_back(CreateTopic(
       /*url=*/"topic1_url", /*details=*/"topic1_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kPersonal));
+      /*related_details=*/"", ::ambient::TopicType::kPersonal));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic2_url", /*details=*/"topic2_details", /*is_portrait=*/true,
       /*related_url=*/"topic2_related_url",
       /*related_details=*/"topic2_related_details",
-      AmbientModeTopicType::kPersonal));
+      ::ambient::TopicType::kPersonal));
   topics.emplace_back(CreateTopic(
       /*url=*/"topic3_url", /*details=*/"topic3_details", /*is_portrait=*/false,
       /*related_url=*/"",
-      /*related_details=*/"", AmbientModeTopicType::kFeatured));
+      /*related_details=*/"", ::ambient::TopicType::kFeatured));
 
   AppendTopics(topics);
   EXPECT_EQ(fetched_topics().size(), 1u);
   EXPECT_EQ(fetched_topics()[0].url, "topic2_url");
   EXPECT_EQ(fetched_topics()[0].details, "topic2_details");
   EXPECT_TRUE(fetched_topics()[0].is_portrait);
-  EXPECT_EQ(fetched_topics()[0].topic_type, AmbientModeTopicType::kPersonal);
+  EXPECT_EQ(fetched_topics()[0].topic_type, ::ambient::TopicType::kPersonal);
   EXPECT_EQ(fetched_topics()[0].related_image_url, "topic2_related_url");
   EXPECT_EQ(fetched_topics()[0].related_details, "topic2_related_details");
 }
 
+TEST_F(AmbientBackendModelTest, ShouldNotPairTwoLandscapeImagesInGeoCategory) {
+  // Set up 2 Geo landscape photos. Will output 2 topics of Geo photos.
+  std::vector<ash::AmbientModeTopic> topics;
+  topics.emplace_back(CreateTopic(
+      /*url=*/"topic1_url", /*details=*/"topic1_details", /*is_portrait=*/false,
+      /*related_url=*/"",
+      /*related_details=*/"", ::ambient::TopicType::kGeo));
+  topics.emplace_back(CreateTopic(
+      /*url=*/"topic2_url", /*details=*/"topic2_details", /*is_portrait=*/false,
+      /*related_url=*/"",
+      /*related_details=*/"", ::ambient::TopicType::kGeo));
+
+  AppendTopics(topics);
+  EXPECT_EQ(fetched_topics().size(), 2u);
+  EXPECT_EQ(fetched_topics()[0].url, "topic1_url");
+  EXPECT_EQ(fetched_topics()[0].details, "topic1_details");
+  EXPECT_FALSE(fetched_topics()[0].is_portrait);
+  EXPECT_EQ(fetched_topics()[0].topic_type, ::ambient::TopicType::kGeo);
+  EXPECT_EQ(fetched_topics()[0].related_image_url, "");
+  EXPECT_EQ(fetched_topics()[0].related_details, "");
+
+  EXPECT_EQ(fetched_topics()[1].url, "topic2_url");
+  EXPECT_EQ(fetched_topics()[1].details, "topic2_details");
+  EXPECT_FALSE(fetched_topics()[1].is_portrait);
+  EXPECT_EQ(fetched_topics()[1].topic_type, ::ambient::TopicType::kGeo);
+  EXPECT_EQ(fetched_topics()[1].related_image_url, "");
+  EXPECT_EQ(fetched_topics()[1].related_details, "");
+}
 }  // namespace ash

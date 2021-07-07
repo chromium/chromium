@@ -13,9 +13,9 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/model/ambient_backend_model.h"
-#include "ash/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/shell.h"
 #include "base/barrier_closure.h"
@@ -284,6 +284,7 @@ void AmbientPhotoController::FetchPhotoRawData() {
     ambient::Photo* photo = cache_entry_.mutable_primary_photo();
     photo->set_details(topic->details);
     photo->set_is_portrait(topic->is_portrait);
+    photo->set_type(topic->topic_type);
 
     const int num_callbacks = (topic->related_image_url.empty()) ? 1 : 2;
     auto on_done = base::BarrierClosure(
@@ -301,6 +302,7 @@ void AmbientPhotoController::FetchPhotoRawData() {
       ambient::Photo* photo = cache_entry_.mutable_related_photo();
       photo->set_details(topic->related_details);
       photo->set_is_portrait(topic->is_portrait);
+      photo->set_type(topic->topic_type);
 
       photo_cache_->DownloadPhoto(
           topic->related_image_url,
@@ -491,6 +493,7 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
   detailed_photo.details = cache_entry_.primary_photo().details();
   detailed_photo.related_details = cache_entry_.related_photo().details();
   detailed_photo.is_portrait = cache_entry_.primary_photo().is_portrait();
+  detailed_photo.topic_type = cache_entry_.primary_photo().type();
   detailed_photo.hash = hash;
 
   ResetImageData();

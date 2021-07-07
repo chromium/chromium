@@ -9,6 +9,7 @@
 
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
@@ -45,7 +46,8 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   // Updates the display images.
   void UpdateImage(const gfx::ImageSkia& image,
                    const gfx::ImageSkia& related_image,
-                   bool is_portrait);
+                   bool is_portrait,
+                   ::ambient::TopicType type);
 
   // Updates the details for the currently displayed image(s).
   void UpdateImageDetails(const std::u16string& details,
@@ -91,6 +93,8 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   std::u16string related_details_;
 
   bool is_portrait_ = false;
+
+  ::ambient::TopicType topic_type_ = ::ambient::TopicType::kOther;
 
   AmbientInfoView* ambient_info_view_ = nullptr;
 
