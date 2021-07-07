@@ -2351,10 +2351,30 @@ TEST_F(IdentityManagerTest, SetPrimaryAccount) {
                           PrimaryAccountManagerSetup::kNoAuthenticatedAccount);
 
   // We should have a Primary Account set up automatically.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_EQ(
       kTestGaiaId,
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia);
+}
+
+// TODO(https://crbug.com/1223364): Remove this when all the users are migrated.
+TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
+  signin_client()->SetInitialPrimaryAccountForTests(account_manager::Account{
+      account_manager::AccountKey{kTestGaiaId2,
+                                  account_manager::AccountType::kGaia},
+      kTestEmail2});
+
+  // RecreateIdentityManager will create PrimaryAccountManager with the primary
+  // account set to kTestGaiaId. After that, IdentityManager ctor should clear
+  // this existing primary account and set the new one to the initial value
+  // provided by the SigninClient.
+  RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
+                          PrimaryAccountManagerSetup::kWithAuthenticatedAccout);
+
+  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_EQ(
+      kTestGaiaId2,
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia);
 }
 #endif
 

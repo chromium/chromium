@@ -57,14 +57,27 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
   // yet been received from `AccountManagerFacade`, entities can ask about the
   // Primary Account and expect it to be available pretty early. Manually seed
   // the account in `AccountTrackerService` to get around this issue.
-  const CoreAccountId account_id = account_tracker_service->SeedAccountInfo(
-      /*gaia=*/device_account.key.id, device_account.raw_email);
+  const CoreAccountId device_account_id =
+      account_tracker_service->SeedAccountInfo(
+          /*gaia=*/device_account.key.id, device_account.raw_email);
+
   // TODO(https://crbug.com/1194983): Figure out how split sync settings will
   // work here. For now, we will mimic Ash's behaviour of having sync turned on
   // by default.
-  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_id, ConsentLevel::kSync);
-
+  const CoreAccountId primary_account_id =
+      identity_manager->GetPrimaryAccountId(ConsentLevel::kSync);
+  if (primary_account_id == device_account_id)
+    return;  // Already correct primary account set, nothing to do.
+  if (!primary_account_id.empty()) {
+    // Different primary account found, have to clear it first.
+    // TODO(https://crbug.com/1223364): Replace this if with a CHECK after all
+    //                                  the existing users have been migrated.
+    identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
+        signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE,
+        signin_metrics::SignoutDelete::kIgnoreMetric);
+  }
+  CHECK(identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      device_account_id, ConsentLevel::kSync));
   CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
   CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
            device_account.key.id);
