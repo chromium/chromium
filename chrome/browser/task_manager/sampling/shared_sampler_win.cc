@@ -13,6 +13,7 @@
 #include "base/bit_cast.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler_win_defines.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
