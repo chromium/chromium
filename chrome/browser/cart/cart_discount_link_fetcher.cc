@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -39,6 +40,7 @@ void CartDiscountLinkFetcher::Fetch(
   fetcher_ptr->PerformRequest(
       base::BindOnce(&OnLinkFetched, std::move(fetcher), std::move(callback)),
       nullptr);
+  CartDiscountMetricCollector::RecordFetchingForDiscountedLink();
 }
 
 std::unique_ptr<EndpointFetcher> CartDiscountLinkFetcher::CreateEndpointFetcher(

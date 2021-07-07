@@ -16950,6 +16950,25 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="NewTabPage.Carts.AcceptDiscountConsent">
+  <owner>meiliang@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    The 'get discounts' is clicked in the discount consent to agree to receive
+    discounts.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.DisableDiscount">
+  <owner>meiliang@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    User disables the discount feature in the new tab page customize menu.
+  </description>
+</action>
+
 <action name="NewTabPage.Carts.DismissLastCartHidesModule">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
@@ -16957,6 +16976,15 @@ should be able to be added at any place in this file.
   <description>
     The last cart in the module is temporarily hidden or permanently removed,
     which causes the module to hide.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.EnableDiscount">
+  <owner>meiliang@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    User enables the discount feature in the new tab page customize menu.
   </description>
 </action>
 
@@ -16977,6 +17005,16 @@ should be able to be added at any place in this file.
   <description>
     The scroll button on the left side of the module is clicked in order to see
     carts on the left.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.RejectDiscountConsent">
+  <owner>meiliang@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    The 'No thanks' is clicked in the discount consent to opt out of receiving
+    discounts.
   </description>
 </action>
 

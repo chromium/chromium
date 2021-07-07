@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
+import {recordOccurence} from '../../metrics_utils.js';
 import {$$} from '../../utils.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
@@ -403,6 +404,8 @@ class ChromeCartModuleElement extends mixinBehaviors
         loadTimeData.getString('modulesCartDiscountConsentRejectConfirmation');
     $$(this, '#confirmDiscountConsentToast').show();
     ChromeCartProxy.getInstance().handler.onDiscountConsentAcknowledged(false);
+    chrome.metricsPrivate.recordUserAction(
+        'NewTabPage.Carts.RejectDiscountConsent');
   }
 
   /** @private */
@@ -412,6 +415,8 @@ class ChromeCartModuleElement extends mixinBehaviors
         loadTimeData.getString('modulesCartDiscountConsentAcceptConfirmation');
     $$(this, '#confirmDiscountConsentToast').show();
     ChromeCartProxy.getInstance().handler.onDiscountConsentAcknowledged(true);
+    chrome.metricsPrivate.recordUserAction(
+        'NewTabPage.Carts.AcceptDiscountConsent');
   }
 
   /** @private */
@@ -437,15 +442,38 @@ async function createCartElement() {
   // getWarmWelcomeVisible.
   const {consentVisible} = await ChromeCartProxy.getInstance()
                                .handler.getDiscountConsentCardVisible();
+
   const {welcomeVisible} =
       await ChromeCartProxy.getInstance().handler.getWarmWelcomeVisible();
   const {carts} =
       await ChromeCartProxy.getInstance().handler.getMerchantCarts();
   chrome.metricsPrivate.recordSmallCount(
       'NewTabPage.Carts.CartCount', carts.length);
+
   if (carts.length === 0) {
     return null;
   }
+
+  if (loadTimeData.getBoolean('ruleBasedDiscountEnabled')) {
+    if (consentVisible) {
+      recordOccurence('NewTabPage.Carts.DiscountConsentShow');
+    }
+
+    let discountedCartCount = 0;
+
+    for (let i = 0; i < carts.length; i++) {
+      const cart = carts[i];
+      if (cart.discountText) {
+        discountedCartCount++;
+        chrome.metricsPrivate.recordSmallCount(
+            'NewTabPage.Carts.DiscountAt', i);
+      }
+    }
+
+    chrome.metricsPrivate.recordSmallCount(
+        'NewTabPage.Carts.DiscountCountAtLoad', discountedCartCount);
+  }
+
   const element = new ChromeCartModuleElement();
   if (welcomeVisible) {
     element.headerChipText = loadTimeData.getString('modulesCartHeaderNew');

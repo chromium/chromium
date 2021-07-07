@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -331,6 +332,7 @@ void CartService::GetDiscountURL(
     base::OnceCallback<void(const ::GURL&)> callback) {
   if (!IsPartnerMerchant(cart_url) || !IsCartDiscountEnabled()) {
     std::move(callback).Run(cart_url);
+    CartDiscountMetricCollector::RecordClickedOnDiscount(false);
     return;
   }
   LoadCart(eTLDPlusOne(cart_url),
@@ -347,12 +349,14 @@ void CartService::OnGetDiscountURL(
   DCHECK_EQ(proto_pairs.size(), 1U);
   if (proto_pairs.size() != 1U) {
     std::move(callback).Run(default_cart_url);
+    CartDiscountMetricCollector::RecordClickedOnDiscount(false);
     return;
   }
   auto& cart_proto = proto_pairs[0].second;
   if (!IsCartDiscountEnabled() ||
       cart_proto.discount_info().discount_info().empty()) {
     std::move(callback).Run(default_cart_url);
+    CartDiscountMetricCollector::RecordClickedOnDiscount(false);
     return;
   }
   auto pending_factory = profile_->GetDefaultStoragePartition()
@@ -364,6 +368,8 @@ void CartService::OnGetDiscountURL(
       base::BindOnce(&CartService::OnDiscountURLFetched,
                      weak_ptr_factory_.GetWeakPtr(), default_cart_url,
                      std::move(callback), cart_proto));
+
+  CartDiscountMetricCollector::RecordClickedOnDiscount(true);
 }
 
 void CartService::OnDiscountURLFetched(
@@ -376,6 +382,7 @@ void CartService::OnDiscountURLFetched(
   if (discount_url.is_valid()) {
     CacheUsedDiscounts(cart_proto);
     CleanUpDiscounts(cart_proto);
+    CartDiscountMetricCollector::RecordAppliedDiscount();
   }
 }
 
