@@ -2634,11 +2634,19 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     auto type = field->Type().ToString();
     auto heuristic_type = AutofillType(field->heuristic_type()).ToString();
     auto server_type = AutofillType(field->server_type()).ToString();
+    if (field->server_type_prediction_is_override())
+      server_type += " (manual override)";
     auto html_type_description =
         field->html_type() != HTML_TYPE_UNSPECIFIED
             ? base::StrCat(
                   {", html: ", FieldTypeToStringPiece(field->html_type())})
             : "";
+    if (field->html_type() == HTML_TYPE_UNRECOGNIZED &&
+        (!base::FeatureList::IsEnabled(
+             features::kAutofillServerTypeTakesPrecedence) ||
+         !field->server_type_prediction_is_override())) {
+      html_type_description += " (disabling autofill)";
+    }
 
     buffer << Tr{} << "Type:"
            << base::StrCat({type, " (heuristic: ", heuristic_type, ", server: ",
