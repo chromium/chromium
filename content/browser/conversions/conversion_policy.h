@@ -7,10 +7,9 @@
 
 #include <stdint.h>
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "base/time/time.h"
+#include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -75,7 +74,8 @@ class CONTENT_EXPORT ConversionPolicy {
   // value of 30 days from |impression_time|.
   virtual base::Time GetExpiryTimeForImpression(
       const absl::optional<base::TimeDelta>& declared_expiry,
-      base::Time impression_time) const;
+      base::Time impression_time,
+      StorableImpression::SourceType source_type) const;
 
   // Delays reports that should have been sent while the browser was not open by
   // given them a noisy report time to help disassociate them from other

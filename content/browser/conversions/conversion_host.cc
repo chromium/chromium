@@ -258,7 +258,8 @@ void ConversionHost::VerifyAndStoreImpression(
       policy.GetSanitizedImpressionData(impression.impression_data),
       impression_origin, impression.conversion_destination, reporting_origin,
       impression_time,
-      policy.GetExpiryTimeForImpression(impression.expiry, impression_time),
+      policy.GetExpiryTimeForImpression(impression.expiry, impression_time,
+                                        source_type),
       source_type, impression.priority,
       /*impression_id=*/absl::nullopt);
 

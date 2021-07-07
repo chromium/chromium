@@ -9,11 +9,17 @@
 
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_test_utils.h"
+#include "content/browser/conversions/storable_impression.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
 namespace {
+
+const StorableImpression::SourceType kSourceTypes[] = {
+    StorableImpression::SourceType::kNavigation,
+    StorableImpression::SourceType::kEvent,
+};
 
 // Fake ConversionNoiseProvider that return un-noised conversion data.
 class EmptyNoiseProvider : public ConversionPolicy::NoiseProvider {
@@ -133,18 +139,25 @@ TEST_F(ConversionPolicyTest, DebugMode_EventSourceTriggerDataNotNoised) {
 }
 
 TEST_F(ConversionPolicyTest, NoExpiryForImpression_DefaultUsed) {
-  base::Time impression_time = base::Time::Now();
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(30),
-            ConversionPolicy().GetExpiryTimeForImpression(
-                /*declared_expiry=*/absl::nullopt, impression_time));
+  const base::Time impression_time = base::Time::Now();
+
+  for (auto source_type : kSourceTypes) {
+    EXPECT_EQ(
+        impression_time + base::TimeDelta::FromDays(30),
+        ConversionPolicy().GetExpiryTimeForImpression(
+            /*declared_expiry=*/absl::nullopt, impression_time, source_type));
+  }
 }
 
 TEST_F(ConversionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
   constexpr base::TimeDelta declared_expiry = base::TimeDelta::FromDays(60);
-  base::Time impression_time = base::Time::Now();
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(30),
-            ConversionPolicy().GetExpiryTimeForImpression(declared_expiry,
-                                                          impression_time));
+  const base::Time impression_time = base::Time::Now();
+
+  for (auto source_type : kSourceTypes) {
+    EXPECT_EQ(impression_time + base::TimeDelta::FromDays(30),
+              ConversionPolicy().GetExpiryTimeForImpression(
+                  declared_expiry, impression_time, source_type));
+  }
 }
 
 TEST_F(ConversionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
@@ -156,25 +169,57 @@ TEST_F(ConversionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
       {base::TimeDelta::FromDays(0), base::TimeDelta::FromDays(1)},
       {base::TimeDelta::FromDays(1) - base::TimeDelta::FromMilliseconds(1),
        base::TimeDelta::FromDays(1)},
-      {base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1),
+  };
+
+  const base::Time impression_time = base::Time::Now();
+
+  for (auto source_type : kSourceTypes) {
+    for (const auto& test_case : kTestCases) {
+      EXPECT_EQ(impression_time + test_case.want_expiry,
+                ConversionPolicy().GetExpiryTimeForImpression(
+                    test_case.declared_expiry, impression_time, source_type));
+    }
+  }
+}
+
+TEST_F(ConversionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
+  const struct {
+    StorableImpression::SourceType source_type;
+    base::TimeDelta declared_expiry;
+    base::TimeDelta want_expiry;
+  } kTestCases[] = {
+      {StorableImpression::SourceType::kNavigation,
+       base::TimeDelta::FromHours(36), base::TimeDelta::FromHours(36)},
+      {StorableImpression::SourceType::kEvent, base::TimeDelta::FromHours(36),
+       base::TimeDelta::FromDays(2)},
+
+      {StorableImpression::SourceType::kNavigation,
+       base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1),
        base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1)},
+      {StorableImpression::SourceType::kEvent,
+       base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1),
+       base::TimeDelta::FromDays(1)},
   };
 
   const base::Time impression_time = base::Time::Now();
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(impression_time + test_case.want_expiry,
-              ConversionPolicy().GetExpiryTimeForImpression(
-                  test_case.declared_expiry, impression_time));
+    EXPECT_EQ(
+        impression_time + test_case.want_expiry,
+        ConversionPolicy().GetExpiryTimeForImpression(
+            test_case.declared_expiry, impression_time, test_case.source_type));
   }
 }
 
 TEST_F(ConversionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
   constexpr base::TimeDelta declared_expiry = base::TimeDelta::FromDays(10);
-  base::Time impression_time = base::Time::Now();
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(10),
-            ConversionPolicy().GetExpiryTimeForImpression(declared_expiry,
-                                                          impression_time));
+  const base::Time impression_time = base::Time::Now();
+
+  for (auto source_type : kSourceTypes) {
+    EXPECT_EQ(impression_time + base::TimeDelta::FromDays(10),
+              ConversionPolicy().GetExpiryTimeForImpression(
+                  declared_expiry, impression_time, source_type));
+  }
 }
 
 }  // namespace content
