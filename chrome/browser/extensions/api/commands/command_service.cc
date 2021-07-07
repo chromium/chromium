@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/commands/commands.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
@@ -584,17 +585,17 @@ void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
         if (!browser_action_command ||
             browser_action_command->accelerator().key_code() ==
                 ui::VKEY_UNKNOWN) {
-          suggested_key_prefs->Remove(it.key(), NULL);
+          suggested_key_prefs->RemoveKey(it.key());
         }
       } else if (it.key() == manifest_values::kPageActionCommandEvent) {
         if (!CommandsInfo::GetPageActionCommand(extension))
-          suggested_key_prefs->Remove(it.key(), NULL);
+          suggested_key_prefs->RemoveKey(it.key());
       } else if (it.key() == manifest_values::kActionCommandEvent) {
         if (!CommandsInfo::GetActionCommand(extension))
-          suggested_key_prefs->Remove(it.key(), nullptr);
+          suggested_key_prefs->RemoveKey(it.key());
       } else if (named_commands) {
         if (named_commands->find(it.key()) == named_commands->end())
-          suggested_key_prefs->Remove(it.key(), NULL);
+          suggested_key_prefs->RemoveKey(it.key());
       }
     }
 
@@ -671,7 +672,7 @@ void CommandService::RemoveKeybindingPrefs(const std::string& extension_id,
   for (KeysToRemove::const_iterator it = keys_to_remove.begin();
        it != keys_to_remove.end(); ++it) {
     std::string key = *it;
-    bindings->Remove(key, NULL);
+    bindings->RemoveKey(key);
   }
 
   for (const Command& removed_command : removed_commands) {

@@ -55,8 +55,8 @@ TEST_F(ExtensionGarbageCollectorUnitTest, CleanupOnStartup) {
   {
     DictionaryPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
     base::DictionaryValue* dict = update.Get();
-    ASSERT_TRUE(dict != NULL);
-    dict->Remove(kExtensionId, NULL);
+    ASSERT_TRUE(dict != nullptr);
+    dict->RemoveKey(kExtensionId);
   }
 
   service_->Init();
@@ -90,8 +90,8 @@ TEST_F(ExtensionGarbageCollectorUnitTest, NoCleanupDuringInstall) {
   {
     DictionaryPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
     base::DictionaryValue* dict = update.Get();
-    ASSERT_TRUE(dict != NULL);
-    dict->Remove(kExtensionId, NULL);
+    ASSERT_TRUE(dict != nullptr);
+    dict->RemoveKey(kExtensionId);
   }
 
   service_->Init();

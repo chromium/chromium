@@ -396,7 +396,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       EXPECT_EQ(crx_location_, location);
 
       // Remove it so we won't count it ever again.
-      prefs_->Remove(info.extension_id, nullptr);
+      prefs_->RemoveKey(info.extension_id);
     }
     return true;
   }
@@ -430,7 +430,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       EXPECT_EQ(parsed_install_parameter, info.install_parameter);
 
       // Remove it so we won't count it again.
-      prefs_->Remove(info.extension_id, nullptr);
+      prefs_->RemoveKey(info.extension_id);
     }
     return true;
   }
@@ -715,7 +715,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     base::DictionaryValue* pref = nullptr;
     ASSERT_TRUE(dict->GetDictionary(extension_id, &pref)) << msg;
     EXPECT_TRUE(pref) << msg;
-    pref->Remove(pref_path, nullptr);
+    pref->RemovePath(pref_path);
   }
 
   void SetPrefStringSet(const std::string& extension_id,

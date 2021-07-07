@@ -195,7 +195,7 @@ TEST_F(ExtensionSettingsQuotaTest, RemovingExistingSettings) {
 
   // Try again with "b" removed, enough quota.
   EXPECT_TRUE(storage_->Remove("b").status().ok());
-  settings.Remove("b", NULL);
+  settings.RemoveKey("b");
   EXPECT_TRUE(storage_->Set(DEFAULTS, "c", byte_value_256_).status().ok());
   settings.SetKey("c", byte_value_256_.Clone());
   EXPECT_TRUE(SettingsEqual(settings));
@@ -210,7 +210,7 @@ TEST_F(ExtensionSettingsQuotaTest, RemovingExistingSettings) {
 
   // Back under max keys.
   EXPECT_TRUE(storage_->Remove("a").status().ok());
-  settings.Remove("a", NULL);
+  settings.RemoveKey("a");
   EXPECT_TRUE(storage_->Set(DEFAULTS, "b", byte_value_1_).status().ok());
   settings.SetKey("b", byte_value_1_.Clone());
   EXPECT_TRUE(SettingsEqual(settings));
@@ -397,8 +397,8 @@ TEST_F(ExtensionSettingsQuotaTest, WithInitialDataAndByteQuota) {
   to_remove.push_back("a");
   to_remove.push_back("b");
   storage_->Remove(to_remove);
-  settings.Remove("a", NULL);
-  settings.Remove("b", NULL);
+  settings.RemoveKey("a");
+  settings.RemoveKey("b");
   EXPECT_TRUE(SettingsEqual(settings));
 
   EXPECT_TRUE(storage_->Set(DEFAULTS, "d", byte_value_256_).status().ok());
@@ -460,9 +460,9 @@ TEST_F(ExtensionSettingsQuotaTest, InitiallyOverMaxKeys) {
 
   // Should be able after removing 2.
   storage_->Remove("a");
-  settings.Remove("a", NULL);
+  settings.RemoveKey("a");
   storage_->Remove("b");
-  settings.Remove("b", NULL);
+  settings.RemoveKey("b");
   EXPECT_TRUE(SettingsEqual(settings));
 
   EXPECT_TRUE(storage_->Set(DEFAULTS, "e", byte_value_1_).status().ok());

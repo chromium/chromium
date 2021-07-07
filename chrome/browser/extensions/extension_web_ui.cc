@@ -337,7 +337,7 @@ void ForEachOverrideList(
     // user's prefs are mangled (by malware, user modification, hard drive
     // corruption, evil robots, etc), this will fail. Instead, delete the pref.
     if (!success) {
-      all_overrides->Remove(key, nullptr);
+      all_overrides->RemoveKey(key);
       continue;
     }
     callback.Run(list);

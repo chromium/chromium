@@ -514,8 +514,8 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
     change_list.push_back(
         settings_sync_util::CreateDelete("s2", "foo", model_type));
     GetSyncableService(model_type)->ProcessSyncChanges(FROM_HERE, change_list);
-    expected1.Remove("foo", NULL);
-    expected2.Remove("foo", NULL);
+    expected1.RemoveKey("foo");
+    expected2.RemoveKey("foo");
 
     EXPECT_PRED_FORMAT2(SettingsEq, expected1, storage1->Get());
     EXPECT_PRED_FORMAT2(SettingsEq, expected2, storage2->Get());

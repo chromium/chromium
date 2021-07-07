@@ -172,7 +172,7 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
         keys_to_erase.insert(entry.first);
     }
     for (const auto& key : keys_to_erase)
-      prefs->Remove(key, nullptr);
+      prefs->RemoveKey(key);
   }
 
   // Next, the more fun case. It's possible that these apps were uninstalled
@@ -216,7 +216,7 @@ void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
     }
 
     for (const auto& key : keys_to_erase) {
-      prefs->Remove(key, nullptr);
+      prefs->RemoveKey(key);
     }
   }
 

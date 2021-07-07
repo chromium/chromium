@@ -101,7 +101,6 @@ void GetRegisteredItems(OperationResult* result,
 
   values->Clear();
 
-  std::unique_ptr<base::Value> registered_items;
   if (!read.status().ok()) {
     *result = OperationResult::kFailed;
     return;
@@ -110,7 +109,9 @@ void GetRegisteredItems(OperationResult* result,
   // Using remove to pass ownership of registered_item dict to
   // |registered_items| (and avoid doing a copy |read.settings()|
   // sub-dictionary).
-  if (!read.settings().Remove(kStoreKeyRegisteredItems, &registered_items)) {
+  absl::optional<base::Value> registered_items =
+      read.settings().ExtractKey(kStoreKeyRegisteredItems);
+  if (!registered_items) {
     // If the registered items dictionary cannot be found, assume no items have
     // yet been registered, and return empty result.
     *result = OperationResult::kSuccess;
@@ -118,7 +119,8 @@ void GetRegisteredItems(OperationResult* result,
   }
 
   std::unique_ptr<base::DictionaryValue> items_dict =
-      base::DictionaryValue::From(std::move(registered_items));
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(std::move(*registered_items)));
 
   *result =
       items_dict.get() ? OperationResult::kSuccess : OperationResult::kFailed;
@@ -132,16 +134,17 @@ void RegisterItem(OperationResult* result,
                   ValueStore* store) {
   ValueStore::ReadResult read = store->Get(kStoreKeyRegisteredItems);
 
-  std::unique_ptr<base::Value> registered_items;
   if (!read.status().ok()) {
     *result = OperationResult::kFailed;
     return;
   }
-  if (!read.settings().Remove(kStoreKeyRegisteredItems, &registered_items))
-    registered_items = std::make_unique<base::DictionaryValue>();
+  absl::optional<base::Value> registered_items =
+      read.settings().ExtractKey(kStoreKeyRegisteredItems);
+  if (!registered_items)
+    registered_items = base::Value(base::Value::Type::DICTIONARY);
 
-  std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(std::move(registered_items));
+  std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(std::move(*registered_items)));
   if (!dict) {
     *result = OperationResult::kFailed;
     return;
@@ -250,7 +253,7 @@ void DeleteImpl(OperationResult* result,
   base::DictionaryValue* registered_items = nullptr;
   if (!read.settings().GetDictionary(kStoreKeyRegisteredItems,
                                      &registered_items) ||
-      !registered_items->Remove(item_id, nullptr)) {
+      !registered_items->RemoveKey(item_id)) {
     *result = OperationResult::kNotFound;
     return;
   }

@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
       static_cast<base::DictionaryValue*>(
           base::JSONReader::ReadDeprecated(result).release()));
   // extension->manifest() does not contain the id.
-  app_details->Remove("id", NULL);
+  app_details->RemoveKey("id");
   EXPECT_TRUE(app_details.get());
   EXPECT_TRUE(app_details->Equals(extension->manifest()->value()));
 

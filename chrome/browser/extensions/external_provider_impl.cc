@@ -497,7 +497,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
        it != unsupported_extensions.end(); ++it) {
     // Remove extension for the list of know external extensions. The extension
     // will be uninstalled later because provider doesn't provide it anymore.
-    prefs_->Remove(*it, nullptr);
+    prefs_->RemoveKey(*it);
   }
 }
 
