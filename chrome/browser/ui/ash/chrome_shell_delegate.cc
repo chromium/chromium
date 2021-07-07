@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
@@ -191,6 +192,11 @@ bool ChromeShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
 bool ChromeShellDelegate::IsTabDrag(const ui::OSExchangeData& drop_data) {
   DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
   return tab_strip_ui::IsDraggedTab(drop_data);
+}
+
+int ChromeShellDelegate::GetBrowserWebUITabStripHeight() {
+  DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
+  return TabStripUILayout::GetContainerHeight();
 }
 
 aura::Window* ChromeShellDelegate::CreateBrowserForTabDrop(

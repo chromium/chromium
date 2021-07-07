@@ -124,7 +124,7 @@ void TabDragDropDelegate::DragUpdate(const gfx::Point& location_in_screen) {
           true, SplitViewDragIndicators::WindowDraggingState::kFromTop,
           snap_position));
 
-  UpdateSourceWindowBoundsIfNecessary(snap_position);
+  UpdateSourceWindowBoundsIfNecessary(snap_position, location_in_screen);
 
   tab_dragging_recorder_->RequestNext();
 }
@@ -182,7 +182,8 @@ void TabDragDropDelegate::Drop(const gfx::Point& location_in_screen,
 }
 
 void TabDragDropDelegate::UpdateSourceWindowBoundsIfNecessary(
-    SplitViewController::SnapPosition candidate_snap_position) {
+    SplitViewController::SnapPosition candidate_snap_position,
+    const gfx::Point& location_in_screen) {
   SplitViewController* const split_view_controller =
       SplitViewController::Get(source_window_);
 
@@ -201,8 +202,14 @@ void TabDragDropDelegate::UpdateSourceWindowBoundsIfNecessary(
         screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
             root_window_);
     new_source_window_bounds = area;
-    new_source_window_bounds.ClampToCenteredSize(gfx::Size(
-        area.width() * kSourceWindowScale, area.height() * kSourceWindowScale));
+
+    // Only shrink the window when the tab is dragged out of WebUI tab strip.
+    if (location_in_screen.y() >
+        Shell::Get()->shell_delegate()->GetBrowserWebUITabStripHeight()) {
+      new_source_window_bounds.ClampToCenteredSize(
+          gfx::Size(area.width() * kSourceWindowScale,
+                    area.height() * kSourceWindowScale));
+    }
   } else {
     const SplitViewController::SnapPosition opposite_position =
         (candidate_snap_position == SplitViewController::SnapPosition::LEFT)

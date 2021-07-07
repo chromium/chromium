@@ -64,7 +64,8 @@ class ASH_EXPORT TabDragDropDelegate {
   // |candidate_snap_position| is where the dragged tab will be snapped
   // if dropped immediately.
   void UpdateSourceWindowBoundsIfNecessary(
-      SplitViewController::SnapPosition candidate_snap_position);
+      SplitViewController::SnapPosition candidate_snap_position,
+      const gfx::Point& location_in_screen);
 
   // Puts the source window back into its original position.
   void RestoreSourceWindowBounds();

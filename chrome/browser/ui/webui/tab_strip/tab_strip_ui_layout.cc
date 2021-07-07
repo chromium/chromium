@@ -8,21 +8,27 @@
 #include "base/values.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace {
+
+// The height of the thumbnail.
+constexpr int kThumbnailHeight = 120;
+
+// The padding of the tab item to the top/bottom of the tab strip.
+constexpr int kPaddingAroundTabList = 16;
+
+// The height of the tab title.
+constexpr int kTabTitleHeight = 40;
+
+}  // namespace
+
 // static
 TabStripUILayout TabStripUILayout::CalculateForWebViewportSize(
     const gfx::Size& viewport_size) {
-  // The smaller of the thumbnail's height or width is fixed to this
-  // value. The other dimension will be at least this long.
-  constexpr int kThumbnailMinDimensionLength = 120;
-
   TabStripUILayout layout;
-  layout.padding_around_tab_list = 16;
-  layout.tab_title_height = 40;
   layout.viewport_width = viewport_size.width();
 
   if (viewport_size.IsEmpty()) {
-    layout.tab_thumbnail_size =
-        gfx::Size(kThumbnailMinDimensionLength, kThumbnailMinDimensionLength);
+    layout.tab_thumbnail_size = gfx::Size(kThumbnailHeight, kThumbnailHeight);
     return layout;
   }
 
@@ -31,19 +37,24 @@ TabStripUILayout TabStripUILayout::CalculateForWebViewportSize(
   // narrow.
   double ratio =
       std::max(1.0, 1.0 * viewport_size.width() / viewport_size.height());
-  layout.tab_thumbnail_size.set_height(kThumbnailMinDimensionLength);
-  layout.tab_thumbnail_size.set_width(kThumbnailMinDimensionLength * ratio);
+  layout.tab_thumbnail_size.set_height(kThumbnailHeight);
+  layout.tab_thumbnail_size.set_width(kThumbnailHeight * ratio);
   layout.tab_thumbnail_aspect_ratio = ratio;
 
   return layout;
 }
 
+// static
+int TabStripUILayout::GetContainerHeight() {
+  return 2 * kPaddingAroundTabList + kTabTitleHeight + kThumbnailHeight;
+}
+
 base::Value TabStripUILayout::AsDictionary() const {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("--tabstrip-tab-list-vertical-padding",
-                    base::NumberToString(padding_around_tab_list) + "px");
+                    base::NumberToString(kPaddingAroundTabList) + "px");
   dict.SetStringKey("--tabstrip-tab-title-height",
-                    base::NumberToString(tab_title_height) + "px");
+                    base::NumberToString(kTabTitleHeight) + "px");
   dict.SetStringKey("--tabstrip-tab-thumbnail-width",
                     base::NumberToString(tab_thumbnail_size.width()) + "px");
   dict.SetStringKey("--tabstrip-tab-thumbnail-height",
@@ -55,7 +66,3 @@ base::Value TabStripUILayout::AsDictionary() const {
   return dict;
 }
 
-int TabStripUILayout::CalculateContainerHeight() const {
-  return 2 * padding_around_tab_list + tab_title_height +
-         tab_thumbnail_size.height();
-}

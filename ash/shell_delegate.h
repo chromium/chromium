@@ -88,6 +88,10 @@ class ASH_EXPORT ShellDelegate {
   // Checks whether a drag-drop operation is a tab drag.
   virtual bool IsTabDrag(const ui::OSExchangeData& drop_data);
 
+  // Return the height of WebUI tab strip used to determine if a tab has
+  // dragged out of it.
+  virtual int GetBrowserWebUITabStripHeight() = 0;
+
   // Drops tab in a new browser window. |drop_data| must be from a tab
   // drag as determined by IsTabDrag() above.
   virtual aura::Window* CreateBrowserForTabDrop(

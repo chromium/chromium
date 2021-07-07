@@ -57,6 +57,10 @@ bool TestShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
   return should_wait_for_touch_ack_;
 }
 
+int TestShellDelegate::GetBrowserWebUITabStripHeight() {
+  return 0;
+}
+
 void TestShellDelegate::BindMultiDeviceSetup(
     mojo::PendingReceiver<chromeos::multidevice_setup::mojom::MultiDeviceSetup>
         receiver) {

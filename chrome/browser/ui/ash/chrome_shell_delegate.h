@@ -30,6 +30,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   bool AllowDefaultTouchActions(gfx::NativeWindow window) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   bool IsTabDrag(const ui::OSExchangeData& drop_data) override;
+  int GetBrowserWebUITabStripHeight() override;
   aura::Window* CreateBrowserForTabDrop(
       aura::Window* source_window,
       const ui::OSExchangeData& drop_data) override;
