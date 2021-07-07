@@ -509,10 +509,6 @@ ChromeBrowserMainParts::ChromeBrowserMainParts(
   // If we're running tests (ui_task is non-null).
   if (parameters.ui_task)
     browser_defaults::enable_help_app = false;
-
-#if !defined(OS_ANDROID)
-  shutdown_watcher_ = std::make_unique<ShutdownWatcherHelper>();
-#endif  // !defined(OS_ANDROID)
 }
 
 ChromeBrowserMainParts::~ChromeBrowserMainParts() {
@@ -1817,9 +1813,21 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   // disconnects DBus services in its PostDestroyThreads.
   UpgradeDetector::GetInstance()->Shutdown();
 
-  // Start watching for jank during shutdown. It gets disarmed when
-  // |shutdown_watcher_| object is destructed.
-  shutdown_watcher_->Arm(base::TimeDelta::FromSeconds(300));
+  // Two different types of hang detection cannot attempt to upload crashes at
+  // the same time or they would interfere with each other.
+  constexpr base::TimeDelta kShutdownHangDelay{
+      base::TimeDelta::FromSeconds(300)};
+  if (base::HangWatcher::IsCrashReportingEnabled()) {
+    // Use ShutdownWatcherHelper logic to choose delay to get identical
+    // behavior.
+    watch_hangs_scope_.emplace(
+        ShutdownWatcherHelper::GetPerChannelTimeout(kShutdownHangDelay));
+  } else {
+    // Start watching for jank during shutdown. It gets disarmed when
+    // |shutdown_watcher_| object is destructed.
+    shutdown_watcher_ = std::make_unique<ShutdownWatcherHelper>();
+    shutdown_watcher_->Arm(kShutdownHangDelay);
+  }
 
   web_usb_detector_.reset();
 

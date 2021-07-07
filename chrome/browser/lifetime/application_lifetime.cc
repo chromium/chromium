@@ -13,6 +13,8 @@
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/threading/hang_watcher.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -36,6 +38,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/notification_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -377,11 +380,24 @@ void SessionEnding() {
   // to kill us soon. Either way we don't care about that here.
   base::ThreadRestrictions::ScopedAllowIO allow_io;
 
-  // Start watching for hang during shutdown, and crash it if takes too long.
-  // We disarm when |shutdown_watcher| object is destroyed, which is when we
-  // exit this function.
-  ShutdownWatcherHelper shutdown_watcher;
-  shutdown_watcher.Arm(base::TimeDelta::FromSeconds(90));
+  // Two different types of hang detection cannot attempt to upload crashes at
+  // the same time or they would interfere with each other.
+  absl::optional<ShutdownWatcherHelper> shutdown_watcher;
+  absl::optional<base::WatchHangsInScope> watch_hangs_scope;
+  constexpr base::TimeDelta kShutdownHangDelay{
+      base::TimeDelta::FromSeconds(90)};
+  if (base::HangWatcher::IsCrashReportingEnabled()) {
+    // Use ShutdownWatcherHelper logic to choose delay to get identical
+    // behavior.
+    watch_hangs_scope.emplace(
+        ShutdownWatcherHelper::GetPerChannelTimeout(kShutdownHangDelay));
+  } else {
+    // Start watching for hang during shutdown, and crash it if takes too long.
+    // We disarm when |shutdown_watcher| object is destroyed, which is when we
+    // exit this function.
+    shutdown_watcher.emplace();
+    shutdown_watcher->Arm(kShutdownHangDelay);
+  }
 
   browser_shutdown::OnShutdownStarting(
       browser_shutdown::ShutdownType::kEndSession);

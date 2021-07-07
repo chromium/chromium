@@ -22,6 +22,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/metrics/thread_watcher_report_hang.h"
@@ -904,6 +905,14 @@ ShutdownWatcherHelper::~ShutdownWatcherHelper() {
 void ShutdownWatcherHelper::Arm(const base::TimeDelta& duration) {
   DCHECK_EQ(thread_id_, base::PlatformThread::CurrentId());
   DCHECK(!shutdown_watchdog_);
+  shutdown_watchdog_ =
+      new ShutdownWatchDogThread(GetPerChannelTimeout(duration));
+  shutdown_watchdog_->Arm();
+}
+
+// static
+base::TimeDelta ShutdownWatcherHelper::GetPerChannelTimeout(
+    base::TimeDelta duration) {
   base::TimeDelta actual_duration = duration;
 
   version_info::Channel channel = chrome::GetChannel();
@@ -917,8 +926,7 @@ void ShutdownWatcherHelper::Arm(const base::TimeDelta& duration) {
     actual_duration *= 2;
   }
 
-  shutdown_watchdog_ = new ShutdownWatchDogThread(actual_duration);
-  shutdown_watchdog_->Arm();
+  return actual_duration;
 }
 
 #endif  // !defined(OS_ANDROID)
