@@ -71,6 +71,17 @@ class TestMain {
 
 }
 
+@class XCTSourceCodeSymbolInfo;
+@protocol XCTSymbolInfoProviding <NSObject>
+- (XCTSourceCodeSymbolInfo*)symbolInfoForAddressInCurrentProcess:(pid_t)pid
+                                                           error:
+                                                               (NSError**)error;
+@end
+
+@interface XCTSymbolicationService
++ (void)setSharedService:(id<XCTSymbolInfoProviding>)arg1;
+@end
+
 @interface ChromeEGTestBundleMain () <XCTestObservation> {
   std::unique_ptr<TestMain> _testMain;
 }
@@ -99,6 +110,17 @@ class TestMain {
   CHECK(NSClassFromString(@"CRWWebController") == nil);
   CHECK(NSClassFromString(@"MainController") == nil);
   CHECK(NSClassFromString(@"BrowserViewController") == nil);
+
+  // Disable aggressive symbolication and disable symbolication service to work
+  // around slow XCTest assertion failures. These failures are spending a very
+  // long time attempting to symbolicate.
+  Class symbolicationService = NSClassFromString(@"XCTSymbolicationService");
+  if (symbolicationService != nil) {
+    [symbolicationService setSharedService:nil];
+  }
+  [[NSUserDefaults standardUserDefaults]
+      setBool:YES
+       forKey:@"XCTDisableAggressiveSymbolication"];
 }
 
 - (void)testBundleDidFinish:(NSBundle*)testBundle {
