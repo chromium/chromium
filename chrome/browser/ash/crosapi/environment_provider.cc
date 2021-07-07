@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,6 +77,12 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
     // Typically /home/chronos/u-<hash>/MyFiles/Downloads.
     default_paths->downloads =
         file_manager::util::GetDownloadsFolderForProfile(profile);
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+    if (integration_service && integration_service->is_enabled() &&
+        integration_service->IsMounted()) {
+      default_paths->drivefs = integration_service->GetMountPointPath();
+    }
   } else {
     // On developer linux workstations the above functions do path mangling to
     // support multi-signin which gets undone later in ash-specific code. This
@@ -83,6 +90,7 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
     base::FilePath home = base::GetHomeDir();
     default_paths->documents = home.Append("Documents");
     default_paths->downloads = home.Append("Downloads");
+    default_paths->drivefs = home.Append("Drive");
   }
   return default_paths;
 }

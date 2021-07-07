@@ -18,6 +18,8 @@ namespace {
 struct DefaultPaths {
   base::FilePath documents_dir;
   base::FilePath downloads_dir;
+  // |drivefs| is empty if Drive is not enabled in Ash.
+  base::FilePath drivefs;
 };
 
 DefaultPaths& GetDefaultPaths() {
@@ -28,7 +30,8 @@ DefaultPaths& GetDefaultPaths() {
 }  // namespace
 
 void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
-                           const base::FilePath& downloads_dir) {
+                           const base::FilePath& downloads_dir,
+                           const base::FilePath& drivefs) {
   DCHECK(!documents_dir.empty());
   DCHECK(documents_dir.IsAbsolute());
   GetDefaultPaths().documents_dir = documents_dir;
@@ -36,6 +39,8 @@ void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
   DCHECK(!downloads_dir.empty());
   DCHECK(downloads_dir.IsAbsolute());
   GetDefaultPaths().downloads_dir = downloads_dir;
+
+  GetDefaultPaths().drivefs = drivefs;
 }
 
 bool GetDefaultUserDataDirectory(base::FilePath* result) {
@@ -93,6 +98,15 @@ bool GetUserVideosDirectory(base::FilePath* result) {
 bool ProcessNeedsProfileDir(const std::string& process_type) {
   // We have no reason to forbid this on Chrome OS as we don't have roaming
   // profile troubles there.
+  return true;
+}
+
+bool GetDriveFsMountPointPath(base::FilePath* result) {
+  // NOTE: Lacros overrides the path with a value from ash early in startup. See
+  // crosapi::mojom::LacrosInitParams.
+  if (GetDefaultPaths().drivefs.empty())
+    return false;
+  *result = GetDefaultPaths().drivefs;
   return true;
 }
 

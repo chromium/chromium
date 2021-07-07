@@ -11,10 +11,15 @@ class FilePath;
 
 namespace chrome {
 
-// Sets the default paths for user documents and downloads. The paths are sent
-// by ash-chrome and are set early in lacros-chrome startup.
+// Sets the default paths for user documents, downloads and the mount point for
+// Drive. The paths are sent by ash-chrome and are set early in lacros-chrome
+// startup.
 void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
-                           const base::FilePath& downloads_dir);
+                           const base::FilePath& downloads_dir,
+                           const base::FilePath& drivefs);
+
+// Returns false if Drive is not enabled in Ash.
+bool GetDriveFsMountPointPath(base::FilePath* result);
 
 }  // namespace chrome
 

@@ -25,9 +25,9 @@ class EnvironmentProvider {
   virtual crosapi::mojom::SessionType GetSessionType();
   virtual crosapi::mojom::DeviceMode GetDeviceMode();
 
-  // Returns the default paths, such as Downloads and Documents (MyFiles).
-  // These are provided by ash because they are part of the device account,
-  // not the Lacros profile.
+  // Returns the default paths, such as Downloads, Documents (MyFiles) and the
+  // mount point for Drive. These are provided by ash because they are part of
+  // the device account, not the Lacros profile.
   virtual crosapi::mojom::DefaultPathsPtr GetDefaultPaths();
 
   // Deprecated. Use `GetDeviceAccount` instead.

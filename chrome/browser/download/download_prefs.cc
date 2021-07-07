@@ -52,7 +52,9 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chromeos/dbus/cros_disks_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/common/chrome_paths_lacros.h"
+#endif
 
 #if defined(OS_WIN)
 #include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
@@ -555,6 +557,12 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(https://crbug.com/1148848): Sort out path sanitization for Lacros.
   // This will require refactoring the ash-only code below so it can be shared.
+  base::FilePath migrated_drive_path;
+  if (download_dir_util::ExpandDrivePolicyVariable(profile_, path,
+                                                   &migrated_drive_path)) {
+    return SanitizeDownloadTargetPath(migrated_drive_path);
+  }
+
   const base::FilePath default_downloads_path =
       GetDefaultDownloadDirectoryForProfile();
   // Relative paths might be unsafe, so use the default path.
@@ -571,6 +579,12 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   base::FilePath documents_path =
       base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
   if (documents_path == path || documents_path.IsParent(path))
+    return path;
+
+  // Allow paths under the drive mount point.
+  base::FilePath drivefs;
+  bool drivefs_mounted = chrome::GetDriveFsMountPointPath(&drivefs);
+  if (drivefs_mounted && drivefs.IsParent(path))
     return path;
 
   // Otherwise, return the safe default.

@@ -334,6 +334,12 @@ struct DefaultPaths {
   // compatibility, to avoid assumptions about where on disk the directory is
   // located.
   mojo_base.mojom.FilePath downloads@1;
+
+  // The (non-configurable) path of the mount point for drive in ChromeOS. For
+  // example, /media/fuse/drivefs-<hash>. We send the full path for future
+  // compatibility, to avoid assumptions about where on disk the directory is
+  // located.
+  [MinVersion=23] mojo_base.mojom.FilePath? drivefs@2;
 };
 
 // The device specific data needed in Lacros.
@@ -412,7 +418,7 @@ enum OndeviceHandwritingSupport{
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 23
+// Next version: 24
 // Next id: 23
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {

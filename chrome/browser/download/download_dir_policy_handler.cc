@@ -92,8 +92,8 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
   if (policies.Get(policy_name())->level == policy::POLICY_LEVEL_MANDATORY) {
     prefs->SetBoolean(prefs::kPromptForDownload, false);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(https://crbug.com/1148846): Sort out download directory policy for
-    // lacros.
+    // Drive is disabled only in Ash and not Lacros, because Lacros respects
+    // Drive availability status in Ash automatically.
     if (download_dir_util::DownloadToDrive(string_value, parameters)) {
       prefs->SetBoolean(drive::prefs::kDisableDrive, false);
     }

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_DIR_UTIL_H_
 
 #include "base/files/file_path.h"
-#include "build/chromeos_buildflags.h"
 
 class Profile;
 
@@ -16,7 +15,7 @@ struct PolicyHandlerParameters;
 
 namespace download_dir_util {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 extern const char kDriveNamePolicyVariableName[];
 
 // Returns whether |string_value| points to a directory in Drive or not.
@@ -29,7 +28,7 @@ bool DownloadToDrive(const base::FilePath::StringType& string_value,
 bool ExpandDrivePolicyVariable(Profile* profile,
                                const base::FilePath& old_path,
                                base::FilePath* new_path);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 // Expands path variables in the download directory path |string_value|.
 base::FilePath::StringType ExpandDownloadDirectoryPath(
