@@ -54,8 +54,9 @@ em::Policy_PolicySource GetSource(const base::Value& policy) {
       return em::Policy_PolicySource_SOURCE_CLOUD;
     case policy::POLICY_SOURCE_ACTIVE_DIRECTORY:
       return em::Policy_PolicySource_SOURCE_ACTIVE_DIRECTORY;
-    case policy::POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE:
-      return em::Policy_PolicySource_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE;
+    case policy::POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED:
+      return em::
+          Policy_PolicySource_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED;
     case policy::POLICY_SOURCE_PLATFORM:
       return em::Policy_PolicySource_SOURCE_PLATFORM;
     case policy::POLICY_SOURCE_PRIORITY_CLOUD:

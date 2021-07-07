@@ -12,13 +12,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 
 namespace policy {
-
-class PolicyMap;
 
 // Policy provider for a device-local account. Pulls policy from
 // DeviceLocalAccountPolicyService. Note that this implementation keeps
@@ -30,10 +29,9 @@ class DeviceLocalAccountPolicyProvider
     : public ConfigurationPolicyProvider,
       public DeviceLocalAccountPolicyService::Observer {
  public:
-  DeviceLocalAccountPolicyProvider(
-      const std::string& user_id,
-      DeviceLocalAccountPolicyService* service,
-      std::unique_ptr<PolicyMap> chrome_policy_overrides);
+  DeviceLocalAccountPolicyProvider(const std::string& user_id,
+                                   DeviceLocalAccountPolicyService* service,
+                                   DeviceLocalAccount::Type type);
   ~DeviceLocalAccountPolicyProvider() override;
 
   // Factory function to create and initialize a provider for |user_id|. Returns
@@ -71,11 +69,7 @@ class DeviceLocalAccountPolicyProvider
   scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager_;
 
   DeviceLocalAccountPolicyService* service_;
-
-  // A policy map providing overrides to apply on top of the Chrome policy
-  // received from |service_|. This is used to fix certain policies for public
-  // sessions regardless of what's actually specified in policy.
-  std::unique_ptr<PolicyMap> chrome_policy_overrides_;
+  DeviceLocalAccount::Type type_;
 
   bool store_initialized_;
   bool waiting_for_policy_refresh_;
