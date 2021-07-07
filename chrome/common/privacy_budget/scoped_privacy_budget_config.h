@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace test {
@@ -29,6 +30,14 @@ namespace test {
 //     reverts the configuration changes.
 class ScopedPrivacyBudgetConfig {
  public:
+  // The default generation is arbitrary. The only thing special about this
+  // number is that it is the default.
+  constexpr static int kDefaultGeneration = 17;
+
+  // An expected surface count of one implies that the probability of selecting
+  // a surface is 1/1.
+  constexpr static int kDefaultExpectedSurfaceCount = 1;
+
   // These fields correspond to the equivalent features described in
   // privacy_budget_features.h
   //
@@ -41,14 +50,15 @@ class ScopedPrivacyBudgetConfig {
     ~Parameters();
 
     bool enabled = true;
-    int generation = 1;
+    int generation = kDefaultGeneration;
 
     std::vector<blink::IdentifiableSurface> blocked_surfaces;
     std::vector<blink::IdentifiableSurface::Type> blocked_types;
-    int surface_selection_rate = 1;
+    int surface_selection_rate = kDefaultExpectedSurfaceCount;
     int max_surfaces = std::numeric_limits<int>::max();
     std::map<blink::IdentifiableSurface, int> per_surface_sampling_rate;
     std::map<blink::IdentifiableSurface::Type, int> per_type_sampling_rate;
+    SurfaceSetEquivalentClassesList equivalence_classes;
   };
 
   enum Presets {
@@ -78,7 +88,7 @@ class ScopedPrivacyBudgetConfig {
   ~ScopedPrivacyBudgetConfig();
 
   // Apply the configuration as described in `parameters`. Should only be called
-  // once.
+  // once per instance.
   void Apply(const Parameters& parameters);
 
   ScopedPrivacyBudgetConfig(const ScopedPrivacyBudgetConfig&) = delete;

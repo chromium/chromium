@@ -24,8 +24,7 @@ namespace features {
 // will be recorded or reported.
 //
 // Enabling the feature doesn't automatically make this client part of the study
-// either. See documentation for IdentifiabilityStudySettings for a full list of
-// the criteria that contributes to that decision.
+// either.
 extern const base::Feature kIdentifiabilityStudy;
 
 // Each time the key study parameters change, the study generation also
@@ -45,9 +44,15 @@ extern const base::FeatureParam<int> kIdentifiabilityStudyGeneration;
 // Parameter type: Comma separated list of decimal integers, each of which
 //     represents an IdentifiableSurface.
 //
+// When specifying these values on the command-line, the commas should be
+// escaped using URL encoding. I.e. '1,2' -> '1%2C2'.
+//
 // E.g.:
 //  * "258, 257" : Matches IdentifiableSurface::FromTypeAndToken(kWebFeature, 1)
 //                 and IdentifiableSurface::FromTypeAndToken(kWebFeature, 2)
+//
+// From 03/2021 the code no longer supports revoking a surface that was once
+// blocked either via "BlockedHashes" or "BlockedTypes".
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyBlockedMetrics;
 
@@ -56,6 +61,9 @@ extern const base::FeatureParam<std::string>
 // Parameter name: "BlockedTypes"
 // Parameter type: Comma separated list of decimal integers, each of which
 //                 represents an IdentifiableSurface::Type.
+//
+// When specifying these values on the command-line, the commas should be
+// escaped using URL encoding. I.e. '1,2' -> '1%2C2'.
 //
 // E.g.:
 //  * "1, 2" : Matches all surfaces with types kWebFeature and kCanvasReadback.
@@ -87,6 +95,30 @@ extern const base::FeatureParam<int> kIdentifiabilityStudyMaxSurfaces;
 // `kMaxIdentifiabilityStudyMaxSurfaces`.
 constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 40;
 
+// Surface equivalence classes.
+//
+// Parameter name: "Classes"
+// Parameter type: Comma separated list of classes. Each class is a semicolon
+//                 separated list of surfaces. See examples below.
+//
+//                 NOTE: The first surface in the list is the representative
+//                 surface that forms the basis for determining the cost for
+//                 the entire class. I.e. the cost of the first surface in the
+//                 list is assumed to be the cost of _any subset_ of surfaces
+//                 in the set.
+//
+// Every surface in an equivalence class is assumed to be pairwise perfectly
+// correlated with all other surfaces in the set. For more details see
+// definition of SurfaceSetValuation::EquivalenceClassIdentifierMap.
+//
+// E.g.:
+//   * "1;2;3,4;5;6" : Defines two classes: {1,2,3} and {4,5,6}. The surface
+//     with ID 1 defines the cost of the entire class {1,2,3}. Similarly the
+//     surface with ID 4 defines the cost of the entire class {4,5,6}.
+//
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudySurfaceEquivalenceClasses;
+
 // Selection rate for clusters of related surfaces.
 //
 // Parameter name: "HashRate"
@@ -98,7 +130,7 @@ constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 40;
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyPerSurfaceSettings;
 
-// Selection rate for clusters of related surfaces.
+// Selection rate for clusters of related surface types.
 //
 // Parameter name: "TypeRate"
 // Parameter type: Comma separated list of <filter-string>;<rate> pairs.

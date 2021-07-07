@@ -30,4 +30,8 @@ const base::FeatureParam<std::string> kIdentifiabilityStudyPerSurfaceSettings =
 const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeSettings = {
     &kIdentifiabilityStudy, "TypeRate", ""};
 
+const base::FeatureParam<std::string>
+    kIdentifiabilityStudySurfaceEquivalenceClasses = {&kIdentifiabilityStudy,
+                                                      "Classes", ""};
+
 }  // namespace features
