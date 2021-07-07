@@ -549,9 +549,20 @@ bool RequestManager::TryPrepareOneShotRequest(
 
 bool RequestManager::TryPrepareRecordingRequest(
     std::set<StreamType>* stream_types) {
-  if (!stream_buffer_manager_->IsRecordingSupported() ||
-      !stream_buffer_manager_->HasFreeBuffers({StreamType::kRecordingOutput})) {
+  if (!stream_buffer_manager_->IsRecordingSupported()) {
     return false;
+  }
+
+  if (!stream_buffer_manager_->HasFreeBuffers({StreamType::kRecordingOutput})) {
+    // Try our best to reserve an usable buffer.  If the reservation still
+    // fails, then we'd have to drop the camera frame.
+    DLOG(WARNING) << "Late request for reserving recording buffer";
+    stream_buffer_manager_->ReserveBuffer(StreamType::kRecordingOutput);
+    if (!stream_buffer_manager_->HasFreeBuffers(
+            {StreamType::kRecordingOutput})) {
+      DLOG(WARNING) << "No free buffer for recording stream";
+      return false;
+    }
   }
 
   stream_types->insert({StreamType::kRecordingOutput});
