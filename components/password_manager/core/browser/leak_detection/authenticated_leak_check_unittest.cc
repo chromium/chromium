@@ -169,9 +169,6 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenBeforeEncryption) {
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.LeakDetection.ObtainAccessTokenTime", kMockElapsedTime,
       1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.AccessTokenFetchStatus",
-      GoogleServiceAuthError::NONE, 1);
 
   auto network_request = std::make_unique<MockLeakDetectionRequest>();
   EXPECT_CALL(*network_request,
@@ -225,9 +222,6 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenAfterEncryption) {
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.LeakDetection.ObtainAccessTokenTime", kMockElapsedTime,
       1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.AccessTokenFetchStatus",
-      GoogleServiceAuthError::NONE, 1);
 }
 
 TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenFailure) {
@@ -243,12 +237,6 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenFailure) {
 
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.LeakDetection.ObtainAccessTokenTime", kMockElapsedTime,
-      1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.AccessTokenFetchStatus",
-      GoogleServiceAuthError::CONNECTION_FAILED, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.AccessTokenNetErrorCode", -net::ERR_FAILED,
       1);
 }
 
@@ -283,9 +271,6 @@ TEST_F(AuthenticatedLeakCheckTest, ParseResponse_DecryptionError) {
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime",
       kMockElapsedTime, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.AnalyzeSingleLeakResponseTime",
-      kMockElapsedTime, 1);
 }
 // Perform the whole cycle of a leak check. The server returns data signalling
 // that the password wasn't leaked.
@@ -315,9 +300,6 @@ TEST_F(AuthenticatedLeakCheckTest, ParseResponse_NoLeak) {
   // Expect one sample for each of the response time histograms.
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime",
-      kMockElapsedTime, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.AnalyzeSingleLeakResponseTime",
       kMockElapsedTime, 1);
 }
 
@@ -355,9 +337,6 @@ TEST_F(AuthenticatedLeakCheckTest, ParseResponse_Leak) {
   // Expect one sample for each of the response time histograms.
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime",
-      kMockElapsedTime, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.AnalyzeSingleLeakResponseTime",
       kMockElapsedTime, 1);
 }
 

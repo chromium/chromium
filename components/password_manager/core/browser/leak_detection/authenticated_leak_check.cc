@@ -197,14 +197,8 @@ void AuthenticatedLeakCheck::Start(const GURL& url,
 void AuthenticatedLeakCheck::OnAccessTokenRequestCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.LeakDetection.AccessTokenFetchStatus", error.state(),
-      GoogleServiceAuthError::NUM_STATES);
   if (error.state() != GoogleServiceAuthError::NONE) {
     // Network error codes are negative. See: src/net/base/net_error_list.h.
-    base::UmaHistogramSparse(
-        "PasswordManager.LeakDetection.AccessTokenNetErrorCode",
-        -error.network_error());
     DLOG(ERROR) << "Token request error: " << error.error_message();
     delegate_->OnError(LeakDetectionError::kTokenRequestFailure);
     return;
@@ -253,10 +247,8 @@ void AuthenticatedLeakCheck::OnLookupSingleLeakResponse(
 
   AnalyzeResponse(
       std::move(response), encryption_key_,
-      TimeCallback(
-          base::BindOnce(&AuthenticatedLeakCheck::OnAnalyzeSingleLeakResponse,
-                         weak_ptr_factory_.GetWeakPtr()),
-          "PasswordManager.LeakDetection.AnalyzeSingleLeakResponseTime"));
+      base::BindOnce(&AuthenticatedLeakCheck::OnAnalyzeSingleLeakResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AuthenticatedLeakCheck::OnAnalyzeSingleLeakResponse(
