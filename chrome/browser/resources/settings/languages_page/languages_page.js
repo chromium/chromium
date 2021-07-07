@@ -359,16 +359,16 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
         item.language.code, !item.spellCheckEnabled);
   }
 
-  // <if expr="chromeos">
   /**
-   * @param {string} prospectiveUILanguage
-   * @return {string}
+   * @param {string} languageCode
+   * @return {string} The display name for a given language code.
    * @private
    */
-  getProspectiveUILanguageName_(prospectiveUILanguage) {
-    return this.languageHelper.getLanguage(prospectiveUILanguage).displayName;
+  getProspectiveUILanguageName_(languageCode) {
+    return this.languageHelper.getLanguage(languageCode).displayName;
   }
 
+  // <if expr="chromeos">
   /**
    * @param {!Event} e
    * @private

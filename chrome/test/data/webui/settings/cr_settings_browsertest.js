@@ -120,6 +120,10 @@ var CrSettingsLanguagesPageV3Test = class extends CrSettingsV3BrowserTest {
   }
 };
 
+TEST_F('CrSettingsLanguagesPageV3Test', 'LanguageSettings', function() {
+  mocha.grep(languages_page_tests.TestNames.LanguageSettings).run();
+});
+
 TEST_F('CrSettingsLanguagesPageV3Test', 'Spellcheck', function() {
   mocha.grep(languages_page_tests.TestNames.Spellcheck).run();
 });

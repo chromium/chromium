@@ -18,6 +18,7 @@ window.languages_page_tests = {};
 
 /** @enum {string} */
 window.languages_page_tests.TestNames = {
+  LanguageSettings: 'language_settings',
   Spellcheck: 'spellcheck_all',
   SpellcheckOfficialBuild: 'spellcheck_official',
   ChromeOSLanguagesSettingsUpdate: 'chromeos settings update',
@@ -85,6 +86,20 @@ suite('languages page', function() {
 
   teardown(function() {
     PolymerTest.clearBody();
+  });
+
+  suite(languages_page_tests.TestNames.LanguageSettings, function() {
+    test('decoupled language subtitle', function() {
+      const secondaryText = languagesPage.shadowRoot.querySelector(
+          '#languageSectionSecondaryText');
+      if (isChromeOS || isWindows) {
+        // Set to English from FakeLanguageSettingsPrivate.
+        assertEquals(
+            secondaryText.textContent.trim(), 'English (United States)');
+      } else {
+        assertEquals(secondaryText, null);
+      }
+    });
   });
 
   suite(languages_page_tests.TestNames.Spellcheck, function() {
