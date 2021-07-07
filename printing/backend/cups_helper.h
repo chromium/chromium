@@ -17,6 +17,18 @@ namespace printing {
 
 struct PrinterSemanticCapsAndDefaults;
 
+// Time willing to wait for individual CUPS calls to complete, such as
+// establishing a new connection or enumerating list of printers.
+constexpr int kCupsTimeoutMs = 3000;
+
+// Exclude fax and scanner devices when enumerating printers.
+// Also exclude discovered printers that have not been added locally.
+// On macOS, AirPrint destinations show up even if they're not added to
+// the system, and their capabilities cannot be read in that situation.
+// (crbug.com/1027834)
+constexpr cups_ptype_t kDestinationsFilterMask =
+    CUPS_PRINTER_FAX | CUPS_PRINTER_SCANNER | CUPS_PRINTER_DISCOVERED;
+
 // Helper wrapper around http_t structure, with connection and cleanup
 // functionality.
 class COMPONENT_EXPORT(PRINT_BACKEND) HttpConnectionCUPS {

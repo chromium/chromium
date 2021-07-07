@@ -4,6 +4,7 @@
 
 #include "printing/backend/print_backend_cups.h"
 
+#include <cups/cups.h>
 #include <cups/ppd.h>
 #include <dlfcn.h>
 #include <errno.h>
@@ -35,6 +36,27 @@
 
 namespace printing {
 
+namespace {
+
+struct CupsDestsData {
+  int num_dests;
+  cups_dest_t* dests;
+};
+
+int CaptureCupsDestCallback(void* data, unsigned flags, cups_dest_t* dest) {
+  CupsDestsData* dests_data = reinterpret_cast<CupsDestsData*>(data);
+  if (flags & CUPS_DEST_FLAGS_REMOVED) {
+    dests_data->num_dests = cupsRemoveDest(
+        dest->name, dest->instance, dests_data->num_dests, &dests_data->dests);
+  } else {
+    dests_data->num_dests =
+        cupsCopyDest(dest, dests_data->num_dests, &dests_data->dests);
+  }
+  return 1;  // Keep going.
+}
+
+}  // namespace
+
 PrintBackendCUPS::PrintBackendCUPS(const GURL& print_server_url,
                                    http_encryption_t encryption,
                                    bool blocking,
@@ -55,14 +77,7 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
   if (type_str) {
     cups_ptype_t type;
     if (base::StringToUint(type_str, &type)) {
-      // Exclude fax and scanner devices.
-      // Also exclude discovered printers that have not been added locally.
-      // On macOS, AirPrint destinations show up even if they're not added to
-      // the system, and their capabilities cannot be read in that situation.
-      // (crbug.com/1027834)
-      constexpr cups_ptype_t kMask =
-          CUPS_PRINTER_FAX | CUPS_PRINTER_SCANNER | CUPS_PRINTER_DISCOVERED;
-      if (type & kMask)
+      if (type & kDestinationsFilterMask)
         return mojom::ResultCode::kFailed;
     }
   }
@@ -125,15 +140,39 @@ mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
   DCHECK(printer_list);
   printer_list->clear();
 
-  cups_dest_t* destinations = nullptr;
-  int num_dests = GetDests(&destinations);
-  DCHECK_GE(num_dests, 0);
-  if (!num_dests) {
+  // If possible prefer to use cupsEnumDests() over GetDests(), because the
+  // latter has been found to filter out some destination values if a device
+  // reports multiple times (crbug.com/1209175), which can lead to destinations
+  // not showing as available.  Using cupsEnumDests() allows us to do our own
+  // filtering should any duplicates occur.
+  CupsDestsData dests_data = {0, nullptr};
+  ipp_status_t last_error = IPP_STATUS_OK;
+  if (print_server_url_.is_empty()) {
+    VLOG(1) << "CUPS: using cupsEnumDests to enumerate printers";
+    if (!cupsEnumDests(CUPS_DEST_FLAGS_NONE, kCupsTimeoutMs,
+                       /*cancel=*/nullptr,
+                       /*type=*/CUPS_PRINTER_LOCAL, kDestinationsFilterMask,
+                       CaptureCupsDestCallback, &dests_data)) {
+      // Free any allocations and reset data, and then fall through to common
+      // error handling below.
+      last_error = cupsLastError();
+      cupsFreeDests(dests_data.num_dests, dests_data.dests);
+      dests_data.num_dests = 0;
+      dests_data.dests = nullptr;
+    }
+  } else {
+    VLOG(1) << "CUPS: using cupsGetDests2 to enumerate printers";
+    dests_data.num_dests = GetDests(&dests_data.dests);
+    if (!dests_data.num_dests)
+      last_error = cupsLastError();
+  }
+
+  DCHECK_GE(dests_data.num_dests, 0);
+  if (!dests_data.num_dests) {
     // No destinations could mean the operation failed or that there are simply
     // no printer drivers installed.  Rely upon CUPS error code to distinguish
     // between these.
-    DCHECK(!destinations);
-    const ipp_status_t last_error = cupsLastError();
+    DCHECK(!dests_data.dests);
     if (last_error != IPP_STATUS_ERROR_NOT_FOUND) {
       VLOG(1) << "CUPS: Error getting printers from CUPS server"
               << ", server: " << print_server_url_
@@ -145,8 +184,9 @@ mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
     return mojom::ResultCode::kSuccess;
   }
 
-  for (int printer_index = 0; printer_index < num_dests; ++printer_index) {
-    const cups_dest_t& printer = destinations[printer_index];
+  for (int printer_index = 0; printer_index < dests_data.num_dests;
+       ++printer_index) {
+    const cups_dest_t& printer = dests_data.dests[printer_index];
 
     PrinterBasicInfo printer_info;
     if (PrinterBasicInfoFromCUPS(printer, &printer_info) ==
@@ -155,7 +195,7 @@ mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
     }
   }
 
-  cupsFreeDests(num_dests, destinations);
+  cupsFreeDests(dests_data.num_dests, dests_data.dests);
 
   VLOG(1) << "CUPS: Enumerated printers, server: " << print_server_url_
           << ", # of printers: " << printer_list->size();

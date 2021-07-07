@@ -11,13 +11,12 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "printing/backend/cups_helper.h"
 #include "printing/backend/cups_jobs.h"
 
 namespace printing {
 
 namespace {
-
-constexpr int kTimeoutMs = 3000;
 
 // The number of jobs we'll retrieve for a queue.  We expect a user to queue at
 // most 10 jobs per printer.  If they queue more, they won't receive updates for
@@ -86,18 +85,11 @@ class CupsConnectionImpl : public CupsConnection {
       LOG(WARNING) << "CUPS connection failed: ";
       return false;
     }
-
-    // On macOS, AirPrint destinations show up even if they're not added to the
-    // system, and their capabilities cannot be read in that situation
-    // (crbug.com/1027834). Therefore, only show discovered destinations that
-    // have been added locally. Also exclude fax and scanner devices.
-    constexpr cups_ptype_t kMask =
-        CUPS_PRINTER_FAX | CUPS_PRINTER_SCANNER | CUPS_PRINTER_DISCOVERED;
     DestinationEnumerator enumerator;
     const int success =
-        cupsEnumDests(CUPS_DEST_FLAGS_NONE, kTimeoutMs,
+        cupsEnumDests(CUPS_DEST_FLAGS_NONE, kCupsTimeoutMs,
                       /*cancel=*/nullptr,
-                      /*type=*/CUPS_PRINTER_LOCAL, kMask,
+                      /*type=*/CUPS_PRINTER_LOCAL, kDestinationsFilterMask,
                       &DestinationEnumerator::cups_callback, &enumerator);
 
     if (!success) {
@@ -199,7 +191,7 @@ class CupsConnectionImpl : public CupsConnection {
 
     cups_http_.reset(httpConnect2(host.c_str(), port, nullptr, AF_UNSPEC,
                                   cups_encryption_, blocking_ ? 1 : 0,
-                                  kTimeoutMs, nullptr));
+                                  kCupsTimeoutMs, nullptr));
     return !!cups_http_;
   }
 
