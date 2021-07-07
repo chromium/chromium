@@ -19,19 +19,13 @@ WindowControlsOverlayInputRoutingMac::WindowControlsOverlayInputRoutingMac(
       overlay_type_(overlay_type) {
   // WebAppOriginText animates and disappears during initial launch so we want
   // to observe that and update the remote view accordingly.
-  if (overlay_type_ ==
-      remote_cocoa::mojom::WindowControlsOverlayNSViewType::kWebAppFrameToolbar)
-    overlay_view_->AddObserver(this);
-  else
-    browser_non_client_frame_view_mac_->AddObserver(this);
+  overlay_view_->AddObserver(this);
+  browser_non_client_frame_view_mac_->AddObserver(this);
 }
 
 WindowControlsOverlayInputRoutingMac::~WindowControlsOverlayInputRoutingMac() {
-  if (overlay_type_ ==
-      remote_cocoa::mojom::WindowControlsOverlayNSViewType::kWebAppFrameToolbar)
-    overlay_view_->RemoveObserver(this);
-  else
-    browser_non_client_frame_view_mac_->RemoveObserver(this);
+  overlay_view_->RemoveObserver(this);
+  browser_non_client_frame_view_mac_->RemoveObserver(this);
 }
 
 void WindowControlsOverlayInputRoutingMac::OnViewBoundsChanged(

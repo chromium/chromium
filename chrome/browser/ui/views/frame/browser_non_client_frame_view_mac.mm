@@ -113,6 +113,8 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
     return;
   }
   if (browser_view()->IsFullscreen()) {
+    ToggleWebAppFrameToolbarViewVisibility();
+
     [fullscreen_toolbar_controller_ enterFullscreenMode];
   } else {
     // Exiting tab fullscreen requires updating Top UI.
@@ -218,6 +220,9 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     browser_view()->UnhideDownloadShelf();
   }
   [fullscreen_toolbar_controller_ setToolbarStyle:new_style];
+
+  ToggleWebAppFrameToolbarViewVisibility();
+
   if (![fullscreen_toolbar_controller_ isInFullscreen] ||
       old_style == new_style)
     return;
@@ -233,11 +238,6 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     // requires a re-layout when in fullscreen and shown.
     if (web_app_frame_toolbar() && !ShouldHideTopUIForFullscreen())
       InvalidateLayout();
-
-    if (ShouldHideTopUIForFullscreen() &&
-        browser_view()->IsWindowControlsOverlayEnabled()) {
-      InvalidateLayout();
-    }
   }
 }
 
@@ -587,4 +587,11 @@ void BrowserNonClientFrameViewMac::AddRoutingForWindowControlsOverlayViews() {
           this, web_app_frame_toolbar(),
           remote_cocoa::mojom::WindowControlsOverlayNSViewType::
               kWebAppFrameToolbar);
+}
+
+void BrowserNonClientFrameViewMac::ToggleWebAppFrameToolbarViewVisibility() {
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    web_app_frame_toolbar()->SetVisible(!ShouldHideTopUIForFullscreen());
+    InvalidateLayout();
+  }
 }

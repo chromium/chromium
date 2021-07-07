@@ -101,6 +101,11 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
 
   void AddRoutingForWindowControlsOverlayViews();
 
+  // Toggle the visibility of the web_app_frame_toolbar_view() for PWAs with
+  // window controls overlay display override when entering full screen or when
+  // toolbar style is changed.
+  void ToggleWebAppFrameToolbarViewVisibility();
+
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
 
