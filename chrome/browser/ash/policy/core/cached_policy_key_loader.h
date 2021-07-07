@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_CORE_CACHED_POLICY_KEY_LOADER_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_CORE_CACHED_POLICY_KEY_LOADER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_CORE_CACHED_POLICY_KEY_LOADER_H_
+#define CHROME_BROWSER_ASH_POLICY_CORE_CACHED_POLICY_KEY_LOADER_H_
 
 #include <string>
 #include <vector>
@@ -29,14 +29,13 @@ class CryptohomeMiscClient;
 namespace policy {
 
 // Loads policy key cached by session_manager.
-class CachedPolicyKeyLoaderChromeOS {
+class CachedPolicyKeyLoader {
  public:
-  CachedPolicyKeyLoaderChromeOS(
-      chromeos::CryptohomeMiscClient* cryptohome_misc_client,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const AccountId& account_id,
-      const base::FilePath& user_policy_key_dir);
-  ~CachedPolicyKeyLoaderChromeOS();
+  CachedPolicyKeyLoader(chromeos::CryptohomeMiscClient* cryptohome_misc_client,
+                        scoped_refptr<base::SequencedTaskRunner> task_runner,
+                        const AccountId& account_id,
+                        const base::FilePath& user_policy_key_dir);
+  ~CachedPolicyKeyLoader();
 
   // Invokes |callback| after loading |policy_key_|, if it hasn't been loaded
   // yet; otherwise invokes |callback| immediately.
@@ -97,11 +96,11 @@ class CachedPolicyKeyLoaderChromeOS {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Must be the last memeber.
-  base::WeakPtrFactory<CachedPolicyKeyLoaderChromeOS> weak_factory_{this};
+  base::WeakPtrFactory<CachedPolicyKeyLoader> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(CachedPolicyKeyLoaderChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(CachedPolicyKeyLoader);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_CORE_CACHED_POLICY_KEY_LOADER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_CORE_CACHED_POLICY_KEY_LOADER_H_

@@ -28,7 +28,7 @@ class CryptohomeMiscClient;
 
 namespace policy {
 
-class CachedPolicyKeyLoaderChromeOS;
+class CachedPolicyKeyLoader;
 
 // Implements a policy store backed by the Chrome OS' session_manager, which
 // takes care of persisting policy to disk and is accessed via DBus calls
@@ -97,7 +97,7 @@ class UserCloudPolicyStoreChromeOS : public UserCloudPolicyStoreBase {
   bool is_active_directory_;
 
   // Used to load the policy key provided by session manager as a file.
-  std::unique_ptr<CachedPolicyKeyLoaderChromeOS> cached_policy_key_loader_;
+  std::unique_ptr<CachedPolicyKeyLoader> cached_policy_key_loader_;
 
   base::WeakPtrFactory<UserCloudPolicyStoreChromeOS> weak_factory_{this};
 

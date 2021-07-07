@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/policy/core/cached_policy_key_loader_chromeos.h"
+#include "chrome/browser/ash/policy/core/cached_policy_key_loader.h"
 #include "chrome/browser/chromeos/policy/value_validation/onc_user_policy_value_validator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -49,11 +49,11 @@ UserCloudPolicyStoreChromeOS::UserCloudPolicyStoreChromeOS(
       session_manager_client_(session_manager_client),
       account_id_(account_id),
       is_active_directory_(is_active_directory),
-      cached_policy_key_loader_(std::make_unique<CachedPolicyKeyLoaderChromeOS>(
-          cryptohome_misc_client,
-          background_task_runner,
-          account_id,
-          user_policy_key_dir)) {}
+      cached_policy_key_loader_(
+          std::make_unique<CachedPolicyKeyLoader>(cryptohome_misc_client,
+                                                  background_task_runner,
+                                                  account_id,
+                                                  user_policy_key_dir)) {}
 
 UserCloudPolicyStoreChromeOS::~UserCloudPolicyStoreChromeOS() {}
 

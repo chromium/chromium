@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/cached_policy_key_loader_chromeos.h"
+#include "chrome/browser/ash/policy/core/cached_policy_key_loader.h"
 
 #include <memory>
 
@@ -34,7 +34,7 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
 
-    cached_policy_key_loader_ = std::make_unique<CachedPolicyKeyLoaderChromeOS>(
+    cached_policy_key_loader_ = std::make_unique<CachedPolicyKeyLoader>(
         &cryptohome_misc_client_, task_environment_.GetMainThreadTaskRunner(),
         account_id_, user_policy_keys_dir());
   }
@@ -75,7 +75,7 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
   const cryptohome::AccountIdentifier cryptohome_id_ =
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
 
-  std::unique_ptr<CachedPolicyKeyLoaderChromeOS> cached_policy_key_loader_;
+  std::unique_ptr<CachedPolicyKeyLoader> cached_policy_key_loader_;
 
   // Counts how many times OnPolicyKeyLoaded() has been invoked.
   int policy_key_loaded_callback_invocations_ = 0;

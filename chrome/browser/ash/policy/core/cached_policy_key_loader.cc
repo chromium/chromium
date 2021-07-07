@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/cached_policy_key_loader_chromeos.h"
+#include "chrome/browser/ash/policy/core/cached_policy_key_loader.h"
 
 #include <stddef.h>
 
@@ -33,7 +33,7 @@ const size_t kKeySizeLimit = 16 * 1024;
 
 }  // namespace
 
-CachedPolicyKeyLoaderChromeOS::CachedPolicyKeyLoaderChromeOS(
+CachedPolicyKeyLoader::CachedPolicyKeyLoader(
     chromeos::CryptohomeMiscClient* cryptohome_misc_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const AccountId& account_id,
@@ -43,10 +43,9 @@ CachedPolicyKeyLoaderChromeOS::CachedPolicyKeyLoaderChromeOS(
       account_id_(account_id),
       user_policy_key_dir_(user_policy_key_dir) {}
 
-CachedPolicyKeyLoaderChromeOS::~CachedPolicyKeyLoaderChromeOS() {}
+CachedPolicyKeyLoader::~CachedPolicyKeyLoader() {}
 
-void CachedPolicyKeyLoaderChromeOS::EnsurePolicyKeyLoaded(
-    base::OnceClosure callback) {
+void CachedPolicyKeyLoader::EnsurePolicyKeyLoaded(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (key_loaded_) {
@@ -70,12 +69,11 @@ void CachedPolicyKeyLoaderChromeOS::EnsurePolicyKeyLoaded(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_)
           .account_id());
   cryptohome_misc_client_->GetSanitizedUsername(
-      request,
-      base::BindOnce(&CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername,
-                     weak_factory_.GetWeakPtr()));
+      request, base::BindOnce(&CachedPolicyKeyLoader::OnGetSanitizedUsername,
+                              weak_factory_.GetWeakPtr()));
 }
 
-bool CachedPolicyKeyLoaderChromeOS::LoadPolicyKeyImmediately() {
+bool CachedPolicyKeyLoader::LoadPolicyKeyImmediately() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   user_data_auth::GetSanitizedUsernameRequest request;
@@ -95,8 +93,7 @@ bool CachedPolicyKeyLoaderChromeOS::LoadPolicyKeyImmediately() {
   return true;
 }
 
-void CachedPolicyKeyLoaderChromeOS::ReloadPolicyKey(
-    base::OnceClosure callback) {
+void CachedPolicyKeyLoader::ReloadPolicyKey(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   key_loaded_callbacks_.push_back(std::move(callback));
@@ -117,17 +114,15 @@ void CachedPolicyKeyLoaderChromeOS::ReloadPolicyKey(
         cryptohome::CreateAccountIdentifierFromAccountId(account_id_)
             .account_id());
     cryptohome_misc_client_->GetSanitizedUsername(
-        request,
-        base::BindOnce(&CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername,
-                       weak_factory_.GetWeakPtr()));
+        request, base::BindOnce(&CachedPolicyKeyLoader::OnGetSanitizedUsername,
+                                weak_factory_.GetWeakPtr()));
   } else {
     TriggerLoadPolicyKey();
   }
 }
 
 // static
-std::string CachedPolicyKeyLoaderChromeOS::LoadPolicyKey(
-    const base::FilePath& path) {
+std::string CachedPolicyKeyLoader::LoadPolicyKey(const base::FilePath& path) {
   std::string key;
 
   if (!base::PathExists(path)) {
@@ -154,18 +149,18 @@ std::string CachedPolicyKeyLoaderChromeOS::LoadPolicyKey(
   return key;
 }
 
-void CachedPolicyKeyLoaderChromeOS::TriggerLoadPolicyKey() {
+void CachedPolicyKeyLoader::TriggerLoadPolicyKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
-      base::BindOnce(&CachedPolicyKeyLoaderChromeOS::LoadPolicyKey,
+      base::BindOnce(&CachedPolicyKeyLoader::LoadPolicyKey,
                      cached_policy_key_path_),
-      base::BindOnce(&CachedPolicyKeyLoaderChromeOS::OnPolicyKeyLoaded,
+      base::BindOnce(&CachedPolicyKeyLoader::OnPolicyKeyLoaded,
                      weak_factory_.GetWeakPtr()));
 }
 
-void CachedPolicyKeyLoaderChromeOS::OnPolicyKeyLoaded(const std::string& key) {
+void CachedPolicyKeyLoader::OnPolicyKeyLoaded(const std::string& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cached_policy_key_ = key;
@@ -175,7 +170,7 @@ void CachedPolicyKeyLoaderChromeOS::OnPolicyKeyLoaded(const std::string& key) {
   NotifyAndClearCallbacks();
 }
 
-void CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername(
+void CachedPolicyKeyLoader::OnGetSanitizedUsername(
     absl::optional<user_data_auth::GetSanitizedUsernameReply> reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reply.has_value() || reply->sanitized_username().empty()) {
@@ -192,7 +187,7 @@ void CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername(
   TriggerLoadPolicyKey();
 }
 
-void CachedPolicyKeyLoaderChromeOS::NotifyAndClearCallbacks() {
+void CachedPolicyKeyLoader::NotifyAndClearCallbacks() {
   std::vector<base::OnceClosure> callbacks = std::move(key_loaded_callbacks_);
   key_loaded_callbacks_.clear();
 
