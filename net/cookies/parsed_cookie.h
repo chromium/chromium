@@ -54,6 +54,7 @@ class NET_EXPORT ParsedCookie {
       CookieSameSiteString* samesite_string = nullptr) const;
   CookiePriority Priority() const;
   bool IsSameParty() const { return same_party_index_ != 0; }
+  bool IsPartitioned() const { return partitioned_index_ != 0; }
   bool HasTruncatedNameOrValue() const { return truncated_name_or_value_; }
 
   // Returns the number of attributes, for example, returning 2 for:
@@ -81,6 +82,7 @@ class NET_EXPORT ParsedCookie {
   bool SetSameSite(const std::string& same_site);
   bool SetPriority(const std::string& priority);
   bool SetIsSameParty(bool is_same_party);
+  bool SetIsPartitioned(bool is_partitioned);
 
   // Returns the cookie description as it appears in a HTML response header.
   std::string ToCookieLine() const;
@@ -160,6 +162,7 @@ class NET_EXPORT ParsedCookie {
   size_t same_site_index_ = 0;
   size_t priority_index_ = 0;
   size_t same_party_index_ = 0;
+  size_t partitioned_index_ = 0;
   // For metrics on cookie name/value truncation. See usage at the bottom of
   // `ParseTokenValuePairs()` for more details.
   bool truncated_name_or_value_ = false;

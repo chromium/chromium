@@ -61,6 +61,7 @@ const char kHttpOnlyTokenName[] = "httponly";
 const char kSameSiteTokenName[] = "samesite";
 const char kPriorityTokenName[] = "priority";
 const char kSamePartyTokenName[] = "sameparty";
+const char kPartitionedTokenName[] = "partitioned";
 
 const char kTerminator[] = "\n\r\0";
 const int kTerminatorLen = sizeof(kTerminator) - 1;
@@ -228,6 +229,10 @@ bool ParsedCookie::SetIsSameParty(bool is_same_party) {
   return SetBool(&same_party_index_, kSamePartyTokenName, is_same_party);
 }
 
+bool ParsedCookie::SetIsPartitioned(bool is_partitioned) {
+  return SetBool(&partitioned_index_, kPartitionedTokenName, is_partitioned);
+}
+
 std::string ParsedCookie::ToCookieLine() const {
   std::string out;
   for (auto it = pairs_.begin(); it != pairs_.end(); ++it) {
@@ -239,7 +244,8 @@ std::string ParsedCookie::ToCookieLine() const {
     // we need to consider whether the name component is a special token.
     if (it == pairs_.begin() ||
         (it->first != kSecureTokenName && it->first != kHttpOnlyTokenName &&
-         it->first != kSamePartyTokenName)) {
+         it->first != kSamePartyTokenName &&
+         it->first != kPartitionedTokenName)) {
       out.append("=");
       out.append(it->second);
     }
@@ -480,6 +486,8 @@ void ParsedCookie::SetupAttributes() {
       priority_index_ = i;
     } else if (pairs_[i].first == kSamePartyTokenName) {
       same_party_index_ = i;
+    } else if (pairs_[i].first == kPartitionedTokenName) {
+      partitioned_index_ = i;
     } else {
       /* some attribute we don't know or don't care about. */
     }
@@ -545,9 +553,10 @@ void ParsedCookie::ClearAttributePair(size_t index) {
   if (index == 0)
     return;
 
-  size_t* indexes[] = {&path_index_,      &domain_index_,   &expires_index_,
-                       &maxage_index_,    &secure_index_,   &httponly_index_,
-                       &same_site_index_, &priority_index_, &same_party_index_};
+  size_t* indexes[] = {&path_index_,       &domain_index_,   &expires_index_,
+                       &maxage_index_,     &secure_index_,   &httponly_index_,
+                       &same_site_index_,  &priority_index_, &same_party_index_,
+                       &partitioned_index_};
   for (size_t* attribute_index : indexes) {
     if (*attribute_index == index)
       *attribute_index = 0;
