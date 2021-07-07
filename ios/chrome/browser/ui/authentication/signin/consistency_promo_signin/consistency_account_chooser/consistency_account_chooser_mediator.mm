@@ -115,7 +115,7 @@
 - (void)updateIdentityItemConfigurator:(IdentityItemConfigurator*)configurator
                     withChromeIdentity:(ChromeIdentity*)identity {
   configurator.gaiaID = identity.gaiaID;
-  configurator.name = identity.userGivenName;
+  configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
   configurator.avatar = [self.avatarCache resizedAvatarForIdentity:identity];
   configurator.selected = [identity isEqual:self.selectedIdentity];
