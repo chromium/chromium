@@ -18,7 +18,7 @@ promise_test(async t => {
   // Wait until the test sends us the results.
   const result = await nextValueFromServer(key);
 
-  assert_equals(result, "false", "initial document.prerendering");
+  assert_equals(result, "blocked by prefetch-src", "initial document.prerendering");
 }, 'Test if CSP prefetch-src prevent prerendering correctly.');
 
 </script>

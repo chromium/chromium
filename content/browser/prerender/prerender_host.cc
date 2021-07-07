@@ -327,15 +327,29 @@ bool PrerenderHost::StartPrerendering() {
 }
 
 void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
+  // Observe navigation only in the prerendering main frame.
   if (navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_)
     return;
 
   // Stop observing the events about the prerendered contents.
   Observe(nullptr);
 
-  // Cancel if the initial prerender navigation hasn't committed.
-  if (!navigation_handle->HasCommitted()) {
-    Cancel(FinalStatus::kNavigationNotCommitted);
+  // Cancel prerendering on navigation request failure.
+  //
+  // Check net::Error here rather than PrerenderNavigationThrottle as CSP
+  // blocking occurs before NavigationThrottles so cannot be observed in
+  // NavigationThrottle::WillFailRequest().
+  net::Error net_error = navigation_handle->GetNetErrorCode();
+  absl::optional<FinalStatus> status;
+  if (net_error == net::Error::ERR_BLOCKED_BY_CSP) {
+    status = FinalStatus::kNavigationRequestBlockedByCsp;
+  } else if (net_error != net::Error::OK) {
+    status = FinalStatus::kNavigationRequestNetworkError;
+  } else if (!navigation_handle->HasCommitted()) {
+    status = FinalStatus::kNavigationNotCommitted;
+  }
+  if (status.has_value()) {
+    Cancel(*status);
     return;
   }
 

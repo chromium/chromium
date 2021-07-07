@@ -31,20 +31,20 @@ if (!run_test) {
   url.searchParams.append('run-test', '');
 
   // Observe `securitypolicyviolation` event that will be triggered by
-  // startPrerendering(), then navigate to the same url.
+  // startPrerendering().
   document.addEventListener('securitypolicyviolation', e => {
     if (e.effectiveDirective != 'prefetch-src') {
       const message = 'unexpected effective directive: ' + e.effectiveDirective;
       writeValueToServer(key, message).then(() => { window.close(); });
     } else {
-      window.location = url.toString();
+      const message = 'blocked by prefetch-src';
+      writeValueToServer(key, message).then(() => { window.close(); });
     }
   });
 
   startPrerendering(url.toString());
 } else {
-  // Tell the harness the initial document.prerendering value.
-  writeValueToServer(key, document.prerendering);
+  writeValueToServer(key, 'unexpected prerendering');
   window.close();
 }
 

@@ -1973,10 +1973,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPPrefetchSrc) {
     test::PrerenderHostRegistryObserver observer(*web_contents_impl());
     AddPrerenderAsync(disallowed_url);
     observer.WaitForTrigger(disallowed_url);
-    EXPECT_FALSE(HasHostForUrl(disallowed_url));
+    int host_id = GetHostForUrl(disallowed_url);
+    test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
     console_observer.Wait();
     EXPECT_EQ(1u, console_observer.messages().size());
     EXPECT_EQ(GetRequestCount(disallowed_url), 0);
+    host_observer.WaitForDestroyed();
     histogram_tester.ExpectUniqueSample(
         "Prerender.Experimental.PrerenderHostFinalStatus",
         PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp, 1);
@@ -2031,10 +2033,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CSPDefaultSrc) {
     test::PrerenderHostRegistryObserver observer(*web_contents_impl());
     AddPrerenderAsync(disallowed_url);
     observer.WaitForTrigger(disallowed_url);
-    EXPECT_FALSE(HasHostForUrl(disallowed_url));
+    int host_id = GetHostForUrl(disallowed_url);
+    test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
     console_observer.Wait();
     EXPECT_EQ(1u, console_observer.messages().size());
     EXPECT_EQ(GetRequestCount(disallowed_url), 0);
+    host_observer.WaitForDestroyed();
     histogram_tester.ExpectUniqueSample(
         "Prerender.Experimental.PrerenderHostFinalStatus",
         PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp, 1);
@@ -2686,9 +2690,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kActivated, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostCancelReasonDuringActivation",
-      PrerenderHost::FinalStatus::kNavigationRequestFailure, 1);
 }
 
 // Ensures WebContents::OpenURL to a frame in a currently activating (i.e.

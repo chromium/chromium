@@ -58,7 +58,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kInvalidSchemeRedirect = 5,
     kInvalidSchemeNavigation = 6,
     kInProgressNavigation = 7,
-    kNavigationRequestFailure = 8,
+    // kNavigationRequestFailure = 8,  // No longer used.
     kNavigationRequestBlockedByCsp = 9,
     kMainFrameNavigation = 10,
     kMojoBinderPolicy = 11,
@@ -70,7 +70,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kNavigationNotCommitted = 17,
     kNavigationBadHttpStatus = 18,
     kClientCertRequested = 19,
-    kMaxValue = kClientCertRequested,
+    kNavigationRequestNetworkError = 20,
+    kMaxValue = kNavigationRequestNetworkError,
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,

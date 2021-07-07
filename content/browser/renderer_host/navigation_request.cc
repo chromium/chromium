@@ -3115,27 +3115,6 @@ void NavigationRequest::OnRequestFailedInternal(
   extended_error_code_ = status.extended_error_code;
   resolve_error_info_ = status.resolve_error_info;
 
-  // Abandon the prerender host if the request failed for the main frame
-  // navigation. The host may be already abandoned by other prerendering
-  // specific cancellation code path, i.e. PrerenderNavigationThrottle did it
-  // with a dedicated FinalStatus code. In such cases, following call does
-  // nothing.
-  if (IsInMainFrame() && frame_tree_node_->frame_tree()->is_prerendering()) {
-    auto final_status = PrerenderHost::FinalStatus::kNavigationRequestFailure;
-    if (net_error_ == net::Error::ERR_BLOCKED_BY_CSP) {
-      final_status = PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp;
-    }
-    GetPrerenderHostRegistry().CancelHost(GetFrameTreeNodeId(), final_status);
-    // We must continue with this function because CancelHost() does
-    // not necessarily cancel the host if activation already started,
-    // so this NavigationRequest remains live and the DidFinishNavigation()
-    // method is not called and callers waiting for this navigation to finish
-    // will never know it was cancelled.
-    // TODO(falken): Figure out what to do after
-    // https://chromium-review.googlesource.com/c/chromium/src/+/2830778 lands,
-    // which will restart the navigation request in CancelHost().
-  }
-
   if (MaybeCancelFailedNavigation())
     return;
 
