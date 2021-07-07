@@ -16,11 +16,9 @@
 
 namespace reporting {
 
-// TODO(b/189130411): Make this feature default enabled once it has been fully
-// tested and available for launch.
 const base::Feature kCompressReportingPipeline{
     CompressionModule::kCompressReportingFeature,
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // static
 const char CompressionModule::kCompressReportingFeature[] =
@@ -103,10 +101,10 @@ bool CompressionModule::is_enabled() {
 }
 
 CompressionModule::CompressionModule(
-    uint64_t compression_threshold_,
-    CompressionInformation::CompressionAlgorithm compression_type_)
-    : compression_type_(compression_type_),
-      compression_threshold_(compression_threshold_) {}
+    uint64_t compression_threshold,
+    CompressionInformation::CompressionAlgorithm compression_type)
+    : compression_type_(compression_type),
+      compression_threshold_(compression_threshold) {}
 CompressionModule::~CompressionModule() = default;
 
 void CompressionModule::CompressRecordSnappy(

@@ -55,7 +55,7 @@ using ::testing::WithoutArgs;
 namespace reporting {
 namespace {
 
-constexpr int kCompressionThreshold = 512;
+constexpr size_t kCompressionThreshold = 512;
 
 // Context of single decryption. Self-destructs upon completion or failure.
 class SingleDecryptionContext {

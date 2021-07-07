@@ -46,7 +46,7 @@ namespace {
 
 // Metadata file name prefix.
 const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
-constexpr int kCompressionThreshold = 512;
+constexpr size_t kCompressionThreshold = 512;
 
 class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
  public:
@@ -277,12 +277,6 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     options_.set_directory(base::FilePath(location_.GetPath()))
         .set_single_file_size(GetParam());
-  }
-
-  void EnableCompression() {
-    // TODO(b/189130411) Remove once compression is enabled by default.
-    scoped_feature_list_.InitFromCommandLine(
-        {CompressionModule::kCompressReportingFeature}, {});
   }
 
   void TearDown() override {
@@ -1208,7 +1202,6 @@ TEST_P(StorageQueueTest, WriteEncryptFailure) {
 }
 
 TEST_P(StorageQueueTest, EnableCompression) {
-  EnableCompression();
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);

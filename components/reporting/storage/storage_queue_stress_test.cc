@@ -45,7 +45,7 @@ using ::testing::WithArg;
 namespace reporting {
 namespace {
 
-constexpr int kCompressionThreshold = 512;
+constexpr size_t kCompressionThreshold = 512;
 constexpr size_t kTotalQueueStarts = 4;
 constexpr size_t kTotalWritesPerStart = 16;
 constexpr char kDataPrefix[] = "Rec";
