@@ -220,9 +220,7 @@ class CustomFieldConverter : public ValueConverter<FieldType> {
       : convert_func_(convert_func) {}
 
   bool Convert(const base::Value& value, FieldType* field) const override {
-    std::string string_value;
-    return value.GetAsString(&string_value) &&
-        convert_func_(string_value, field);
+    return value.is_string() && convert_func_(value.GetString(), field);
   }
 
  private:
