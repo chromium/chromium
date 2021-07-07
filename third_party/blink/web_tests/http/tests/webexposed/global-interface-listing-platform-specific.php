@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+<?php
+  header("Cross-Origin-Opener-Policy: same-origin");
+  header("Cross-Origin-Embedder-Policy: require-corp");
+?><!DOCTYPE html>
 <script>
 // Save the list of property names of the global object just after page load.
 var propertyNamesInGlobal = Object.getOwnPropertyNames(this);

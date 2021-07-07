@@ -2,7 +2,7 @@
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-Starting worker: resources/global-constructors-attributes-worker.js
+Starting worker: resources/global-constructors-attributes-worker.js.php
 PASS [Worker] Object.getOwnPropertyDescriptor(global, 'DataView').value is DataView
 PASS [Worker] Object.getOwnPropertyDescriptor(global, 'DataView').hasOwnProperty('get') is false
 PASS [Worker] Object.getOwnPropertyDescriptor(global, 'DataView').hasOwnProperty('set') is false

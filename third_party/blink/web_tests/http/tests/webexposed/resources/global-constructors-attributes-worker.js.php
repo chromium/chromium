@@ -1,4 +1,8 @@
-if (this.importScripts)
+<?php
+  header("Content-Type: application/javascript");
+  header("Cross-Origin-Opener-Policy: same-origin");
+  header("Cross-Origin-Embedder-Policy: require-corp");
+?>if (this.importScripts)
     importScripts('/js-test-resources/js-test.js');
 
 description("Test to ensure that global constructors in workers environment have the right attributes");

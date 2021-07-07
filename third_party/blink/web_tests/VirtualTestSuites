@@ -1125,7 +1125,7 @@
   {
     "prefix": "anonymous-iframe",
     "bases": ["http/tests/webexposed/element-instance-property-listing.html",
-              "http/tests/webexposed/global-interface-listing.html"],
+              "http/tests/webexposed/global-interface-listing.php"],
     "args": ["--enable-blink-features=AnonymousIframe"]
   },
   {

@@ -1,4 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<?php
+  header("Cross-Origin-Opener-Policy: same-origin");
+  header("Cross-Origin-Embedder-Policy: require-corp");
+?><!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
 <script src="/js-test-resources/js-test.js"></script>

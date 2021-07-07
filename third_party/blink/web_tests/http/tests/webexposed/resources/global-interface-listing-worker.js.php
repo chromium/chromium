@@ -1,4 +1,8 @@
-// Avoid polluting the global scope.
+<?php
+  header("Content-Type: application/javascript");
+  header("Cross-Origin-Opener-Policy: same-origin");
+  header("Cross-Origin-Embedder-Policy: require-corp");
+?>// Avoid polluting the global scope.
 (function(globalObject) {
 
   // Save the list of property names of the global object before loading other scripts.
