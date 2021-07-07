@@ -79,7 +79,7 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
     return;
 
   key_.set<IsOffscreenField>(context->Host()->IsOffscreenCanvas());
-  key_.set<IsOffscreenField>(context->IsAccelerated());
+  key_.set<IsAcceleratedField>(context->IsAccelerated());
   key_.set<ContextTypeField>(context->GetContextType());
   // The padding field ensures at least one bit is set in the key in order
   // to avoid a key == 0, which is not supported by WTF::HashSet

@@ -3273,7 +3273,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="PartitionAlloc"/>
   </token>
   <token key="Context">
-    <variant name="2D"/>
+    <variant name="2D.Accelerated"/>
+    <variant name="2D.Unaccelerated"/>
     <variant name="ImageBitmap"/>
     <variant name="WebGL"/>
     <variant name="WebGL2"/>
