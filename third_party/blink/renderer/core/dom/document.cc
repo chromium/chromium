@@ -4574,6 +4574,8 @@ void Document::LayoutViewportWasResized() {
       load_event_progress_ == kLoadEventInProgress) {
     EnqueueResizeEvent();
     EnqueueVisualViewportResizeEvent();
+    if (GetFrame()->IsMainFrame() && !Printing())
+      probe::DidResizeMainFrame(GetFrame());
   }
   if (!HasViewportUnits())
     return;

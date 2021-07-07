@@ -3853,10 +3853,8 @@ void LocalFrameView::SetLayoutSizeInternal(const IntSize& size) {
   if (!document || !document->IsActive())
     return;
   document->LayoutViewportWasResized();
-  if (frame_->IsMainFrame()) {
+  if (frame_->IsMainFrame())
     TextAutosizer::UpdatePageInfoInAllFrames(frame_);
-    probe::DidResizeMainFrame(frame_.Get());
-  }
 }
 
 void LocalFrameView::DidChangeScrollOffset() {
