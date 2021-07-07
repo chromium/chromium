@@ -9,6 +9,7 @@
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/android/metrics/jni_headers/AndroidSessionDurationsServiceState_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile_manager.h"
 
 namespace {
 class IncognitoSessionDurationsMetricsRecorder {
@@ -154,7 +155,10 @@ void AndroidSessionDurationsService::GetIncognitoSessionData(
 void AndroidSessionDurationsService::RestoreIncognitoSession(
     base::Time session_start,
     base::TimeDelta last_reported_duration) {
-  DCHECK(incognito_session_metrics_recorder_);
+  // TODO(https://crbug.com/1226462): Change back to DCHECK after investigation
+  // of the crash.
+  CHECK(incognito_session_metrics_recorder_);
+
   incognito_session_metrics_recorder_->RestoreSession(session_start,
                                                       last_reported_duration);
 }
@@ -192,6 +196,11 @@ void JNI_AndroidSessionDurationsServiceState_RestoreAndroidSessionDurationsServi
 
   AndroidSessionDurationsService* duration_service =
       AndroidSessionDurationsServiceFactory::GetForProfile(profile);
+
+  // TODO(https://crbug.com/1226462): Remove after investigation of the crash.
+  CHECK_EQ(profile,
+           ProfileManager::GetLastUsedProfile()->GetPrimaryOTRProfile(false));
+  CHECK(duration_service);
 
   base::Time session_start_time = base::Time::FromJavaTime(
       Java_AndroidSessionDurationsServiceState_getSessionStartTime(
