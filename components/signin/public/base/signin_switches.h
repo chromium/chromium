@@ -33,11 +33,6 @@ extern const base::Feature kDeprecateMenagerieAPI;
 extern const base::Feature kWipeDataOnChildAccountSignin;
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Killswitch for PO2TS migration to AccountManagerFacade.
-extern const base::Feature kUseAccountManagerFacade;
-#endif
-
 #if defined(OS_ANDROID) || defined(OS_IOS)
 // Features to trigger the startup sign-in promo at boot.
 extern const base::Feature kForceStartupSigninPromo;

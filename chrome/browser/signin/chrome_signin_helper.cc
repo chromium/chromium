@@ -66,10 +66,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
-#include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -331,13 +327,6 @@ void ProcessMirrorHeader(
   }
 
   // 4. Displaying the Account Manager for managing accounts.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile, chromeos::settings::mojom::kMyAccountsSubpagePath);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ::GetAccountManagerFacade(profile->GetPath().value())
       ->ShowManageAccountsSettings();
   return;
