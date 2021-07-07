@@ -16,6 +16,7 @@ def CheckConversionStorageSchemaModification(input_api, output_api):
   Whenever any of the following files is changed:
     - conversion_storage_sql.cc
     - conversion_storage_sql_migrations.cc
+    - rate_limit_table.cc
   and kCurrentVersionNumber stays intact, this check returns a
   presubmit warning to make sure the value is updated if necessary.
   """
@@ -27,7 +28,8 @@ def CheckConversionStorageSchemaModification(input_api, output_api):
     basename = input_api.basename(affected_file.LocalPath())
 
     if (basename == 'conversion_storage_sql_migrations.cc' or
-        basename == 'conversion_storage_sql.cc'):
+        basename == 'conversion_storage_sql.cc' or
+        basename == 'rate_limit_table.cc'):
       database_files_changed = True
 
     if basename == 'conversion_storage_sql.cc':
