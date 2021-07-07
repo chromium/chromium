@@ -4,8 +4,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 
-#include <ostream>
-
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
