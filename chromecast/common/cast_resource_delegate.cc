@@ -35,7 +35,7 @@ CastResourceDelegate::~CastResourceDelegate() {
 
 base::FilePath CastResourceDelegate::GetPathForResourcePack(
     const base::FilePath& pack_path,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return pack_path;
 }
 
@@ -62,7 +62,7 @@ gfx::Image CastResourceDelegate::GetNativeImageNamed(int resource_id) {
 
 base::RefCountedStaticMemory* CastResourceDelegate::LoadDataResourceBytes(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return NULL;
 }
 
@@ -71,9 +71,10 @@ absl::optional<std::string> CastResourceDelegate::LoadDataResourceString(
   return absl::nullopt;
 }
 
-bool CastResourceDelegate::GetRawDataResource(int resource_id,
-                                              ui::ScaleFactor scale_factor,
-                                              base::StringPiece* value) const {
+bool CastResourceDelegate::GetRawDataResource(
+    int resource_id,
+    ui::ResourceScaleFactor scale_factor,
+    base::StringPiece* value) const {
   return false;
 }
 
