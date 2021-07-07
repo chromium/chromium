@@ -4188,6 +4188,8 @@ ci.fyi_coverage_builder(
     ),
     use_clang_coverage = True,
     coverage_test_types = ["overall", "unit"],
+    # last commit of 2020
+    coverage_reference_commit = "c942891373445199f69afd905965ad1e89cdee09",
     triggered_by = [],
 )
 
