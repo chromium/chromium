@@ -333,6 +333,8 @@ component("bluetooth") {
         "bluez/bluetooth_local_gatt_descriptor_bluez.h",
         "bluez/bluetooth_local_gatt_service_bluez.cc",
         "bluez/bluetooth_local_gatt_service_bluez.h",
+        "bluez/bluetooth_low_energy_scan_session_bluez.cc",
+        "bluez/bluetooth_low_energy_scan_session_bluez.h",
         "bluez/bluetooth_pairing_bluez.cc",
         "bluez/bluetooth_pairing_bluez.h",
         "bluez/bluetooth_remote_gatt_characteristic_bluez.cc",
