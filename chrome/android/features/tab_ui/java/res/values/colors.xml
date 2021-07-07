@@ -54,4 +54,10 @@
 
     <color name="incognito_tab_title_color">@color/baseline_neutral_100</color>
     <color name="incognito_tab_title_selected_color">@color/baseline_primary_800</color>
+
+    <color name="incognito_tab_thumbnail_placeholder_color">@color/baseline_neutral_variant_200_alpha_15</color>
+    <color name="incognito_tab_thumbnail_placeholder_selected_color">@color/baseline_primary_100</color>
+
+    <color name="incognito_tab_tile_number_color">@color/baseline_neutral_100</color>
+    <color name="incognito_tab_tile_number_selected_color">@color/baseline_primary_900</color>
 </resources>

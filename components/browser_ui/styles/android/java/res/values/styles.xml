@@ -202,6 +202,7 @@
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_100</item>
         <item name="colorOnBackground">@color/modern_grey_900</item>
         <item name="colorOnPrimary">@color/modern_white</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
         <item name="colorOnSurface">@color/modern_grey_900</item>
         <item name="colorOnSurfaceVariant">@color/modern_grey_700</item>
         <item name="colorOnSurfaceInverse">@color/modern_white</item>
