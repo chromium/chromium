@@ -2511,7 +2511,7 @@ TEST_P(QuicStreamFactoryTest, CloseSessionsOnIPAddressChanged) {
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   stream = CreateStream(&request2);
 
-  // Check a new active session exisits for the destination and the old session
+  // Check a new active session exists for the destination and the old session
   // is no longer live.
   EXPECT_TRUE(HasActiveSession(host_port_pair_));
   QuicChromiumClientSession* session2 = GetActiveSession(host_port_pair_);
@@ -2620,7 +2620,7 @@ TEST_P(QuicStreamFactoryTest, GoAwaySessionsOnIPAddressChanged) {
   std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
   EXPECT_TRUE(stream2.get());
 
-  // Check an active session exisits for the destination.
+  // Check an active session exists for the destination.
   EXPECT_TRUE(HasActiveSession(host_port_pair_));
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   QuicChromiumClientSession* session2 = GetActiveSession(host_port_pair_);

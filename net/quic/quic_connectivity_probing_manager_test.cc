@@ -514,7 +514,7 @@ TEST_F(QuicConnectivityProbingManagerTest, DoNotCancelProbing) {
   EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
 
   // Request cancel probing for |newPeerAddress| on |testNetworkHandle| doesn't
-  // affect the exisiting probing.
+  // affect the existing probing.
   probing_manager_.CancelProbing(testNetworkHandle, newPeerAddress);
   EXPECT_TRUE(
       probing_manager_.IsUnderProbing(testNetworkHandle, testPeerAddress));
