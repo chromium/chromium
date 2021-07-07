@@ -99,6 +99,7 @@ CSSColorInterpolationType::MaybeCreateInterpolableColor(const CSSValue& value) {
   return CreateInterpolableColor(identifier_value->GetValueID());
 }
 
+// Spec link: https://www.w3.org/TR/css-color-4/#interpolation-alpha
 Color CSSColorInterpolationType::GetRGBA(const InterpolableValue& value) {
   const InterpolableList& list = To<InterpolableList>(value);
   DCHECK_GE(list.length(), kAlpha);
@@ -107,6 +108,9 @@ Color CSSColorInterpolationType::GetRGBA(const InterpolableValue& value) {
     const InterpolableValue& current_value = *(list.Get(i));
     color[i] = To<InterpolableNumber>(current_value).Value();
   }
+  // Prevent dividing 0
+  if (color[kAlpha] == 0)
+    return Color::kTransparent;
   return Color(MakeRGBA(std::round(color[kRed] / color[kAlpha]),
                         std::round(color[kGreen] / color[kAlpha]),
                         std::round(color[kBlue] / color[kAlpha]),

@@ -29,4 +29,10 @@ TEST(CSSColorInterpolationTypeTest, GetRGBA3) {
                 *CSSColorInterpolationType::CreateInterpolableColor(color)));
 }
 
+TEST(CSSColorInterpolationTypeTest, GetRGBA4) {
+  Color color(35, 140, 10, 0);
+  EXPECT_EQ(Color(MakeRGBA(0, 0, 0, 0)),
+            CSSColorInterpolationType::GetRGBA(
+                *CSSColorInterpolationType::CreateInterpolableColor(color)));
+}
 }  // namespace blink
