@@ -543,11 +543,6 @@ This dictionary appears in Java-related targets (e.g. `java_library`,
 `android_apk` and others), and contains information related to the compilation
 of Java sources, class files, and jars.
 
-* `javac['resource_packages']`
-For `java_library` targets, this is the list of package names for all resource
-dependencies for the current target. Order must match the one from
-`javac['srcjars']`. For other target types, this key does not exist.
-
 * `javac['classpath']`
 The classpath used to compile this target when annotation processors are
 present.
@@ -1494,10 +1489,6 @@ def main(argv):
       deps_info['res_sources_path'] = options.res_sources_path
 
   if options.requires_android and options.type == 'java_library':
-    # Used to strip out R.class for android_prebuilt()s.
-    config['javac']['resource_packages'] = [
-        c['package_name'] for c in all_resources_deps if 'package_name' in c
-    ]
     if options.package_name:
       deps_info['package_name'] = options.package_name
 
