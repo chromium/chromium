@@ -1529,6 +1529,10 @@ class AutofillMetrics {
       FormSignature form_signature,
       FormInteractionsUkmLogger* form_interactions_ukm_logger);
 
+  // Logs if every non-empty field in a submitted form was filled by Autofill.
+  // If |is_address| an address was filled, otherwise it was a credit card.
+  static void LogAutofillPerfectFilling(bool is_address, bool perfect_filling);
+
   // This should be called when determining the heuristic types for a form's
   // fields.
   static void LogDetermineHeuristicTypesTiming(const base::TimeDelta& duration);

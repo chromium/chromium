@@ -1177,6 +1177,11 @@ void FormStructure::LogQualityMetrics(
   // Use the same timestamp on UKM Metrics generated within this method's scope.
   AutofillMetrics::UkmTimestampPin timestamp_pin(form_interactions_ukm_logger);
 
+  // Determine the type of the form.
+  DenseSet<FormType> form_types = GetFormTypes();
+  bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
+  bool address_form = base::Contains(form_types, FormType::kAddressForm);
+
   size_t num_detected_field_types = 0;
   size_t num_edited_autofilled_fields = 0;
   size_t num_of_accepted_autofilled_fields = 0;
@@ -1185,6 +1190,9 @@ void FormStructure::LogQualityMetrics(
   bool did_autofill_some_possible_fields = false;
   bool is_for_credit_card = IsCompleteCreditCardForm();
   bool has_upi_vpa_field = false;
+  // A perfectly filled form is submitted as it was filled from Autofill without
+  // subsequent changes.
+  bool perfect_filling = true;
 
   // Determine the correct suffix for the metric, depending on whether or
   // not a submission was observed.
@@ -1215,6 +1223,11 @@ void FormStructure::LogQualityMetrics(
     // whether the data now in the field is recognized.
     if (field->previously_autofilled())
       num_edited_autofilled_fields++;
+
+    // The form was not perfectly filled if a non-empty field was not
+    // autofilled.
+    if (!field->value.empty() && !field->is_autofilled)
+      perfect_filling = false;
 
     const ServerFieldTypeSet& field_types = field->possible_types();
     DCHECK(!field_types.empty());
@@ -1300,10 +1313,26 @@ void FormStructure::LogQualityMetrics(
             GetFormTypes(), did_autofill_some_possible_fields, elapsed);
       }
     }
-
     AutofillMetrics::LogAutofillFormSubmittedState(
         state, is_for_credit_card, has_upi_vpa_field, GetFormTypes(),
         form_parsed_timestamp_, form_signature(), form_interactions_ukm_logger);
+
+    // The perfect filling metric is only recorded if Autofill was used on at
+    // least one field. This conditions this metric on Assistance, Readiness and
+    // Acceptance.
+    if (did_autofill_some_possible_fields) {
+      // Perfect filling is recorded for addresses and credit cards separately.
+      // Note that a form can be both an address and a credit card form
+      // simultaneously.
+      if (address_form) {
+        AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/true,
+                                                   perfect_filling);
+      }
+      if (card_form) {
+        AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/false,
+                                                   perfect_filling);
+      }
+    }
   }
 }
 

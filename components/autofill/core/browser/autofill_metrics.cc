@@ -2241,6 +2241,17 @@ void AutofillMetrics::LogAutofillFormSubmittedState(
 }
 
 // static
+void AutofillMetrics::LogAutofillPerfectFilling(bool is_address,
+                                                bool perfect_filling) {
+  if (is_address) {
+    UMA_HISTOGRAM_BOOLEAN("Autofill.PerfectFilling.Addresses", perfect_filling);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN("Autofill.PerfectFilling.CreditCards",
+                          perfect_filling);
+  }
+}
+
+// static
 void AutofillMetrics::LogDetermineHeuristicTypesTiming(
     const base::TimeDelta& duration) {
   UMA_HISTOGRAM_TIMES("Autofill.Timing.DetermineHeuristicTypes", duration);
