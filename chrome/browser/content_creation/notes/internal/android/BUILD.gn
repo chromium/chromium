@@ -18,6 +18,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMediator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMetrics.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteProperties.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/fonts/GoogleFontService.java",
@@ -45,6 +46,7 @@ android_library("java") {
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java_resources",
     "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.content_creation.internal"

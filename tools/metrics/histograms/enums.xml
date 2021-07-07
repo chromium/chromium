@@ -58376,6 +58376,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Main resource redirect, no-store"/>
 </enum>
 
+<enum name="NoteCreationFunnel">
+  <int value="0" label="Create Card Button Clicked"/>
+  <int value="1" label="Template Selected"/>
+  <int value="2" label="NoteShared"/>
+</enum>
+
 <enum name="NoteTakingAppLaunchResult">
   <int value="0" label="Chrome app launched successfully"/>
   <int value="1" label="Chrome app missing"/>

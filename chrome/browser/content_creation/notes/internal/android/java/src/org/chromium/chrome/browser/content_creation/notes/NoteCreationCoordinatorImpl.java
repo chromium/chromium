@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.content_creation.notes;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Build;
@@ -81,6 +82,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
 
     @Override
     public void showDialog() {
+        NoteCreationMetrics.recordNoteCreationSelected();
+
         FragmentActivity fragmentActivity = (FragmentActivity) mActivity;
         mDialog.show(fragmentActivity.getSupportFragmentManager(), null);
     }
@@ -106,6 +109,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
      */
     @Override
     public void executeAction() {
+        NoteCreationMetrics.recordNoteTemplateSelected();
+
         View noteView = mDialog.getNoteViewAt(mDialog.getSelectedItemIndex());
 
         assert noteView != null;
@@ -123,6 +128,15 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                     .setFileUris(
                                             new ArrayList<>(Collections.singletonList(imageUri)))
                                     .setFileContentType(PNG_MIME_TYPE)
+                                    .setCallback(new ShareParams.TargetChosenCallback() {
+                                        @Override
+                                        public void onTargetChosen(ComponentName chosenComponent) {
+                                            NoteCreationMetrics.recordNoteShared();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {}
+                                    })
                                     .build();
 
                     long shareStartTime = System.currentTimeMillis();
