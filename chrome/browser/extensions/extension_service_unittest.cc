@@ -6573,7 +6573,8 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
   EXPECT_TRUE(pending->IsIdPending(kGoodId));
 }
 
-TEST_F(ExtensionServiceTest, ConcurrentExternalLocalFile) {
+// TODO(crbug.com/1227104): This test fails when run by TSan buildbots.
+TEST_F(ExtensionServiceTest, DISABLED_ConcurrentExternalLocalFile) {
   base::Version kVersion123("1.2.3");
   base::Version kVersion124("1.2.4");
   base::Version kVersion125("1.2.5");
