@@ -50,9 +50,7 @@ PP_Var PPB_X509Certificate_Fields::GetFieldAsPPVar(
       return PP_MakeInt32(value->GetInt());
     }
     case base::Value::Type::DOUBLE: {
-      double val;
-      value->GetAsDouble(&val);
-      return PP_MakeDouble(val);
+      return PP_MakeDouble(value->GetDouble());
     }
     case base::Value::Type::STRING: {
       std::string val;
