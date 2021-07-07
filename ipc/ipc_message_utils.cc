@@ -106,10 +106,8 @@ void WriteValue(base::Pickle* m, const base::Value* value, int recursion) {
       break;
     }
     case base::Value::Type::DOUBLE: {
-      double val;
-      result = value->GetAsDouble(&val);
-      DCHECK(result);
-      WriteParam(m, val);
+      DCHECK(value->is_int() || value->is_double());
+      WriteParam(m, value->GetDouble());
       break;
     }
     case base::Value::Type::STRING: {
