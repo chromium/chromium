@@ -14,6 +14,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
@@ -63,7 +64,6 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
   }
 
   void TearDown() override {
-    close(allowlist_fd_);
     base::DeleteFile(allowlist_path_);
   }
 
@@ -80,12 +80,10 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
     WriteAllowListToFile(filter->bytes());
   }
 
-  int OpenAndGetAllowlistFd() {
-    if (allowlist_fd_ == -1) {
-      allowlist_fd_ = open(allowlist_path_.value().c_str(), O_RDONLY);
-      CHECK(allowlist_fd_) << "Failed to open FD for " << allowlist_path_;
-    }
-    return allowlist_fd_;
+  base::ScopedFD OpenAndGetAllowlistFd() {
+    int allowlist_fd = open(allowlist_path_.value().c_str(), O_RDONLY);
+    CHECK(allowlist_fd) << "Failed to open FD for " << allowlist_path_;
+    return base::ScopedFD(allowlist_fd);
   }
 
   void LookupConfirmationCallback(bool lookup_result) {
@@ -103,16 +101,14 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
   bool lookup_result_;
 
  private:
-  int allowlist_fd_ = -1;
   base::FilePath allowlist_path_;
 };
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestExistingPackageName) {
   WritePackageNamesAllowListToFile();
-  base::flat_map<std::string, int> fd_map;
+  base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
-  auto manifest = BuildTestManifest();
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
@@ -122,7 +118,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                          base::Unretained(this)));
 
   policy->ComponentLoaded(base::Version(), fd_map,
-                          base::DictionaryValue::From(std::move(manifest)));
+                          base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
   EXPECT_TRUE(lookup_result_);
@@ -131,9 +127,8 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestNonExistingPackageName) {
   WritePackageNamesAllowListToFile();
-  base::flat_map<std::string, int> fd_map;
+  base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
-  auto manifest = BuildTestManifest();
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
@@ -143,7 +138,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                          base::Unretained(this)));
 
   policy->ComponentLoaded(base::Version(), fd_map,
-                          base::DictionaryValue::From(std::move(manifest)));
+                          base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(lookup_result_);
@@ -151,9 +146,8 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestAllowlistFileNotInMap) {
-  base::flat_map<std::string, int> fd_map;
+  base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map["another_file"] = OpenAndGetAllowlistFd();
-  auto manifest = BuildTestManifest();
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
@@ -163,7 +157,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                          base::Unretained(this)));
 
   policy->ComponentLoaded(base::Version(), fd_map,
-                          base::DictionaryValue::From(std::move(manifest)));
+                          base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(lookup_result_);
@@ -172,7 +166,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestMissingBloomFilterParams) {
   WritePackageNamesAllowListToFile();
-  base::flat_map<std::string, int> fd_map;
+  base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
 
   auto policy =
@@ -192,9 +186,8 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestTooShortBloomFilter) {
   WriteAllowListToFile(std::vector<uint8_t>(2, 0xff));
-  base::flat_map<std::string, int> fd_map;
+  base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
-  auto manifest = BuildTestManifest();
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
@@ -204,7 +197,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                          base::Unretained(this)));
 
   policy->ComponentLoaded(base::Version(), fd_map,
-                          base::DictionaryValue::From(std::move(manifest)));
+                          base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(lookup_result_);
@@ -213,9 +206,8 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestTooLongBloomFilter) {
   WriteAllowListToFile(std::vector<uint8_t>(2000, 0xff));
-  base::flat_map<std::string, int> fd_map;
+  base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
-  auto manifest = BuildTestManifest();
 
   auto policy =
       std::make_unique<AwAppsPackageNamesAllowlistComponentLoaderPolicy>(
@@ -225,7 +217,7 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
                          base::Unretained(this)));
 
   policy->ComponentLoaded(base::Version(), fd_map,
-                          base::DictionaryValue::From(std::move(manifest)));
+                          base::DictionaryValue::From(BuildTestManifest()));
 
   lookup_run_loop_.Run();
   EXPECT_FALSE(lookup_result_);
@@ -234,9 +226,9 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestExpiredAllowlist) {
   WritePackageNamesAllowListToFile();
-  base::flat_map<std::string, int> fd_map;
+  base::flat_map<std::string, base::ScopedFD> fd_map;
   fd_map[kAllowlistBloomFilterFileName] = OpenAndGetAllowlistFd();
-  auto manifest = BuildTestManifest();
+  std::unique_ptr<base::Value> manifest = BuildTestManifest();
   manifest->SetKey(kExpiryDateKey, base::Value(OneDayAgoMs()));
 
   auto policy =

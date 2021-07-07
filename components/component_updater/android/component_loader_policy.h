@@ -14,6 +14,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/component_updater/android/component_loader_policy_forward.h"
@@ -58,7 +59,7 @@ class ComponentLoaderPolicy {
   // `manifest` is the manifest for this version of the component.
   virtual void ComponentLoaded(
       const base::Version& version,
-      const base::flat_map<std::string, int>& fd_map,
+      base::flat_map<std::string, base::ScopedFD>& fd_map,
       std::unique_ptr<base::DictionaryValue> manifest) = 0;
 
   // Called if connection to the service fails, components files are not found
@@ -113,9 +114,8 @@ class AndroidComponentLoaderPolicy {
   // `org.chromium.components.component_updater.ComponentLoaderPolicy`.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  void NotifyNewVersion(const base::flat_map<std::string, int>& fd_map,
+  void NotifyNewVersion(base::flat_map<std::string, base::ScopedFD>& fd_map,
                         std::unique_ptr<base::DictionaryValue> manifest);
-  void CloseFdsAndFail(const base::flat_map<std::string, int>& fd_map);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <unistd.h>
 
 #include <memory>
 #include <string>
@@ -17,6 +16,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -28,8 +28,9 @@ namespace {
 // Attempts to load key commitments as raw JSON from their storage file,
 // returning the loaded commitments on success and nullopt on failure.
 // TODO(crbug.com/1180964) move reading string from fd to base/file_util.h
-absl::optional<std::string> LoadKeyCommitmentsFromDisk(int fd) {
-  base::ScopedFILE file_stream(fdopen(fd, "r"));
+absl::optional<std::string> LoadKeyCommitmentsFromDisk(base::ScopedFD fd) {
+  // Transfer the ownership of the file from `fd` to `file_stream`.
+  base::ScopedFILE file_stream(fdopen(fd.release(), "r"));
   if (!file_stream.get()) {
     return absl::nullopt;
   }
@@ -54,18 +55,10 @@ TrustTokenKeyCommitmentsComponentLoaderPolicy::
 
 void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
-    const base::flat_map<std::string, int>& fd_map,
+    base::flat_map<std::string, base::ScopedFD>& fd_map,
     std::unique_ptr<base::DictionaryValue> manifest) {
-  int keys_fd = -1;
-  for (auto& key_value : fd_map) {
-    if (key_value.first == kTrustTokenKeyCommitmentsFileName) {
-      keys_fd = key_value.second;
-    } else {
-      // Close unused fds.
-      close(key_value.second);
-    }
-  }
-  if (keys_fd == -1) {
+  auto keys_fd_iterator = fd_map.find(kTrustTokenKeyCommitmentsFileName);
+  if (keys_fd_iterator == fd_map.end()) {
     VLOG(1) << "TrustTokenKeyCommitmentsComponentLoaderPolicy#ComponentLoaded "
                "failed because keys.json is not found in the fd map";
     ComponentLoadFailed();
@@ -73,7 +66,8 @@ void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoaded(
   }
   component_updater::TrustTokenKeyCommitmentsComponentInstallerPolicy::
       LoadTrustTokensFromString(
-          base::BindOnce(&LoadKeyCommitmentsFromDisk, keys_fd),
+          base::BindOnce(&LoadKeyCommitmentsFromDisk,
+                         std::move(keys_fd_iterator->second)),
           on_commitments_ready_);
 }
 

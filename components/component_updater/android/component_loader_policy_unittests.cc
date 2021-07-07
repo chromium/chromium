@@ -24,6 +24,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -58,7 +59,7 @@ std::vector<int> OpenFileFds(const base::FilePath& base,
 
 using OnLoadedTestCallBack =
     base::OnceCallback<void(const base::Version&,
-                            const base::flat_map<std::string, int>&,
+                            base::flat_map<std::string, base::ScopedFD>&,
                             std::unique_ptr<base::DictionaryValue>)>;
 
 class MockLoaderPolicy : public ComponentLoaderPolicy {
@@ -70,7 +71,7 @@ class MockLoaderPolicy : public ComponentLoaderPolicy {
   MockLoaderPolicy()
       : on_loaded_(
             base::DoNothing::Once<const base::Version&,
-                                  const base::flat_map<std::string, int>&,
+                                  base::flat_map<std::string, base::ScopedFD>&,
                                   std::unique_ptr<base::DictionaryValue>>()),
         on_failed_(base::DoNothing::Once()) {}
 
@@ -81,7 +82,7 @@ class MockLoaderPolicy : public ComponentLoaderPolicy {
 
   void ComponentLoaded(
       const base::Version& version,
-      const base::flat_map<std::string, int>& fd_map,
+      base::flat_map<std::string, base::ScopedFD>& fd_map,
       std::unique_ptr<base::DictionaryValue> manifest) override {
     std::move(on_loaded_).Run(version, fd_map, std::move(manifest));
   }
@@ -97,7 +98,7 @@ class MockLoaderPolicy : public ComponentLoaderPolicy {
 
 void VerifyComponentLoaded(base::OnceClosure on_done,
                            const base::Version& version,
-                           const base::flat_map<std::string, int>& fd_map,
+                           base::flat_map<std::string, base::ScopedFD>& fd_map,
                            std::unique_ptr<base::DictionaryValue> manifest) {
   EXPECT_EQ(version.GetString(), "123.456.789");
   EXPECT_EQ(fd_map.size(), 2u);
@@ -172,7 +173,7 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestMissingManifest) {
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
           base::BindOnce(
               [](const base::Version& version,
-                 const base::flat_map<std::string, int>& fd_map,
+                 base::flat_map<std::string, base::ScopedFD>& fd_map,
                  std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
           run_loop.QuitClosure()));
 
@@ -194,7 +195,7 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidVersion) {
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
           base::BindOnce(
               [](const base::Version& version,
-                 const base::flat_map<std::string, int>& fd_map,
+                 base::flat_map<std::string, base::ScopedFD>& fd_map,
                  std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
           run_loop.QuitClosure()));
 
@@ -215,7 +216,7 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidManifest) {
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
           base::BindOnce(
               [](const base::Version& version,
-                 const base::flat_map<std::string, int>& fd_map,
+                 base::flat_map<std::string, base::ScopedFD>& fd_map,
                  std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
           run_loop.QuitClosure()));
 

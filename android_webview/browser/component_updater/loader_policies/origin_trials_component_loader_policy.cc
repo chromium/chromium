@@ -13,6 +13,7 @@
 
 #include "android_webview/browser/aw_browser_process.h"
 #include "base/containers/flat_map.h"
+#include "base/files/scoped_file.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
@@ -28,13 +29,8 @@ OriginTrialsComponentLoaderPolicy::~OriginTrialsComponentLoaderPolicy() =
 
 void OriginTrialsComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
-    const base::flat_map<std::string, int>& fd_map,
+    base::flat_map<std::string, base::ScopedFD>& fd_map,
     std::unique_ptr<base::DictionaryValue> manifest) {
-  // Close unused fds.
-  for (auto& key_value : fd_map) {
-    close(key_value.second);
-  }
-
   // Read the configuration from the manifest and set values in browser
   // local_state. These will be used on the next browser restart.
   // If an individual configuration value is missing, treat as a reset to the

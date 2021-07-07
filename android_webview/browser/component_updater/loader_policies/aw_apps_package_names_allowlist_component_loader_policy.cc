@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <unistd.h>
 
 #include <cstring>
 #include <memory>
@@ -17,6 +16,7 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -40,11 +40,12 @@ constexpr int kBitsPerByte = 8;
 
 // Creates a bloomfilter after loading its data from file in `allowlist_fd`
 // and lookup the given `package_name` in it.
-bool IsLoggingPackageNameAllowed(int allowlist_fd,
+bool IsLoggingPackageNameAllowed(base::ScopedFD allowlist_fd,
                                  int num_hash,
                                  int num_bits,
                                  const std::string& package_name) {
-  base::ScopedFILE file_stream(fdopen(allowlist_fd, "r"));
+  // Transfer the ownership of the file from `allowlist_fd` to `file_stream`.
+  base::ScopedFILE file_stream(fdopen(allowlist_fd.release(), "r"));
   if (!file_stream.get())
     return false;
 
@@ -108,41 +109,43 @@ AwAppsPackageNamesAllowlistComponentLoaderPolicy::
 // }
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
-    const base::flat_map<std::string, int>& fd_map,
+    base::flat_map<std::string, base::ScopedFD>& fd_map,
     std::unique_ptr<base::DictionaryValue> manifest) {
   // Have to use double because base::DictionaryValue doesn't support int64
   // values.
   absl::optional<double> expiry_date_ms =
       manifest->FindDoublePath(kExpiryDateKey);
-  absl::optional<int> num_hash = manifest->FindIntPath(kBloomFilterNumHashKey);
-  absl::optional<int> num_bits = manifest->FindIntPath(kBloomFilterNumBitsKey);
-  auto allowlist_iterator = fd_map.end();
 
   // Being conservative and consider the allowlist expired when a valid expiry
   // date is absent.
-  if (num_hash.has_value() && num_bits.has_value() && num_hash.value() > 0 &&
-      num_bits.value() > 0 && expiry_date_ms.has_value() &&
+  if (!expiry_date_ms.has_value() ||
       base::Time::UnixEpoch() +
-              base::TimeDelta::FromMillisecondsD(expiry_date_ms.value()) >
-          base::Time::Now() &&
-      (allowlist_iterator = fd_map.find(kAllowlistBloomFilterFileName)) !=
-          fd_map.end()) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&IsLoggingPackageNameAllowed, allowlist_iterator->second,
-                       num_hash.value(), num_bits.value(),
-                       std::move(app_package_name_)),
-        std::move(lookup_callback_));
-  } else {
+              base::TimeDelta::FromMillisecondsD(expiry_date_ms.value()) <=
+          base::Time::Now()) {
     ComponentLoadFailed();
+    return;
   }
 
-  // Close unused files.
-  // TODO(https://crbug.com/1219672): use base::ScopedFD instead.
-  for (auto& iterator : fd_map) {
-    if (allowlist_iterator == fd_map.end() || iterator != *allowlist_iterator)
-      close(iterator.second);
+  absl::optional<int> num_hash = manifest->FindIntPath(kBloomFilterNumHashKey);
+  absl::optional<int> num_bits = manifest->FindIntPath(kBloomFilterNumBitsKey);
+  if (!num_hash.has_value() || !num_bits.has_value() || num_hash.value() <= 0 ||
+      num_bits.value() <= 0) {
+    ComponentLoadFailed();
+    return;
   }
+
+  auto allowlist_iterator = fd_map.find(kAllowlistBloomFilterFileName);
+  if (allowlist_iterator == fd_map.end()) {
+    ComponentLoadFailed();
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&IsLoggingPackageNameAllowed,
+                     std::move(allowlist_iterator->second), num_hash.value(),
+                     num_bits.value(), std::move(app_package_name_)),
+      std::move(lookup_callback_));
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed() {
