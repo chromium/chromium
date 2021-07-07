@@ -264,7 +264,6 @@ void DlpClipboardNotifier::OnWidgetClosing(views::Widget* widget) {
 }
 
 void DlpClipboardNotifier::WebContentsDestroyed() {
-  std::move(blink_paste_cb_);
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 }
 

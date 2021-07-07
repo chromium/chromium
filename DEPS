@@ -405,7 +405,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       '8fa87946779682841e21e2da977eccfb6cb3bded',
+  'libcxx_revision':       '79a2e924d96e2fc1e4b937c42efd08898fa472d7',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:31f2bba8aafa8015ca5761100a21f17c2d741062',
@@ -1653,7 +1653,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@c0a9914dabbe63b5f97254447eed91a4df4cb656',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@8890d98d99513170b03d869aff1ab740e8dc98e0',
     'condition': 'checkout_src_internal',
   },
 
