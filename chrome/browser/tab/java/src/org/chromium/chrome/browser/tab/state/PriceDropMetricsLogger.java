@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import android.text.TextUtils;
+
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.tab.proto.PriceTracking.PriceTrackingData;
 
 import java.util.Locale;
 
@@ -16,12 +19,12 @@ public class PriceDropMetricsLogger {
     private MetricsResult mMetrics;
 
     /**
-     * Log metrics related to our price drops feature
-     * @param priceTrackingDataProto price tracking data proto acquired from OptimizationGuide to
-     *         power the price drops experimence
+     * Log metrics related to our price drops feature.
+     * @param shoppingPersistedTabData {@link ShoppingPersistedTabData} associated with price drop
+     *         data.
      */
-    PriceDropMetricsLogger(PriceTrackingData priceTrackingDataProto) {
-        mMetrics = deriveMetrics(priceTrackingDataProto);
+    PriceDropMetricsLogger(ShoppingPersistedTabData shoppingPersistedTabData) {
+        mMetrics = deriveMetrics(shoppingPersistedTabData);
     }
 
     /**
@@ -44,17 +47,20 @@ public class PriceDropMetricsLogger {
                 mMetrics.containsPriceDrop);
     }
 
-    private static MetricsResult deriveMetrics(PriceTrackingData priceTrackingDataProto) {
-        return new MetricsResult(priceTrackingDataProto.hasBuyableProduct()
-                        && priceTrackingDataProto.getBuyableProduct().hasOfferId(),
-                priceTrackingDataProto.hasBuyableProduct()
-                        && priceTrackingDataProto.getBuyableProduct().hasCurrentPrice(),
-                priceTrackingDataProto.hasProductUpdate()
-                        && priceTrackingDataProto.getProductUpdate().hasOldPrice()
-                        && priceTrackingDataProto.getProductUpdate().hasNewPrice());
+    @VisibleForTesting
+    protected MetricsResult getMetricsResultForTesting() {
+        return mMetrics;
     }
 
-    private static class MetricsResult {
+    private static MetricsResult deriveMetrics(ShoppingPersistedTabData shoppingPersistedTabData) {
+        return new MetricsResult(!TextUtils.isEmpty(shoppingPersistedTabData.getMainOfferId()),
+                shoppingPersistedTabData.hasPriceMicros(),
+                shoppingPersistedTabData.hasPriceMicros()
+                        && shoppingPersistedTabData.hasPreviousPriceMicros());
+    }
+
+    @VisibleForTesting
+    protected static class MetricsResult {
         public final boolean isProductDetailPage;
         public final boolean containsPrice;
         public final boolean containsPriceDrop;
