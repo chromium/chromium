@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import os
 import subprocess
@@ -37,21 +39,21 @@ def main():
   devices = device_utils.DeviceUtils.HealthyDevices(device_arg=args.devices)
 
   def install(device):
-    print 'Installing %s...' % args.shell_apk_path
+    print('Installing %s...' % args.shell_apk_path)
     device.Install(args.shell_apk_path, reinstall=True, allow_downgrade=True)
-    print 'Success'
+    print('Success')
     for path in args.support_apk_path:
-      print 'Installing %s...' % path
+      print('Installing %s...' % path)
       device.Install(path, reinstall=True, allow_downgrade=True)
-      print 'Success'
+      print('Success')
     if args.switch_webview_to:
-      print 'Installing %s...' % args.switch_webview_to
+      print('Installing %s...' % args.switch_webview_to)
       device.Install(args.switch_webview_to, reinstall=True,
                      allow_downgrade=True)
       package = apk_helper.GetPackageName(args.switch_webview_to)
-      print 'Setting WebView implementation to %s' % package
+      print('Setting WebView implementation to %s' % package)
       device.SetWebViewImplementation(package)
-      print 'Done'
+      print('Done')
 
     if os.path.basename(args.shell_apk_path) == 'WebLayerShell.apk':
       # When launching weblayer shell use 'weblayer_shell_apk', which supports
