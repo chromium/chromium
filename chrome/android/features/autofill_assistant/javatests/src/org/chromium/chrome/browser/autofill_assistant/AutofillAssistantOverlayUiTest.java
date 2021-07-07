@@ -16,8 +16,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementOnScreen;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getBoundingRectForElement;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.scrollIntoViewIfNeeded;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitForElementRemoved;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.graphics.Bitmap;
@@ -46,8 +49,8 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
@@ -193,9 +196,11 @@ public class AutofillAssistantOverlayUiTest {
     @MediumTest
     public void testSimpleScrollPartialOverlay() throws Exception {
         AssistantOverlayModel model = new AssistantOverlayModel();
-        AssistantOverlayCoordinator coordinator = createCoordinator(model);
+        createCoordinator(model);
 
-        scrollIntoViewIfNeeded("touch_area_five");
+        ChromeTabUtils.waitForInteractable(mTestRule.getActivity().getActivityTab());
+        scrollIntoViewIfNeeded(mTestRule.getWebContents(), "touch_area_five");
+        waitUntil(() -> checkElementOnScreen(mTestRule, "touch_area_five"));
         Rect rect = getBoundingRectForElement(getWebContents(), "touch_area_five");
         runOnUiThreadBlocking(() -> {
             model.set(AssistantOverlayModel.STATE, AssistantOverlayState.PARTIAL);
@@ -274,19 +279,5 @@ public class AutofillAssistantOverlayUiTest {
 
     void tapElement(String elementId) throws Exception {
         AutofillAssistantUiTestUtil.tapElement(mTestRule, elementId);
-    }
-
-    /**
-     * Scrolls to the specified element on the webpage, if necessary.
-     */
-    private void scrollIntoViewIfNeeded(String elementId) throws Exception {
-        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
-                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
-        javascriptHelper.evaluateJavaScriptForTests(getWebContents(),
-                "(function() {"
-                        + " document.getElementById('" + elementId + "').scrollIntoViewIfNeeded();"
-                        + " return true;"
-                        + "})()");
-        javascriptHelper.waitUntilHasValue();
     }
 }

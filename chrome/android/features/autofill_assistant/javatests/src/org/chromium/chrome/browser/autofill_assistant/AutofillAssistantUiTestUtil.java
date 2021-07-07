@@ -560,6 +560,21 @@ class AutofillAssistantUiTestUtil {
         TestTouchUtils.singleClick(InstrumentationRegistry.getInstrumentation(), x, y);
     }
 
+    /** Scrolls to the specified element on the webpage, if necessary. */
+    public static void scrollIntoViewIfNeeded(WebContents webContents, String... elementIds)
+            throws Exception {
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+        javascriptHelper.evaluateJavaScriptForTests(webContents,
+                "(function() {"
+                        + " " + getElementSelectorString(elementIds) + ".scrollIntoViewIfNeeded();"
+                        + " return [true];"
+                        + "})()");
+        javascriptHelper.waitUntilHasValue();
+        JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
+        assert result.getBoolean(0);
+    }
+
     /** Computes the bounding rectangle of the specified DOM element in absolute screen space. */
     public static Rect getAbsoluteBoundingRect(
             ChromeActivityTestRule testRule, String... elementIds) throws Exception {
@@ -654,21 +669,6 @@ class AutofillAssistantUiTestUtil {
     public static void waitForElementRemoved(WebContents webContents, String id) {
         CriteriaHelper.pollInstrumentationThread(
                 () -> !checkElementExists(webContents, id), "Element is still on the page!");
-    }
-
-    /** Checks whether the specified element is displayed in the DOM tree. */
-    public static boolean checkElementIsDisplayed(WebContents webContents, String... elementIds)
-            throws Exception {
-        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
-                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
-        javascriptHelper.evaluateJavaScriptForTests(webContents,
-                "(function() {"
-                        + " return [" + getElementSelectorString(elementIds)
-                        + ".style.display != \"none\"]; "
-                        + "})()");
-        javascriptHelper.waitUntilHasValue();
-        JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
-        return result.getBoolean(0);
     }
 
     /**
