@@ -27,26 +27,9 @@ class PasswordStoreInterface;
 
 namespace passwords_helper {
 
-// Adds the login held in |form| to the password store |store|. Even though
-// logins are normally added asynchronously, this method will block until the
-// login is added.
-void AddLogin(password_manager::PasswordStore* store,
-              const password_manager::PasswordForm& form);
-
 // Adds |issue| to the password store |store|.
 void AddInsecureCredential(password_manager::PasswordStore* store,
                            const password_manager::InsecureCredential& issue);
-
-// Update the data held in password store |store| with a modified |form|.
-// This method blocks until the operation is complete.
-void UpdateLogin(password_manager::PasswordStore* store,
-                 const password_manager::PasswordForm& form);
-
-// Removes |old_form| from password store |store| and immediately adds
-// |new_form|. This method blocks until the operation is complete.
-void UpdateLoginWithPrimaryKey(password_manager::PasswordStore* store,
-                               const password_manager::PasswordForm& new_form,
-                               const password_manager::PasswordForm& old_form);
 
 // Returns all logins from |store| matching a fake signon realm (see
 // CreateTestPasswordForm()).
