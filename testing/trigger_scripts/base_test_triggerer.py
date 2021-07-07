@@ -171,31 +171,6 @@ class BaseTestTriggerer(object):
         finally:
             self.delete_temp_file(temp_file)
 
-    def query_swarming_for_bot_configs(self, verbose):
-        # Query Swarming to figure out which bots are available.
-        for config in self._bot_configs:
-            values = []
-            for key, value in sorted(config.iteritems()):
-                values.append(('dimensions', '%s:%s' % (key, value)))
-            # Ignore dead and quarantined bots.
-            values.append(('is_dead', 'FALSE'))
-            values.append(('quarantined', 'FALSE'))
-
-            query_result = self.query_swarming('bots/count', values, verbose)
-            # Summarize number of available bots per configuration.
-            count = int(query_result['count'])
-            # Be robust against errors in computation.
-            available = max(0, count - int(query_result['busy']))
-            self._bot_statuses.append({'total': count, 'available': available})
-            if verbose:
-                idx = len(self._bot_statuses) - 1
-                logging.info('Bot config %d: %s' %
-                             (idx, str(self._bot_statuses[idx])))
-        # Sum up the total count of all bots.
-        self._total_bots = sum(x['total'] for x in self._bot_statuses)
-        if verbose:
-            logging.info('Total bots: %d' % (self._total_bots))
-
     def remove_swarming_dimension(self, args, dimension):
         for i in xrange(len(args)):
             if args[i] == '--dimension' and args[i + 1] == dimension:
