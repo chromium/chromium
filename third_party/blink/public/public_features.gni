@@ -36,3 +36,8 @@ enable_unhandled_tap = is_android
 
 # Use Minikin hyphenation engine.
 use_minikin_hyphenation = !is_mac
+
+# Forward the request for naming to cppgc.
+if (enable_additional_blink_object_names) {
+  cppgc_enable_object_names = true
+}

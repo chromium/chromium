@@ -232,8 +232,11 @@ source_set("test_support") {
     "//third_party/blink/renderer/platform/wtf:buildflags",
   ]
 
+  # TODO(v8:11952): Switch to `//v8:v8_for_testing` as target once it properly
+  # depends on v8 without duplicating the whole library which causes ODR
+  # violations when `//v8:v8` is also pulled in otherwise.
   if (enable_blink_heap_use_v8_oilpan) {
-    deps += [ "//v8:v8_for_testing" ]
+    deps += [ "//v8:v8" ]
   }
 
   public_deps = [ "//base/test:test_support" ]
