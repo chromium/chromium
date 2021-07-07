@@ -114,6 +114,7 @@ class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
 
   Gamepad();
   Gamepad(const Gamepad& other);
+  Gamepad& operator=(const Gamepad& other);
 
   // If src is too long, then the contents of id will be truncated to
   // kIdLengthCap-1. id will be null-terminated and any extra space in the
