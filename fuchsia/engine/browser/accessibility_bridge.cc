@@ -583,6 +583,19 @@ bool AccessibilityBridge::ShouldHoldCommit() {
     return true;
   }
 
+  // Make sure that all trees are reachable from the main frame semantic tree.
+  // If a tree is not reachable, this means that when committed it would result
+  // in a dangling tree, which is not valid.
+  for (const auto& kv : ax_trees_) {
+    const ui::AXTreeID& tree_id = kv.first;
+    if (tree_id == main_frame_tree_id)
+      continue;
+
+    auto it = tree_connections_.find(tree_id);
+    if (it == tree_connections_.end())
+      return true;
+  }
+
   for (const auto& kv : tree_connections_) {
     if (!kv.second.is_connected) {
       // Trees are not connected, which means that a node is pointing to
