@@ -1052,9 +1052,11 @@ settings_private::SetPrefResult PrefsUtil::SetPref(const std::string& pref_name,
       // Otherwise if the number is a whole number like 2.0, it will
       // automatically be of type INTEGER causing type mismatches in
       // PrefService::SetUserPrefValue for doubles, and vice versa.
-      double double_value;
-      if (!value->GetAsDouble(&double_value))
+      if (!value->is_double() && !value->is_int())
         return settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+      double double_value;
+      double_value = value->GetDouble();
+
       if (pref->GetType() == base::Value::Type::DOUBLE)
         pref_service->SetDouble(pref_name, double_value);
       else
