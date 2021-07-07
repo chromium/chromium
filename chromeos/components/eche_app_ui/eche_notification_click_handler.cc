@@ -44,7 +44,7 @@ EcheNotificationClickHandler::~EcheNotificationClickHandler() {
 void EcheNotificationClickHandler::HandleNotificationClick(
     int64_t notification_id,
     const phonehub::Notification::AppMetadata& app_metadata) {
-  launch_eche_app_function_.Run(notification_id);
+  launch_eche_app_function_.Run(notification_id, app_metadata.package_name);
 }
 
 void EcheNotificationClickHandler::OnFeatureStatusChanged() {

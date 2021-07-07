@@ -62,11 +62,16 @@ enum class NotificationInteraction {
   kMaxValue = kOpenAppStreaming,
 };
 
-void LaunchEcheApp(Profile* profile, int64_t notification_id) {
+void LaunchEcheApp(Profile* profile,
+                   int64_t notification_id,
+                   std::string package_name) {
   double now_seconds = base::Time::Now().ToDoubleT();
   int64_t now_ms = static_cast<int64_t>(now_seconds * 1000);
+
   std::string url = "chrome://eche-app/#notification_id=";
   url.append(base::NumberToString(notification_id));
+  url.append("&package_name=");
+  url.append(package_name);
   url.append("&timestamp=");
   url.append(base::NumberToString(now_ms));
   web_app::SystemAppLaunchParams params;

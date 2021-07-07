@@ -4,6 +4,8 @@
 
 #include "chromeos/components/eche_app_ui/eche_notification_click_handler.h"
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,7 +41,8 @@ class EcheNotificationClickHandlerTest : public testing::Test {
             base::Unretained(this)));
   }
 
-  void FakeLaunchEcheAppFunction(int64_t notification_id) {
+  void FakeLaunchEcheAppFunction(int64_t notification_id,
+                                 std::string package_name) {
     // Do nothing.
   }
 
