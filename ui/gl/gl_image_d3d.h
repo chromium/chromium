@@ -74,6 +74,8 @@ class GL_EXPORT GLImageD3D : public GLImage {
   size_t array_slice() const { return array_slice_; }
   size_t plane_index() const { return plane_index_; }
 
+  void* egl_image() const { return egl_image_; }
+
  protected:
   const gfx::Size size_;
   const unsigned internal_format_;  // GLenum

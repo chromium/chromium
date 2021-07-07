@@ -25,6 +25,8 @@ class GL_EXPORT GLImageEGL : public GLImage {
   bool BindTexImage(unsigned target) override;
   void ReleaseTexImage(unsigned target) override {}
 
+  void* egl_image() const { return egl_image_; }
+
  protected:
   ~GLImageEGL() override;
 

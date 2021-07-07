@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/webgpu_decoder_impl.h"
 
 #include <dawn_native/DawnNative.h>
+#include <dawn_native/OpenGLBackend.h>
 #include <dawn_platform/DawnPlatform.h>
 #include <dawn_wire/WireServer.h>
 
@@ -29,6 +30,8 @@
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ipc/ipc_channel.h"
+#include "ui/gl/gl_context_egl.h"
+#include "ui/gl/gl_surface_egl.h"
 
 #if defined(OS_WIN)
 #include <dawn_native/D3D12Backend.h>
@@ -181,7 +184,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     return nullptr;
   }
   void Destroy(bool have_context) override;
-  bool MakeCurrent() override { return true; }
+  bool MakeCurrent() override {
+    if (gl_context_.get()) {
+      gl_context_->MakeCurrent(gl_surface_.get());
+    }
+    return true;
+  }
   gl::GLContext* GetGLContext() override { return nullptr; }
   gl::GLSurface* GetGLSurface() override {
     NOTREACHED();
@@ -438,6 +446,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::vector<dawn_native::Adapter> dawn_adapters_;
 
   bool allow_spirv_ = false;
+  bool force_webgpu_compat_ = false;
   std::vector<std::string> force_enabled_toggles_;
   std::vector<std::string> force_disabled_toggles_;
 
@@ -465,6 +474,9 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unordered_map<uint32_t, WGPUBackendType> device_backend_types_;
 
   bool has_polling_work_ = false;
+
+  scoped_refptr<gl::GLContext> gl_context_;
+  scoped_refptr<gl::GLSurface> gl_surface_;
 
   DISALLOW_COPY_AND_ASSIGN(WebGPUDecoderImpl);
 };
@@ -525,6 +537,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   }
 
   allow_spirv_ = gpu_preferences.enable_webgpu_spirv;
+  force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
   force_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   force_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 
@@ -545,6 +558,15 @@ void WebGPUDecoderImpl::Destroy(bool have_context) {
 }
 
 ContextResult WebGPUDecoderImpl::Initialize() {
+  if (force_webgpu_compat_) {
+    gl_surface_ = new gl::SurfacelessEGL(gfx::Size(1, 1));
+    gl::GLContextAttribs attribs;
+    attribs.client_major_es_version = 3;
+    attribs.client_minor_es_version = 1;
+    gl_context_ = new gl::GLContextEGL(nullptr);
+    gl_context_->Initialize(gl_surface_.get(), attribs);
+    gl_context_->MakeCurrent(gl_surface_.get());
+  }
   DiscoverAdapters();
   return ContextResult::kSuccess;
 }
@@ -627,6 +649,16 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
 }
 
 void WebGPUDecoderImpl::DiscoverAdapters() {
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  if (force_webgpu_compat_) {
+    auto getProc = [](const char* pname) {
+      return reinterpret_cast<void*>(eglGetProcAddress(pname));
+    };
+    dawn_native::opengl::AdapterDiscoveryOptionsES optionsES;
+    optionsES.getProc = getProc;
+    dawn_instance_->DiscoverAdapters(&optionsES);
+  }
+#endif
 #if defined(OS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       gl::QueryD3D11DeviceObjectFromANGLE();
@@ -647,8 +679,12 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 
   std::vector<dawn_native::Adapter> adapters = dawn_instance_->GetAdapters();
   for (const dawn_native::Adapter& adapter : adapters) {
-    if (adapter.GetBackendType() != dawn_native::BackendType::Null &&
-        adapter.GetBackendType() != dawn_native::BackendType::OpenGL) {
+    if (force_webgpu_compat_) {
+      if (adapter.GetBackendType() == dawn_native::BackendType::OpenGLES) {
+        dawn_adapters_.push_back(adapter);
+      }
+    } else if (adapter.GetBackendType() != dawn_native::BackendType::Null &&
+               adapter.GetBackendType() != dawn_native::BackendType::OpenGL) {
       dawn_adapters_.push_back(adapter);
     }
   }

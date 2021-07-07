@@ -5,6 +5,7 @@
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
+import("//third_party/dawn/scripts/dawn_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/gl/features.gni")
 
@@ -403,9 +404,16 @@ target(link_target_type, "gles2_sources") {
 
   if (use_dawn) {
     deps += [
+      "//third_party/dawn/src/dawn:dawn_proc",
       "//third_party/dawn/src/dawn_native",
       "//third_party/dawn/src/dawn_platform",
     ]
+    if (dawn_enable_opengles) {
+      sources += [
+        "shared_image_representation_dawn_egl_image.cc",
+        "shared_image_representation_dawn_egl_image.h",
+      ]
+    }
   }
 
   if (is_mac) {
