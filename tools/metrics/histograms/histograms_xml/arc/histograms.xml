@@ -209,7 +209,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.Auth.AccountCheck.Status"
-    enum="ArcAuthAccountCheckStatus" expires_after="2021-10-25">
+    enum="ArcAuthAccountCheckStatus" expires_after="2022-07-04">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -218,7 +218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.Auth.AccountCheck.TimeDelta" units="ms"
-    expires_after="2021-08-19">
+    expires_after="2022-07-04">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -230,7 +230,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.Auth.Checkin.Attempts" units="attempts"
-    expires_after="2021-11-14">
+    expires_after="2022-07-04">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -243,7 +243,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.Auth.Checkin.TimeDelta" units="ms"
-    expires_after="2021-11-14">
+    expires_after="2022-07-04">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -275,14 +275,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Auth.MainAccountResolution.Status"
-    enum="ArcAuthMainAccountResolutionStatus" expires_after="2021-12-12">
+    enum="ArcAuthMainAccountResolutionStatus" expires_after="2022-07-04">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>Contains the status of main account resolution.</summary>
 </histogram>
 
 <histogram base="true" name="Arc.Auth.NetworkWait.TimeDelta" units="ms"
-    expires_after="2021-09-15">
+    expires_after="2022-07-04">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -294,7 +294,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.Auth.SignIn.TimeDelta" units="ms"
-    expires_after="2021-11-14">
+    expires_after="2022-07-04">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -771,7 +771,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OptInCancel" enum="ArcOptInCancel"
-    expires_after="2021-08-09">
+    expires_after="2022-07-04">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>Arc OptIn cancelation reason.</summary>
