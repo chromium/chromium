@@ -73,6 +73,19 @@ class StartupController : public policy::PolicyService::Observer {
  private:
   enum StartUpDeferredOption { STARTUP_DEFERRED, STARTUP_IMMEDIATE };
 
+  // Enum for UMA defining different events that cause us to exit the "deferred"
+  // state of initialization and invoke start_engine.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class DeferredInitTrigger {
+    // We have received a signal from a data type requesting that sync starts as
+    // soon as possible.
+    kDataTypeRequest = 0,
+    // No data type requested sync to start and our fallback timer expired.
+    kFallbackTimer = 1,
+    kMaxValue = kFallbackTimer
+  };
+
   // Called when |policy_service_| is defined, but it took too long to receive
   // the first chrome policies.
   void OnFirstPoliciesLoadedTimeout();
@@ -86,7 +99,7 @@ class StartupController : public policy::PolicyService::Observer {
   void OnFallbackStartupTimerExpired();
 
   // Records time spent in deferred state with UMA histograms.
-  void RecordTimeDeferred();
+  void RecordTimeDeferred(DeferredInitTrigger trigger);
 
   const base::RepeatingCallback<ModelTypeSet()>
       get_preferred_data_types_callback_;
