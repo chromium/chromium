@@ -96,11 +96,11 @@ UsbChooserController::UsbChooserController(
                              IDS_USB_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)),
       filters_(std::move(device_filters)),
       callback_(std::move(callback)),
-      web_contents_(WebContents::FromRenderFrameHost(render_frame_host)) {
-  RenderFrameHost* main_frame = web_contents_->GetMainFrame();
+      requesting_frame_(render_frame_host) {
+  RenderFrameHost* main_frame = requesting_frame_->GetMainFrame();
   origin_ = main_frame->GetLastCommittedOrigin();
   Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+      Profile::FromBrowserContext(main_frame->GetBrowserContext());
   chooser_context_ =
       UsbChooserContextFactory::GetForProfile(profile)->AsWeakPtr();
   DCHECK(chooser_context_);
@@ -199,10 +199,12 @@ void UsbChooserController::Cancel() {
 void UsbChooserController::Close() {}
 
 void UsbChooserController::OpenHelpCenterUrl() const {
-  web_contents_->OpenURL(content::OpenURLParams(
-      GURL(chrome::kChooserUsbOverviewURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false /* is_renderer_initialized */));
+  WebContents::FromRenderFrameHost(requesting_frame_)
+      ->OpenURL(content::OpenURLParams(
+          GURL(chrome::kChooserUsbOverviewURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          false /* is_renderer_initialized */));
 }
 
 void UsbChooserController::OnDeviceAdded(

@@ -22,7 +22,6 @@
 
 namespace content {
 class RenderFrameHost;
-class WebContents;
 }
 
 // UsbChooserController creates a chooser for WebUSB.
@@ -62,7 +61,7 @@ class UsbChooserController : public permissions::ChooserController,
   blink::mojom::WebUsbService::GetPermissionCallback callback_;
   url::Origin origin_;
 
-  content::WebContents* const web_contents_;
+  content::RenderFrameHost* const requesting_frame_;
   base::WeakPtr<UsbChooserContext> chooser_context_;
   base::ScopedObservation<UsbChooserContext, UsbChooserContext::DeviceObserver>
       observation_{this};
