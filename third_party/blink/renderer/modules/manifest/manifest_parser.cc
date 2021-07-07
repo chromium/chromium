@@ -1170,7 +1170,8 @@ Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
 absl::optional<mojom::blink::ManifestUrlHandlerPtr>
 ManifestParser::ParseUrlHandler(const JSONObject* object) {
   DCHECK(
-      base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers));
+      base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) ||
+      RuntimeEnabledFeatures::WebAppUrlHandlingEnabled(feature_context_));
   if (!object->Get("origin")) {
     AddErrorInfo(
         "url_handlers entry ignored, required property 'origin' is missing.");
