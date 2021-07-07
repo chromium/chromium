@@ -1,6 +1,7 @@
 const directory = '/html/cross-origin-embedder-policy/credentialless';
 const executor_path = directory + '/resources/executor.html?pipe=';
 const executor_js_path = directory + '/resources/executor.js?pipe=';
+const sw_executor_js_path = directory + '/resources/sw_executor.js?pipe=';
 
 // COEP
 const coep_none =
