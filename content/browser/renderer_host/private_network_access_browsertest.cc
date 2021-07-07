@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +20,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/resource_load_observer.h"
@@ -2248,6 +2250,148 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// ==================================================
+// SECURE CONTEXT RESTRICTION DEPRECATION TRIAL TESTS
+// ==================================================
+//
+// These tests verify the correct behavior of `private_network_request_policy`
+// in the face of the `PrivateNetworkAccessNonSecureContextsAllowed` deprecation
+// trial.
+
+// Origin Trial tokens are tied to a single origin, which precludes the use of
+// `net::EmbeddedTestServer` and its random port assignment. Instead, we resort
+// to the use of an interceptor that can serve resources from a fixed origin.
+class OriginTrialURLLoaderInterceptor {
+ public:
+  OriginTrialURLLoaderInterceptor()
+      : interceptor_(
+            base::BindRepeating(&OriginTrialURLLoaderInterceptor::HandleRequest,
+                                base::Unretained(this))) {}
+
+  // Instances of this type are neither copyable nor movable.
+  OriginTrialURLLoaderInterceptor(const OriginTrialURLLoaderInterceptor&) =
+      delete;
+  OriginTrialURLLoaderInterceptor& operator=(
+      const OriginTrialURLLoaderInterceptor&) = delete;
+
+  GURL EnabledUrl() const { return enabled_url_; }
+  GURL DisabledUrl() const { return disabled_url_; }
+
+ private:
+  using RequestParams = URLLoaderInterceptor::RequestParams;
+
+  bool HandleRequest(RequestParams* request_params) const {
+    const GURL& url = request_params->url_request.url;
+    if (url == EnabledUrl()) {
+      HandleEnabledUrlRequest(*request_params);
+      return true;
+    }
+
+    if (url == DisabledUrl()) {
+      HandleDisabledUrlRequest(*request_params);
+      return true;
+    }
+
+    return false;
+  }
+
+  void HandleEnabledUrlRequest(RequestParams& request_params) const {
+    constexpr char kHeaders[] =      //
+        "HTTP/1.1 200 OK\n"          //
+        "Content-Type: text/html\n"  //
+        // Use CSP to make the page `public`, even though it is served with no
+        // IP address information. Without this it is treated as `unknown`, and
+        // that interferes with its private network request policy.
+        "Content-Security-Policy: treat-as-public-address\n"  //
+        // This token was generated using:
+        //
+        //   $ tools/origin_trials/generate_token.py \
+        //     --expire-days 5000 \
+        //     --version 3 \
+        //     http://enabled.test PrivateNetworkAccessNonSecureContextsAllowed
+        //
+        "Origin-Trial: "
+        "A4dgNIB2F3P8qkQQes/oiaobjPNRbfZcaPd5TqdcIHUlpX3/al3rvk5b4f+dnke3WcsXeX"
+        "4aMNENL3mg1FM8+wYAAAB1eyJvcmlnaW4iOiAiaHR0cDovL2VuYWJsZWQudGVzdDo4MCIs"
+        "ICJmZWF0dXJlIjogIlByaXZhdGVOZXR3b3JrQWNjZXNzTm9uU2VjdXJlQ29udGV4dHNBbG"
+        "xvd2VkIiwgImV4cGlyeSI6IDIwNTcxNDYwMzB9"  //
+        "\n\n";
+    URLLoaderInterceptor::WriteResponse(kHeaders, "",
+                                        request_params.client.get());
+  }
+
+  void HandleDisabledUrlRequest(RequestParams& request_params) const {
+    constexpr char kHeaders[] =      //
+        "HTTP/1.1 200 OK\n"          //
+        "Content-Type: text/html\n"  //
+        // See above.
+        "Content-Security-Policy: treat-as-public-address\n\n";
+    URLLoaderInterceptor::WriteResponse(kHeaders, "",
+                                        request_params.client.get());
+  }
+
+  const GURL enabled_url_{"http://enabled.test/"};
+  const GURL disabled_url_{"http://disabled.test/"};
+  URLLoaderInterceptor interceptor_;
+};
+
+// Test with insecure private network requests blocked, excluding navigations.
+class PrivateNetworkAccessDeprecationTrialBrowserTest
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessDeprecationTrialBrowserTest()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
+            },
+            {}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       DeprecationTrialDisabled) {
+  OriginTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessDeprecationTrialBrowserTest,
+                       OriginEnabled) {
+  OriginTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), interceptor.EnabledUrl()));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1225977): Expect `kAllow` once support for trials
+  // on insecure origins is fixed in `blink::TrialTokenValidator`.
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessDeprecationTrialBrowserTest,
+                       OriginDisabled) {
+  OriginTrialURLLoaderInterceptor interceptor;
+
+  EXPECT_TRUE(NavigateToURL(shell(), interceptor.DisabledUrl()));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
   EXPECT_EQ(security_state->private_network_request_policy,
             network::mojom::PrivateNetworkRequestPolicy::kBlock);
 }

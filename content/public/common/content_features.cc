@@ -119,6 +119,13 @@ const base::Feature kBlockCredentialedSubresources{
 const base::Feature kBlockInsecurePrivateNetworkRequests{
     "BlockInsecurePrivateNetworkRequests", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables use of the PrivateNetworkAccessNonSecureContextsAllowed deprecation
+// trial. This is a necessary yet insufficient condition: documents that wish to
+// make use of the trial must additionally serve a valid origin trial token.
+const base::Feature kBlockInsecurePrivateNetworkRequestsDeprecationTrial{
+    "BlockInsecurePrivateNetworkRequestsDeprecationTrial",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When both kBlockInsecurePrivateNetworkRequestsForNavigations and
 // kBlockInsecurePrivateNetworkRequests are enabled, navigations initiated
 // by documents in a less-private network may only target a more-private network

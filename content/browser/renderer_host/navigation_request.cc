@@ -5245,6 +5245,18 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial) &&
+      blink::TrialTokenValidator().RequestEnablesFeature(
+          common_params_->url, response_head_->headers.get(),
+          "PrivateNetworkAccessNonSecureContextsAllowed", base::Time::Now())) {
+    // TODO(https://crbug.com/1225977): Record that we need to increment a
+    // usecounter after commit.
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    return;
+  }
+
   // Requests from non-secure contexts are only blocked if the feature is
   // enabled, otherwise we simply show a warning in DevTools.
   private_network_request_policy_ =
