@@ -359,6 +359,7 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
 
 class DriveFsEventRouterImpl : public DriveFsEventRouter {
  public:
+  DriveFsEventRouterImpl(const DriveFsEventRouterImpl&) = delete;
   DriveFsEventRouterImpl(
       SystemNotificationManager* notification_manager,
       Profile* profile,
@@ -367,6 +368,8 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       : DriveFsEventRouter(notification_manager),
         profile_(profile),
         file_watchers_(file_watchers) {}
+
+  DriveFsEventRouterImpl& operator=(const DriveFsEventRouterImpl&) = delete;
 
  private:
   std::set<GURL> GetEventListenerURLs(const std::string& event_name) override {
@@ -414,19 +417,6 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
            base::Contains(*file_watchers_, absolute_path);
   }
 
-  void DispatchEventToExtension(
-      const std::string& extension_id,
-      extensions::events::HistogramValue histogram_value,
-      const std::string& event_name,
-      std::vector<base::Value> event_args) override {
-    std::unique_ptr<extensions::Event> event =
-        std::make_unique<extensions::Event>(histogram_value, event_name,
-                                            std::move(event_args));
-    system_notification_manager()->HandleEvent(*event.get());
-    extensions::EventRouter::Get(profile_)->DispatchEventToExtension(
-        extension_id, std::move(event));
-  }
-
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,
                       const std::string& event_name,
                       std::vector<base::Value> event_args) override {
@@ -440,8 +430,6 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
   Profile* const profile_;
   const std::map<base::FilePath, std::unique_ptr<FileWatcher>>* const
       file_watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsEventRouterImpl);
 };
 
 }  // namespace

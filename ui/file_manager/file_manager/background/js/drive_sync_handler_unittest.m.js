@@ -22,6 +22,15 @@ let progressCenter;
 let driveSyncHandler;
 
 /**
+ * @param {string} name file name
+ * @return {string} Valid file URL
+ */
+function asFileURL(name) {
+  return 'filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
+      `external/${name}`;
+}
+
+/**
  * Mock chrome APIs.
  * @type {Object}
  */
@@ -227,7 +236,7 @@ export function testErrorWithoutPath() {
 export async function testOffline() {
   // Start a transfer.
   await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
-    fileUrl: 'name',
+    fileUrl: asFileURL('name'),
     transferState: 'in_progress',
     processed: 50.0,
     total: 100.0,
@@ -258,7 +267,7 @@ export async function testOffline() {
 export async function testTransferUpdate() {
   // Start a pin transfer.
   await mockChrome.fileManagerPrivate.onPinTransfersUpdated.listener_({
-    fileUrl: 'name',
+    fileUrl: asFileURL('name'),
     transferState: 'in_progress',
     processed: 50.0,
     total: 100.0,
@@ -275,7 +284,7 @@ export async function testTransferUpdate() {
 
   // Start a sync transfer.
   await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
-    fileUrl: 'name',
+    fileUrl: asFileURL('name'),
     transferState: 'in_progress',
     processed: 25.0,
     total: 100.0,
@@ -290,7 +299,7 @@ export async function testTransferUpdate() {
 
   // Finish the pin transfer.
   await mockChrome.fileManagerPrivate.onPinTransfersUpdated.listener_({
-    fileUrl: 'name',
+    fileUrl: asFileURL('name'),
     transferState: 'completed',
     processed: 100.0,
     total: 100.0,
@@ -307,7 +316,7 @@ export async function testTransferUpdate() {
 
   // Fail the sync transfer.
   await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
-    fileUrl: 'name',
+    fileUrl: asFileURL('name'),
     transferState: 'failed',
     processed: 40.0,
     total: 100.0,

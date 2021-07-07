@@ -227,6 +227,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
    * @private
    */
   async onFileTransfersStatusReceived_(item, status) {
+    if (!this.isProcessableEvent(status)) {
+      return;
+    }
     switch (status.transferState) {
       case 'in_progress':
         await this.updateItem_(item, status);
@@ -308,12 +311,34 @@ export class DriveSyncHandlerImpl extends EventTarget {
   }
 
   /**
+   * Attempts to infer of the given event is processable by the drive sync
+   * handler. It uses fileUrl and window.isSwa flag to make a decision. It
+   * errs on the side of 'yes', when passing the judgement.
+   * @param {!Object} event
+   * @return {boolean} Whether or not the event should be processed.
+   */
+  isProcessableEvent(event) {
+    const fileUrl = event.fileUrl;
+    if (fileUrl) {
+      const match = 'filesystem:' +
+          (window.isSWA ?
+               'chrome://file-manager' :
+               'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj');
+      return fileUrl.startsWith(match);
+    }
+    return true;
+  }
+
+  /**
    * Handles drive's sync errors.
    * @param {chrome.fileManagerPrivate.DriveSyncErrorEvent} event Drive sync
    * error event.
    * @private
    */
   onDriveSyncError_(event) {
+    if (!this.isProcessableEvent(event)) {
+      return;
+    }
     const postError = name => {
       const item = new ProgressCenterItem();
       item.type = ProgressItemType.SYNC;
@@ -390,6 +415,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
    * @private
    */
   async onDriveConfirmDialog_(event) {
+    if (!this.isProcessableEvent(event)) {
+      return;
+    }
     let appId = null;
     // When a file manager is launched, its dialog will be added to dialogs_, so
     // check it to see if there is already a window open.

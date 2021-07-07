@@ -37,7 +37,10 @@ namespace file_manager {
 class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
  public:
   explicit DriveFsEventRouter(SystemNotificationManager* notification_manager);
+  DriveFsEventRouter(const DriveFsEventRouter&) = delete;
   virtual ~DriveFsEventRouter();
+
+  DriveFsEventRouter& operator=(const DriveFsEventRouter&) = delete;
 
   // Triggers an event in the UI to display a confirmation dialog.
   void DisplayConfirmDialog(
@@ -70,9 +73,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
       const std::vector<drivefs::mojom::FileChange>& changes) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
 
-  void DispatchOnFileTransfersUpdatedEvent(
-      const extensions::api::file_manager_private::FileTransferStatus& status);
-
   virtual std::set<GURL> GetEventListenerURLs(
       const std::string& event_name) = 0;
 
@@ -83,27 +83,15 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
 
   virtual bool IsPathWatched(const base::FilePath& path) = 0;
 
-  void DispatchOnFileTransfersUpdatedEventToExtension(
-      const std::string& extension_id,
+  void BroadcastOnFileTransfersUpdatedEvent(
       const extensions::api::file_manager_private::FileTransferStatus& status);
 
-  void DispatchOnPinTransfersUpdatedEvent(
-      const extensions::api::file_manager_private::FileTransferStatus& status);
-
-  void DispatchOnPinTransfersUpdatedEventToExtension(
-      const std::string& extension_id,
+  void BroadcastOnPinTransfersUpdatedEvent(
       const extensions::api::file_manager_private::FileTransferStatus& status);
 
   void BroadcastOnDirectoryChangedEvent(
       const base::FilePath& directory,
       const extensions::api::file_manager_private::FileWatchEvent& event);
-
-  // Helper method for dispatching an event to an extension.
-  virtual void DispatchEventToExtension(
-      const std::string& extension_id,
-      extensions::events::HistogramValue histogram_value,
-      const std::string& event_name,
-      std::vector<base::Value> event_args) = 0;
 
   // Helper method for broadcasting events.
   virtual void BroadcastEvent(
@@ -122,8 +110,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   SyncingStatusState sync_status_state_;
   SyncingStatusState pin_status_state_;
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsEventRouter);
 };
 
 }  // namespace file_manager
