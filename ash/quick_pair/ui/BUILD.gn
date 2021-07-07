@@ -25,9 +25,11 @@ component("ui") {
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
+    "//components/image_fetcher/core",
     "//services/data_decoder/public/cpp",
     "//ui/base",
     "//ui/gfx",
     "//ui/message_center",
+    "//url",
   ]
 }

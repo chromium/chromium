@@ -10,8 +10,14 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 using DecodeImageCallback = base::OnceCallback<void(const gfx::Image&)>;
+
+namespace image_fetcher {
+class ImageFetcher;
+struct RequestMetadata;
+}  // namespace image_fetcher
 
 namespace ash {
 namespace quick_pair {
@@ -21,15 +27,26 @@ namespace quick_pair {
 // given url or from given bytes of image data.
 class FastPairImageDecoder {
  public:
-  FastPairImageDecoder();
+  explicit FastPairImageDecoder(
+      std::unique_ptr<image_fetcher::ImageFetcher> fetcher);
   FastPairImageDecoder(const FastPairImageDecoder&) = delete;
   FastPairImageDecoder& operator=(const FastPairImageDecoder&) = delete;
   ~FastPairImageDecoder();
 
+  void DecodeImage(const GURL& image_url,
+                   DecodeImageCallback on_image_decoded_callback);
+
   void DecodeImage(const std::vector<uint8_t>& encoded_image_bytes,
-                   DecodeImageCallback on_image_decoded);
+                   DecodeImageCallback on_image_decoded_callback);
 
  private:
+  // ImageDataFetcher callback
+  void OnImageDataFetched(
+      DecodeImageCallback on_image_decoded_callback,
+      const std::string& image_data,
+      const image_fetcher::RequestMetadata& request_metadata);
+
+  std::unique_ptr<image_fetcher::ImageFetcher> fetcher_;
   base::WeakPtrFactory<FastPairImageDecoder> weak_ptr_factory_{this};
 };
 

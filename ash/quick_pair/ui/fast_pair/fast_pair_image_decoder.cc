@@ -7,22 +7,52 @@
 #include "ash/quick_pair/common/logging.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "ipc/ipc_channel.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/request_metadata.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 
 namespace {
 
-const int64_t kMaxImageSizeInBytes =
-    static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
+constexpr char kImageFetcherUmaClientName[] = "FastPair";
 
-void ToImage(DecodeImageCallback on_image_decoded, const SkBitmap& bitmap) {
+// TODO(crbug.com/1226117) Update policy from Nearby to Fast Pair.
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("fast_pair", R"(
+        semantics {
+          sender: "Get Fast Pair Device Image Data from Google"
+          description:
+            "Fast Pair can provide device images to be used in notifications "
+            "for corresponding Fast Pair devices. For a given image url, "
+            "Google's servers will return the image data in bytes to be "
+            "futher decoded here."
+          trigger: "A notification is being triggered for a Fast Pair device."
+          data: "Image pixels and URLs. No user identifier is sent along with "
+                "the data."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature is only enabled for signed-in users who enable "
+            "Nearby Share"
+          chrome_policy {
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+          }
+        })");
+
+void ToImage(DecodeImageCallback on_image_decoded_callback,
+             const SkBitmap& bitmap) {
   if (bitmap.empty()) {
     QP_LOG(WARNING) << "Failed to decode image";
-    std::move(on_image_decoded).Run(gfx::Image());
+    std::move(on_image_decoded_callback).Run(gfx::Image());
     return;
   }
   gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
-  std::move(on_image_decoded).Run(image);
+  std::move(on_image_decoded_callback).Run(image);
 }
 
 }  // namespace
@@ -30,18 +60,40 @@ void ToImage(DecodeImageCallback on_image_decoded, const SkBitmap& bitmap) {
 namespace ash {
 namespace quick_pair {
 
-FastPairImageDecoder::FastPairImageDecoder() = default;
+FastPairImageDecoder::FastPairImageDecoder(
+    std::unique_ptr<image_fetcher::ImageFetcher> fetcher)
+    : fetcher_(std::move(fetcher)) {}
 
 FastPairImageDecoder::~FastPairImageDecoder() = default;
 
 void FastPairImageDecoder::DecodeImage(
+    const GURL& image_url,
+    DecodeImageCallback on_image_decoded_callback) {
+  fetcher_->FetchImageData(
+      image_url,
+      base::BindOnce(&FastPairImageDecoder::OnImageDataFetched,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(on_image_decoded_callback)),
+      image_fetcher::ImageFetcherParams(kTrafficAnnotation,
+                                        kImageFetcherUmaClientName));
+}
+
+void FastPairImageDecoder::DecodeImage(
     const std::vector<uint8_t>& encoded_image_bytes,
-    DecodeImageCallback on_image_decoded) {
+    DecodeImageCallback on_image_decoded_callback) {
   data_decoder::DecodeImageIsolated(
       encoded_image_bytes, data_decoder::mojom::ImageCodec::kDefault,
-      /*shrink_to_fit=*/false, kMaxImageSizeInBytes,
+      /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(),
-      base::BindOnce(&ToImage, std::move(on_image_decoded)));
+      base::BindOnce(&ToImage, std::move(on_image_decoded_callback)));
+}
+
+void FastPairImageDecoder::OnImageDataFetched(
+    DecodeImageCallback on_image_decoded_callback,
+    const std::string& image_data,
+    const image_fetcher::RequestMetadata& request_metadata) {
+  DecodeImage(std::vector<uint8_t>(image_data.begin(), image_data.end()),
+              std::move(on_image_decoded_callback));
 }
 
 }  // namespace quick_pair
