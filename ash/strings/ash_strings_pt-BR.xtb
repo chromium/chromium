@@ -116,7 +116,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1882814835921407042">Rede móvel indisponível</translation>
 <translation id="1882897271359938046">Espelhamento de <ph name="DISPLAY_NAME" /></translation>
-<translation id="1885785240814121742">Desbloqueio com impressão digital</translation>
+<translation id="1885785240814121742">Desbloqueio por impressão digital</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">O atalho para abrir o gerenciador de tarefas foi alterado. Use <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
@@ -848,7 +848,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7860671499921112077">Deslize com três dedos para cima para abrir a Visão geral</translation>
 <translation id="7866482334467279021">ativada</translation>
-<translation id="7868900307798234037">Desbloqueio com impressão digital</translation>
+<translation id="7868900307798234037">Desbloqueio por impressão digital</translation>
 <translation id="7872786842639831132">Desativado</translation>
 <translation id="7875575368831396199">Parece que o Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative-o para usar o recurso Seu smartphone.</translation>
 <translation id="7886169021410746335">ajustar configurações de privacidade.</translation>
