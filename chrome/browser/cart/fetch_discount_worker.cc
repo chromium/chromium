@@ -200,6 +200,11 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     updater->update(cart_url, std::move(cart_proto));
   }
 
-  // Continue to work
-  PrepareToFetch(kDelayFetchSecParam.Get());
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
+          false)) {
+    // Continue to work
+    PrepareToFetch(kDelayFetchSecParam.Get());
+  }
 }
