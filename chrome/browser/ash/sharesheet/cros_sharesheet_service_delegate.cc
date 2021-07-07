@@ -22,16 +22,21 @@ CrosSharesheetServiceDelegate::CrosSharesheetServiceDelegate(
 void CrosSharesheetServiceDelegate::ShowBubble(
     std::vector<::sharesheet::TargetInfo> targets,
     apps::mojom::IntentPtr intent,
-    ::sharesheet::DeliveredCallback delivered_callback) {
+    ::sharesheet::DeliveredCallback delivered_callback,
+    ::sharesheet::CloseCallback close_callback) {
   if (IsBubbleVisible()) {
     if (delivered_callback) {
       std::move(delivered_callback)
           .Run(::sharesheet::SharesheetResult::kErrorAlreadyOpen);
     }
+    if (close_callback) {
+      std::move(close_callback).Run();
+    }
     return;
   }
   sharesheet_bubble_view_->ShowBubble(std::move(targets), std::move(intent),
-                                      std::move(delivered_callback));
+                                      std::move(delivered_callback),
+                                      std::move(close_callback));
 }
 
 void CrosSharesheetServiceDelegate::ShowNearbyShareBubble(

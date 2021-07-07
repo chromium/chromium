@@ -167,9 +167,11 @@ SharesheetBubbleView::~SharesheetBubbleView() = default;
 void SharesheetBubbleView::ShowBubble(
     std::vector<TargetInfo> targets,
     apps::mojom::IntentPtr intent,
-    ::sharesheet::DeliveredCallback delivered_callback) {
+    ::sharesheet::DeliveredCallback delivered_callback,
+    ::sharesheet::CloseCallback close_callback) {
   intent_ = std::move(intent);
   delivered_callback_ = std::move(delivered_callback);
+  close_callback_ = std::move(close_callback);
 
   main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -250,9 +252,9 @@ void SharesheetBubbleView::ShowNearbyShareBubble(
     apps::mojom::IntentPtr intent,
     ::sharesheet::DeliveredCallback delivered_callback,
     ::sharesheet::CloseCallback close_callback) {
-  close_callback_ = std::move(close_callback);
   user_selection_made_ = true;  // Disable close when clicking outside bubble.
-  ShowBubble({}, std::move(intent), std::move(delivered_callback));
+  ShowBubble({}, std::move(intent), std::move(delivered_callback),
+             std::move(close_callback));
   if (delivered_callback_) {
     std::move(delivered_callback_)
         .Run(::sharesheet::SharesheetResult::kSuccess);

@@ -83,6 +83,10 @@ namespace ui {
 class NativeTheme;
 }
 
+namespace views {
+class Button;
+}  // namespace views
+
 namespace web_modal {
 class WebContentsModalDialogHost;
 }
@@ -396,11 +400,16 @@ class BrowserWindow : public ui::BaseWindow {
       send_tab_to_self::SendTabToSelfBubbleController* controller,
       bool is_user_gesture) = 0;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns the PageActionIconView for the Sharing Hub.
+  virtual views::Button* GetSharingHubIconButton() = 0;
+#else
   // Shows the Sharing Hub bubble.
   virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
       content::WebContents* contents,
       sharing_hub::SharingHubBubbleController* controller,
       bool is_user_gesture) = 0;
+#endif
 
   // Shows the translate bubble.
   //

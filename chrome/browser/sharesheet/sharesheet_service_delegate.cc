@@ -21,7 +21,8 @@ gfx::NativeWindow SharesheetServiceDelegate::GetNativeWindow() {
 void SharesheetServiceDelegate::ShowBubble(
     std::vector<TargetInfo> targets,
     apps::mojom::IntentPtr intent,
-    sharesheet::DeliveredCallback delivered_callback) {
+    sharesheet::DeliveredCallback delivered_callback,
+    sharesheet::CloseCallback close_callback) {
   NOTIMPLEMENTED();
 }
 

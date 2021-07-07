@@ -44,7 +44,9 @@ class SharesheetServiceDelegate : public ::sharesheet::SharesheetController {
   // The following are called by the ShareService to communicate with the UI.
   virtual void ShowBubble(std::vector<TargetInfo> targets,
                           apps::mojom::IntentPtr intent,
-                          sharesheet::DeliveredCallback delivered_callback);
+                          sharesheet::DeliveredCallback delivered_callback,
+                          sharesheet::CloseCallback close_callback);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual void ShowNearbyShareBubble(
       apps::mojom::IntentPtr intent,

@@ -24,6 +24,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/button.h"
 
 namespace sharing_hub {
 
@@ -87,10 +88,11 @@ void SharingHubBubbleController::HideBubble() {
 }
 
 void SharingHubBubbleController::ShowBubble() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ShowSharesheet();
-#else
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowSharesheet(browser->window()->GetSharingHubIconButton());
+#else
   sharing_hub_bubble_view_ =
       browser->window()->ShowSharingHubBubble(web_contents_, this, true);
 #endif
@@ -175,11 +177,15 @@ SharingHubModel* SharingHubBubbleController::GetSharingHubModel() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void SharingHubBubbleController::ShowSharesheet() {
+void SharingHubBubbleController::ShowSharesheet(
+    views::Button* highlighted_button) {
   if (!base::FeatureList::IsEnabled(features::kSharesheet) ||
       !base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
     return;
   }
+
+  DCHECK(highlighted_button);
+  highlighted_button_tracker_.SetView(highlighted_button);
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -194,13 +200,23 @@ void SharingHubBubbleController::ShowSharesheet() {
   sharesheet_service->ShowBubble(
       web_contents_, std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kOmniboxShare,
-      base::BindOnce(&SharingHubBubbleController::OnSharesheetShown,
+      base::BindOnce(&SharingHubBubbleController::OnShareDelivered,
+                     base::Unretained(this)),
+      base::BindOnce(&SharingHubBubbleController::OnSharesheetClosed,
                      base::Unretained(this)));
 }
 
-void SharingHubBubbleController::OnSharesheetShown(
+void SharingHubBubbleController::OnShareDelivered(
     sharesheet::SharesheetResult result) {
   LogCrOSSharesheetResult(result);
+}
+
+void SharingHubBubbleController::OnSharesheetClosed() {
+  // Deselect the omnibox icon now that the sharesheet is closed.
+  views::Button* button =
+      views::Button::AsButton(highlighted_button_tracker_.view());
+  if (button)
+    button->SetHighlighted(false);
 }
 #endif
 

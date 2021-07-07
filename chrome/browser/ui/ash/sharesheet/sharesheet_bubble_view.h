@@ -43,7 +43,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   // |close_callback| is run to inform the caller when the bubble is closed.
   void ShowBubble(std::vector<TargetInfo> targets,
                   apps::mojom::IntentPtr intent,
-                  ::sharesheet::DeliveredCallback delivered_callback);
+                  ::sharesheet::DeliveredCallback delivered_callback,
+                  ::sharesheet::CloseCallback close_callback);
   void ShowNearbyShareBubble(apps::mojom::IntentPtr intent,
                              ::sharesheet::DeliveredCallback delivered_callback,
                              ::sharesheet::CloseCallback close_callback);

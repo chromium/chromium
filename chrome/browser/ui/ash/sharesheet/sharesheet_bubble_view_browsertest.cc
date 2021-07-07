@@ -55,7 +55,7 @@ class SharesheetBubbleViewBrowserTest
     sharesheet_service->ShowBubble(
         browser()->tab_strip_model()->GetActiveWebContents(), std::move(intent),
         ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown,
-        base::DoNothing());
+        base::DoNothing(), base::DoNothing());
 
     views::Widget::Widgets new_widgets;
     for (aura::Window* root_window : Shell::GetAllRootWindows())

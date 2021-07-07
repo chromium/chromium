@@ -34,7 +34,8 @@ class CrosSharesheetServiceDelegate
   // ::sharesheet::SharesheetServiceDelegate overrides:
   void ShowBubble(std::vector<::sharesheet::TargetInfo> targets,
                   apps::mojom::IntentPtr intent,
-                  ::sharesheet::DeliveredCallback delivered_callback) override;
+                  ::sharesheet::DeliveredCallback delivered_callback,
+                  ::sharesheet::CloseCallback close_callback) override;
   void ShowNearbyShareBubble(
       apps::mojom::IntentPtr intent,
       ::sharesheet::DeliveredCallback delivered_callback,

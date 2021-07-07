@@ -239,12 +239,18 @@ TestBrowserWindow::ShowSendTabToSelfBubble(
   return nullptr;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+views::Button* TestBrowserWindow::GetSharingHubIconButton() {
+  return nullptr;
+}
+#else
 sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
     content::WebContents* contents,
     sharing_hub::SharingHubBubbleController* controller,
     bool is_user_gesture) {
   return nullptr;
 }
+#endif
 
 bool TestBrowserWindow::IsDownloadShelfVisible() const {
   return false;

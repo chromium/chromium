@@ -7,12 +7,17 @@
 
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/views/view_tracker.h"
 
 class Profile;
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace views {
+class Button;
+}  // namespace views
 
 namespace sharing_hub {
 
@@ -66,8 +71,11 @@ class SharingHubBubbleController
   SharingHubModel* GetSharingHubModel();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void ShowSharesheet();
-  void OnSharesheetShown(sharesheet::SharesheetResult result);
+  void ShowSharesheet(views::Button* highlighted_button);
+  void OnShareDelivered(sharesheet::SharesheetResult result);
+  void OnSharesheetClosed();
+
+  views::ViewTracker highlighted_button_tracker_;
 #endif
 
   // The web_contents associated with this controller.

@@ -155,10 +155,14 @@ class TestBrowserWindow : public BrowserWindow {
       content::WebContents* contents,
       send_tab_to_self::SendTabToSelfBubbleController* controller,
       bool is_user_gesture) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  views::Button* GetSharingHubIconButton() override;
+#else
   sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
       content::WebContents* contents,
       sharing_hub::SharingHubBubbleController* controller,
       bool is_user_gesture) override;
+#endif
   ShowTranslateBubbleResult ShowTranslateBubble(
       content::WebContents* contents,
       translate::TranslateStep step,

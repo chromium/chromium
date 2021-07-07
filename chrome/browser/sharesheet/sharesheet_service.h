@@ -59,16 +59,20 @@ class SharesheetService : public KeyedService {
   //
   // |delivered_callback| is run to signify that the intent has been
   // delivered to the target selected by the user (which may then show its own
-  // separate UI, e.g. for Nearby Sharing)
+  // separate UI, e.g. for Nearby Sharing).
+  // |close_callback| is run to signify that the share flow has finished and the
+  // dialog has closed (this includes separate UI, e.g. Nearby Sharing).
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
                   SharesheetMetrics::LaunchSource source,
-                  DeliveredCallback delivered_callback);
+                  DeliveredCallback delivered_callback,
+                  CloseCallback close_callback = base::NullCallback());
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
                   bool contains_hosted_document,
                   SharesheetMetrics::LaunchSource source,
-                  DeliveredCallback delivered_callback);
+                  DeliveredCallback delivered_callback,
+                  CloseCallback close_callback = base::NullCallback());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.
@@ -121,12 +125,14 @@ class SharesheetService : public KeyedService {
   void OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                         apps::mojom::IntentPtr intent,
                         DeliveredCallback delivered_callback,
+                        CloseCallback close_callback,
                         std::vector<TargetInfo> targets);
 
   void ShowBubbleWithDelegate(SharesheetServiceDelegate* delegate,
                               apps::mojom::IntentPtr intent,
                               bool contains_hosted_document,
-                              DeliveredCallback delivered_callback);
+                              DeliveredCallback delivered_callback,
+                              CloseCallback close_callback);
 
   void RecordUserActionMetrics(const std::u16string& target_name);
   void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);

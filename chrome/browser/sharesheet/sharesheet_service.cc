@@ -56,25 +56,27 @@ SharesheetService::~SharesheetService() = default;
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent,
                                    SharesheetMetrics::LaunchSource source,
-                                   DeliveredCallback delivered_callback) {
+                                   DeliveredCallback delivered_callback,
+                                   CloseCallback close_callback) {
   ShowBubble(web_contents, std::move(intent),
              /*contains_hosted_document=*/false, source,
-             std::move(delivered_callback));
+             std::move(delivered_callback), std::move(close_callback));
 }
 
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent,
                                    bool contains_hosted_document,
                                    SharesheetMetrics::LaunchSource source,
-                                   DeliveredCallback delivered_callback) {
+                                   DeliveredCallback delivered_callback,
+                                   CloseCallback close_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
   auto* sharesheet_service_delegate =
       GetOrCreateDelegate(web_contents->GetTopLevelNativeWindow());
-  ShowBubbleWithDelegate(sharesheet_service_delegate, std::move(intent),
-                         contains_hosted_document,
-                         std::move(delivered_callback));
+  ShowBubbleWithDelegate(
+      sharesheet_service_delegate, std::move(intent), contains_hosted_document,
+      std::move(delivered_callback), std::move(close_callback));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -281,6 +283,7 @@ void SharesheetService::OnIconLoaded(
 void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                                          apps::mojom::IntentPtr intent,
                                          DeliveredCallback delivered_callback,
+                                         CloseCallback close_callback,
                                          std::vector<TargetInfo> targets) {
   RecordTargetCountMetrics(targets);
   RecordShareDataMetrics(intent);
@@ -301,19 +304,24 @@ void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
     }
 
     std::move(delivered_callback).Run(result);
+    // Can be null in tests.
+    if (close_callback)
+      std::move(close_callback).Run();
     delegate->OnBubbleClosed(/*active_action=*/std::u16string());
     return;
   }
 
   delegate->ShowBubble(std::move(targets), std::move(intent),
-                       std::move(delivered_callback));
+                       std::move(delivered_callback),
+                       std::move(close_callback));
 }
 
 void SharesheetService::ShowBubbleWithDelegate(
     SharesheetServiceDelegate* delegate,
     apps::mojom::IntentPtr intent,
     bool contains_hosted_document,
-    DeliveredCallback delivered_callback) {
+    DeliveredCallback delivered_callback,
+    CloseCallback close_callback) {
   std::vector<TargetInfo> targets;
   auto& actions = sharesheet_action_cache_->GetShareActions();
   auto iter = actions.begin();
@@ -334,7 +342,7 @@ void SharesheetService::ShowBubbleWithDelegate(
       std::move(intent_launch_info), std::move(targets), 0,
       base::BindOnce(&SharesheetService::OnAppIconsLoaded,
                      weak_factory_.GetWeakPtr(), delegate, std::move(intent),
-                     std::move(delivered_callback)));
+                     std::move(delivered_callback), std::move(close_callback)));
 }
 
 void SharesheetService::RecordUserActionMetrics(
