@@ -87,6 +87,7 @@ class ScopedPrivacyBudgetConfig {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  bool applied_ = false;
 };
 
 }  // namespace test
