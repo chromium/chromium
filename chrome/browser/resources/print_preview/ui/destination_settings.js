@@ -257,8 +257,8 @@ Polymer({
     let filteredDestinations = recentDestinations;
     // Remove unsupported privet printers from the sticky settings,
     // to free up these spots for supported printers.
-    // TODO(rbpotter): Remove this logic a milestone after the policy and flag
-    // have been removed.
+    // TODO (https://crbug.com/1223593): Remove the code below once this policy
+    // is no longer supported.
     if (!loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
       filteredDestinations = recentDestinations.filter(d => {
         return d.origin !== DestinationOrigin.PRIVET;

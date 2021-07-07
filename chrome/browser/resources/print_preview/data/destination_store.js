@@ -202,9 +202,8 @@ export class DestinationStore extends EventTarget {
       ],
       [PrinterType.LOCAL_PRINTER, DestinationStorePrinterSearchStatus.START],
     ]);
-
-    // TODO (rbpotter): Remove the code below once this flag and policy are no
-    // longer supported. Remove the privet flag in M90.
+    // TODO (https://crbug.com/1223593): Remove the code below once this policy
+    // is no longer supported.
     if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
       this.destinationSearchStatus_.set(
           PrinterType.PRIVET_PRINTER,
@@ -414,6 +413,8 @@ export class DestinationStore extends EventTarget {
     // fetched by Javascript instead of through the native layer (which
     // startLoadDestinations_ invokes).
     for (const printerType of this.typesToSearch_) {
+      // TODO (https://crbug.com/1223593): Remove the code below once this
+      // policy is no longer supported.
       if (printerType !== PrinterType.CLOUD_PRINTER &&
           (printerType !== PrinterType.PRIVET_PRINTER ||
            loadTimeData.getBoolean('forceEnablePrivetPrinting'))) {
@@ -616,8 +617,8 @@ export class DestinationStore extends EventTarget {
     const origins = [];
     if (isLocal) {
       origins.push(DestinationOrigin.LOCAL);
-      // TODO (rbpotter): Remove the code below once this flag and policy are no
-      // longer supported. Remove the privet flag in M90.
+      // TODO (https://crbug.com/1223593): Remove the code below once this
+      // policy is no longer supported.
       if (loadTimeData.getBoolean('forceEnablePrivetPrinting')) {
         origins.push(DestinationOrigin.PRIVET);
       }
