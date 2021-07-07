@@ -147,6 +147,28 @@ TEST_F(ConversionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
                                                           impression_time));
 }
 
+TEST_F(ConversionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
+  const struct {
+    base::TimeDelta declared_expiry;
+    base::TimeDelta want_expiry;
+  } kTestCases[] = {
+      {base::TimeDelta::FromDays(-1), base::TimeDelta::FromDays(1)},
+      {base::TimeDelta::FromDays(0), base::TimeDelta::FromDays(1)},
+      {base::TimeDelta::FromDays(1) - base::TimeDelta::FromMilliseconds(1),
+       base::TimeDelta::FromDays(1)},
+      {base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1),
+       base::TimeDelta::FromDays(1) + base::TimeDelta::FromMilliseconds(1)},
+  };
+
+  const base::Time impression_time = base::Time::Now();
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(impression_time + test_case.want_expiry,
+              ConversionPolicy().GetExpiryTimeForImpression(
+                  test_case.declared_expiry, impression_time));
+  }
+}
+
 TEST_F(ConversionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
   constexpr base::TimeDelta declared_expiry = base::TimeDelta::FromDays(10);
   base::Time impression_time = base::Time::Now();
