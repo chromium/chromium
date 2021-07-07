@@ -60,11 +60,10 @@ void ServiceProcessPrefs::SetBoolean(const std::string& key, bool value) {
 int ServiceProcessPrefs::GetInt(const std::string& key,
                                 int default_value) const {
   const base::Value* value;
-  int result = default_value;
-  if (!prefs_->GetValue(key, &value) || !value->GetAsInteger(&result))
+  if (!prefs_->GetValue(key, &value))
     return default_value;
 
-  return result;
+  return value->GetIfInt().value_or(default_value);
 }
 
 void ServiceProcessPrefs::SetInt(const std::string& key, int value) {
