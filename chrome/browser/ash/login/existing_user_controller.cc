@@ -64,6 +64,8 @@
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/powerwash_requirements_checker.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -552,6 +554,8 @@ void ExistingUserController::Observe(
 // ExistingUserController, private:
 
 ExistingUserController::~ExistingUserController() {
+  if (browser_shutdown::IsTryingToQuit() || chrome::IsAttemptingShutdown())
+    return;
   CHECK(UserSessionManager::GetInstance());
   UserSessionManager::GetInstance()->DelegateDeleted(this);
 }
