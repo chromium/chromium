@@ -8,7 +8,10 @@
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/video/mock_video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,7 +77,12 @@ class RTCVideoEncoderTest
         mock_gpu_factories_(
             new media::MockGpuVideoAcceleratorFactories(nullptr)),
         idle_waiter_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                     base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+                     base::WaitableEvent::InitialState::NOT_SIGNALED) {
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(crbug.com/1186051): remove once enabled by default.
+    feature_list_.InitAndEnableFeature(media::kVp9kSVCHWEncoding);
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   media::MockVideoEncodeAccelerator* ExpectCreateInitAndDestroyVEA() {
     // The VEA will be owned by the RTCVideoEncoder once
@@ -308,6 +316,7 @@ class RTCVideoEncoderTest
   std::unique_ptr<EncodedImageCallbackWrapper> callback_wrapper_;
   base::WaitableEvent idle_waiter_;
   size_t num_spatial_layers_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(RTCVideoEncoderTest, CreateAndInitSucceeds) {
