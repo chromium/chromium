@@ -67,6 +67,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -101,6 +102,13 @@ const uint8_t kApplicationServerKey[kApplicationServerKeyLength] = {
 const char kEncodedApplicationServerKey[] =
     "BFVSaqVujqpHlzYQwWY8HmW_oXvuSMnGu78CGFNyHQx7qeMRtwNSIdNxkBOowc_tIPcf0X_ydr"
     "YBINg1pdk8Q_0";
+
+// From chrome/browser/push_messaging/push_messaging_manager.cc
+const char* kIncognitoWarningPattern =
+    "Chrome currently does not support the Push API in incognito mode "
+    "(https://crbug.com/401439). There is deliberately no way to "
+    "feature-detect this, since incognito mode needs to be undetectable by "
+    "websites.";
 
 std::string GetTestApplicationServerKey(bool base64_url_encoded = false) {
   std::string application_server_key;
@@ -168,7 +176,6 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     content::SetupCrossSiteRedirector(https_server_.get());
-    ASSERT_TRUE(https_server_->Start());
 
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
     InProcessBrowserTest::SetUp();
@@ -186,6 +193,7 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(https_server_->Start());
 
     KeyedService* keyed_service =
         gcm::GCMProfileServiceFactory::GetForProfile(GetBrowser()->profile());
@@ -2768,17 +2776,26 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, EncryptionKeyUniqueness) {
 
 class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTest {
  public:
+  PushMessagingIncognitoBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &PushMessagingIncognitoBrowserTest::web_contents,
+            base::Unretained(this))) {}
   ~PushMessagingIncognitoBrowserTest() override = default;
 
   // PushMessagingBrowserTest:
   void SetUpOnMainThread() override {
     incognito_browser_ = CreateIncognitoBrowser();
+    prerender_helper_.SetUpOnMainThread(https_server());
     PushMessagingBrowserTest::SetUpOnMainThread();
   }
-
   Browser* GetBrowser() const override { return incognito_browser_; }
 
- private:
+  content::WebContents* web_contents() {
+    return GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
   Browser* incognito_browser_ = nullptr;
 };
 
@@ -2796,6 +2813,81 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
   // it should just fulfill with null.
   ASSERT_TRUE(RunScript("hasSubscription()", &script_result));
   ASSERT_EQ("false - not subscribed", script_result);
+}
+
+IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest, WarningToCorrectRFH) {
+  ASSERT_TRUE(GetBrowser()->profile()->IsOffTheRecord());
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kIncognitoWarningPattern);
+
+  // Filter out the main frame host of the currently active page.
+  content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+  console_observer.SetFilter(base::BindLambdaForTesting(
+      [&](const content::WebContentsConsoleObserver::Message& message) {
+        return message.source_frame == rfh;
+      }));
+
+  std::string script_result;
+
+  ASSERT_TRUE(RunScript("registerServiceWorker()", &script_result));
+  ASSERT_EQ("ok - service worker registered", script_result);
+
+  ASSERT_TRUE(RunScript("documentSubscribePush()", &script_result));
+  ASSERT_EQ("AbortError - Registration failed - permission denied",
+            script_result);
+
+  console_observer.Wait();
+  EXPECT_EQ(1u, console_observer.messages().size());
+}
+
+IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
+                       WarningToCorrectRFH_Prerender) {
+  ASSERT_TRUE(GetBrowser()->profile()->IsOffTheRecord());
+
+  const GURL url(https_server()->GetURL(GetTestURL()));
+
+  // Start a prerender with the push messaging test URL.
+  int host_id = prerender_helper_.AddPrerender(url);
+  content::test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                          host_id);
+  ASSERT_NE(prerender_helper_.GetHostForUrl(url),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kIncognitoWarningPattern);
+
+  // Filter out the main frame host of the prerendered page.
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+  console_observer.SetFilter(base::BindLambdaForTesting(
+      [&](const content::WebContentsConsoleObserver::Message& message) {
+        return message.source_frame == prerender_rfh;
+      }));
+
+  std::string script_result;
+
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      prerender_rfh, "registerServiceWorker()", &script_result));
+  ASSERT_EQ("ok - service worker registered", script_result);
+
+  // Use ExecuteScriptAsync because binding of blink::mojom::PushMessaging
+  // is deferred for the prerendered page. Script execution will finish after
+  // the activation.
+  ExecuteScriptAsync(prerender_rfh, "documentSubscribePush()");
+
+  // Activate the prerendered page and wait for a response of script execution.
+  content::DOMMessageQueue message_queue;
+  prerender_helper_.NavigatePrimaryPage(url);
+  // Make sure that the prerender was activated.
+  ASSERT_TRUE(prerender_observer.was_activated());
+  do {
+    ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  } while (script_result !=
+           "\"AbortError - Registration failed - permission denied\"");
+
+  console_observer.Wait();
+  EXPECT_EQ(1u, console_observer.messages().size());
 }
 
 class PushMessagingDisallowSenderIdsBrowserTest
