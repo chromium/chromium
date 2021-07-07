@@ -1347,17 +1347,22 @@ class ContentSettingsWithPrerenderingBrowserTest : public ContentSettingsTest {
   content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
-// Disabled due to https://crbug.com/1225428
 IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
-                       DISABLED_PrerenderingPageSetsCookie) {
+                       PrerenderingPageSetsCookie) {
   const GURL main_url = embedded_test_server()->GetURL("/empty.html");
   const GURL prerender_url =
       embedded_test_server()->GetURL("/set_cookie_header.html");
 
   ui_test_utils::NavigateToURL(browser(), main_url);
   ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+      GetWebContents()->GetMainFrame());
+  ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
-  prerender_test_helper().AddPrerender(prerender_url);
+  CookieChangeObserver cookie_change_observer(GetWebContents());
+  prerender_test_helper().AddPrerenderAsync(prerender_url);
+  cookie_change_observer.Wait();
+  prerender_test_helper().WaitForPrerenderLoadCompletion(prerender_url);
   int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
   content::RenderFrameHost* prerender_frame =
       prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
@@ -1368,8 +1373,6 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   EXPECT_TRUE(prerender_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
   EXPECT_EQ(prerender_pscs->allowed_local_shared_objects().GetObjectCount(),
             1u);
-  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-      GetWebContents()->GetMainFrame());
   EXPECT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
   EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 0u);
 
@@ -1381,15 +1384,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 1u);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1224129
-#define MAYBE_PrerenderingPageIframeSetsCookie \
-  DISABLED_PrerenderingPageIframeSetsCookie
-#else
-#define MAYBE_PrerenderingPageIframeSetsCookie PrerenderingPageIframeSetsCookie
-#endif
 IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
-                       MAYBE_PrerenderingPageIframeSetsCookie) {
+                       PrerenderingPageIframeSetsCookie) {
   const GURL main_url = embedded_test_server()->GetURL("/empty.html");
   const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
   const GURL iframe_url =
@@ -1397,6 +1393,10 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), main_url);
   ASSERT_EQ(GetWebContents()->GetLastCommittedURL(), main_url);
+
+  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
+      GetWebContents()->GetMainFrame());
+  ASSERT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
 
   prerender_test_helper().AddPrerender(prerender_url);
   int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
@@ -1406,12 +1406,16 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
 
   content::TestNavigationManager navigation_manager(GetWebContents(),
                                                     iframe_url);
+  CookieChangeObserver cookie_observer(GetWebContents());
   EXPECT_TRUE(content::ExecJs(
       prerender_frame,
       content::JsReplace("const iframe = document.createElement('iframe');"
                          "iframe.src = $1;"
                          "document.body.appendChild(iframe);",
                          iframe_url)));
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+  navigation_manager.ResumeNavigation();
+  cookie_observer.Wait();
   navigation_manager.WaitForNavigationFinished();
 
   auto* prerender_pscs =
@@ -1419,8 +1423,6 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithPrerenderingBrowserTest,
   EXPECT_TRUE(prerender_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
   EXPECT_EQ(prerender_pscs->allowed_local_shared_objects().GetObjectCount(),
             1u);
-  auto* main_pscs = PageSpecificContentSettings::GetForFrame(
-      GetWebContents()->GetMainFrame());
   EXPECT_FALSE(main_pscs->IsContentAllowed(ContentSettingsType::COOKIES));
   EXPECT_EQ(main_pscs->allowed_local_shared_objects().GetObjectCount(), 0u);
 }
