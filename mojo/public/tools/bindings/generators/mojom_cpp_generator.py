@@ -331,12 +331,6 @@ class Generator(generator.Generator):
     for interface in self.module.interfaces:
       all_enums.extend(interface.enums)
 
-    typemap_forward_declarations = []
-    for kind in self.module.imported_kinds.values():
-      forward_declaration = self._GetTypemappedForwardDeclaration(kind)
-      if forward_declaration:
-        typemap_forward_declarations.append(forward_declaration)
-
     return {
         "all_enums": all_enums,
         "contains_only_enums": self._ContainsOnlyEnums(),
@@ -350,7 +344,6 @@ class Generator(generator.Generator):
         "extra_traits_headers": self._GetExtraTraitsHeaders(),
         "for_blink": self.for_blink,
         "imports": self.module.imports,
-        "typemap_forward_declarations": typemap_forward_declarations,
         "interfaces": self.module.interfaces,
         "kinds": self.module.kinds,
         "module": self.module,
@@ -573,12 +566,6 @@ class Generator(generator.Generator):
     return hasattr(kind, "name") and \
         self._GetFullMojomNameForKind(kind) in self.typemap
 
-  def _GetTypemappedForwardDeclaration(self, kind):
-    if not self._IsTypemappedKind(kind):
-      return None
-    return self.typemap[self._GetFullMojomNameForKind(
-        kind)]["forward_declaration"]
-
   def _IsHashableKind(self, kind):
     """Check if the kind can be hashed.
 
@@ -742,11 +729,11 @@ class Generator(generator.Generator):
     """Determines whether a given import module requires a full header include,
     or if the forward header is sufficient."""
 
-    # Type-mapped kinds may not have forward declarations, and nested kinds
-    # cannot be forward declared.
+    # Type-mapped kinds don't have forward declarations, and nested kinds cannot
+    # be forward declared.
+    # TODO(hans): Use forward declarations for type-mapped kinds.
     if any(kind.module == imported_module and (
-        (self._IsTypemappedKind(kind) and not self.
-         _GetTypemappedForwardDeclaration(kind)) or kind.parent_kind != None)
+        self._IsTypemappedKind(kind) or kind.parent_kind != None)
            for kind in self.module.imported_kinds.values()):
       return True
 

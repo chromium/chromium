@@ -120,10 +120,6 @@ namespace {{variant}} {
 #endif
 {%- endif %}
 
-{%- for forward_declaration in typemap_forward_declarations %}
-{{forward_declaration}}
-{%- endfor %}
-
 {#--- WTF enum hashing #}
 {%- from "enum_macros.tmpl" import enum_hash_blink%}
 {%- if for_blink %}

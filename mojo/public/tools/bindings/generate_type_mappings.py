@@ -82,7 +82,6 @@ def LoadCppTypemapConfig(path):
       for entry in config['types']:
         configs[entry['mojom']] = {
             'typename': entry['cpp'],
-            'forward_declaration': entry.get('forward_declaration', None),
             'public_headers': config.get('traits_headers', []),
             'traits_headers': config.get('traits_private_headers', []),
             'copyable_pass_by_value': entry.get('copyable_pass_by_value',
