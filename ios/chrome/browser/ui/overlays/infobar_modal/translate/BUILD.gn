@@ -45,6 +45,7 @@ source_set("unit_tests") {
     ":translate",
     "//base/test:test_support",
     "//components/infobars/core",
+    "//components/translate/core/browser:browser",
     "//components/translate/core/browser:test_support",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",

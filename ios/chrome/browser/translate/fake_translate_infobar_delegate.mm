@@ -85,10 +85,10 @@ FakeTranslateInfoBarDelegateFactory::~FakeTranslateInfoBarDelegateFactory() {}
 std::unique_ptr<FakeTranslateInfoBarDelegate>
 FakeTranslateInfoBarDelegateFactory::CreateFakeTranslateInfoBarDelegate(
     const std::string& source_language,
-    const std::string& target_language) {
+    const std::string& target_language,
+    translate::TranslateStep translate_step,
+    translate::TranslateErrors::Type error_type) {
   return std::make_unique<FakeTranslateInfoBarDelegate>(
-      manager_->GetWeakPtr(), false,
-      translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-      source_language, target_language, translate::TranslateErrors::Type::NONE,
-      false);
+      manager_->GetWeakPtr(), false, translate_step, source_language,
+      target_language, error_type, false);
 }

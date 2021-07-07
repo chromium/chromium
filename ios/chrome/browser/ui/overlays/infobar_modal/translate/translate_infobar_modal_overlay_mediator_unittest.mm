@@ -6,6 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/translate/core/browser/translate_step.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
@@ -36,13 +37,20 @@ using translate_infobar_modal_responses::ToggleNeverPromptSite;
 using translate_infobar_modal_responses::UpdateLanguageInfo;
 using translate_infobar_modal_responses::UpdateLanguageInfo;
 
-// Test fixture for TranslateInfobarModalOverlayMediator.
+// Base test fixture for TranslateInfobarModalOverlayMediator. The state of the
+// mediator's consumer is expected to vary based on the current TranslateStep.
+// Derived test fixtures are used to verify this behaviour.
 class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
-  TranslateInfobarModalOverlayMediatorTest()
+  TranslateInfobarModalOverlayMediatorTest(
+      translate::TranslateStep step,
+      translate::TranslateErrors::Type error_type)
       : infobar_(
             [[FakeInfobarUIDelegate alloc] init],
-            delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr", "en")),
+            delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr",
+                                                                 "en",
+                                                                 step,
+                                                                 error_type)),
         callback_installer_(
             &callback_receiver_,
             {InfobarModalMainActionResponse::ResponseSupport(),
@@ -59,6 +67,13 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
         initWithRequest:request_.get()];
     mediator_.delegate = delegate_;
   }
+
+  // Default constructor using TRANSLATE_STEP_BEFORE_TRANSLATE as the
+  // translate step.
+  TranslateInfobarModalOverlayMediatorTest()
+      : TranslateInfobarModalOverlayMediatorTest(
+            translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
+            translate::TranslateErrors::Type::NONE) {}
 
   ~TranslateInfobarModalOverlayMediatorTest() override {
     EXPECT_CALL(callback_receiver_, CompletionCallback(request_.get()));
@@ -80,7 +95,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
 };
 
 // Tests that a TranslateInfobarModalOverlayMediator correctly sets up its
-// consumer.
+// consumer while in a "before translate" step.
 TEST_F(TranslateInfobarModalOverlayMediatorTest, SetUpConsumer) {
   FakeInfobarTranslateModalConsumer* consumer =
       [[FakeInfobarTranslateModalConsumer alloc] init];
@@ -183,4 +198,69 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSite) {
                                ToggleNeverPromptSite::ResponseSupport()));
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ neverTranslateSite];
+}
+
+// Test fixture for TranslateInfobarModalOverlayMediator using the
+// TRANSLATE_STEP_AFTER_TRANSLATE translate step.
+class TranslateInfobarModalOverlayMediatorAfterTranslateTest
+    : public TranslateInfobarModalOverlayMediatorTest {
+ public:
+  TranslateInfobarModalOverlayMediatorAfterTranslateTest()
+      : TranslateInfobarModalOverlayMediatorTest(
+            translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
+            translate::TranslateErrors::Type::NONE) {}
+};
+
+// Tests that a TranslateInfobarModalOverlayMediator correctly sets up its
+// consumer while in an "after translate" step.
+TEST_F(TranslateInfobarModalOverlayMediatorAfterTranslateTest, SetUpConsumer) {
+  FakeInfobarTranslateModalConsumer* consumer =
+      [[FakeInfobarTranslateModalConsumer alloc] init];
+  mediator_.consumer = consumer;
+
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate().source_language_name()),
+              consumer.sourceLanguage);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate().target_language_name()),
+              consumer.targetLanguage);
+  EXPECT_FALSE(consumer.enableTranslateActionButton);
+  EXPECT_FALSE(consumer.updateLanguageBeforeTranslate);
+  EXPECT_TRUE(consumer.displayShowOriginalButton);
+  EXPECT_FALSE(consumer.shouldAlwaysTranslate);
+  EXPECT_FALSE(consumer.shouldDisplayNeverTranslateLanguageButton);
+  EXPECT_TRUE(consumer.isTranslatableLanguage);
+  EXPECT_FALSE(consumer.shouldDisplayNeverTranslateSiteButton);
+  EXPECT_FALSE(consumer.isSiteOnNeverPromptList);
+}
+
+// Test fixture for TranslateInfobarModalOverlayMediator using the
+// TRANSLATE_STEP_TRANSLATE_ERROR translate step.
+class TranslateInfobarModalOverlayMediatorTranslateErrorTest
+    : public TranslateInfobarModalOverlayMediatorTest {
+ public:
+  TranslateInfobarModalOverlayMediatorTranslateErrorTest()
+      : TranslateInfobarModalOverlayMediatorTest(
+            translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR,
+            translate::TranslateErrors::Type::TRANSLATION_ERROR) {}
+};
+
+// Tests that a TranslateInfobarModalOverlayMediator correctly sets up its
+// consumer while in a "translate error" step. This is expected to behave the
+// same as in the "before translate" step.
+TEST_F(TranslateInfobarModalOverlayMediatorTranslateErrorTest, SetUpConsumer) {
+  FakeInfobarTranslateModalConsumer* consumer =
+      [[FakeInfobarTranslateModalConsumer alloc] init];
+  mediator_.consumer = consumer;
+
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate().source_language_name()),
+              consumer.sourceLanguage);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(delegate().target_language_name()),
+              consumer.targetLanguage);
+  EXPECT_TRUE(consumer.enableTranslateActionButton);
+  EXPECT_FALSE(consumer.updateLanguageBeforeTranslate);
+  EXPECT_FALSE(consumer.displayShowOriginalButton);
+  EXPECT_FALSE(consumer.shouldAlwaysTranslate);
+  EXPECT_TRUE(consumer.shouldDisplayNeverTranslateLanguageButton);
+  EXPECT_TRUE(consumer.isTranslatableLanguage);
+  EXPECT_TRUE(consumer.shouldDisplayNeverTranslateSiteButton);
+  EXPECT_FALSE(consumer.isSiteOnNeverPromptList);
 }

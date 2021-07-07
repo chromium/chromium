@@ -63,10 +63,15 @@ class FakeTranslateInfoBarDelegateFactory {
   ~FakeTranslateInfoBarDelegateFactory();
 
   // Create a FakeTranslateInfoBarDelegate unique_ptr with
-  // |source_language|and |target_language|.
+  // |source_language|, |target_language|, |translate_step| and |error_type|.
   std::unique_ptr<FakeTranslateInfoBarDelegate>
-  CreateFakeTranslateInfoBarDelegate(const std::string& source_language,
-                                     const std::string& target_language);
+  CreateFakeTranslateInfoBarDelegate(
+      const std::string& source_language,
+      const std::string& target_language,
+      translate::TranslateStep translate_step =
+          translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
+      translate::TranslateErrors::Type error_type =
+          translate::TranslateErrors::Type::NONE);
 
  private:
   translate::testing::MockTranslateDriver driver_;

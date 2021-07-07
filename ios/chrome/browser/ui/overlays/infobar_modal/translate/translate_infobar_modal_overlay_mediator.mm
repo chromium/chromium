@@ -66,9 +66,14 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
   self.newSourceLanguageIndex = kInvalidLanguageIndex;
   self.newTargetLanguageIndex = kInvalidLanguageIndex;
 
-  BOOL currentStepBeforeTranslate =
+  // The Translate button should be enabled whenever the page is untranslated,
+  // which may be before any translation has been triggered or after an error
+  // caused translation to fail.
+  BOOL currentStepUntranslated =
       self.config->current_step() ==
-      translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE;
+          translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE ||
+      self.config->current_step() ==
+          translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR;
 
   [self.consumer
       setupModalViewControllerWithPrefs:
@@ -79,8 +84,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
                                          base::SysUTF16ToNSString(
                                              self.config
                                                  ->target_language_name())
-                             translateButtonEnabled:
-                                 currentStepBeforeTranslate]];
+                             translateButtonEnabled:currentStepUntranslated]];
 }
 
 - (void)setSourceLanguageSelectionConsumer:
@@ -361,9 +365,13 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
                                         targetLanguage:(NSString*)targetLanguage
                                 translateButtonEnabled:
                                     (BOOL)translateButtonEnabled {
-  BOOL currentStepBeforeTranslate =
+  // Modal state following a translate error should be the same as on an
+  // untranslated page.
+  BOOL currentStepUntranslated =
       self.config->current_step() ==
-      translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE;
+          translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE ||
+      self.config->current_step() ==
+          translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR;
   BOOL currentStepAfterTranslate =
       self.config->current_step() ==
       translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE;
@@ -379,8 +387,8 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
     kEnableAndDisplayShowOriginalButtonPrefKey : @(currentStepAfterTranslate),
     kShouldAlwaysTranslatePrefKey :
         @(self.config->is_always_translate_enabled()),
-    kDisplayNeverTranslateLanguagePrefKey : @(currentStepBeforeTranslate),
-    kDisplayNeverTranslateSiteButtonPrefKey : @(currentStepBeforeTranslate),
+    kDisplayNeverTranslateLanguagePrefKey : @(currentStepUntranslated),
+    kDisplayNeverTranslateSiteButtonPrefKey : @(currentStepUntranslated),
     kIsTranslatableLanguagePrefKey : @(self.config->is_translatable_language()),
     kIsSiteOnNeverPromptListPrefKey :
         @(self.config->is_site_on_never_prompt_list()),
