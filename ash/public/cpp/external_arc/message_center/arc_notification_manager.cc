@@ -42,7 +42,8 @@ namespace ash {
 namespace {
 
 constexpr char kPlayStorePackageName[] = "com.android.vending";
-constexpr char kArcGmsPackageName[] = "com.chromium.arc.gms";
+constexpr char kArcGmsPackageName[] = "org.chromium.arc.gms";
+
 constexpr char kManagedProvisioningPackageName[] =
     "com.android.managedprovisioning";
 
@@ -533,7 +534,7 @@ bool ArcNotificationManager::ShouldIgnoreNotification(
     return true;
 
   // Notifications from Play Store are ignored in Public Session and Kiosk mode.
-  // TODO: Use centralized const for Play Store package.
+  // TODO (sarakato): Use centralized const for Play Store package.
   if (data->package_name.has_value() &&
       *data->package_name == kPlayStorePackageName &&
       delegate_->IsPublicSessionOrKiosk()) {
