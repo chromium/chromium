@@ -1198,6 +1198,10 @@
       implied_by: ["LayoutNGPrinting"],
     },
     {
+      name: "LayoutNGBlockInInline",
+      depends_on: ["LayoutNG"],
+    },
+    {
       // Traverse the fragment tree when painting and hit-testing, instead of
       // the layout object tree.
       name: "LayoutNGFragmentTraversal",
