@@ -28,22 +28,18 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value* value) {
       break;
 
     case base::Value::Type::BOOLEAN: {
-      bool bool_value;
-      value->GetAsBoolean(&bool_value);
-      descriptor = [NSAppleEventDescriptor descriptorWithBoolean:bool_value];
+      descriptor =
+          [NSAppleEventDescriptor descriptorWithBoolean:value->GetBool()];
       break;
     }
 
     case base::Value::Type::INTEGER: {
-      int int_value;
-      value->GetAsInteger(&int_value);
-      descriptor = [NSAppleEventDescriptor descriptorWithInt32:int_value];
+      descriptor = [NSAppleEventDescriptor descriptorWithInt32:value->GetInt()];
       break;
     }
 
     case base::Value::Type::DOUBLE: {
-      double double_value;
-      value->GetAsDouble(&double_value);
+      double double_value = value->GetDouble();
       descriptor = [NSAppleEventDescriptor
           descriptorWithDescriptorType:typeIEEE64BitFloatingPoint
                                  bytes:&double_value
@@ -52,10 +48,8 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value* value) {
     }
 
     case base::Value::Type::STRING: {
-      std::string string_value;
-      value->GetAsString(&string_value);
-      descriptor = [NSAppleEventDescriptor descriptorWithString:
-          base::SysUTF8ToNSString(string_value)];
+      descriptor = [NSAppleEventDescriptor
+          descriptorWithString:base::SysUTF8ToNSString(value->GetString())];
       break;
     }
 
