@@ -4994,7 +4994,7 @@ namespace {
 void SetupRemoteObjectInvocation(Shell* shell, const GURL& url) {
   WebContents* web_contents = shell->web_contents();
 
-  // The first load triggers RenderFrameCreated on a RenderFrameHostObserver
+  // The first load triggers RenderFrameCreated on a WebContentsObserver
   // instance, where the object injection happens.
   shell->LoadURL(url);
   EXPECT_TRUE(WaitForLoadStop(web_contents));
