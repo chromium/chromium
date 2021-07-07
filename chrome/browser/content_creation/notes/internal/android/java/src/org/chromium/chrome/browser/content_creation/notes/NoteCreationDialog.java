@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.content_creation.notes;
 
 import android.app.Dialog;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
@@ -86,6 +87,19 @@ public class NoteCreationDialog extends DialogFragment {
         if (mNoteDialogObserver != null) mNoteDialogObserver.onViewCreated(mContentView);
 
         return builder.create();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Re-calculate the left/right paddings for first/last items.
+        if (getNoteViewAt(0) != null) setPadding(true, false, getNoteViewAt(0));
+
+        RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
+        int lastIndex = noteCarousel.getAdapter().getItemCount() - 1;
+        if (getNoteViewAt(lastIndex) != null) setPadding(false, true, getNoteViewAt(lastIndex));
+        centerCurrentNote();
     }
 
     /*
@@ -188,7 +202,7 @@ public class NoteCreationDialog extends DialogFragment {
     // set a smaller padding for the following items (except the last item which has more padding on
     // the right).
     private void setPadding(boolean isFirst, boolean isLast, View itemView) {
-        int dialogWidth = mContentView.getWidth();
+        int dialogWidth = getActivity().getResources().getDisplayMetrics().widthPixels;
         int templateWidth = getActivity().getResources().getDimensionPixelSize(R.dimen.note_width);
         int defaultPadding =
                 getActivity().getResources().getDimensionPixelSize(R.dimen.note_side_padding);
@@ -233,5 +247,14 @@ public class NoteCreationDialog extends DialogFragment {
     private void unFocus(int index) {
         View noteView = getNoteViewAt(index);
         noteView.setElevation(0);
+    }
+
+    private void centerCurrentNote() {
+        RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
+        LinearLayoutManager layoutManager = (LinearLayoutManager) noteCarousel.getLayoutManager();
+        int centerOfScreen = getActivity().getResources().getDisplayMetrics().widthPixels / 2
+                - getNoteViewAt(mSelectedItemIndex).getWidth() / 2
+                - getActivity().getResources().getDimensionPixelSize(R.dimen.note_side_padding);
+        layoutManager.scrollToPositionWithOffset(mSelectedItemIndex, centerOfScreen);
     }
 }
