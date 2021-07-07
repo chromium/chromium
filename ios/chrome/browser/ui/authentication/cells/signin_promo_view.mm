@@ -38,7 +38,7 @@ const CGFloat kStackViewHorizontalPadding = 16.0;
 // Spacing within stackView.
 const CGFloat kStackViewSubViewSpacing = 13.0;
 // Horizontal Inset between button contents and edge.
-const CGFloat kButtonTitleHorizontalContentInset = 40.0;
+const CGFloat kButtonTitleHorizontalContentInset = 12.0;
 // Vertical Inset between button contents and edge.
 const CGFloat kButtonTitleVerticalContentInset = 8.0;
 // Button corner radius.
@@ -96,6 +96,9 @@ const CGFloat kImageViewWidthHeight = 32;
     primaryButton.backgroundColor = [UIColor colorNamed:kBlueColor];
     [primaryButton.titleLabel
         setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
+    primaryButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    primaryButton.titleLabel.minimumScaleFactor = 0.7;
+
     primaryButton.layer.cornerRadius = kButtonCornerRadius;
     primaryButton.clipsToBounds = YES;
     primaryButtonInsets = UIEdgeInsetsMake(
