@@ -2546,6 +2546,7 @@ source_set("quiche_test_tools") {
   testonly = true
   sources = [
     "quiche/common/platform/impl/quiche_test_helpers_impl.h",
+    "quiche/common/platform/impl/quiche_test_impl.cc",
     "quiche/common/platform/impl/quiche_test_impl.h",
   ]
   deps = [

@@ -556,8 +556,6 @@ source_set("quiche") {
     "src/quic/platform/api/quic_error_code_wrappers.h",
     "src/quic/platform/api/quic_export.h",
     "src/quic/platform/api/quic_exported_stats.h",
-    "src/quic/platform/api/quic_file_utils.cc",
-    "src/quic/platform/api/quic_file_utils.h",
     "src/quic/platform/api/quic_flag_utils.h",
     "src/quic/platform/api/quic_flags.h",
     "src/quic/platform/api/quic_hostname_utils.cc",
@@ -867,6 +865,17 @@ source_set("quiche_test_tools_core") {
   ]
 }
 
+source_set("quiche_file_utils") {
+  sources = [
+    "src/common/platform/api/quiche_file_utils.cc",
+    "src/common/platform/api/quiche_file_utils.h",
+    "src/common/platform/default/quiche_platform_impl/quiche_file_utils_impl.cc",
+    "src/common/platform/default/quiche_platform_impl/quiche_file_utils_impl.h",
+  ]
+  configs += [ ":quiche_config" ]
+  deps = [ "//base" ]
+}
+
 source_set("quic_test_tools_core") {
   testonly = true
   sources = [
@@ -1003,6 +1012,7 @@ source_set("quic_test_tools_core") {
   ]
 
   deps = [
+    ":quiche_file_utils",
     "//base",
     "//crypto:test_support",
     "//net",
@@ -1098,6 +1108,7 @@ source_set("simple_quic_tools_core") {
     "src/quic/tools/simple_ticket_crypter.h",
   ]
   deps = [
+    ":quiche_file_utils",
     "//base",
     "//base/third_party/dynamic_annotations",
     "//net",
@@ -1134,6 +1145,7 @@ if (!is_ios) {
   executable("quic_packet_printer") {
     sources = [ "src/quic/tools/quic_packet_printer_bin.cc" ]
     deps = [
+      ":quiche_file_utils",
       "//base",
       "//build/win:default_exe_manifest",
       "//net",
@@ -1183,6 +1195,8 @@ if (!is_ios) {
 source_set("quiche_tests") {
   testonly = true
   sources = [
+    # TODO(bnc): Include in tests after test data files are added to QUICHE.
+    # "src/common/platform/api/quiche_file_utils_test.cc",
     "src/common/platform/api/quiche_time_utils_test.cc",
     "src/common/quiche_circular_deque_test.cc",
     "src/common/quiche_data_writer_test.cc",
@@ -1454,6 +1468,7 @@ source_set("quiche_tests") {
   ]
 
   deps = [
+    ":quiche_file_utils",
     "//net",
     "//net:quic_test_tools",
     "//net:quiche_test_tools",

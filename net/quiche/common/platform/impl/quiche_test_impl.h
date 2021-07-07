@@ -10,10 +10,14 @@
 
 namespace quiche {
 namespace test {
+
 class QuicheTest : public ::testing::Test {};
 
 template <class T>
 class QuicheTestWithParamImpl : public ::testing::TestWithParam<T> {};
+
+std::string QuicheGetCommonSourcePathImpl();
+
 }  // namespace test
 }  // namespace quiche
 
