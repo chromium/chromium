@@ -34,6 +34,7 @@ if (is_win) {
     sources = [
       "../app/chrome_dll_resource.h",
       "../common/chrome_icon_resources_win.h",
+      "//base/win/windows_types.h",
       "install_constants.h",
       "install_details.cc",
       "install_details.h",

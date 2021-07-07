@@ -5,11 +5,10 @@
 #ifndef CHROME_INSTALL_STATIC_INSTALL_DETAILS_H_
 #define CHROME_INSTALL_STATIC_INSTALL_DETAILS_H_
 
-#include <windows.h>
-
 #include <memory>
 #include <string>
 
+#include "base/win/windows_types.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"

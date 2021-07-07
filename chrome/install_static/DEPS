@@ -1,6 +1,8 @@
 include_rules = [
   # Nothing from base.
   "-base",
+  # To avoid including windows.h in headers.
+  "+base/win/windows_types.h",
   # Nothing from chrome.
   "-chrome",
   # For the app icon resource identifiers.

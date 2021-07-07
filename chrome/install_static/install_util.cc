@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 
 #include <algorithm>
 #include <iterator>
@@ -430,7 +431,7 @@ const CLSID& GetElevatorClsid() {
   return InstallDetails::Get().elevator_clsid();
 }
 
-const CLSID& GetElevatorIid() {
+const IID& GetElevatorIid() {
   return InstallDetails::Get().elevator_iid();
 }
 
