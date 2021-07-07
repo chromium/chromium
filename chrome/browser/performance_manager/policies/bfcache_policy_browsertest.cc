@@ -28,23 +28,9 @@ namespace policies {
 
 namespace {
 
-// WebContentsObserver used in the BFCachePolicy browser tests.
-class LenientBFCacheTestObserver : public content::WebContentsObserver {
- public:
-  explicit LenientBFCacheTestObserver(content::WebContents* contents)
-      : content::WebContentsObserver(contents) {}
-  LenientBFCacheTestObserver(const LenientBFCacheTestObserver&) = delete;
-  LenientBFCacheTestObserver(LenientBFCacheTestObserver&&) = delete;
-  LenientBFCacheTestObserver& operator=(const LenientBFCacheTestObserver&) =
-      delete;
-  LenientBFCacheTestObserver& operator=(LenientBFCacheTestObserver&&) = delete;
-  ~LenientBFCacheTestObserver() override = default;
-
-  MOCK_METHOD1(RenderFrameDeleted, void(content::RenderFrameHost*));
-};
-using MockObserver = ::testing::StrictMock<LenientBFCacheTestObserver>;
-
-class BFCachePolicyBrowserTest : public InProcessBrowserTest {
+class BFCachePolicyBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<std::string> {
  public:
   ~BFCachePolicyBrowserTest() override = default;
 
@@ -72,115 +58,70 @@ class BFCachePolicyBrowserTest : public InProcessBrowserTest {
     return web_contents()->GetMainFrame();
   }
 
-  // Init |rfh_a_| and |rfh_b_|, after calling this function |rfh_a_| will be in
-  // the BFCache and rfh_b_ will be active.
-  void InitWithOnePageInBFCache() {
-    GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-    GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-    EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);
-
-    // Navigate to A.
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-    rfh_a_ = top_frame_host();
-
-    // Navigate to B.
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-    EXPECT_EQ(rfh_a_->GetLifecycleState(),
-              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-    rfh_b_ = top_frame_host();
-  }
-
   base::test::ScopedFeatureList feature_list_;
-
-  content::RenderFrameHost* rfh_a_ = nullptr;
-  content::RenderFrameHost* rfh_b_ = nullptr;
 };
 
 }  // namespace
 
 // Disabled due to crash/pass flakiness. https://crbug.com/1225791
-IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
-                       DISABLED_CacheFlushedWhenTabBackgrounded) {
-  InitWithOnePageInBFCache();
-
-  MockObserver obs(web_contents());
-  base::RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(obs, RenderFrameDeleted(rfh_a_))
-      .WillOnce(::testing::Invoke([&]() { std::move(quit_closure).Run(); }));
-
-  // Backgrounding the page should flush the BFCache.
-  web_contents()->WasHidden();
-  run_loop.Run();
-}
-
-// Disabled due to crash/pass flakiness. https://crbug.com/1225791
-IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
-                       DISABLED_CacheFlushedOnModerateMemoryPressure) {
+IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, DISABLED_CacheFlushed) {
   util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  InitWithOnePageInBFCache();
+  EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);
 
-  MockObserver obs(web_contents());
-  base::RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(obs, RenderFrameDeleted(rfh_a_))
-      .WillOnce(::testing::Invoke([&]() { std::move(quit_closure).Run(); }));
+  // Navigate to A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
 
-  // A moderate memory pressure signal should flush the BFCache.
-  fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE);
+  // Navigate to B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  content::RenderFrameHostWrapper rfh_b(top_frame_host());
 
-  run_loop.Run();
+  // Ensure A is cached.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  if (GetParam() == "FlushWhenTabBackgrounded") {
+    // Backgrounding the page will evict it from BFCache.
+    web_contents()->WasHidden();
+    // When the page is evicted the RenderFrame will be deleted.
+    rfh_a.WaitUntilRenderFrameDeleted();
+  } else if (GetParam() == "FlushWhenTabBackgroundDuringNavigation") {
+    web_contents()->GetController().GoBack();
+    // Make the tab backgrounded before the back navigation completes. |rfh_a|
+    // will become the active frame and the cache will be flushed (i.e. |rfh_b|
+    // will be deleted).
+    web_contents()->WasHidden();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_EQ(rfh_a.get(), top_frame_host());
+    rfh_b.WaitUntilRenderFrameDeleted();
+  } else if (GetParam() == "FlushOnModerateMemoryPressure") {
+    // A moderate memory pressure signal will evict the page from BFCache.
+    fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
+        base::MemoryPressureListener::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_MODERATE);
+    // When the page is evicted the RenderFrame will be deleted.
+    rfh_a.WaitUntilRenderFrameDeleted();
+  } else if (GetParam() == "FlushOnCriticalMemoryPressure") {
+    // A critical memory pressure signal will evict the page from BFCache.
+    fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
+        base::MemoryPressureListener::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
+    // When the page is evicted the RenderFrame will be deleted.
+    rfh_a.WaitUntilRenderFrameDeleted();
+  }
 }
 
-// Disabled due to crash/pass flakiness. https://crbug.com/1225791
-IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
-                       DISABLED_CacheFlushedOnCriticalMemoryPressure) {
-  util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
-
-  InitWithOnePageInBFCache();
-
-  MockObserver obs(web_contents());
-
-  base::RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(obs, RenderFrameDeleted(rfh_a_))
-      .WillOnce(::testing::Invoke([&]() { std::move(quit_closure).Run(); }));
-
-  // A critical memory pressure signal should flush the BFCache.
-  fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  run_loop.Run();
+std::vector<std::string> BFCachePolicyBrowserTestValues() {
+  return {"FlushWhenTabBackgrounded", "FlushWhenTabBackgroundDuringNavigation",
+          "FlushOnModerateMemoryPressure", "FlushOnCriticalMemoryPressure"};
 }
 
-// Disabled due to crash/pass flakiness. https://crbug.com/1225791
-IN_PROC_BROWSER_TEST_F(BFCachePolicyBrowserTest,
-                       DISABLED_TabHiddenDuringBackNavigation) {
-  util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
-
-  InitWithOnePageInBFCache();
-
-  MockObserver obs(web_contents());
-  base::RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(obs, RenderFrameDeleted(rfh_b_))
-      .WillOnce(::testing::Invoke([&]() { std::move(quit_closure).Run(); }));
-
-  web_contents()->GetController().GoBack();
-  // Make the tab backgrounded before the back navigation completes. |rfh_a_|
-  // should become the active frame and the cache should be flushed (i.e.
-  // |rfh_b_| should be deleted).
-  web_contents()->WasHidden();
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
-
-  run_loop.Run();
-  EXPECT_EQ(rfh_a_, top_frame_host());
-}
+INSTANTIATE_TEST_SUITE_P(All,
+                         BFCachePolicyBrowserTest,
+                         testing::ValuesIn(BFCachePolicyBrowserTestValues()));
 
 }  // namespace policies
 }  // namespace performance_manager
