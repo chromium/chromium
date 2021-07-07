@@ -48274,6 +48274,7 @@ from previous Chrome versions.
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
   <int value="-303992327" label="SwipeToMoveCursor:disabled"/>
   <int value="-302407285" label="WipeDataOnChildAccountSignin:disabled"/>
+  <int value="-301689561" label="PermissionQuietChip:disabled"/>
   <int value="-301228557" label="PageInfoDiscoverability:disabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
   <int value="-299841473" label="top-document-isolation:enabled"/>
@@ -50595,6 +50596,7 @@ from previous Chrome versions.
   <int value="1639728471" label="ThemeRefactorAndroid:disabled"/>
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
   <int value="1643626730" label="PrinterStatus:disabled"/>
+  <int value="1643700095" label="PermissionQuietChip:enabled"/>
   <int value="1643712769" label="PrintWithReducedRasterization:enabled"/>
   <int value="1645447927" label="MixedContentSiteSetting:disabled"/>
   <int value="1645479440" label="HistoryManipulationIntervention:disabled"/>

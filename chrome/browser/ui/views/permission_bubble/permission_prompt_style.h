@@ -12,7 +12,10 @@ enum class PermissionPromptStyle {
   // The permission chip view in the location bar.
   kChip,
   // The prompt as an indicator in the right side of the omnibox.
-  kQuiet
+  kLocationBarRightIcon,
+  // The less prominent (quiet) version of permission chip view in the location
+  // bar.
+  kQuietChip
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_STYLE_H_

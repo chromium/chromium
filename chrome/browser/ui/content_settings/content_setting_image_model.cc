@@ -22,9 +22,11 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
@@ -35,6 +37,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -977,8 +980,21 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  if (!manager || !manager->ShouldCurrentRequestUseQuietUI())
+  // If `kPermissionQuietUIChip` is enabled, we shouldn't show the icon unless
+  // we're a PWA.
+  // TODO(crbug.com/1221189): Allow PermissionRequestManager to identify the
+  // correct UI style of a permission prompt.
+  const bool quiet_icon_allowed =
+      web_app::AppBrowserController::IsWebApp(
+          chrome::FindBrowserWithWebContents(web_contents)) ||
+      !base::FeatureList::IsEnabled(
+          permissions::features::kPermissionQuietChip);
+
+  if (!quiet_icon_allowed || !manager ||
+      !manager->ShouldCurrentRequestUseQuietUI()) {
     return false;
+  }
+
   // |manager| may be null in tests.
   // Show promo the first time a quiet prompt is shown to the user.
   set_should_show_promo(

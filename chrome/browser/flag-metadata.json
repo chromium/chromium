@@ -4352,6 +4352,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "permission-quiet-chip",
+    "owners": [ "elklm", "engedy"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "photo-picker-video-support",
     "owners": [ "finnur" ],
     "expiry_milestone": 92

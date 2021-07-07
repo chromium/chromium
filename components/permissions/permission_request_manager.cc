@@ -69,6 +69,35 @@ constexpr char kAbusiveNotificationContentWarningMessage[] =
 
 namespace {
 
+// When there are multiple permissions requests in `queued_requests_`, we try to
+// reorder them based on the acceptance rates. Notifications and Geolocations
+// have one of the lowest acceptance, hence they have the lowest priority and
+// will be shown the last.
+bool IsLowPriorityRequest(PermissionRequest* request) {
+  return request->GetRequestType() == RequestType::kNotifications ||
+         request->GetRequestType() == RequestType::kGeolocation;
+}
+
+// In case of multiple permission requests that use chip UI, a newly added
+// request will preempt the currently showing request, which is put back to the
+// queue, and will be shown later. To reduce user annoyance, if a quiet chip
+// permission prompt was displayed longer than `kQuietChipIgnoreTimeout`, we
+// consider it as shown long enough and it will not be shown again after it is
+// preempted.
+// TODO(crbug.com/1221083): If a user switched tabs, do not include that time as
+// "shown".
+bool ShouldShowQuietRequestAgainIfPreempted(
+    absl::optional<base::Time> request_display_start_time) {
+  if (request_display_start_time->is_null()) {
+    return true;
+  }
+
+  static constexpr base::TimeDelta kQuietChipIgnoreTimeout =
+      base::TimeDelta::FromSecondsD(8.5);
+  return base::Time::Now() - request_display_start_time.value() <
+         kQuietChipIgnoreTimeout;
+}
+
 bool IsMediaRequest(RequestType type) {
 #if !defined(OS_ANDROID)
   if (type == RequestType::kCameraPanTiltZoom)
@@ -216,29 +245,73 @@ void PermissionRequestManager::AddRequest(
         base::UserMetricsAction("PermissionBubbleIFrameRequestQueued"));
   }
 
-  if (base::FeatureList::IsEnabled(features::kPermissionChip)) {
-    // Because the requests are shown in a different order for Chip, pending
-    // requests are returned back to queued_requests_ to process them after the
-    // new requests.
-    ResetViewStateForCurrentRequest();
-    for (auto* request : requests_)
-      queued_requests_.push_back(request);
-    requests_.clear();
+  CurrentRequestFate current_request_fate =
+      GetCurrentRequestFateInFaceOfNewRequest(request);
+
+  if (current_request_fate == CurrentRequestFate::Preempt) {
+    PreemptAndRequeueCurrentRequest();
   }
 
-  queued_requests_.push_back(request);
-  request_sources_map_.emplace(
-      request, PermissionRequestSource({source_frame->GetProcess()->GetID(),
-                                        source_frame->GetRoutingID()}));
+  QueueRequest(source_frame, request);
 
-  // If we're displaying a quiet permission request, kill it in favor of this
-  // permission request.
-  if (ShouldCurrentRequestUseQuietUI()) {
+  if (current_request_fate == CurrentRequestFate::Finalize) {
     // FinalizeCurrentRequests will call ScheduleDequeueRequest on its own.
     FinalizeCurrentRequests(PermissionAction::IGNORED);
   } else {
     ScheduleDequeueRequestIfNeeded();
   }
+}
+
+PermissionRequestManager::CurrentRequestFate
+PermissionRequestManager::GetCurrentRequestFateInFaceOfNewRequest(
+    PermissionRequest* new_request) {
+  if (base::FeatureList::IsEnabled(features::kPermissionQuietChip)) {
+    if (ShouldCurrentRequestUseQuietUI() &&
+        !ShouldShowQuietRequestAgainIfPreempted(
+            current_request_first_display_time_)) {
+      return CurrentRequestFate::Finalize;
+    }
+
+    if (base::FeatureList::IsEnabled(features::kPermissionChip)) {
+      // Preempt current request if it is a quiet UI request or it is not
+      // Notifications or Geolocation.
+      if (ShouldCurrentRequestUseQuietUI() ||
+          !IsLowPriorityRequest(new_request)) {
+        return CurrentRequestFate::Preempt;
+      }
+    } else {
+      if (ShouldCurrentRequestUseQuietUI()) {
+        return CurrentRequestFate::Preempt;
+      }
+    }
+  } else {
+    if (base::FeatureList::IsEnabled(features::kPermissionChip)) {
+      return CurrentRequestFate::Preempt;
+    } else if (ShouldCurrentRequestUseQuietUI()) {
+      // If we're displaying a quiet permission request, ignore it in favor of a
+      // new permission request.
+      return CurrentRequestFate::Finalize;
+    }
+  }
+
+  return CurrentRequestFate::KeepCurrent;
+}
+
+void PermissionRequestManager::QueueRequest(
+    content::RenderFrameHost* source_frame,
+    PermissionRequest* request) {
+  PushQueuedRequest(request);
+  request_sources_map_.emplace(
+      request, PermissionRequestSource({source_frame->GetProcess()->GetID(),
+                                        source_frame->GetRoutingID()}));
+}
+
+void PermissionRequestManager::PreemptAndRequeueCurrentRequest() {
+  ResetViewStateForCurrentRequest();
+  for (auto* current_request : requests_) {
+    PushQueuedRequest(current_request);
+  }
+  requests_.clear();
 }
 
 void PermissionRequestManager::UpdateAnchor() {
@@ -263,7 +336,8 @@ void PermissionRequestManager::DidStartNavigation(
   // browser-initiated navigation.
   //
   // TODO(crbug.com/952347): This check has to be done at DidStartNavigation
-  // time, the HasUserGesture state is lost by the time the navigation commits.
+  // time, the HasUserGesture state is lost by the time the navigation
+  // commits.
   if (!navigation_handle->IsRendererInitiated() ||
       navigation_handle->HasUserGesture()) {
     is_notification_prompt_cooldown_active_ = false;
@@ -313,8 +387,8 @@ void PermissionRequestManager::WebContentsDestroyed() {
   CleanUpRequests();
 
   // The WebContents is going away; be aggressively paranoid and delete
-  // ourselves lest other parts of the system attempt to add permission bubbles
-  // or use us otherwise during the destruction.
+  // ourselves lest other parts of the system attempt to add permission
+  // bubbles or use us otherwise during the destruction.
   web_contents()->RemoveUserData(UserDataKey());
   // That was the equivalent of "delete this". This object is now destroyed;
   // returning from this function is the only safe thing to do.
@@ -388,7 +462,8 @@ void PermissionRequestManager::Accept() {
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
-    PermissionGrantedIncludingDuplicates(*requests_iter, /*is_one_time=*/false);
+    PermissionGrantedIncludingDuplicates(*requests_iter,
+                                         /*is_one_time=*/false);
   }
   FinalizeCurrentRequests(PermissionAction::GRANTED);
 }
@@ -400,7 +475,8 @@ void PermissionRequestManager::AcceptThisTime() {
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
-    PermissionGrantedIncludingDuplicates(*requests_iter, /*is_one_time=*/true);
+    PermissionGrantedIncludingDuplicates(*requests_iter,
+                                         /*is_one_time=*/true);
   }
   FinalizeCurrentRequests(PermissionAction::GRANTED_ONCE);
 }
@@ -411,9 +487,10 @@ void PermissionRequestManager::Deny() {
   DCHECK(view_);
 
   // Suppress any further prompts in this WebContents, from any origin, until
-  // there is a user-initiated navigation. This stops users from getting trapped
-  // in request loops where the website automatically navigates cross-origin
-  // (e.g. to another subdomain) to be able to prompt again after a rejection.
+  // there is a user-initiated navigation. This stops users from getting
+  // trapped in request loops where the website automatically navigates
+  // cross-origin (e.g. to another subdomain) to be able to prompt again after
+  // a rejection.
   if (base::FeatureList::IsEnabled(
           features::kBlockRepeatedNotificationPermissionPrompts) &&
       std::any_of(requests_.begin(), requests_.end(), [](const auto* request) {
@@ -468,9 +545,9 @@ void PermissionRequestManager::ScheduleShowBubble() {
 
 void PermissionRequestManager::DequeueRequestIfNeeded() {
   // TODO(olesiamarukhno): Media requests block other media requests from
-  // pre-empting them. For example, when a camera request is pending and mic is
-  // requested, the camera request remains pending and mic request appears only
-  // after the camera request is resolved. This is caused by code in
+  // pre-empting them. For example, when a camera request is pending and mic
+  // is requested, the camera request remains pending and mic request appears
+  // only after the camera request is resolved. This is caused by code in
   // PermissionBubbleMediaAccessHandler and UserMediaClient. We probably don't
   // need two permission queues, so resolve the duplication.
 
@@ -548,8 +625,9 @@ void PermissionRequestManager::ScheduleDequeueRequestIfNeeded() {
 }
 
 void PermissionRequestManager::ShowBubble() {
-  // There is a race condition where the request might have been removed already
-  // so double-checking that there is a request in progress (crbug.com/1041222).
+  // There is a race condition where the request might have been removed
+  // already so double-checking that there is a request in progress
+  // (crbug.com/1041222).
   if (!IsRequestInProgress())
     return;
 
@@ -562,8 +640,12 @@ void PermissionRequestManager::ShowBubble() {
     return;
 
   view_ = view_factory_.Run(web_contents(), this);
-  if (!view_)
+  if (!view_) {
+    current_request_prompt_disposition_ =
+        PermissionPromptDisposition::NONE_VISIBLE;
+    FinalizeCurrentRequests(PermissionAction::IGNORED);
     return;
+  }
 
   current_request_prompt_disposition_ = view_->GetPromptDisposition();
 
@@ -645,9 +727,9 @@ void PermissionRequestManager::FinalizeCurrentRequests(
     quiet_ui_reason = ReasonForUsingQuietUi();
 
   for (PermissionRequest* request : requests_) {
-    // TODO(timloh): We only support dismiss and ignore embargo for permissions
-    // which use PermissionRequestImpl as the other subclasses don't support
-    // GetContentSettingsType.
+    // TODO(timloh): We only support dismiss and ignore embargo for
+    // permissions which use PermissionRequestImpl as the other subclasses
+    // don't support GetContentSettingsType.
     if (request->GetContentSettingsType() == ContentSettingsType::DEFAULT)
       continue;
 
@@ -776,7 +858,8 @@ void PermissionRequestManager::RemoveObserver(Observer* observer) {
 
 bool PermissionRequestManager::ShouldCurrentRequestUseQuietUI() const {
   // ContentSettingImageModel might call into this method if the user switches
-  // between tabs while the |notification_permission_ui_selectors_| are pending.
+  // between tabs while the |notification_permission_ui_selectors_| are
+  // pending.
   return ReasonForUsingQuietUi() != absl::nullopt;
 }
 
@@ -791,6 +874,23 @@ PermissionRequestManager::ReasonForUsingQuietUi() const {
 
 bool PermissionRequestManager::IsRequestInProgress() const {
   return !requests_.empty();
+}
+
+bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly() {
+  absl::optional<QuietUiReason> quiet_ui_reason = ReasonForUsingQuietUi();
+  if (quiet_ui_reason.has_value()) {
+    switch (quiet_ui_reason.value()) {
+      case QuietUiReason::kEnabledInPrefs:
+      case QuietUiReason::kPredictedVeryUnlikelyGrant:
+      case QuietUiReason::kTriggeredByCrowdDeny:
+        return false;
+      case QuietUiReason::kTriggeredDueToAbusiveRequests:
+      case QuietUiReason::kTriggeredDueToAbusiveContent:
+        return true;
+    }
+  }
+
+  return false;
 }
 
 void PermissionRequestManager::NotifyBubbleAdded() {
@@ -916,6 +1016,15 @@ PermissionRequest* PermissionRequestManager::PopNextQueuedRequest() {
   else
     queued_requests_.pop_front();
   return next;
+}
+
+void PermissionRequestManager::PushQueuedRequest(PermissionRequest* request) {
+  if (base::FeatureList::IsEnabled(features::kPermissionQuietChip) &&
+      !base::FeatureList::IsEnabled(features::kPermissionChip)) {
+    queued_requests_.push_front(request);
+  } else {
+    queued_requests_.push_back(request);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PermissionRequestManager)

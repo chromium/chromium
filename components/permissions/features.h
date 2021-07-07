@@ -28,6 +28,9 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionChip;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::Feature kPermissionQuietChip;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionChipAutoDismiss;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)

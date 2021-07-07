@@ -1183,6 +1183,9 @@ extern const char kPermissionChipRequestTypeSensitiveDescription[];
 extern const char kPermissionPredictionsName[];
 extern const char kPermissionPredictionsDescription[];
 
+extern const char kPermissionQuietChipName[];
+extern const char kPermissionQuietChipDescription[];
+
 extern const char kPlaybackSpeedButtonName[];
 extern const char kPlaybackSpeedButtonDescription[];
 

@@ -55,27 +55,24 @@ class BubbleButtonController : public views::ButtonController {
 
 PermissionChip::PermissionChip(
     permissions::PermissionPrompt::Delegate* delegate,
-    const gfx::VectorIcon& icon,
-    std::u16string message,
-    bool should_start_open)
-    : delegate_(delegate), should_start_open_(should_start_open) {
-  DCHECK(delegate);
+    DisplayParams initializer)
+    : delegate_(delegate),
+      should_start_open_(initializer.should_start_open),
+      should_expand_(initializer.should_expand) {
+  DCHECK(delegate_);
   SetUseDefaultFillLayout(true);
 
   chip_button_ = AddChildView(std::make_unique<OmniboxChipButton>(
       base::BindRepeating(&PermissionChip::ChipButtonPressed,
                           base::Unretained(this)),
-      icon, message, true));
-
+      initializer.icon, initializer.message, initializer.is_prominent));
+  chip_button_->SetTheme(initializer.theme);
   chip_button_->SetButtonController(std::make_unique<BubbleButtonController>(
       chip_button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           chip_button_)));
-
   chip_button_->SetExpandAnimationEndedCallback(base::BindRepeating(
       &PermissionChip::ExpandAnimationEnded, base::Unretained(this)));
-
-  chip_button_->SetTheme(OmniboxChipButton::Theme::kBlue);
 
   Show(should_start_open_);
 }
@@ -125,7 +122,8 @@ bool PermissionChip::IsBubbleShowing() const {
 void PermissionChip::Show(bool always_open_bubble) {
   // TODO(olesiamarukhno): Add tests for animation logic.
   chip_button_->ResetAnimation();
-  if (!delegate_->WasCurrentRequestAlreadyDisplayed() || always_open_bubble) {
+  if (should_expand_ &&
+      (!delegate_->WasCurrentRequestAlreadyDisplayed() || always_open_bubble)) {
     chip_button_->AnimateExpand();
   } else {
     StartDismissTimer();
@@ -170,11 +168,18 @@ void PermissionChip::Collapse(bool allow_restart) {
 }
 
 void PermissionChip::StartDismissTimer() {
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipAutoDismiss)) {
-    auto delay = base::TimeDelta::FromMilliseconds(
-        permissions::features::kPermissionChipAutoDismissDelay.Get());
-    dismiss_timer_.Start(FROM_HERE, delay, this, &PermissionChip::Dismiss);
+  if (should_expand_) {
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kPermissionChipAutoDismiss)) {
+      auto delay = base::TimeDelta::FromMilliseconds(
+          permissions::features::kPermissionChipAutoDismissDelay.Get());
+      dismiss_timer_.Start(FROM_HERE, delay, this, &PermissionChip::Dismiss);
+    }
+  } else {
+    // Abusive origins do not support expand animation, hence the dismiss timer
+    // should be longer.
+    dismiss_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(18), this,
+                         &PermissionChip::Dismiss);
   }
 }
 

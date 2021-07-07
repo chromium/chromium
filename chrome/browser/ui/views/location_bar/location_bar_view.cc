@@ -56,6 +56,8 @@
 #include "chrome/browser/ui/views/location_bar/keyword_hint_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/permission_quiet_chip.h"
+#include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
@@ -819,12 +821,16 @@ bool LocationBarView::ActivateFirstInactiveBubbleForAccessibility() {
 
 PermissionChip* LocationBarView::DisplayChip(
     permissions::PermissionPrompt::Delegate* delegate) {
-  DCHECK(!chip_);
   DCHECK(delegate);
-  // `chip_` must come first so it's in the correct place in the focus order.
-  chip_ = AddChildViewAt(
-      std::make_unique<PermissionRequestChip>(browser(), delegate), 0);
-  return chip_;
+  return AddChip(std::make_unique<PermissionRequestChip>(browser(), delegate));
+}
+
+PermissionChip* LocationBarView::DisplayQuietChip(
+    permissions::PermissionPrompt::Delegate* delegate,
+    bool should_expand) {
+  DCHECK(delegate);
+  return AddChip(std::make_unique<PermissionQuietChip>(browser(), delegate,
+                                                       should_expand));
 }
 
 void LocationBarView::FinalizeChip() {
@@ -912,6 +918,13 @@ int LocationBarView::GetAvailableDecorationTextHeight() {
       GetLayoutConstant(LOCATION_BAR_BUBBLE_FONT_VERTICAL_PADDING);
   return std::max(
       0, LocationBarView::GetAvailableTextHeight() - (bubble_padding * 2));
+}
+
+PermissionChip* LocationBarView::AddChip(std::unique_ptr<PermissionChip> chip) {
+  DCHECK(!chip_);
+  // `chip_` must come first so it's in the correct place in the focus order.
+  chip_ = AddChildViewAt(std::move(chip), 0);
+  return chip_;
 }
 
 int LocationBarView::GetMinimumLeadingWidth() const {

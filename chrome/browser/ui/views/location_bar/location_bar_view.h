@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
+#include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/security_state/core/security_state.h"
@@ -183,6 +183,11 @@ class LocationBarView : public LocationBar,
   PermissionChip* DisplayChip(
       permissions::PermissionPrompt::Delegate* delegate);
 
+  // Creates and displays an instance of PermissionQuietChip.
+  PermissionChip* DisplayQuietChip(
+      permissions::PermissionPrompt::Delegate* delegate,
+      bool should_expand);
+
   // Removes previously displayed PermissionChip.
   void FinalizeChip();
 
@@ -265,6 +270,9 @@ class LocationBarView : public LocationBar,
                           device::GeolocationManager::PermissionObserver>
       geolocation_permission_observation_{this};
 #endif
+
+  // Adds `chip` as the first child view.
+  PermissionChip* AddChip(std::unique_ptr<PermissionChip> chip);
 
   // Returns the amount of space required to the left of the omnibox text.
   int GetMinimumLeadingWidth() const;

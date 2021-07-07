@@ -589,6 +589,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Permissions.QuietChip.TimeToInteraction" units="ms"
+    expires_after="2021-10-25">
+  <owner>elklm@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Records how long it takes for the user to click on the quiet chip after it
+    was shown. Chip framework is only available on Desktop. Recorded only if the
+    user clicks on the quiet chip. We can learn what % of prompts get ignored by
+    comparing this metric and
+    `PermissionPromptDisposition.LocationBarLeftQuietChip`.
+  </summary>
+</histogram>
+
 <histogram
     name="Permissions.QuietNotificationPrompts.DidEnableAdapativelyInPrefs"
     enum="Boolean" expires_after="2021-10-10">

@@ -123,6 +123,10 @@ class PermissionRequestManager
 
   bool IsRequestInProgress() const;
 
+  // If the LocationBar is not visible, there is no place to display a quiet
+  // permission prompt. Abusive prompts will be ignored.
+  bool ShouldDropCurrentRequestIfCannotShowQuietly();
+
   // Do NOT use this methods in production code. Use this methods in browser
   // tests that need to accept or deny permissions when requested in
   // JavaScript. Your test needs to set this appropriately, and then the bubble
@@ -184,6 +188,10 @@ class PermissionRequestManager
 
   PermissionPrompt* view_for_testing() { return view_.get(); }
 
+  void set_current_request_first_display_time_for_testing(base::Time time) {
+    current_request_first_display_time_ = time;
+  }
+
   absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
   prediction_grant_likelihood_for_testing() {
     return prediction_grant_likelihood_;
@@ -199,6 +207,23 @@ class PermissionRequestManager
   friend class content::WebContentsUserData<PermissionRequestManager>;
 
   explicit PermissionRequestManager(content::WebContents* web_contents);
+
+  enum class CurrentRequestFate { KeepCurrent, Preempt, Finalize };
+
+  // Returns `CurrentRequestFate` based on what type of UI has been shown for
+  // `requests_`.
+  CurrentRequestFate GetCurrentRequestFateInFaceOfNewRequest(
+      PermissionRequest* request);
+
+  // Adds `request` into `queued_requests_`, and request's `source_frame` into
+  // `request_sources_map_`.
+  void QueueRequest(content::RenderFrameHost* source_frame,
+                    PermissionRequest* request);
+
+  // Because the requests are shown in a different order for Normal and Quiet
+  // Chip, pending requests are returned back to queued_requests_ to process
+  // them after the new requests.
+  void PreemptAndRequeueCurrentRequest();
 
   // Posts a task which will allow the bubble to become visible.
   void ScheduleShowBubble();
@@ -293,11 +318,19 @@ class PermissionRequestManager
     bool IsSourceFrameInactiveAndDisallowActivation() const;
   };
 
-  base::circular_deque<PermissionRequest*> queued_requests_;
-
   PermissionRequest* PeekNextQueuedRequest();
 
   PermissionRequest* PopNextQueuedRequest();
+
+  // Encapsulate enqueuing `request` into `queued_requests_`. Based on the chip
+  // / quiet chip experiments, the `request` is added into the back or front of
+  // the queue.
+  void PushQueuedRequest(PermissionRequest* request);
+
+  // TODO(crbug.com/1221150): Create a separate entity to handle Enqueue /
+  // Dequeue with all edge cases. Expose to `PermissionRequestManager` only a
+  // clear API like `Peek()` and `Pop()`, etc.
+  base::circular_deque<PermissionRequest*> queued_requests_;
 
   // Maps from the first request of a kind to subsequent requests that were
   // duped against it.

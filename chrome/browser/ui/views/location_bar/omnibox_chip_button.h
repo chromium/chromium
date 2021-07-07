@@ -26,7 +26,7 @@ class OmniboxChipButton : public views::MdTextButton {
   // of Chip.
   enum class Theme {
     kBlue,
-    // TODO(crbug.com/1177760): Other themes will follow.
+    kGray,
   };
 
   void AnimateCollapse();
@@ -48,6 +48,8 @@ class OmniboxChipButton : public views::MdTextButton {
   // Set the button theme.
   void SetTheme(Theme theme);
   void SetForceExpandedForTesting(bool force_expanded_for_testing);
+
+  Theme get_theme_for_testing() { return theme_; }
 
  private:
   int GetIconSize() const;

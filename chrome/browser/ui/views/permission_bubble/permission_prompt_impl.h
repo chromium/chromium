@@ -18,6 +18,10 @@ namespace views {
 class BubbleDialogDelegateView;
 }
 
+namespace permissions {
+class PermissionRequestManager;
+}
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -49,10 +53,16 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   void OnWidgetClosing(views::Widget* widget) override;
 
  private:
+  bool IsLocationBarDisplayed();
+  void SelectPwaPrompt();
+  void SelectNormalPrompt();
+  void SelectQuietPrompt();
   LocationBarView* GetLocationBarView();
+  void ShowQuietIcon();
   void ShowBubble();
-  void ShowChipUI();
-  bool ShouldCurrentRequestUseChipUI();
+  void ShowChip();
+  bool ShouldCurrentRequestUseChip();
+  bool ShouldCurrentRequestUseQuietChip();
   void FinalizeChip();
 
   // The popup bubble. Not owned by this class; it will delete itself when a
@@ -71,6 +81,9 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   Browser* browser_;
 
   base::TimeTicks permission_requested_time_;
+
+  // PermissionRequestManager owns `this` and outlives `PermissionPromptImpl`.
+  permissions::PermissionRequestManager* manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionPromptImpl);
 };

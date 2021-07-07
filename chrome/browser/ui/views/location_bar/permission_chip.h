@@ -28,12 +28,21 @@ class BubbleOwnerDelegate {
 class PermissionChip : public views::AccessiblePaneView,
                        public views::WidgetObserver,
                        public BubbleOwnerDelegate {
+ protected:
+  // Holds all parameters needed for a chip initialization.
+  struct DisplayParams {
+    const gfx::VectorIcon& icon;
+    std::u16string message;
+    bool should_start_open;
+    bool is_prominent;
+    OmniboxChipButton::Theme theme;
+    bool should_expand;
+  };
+
  public:
   METADATA_HEADER(PermissionChip);
-  PermissionChip(permissions::PermissionPrompt::Delegate* delegate,
-                 const gfx::VectorIcon& icon,
-                 std::u16string message,
-                 bool should_start_open);
+  explicit PermissionChip(permissions::PermissionPrompt::Delegate* delegate,
+                          DisplayParams initializer);
   PermissionChip(const PermissionChip& chip) = delete;
   PermissionChip& operator=(const PermissionChip& chip) = delete;
   ~PermissionChip() override;
@@ -61,6 +70,8 @@ class PermissionChip : public views::AccessiblePaneView,
   GetPermissionPromptBubbleForTest() = 0;
 
   bool should_start_open_for_testing() { return should_start_open_; }
+  bool should_expand_for_testing() { return should_expand_; }
+  OmniboxChipButton* get_chip_button_for_testing() { return chip_button_; }
 
  protected:
   permissions::PermissionPrompt::Delegate* delegate() const {
@@ -76,6 +87,7 @@ class PermissionChip : public views::AccessiblePaneView,
   void Collapse(bool allow_restart);
   void StartDismissTimer();
   void Dismiss();
+
   void AnimateCollapse();
   void AnimateExpand();
 
@@ -92,6 +104,7 @@ class PermissionChip : public views::AccessiblePaneView,
   OmniboxChipButton* chip_button_ = nullptr;
 
   bool should_start_open_ = false;
+  bool should_expand_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_

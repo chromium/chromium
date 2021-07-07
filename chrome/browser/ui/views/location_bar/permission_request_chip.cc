@@ -25,6 +25,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
 bool IsCameraPermission(permissions::RequestType type) {
   return type == permissions::RequestType::kCameraStream;
 }
@@ -112,10 +113,11 @@ bool ShouldBubbleStartOpen(permissions::PermissionPrompt::Delegate* delegate) {
 PermissionRequestChip::PermissionRequestChip(
     Browser* browser,
     permissions::PermissionPrompt::Delegate* delegate)
-    : PermissionChip(delegate,
-                     GetPermissionIconId(delegate),
-                     GetPermissionMessage(delegate),
-                     ShouldBubbleStartOpen(delegate)),
+    : PermissionChip(
+          delegate,
+          {GetPermissionIconId(delegate), GetPermissionMessage(delegate),
+           ShouldBubbleStartOpen(delegate), /*is_prominent=*/true,
+           OmniboxChipButton::Theme::kBlue, /*should_expand=*/true}),
       browser_(browser) {
   chip_shown_time_ = base::TimeTicks::Now();
   VerifyCameraAndMicRequest(delegate);
@@ -159,7 +161,7 @@ bool PermissionRequestChip::IsBubbleShowing() const {
 }
 
 void PermissionRequestChip::RecordChipButtonPressed() {
-    base::UmaHistogramLongTimes("Permissions.Chip.TimeToInteraction",
+  base::UmaHistogramMediumTimes("Permissions.Chip.TimeToInteraction",
                                 base::TimeTicks::Now() - chip_shown_time_);
 }
 

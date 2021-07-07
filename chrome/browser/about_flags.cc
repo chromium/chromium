@@ -6456,6 +6456,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          permissions::features::kPermissionChipRequestTypeSensitive)},
+    {"permission-quiet-chip", flag_descriptions::kPermissionQuietChipName,
+     flag_descriptions::kPermissionQuietChipDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(permissions::features::kPermissionQuietChip)},
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     {"dice-web-signin-interception",

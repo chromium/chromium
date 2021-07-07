@@ -269,6 +269,8 @@ std::string GetPromptDispositionString(
       return "CustomModalDialog";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
       return "LocationBarLeftChip";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
+      return "LocationBarLeftQuietChip";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
       return "LocationBarRightAnimatedIcon";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:

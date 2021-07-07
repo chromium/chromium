@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 
-#include "base/location.h"
-#include "base/time/time.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/theme_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -116,14 +114,16 @@ void OmniboxChipButton::UpdateColors() {
 }
 
 SkColor OmniboxChipButton::GetMainColor() {
-  ui::NativeTheme* native_theme = GetNativeTheme();
   switch (theme_) {
     case Theme::kBlue:
       // TODO(crbug.com/1003612): ui::NativeTheme::kColorId_ProminentButtonColor
       // does not always represent the blue color we need, but it is OK to use
       // for now.
-      return native_theme->GetSystemColor(
+      return GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_ProminentButtonColor);
+    case Theme::kGray:
+      return GetThemeProvider()->GetColor(
+          ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED);
   }
 }
 

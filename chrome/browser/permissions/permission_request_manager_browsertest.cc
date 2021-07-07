@@ -826,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   permissions::MockPermissionRequest request2(
-      u"request2", permissions::RequestType::kGeolocation,
+      u"request2", permissions::RequestType::kMicStream,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request2);
   base::RunLoop().RunUntilIdle();

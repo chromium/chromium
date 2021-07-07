@@ -14381,6 +14381,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="LocationBarLeftChip"
       label="A chip on the left-hand side of the location bar that shows a
              bubble when clicked"/>
+  <suffix name="LocationBarLeftQuietChip"
+      label="A less prominent version of a chip on the left-hand side of the
+             location bar that shows a bubble when clicked"/>
   <suffix name="LocationBarRightAnimatedIcon"
       label="An animated indicator on the right-hand side of the location bar"/>
   <suffix name="LocationBarRightStaticIcon"
