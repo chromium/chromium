@@ -210,10 +210,16 @@ TEST(GeneratePolicySource, PolicyDetails) {
   EXPECT_TRUE(details->is_device_policy);
   EXPECT_EQ(90, details->id);
   EXPECT_EQ(0u, details->max_external_data_size);
-#endif
 
-  // TODO(bartfab): add a test that verifies a max_external_data_size larger
-  // than 0, once a type 'external' policy is added.
+  // Policies of type 'external' have a greater-than-zero value for
+  // |max_external_data_size|.
+  details = GetChromePolicyDetails(key::kWallpaperImage);
+  ASSERT_TRUE(details);
+  EXPECT_FALSE(details->is_deprecated);
+  EXPECT_FALSE(details->is_device_policy);
+  EXPECT_EQ(262, details->id);
+  EXPECT_GT(details->max_external_data_size, 0u);
+#endif
 }
 
 #if defined(OS_CHROMEOS)
