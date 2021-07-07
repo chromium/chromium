@@ -247,8 +247,8 @@ The Chrome WebUI factory is where you setup your new request handler.
 ```
 
 ## Add an entry to resource_ids.spec
-This file is for automatically generating resource ids. Ensure that the previous
-entry number plus the size equals the next entry number.
+This file is for automatically generating resource ids. Ensure that your entry
+has a unique ID and preserves numerical ordering.
 
 `tools/gritsettings/resource_ids.spec`
 
