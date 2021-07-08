@@ -700,8 +700,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // Crash requires specific conditions to be reproduced. Browser should have 2
 // profiles with the same GAIA account name and the first profile should use
 // default local name. This is set up specifically in order to trigger
-// ProfileInfoCache::NotifyIfProfileNamesHaveChanged() when a new third profile
-// is added.
+// ProfileAttributesStorage::NotifyIfProfileNamesHaveChanged() when a new third
+// profile is added.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        PRE_ProfileNameChangesOnProfileAdded) {
   Profile* default_profile = browser()->profile();

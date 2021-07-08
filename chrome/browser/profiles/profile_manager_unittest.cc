@@ -31,8 +31,8 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -665,7 +665,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   supervised_profile->GetPrefs()->SetString(
       prefs::kSupervisedUserId, supervised_users::kChildAccountSUID);
 
-  // RegisterTestingProfile adds the profile to the cache and takes ownership.
+  // RegisterTestingProfile adds the profile to the attributes storage and takes
+  // ownership.
   profile_manager->RegisterTestingProfile(std::move(supervised_profile), true);
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
   EXPECT_FALSE(storage.GetAllProfilesAttributesSortedByName()[0]->IsOmitted());
@@ -927,9 +928,9 @@ TEST_F(ProfileManagerTest, InitProfileUserPrefs) {
       avatar_index));
 }
 
-// Tests that a new profile's entry in the profile info cache is setup with the
-// same values that are in the profile prefs.
-TEST_F(ProfileManagerTest, InitProfileInfoCacheForAProfile) {
+// Tests that a new profile's entry in the profile attributes storage is setup
+// with the same values that are in the profile prefs.
+TEST_F(ProfileManagerTest, InitProfileAttributesStorageForAProfile) {
   base::FilePath dest_path = temp_dir_.GetPath();
   dest_path = dest_path.Append(FILE_PATH_LITERAL("New Profile"));
 
@@ -948,7 +949,7 @@ TEST_F(ProfileManagerTest, InitProfileInfoCacheForAProfile) {
                                       .GetProfileAttributesWithPath(dest_path);
   ASSERT_NE(entry, nullptr);
 
-  // Check if the profile prefs are the same as the cache prefs
+  // Check if the profile prefs are the same as the storage prefs.
   EXPECT_EQ(profile_name, base::UTF16ToUTF8(entry->GetName()));
   EXPECT_EQ(avatar_index, entry->GetAvatarIconIndex());
 }

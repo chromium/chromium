@@ -32,7 +32,6 @@
 #endif  // !defined(OS_ANDROID)
 
 class ProfileAttributesStorage;
-class ProfileInfoCache;
 enum class ProfileKeepAliveOrigin;
 class ProfileManagerObserver;
 class ScopedProfileKeepAlive;
@@ -434,11 +433,6 @@ class ProfileManager : public Profile::Delegate {
   // Whether a new profile can be created at |path|.
   bool CanCreateProfileAtPath(const base::FilePath& path) const;
 
-  // Returns a ProfileInfoCache object which can be used to get information
-  // about profiles without having to load them from disk.
-  // Deprecated, use GetProfileAttributesStorage() instead.
-  ProfileInfoCache& GetProfileInfoCache();
-
   // Adds |profile| to the profile attributes storage if it hasn't been added
   // yet.
   void AddProfileToStorage(Profile* profile);
@@ -502,8 +496,8 @@ class ProfileManager : public Profile::Delegate {
   void OnClosingAllBrowsersChanged(bool closing);
 #endif  // !defined(OS_ANDROID)
 
-  // Destroy after |profile_info_cache_| since Profile destruction may trigger
-  // some observers to unregister themselves.
+  // Destroy after |profile_attributes_storage_| since Profile destruction may
+  // trigger some observers to unregister themselves.
   base::ObserverList<ProfileManagerObserver> observers_;
 
   // Object to cache various information about profiles. Contains information
@@ -511,7 +505,7 @@ class ProfileManager : public Profile::Delegate {
   // if it has not been explicitly deleted. It must be destroyed after
   // |profiles_info_| because ~ProfileInfo can trigger a chain of events leading
   // to an access to this member.
-  std::unique_ptr<ProfileInfoCache> profile_info_cache_;
+  std::unique_ptr<ProfileAttributesStorage> profile_attributes_storage_;
 
   base::CallbackListSubscription closing_all_browsers_subscription_;
 

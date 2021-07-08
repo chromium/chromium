@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_info_cache_observer.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,7 +40,7 @@ class ProfileNameVerifierObserver : public ProfileInfoCacheObserver {
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
 
  private:
-  ProfileInfoCache* GetCache();
+  ProfileAttributesStorage* GetCache();
   std::map<base::FilePath, std::u16string> profile_names_;
   TestingProfileManager* testing_profile_manager_;
 };
@@ -52,7 +53,7 @@ class ProfileInfoCacheTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  ProfileInfoCache* GetCache();
+  ProfileAttributesStorage* GetCache();
   base::FilePath GetProfilePath(const std::string& base_name);
   void ResetCache();
   void RemoveObserver();

@@ -24,8 +24,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/chrome_switches.h"
@@ -109,8 +109,8 @@ void ProfileNameVerifierObserver::OnProfileAvatarChanged(
   EXPECT_TRUE(profile_names_.find(profile_path) != profile_names_.end());
 }
 
-ProfileInfoCache* ProfileNameVerifierObserver::GetCache() {
-  return testing_profile_manager_->profile_info_cache();
+ProfileAttributesStorage* ProfileNameVerifierObserver::GetCache() {
+  return testing_profile_manager_->profile_attributes_storage();
 }
 
 ProfileInfoCacheTest::ProfileInfoCacheTest()
@@ -122,7 +122,8 @@ ProfileInfoCacheTest::~ProfileInfoCacheTest() {
 
 void ProfileInfoCacheTest::SetUp() {
   ASSERT_TRUE(testing_profile_manager_.SetUp());
-  testing_profile_manager_.profile_info_cache()->AddObserver(&name_observer_);
+  testing_profile_manager_.profile_attributes_storage()->AddObserver(
+      &name_observer_);
 }
 
 void ProfileInfoCacheTest::TearDown() {
@@ -131,8 +132,8 @@ void ProfileInfoCacheTest::TearDown() {
   content::RunAllTasksUntilIdle();
 }
 
-ProfileInfoCache* ProfileInfoCacheTest::GetCache() {
-  return testing_profile_manager_.profile_info_cache();
+ProfileAttributesStorage* ProfileInfoCacheTest::GetCache() {
+  return testing_profile_manager_.profile_attributes_storage();
 }
 
 base::FilePath ProfileInfoCacheTest::GetProfilePath(
@@ -142,7 +143,7 @@ base::FilePath ProfileInfoCacheTest::GetProfilePath(
 }
 
 void ProfileInfoCacheTest::ResetCache() {
-  testing_profile_manager_.DeleteProfileInfoCache();
+  testing_profile_manager_.DeleteProfileAttributesStorage();
 }
 
 std::u16string ProfileInfoCacheTest::GetConcatenation(
@@ -184,7 +185,7 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
     params.profile_name = profile_name;
     params.icon_index = i;
     params.supervised_user_id = supervised_user_id;
-    GetCache()->AddProfileToCache(std::move(params));
+    GetCache()->AddProfile(std::move(params));
 
     ProfileAttributesEntry* entry =
         GetCache()->GetProfileAttributesWithPath(profile_path);
@@ -241,14 +242,14 @@ TEST_F(ProfileInfoCacheTest, GAIAName) {
   ProfileAttributesInitParams params_1;
   params_1.profile_path = profile_path_1;
   params_1.profile_name = u"Person 1";
-  GetCache()->AddProfileToCache(std::move(params_1));
+  GetCache()->AddProfile(std::move(params_1));
   ProfileAttributesEntry* entry_1 =
       GetCache()->GetProfileAttributesWithPath(profile_path_1);
   base::FilePath profile_path_2 = GetProfilePath("path_2");
   ProfileAttributesInitParams params_2;
   params_2.profile_path = profile_path_2;
   params_2.profile_name = u"Person 2";
-  GetCache()->AddProfileToCache(std::move(params_2));
+  GetCache()->AddProfile(std::move(params_2));
   ProfileAttributesEntry* entry_2 =
       GetCache()->GetProfileAttributesWithPath(profile_path_2);
 
@@ -285,7 +286,7 @@ TEST_F(ProfileInfoCacheTest, ConcatenateGaiaNameAndProfileName) {
   ProfileAttributesInitParams params_1;
   params_1.profile_path = profile_path_1;
   params_1.profile_name = u"Person 1";
-  GetCache()->AddProfileToCache(std::move(params_1));
+  GetCache()->AddProfile(std::move(params_1));
   ProfileAttributesEntry* entry_1 =
       GetCache()->GetProfileAttributesWithPath(profile_path_1);
   EXPECT_EQ(u"Person 1", entry_1->GetName());
@@ -308,7 +309,7 @@ TEST_F(ProfileInfoCacheTest, ConcatenateGaiaNameAndProfileName) {
   ProfileAttributesInitParams params_2;
   params_2.profile_path = profile_path_2;
   params_2.profile_name = u"Person 2";
-  GetCache()->AddProfileToCache(std::move(params_2));
+  GetCache()->AddProfile(std::move(params_2));
   ProfileAttributesEntry* entry_2 =
       GetCache()->GetProfileAttributesWithPath(profile_path_2);
   EXPECT_EQ(u"Patt", entry_1->GetName());
@@ -335,7 +336,7 @@ TEST_F(ProfileInfoCacheTest, ConcatenateGaiaNameAndProfileName) {
   ProfileAttributesInitParams params_3;
   params_3.profile_path = profile_path_3;
   params_3.profile_name = u"Person 3";
-  GetCache()->AddProfileToCache(std::move(params_3));
+  GetCache()->AddProfile(std::move(params_3));
   ProfileAttributesEntry* entry_3 =
       GetCache()->GetProfileAttributesWithPath(profile_path_3);
   entry_3->SetGAIAName(u"Patt Smith");
@@ -377,7 +378,7 @@ TEST_F(ProfileInfoCacheTest, DeleteProfile) {
   ProfileAttributesInitParams params_1;
   params_1.profile_path = path_1;
   params_1.profile_name = u"name_1";
-  GetCache()->AddProfileToCache(std::move(params_1));
+  GetCache()->AddProfile(std::move(params_1));
   EXPECT_EQ(1u, GetCache()->GetNumberOfProfiles());
 
   base::FilePath path_2 = GetProfilePath("path_2");
@@ -385,16 +386,16 @@ TEST_F(ProfileInfoCacheTest, DeleteProfile) {
   ProfileAttributesInitParams params_2;
   params_2.profile_path = path_2;
   params_2.profile_name = name_2;
-  GetCache()->AddProfileToCache(std::move(params_2));
+  GetCache()->AddProfile(std::move(params_2));
   ProfileAttributesEntry* entry =
       GetCache()->GetProfileAttributesWithPath(path_2);
   EXPECT_EQ(2u, GetCache()->GetNumberOfProfiles());
 
-  GetCache()->DeleteProfileFromCache(path_1);
+  GetCache()->RemoveProfile(path_1);
   EXPECT_EQ(1u, GetCache()->GetNumberOfProfiles());
   EXPECT_EQ(name_2, entry->GetName());
 
-  GetCache()->DeleteProfileFromCache(path_2);
+  GetCache()->RemoveProfile(path_2);
   EXPECT_EQ(0u, GetCache()->GetNumberOfProfiles());
 }
 
@@ -403,13 +404,13 @@ TEST_F(ProfileInfoCacheTest, MutateProfile) {
   ProfileAttributesInitParams params_1;
   params_1.profile_path = profile_path_1;
   params_1.profile_name = u"name_1";
-  GetCache()->AddProfileToCache(std::move(params_1));
+  GetCache()->AddProfile(std::move(params_1));
 
   base::FilePath profile_path_2 = GetProfilePath("path_2");
   ProfileAttributesInitParams params_2;
   params_2.profile_path = profile_path_2;
   params_2.profile_name = u"name_2";
-  GetCache()->AddProfileToCache(std::move(params_2));
+  GetCache()->AddProfile(std::move(params_2));
   ProfileAttributesEntry* entry_1 =
       GetCache()->GetProfileAttributesWithPath(profile_path_1);
   ProfileAttributesEntry* entry_2 =
@@ -441,13 +442,13 @@ TEST_F(ProfileInfoCacheTest, BackgroundModeStatus) {
   ProfileAttributesInitParams params_1;
   params_1.profile_path = path_1;
   params_1.profile_name = u"name_1";
-  GetCache()->AddProfileToCache(std::move(params_1));
+  GetCache()->AddProfile(std::move(params_1));
 
   base::FilePath path_2 = GetProfilePath("path_2");
   ProfileAttributesInitParams params_2;
   params_2.profile_path = path_2;
   params_2.profile_name = u"name_2";
-  GetCache()->AddProfileToCache(std::move(params_2));
+  GetCache()->AddProfile(std::move(params_2));
 
   ProfileAttributesEntry* entry_1 =
       GetCache()->GetProfileAttributesWithPath(path_1);
@@ -478,7 +479,7 @@ TEST_F(ProfileInfoCacheTest, SetSupervisedUserId) {
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = u"Test";
-  GetCache()->AddProfileToCache(std::move(params));
+  GetCache()->AddProfile(std::move(params));
   ProfileAttributesEntry* entry =
       GetCache()->GetProfileAttributesWithPath(profile_path);
   EXPECT_FALSE(entry->IsSupervised());
@@ -548,7 +549,7 @@ TEST_F(ProfileInfoCacheTest, AddStubProfile) {
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
     params.profile_name = profile_name;
-    GetCache()->AddProfileToCache(std::move(params));
+    GetCache()->AddProfile(std::move(params));
     ProfileAttributesEntry* entry =
         GetCache()->GetProfileAttributesWithPath(profile_path);
     EXPECT_TRUE(entry);
@@ -560,8 +561,8 @@ TEST_F(ProfileInfoCacheTest, AddStubProfile) {
   // Check that the profiles can be extracted from the local state.
   std::vector<std::u16string> names;
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* cache = local_state->GetDictionary(
-      prefs::kProfileInfoCache);
+  const base::DictionaryValue* cache =
+      local_state->GetDictionary(prefs::kProfileAttributes);
   std::u16string name;
   for (base::DictionaryValue::Iterator it(*cache); !it.IsAtEnd();
        it.Advance()) {
@@ -608,7 +609,7 @@ TEST_F(ProfileInfoCacheTest, EntriesInAttributesStorage) {
     params.profile_name = profile_name;
     params.icon_index = i;
     if (i == 0 || i == 2) {
-      GetCache()->AddProfileToCache(std::move(params));
+      GetCache()->AddProfile(std::move(params));
     } else {
       GetCache()->AddProfile(std::move(params));
     }
@@ -634,7 +635,7 @@ TEST_F(ProfileInfoCacheTest, EntriesInAttributesStorage) {
     // Use ProfileInfoCache in profiles 0 and 1, and ProfileAttributesStorage in
     // profiles 2 and 3.
     if (i == 0 || i == 1)
-      GetCache()->DeleteProfileFromCache(profile_path);
+      GetCache()->RemoveProfile(profile_path);
     else
       GetCache()->RemoveProfile(profile_path);
 
@@ -673,7 +674,7 @@ TEST_F(ProfileInfoCacheTest, MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
     params.profile_path = profile_path;
     params.profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
     params.icon_index = i;
-    GetCache()->AddProfileToCache(std::move(params));
+    GetCache()->AddProfile(std::move(params));
     entry = GetCache()->GetProfileAttributesWithPath(profile_path);
     EXPECT_TRUE(entry);
     entry->SetIsUsingDefaultName(kTestCases[i].is_using_default_name);
@@ -682,9 +683,9 @@ TEST_F(ProfileInfoCacheTest, MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
   EXPECT_EQ(12U, GetCache()->GetNumberOfProfiles());
 
   ResetCache();
-  ProfileInfoCache::SetLegacyProfileMigrationForTesting(true);
+  ProfileAttributesStorage::SetLegacyProfileMigrationForTesting(true);
   GetCache();
-  ProfileInfoCache::SetLegacyProfileMigrationForTesting(false);
+  ProfileAttributesStorage::SetLegacyProfileMigrationForTesting(false);
 
   entry = GetCache()->GetProfileAttributesWithPath(
       GetProfilePath(kTestCases[4].profile_path));
@@ -734,7 +735,7 @@ TEST_F(ProfileInfoCacheTest,
     params.profile_path = profile_path;
     params.profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
     params.icon_index = i;
-    GetCache()->AddProfileToCache(std::move(params));
+    GetCache()->AddProfile(std::move(params));
     ProfileAttributesEntry* entry =
         GetCache()->GetProfileAttributesWithPath(profile_path);
     EXPECT_TRUE(entry);
@@ -781,7 +782,7 @@ TEST_F(ProfileInfoCacheTest, RemoveProfileByAccountId) {
     params.user_name = UTF8ToUTF16(kTestCases[i].account_id.GetUserEmail());
     params.is_consented_primary_account =
         kTestCases[i].is_consented_primary_account;
-    GetCache()->AddProfileToCache(std::move(params));
+    GetCache()->AddProfile(std::move(params));
     EXPECT_EQ(i + 1, GetCache()->GetNumberOfProfiles());
   }
 
@@ -818,7 +819,7 @@ TEST_F(ProfileInfoCacheTest, ModifiyEntryWhileInitializing) {
     params.profile_name = u"Test";
     params.gaia_id = account_id.GetGaiaId();
     params.user_name = UTF8ToUTF16(account_id.GetUserEmail());
-    GetCache()->AddProfileToCache(std::move(params));
+    GetCache()->AddProfile(std::move(params));
     ProfileAttributesEntry* entry =
         GetCache()->GetProfileAttributesWithPath(profile_path);
     // Set up the state so that ProfileAttributesEntry::Initialize() will modify
@@ -846,7 +847,7 @@ TEST_F(ProfileInfoCacheTest, ProfileNamesOnInit) {
   ProfileAttributesInitParams params_1;
   params_1.profile_path = path_1;
   params_1.profile_name = kDefaultProfileName;
-  GetCache()->AddProfileToCache(std::move(params_1));
+  GetCache()->AddProfile(std::move(params_1));
   ProfileAttributesEntry* entry_1 =
       GetCache()->GetProfileAttributesWithPath(path_1);
   entry_1->SetGAIAGivenName(kCommonName);
@@ -857,7 +858,7 @@ TEST_F(ProfileInfoCacheTest, ProfileNamesOnInit) {
   ProfileAttributesInitParams params_2;
   params_2.profile_path = path_2;
   params_2.profile_name = kCommonName;
-  GetCache()->AddProfileToCache(std::move(params_2));
+  GetCache()->AddProfile(std::move(params_2));
   ProfileAttributesEntry* entry_2 =
       GetCache()->GetProfileAttributesWithPath(path_2);
   entry_2->SetGAIAGivenName(kCommonName);

@@ -21,7 +21,7 @@
 
 class PrefRegistrySimple;
 class PrefService;
-class ProfileInfoCache;
+class ProfileAttributesStorage;
 struct ProfileThemeColors;
 
 enum class SigninState {
@@ -221,7 +221,6 @@ class ProfileAttributesEntry {
 
  private:
   friend class ProfileAttributesStorage;
-  friend class ProfileInfoCache;
   friend class ProfileThemeUpdateServiceBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            EntryInternalAccessors);
@@ -231,7 +230,7 @@ class ProfileAttributesEntry {
 
   // Initializes the current entry instance. The callers must subsequently call
   // InitializeLastNameToDisplay() for this entry.
-  void Initialize(ProfileInfoCache* cache,
+  void Initialize(ProfileAttributesStorage* storage,
                   const base::FilePath& path,
                   PrefService* prefs);
 
@@ -323,7 +322,7 @@ class ProfileAttributesEntry {
   // notifications.
   void SetIsOmittedInternal(bool is_omitted);
 
-  ProfileInfoCache* profile_info_cache_ = nullptr;
+  ProfileAttributesStorage* profile_attributes_storage_ = nullptr;
   PrefService* prefs_ = nullptr;
   base::FilePath profile_path_;
   std::string storage_key_;

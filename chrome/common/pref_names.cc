@@ -1651,10 +1651,10 @@ const char kGuestProfilesNumCreated[] = "profile.guest_profiles_created";
 // to "1.0.0.0".
 const char kProfileCreatedByVersion[] = "profile.created_by_version";
 
-// A map of profile data directory to cached information. This cache can be
-// used to display information about profiles without actually having to load
+// A map of profile data directory to profile attributes. These attributes can
+// be used to display information about profiles without actually having to load
 // them.
-const char kProfileInfoCache[] = "profile.info_cache";
+const char kProfileAttributes[] = "profile.info_cache";
 
 // A list of profile paths that should be deleted on shutdown. The deletion does
 // not happen if the browser crashes, so we remove the profile on next start.

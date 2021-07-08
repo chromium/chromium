@@ -61,7 +61,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
-#include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -991,17 +990,13 @@ base::FilePath ProfileManager::GenerateNextProfileDirectoryPath() {
   return new_path;
 }
 
-ProfileInfoCache& ProfileManager::GetProfileInfoCache() {
-  TRACE_EVENT0("browser", "ProfileManager::GetProfileInfoCache");
-  if (!profile_info_cache_) {
-    profile_info_cache_ = std::make_unique<ProfileInfoCache>(
+ProfileAttributesStorage& ProfileManager::GetProfileAttributesStorage() {
+  TRACE_EVENT0("browser", "ProfileManager::GetProfileAttributesStorage");
+  if (!profile_attributes_storage_) {
+    profile_attributes_storage_ = std::make_unique<ProfileAttributesStorage>(
         g_browser_process->local_state(), user_data_dir_);
   }
-  return *profile_info_cache_.get();
-}
-
-ProfileAttributesStorage& ProfileManager::GetProfileAttributesStorage() {
-  return GetProfileInfoCache();
+  return *profile_attributes_storage_.get();
 }
 
 ProfileShortcutManager* ProfileManager::profile_shortcut_manager() {
@@ -1111,8 +1106,6 @@ void ProfileManager::CleanUpEphemeralProfiles() {
     profiles::SetLastUsedProfile(new_profile_path.BaseName().MaybeAsASCII());
   }
 
-  // This uses a separate loop, because deleting the profile from the
-  // ProfileInfoCache will modify indices.
   for (const base::FilePath& profile_path : profiles_to_delete) {
     base::ThreadPool::PostTask(
         FROM_HERE,
@@ -1172,8 +1165,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // User object may already have changed user type, so we apply that
   // type to profile.
-  // If profile type has changed, remove ProfileInfoCache entry for it to
-  // make sure it is fully re-initialized later.
+  // If profile type has changed, remove ProfileAttributesEntry for it to make
+  // sure it is fully re-initialized later.
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user) {

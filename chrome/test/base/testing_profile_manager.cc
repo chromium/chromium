@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -144,7 +143,8 @@ TestingProfile* TestingProfileManager::CreateGuestProfile() {
   builder.SetGuestSession();
   builder.SetPath(ProfileManager::GetGuestProfilePath());
 
-  // Add the guest profile to the profile manager, but not to the info cache.
+  // Add the guest profile to the profile manager, but not to the attributes
+  // storage.
   std::unique_ptr<TestingProfile> profile = builder.Build();
   TestingProfile* profile_ptr = profile.get();
   profile_ptr->set_profile_name(kGuestProfileName);
@@ -170,7 +170,8 @@ TestingProfile* TestingProfileManager::CreateSystemProfile() {
   TestingProfile::Builder builder;
   builder.SetPath(ProfileManager::GetSystemProfilePath());
 
-  // Add the system profile to the profile manager, but not to the info cache.
+  // Add the system profile to the profile manager, but not to the attributes
+  // storage.
   std::unique_ptr<TestingProfile> profile = builder.Build();
   TestingProfile* profile_ptr = profile.get();
   profile_ptr->set_profile_name(kSystemProfileName);
@@ -237,8 +238,8 @@ void TestingProfileManager::DeleteSystemProfile() {
       ProfileManager::GetSystemProfilePath());
 }
 
-void TestingProfileManager::DeleteProfileInfoCache() {
-  profile_manager_->profile_info_cache_.reset(NULL);
+void TestingProfileManager::DeleteProfileAttributesStorage() {
+  profile_manager_->profile_attributes_storage_.reset(nullptr);
 }
 
 void TestingProfileManager::UpdateLastUser(Profile* last_active) {
@@ -257,13 +258,9 @@ ProfileManager* TestingProfileManager::profile_manager() {
   return profile_manager_;
 }
 
-ProfileInfoCache* TestingProfileManager::profile_info_cache() {
-  DCHECK(called_set_up_);
-  return &profile_manager_->GetProfileInfoCache();
-}
-
 ProfileAttributesStorage* TestingProfileManager::profile_attributes_storage() {
-  return profile_info_cache();
+  DCHECK(called_set_up_);
+  return &profile_manager_->GetProfileAttributesStorage();
 }
 
 void TestingProfileManager::OnProfileWillBeDestroyed(Profile* profile) {
@@ -289,7 +286,7 @@ void TestingProfileManager::SetUpInternal(const base::FilePath& profiles_path) {
   profile_manager_ = profile_manager_unique.get();
   browser_process_->SetProfileManager(std::move(profile_manager_unique));
 
-  profile_manager_->GetProfileInfoCache().
-      set_disable_avatar_download_for_testing(true);
+  profile_manager_->GetProfileAttributesStorage()
+      .set_disable_avatar_download_for_testing(true);
   called_set_up_ = true;
 }

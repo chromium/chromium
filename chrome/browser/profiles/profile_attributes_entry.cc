@@ -15,8 +15,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
@@ -142,12 +142,12 @@ void ProfileAttributesEntry::RegisterLocalStatePrefs(
 
 ProfileAttributesEntry::ProfileAttributesEntry() = default;
 
-void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
+void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
                                         const base::FilePath& path,
                                         PrefService* prefs) {
-  DCHECK(!profile_info_cache_);
-  DCHECK(cache);
-  profile_info_cache_ = cache;
+  DCHECK(!profile_attributes_storage_);
+  DCHECK(storage);
+  profile_attributes_storage_ = storage;
 
   DCHECK(profile_path_.empty());
   DCHECK(!path.empty());
@@ -157,8 +157,8 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
   DCHECK(prefs);
   prefs_ = prefs;
 
-  DCHECK(profile_info_cache_->GetUserDataDir() == profile_path_.DirName());
-  storage_key_ = profile_path_.BaseName().MaybeAsASCII();
+  storage_key_ =
+      profile_attributes_storage_->StorageKeyFromProfilePath(profile_path_);
 
   MigrateObsoleteProfileAttributes();
 
@@ -209,7 +209,7 @@ bool ProfileAttributesEntry::ShouldShowProfileLocalName(
 
   // The profile local name is a default profile name : Person n.
   std::vector<ProfileAttributesEntry*> entries =
-      profile_info_cache_->GetAllProfilesAttributes();
+      profile_attributes_storage_->GetAllProfilesAttributes();
 
   for (ProfileAttributesEntry* entry : entries) {
     if (entry == this)
@@ -390,7 +390,7 @@ const gfx::Image* ProfileAttributesEntry::GetGAIAPicture() const {
     return nullptr;
 
   base::FilePath image_path = profile_path_.AppendASCII(file_name);
-  return profile_info_cache_->LoadAvatarPictureFromPath(
+  return profile_attributes_storage_->LoadAvatarPictureFromPath(
       profile_path_, storage_key_, image_path);
 }
 
@@ -404,7 +404,7 @@ bool ProfileAttributesEntry::IsUsingGAIAPicture() const {
 }
 
 bool ProfileAttributesEntry::IsGAIAPictureLoaded() const {
-  return profile_info_cache_->IsGAIAPictureLoaded(storage_key_);
+  return profile_attributes_storage_->IsGAIAPictureLoaded(storage_key_);
 }
 
 std::string ProfileAttributesEntry::GetLastDownloadedGAIAPictureUrlWithSize()
@@ -539,7 +539,7 @@ void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,
   bool changed = SetString16(kNameKey, name);
   changed |= SetBool(kIsUsingDefaultNameKey, is_default_name);
   if (changed)
-    profile_info_cache_->NotifyIfProfileNamesHaveChanged();
+    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
 }
 
 void ProfileAttributesEntry::SetShortcutName(const std::u16string& name) {
@@ -560,12 +560,13 @@ void ProfileAttributesEntry::SetIsOmitted(bool is_omitted) {
 
   // Send a notification only if the value has really changed.
   if (old_value != is_omitted_)
-    profile_info_cache_->NotifyProfileIsOmittedChanged(GetPath());
+    profile_attributes_storage_->NotifyProfileIsOmittedChanged(GetPath());
 }
 
 void ProfileAttributesEntry::SetSupervisedUserId(const std::string& id) {
   if (SetString(kSupervisedUserId, id))
-    profile_info_cache_->NotifyProfileSupervisedUserIdChanged(GetPath());
+    profile_attributes_storage_->NotifyProfileSupervisedUserIdChanged(
+        GetPath());
 }
 
 void ProfileAttributesEntry::SetBackgroundStatus(bool running_background_apps) {
@@ -574,12 +575,12 @@ void ProfileAttributesEntry::SetBackgroundStatus(bool running_background_apps) {
 
 void ProfileAttributesEntry::SetGAIAName(const std::u16string& name) {
   if (SetString16(kGAIANameKey, name))
-    profile_info_cache_->NotifyIfProfileNamesHaveChanged();
+    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
 }
 
 void ProfileAttributesEntry::SetGAIAGivenName(const std::u16string& name) {
   if (SetString16(kGAIAGivenNameKey, name))
-    profile_info_cache_->NotifyIfProfileNamesHaveChanged();
+    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
 }
 
 void ProfileAttributesEntry::SetGAIAPicture(
@@ -593,8 +594,8 @@ void ProfileAttributesEntry::SetGAIAPicture(
   if (image.IsEmpty()) {
     // Delete the old bitmap from disk.
     base::FilePath image_path = profile_path_.AppendASCII(old_file_name);
-    profile_info_cache_->DeleteGAIAImageAtPath(profile_path_, storage_key_,
-                                               image_path);
+    profile_attributes_storage_->DeleteGAIAImageAtPath(
+        profile_path_, storage_key_, image_path);
   } else {
     // Save the new bitmap to disk.
     new_file_name =
@@ -602,18 +603,18 @@ void ProfileAttributesEntry::SetGAIAPicture(
             ? base::FilePath(profiles::kGAIAPictureFileName).MaybeAsASCII()
             : old_file_name;
     base::FilePath image_path = profile_path_.AppendASCII(new_file_name);
-    profile_info_cache_->SaveGAIAImageAtPath(profile_path_, storage_key_, image,
-                                             image_path, image_url_with_size);
+    profile_attributes_storage_->SaveGAIAImageAtPath(
+        profile_path_, storage_key_, image, image_path, image_url_with_size);
   }
 
   SetString(kGAIAPictureFileNameKey, new_file_name);
-  profile_info_cache_->NotifyOnProfileAvatarChanged(profile_path_);
+  profile_attributes_storage_->NotifyOnProfileAvatarChanged(profile_path_);
 }
 
 void ProfileAttributesEntry::SetIsUsingGAIAPicture(bool value) {
   SetBool(kUseGAIAPictureKey, value);
   // TODO(alexilin): send notification only if the value has changed.
-  profile_info_cache_->NotifyOnProfileAvatarChanged(profile_path_);
+  profile_attributes_storage_->NotifyOnProfileAvatarChanged(profile_path_);
 }
 
 void ProfileAttributesEntry::SetLastDownloadedGAIAPictureUrlWithSize(
@@ -632,7 +633,7 @@ void ProfileAttributesEntry::LockForceSigninProfile(bool is_lock) {
   if (GetBool(kForceSigninProfileLockedKey) == is_lock)
     return;
   SetBool(kForceSigninProfileLockedKey, is_lock);
-  profile_info_cache_->NotifyIsSigninRequiredChanged(GetPath());
+  profile_attributes_storage_->NotifyIsSigninRequiredChanged(GetPath());
 }
 
 void ProfileAttributesEntry::RecordAccountMetrics() const {
@@ -651,7 +652,7 @@ void ProfileAttributesEntry::SetIsEphemeral(bool value) {
 
 void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {
   if (SetBool(kIsUsingDefaultNameKey, value))
-    profile_info_cache_->NotifyIfProfileNamesHaveChanged();
+    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
 }
 
 void ProfileAttributesEntry::SetIsUsingDefaultAvatar(bool value) {
@@ -673,12 +674,12 @@ void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
   SetString(kAvatarIconKey, default_avatar_icon_url);
 
   base::FilePath profile_path = GetPath();
-  if (!profile_info_cache_->GetDisableAvatarDownloadForTesting()) {
-    profile_info_cache_->DownloadHighResAvatarIfNeeded(icon_index,
-                                                       profile_path);
+  if (!profile_attributes_storage_->GetDisableAvatarDownloadForTesting()) {
+    profile_attributes_storage_->DownloadHighResAvatarIfNeeded(icon_index,
+                                                               profile_path);
   }
 
-  profile_info_cache_->NotifyOnProfileAvatarChanged(profile_path);
+  profile_attributes_storage_->NotifyOnProfileAvatarChanged(profile_path);
 }
 
 void ProfileAttributesEntry::SetProfileThemeColors(
@@ -698,15 +699,15 @@ void ProfileAttributesEntry::SetProfileThemeColors(
   }
 
   if (changed) {
-    profile_info_cache_->NotifyProfileThemeColorsChanged(GetPath());
+    profile_attributes_storage_->NotifyProfileThemeColorsChanged(GetPath());
     if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex())
-      profile_info_cache_->NotifyOnProfileAvatarChanged(GetPath());
+      profile_attributes_storage_->NotifyOnProfileAvatarChanged(GetPath());
   }
 }
 
 void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
   if (SetString(kHostedDomain, hosted_domain))
-    profile_info_cache_->NotifyProfileHostedDomainChanged(GetPath());
+    profile_attributes_storage_->NotifyProfileHostedDomainChanged(GetPath());
 }
 
 void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
@@ -728,7 +729,7 @@ void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
   new_data.SetBoolKey(kIsConsentedPrimaryAccountKey,
                       is_consented_primary_account);
   SetEntryData(std::move(new_data));
-  profile_info_cache_->NotifyProfileAuthInfoChanged(profile_path_);
+  profile_attributes_storage_->NotifyProfileAuthInfoChanged(profile_path_);
 }
 
 void ProfileAttributesEntry::AddAccountName(const std::string& name) {
@@ -782,8 +783,8 @@ const gfx::Image* ProfileAttributesEntry::GetHighResAvatar() const {
       profiles::GetDefaultAvatarIconFileNameAtIndex(avatar_index);
   const base::FilePath image_path =
       profiles::GetPathOfHighResAvatarAtIndex(avatar_index);
-  return profile_info_cache_->LoadAvatarPictureFromPath(GetPath(), key,
-                                                        image_path);
+  return profile_attributes_storage_->LoadAvatarPictureFromPath(GetPath(), key,
+                                                                image_path);
 }
 
 gfx::Image ProfileAttributesEntry::GetPlaceholderAvatarIcon(int size) const {
@@ -837,17 +838,17 @@ void ProfileAttributesEntry::RecordAccountNamesMetric() const {
 }
 
 const base::Value* ProfileAttributesEntry::GetEntryData() const {
-  const base::DictionaryValue* cache =
-      prefs_->GetDictionary(prefs::kProfileInfoCache);
-  return cache->FindKeyOfType(storage_key_, base::Value::Type::DICTIONARY);
+  const base::DictionaryValue* attributes =
+      prefs_->GetDictionary(prefs::kProfileAttributes);
+  return attributes->FindKeyOfType(storage_key_, base::Value::Type::DICTIONARY);
 }
 
 void ProfileAttributesEntry::SetEntryData(base::Value data) {
   DCHECK(data.is_dict());
 
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-  base::DictionaryValue* cache = update.Get();
-  cache->SetKey(storage_key_, std::move(data));
+  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::DictionaryValue* attributes = update.Get();
+  attributes->SetKey(storage_key_, std::move(data));
 }
 
 const base::Value* ProfileAttributesEntry::GetValue(const char* key) const {

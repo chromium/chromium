@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -202,11 +201,7 @@ class ProfileAttributesStorageTest : public testing::Test {
   }
 
   ProfileAttributesStorage* storage() {
-    return profile_info_cache();
-  }
-
-  ProfileInfoCache* profile_info_cache() {
-    return testing_profile_manager_.profile_info_cache();
+    return testing_profile_manager_.profile_attributes_storage();
   }
 
   ProfileAttributesTestObserver& observer() { return observer_; }
@@ -236,9 +231,9 @@ class ProfileAttributesStorageTest : public testing::Test {
     EXPECT_EQ(number_of_profiles + 1, storage()->GetNumberOfProfiles());
   }
 
-  void ResetProfileInfoCache() {
+  void ResetProfileAttributesStorage() {
     DisableObserver();
-    testing_profile_manager_.DeleteProfileInfoCache();
+    testing_profile_manager_.DeleteProfileAttributesStorage();
     EnableObserver();
   }
 
@@ -669,7 +664,7 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
       storage()->GetProfileAttributesWithPath(GetProfilePath("alpha_path"));
   ASSERT_NE(entry, nullptr);
 
-  // Trigger a ProfileInfoCache re-sort.
+  // Trigger a ProfileAttributesStorage re-sort.
   entry->SetLocalProfileName(u"zulu_name",
                              /*is_default_name=*/false);
   EXPECT_EQ(GetProfilePath("alpha_path"), entry->GetPath());
@@ -678,9 +673,8 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
 TEST_F(ProfileAttributesStorageTest, RemoveOtherProfile) {
   AddTestingProfile();
   AddTestingProfile();
-  AddTestingProfile();
 
-  EXPECT_EQ(3U, storage()->GetNumberOfProfiles());
+  EXPECT_EQ(2U, storage()->GetNumberOfProfiles());
 
   ProfileAttributesEntry* first_entry = storage()->GetProfileAttributesWithPath(
       GetProfilePath("testing_profile_path0"));
@@ -702,16 +696,6 @@ TEST_F(ProfileAttributesStorageTest, RemoveOtherProfile) {
 
   EXPECT_EQ(GetProfilePath("testing_profile_path0"), first_entry->GetPath());
   EXPECT_EQ(u"testing_profile_name0", first_entry->GetName());
-
-  // Deleting through the ProfileInfoCache should be reflected in the
-  // ProfileAttributesStorage as well.
-  AddCallExpectationsForRemoveProfile(2);
-  profile_info_cache()->RemoveProfile(
-      GetProfilePath("testing_profile_path2"));
-  VerifyAndResetCallExpectations();
-  second_entry = storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path2"));
-  ASSERT_EQ(second_entry, nullptr);
 }
 
 TEST_F(ProfileAttributesStorageTest, AccessFromElsewhere) {
@@ -732,10 +716,6 @@ TEST_F(ProfileAttributesStorageTest, AccessFromElsewhere) {
                                    /*is_default_name=*/false);
   EXPECT_EQ(u"NewName", second_entry->GetName());
   EXPECT_EQ(first_entry, second_entry);
-
-  // The ProfileInfoCache should also reflect the changes and its changes
-  // should be reflected by the ProfileAttributesStorage.
-  EXPECT_EQ(u"NewName", second_entry->GetName());
 
   second_entry->SetLocalProfileName(u"OtherNewName",
                                     /*is_default_name=*/false);
@@ -843,7 +823,7 @@ TEST_F(ProfileAttributesStorageTest,
     VerifyAndResetCallExpectations();
 
     // IsSigninRequired() cannot be set as an init parameter. Set it after an
-    // entry is initialized and reset the cache to reinitialize an entry from
+    // entry is initialized and reset the storage to reinitialize an entry from
     // prefs.
     EXPECT_CALL(observer(), OnProfileSigninRequiredChanged(profile_path))
         .Times(1);
@@ -851,7 +831,7 @@ TEST_F(ProfileAttributesStorageTest,
         storage()->GetProfileAttributesWithPath(profile_path);
     entry->LockForceSigninProfile(true);
     VerifyAndResetCallExpectations();
-    ResetProfileInfoCache();
+    ResetProfileAttributesStorage();
 
     entry = storage()->GetProfileAttributesWithPath(profile_path);
     ASSERT_NE(entry, nullptr);
@@ -859,9 +839,9 @@ TEST_F(ProfileAttributesStorageTest,
     EXPECT_TRUE(entry->IsSigninRequired());
   }
 
-  // Reset the cache once more after the policy has been disabled and check that
-  // sign-in is no longer required.
-  ResetProfileInfoCache();
+  // Reset the storage once more after the policy has been disabled and check
+  // that sign-in is no longer required.
+  ResetProfileAttributesStorage();
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
   ASSERT_NE(entry, nullptr);
@@ -958,7 +938,7 @@ TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
 
   // The previous |GetHighResAvater| starts |LoadAvatarPictureFromPath| async.
   // The async code will end up at |OnAvatarPictureLoaded| storing an empty
-  // image in the cache.
+  // image in the storage.
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
   content::RunAllTasksUntilIdle();
   VerifyAndResetCallExpectations();
@@ -1310,7 +1290,7 @@ TEST_F(ProfileAttributesStorageTest, PersistGAIAPicture) {
             "GAIA_IMAGE_URL_WITH_SIZE_0");
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, *entry->GetGAIAPicture()));
 
-  ResetProfileInfoCache();
+  ResetProfileAttributesStorage();
   // Try to get the GAIA picture. This should return NULL until the read from
   // disk is done.
   entry = storage()->GetProfileAttributesWithPath(profile_path);
@@ -1384,10 +1364,10 @@ TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
   // Make sure this profile is using GAIA picture.
   EXPECT_TRUE(entry->IsUsingGAIAPicture());
 
-  ResetProfileInfoCache();
+  ResetProfileAttributesStorage();
   entry = storage()->GetProfileAttributesWithPath(profile_path);
 
-  // We need to explicitly set the GAIA usage flag after resetting the cache.
+  // We need to explicitly set the GAIA usage flag after resetting the storage.
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
   entry->SetIsUsingGAIAPicture(true);
