@@ -2554,7 +2554,8 @@ bool ShellUtil::AddFileAssociations(
     const base::CommandLine& command_line,
     const std::wstring& application_name,
     const std::wstring& file_type_name,
-    const base::FilePath& icon_path,
+    const base::FilePath& application_icon_path,
+    const base::FilePath& file_type_icon_path,
     const std::set<std::wstring>& file_extensions) {
   std::vector<std::unique_ptr<RegistryEntry>> entries;
 
@@ -2562,10 +2563,10 @@ bool ShellUtil::AddFileAssociations(
   ApplicationInfo app_info;
   app_info.prog_id = prog_id;
   app_info.application_name = application_name;
-  app_info.application_icon_path = icon_path;
+  app_info.application_icon_path = application_icon_path;
   app_info.application_icon_index = 0;
   app_info.file_type_name = file_type_name;
-  app_info.file_type_icon_path = icon_path;
+  app_info.file_type_icon_path = file_type_icon_path;
   app_info.file_type_icon_index = 0;
   app_info.command_line = command_line.GetCommandLineStringForShell();
 
