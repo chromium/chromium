@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
@@ -85,6 +84,31 @@ public class WebContentsAccessibilityEventsTest {
     /**
      * Perform a single test which will:
      *      1. Open the given HTML file
+     *      2. Execute the javascript method "go()"
+     *      3. Repeat above step a total of |count| times
+     *      4. Read expectations file and compare with results
+     *
+     * @param inputFile                     HTML test input file
+     * @param expectationFile               TXT expectations file
+     * @param count                         Number of times to run method.
+     */
+    private void performTestWithRepeatCounter(String inputFile, String expectationFile, int count) {
+        // Build page from given file and enable testing framework, set a tracker.
+        setupTestFromFile(BASE_FILE_PATH + inputFile);
+
+        // Execute method a given number of times.
+        for (int i = 0; i < count; i++) {
+            mActivityTestRule.executeJS("go()");
+        }
+
+        // Send an "end of test" signal, then check results.
+        mActivityTestRule.sendEndOfTestSignal();
+        assertResults(expectationFile);
+    }
+
+    /**
+     * Perform a single test which will:
+     *      1. Open the given HTML file
      *      2. Execute the given javascript method
      *      3. Read expectations file and compare with results
      *
@@ -124,7 +148,9 @@ public class WebContentsAccessibilityEventsTest {
         String actualResults = getTrackerResults();
         Assert.assertNotNull(RESULTS_NULL, actualResults);
 
-        Assert.assertEquals(EVENTS_ERROR, expectedResults, actualResults);
+        Assert.assertEquals(EVENTS_ERROR + "\n\nExpected:\n" + expectedResults + "\n\nActual:\n"
+                        + actualResults + "\n\n",
+                expectedResults, actualResults);
     }
 
     /**
@@ -275,9 +301,9 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1215897")
     public void test_ariaComboboxExpand() {
-        performTest("aria-combo-box-expand.html", "aria-combo-box-expand-expected-android.txt");
+        performTestWithRepeatCounter(
+                "aria-combo-box-expand.html", "aria-combo-box-expand-expected-android.txt", 3);
     }
 
     @Test
