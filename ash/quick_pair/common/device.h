@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_COMMON_DEVICE_H_
 
 #include "ash/quick_pair/common/protocol.h"
+#include "base/component_export.h"
 
 namespace ash {
 namespace quick_pair {
@@ -15,7 +16,8 @@ namespace quick_pair {
 //
 // Lower level components will use |protocol|, |metadata_id| and |address| to
 // fetch objects which contain more information. E.g. A Fast Pair component
-// can use |metadata_id| to query the Service to receive a full metadata object.
+// can use |metadata_id| to query the Service to receive a full metadata
+// object.
 struct Device {
   Device(std::string metadata_id, std::string address, Protocol protocol);
   Device(const Device&) = delete;
@@ -37,7 +39,8 @@ struct Device {
   const Protocol protocol;
 };
 
-std::ostream& operator<<(std::ostream& stream, Device device);
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+std::ostream& operator<<(std::ostream& stream, const Device& device);
 
 }  // namespace quick_pair
 }  // namespace ash

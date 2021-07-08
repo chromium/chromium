@@ -24,6 +24,23 @@ source_set("scanning") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_scanner_broker.cc",
+    "mock_scanner_broker.h",
+    "scanner_broker.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

@@ -16,7 +16,7 @@ Device::Device(std::string metadata_id, std::string address, Protocol protocol)
       address(std::move(address)),
       protocol(protocol) {}
 
-std::ostream& operator<<(std::ostream& stream, Device device) {
+std::ostream& operator<<(std::ostream& stream, const Device& device) {
   stream << "[Device: metadata_id=" << device.metadata_id
          << ", address=" << device.address << ", protocol=" << device.protocol
          << "]";

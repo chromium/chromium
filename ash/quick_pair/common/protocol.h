@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_COMMON_PROTOCOL_H_
 
 #include <ostream>
+#include "base/component_export.h"
 
 namespace ash {
 namespace quick_pair {
@@ -15,6 +16,7 @@ enum class Protocol {
   kFastPair = 0
 };
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 std::ostream& operator<<(std::ostream& stream, Protocol protocol);
 
 }  // namespace quick_pair

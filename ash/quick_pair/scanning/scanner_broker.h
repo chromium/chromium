@@ -21,9 +21,11 @@ class ScannerBroker {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnDeviceFound(const Device& device);
-    virtual void OnDeviceLost(const Device& device);
+    virtual void OnDeviceFound(const Device& device) = 0;
+    virtual void OnDeviceLost(const Device& device) = 0;
   };
+
+  virtual ~ScannerBroker() = default;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

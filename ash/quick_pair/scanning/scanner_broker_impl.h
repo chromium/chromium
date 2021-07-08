@@ -17,7 +17,7 @@ class ScannerBrokerImpl : public ScannerBroker {
   ScannerBrokerImpl();
   ScannerBrokerImpl(const ScannerBrokerImpl&) = delete;
   ScannerBrokerImpl& operator=(const ScannerBrokerImpl&) = delete;
-  ~ScannerBrokerImpl();
+  ~ScannerBrokerImpl() override;
 
   // ScannerBroker:
   void AddObserver(Observer* observer) override;

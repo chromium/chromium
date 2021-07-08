@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "ash/quick_pair/feature_status_tracker/fake_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/mock_quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
+#include "ash/quick_pair/scanning/mock_scanner_broker.h"
+#include "ash/quick_pair/scanning/scanner_broker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -17,28 +20,40 @@ class MediatorTest : public testing::Test {
  public:
   void SetUp() override {
     std::unique_ptr<FeatureStatusTracker> tracker =
-        std::make_unique<MockFeatureStatusTracker>();
+        std::make_unique<FakeFeatureStatusTracker>();
     feature_status_tracker_ =
-        static_cast<MockFeatureStatusTracker*>(tracker.get());
+        static_cast<FakeFeatureStatusTracker*>(tracker.get());
 
-    EXPECT_CALL(*feature_status_tracker_, AddObserver);
-    EXPECT_CALL(*feature_status_tracker_, IsFastPairEnabled);
+    std::unique_ptr<ScannerBroker> scanner_broker =
+        std::make_unique<MockScannerBroker>();
+    mock_scanner_broker_ =
+        static_cast<MockScannerBroker*>(scanner_broker.get());
 
-    mediator_ = std::make_unique<Mediator>(std::move(tracker));
+    EXPECT_CALL(*mock_scanner_broker_, AddObserver);
+
+    mediator_ = std::make_unique<Mediator>(std::move(tracker),
+                                           std::move(scanner_broker));
   }
 
   void TearDown() override {
-    EXPECT_CALL(*feature_status_tracker_, RemoveObserver(mediator_.get()));
+    EXPECT_CALL(*mock_scanner_broker_, RemoveObserver(mediator_.get()));
   }
 
  protected:
-  MockFeatureStatusTracker* feature_status_tracker_;
+  FakeFeatureStatusTracker* feature_status_tracker_;
+  MockScannerBroker* mock_scanner_broker_;
   std::unique_ptr<Mediator> mediator_;
 };
 
-TEST_F(MediatorTest, SetupAndTeardownMakesExpectedCalls) {
-  // Blank test to explicitly test SetUp and TearDown. Can be removed once
-  // more tests are added which will test the same logic.
+TEST_F(MediatorTest, TogglesScanningWhenFastPairEnabledChanges) {
+  EXPECT_CALL(*mock_scanner_broker_, StartScanning);
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  feature_status_tracker_->SetIsFastPairEnabled(false);
+  EXPECT_CALL(*mock_scanner_broker_, StartScanning);
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  feature_status_tracker_->SetIsFastPairEnabled(false);
 }
 
 }  // namespace quick_pair
