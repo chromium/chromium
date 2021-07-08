@@ -11,7 +11,11 @@ namespace views {
 
 ColorTrackingIconView::ColorTrackingIconView(const gfx::VectorIcon& icon,
                                              int icon_size)
-    : icon_(icon), icon_size_(icon_size) {}
+    : icon_(icon), icon_size_(icon_size) {
+  // Set the image using a placeholder color. This will allow the ImageView to
+  // report its preferred size before OnThemeChanged for layout purposes.
+  SetImage(gfx::CreateVectorIcon(icon_, icon_size_, gfx::kPlaceholderColor));
+}
 
 void ColorTrackingIconView::OnThemeChanged() {
   ImageView::OnThemeChanged();

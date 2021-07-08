@@ -54,6 +54,8 @@ class HoverButton : public views::LabelButton {
   // When |resize_row_for_secondary_icon| is false, the button tries to
   // accommodate the view's preferred size by reducing the top and bottom
   // insets appropriately up to a value of 0.
+  // Warning: |icon_view| must have a fixed size and be correctly set during its
+  // constructor for the HoverButton to layout correctly.
   HoverButton(PressedCallback callback,
               std::unique_ptr<views::View> icon_view,
               const std::u16string& title,
