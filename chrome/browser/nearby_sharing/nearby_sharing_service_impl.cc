@@ -1170,10 +1170,6 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   } else {
     NS_LOG(INFO) << __func__ << ": Nearby sharing disabled!";
     StopAdvertising();
-    if (base::FeatureList::IsEnabled(
-            features::kNearbySharingBackgroundScanning)) {
-      StopBackgroundScanning();
-    }
     StopScanning();
     nearby_connections_manager_->Shutdown();
     local_device_data_manager_->Stop();
@@ -2102,11 +2098,6 @@ void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
 }
 
 void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
-  // TODO(hansenmichael): This method is in a prototype state and essentially
-  // duplicates the checks from InvalidateAdvertisingState(). This should be
-  // vetted further and updated specifically for background scanning. This is
-  // not invoked unless the background scanning feature flag is enabled.
-
   // Nothing to do if we're shutting down the profile.
   if (!profile_)
     return;
@@ -2136,8 +2127,9 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     return;
   }
 
-  // Nearby Sharing is disabled. Don't scan.
-  if (!settings_.GetEnabled()) {
+  // User has explicitly disabled Nearby Sharing after onboarding. Don't
+  // background scan.
+  if (settings_.IsOnboardingComplete() && !settings_.GetEnabled()) {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because Nearby Sharing is disabled.";
@@ -2159,25 +2151,6 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
                     << ": Stopping background scanning because we're currently "
                        "in the midst of "
                        "a transfer.";
-    StopBackgroundScanning();
-    return;
-  }
-
-  if (foreground_receive_callbacks_.empty() &&
-      background_receive_callbacks_.empty()) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Stopping background scanning because no receive "
-                       "surface is registered.";
-    StopBackgroundScanning();
-    return;
-  }
-
-  if (!IsVisibleInBackground(settings_.GetVisibility()) &&
-      foreground_receive_callbacks_.empty()) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Stopping background scanning because no high power "
-                       "receive surface "
-                       "is registered and device is visible to NO_ONE.";
     StopBackgroundScanning();
     return;
   }
