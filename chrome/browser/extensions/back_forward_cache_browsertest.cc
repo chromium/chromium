@@ -6,10 +6,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/messaging/message_service.h"
@@ -932,6 +935,52 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
       "document_start/document_end/document_idle/page_show/page_hide/"
       "page_show/",
       EvalJs(rfh_a, "document.getElementById('stage').value;"));
+}
+
+// Test that an activeTab permission temporarily granted to an extension for a
+// page does not revive when the BFCache entry is restored.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       ActiveTabPermissionRevoked) {
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("active_tab"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHostWrapper rfh_a(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+
+  // Grant the activeTab permission.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ExtensionActionRunner::GetForWebContents(web_contents)
+      ->RunAction(extension.get(), /* grant_tab_permissions=*/true);
+
+  ExpectTitleChangeSuccess(*extension, "changed_title");
+
+  // 2) Navigate to B.
+  ui_test_utils::NavigateToURL(browser(), url_b);
+
+  // Ensure that `rfh_a` is in the cache.
+  EXPECT_FALSE(rfh_a.IsDestroyed());
+  EXPECT_EQ(rfh_a.get()->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Extension should no longer be able to change title, since the permission
+  // should be revoked with a cross-site navigation.
+  ExpectTitleChangeFail(*extension);
+
+  // 3) Go back to A.
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Extension should no longer be able to change title, since the permission
+  // should not revive with BFCache navigation to a.com.
+  ExpectTitleChangeFail(*extension);
 }
 
 }  // namespace extensions
