@@ -260,7 +260,12 @@ const CGFloat kOffsetToPinOmnibox = 100;
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
     }
   };
-  [coordinator animateAlongsideTransition:alongsideBlock completion:nil];
+  [coordinator
+      animateAlongsideTransition:alongsideBlock
+                      completion:^(
+                          id<UIViewControllerTransitionCoordinatorContext>) {
+                        [self updateFeedInsetsForContentSuggestions];
+                      }];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
