@@ -920,8 +920,14 @@ PhysicalRect NGFragmentItem::LocalRect(StringView text,
   LayoutUnit width = Size().width;
   LayoutUnit height = Size().height;
   if (Type() == kSvgText) {
-    width = LayoutUnit(SvgFragmentData()->rect.Size().Width());
-    height = LayoutUnit(SvgFragmentData()->rect.Size().Height());
+    const NGSvgFragmentData& data = *SvgFragmentData();
+    if (IsHorizontal()) {
+      width = LayoutUnit(data.rect.Size().Width() / data.length_adjust_scale);
+      height = LayoutUnit(data.rect.Size().Height());
+    } else {
+      width = LayoutUnit(data.rect.Size().Width());
+      height = LayoutUnit(data.rect.Size().Height() / data.length_adjust_scale);
+    }
   }
   if (start_offset == StartOffset() && end_offset == EndOffset()) {
     return {LayoutUnit(), LayoutUnit(), width, height};
