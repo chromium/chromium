@@ -10,6 +10,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <deque>
 #include <set>
 #include <utility>
@@ -379,6 +380,29 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   // Add hugepages.
   request.set_use_hugepages(IsArcVmUseHugePages());
+
+  // Specify VM Memory.
+  if (base::FeatureList::IsEnabled(kVmMemorySize)) {
+    base::SystemMemoryInfoKB info;
+    if (base::GetSystemMemoryInfo(&info)) {
+      const int ram_mib = info.total / 1024;
+      const int shift_mib = kVmMemorySizeShiftMiB.Get();
+      const int max_mib = kVmMemorySizeMaxMiB.Get();
+      const int vm_ram_mib = std::min(max_mib, ram_mib + shift_mib);
+      constexpr int kVmRamMinMib = 2048;
+      if (vm_ram_mib > kVmRamMinMib) {
+        request.set_memory_mib(vm_ram_mib);
+      } else {
+        VLOG(1) << "VmMemorySize is enabled, but computed size is "
+                << "min(" << ram_mib << " + " << shift_mib << "," << max_mib
+                << ") == " << vm_ram_mib << "MiB, less than " << kVmRamMinMib
+                << " MiB safe minium.";
+      }
+    } else {
+      VLOG(1) << "VmMemorySize is enabled, but GetSystemMemoryInfo failed.";
+    }
+  }
+
   return request;
 }
 

@@ -25,6 +25,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/safe_strerror.h"
+#include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1839,6 +1840,86 @@ TEST_F(ArcVmClientAdapterTest, ArcVmUseHugePagesDisabled) {
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_FALSE(request.use_hugepages());
+}
+
+// Test that StartArcVmRequest has no memory_mib field when kVmMemorySize is
+// disabled.
+TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kVmMemorySize);
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(request.memory_mib(), 0u);
+}
+
+// Test that StartArcVmRequest has `memory_mib == system memory` when
+// kVmMemorySize is enabled with no maximum and shift_mib := 0.
+TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledBig) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["shift_mib"] = "0";
+  feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
+  base::SystemMemoryInfoKB info;
+  ASSERT_TRUE(base::GetSystemMemoryInfo(&info));
+  const uint32_t total_mib = info.total / 1024;
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(request.memory_mib(), total_mib);
+}
+
+// Test that StartArcVmRequest has `memory_mib == system memory - 1024` when
+// kVmMemorySize is enabled with no maximum and shift_mib := -1024.
+TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledSmall) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["shift_mib"] = "-1024";
+  feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
+  base::SystemMemoryInfoKB info;
+  ASSERT_TRUE(base::GetSystemMemoryInfo(&info));
+  const uint32_t total_mib = info.total / 1024;
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(request.memory_mib(), total_mib - 1024);
+}
+
+// Test that StartArcVmRequest has memory_mib unset when kVmMemorySize is
+// enabled, but the requested size is too low (due to max_mib being lower than
+// the 2048 safety minimum).
+TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledLow) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["shift_mib"] = "0";
+  params["max_mib"] = "1024";
+  feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  // The 1024 max_mib is below the 2048 MiB safety cut-off, so we expect
+  // memory_mib to be unset.
+  EXPECT_EQ(request.memory_mib(), 0u);
+}
+
+// Test that StartArcVmRequest has `memory_mib == 2049` when kVmMemorySize is
+// enabled with max_mib := 2049.
+// NOTE: requires that the test running system has more than 2049 MiB of RAM.
+TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledMax) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["shift_mib"] = "0";
+  params["max_mib"] = "2049";  // Above the 2048 minimum cut-off.
+  feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(request.memory_mib(), 2049u);
 }
 
 struct DalvikMemoryProfileTestParam {

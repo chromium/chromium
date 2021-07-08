@@ -34,6 +34,9 @@ extern const base::Feature kSaveRawFilesOnTracing;
 extern const base::Feature kUseHighMemoryDalvikProfile;
 extern const base::Feature kUsbStorageUIFeature;
 extern const base::Feature kVideoDecoder;
+extern const base::Feature kVmMemorySize;
+extern const base::FeatureParam<int> kVmMemorySizeShiftMiB;
+extern const base::FeatureParam<int> kVmMemorySizeMaxMiB;
 
 }  // namespace arc
 
