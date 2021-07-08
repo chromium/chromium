@@ -2524,20 +2524,28 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
 }
 
 void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
+  recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode Start %d",
+                       recordreplay::PointerId(node));
+
   DCHECK(node);
   if (!node->InActiveDocument()) {
     // If |node| is not in the active document, we can't update its style or
     // layout tree.
     DCHECK_EQ(node->ownerDocument(), this);
+    recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode #1");
     return;
   }
   DCHECK(!InStyleRecalc())
       << "UpdateStyleAndLayoutTreeForNode called from within style recalc";
-  if (!NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node))
+  if (!NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node)) {
+    recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode #2");
     return;
+  }
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(node);
   UpdateStyleAndLayoutTree();
+
+  recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode Done");
 }
 
 void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node) {
