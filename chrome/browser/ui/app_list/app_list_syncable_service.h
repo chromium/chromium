@@ -70,6 +70,9 @@ class AppListSyncableService : public syncer::SyncableService,
     // Notifies that sync model was updated.
     virtual void OnSyncModelUpdated() = 0;
 
+    // Notifies the addition or update from the sync items for testing.
+    virtual void OnAddOrUpdateFromSyncItemForTest() {}
+
    protected:
     ~Observer() override;
   };

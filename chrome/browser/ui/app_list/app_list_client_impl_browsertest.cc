@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
@@ -74,6 +75,29 @@
 
 // Browser Test for AppListClientImpl.
 using AppListClientImplBrowserTest = extensions::PlatformAppBrowserTest;
+
+namespace {
+class TestObserver : public app_list::AppListSyncableService::Observer {
+ public:
+  explicit TestObserver(app_list::AppListSyncableService* syncable_service)
+      : syncable_service_(syncable_service) {
+    syncable_service_->AddObserverAndStart(this);
+  }
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+  ~TestObserver() override { syncable_service_->RemoveObserver(this); }
+
+  size_t add_or_update_count() const { return add_or_update_count_; }
+
+  // app_list::AppListSyncableService::Observer:
+  void OnSyncModelUpdated() override {}
+  void OnAddOrUpdateFromSyncItemForTest() override { ++add_or_update_count_; }
+
+ private:
+  app_list::AppListSyncableService* const syncable_service_;
+  size_t add_or_update_count_ = 0;
+};
+}  // namespace
 
 // Test AppListClient::IsAppOpen for extension apps.
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
@@ -249,19 +273,27 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   // Emulate that the current user is new.
   client->InitializeAsIfNewUserLoginForTest();
 
-  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  TestObserver syncable_service_observer(
+      app_list::AppListSyncableServiceFactory::GetInstance()->GetForProfile(
+          profile()));
 
   // Add an app item.
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   const std::string app_id("fake_id");
   model_updater->AddItem(std::make_unique<ChromeAppListItem>(
       browser()->profile(), app_id, model_updater));
-  ChromeAppListItem* item = model_updater->FindItem(app_id);
-  ASSERT_TRUE(item);
+
+  // Verify that the app addition from the app list client side should not
+  // trigger the update recursively, i.e. the client side observers the update
+  // in the app list model then reacts to it.
+  EXPECT_EQ(0u, syncable_service_observer.add_or_update_count());
 
   base::HistogramTester histogram_tester;
 
   // Verify that app activation is recorded.
   client->ShowAppList();
+  ChromeAppListItem* item = model_updater->FindItem(app_id);
+  ASSERT_TRUE(item);
   client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0);
   histogram_tester.ExpectBucketCount(
       "Apps.FirstLauncherActionByNewUsers",

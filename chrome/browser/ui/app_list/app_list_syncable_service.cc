@@ -719,6 +719,9 @@ void AppListSyncableService::SetPinPosition(
 
 void AppListSyncableService::AddOrUpdateFromSyncItem(
     const ChromeAppListItem* app_item) {
+  for (auto& observer : observer_list_)
+    observer.OnAddOrUpdateFromSyncItemForTest();
+
   // Do not create a sync item for the OEM folder here, do that in
   // ResolveFolderPositions once the position has been resolved.
   if (app_item->id() == ash::kOemFolderId)
