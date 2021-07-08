@@ -10,11 +10,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import android.view.View;
-
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.PreferenceScreen;
-import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -27,22 +24,16 @@ import org.mockito.Mock;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.io.IOException;
 import java.util.HashSet;
 
 /**
@@ -65,10 +56,6 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-
-    @Rule
-    public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     private static final String GOOGLE_ACCOUNT = "Google Account";
     private static final String OTHER_ACTIVITY = "other forms of browsing history";
@@ -185,47 +172,5 @@ public class ClearBrowsingDataFragmentBasicTest {
             assertThat(historySummary, containsString(OTHER_ACTIVITY));
             assertThat(historySummary, containsString(SYNCED_DEVICES));
         });
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SEARCH_HISTORY_LINK)
-    public void testRenderNotSignedIn() throws IOException {
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
-        mRenderTestRule.render(view, "clear_browsing_data_basic_signed_out");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SEARCH_HISTORY_LINK)
-    @DisabledTest(message = "https://crbug.com/1227122")
-    public void testRenderSignedInNotSyncing() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        // Simulate that Sync was stopped but the primary account remained.
-        setSyncable(false);
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
-        mRenderTestRule.render(view, "clear_browsing_data_basic_signed_in_no_sync");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SEARCH_HISTORY_LINK)
-    public void testRenderSignedInAndSyncing() throws IOException {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        setSyncable(true);
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
-        mRenderTestRule.render(view, "clear_browsing_data_basic_signed_in_sync");
     }
 }
