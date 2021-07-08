@@ -198,15 +198,9 @@ bool CanAccessTarget(const PermissionsData& permissions,
 }
 
 // Returns true if the loaded resource is valid for injection.
-bool CheckLoadedResource(bool success,
-                         std::string* data,
+bool CheckLoadedResource(std::string* data,
                          const std::string& file_name,
                          std::string* error) {
-  if (!success) {
-    *error = ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, file_name);
-    return false;
-  }
-
   DCHECK(data);
   // TODO(devlin): What necessitates this encoding requirement? Is it needed for
   // blink injection?
@@ -226,14 +220,14 @@ bool CheckLoadedResource(bool success,
 bool CheckAndLoadFiles(const std::vector<std::string>& files,
                        const Extension& extension,
                        bool requires_localization,
-                       LoadAndLocalizeResourceCallback callback,
+                       LoadAndLocalizeResourcesCallback callback,
                        std::string* error) {
   ExtensionResource resource;
   if (!GetFileResource(files, extension, &resource, error))
     return false;
 
-  LoadAndLocalizeResource(extension, resource, requires_localization,
-                          std::move(callback));
+  LoadAndLocalizeResources(extension, {std::move(resource)},
+                           requires_localization, std::move(callback));
   return true;
 }
 
@@ -363,20 +357,27 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
 }
 
 void ScriptingExecuteScriptFunction::DidLoadResource(
-    bool success,
-    std::unique_ptr<std::string> data) {
+    std::vector<std::unique_ptr<std::string>> data,
+    absl::optional<std::string> load_error) {
   DCHECK(injection_.files);
   DCHECK_EQ(1u, injection_.files->size());
 
+  if (load_error) {
+    Respond(Error(std::move(*load_error)));
+    return;
+  }
+
+  // TODO(devlin): Remove this DCHECK when multiple files are supported.
+  DCHECK_EQ(1u, data.size());
+  auto file_data = std::move(data.front());
   std::string error;
-  if (!CheckLoadedResource(success, data.get(), injection_.files->at(0),
-                           &error)) {
+  if (!CheckLoadedResource(file_data.get(), injection_.files->at(0), &error)) {
     Respond(Error(std::move(error)));
     return;
   }
 
   GURL script_url = extension()->GetResourceURL(injection_.files->at(0));
-  if (!Execute(std::move(*data), std::move(script_url), &error))
+  if (!Execute(std::move(*file_data), std::move(script_url), &error))
     Respond(Error(std::move(error)));
 }
 
@@ -481,20 +482,27 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
 }
 
 void ScriptingInsertCSSFunction::DidLoadResource(
-    bool success,
-    std::unique_ptr<std::string> data) {
+    std::vector<std::unique_ptr<std::string>> data,
+    absl::optional<std::string> load_error) {
   DCHECK(injection_.files);
   DCHECK_EQ(1u, injection_.files->size());
 
+  if (load_error) {
+    Respond(Error(std::move(*load_error)));
+    return;
+  }
+
+  // TODO(devlin): Remove this DCHECK when multiple files are supported.
+  DCHECK_EQ(1u, data.size());
   std::string error;
-  if (!CheckLoadedResource(success, data.get(), injection_.files->at(0),
-                           &error)) {
+  auto& file_data = data.front();
+  if (!CheckLoadedResource(file_data.get(), injection_.files->at(0), &error)) {
     Respond(Error(std::move(error)));
     return;
   }
 
   GURL script_url = extension()->GetResourceURL(injection_.files->at(0));
-  if (!Execute(std::move(*data), std::move(script_url), &error))
+  if (!Execute(std::move(*file_data), std::move(script_url), &error))
     Respond(Error(std::move(error)));
 }
 

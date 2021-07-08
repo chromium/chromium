@@ -5,6 +5,10 @@
 #ifndef EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_H_
 #define EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
@@ -54,8 +58,8 @@ class ExecuteCodeFunction : public ExtensionFunction {
 
   // Called when contents from the loaded file have been localized.
   void DidLoadAndLocalizeFile(const std::string& file,
-                              bool success,
-                              std::unique_ptr<std::string> data);
+                              std::vector<std::unique_ptr<std::string>> data,
+                              absl::optional<std::string> load_error);
 
   const mojom::HostID& host_id() const { return host_id_; }
   void set_host_id(const mojom::HostID& host_id) { host_id_ = host_id; }

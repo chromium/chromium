@@ -6,32 +6,37 @@
 #define EXTENSIONS_BROWSER_FILE_READER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "extensions/common/extension_resource.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-// This file defines an interface for reading a file asynchronously on a
+// This file defines an interface for reading files asynchronously on a
 // background sequence.
 // Consider abstracting out a FilePathProvider (ExtensionResource) and moving
 // back to chrome/browser/net if other subsystems want to use it.
 class FileReader : public base::RefCountedThreadSafe<FileReader> {
  public:
-  // Reports success or failure and the data of the file upon success.
+  // Passes the result of loading the files in `data`, or reports the
+  // encountered error in `error`. If there was an error, `data` will be empty.
   using DoneCallback =
-      base::OnceCallback<void(bool, std::unique_ptr<std::string>)>;
-  // Lets the caller accomplish tasks on the file data, after the file content
-  // has been read.
-  // If the file reading doesn't succeed, this will be ignored.
-  using OptionalFileSequenceTask = base::OnceCallback<void(std::string*)>;
+      base::OnceCallback<void(std::vector<std::unique_ptr<std::string>> data,
+                              absl::optional<std::string> error)>;
 
-  FileReader(const extensions::ExtensionResource& resource,
+  // Lets the caller accomplish tasks on the file data, after the file content
+  // has been read. This is called once per file successfully read (it is not
+  // invoked if a file read fails).
+  using OptionalFileSequenceTask = base::RepeatingCallback<void(std::string*)>;
+
+  FileReader(std::vector<extensions::ExtensionResource> resources,
              OptionalFileSequenceTask file_sequence_task,
              DoneCallback done_callback);
 
-  // Called to start reading the file on a background sequence. Upon completion,
-  // the callback will be notified of the results.
+  // Called to start reading the files on a background sequence. Upon
+  // completion, the callback will be notified of the results.
   void Start();
 
  private:
@@ -39,9 +44,9 @@ class FileReader : public base::RefCountedThreadSafe<FileReader> {
 
   ~FileReader();
 
-  void ReadFileOnFileSequence();
+  void ReadFilesOnFileSequence();
 
-  extensions::ExtensionResource resource_;
+  std::vector<extensions::ExtensionResource> resources_;
   OptionalFileSequenceTask optional_file_sequence_task_;
   DoneCallback done_callback_;
   const scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;

@@ -7,39 +7,54 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/extension_file_task_runner.h"
 
-FileReader::FileReader(const extensions::ExtensionResource& resource,
+FileReader::FileReader(std::vector<extensions::ExtensionResource> resources,
                        OptionalFileSequenceTask optional_file_sequence_task,
                        DoneCallback done_callback)
-    : resource_(resource),
+    : resources_(std::move(resources)),
       optional_file_sequence_task_(std::move(optional_file_sequence_task)),
       done_callback_(std::move(done_callback)),
       origin_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 void FileReader::Start() {
   extensions::GetExtensionFileTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&FileReader::ReadFileOnFileSequence, this));
+      FROM_HERE, base::BindOnce(&FileReader::ReadFilesOnFileSequence, this));
 }
 
 FileReader::~FileReader() {}
 
-void FileReader::ReadFileOnFileSequence() {
+void FileReader::ReadFilesOnFileSequence() {
   DCHECK(
       extensions::GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
-  std::unique_ptr<std::string> data(new std::string());
-  bool success = base::ReadFileToString(resource_.GetFilePath(), data.get());
+  std::vector<std::unique_ptr<std::string>> data;
+  data.reserve(resources_.size());
+  absl::optional<std::string> error;
+  for (const auto& resource : resources_) {
+    data.push_back(std::make_unique<std::string>());
+    std::string* file_data = data.back().get();
+    bool success = base::ReadFileToString(resource.GetFilePath(), file_data);
+    if (!success) {
+      error =
+          base::StringPrintf("Could not load file: '%s'.",
+                             resource.relative_path().AsUTF8Unsafe().c_str());
+      // Clear `data` to avoid passing a partial result.
+      data.clear();
 
-  if (optional_file_sequence_task_) {
-    if (success)
-      std::move(optional_file_sequence_task_).Run(data.get());
-    else
-      optional_file_sequence_task_.Reset();
+      break;
+    }
+
+    if (optional_file_sequence_task_)
+      optional_file_sequence_task_.Run(file_data);
   }
 
+  // Release any potentially-bound references from the file sequence task.
+  optional_file_sequence_task_.Reset();
+
   origin_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(done_callback_), success, std::move(data)));
+      FROM_HERE, base::BindOnce(std::move(done_callback_), std::move(data),
+                                std::move(error)));
 }

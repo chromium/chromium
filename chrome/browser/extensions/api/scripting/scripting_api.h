@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
 
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "chrome/common/extensions/api/scripting.h"
 #include "extensions/browser/extension_function.h"
@@ -33,7 +35,8 @@ class ScriptingExecuteScriptFunction : public ExtensionFunction {
   ~ScriptingExecuteScriptFunction() override;
 
   // Called when the resource file to be injected has been loaded.
-  void DidLoadResource(bool success, std::unique_ptr<std::string> data);
+  void DidLoadResource(std::vector<std::unique_ptr<std::string>> data,
+                       absl::optional<std::string> load_error);
 
   // Triggers the execution of `code_to_execute` in the appropriate context.
   // Returns true on success; on failure, populates `error`.
@@ -63,7 +66,8 @@ class ScriptingInsertCSSFunction : public ExtensionFunction {
   ~ScriptingInsertCSSFunction() override;
 
   // Called when the resource file to be injected has been loaded.
-  void DidLoadResource(bool success, std::unique_ptr<std::string> data);
+  void DidLoadResource(std::vector<std::unique_ptr<std::string>> data,
+                       absl::optional<std::string> load_error);
 
   // Triggers the execution of `code_to_execute` in the appropriate context.
   // Returns true on success; on failure, populates `error`.

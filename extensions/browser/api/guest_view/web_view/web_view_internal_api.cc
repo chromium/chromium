@@ -523,14 +523,30 @@ bool WebViewInternalExecuteCodeFunction::LoadFileForWebUI(
   return true;
 }
 
+void WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI(
+    const std::string& file,
+    bool success,
+    std::unique_ptr<std::string> data) {
+  std::vector<std::unique_ptr<std::string>> data_list;
+  absl::optional<std::string> error;
+  if (success) {
+    DCHECK(data);
+    data_list.push_back(std::move(data));
+  } else {
+    error = base::StringPrintf("Failed to load file '%s'.", file.c_str());
+  }
+
+  DidLoadAndLocalizeFile(file, std::move(data_list), std::move(error));
+}
+
 bool WebViewInternalExecuteCodeFunction::LoadFile(const std::string& file,
                                                   std::string* error) {
   if (!extension()) {
     if (LoadFileForWebUI(
             *details_->file,
             base::BindOnce(
-                &WebViewInternalExecuteCodeFunction::DidLoadAndLocalizeFile,
-                this, file)))
+                &WebViewInternalExecuteCodeFunction::DidLoadFileForWebUI, this,
+                file)))
       return true;
 
     *error = ErrorUtils::FormatErrorMessage(kLoadFileError, file);

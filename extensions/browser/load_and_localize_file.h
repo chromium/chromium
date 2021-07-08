@@ -7,29 +7,30 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 class Extension;
 class ExtensionResource;
 
-// Invoked with the result of the file read and localization. The bool
-// indicates success and failure. On success, |data| contains the
-// localized content of the file.
-// TODO(devlin): Update this to just pass |data| and have null indicate
-// failure once FileReader's callback signature is updated.
-using LoadAndLocalizeResourceCallback =
-    base::OnceCallback<void(bool success, std::unique_ptr<std::string> data)>;
+// Invoked with the result of the file read and localization.
+// `data` is a vector that contains the result of the localized content of the
+// files. `error` indicates the error, if any.
+using LoadAndLocalizeResourcesCallback =
+    base::OnceCallback<void(std::vector<std::unique_ptr<std::string>> data,
+                            absl::optional<std::string> error)>;
 
-// Loads |resource| from |extension|, optionally localizing the content, and
+// Loads |resources| from |extension|, optionally localizing the content, and
 // invokes |callback| with the result. Handles both component and non-component
-// extension resources. |resource| must be valid. Note: |callback| is always
+// extension resources. |resources| must be valid. Note: |callback| is always
 // invoked asynchronously.
-void LoadAndLocalizeResource(const Extension& extension,
-                             const ExtensionResource& resource,
-                             bool localize_file,
-                             LoadAndLocalizeResourceCallback callback);
+void LoadAndLocalizeResources(const Extension& extension,
+                              std::vector<ExtensionResource> resources,
+                              bool localize_files,
+                              LoadAndLocalizeResourcesCallback callback);
 
 }  // namespace extensions
 

@@ -30,7 +30,6 @@ const char kMoreThanOneValuesError[] =
     "at the same time in the second argument.";
 const char kBadFileEncodingError[] =
     "Could not load file '*' for content script. It isn't UTF-8 encoded.";
-const char kLoadFileError[] = "Failed to load file: \"*\". ";
 const char kCSSOriginForNonCSSError[] =
     "CSS origin should be specified only for CSS code.";
 
@@ -48,22 +47,24 @@ ExecuteCodeFunction::~ExecuteCodeFunction() {
 
 void ExecuteCodeFunction::DidLoadAndLocalizeFile(
     const std::string& file,
-    bool success,
-    std::unique_ptr<std::string> data) {
-  if (!success) {
+    std::vector<std::unique_ptr<std::string>> data,
+    absl::optional<std::string> load_error) {
+  if (load_error) {
     // TODO(viettrungluu): bug: there's no particular reason the path should be
     // UTF-8, in which case this may fail.
-    Respond(Error(ErrorUtils::FormatErrorMessage(kLoadFileError, file)));
+    Respond(Error(std::move(*load_error)));
     return;
   }
 
-  if (!base::IsStringUTF8(*data)) {
+  DCHECK_EQ(1u, data.size());
+  auto& file_data = data.front();
+  if (!base::IsStringUTF8(*file_data)) {
     Respond(Error(ErrorUtils::FormatErrorMessage(kBadFileEncodingError, file)));
     return;
   }
 
   std::string error;
-  if (!Execute(*data, &error))
+  if (!Execute(*file_data, &error))
     Respond(Error(std::move(error)));
 
   // If Execute() succeeds, the function will respond in
@@ -189,10 +190,11 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
 
   bool might_require_localization = ShouldInsertCSS() || ShouldRemoveCSS();
 
-  LoadAndLocalizeResource(
-      *extension(), resource, might_require_localization,
+  std::string relative_path = resource.relative_path().AsUTF8Unsafe();
+  LoadAndLocalizeResources(
+      *extension(), {std::move(resource)}, might_require_localization,
       base::BindOnce(&ExecuteCodeFunction::DidLoadAndLocalizeFile, this,
-                     resource.relative_path().AsUTF8Unsafe()));
+                     relative_path));
 
   return true;
 }
