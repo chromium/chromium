@@ -25,6 +25,10 @@ BASE_EXPORT bool IsRunningOnIOS13OrLater();
 // TODO(crbug.com/1129484): Remove once minimum supported version is at least 14
 BASE_EXPORT bool IsRunningOnIOS14OrLater();
 
+// Returns whether the operating system is iOS 15 or later.
+// TODO(crbug.com/1227419): Remove once minimum supported version is at least 15
+BASE_EXPORT bool IsRunningOnIOS15OrLater();
+
 // Returns whether the operating system is at the given version or later.
 BASE_EXPORT bool IsRunningOnOrLater(int32_t major,
                                     int32_t minor,
