@@ -1,0 +1,103 @@
+elf_arch=arm
+elf_build_id=WhatAnAmazingBuildId
+elf_file_name=elf
+elf_mtime={redacted}
+elf_relocations_count=394087
+git_revision=abc123
+gn_args=var1=true var2="foo"
+tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/
+Section .text: has 100.0% of 35982248 bytes accounted for from 11 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 83704 bytes (0.2%)
+* 3 have source paths. Accounts for 8472 bytes (0.0%).
+* 3 have a component assigned. Accounts for 8472 bytes (0.0%).
+* 1 placeholders exist (symbols that start with **). Accounts for 35897728 bytes (99.8%).
+* 5 aliases exist, mapped to 2 unique addresses (32 bytes saved)
+* 0 symbols have shared ownership.
+* 1 symbols are clones. Accounts for 8 bytes (0.0%).
+Large padding of 75512 between:
+  A) .text@28d900(size_without_padding=8,padding=0,full_name=startup._GLOBAL__sub_I_page_allocator.cc,object_path=,source_path=,flags={},num_aliases=1,component=)
+  B) .text@2a0000(size_without_padding=16,padding=75512,full_name=BazAlias(bool),object_path=,source_path=,flags={},num_aliases=2,component=)
+Large padding of 8168 between:
+  A) .text@2a0010(size_without_padding=8,padding=0,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={clone},num_aliases=3,component=Internal>Android)
+  B) .text@2a2000(size_without_padding=8,padding=8168,full_name=OUTLINED_FUNCTION_0,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
+Section .rodata: has 0.0% of 0 bytes accounted for from 0 symbols. 5927652 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 string literals exist. Accounts for 0 bytes (0.0%) padding is 0 bytes.
+* 0 symbols have shared ownership.
+Section .data.rel.ro: has 0.0% of 0 bytes accounted for from 0 symbols. 1065224 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .data: has 0.0% of 0 bytes accounted for from 0 symbols. 101768 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .bss: has 0.0% of 0 bytes accounted for from 0 symbols. 1300456 bytes are unaccounted for.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .dex: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .dex.method: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .pak.translations: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .pak.nontranslated: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .other: has 100.0% of 90351129 bytes accounted for from 23 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 33902635 bytes (37.5%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 22 placeholders exist (symbols that start with **). Accounts for 56448494 bytes (62.5%).
+* 0 symbols have shared ownership.
+.text@28d900(size_without_padding=8,padding=0,full_name=startup._GLOBAL__sub_I_page_allocator.cc,object_path=,source_path=,flags={},num_aliases=1,component=)
+.text@2a0000(size_without_padding=16,padding=75512,full_name=BazAlias(bool),object_path=,source_path=,flags={},num_aliases=2,component=)
+.text@2a0000(size_without_padding=16,padding=75512,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=,source_path=,flags={},num_aliases=2,component=)
+.text@2a0010(size_without_padding=8,padding=0,full_name=BarAlias(),object_path=,source_path=,flags={},num_aliases=3,component=)
+.text@2a0010(size_without_padding=8,padding=0,full_name=FooAlias(),object_path=,source_path=,flags={},num_aliases=3,component=)
+.text@2a0010(size_without_padding=8,padding=0,full_name=blink::ContiguousContainerBase::shrinkToFit(),object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={clone},num_aliases=3,component=Internal>Android)
+.text@2a2000(size_without_padding=8,padding=8168,full_name=OUTLINED_FUNCTION_0,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
+.text@2a2020(size_without_padding=264,padding=24,full_name=OUTLINED_FUNCTION_1,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
+.text@2a2128(size_without_padding=248,padding=0,full_name=AssemblySymbol,object_path=,source_path=,flags={},num_aliases=1,component=)
+.text@2a2220(size_without_padding=264,padding=0,full_name=aliasedWithOutlinedFunction(),object_path=,source_path=,flags={},num_aliases=1,component=)
+.text@2a2328(size_without_padding=35897728,padding=0,full_name=** .text (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=60,padding=0,full_name=** ELF Section: .ARM.attributes,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=1536456,padding=0,full_name=** ELF Section: .ARM.exidx,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=183632,padding=0,full_name=** ELF Section: .ARM.extab,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=304,padding=0,full_name=** ELF Section: .dynamic,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=4025,padding=0,full_name=** ELF Section: .dynstr,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=6496,padding=0,full_name=** ELF Section: .dynsym,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=8,padding=0,full_name=** ELF Section: .fini_array,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=812,padding=0,full_name=** ELF Section: .gnu.version,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=28,padding=0,full_name=** ELF Section: .gnu.version_d,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=96,padding=0,full_name=** ELF Section: .gnu.version_r,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=42956,padding=0,full_name=** ELF Section: .got,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=2684,padding=0,full_name=** ELF Section: .hash,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=8,padding=0,full_name=** ELF Section: .init_array,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=19,padding=0,full_name=** ELF Section: .interp,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=36,padding=0,full_name=** ELF Section: .note.gnu.build-id,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=28,padding=0,full_name=** ELF Section: .note.gnu.gold-version,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=4244,padding=0,full_name=** ELF Section: .plt,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=2655384,padding=0,full_name=** ELF Section: .rel.dyn,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=2816,padding=0,full_name=** ELF Section: .rel.plt,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=436,padding=0,full_name=** ELF Section: .shstrtab,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=34841854,padding=0,full_name=** ELF Section: .strtab,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=17166112,padding=0,full_name=** ELF Section: .symtab,object_path=,source_path=,flags={},num_aliases=1,component=)
+.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=,flags={},num_aliases=1,component=)

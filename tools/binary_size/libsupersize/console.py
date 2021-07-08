@@ -25,6 +25,7 @@ import html_report
 import match_util
 import models
 import path_util
+import readelf
 import string_extract
 
 
@@ -283,7 +284,7 @@ class _Session(object):
 
   def _ElfPathForSymbol(self, size_info, container, tool_prefix, elf_path):
     def build_id_matches(elf_path):
-      found_build_id = archive.BuildIdFromElf(elf_path, tool_prefix)
+      found_build_id = readelf.BuildIdFromElf(elf_path, tool_prefix)
       expected_build_id = container.metadata.get(models.METADATA_ELF_BUILD_ID)
       return found_build_id == expected_build_id
 

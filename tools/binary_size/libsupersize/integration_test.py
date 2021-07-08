@@ -197,11 +197,12 @@ class IntegrationTest(unittest.TestCase):
                      use_apk=False,
                      use_minimal_apks=False,
                      use_pak=False,
-                     use_aux_elf=False):
+                     use_aux_elf=False,
+                     ignore_linker_map=False):
     assert not use_elf or use_output_directory
     assert not (use_apk and use_pak)
     cache_key = (use_output_directory, use_elf, use_apk, use_minimal_apks,
-                 use_pak, use_aux_elf)
+                 use_pak, use_aux_elf, ignore_linker_map)
     if cache_key not in IntegrationTest.cached_size_info:
       knobs = archive.SectionSizeKnobs()
       # Override for testing. Lower the bar for compacting symbols, to allow
@@ -209,8 +210,14 @@ class IntegrationTest(unittest.TestCase):
       knobs.max_same_name_alias_count = 3
 
       args = self._CreateTestArgs()
+      if ignore_linker_map:
+        args.ignore_linker_map = ignore_linker_map
+        # TODO(crbug.com/1193507): Remove when we implement string literal
+        #     tracking without map files.
+        args.track_string_literals = False
+      else:
+        args.map_file = _TEST_MAP_PATH
       args.elf_file = _TEST_ELF_PATH if use_elf or use_aux_elf else None
-      args.map_file = _TEST_MAP_PATH
       args.output_directory = _TEST_OUTPUT_DIR if use_output_directory else None
       args.source_directory = _TEST_SOURCE_DIR
       args.tool_prefix = _TEST_TOOL_PREFIX
@@ -238,7 +245,7 @@ class IntegrationTest(unittest.TestCase):
       if use_pak:
         pak_files = [_TEST_APK_LOCALE_PAK_PATH, _TEST_APK_PAK_PATH]
         pak_info_file = _TEST_PAK_INFO_PATH
-      linker_name = 'gold'
+      linker_name = None if ignore_linker_map else 'gold'
 
       # For simplicity, using |args| for both params. This is okay since
       # |args.ssargs_file| is unassigned.
@@ -314,16 +321,20 @@ class IntegrationTest(unittest.TestCase):
                  use_minimal_apks=False,
                  use_pak=False,
                  use_aux_elf=None,
+                 ignore_linker_map=False,
                  debug_measures=False,
                  include_padding=False):
     args = [
         archive_path,
         '--source-directory',
         _TEST_SOURCE_DIR,
-        #  --map-file ignored for use_ssargs.
-        '--map-file',
-        _TEST_MAP_PATH,
     ]
+    if ignore_linker_map:
+      args += ['--no-map-file']
+      args += ['--tool-prefix', _TEST_TOOL_PREFIX]
+    elif not use_ssargs:
+      # --map-file ignored for use_ssargs.
+      args += ['--map-file', _TEST_MAP_PATH]
 
     if use_output_directory:
       # Let autodetection find output_directory when --elf-file is used.
@@ -356,6 +367,7 @@ class IntegrationTest(unittest.TestCase):
                      use_minimal_apks=False,
                      use_pak=False,
                      use_aux_elf=False,
+                     ignore_linker_map=False,
                      debug_measures=False,
                      include_padding=False):
     with tempfile.NamedTemporaryFile(suffix='.size') as temp_file:
@@ -366,6 +378,7 @@ class IntegrationTest(unittest.TestCase):
                       use_minimal_apks=use_minimal_apks,
                       use_pak=use_pak,
                       use_aux_elf=use_aux_elf,
+                      ignore_linker_map=ignore_linker_map,
                       debug_measures=debug_measures,
                       include_padding=include_padding)
       size_info = archive.LoadAndPostProcessSizeInfo(temp_file.name)
@@ -376,7 +389,8 @@ class IntegrationTest(unittest.TestCase):
         use_apk=use_apk,
         use_minimal_apks=use_minimal_apks,
         use_pak=use_pak,
-        use_aux_elf=use_aux_elf)
+        use_aux_elf=use_aux_elf,
+        ignore_linker_map=ignore_linker_map)
     self.assertEqual(_AllMetadata(expected_size_info), _AllMetadata(size_info))
     # Don't cluster.
     expected_size_info.symbols = expected_size_info.raw_symbols
@@ -407,6 +421,10 @@ class IntegrationTest(unittest.TestCase):
   @_CompareWithGolden()
   def test_Archive_Elf(self):
     return self._DoArchiveTest(use_elf=True)
+
+  @_CompareWithGolden()
+  def test_Archive_Elf_No_Map(self):
+    return self._DoArchiveTest(use_elf=True, ignore_linker_map=True)
 
   @_CompareWithGolden()
   def test_Archive_Apk(self):
