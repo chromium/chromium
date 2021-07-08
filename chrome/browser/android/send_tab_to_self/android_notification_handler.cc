@@ -21,6 +21,7 @@
 #include "components/messages/android/message_wrapper.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -70,7 +71,8 @@ void AndroidNotificationHandler::DisplayNewEntries(
       message_->SetTitle(l10n_util::GetStringFUTF16(
           IDS_SEND_TAB_TO_SELF_MESSAGE,
           base::UTF8ToUTF16(entry->GetDeviceName())));
-      message_->SetDescription(base::UTF8ToUTF16(entry->GetURL().spec()));
+      message_->SetDescription(
+          url_formatter::FormatUrlForSecurityDisplay(entry->GetURL()));
       message_->SetDescriptionMaxLines(1);
       message_->SetPrimaryButtonText(
           l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MESSAGE_OPEN));
