@@ -30,7 +30,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   const GURL& GetScriptURL() override;
   Service* GetService() override;
   WebController* GetWebController() override;
-  ElementStore* GetElementStore() const override;
   TriggerContext* GetTriggerContext() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   WebsiteLoginManager* GetWebsiteLoginManager() override;
@@ -119,10 +118,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
     web_controller_ = web_controller;
   }
 
-  void SetElementStore(ElementStore* element_store) {
-    element_store_ = element_store;
-  }
-
   void SetTriggerContext(std::unique_ptr<TriggerContext> trigger_context) {
     trigger_context_ = std::move(trigger_context);
   }
@@ -169,7 +164,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   GURL current_url_;
   Service* service_ = nullptr;
   WebController* web_controller_ = nullptr;
-  ElementStore* element_store_ = nullptr;
   std::unique_ptr<TriggerContext> trigger_context_;
   std::vector<AutofillAssistantState> state_history_;
   std::string status_message_;

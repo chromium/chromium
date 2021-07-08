@@ -37,10 +37,6 @@ WebController* FakeScriptExecutorDelegate::GetWebController() {
   return web_controller_;
 }
 
-ElementStore* FakeScriptExecutorDelegate::GetElementStore() const {
-  return element_store_;
-}
-
 TriggerContext* FakeScriptExecutorDelegate::GetTriggerContext() {
   return trigger_context_.get();
 }

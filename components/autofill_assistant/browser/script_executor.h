@@ -28,6 +28,7 @@
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 
 namespace autofill_assistant {
 class ElementStore;
@@ -483,6 +484,7 @@ class ScriptExecutor : public ActionDelegate,
   // being called.
   const std::vector<std::unique_ptr<Script>>* const ordered_interrupts_;
   std::map<std::string, ScriptStatus>* const scripts_state_;
+  std::unique_ptr<ElementStore> element_store_;
   RunScriptCallback callback_;
   std::vector<std::unique_ptr<Action>> actions_;
   std::vector<ProcessedActionProto> processed_actions_;

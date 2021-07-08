@@ -81,7 +81,9 @@ ScriptExecutor::ScriptExecutor(
       listener_(listener),
       delegate_(delegate),
       ordered_interrupts_(ordered_interrupts),
-      scripts_state_(scripts_state) {
+      scripts_state_(scripts_state),
+      element_store_(
+          std::make_unique<ElementStore>(delegate->GetWebContents())) {
   DCHECK(delegate_);
   DCHECK(ordered_interrupts_);
 }
@@ -649,7 +651,7 @@ content::WebContents* ScriptExecutor::GetWebContents() const {
 }
 
 ElementStore* ScriptExecutor::GetElementStore() const {
-  return delegate_->GetElementStore();
+  return element_store_.get();
 }
 
 WebController* ScriptExecutor::GetWebController() const {
