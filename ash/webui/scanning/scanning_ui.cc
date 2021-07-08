@@ -48,6 +48,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 void AddScanningAppStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"a4OptionText", IDS_SCANNING_APP_A4_OPTION_TEXT},
+      {"actionToolbarPageCountText",
+       IDS_SCANNING_APP_ACTION_TOOLBAR_PAGE_COUNT_TEXT},
       {"appTitle", IDS_SCANNING_APP_TITLE},
       {"blackAndWhiteOptionText", IDS_SCANNING_APP_BLACK_AND_WHITE_OPTION_TEXT},
       {"cancelButtonText", IDS_SCANNING_APP_CANCEL_BUTTON_TEXT},

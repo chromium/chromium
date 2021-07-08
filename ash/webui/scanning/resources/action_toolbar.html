@@ -26,6 +26,14 @@
     --cr-icon-button-fill-color: var(--google-grey-200);
   }
 
+  #pageNumbers {
+    color: var(--scanning-action-toolbar-text-color);
+    font-family: var(--scanning-action-toolbar-font-family);
+    font-size: var(--scanning-action-toolbar-font-size);
+    font-weight: var(--scanning-medium-font-weight);
+    line-height: var(--scanning-action-toolbar-line-height);
+  }
+
   #removePageIcon {
     --cr-icon-button-margin-end: 16px;
     --cr-icon-image: url(svg/remove_page.svg);
@@ -36,6 +44,7 @@
   }
 </style>
 <div id="actionToolbar">
+  <div id="pageNumbers">[[pageNumberText_]]</div>
   <div class="separator"></div>
   <div>
     <cr-icon-button id="removePageIcon"></cr-icon-button>

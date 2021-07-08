@@ -690,6 +690,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_MULTI_PAGE_SCAN_INSTRUCTIONS_TEXT" desc="The text instructions for a multi-page scan job to tell the user to scan another page from their scanner.">
         Place another page on the scanner and select Scan to add page.
       </message>
+      <message name="IDS_SCANNING_APP_ACTION_TOOLBAR_PAGE_COUNT_TEXT" desc="The text in the action toolbar that shows the current page number and the total number of pages scanned.">
+        <ph name="CURRENT_PAGE">$1<ex>2</ex></ph> of <ph name="TOTAL_PAGES">$2<ex>4</ex></ph>
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

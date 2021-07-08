@@ -10,6 +10,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-l
 import 'chrome://scanning/file_path.mojom-lite.js';
 import 'chrome://scanning/scanning.mojom-lite.js';
 
+import {actionToolbarTest} from './action_toolbar_test.js';
 import {colorModeSelectTest} from './color_mode_select_test.js';
 import {fileTypeSelectTest} from './file_type_select_test.js';
 import {loadingPageTest} from './loading_page_test.js';
@@ -31,6 +32,7 @@ function runSuite(suiteName, testFn) {
   suite(suiteName, testFn);
 }
 
+runSuite('ActionToolbar', actionToolbarTest);
 runSuite('ColorModeSelect', colorModeSelectTest);
 runSuite('FileTypeSelect', fileTypeSelectTest);
 runSuite('LoadingPage', loadingPageTest);

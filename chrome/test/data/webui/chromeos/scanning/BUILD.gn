@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
+    ":action_toolbar_test",
     ":color_mode_select_test",
     ":file_type_select_test",
     ":loading_page_test",
@@ -29,6 +30,14 @@ js_type_check("closure_compile") {
     ":source_select_test",
     ":test_scanning_browser_proxy",
   ]
+}
+
+js_library("action_toolbar_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/scanning/resources:action_toolbar",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("color_mode_select_test") {
