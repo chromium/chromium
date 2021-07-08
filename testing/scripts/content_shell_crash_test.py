@@ -86,10 +86,8 @@ def main(argv):
       failures = json.load(f)
 
   with open(args.isolated_script_test_output, 'w') as fp:
-    json.dump({
-        'valid': True,
-        'failures': failures,
-    }, fp)
+    common.record_local_script_results(
+        'content_shell_crash_test', fp, failures, True)
 
   return rc
 
