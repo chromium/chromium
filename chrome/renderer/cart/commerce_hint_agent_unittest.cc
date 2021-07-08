@@ -927,7 +927,8 @@ float BenchmarkShouldSkipAddToCart(const GURL& url) {
     BUILDFLAG(CFI_ENFORCEMENT_TRAP)
 #define MAYBE_RegexBenchmark DISABLED_RegexBenchmark
 #else
-#define MAYBE_RegexBenchmark RegexBenchmark
+// TODO(https://crbug.com/1223680): Test is flaky everywhere
+#define MAYBE_RegexBenchmark DISABLED_RegexBenchmark
 #endif
 
 TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
