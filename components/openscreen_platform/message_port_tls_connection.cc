@@ -32,10 +32,6 @@ bool MessagePortTlsConnection::Send(const void* data, size_t len) {
       base::StringPiece(static_cast<const char*>(data), len));
 }
 
-openscreen::IPEndpoint MessagePortTlsConnection::GetLocalEndpoint() const {
-  return openscreen::IPEndpoint{openscreen::IPAddress::kV4LoopbackAddress()};
-}
-
 openscreen::IPEndpoint MessagePortTlsConnection::GetRemoteEndpoint() const {
   return openscreen::IPEndpoint{openscreen::IPAddress::kV6LoopbackAddress()};
 }

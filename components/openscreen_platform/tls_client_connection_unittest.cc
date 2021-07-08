@@ -268,7 +268,6 @@ TEST_F(TlsClientConnectionTest,
 }
 
 TEST_F(TlsClientConnectionTest, CanRetrieveAddresses) {
-  EXPECT_EQ(kValidEndpointOne, connection()->GetLocalEndpoint());
   EXPECT_EQ(kValidEndpointTwo, connection()->GetRemoteEndpoint());
 }
 

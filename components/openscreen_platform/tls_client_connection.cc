@@ -72,10 +72,6 @@ bool TlsClientConnection::Send(const void* data, size_t len) {
          Error::Code::kNone;
 }
 
-openscreen::IPEndpoint TlsClientConnection::GetLocalEndpoint() const {
-  return local_address_;
-}
-
 openscreen::IPEndpoint TlsClientConnection::GetRemoteEndpoint() const {
   return remote_address_;
 }
