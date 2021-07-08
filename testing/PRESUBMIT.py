@@ -18,7 +18,8 @@ def CommonChecks(input_api, output_api):
   gpu_path = input_api.os_path.join(
       input_api.PresubmitLocalPath(), '..', 'content', 'test', 'gpu')
   testing_env.update({
-      'PYTHONPATH': '%s:%s' % (input_api.PresubmitLocalPath(), gpu_path),
+      'PYTHONPATH': input_api.os_path.pathsep.join(
+          [input_api.PresubmitLocalPath(), gpu_path]),
       'PYTHONDONTWRITEBYTECODE': '1',
   })
 
