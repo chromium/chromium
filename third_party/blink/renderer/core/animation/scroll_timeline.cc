@@ -426,8 +426,8 @@ AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
     // if iteration_duration == "auto" and iterations > 0
     if (!timing.iteration_duration && timing.iteration_count > 0) {
       // duration represents 100% so we divide it by iteration count to
-      // calculate the iteration duration. Once delays can be percentages
-      // we will include them in the calculation:
+      // calculate the iteration duration. TODO: (crbug.com/1216527) Once
+      // delays can be percentages we will include them in the calculation:
       // ((100% - start_delay% - end_delay%) / iterations) * duration
       return duration.value() / timing.iteration_count;
     }

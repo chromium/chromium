@@ -15,7 +15,8 @@ class MODULES_EXPORT WorkletAnimationEffectTimings final
     : public cc::AnimationEffectTimings {
  public:
   explicit WorkletAnimationEffectTimings(
-      scoped_refptr<base::RefCountedData<Vector<Timing>>>);
+      scoped_refptr<base::RefCountedData<Vector<Timing>>>,
+      scoped_refptr<base::RefCountedData<Vector<Timing::NormalizedTiming>>>);
 
   std::unique_ptr<cc::AnimationEffectTimings> Clone() const override;
 
@@ -24,9 +25,15 @@ class MODULES_EXPORT WorkletAnimationEffectTimings final
   const scoped_refptr<base::RefCountedData<Vector<Timing>>>& GetTimings() {
     return timings_;
   }
+  const scoped_refptr<base::RefCountedData<Vector<Timing::NormalizedTiming>>>&
+  GetNormalizedTimings() {
+    return normalized_timings_;
+  }
 
  private:
   scoped_refptr<base::RefCountedData<Vector<Timing>>> timings_;
+  scoped_refptr<base::RefCountedData<Vector<Timing::NormalizedTiming>>>
+      normalized_timings_;
 };
 
 }  // namespace blink

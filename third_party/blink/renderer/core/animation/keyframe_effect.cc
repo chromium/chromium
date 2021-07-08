@@ -571,12 +571,12 @@ void KeyframeEffect::ApplyEffects() {
   if (sampled_effect_) {
     changed =
         model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
-                       SpecifiedTiming().IterationDuration(),
+                       NormalizedTiming().iteration_duration,
                        sampled_effect_->MutableInterpolations());
   } else {
     HeapVector<Member<Interpolation>> interpolations;
     model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
-                   SpecifiedTiming().IterationDuration(), interpolations);
+                   NormalizedTiming().iteration_duration, interpolations);
     if (!interpolations.IsEmpty()) {
       auto* sampled_effect =
           MakeGarbageCollected<SampledEffect>(this, owner_->SequenceNumber());
@@ -658,11 +658,14 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
     bool forwards,
     absl::optional<AnimationTimeDelta> local_time,
     AnimationTimeDelta time_to_next_iteration) const {
-  const AnimationTimeDelta start_time = SpecifiedTiming().start_delay;
+  const AnimationTimeDelta start_time = NormalizedTiming().start_delay;
+
   const AnimationTimeDelta end_time_minus_end_delay =
-      start_time + SpecifiedTiming().ActiveDuration();
+      start_time + NormalizedTiming().active_duration;
+
   const AnimationTimeDelta end_time =
-      end_time_minus_end_delay + SpecifiedTiming().end_delay;
+      end_time_minus_end_delay + NormalizedTiming().end_delay;
+
   const AnimationTimeDelta after_time =
       std::min(end_time_minus_end_delay, end_time);
 

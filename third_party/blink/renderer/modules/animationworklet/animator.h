@@ -31,7 +31,8 @@ class Animator final : public GarbageCollected<Animator>, public NameClient {
            const String& name,
            WorkletAnimationOptions options,
            const Vector<absl::optional<base::TimeDelta>>& local_times,
-           const Vector<Timing>& timings);
+           const Vector<Timing>& timings,
+           const Vector<Timing::NormalizedTiming>& normalized_timings);
   ~Animator() final;
   void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "Animator"; }
@@ -57,6 +58,7 @@ class Animator final : public GarbageCollected<Animator>, public NameClient {
   }
 
   Vector<Timing> GetTimings() const;
+  Vector<Timing::NormalizedTiming> GetNormalizedTimings() const;
   bool IsStateful() const;
 
   const String& name() const { return name_; }

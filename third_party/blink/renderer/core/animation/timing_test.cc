@@ -18,8 +18,8 @@ class AnimationTimingTest : public testing::Test {
         playback_rate < 0 ? Timing::AnimationDirection::kBackwards
                           : Timing::AnimationDirection::kForwards;
     return timing_.CalculateTimings(
-        local_time, /*timeline_phase*/ absl::nullopt, animation_direction,
-        is_keyframe_effect, playback_rate);
+        local_time, /*timeline_phase*/ absl::nullopt, normalized_timing_,
+        animation_direction, is_keyframe_effect, playback_rate);
   }
   bool IsCurrent(absl::optional<double> local_time, double playback_rate) {
     absl::optional<AnimationTimeDelta> local_time_delta;
@@ -32,9 +32,14 @@ class AnimationTimingTest : public testing::Test {
 
  private:
   void SetUp() override {
-    timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
+    normalized_timing_.start_delay = AnimationTimeDelta();
+    normalized_timing_.end_delay = AnimationTimeDelta();
+    normalized_timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
+    normalized_timing_.active_duration = AnimationTimeDelta::FromSecondsD(1);
+    normalized_timing_.end_time = AnimationTimeDelta::FromSecondsD(1);
   }
   Timing timing_;
+  Timing::NormalizedTiming normalized_timing_;
 };
 
 TEST_F(AnimationTimingTest, IsCurrent) {

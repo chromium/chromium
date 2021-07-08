@@ -102,13 +102,6 @@ struct CORE_EXPORT Timing {
     DCHECK(timing_function);
   }
 
-  // https://drafts.csswg.org/web-animations-1/#iteration-duration
-  AnimationTimeDelta IterationDuration() const;
-
-  // https://drafts.csswg.org/web-animations-1/#active-duration
-  AnimationTimeDelta ActiveDuration() const;
-  AnimationTimeDelta EndTimeInternal() const;
-
   Timing::FillMode ResolvedFillMode(bool is_animation) const;
   EffectTiming* ConvertToEffectTiming() const;
 
@@ -134,7 +127,8 @@ struct CORE_EXPORT Timing {
   }
   bool HasTimingOverrides() { return timing_overrides != kOverrideNode; }
 
-  V8CSSNumberish* ToComputedValue(absl::optional<AnimationTimeDelta>) const;
+  V8CSSNumberish* ToComputedValue(absl::optional<AnimationTimeDelta>,
+                                  absl::optional<AnimationTimeDelta>) const;
 
   // TODO(crbug.com/1216527): Support CSSNumberish delays
   AnimationTimeDelta start_delay;
@@ -144,10 +138,6 @@ struct CORE_EXPORT Timing {
   double iteration_count = 1;
   // If empty, indicates the 'auto' value.
   absl::optional<AnimationTimeDelta> iteration_duration = absl::nullopt;
-
-  // A valid timeline_duration indicates use of a progress based timeline.
-  absl::optional<AnimationTimeDelta> timeline_duration;
-  AnimationTimeDelta intrinsic_iteration_duration;
 
   PlaybackDirection direction = PlaybackDirection::NORMAL;
   scoped_refptr<TimingFunction> timing_function =
@@ -173,13 +163,31 @@ struct CORE_EXPORT Timing {
     AnimationTimeDelta time_to_next_iteration = AnimationTimeDelta::Max();
   };
 
+  // Normalized values contain specified timing values after normalizing to
+  // timeline.
+  struct NormalizedTiming {
+    DISALLOW_NEW();
+    // Value used in normalization math. Stored so that we can convert back if
+    // needed.
+    absl::optional<AnimationTimeDelta> timeline_duration;
+    AnimationTimeDelta start_delay;
+    AnimationTimeDelta end_delay;
+    AnimationTimeDelta iteration_duration;
+    // Calculated as (iteration_duration * iteration_count)
+    AnimationTimeDelta active_duration;
+    // Calculated as (start_delay + active_duration + end_delay)
+    AnimationTimeDelta end_time;
+  };
+
   CalculatedTiming CalculateTimings(
       absl::optional<AnimationTimeDelta> local_time,
       absl::optional<Phase> timeline_phase,
+      const NormalizedTiming& normalized_timing,
       AnimationDirection animation_direction,
       bool is_keyframe_effect,
       absl::optional<double> playback_rate) const;
   ComputedEffectTiming* getComputedTiming(const CalculatedTiming& calculated,
+                                          const NormalizedTiming& normalized,
                                           bool is_keyframe_effect) const;
 };
 

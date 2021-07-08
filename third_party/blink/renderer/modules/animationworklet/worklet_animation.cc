@@ -299,14 +299,20 @@ WorkletAnimation::WorkletAnimation(
   auto timings = base::MakeRefCounted<base::RefCountedData<Vector<Timing>>>();
   timings->data.ReserveInitialCapacity(effects_.size());
 
+  auto normalized_timings = base::MakeRefCounted<
+      base::RefCountedData<Vector<Timing::NormalizedTiming>>>();
+  normalized_timings->data.ReserveInitialCapacity(effects_.size());
+
   DCHECK_GE(effects_.size(), 1u);
   for (auto& effect : effects_) {
     AnimationEffect* target_effect = effect;
     target_effect->Attach(this);
     local_times_.push_back(absl::nullopt);
     timings->data.push_back(target_effect->SpecifiedTiming());
+    normalized_timings->data.push_back(target_effect->NormalizedTiming());
   }
-  effect_timings_ = std::make_unique<WorkletAnimationEffectTimings>(timings);
+  effect_timings_ = std::make_unique<WorkletAnimationEffectTimings>(
+      timings, normalized_timings);
 
   if (timeline_->IsScrollTimeline())
     To<ScrollTimeline>(*timeline_).WorkletAnimationAttached();

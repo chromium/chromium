@@ -50,6 +50,92 @@ AnimationEffect::AnimationEffect(const Timing& timing,
       needs_update_(true),
       cancel_time_(AnimationTimeDelta()) {
   timing_.AssertValid();
+  InvalidateNormalizedTiming();
+}
+
+// Scales all timing values so that end_time == timeline_duration
+void AnimationEffect::EnsureNormalizedTiming() const {
+  // Only run the normalization process if needed
+  if (normalized_)
+    return;
+
+  normalized_ = Timing::NormalizedTiming();
+  if (GetAnimation() && GetAnimation()->timeline() &&
+      GetAnimation()->timeline()->IsProgressBasedTimeline()) {
+    // Normalize timings for progress based timelines
+    normalized_->timeline_duration = GetAnimation()->timeline()->GetDuration();
+    DCHECK(normalized_->timeline_duration);
+
+    if (timing_.iteration_duration) {
+      // Scaling up iteration_duration allows animation effect to be able to
+      // handle values produced by progress based timelines. At this point it
+      // can be assumed that EndTimeInternal() will give us a good value.
+
+      const AnimationTimeDelta active_duration = MultiplyZeroAlwaysGivesZero(
+          timing_.iteration_duration.value(), timing_.iteration_count);
+      DCHECK_GE(active_duration, AnimationTimeDelta());
+
+      // Per the spec, the end time has a lower bound of 0.0:
+      // https://drafts.csswg.org/web-animations-1/#end-time
+      const AnimationTimeDelta end_time =
+          std::max(timing_.start_delay + active_duration + timing_.end_delay,
+                   AnimationTimeDelta());
+
+      // Exceptions should have already been thrown when trying to input values
+      // that would result in an infinite end_time for progress based timelines.
+      DCHECK(!end_time.is_inf());
+
+      // Negative start_delay that is >= iteration_duration or iteration_count
+      // of 0 will cause end_time to be 0 or negative.
+      if (end_time.is_zero()) {
+        // end_time of zero causes division by zero so we handle it here
+        normalized_->start_delay = AnimationTimeDelta();
+        normalized_->end_delay = AnimationTimeDelta();
+        normalized_->iteration_duration = AnimationTimeDelta();
+      } else {
+        // convert to percentages then multiply by the timeline_duration
+        normalized_->start_delay = (timing_.start_delay / end_time) *
+                                   normalized_->timeline_duration.value();
+
+        normalized_->end_delay = (timing_.end_delay / end_time) *
+                                 normalized_->timeline_duration.value();
+
+        normalized_->iteration_duration =
+            (timing_.iteration_duration.value() / end_time) *
+            normalized_->timeline_duration.value();
+      }
+    } else {
+      // Handle iteration_duration value of "auto"
+
+      // TODO(crbug.com/1216527)
+      // this will change to support percentage delays and possibly mixed
+      // delays.
+      DCHECK(normalized_->start_delay.is_zero() &&
+             normalized_->end_delay.is_zero());
+
+      normalized_->iteration_duration =
+          GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
+              timing_);
+      // TODO: add support for progress based timelines and "auto" duration
+      // effects
+    }
+  } else {
+    // Populates normalized values for use with time based timelines.
+    normalized_->start_delay = timing_.start_delay;
+    normalized_->end_delay = timing_.end_delay;
+    normalized_->iteration_duration =
+        timing_.iteration_duration.value_or(AnimationTimeDelta());
+  }
+
+  normalized_->active_duration = MultiplyZeroAlwaysGivesZero(
+      normalized_->iteration_duration, timing_.iteration_count);
+
+  // Per the spec, the end time has a lower bound of 0.0:
+  // https://drafts.csswg.org/web-animations-1/#end-time
+  normalized_->end_time =
+      std::max(normalized_->start_delay + normalized_->active_duration +
+                   normalized_->end_delay,
+               AnimationTimeDelta());
 }
 
 void AnimationEffect::UpdateSpecifiedTiming(const Timing& timing) {
@@ -83,25 +169,8 @@ void AnimationEffect::UpdateSpecifiedTiming(const Timing& timing) {
       timing_.timing_function = timing.timing_function;
   }
 
-  // Changing timings can impact the intrinsic iteration duration.
-  if (GetAnimation() && GetAnimation()->timeline()) {
-    timing_.intrinsic_iteration_duration =
-        GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
-            timing_);
-  }
+  InvalidateNormalizedTiming();
   InvalidateAndNotifyOwner();
-}
-
-void AnimationEffect::SetTimingTimelineDuration(
-    absl::optional<AnimationTimeDelta> timeline_duration) {
-  timing_.timeline_duration = timeline_duration;
-  if (timeline_duration) {
-    timing_.intrinsic_iteration_duration =
-        GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
-            timing_);
-  } else {
-    timing_.intrinsic_iteration_duration = AnimationTimeDelta();
-  }
 }
 
 void AnimationEffect::SetIgnoreCssTimingProperties() {
@@ -115,8 +184,8 @@ EffectTiming* AnimationEffect::getTiming() const {
 }
 
 ComputedEffectTiming* AnimationEffect::getComputedTiming() const {
-  return SpecifiedTiming().getComputedTiming(EnsureCalculated(),
-                                             IsA<KeyframeEffect>(this));
+  return SpecifiedTiming().getComputedTiming(
+      EnsureCalculated(), NormalizedTiming(), IsA<KeyframeEffect>(this));
 }
 
 void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
@@ -169,12 +238,7 @@ void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
   if (!TimingInput::Update(timing_, optional_timing, nullptr, exception_state))
     return;
 
-  // Changing timings can impact the intrinsic iteration duration.
-  if (GetAnimation() && GetAnimation()->timeline()) {
-    timing_.intrinsic_iteration_duration =
-        GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
-            timing_);
-  }
+  InvalidateNormalizedTiming();
   InvalidateAndNotifyOwner();
 }
 
@@ -215,18 +279,6 @@ void AnimationEffect::UpdateInheritedTime(
   absl::optional<Timing::Phase> timeline_phase =
       TimelinePhaseToTimingPhase(inherited_timeline_phase);
 
-  // TODO (crbug.com/1222387): Once normalized timing values have been added,
-  // we will no longer need to convert inherited_time to be effect time relative
-  // since all effect times will be timeline relative based on the normalized
-  // timing values.
-  if (inherited_time && GetAnimation() && GetAnimation()->timeline() &&
-      GetAnimation()->timeline()->IsProgressBasedTimeline()) {
-    // map inherited time [0,timeline_duration] to effect end time [0,end_time]
-    inherited_time = (inherited_time.value() /
-                      GetAnimation()->timeline()->GetDuration().value()) *
-                     SpecifiedTiming().EndTimeInternal();
-  }
-
   bool needs_update = needs_update_ || last_update_time_ != inherited_time ||
                       (owner_ && owner_->EffectSuppressed()) ||
                       last_update_phase_ != timeline_phase;
@@ -236,8 +288,8 @@ void AnimationEffect::UpdateInheritedTime(
 
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
-        inherited_time, timeline_phase, direction, IsA<KeyframeEffect>(this),
-        playback_rate);
+        inherited_time, timeline_phase, NormalizedTiming(), direction,
+        IsA<KeyframeEffect>(this), playback_rate);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;

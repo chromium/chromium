@@ -405,9 +405,9 @@ AnimationTimeDelta StartTimeFromDelay(AnimationTimeDelta start_delay) {
 // Timing functions for computing elapsed time of an event.
 
 AnimationTimeDelta IntervalStart(const AnimationEffect& effect) {
-  AnimationTimeDelta start_delay = effect.SpecifiedTiming().start_delay;
+  AnimationTimeDelta start_delay = effect.NormalizedTiming().start_delay;
   const AnimationTimeDelta active_duration =
-      effect.SpecifiedTiming().ActiveDuration();
+      effect.NormalizedTiming().active_duration;
   // This fixes a problem where start_delay could be -0
   if (!start_delay.is_zero()) {
     start_delay = -start_delay;
@@ -416,10 +416,10 @@ AnimationTimeDelta IntervalStart(const AnimationEffect& effect) {
 }
 
 AnimationTimeDelta IntervalEnd(const AnimationEffect& effect) {
-  const AnimationTimeDelta start_delay = effect.SpecifiedTiming().start_delay;
-  const AnimationTimeDelta end_delay = effect.SpecifiedTiming().end_delay;
+  const AnimationTimeDelta start_delay = effect.NormalizedTiming().start_delay;
+  const AnimationTimeDelta end_delay = effect.NormalizedTiming().end_delay;
   const AnimationTimeDelta active_duration =
-      effect.SpecifiedTiming().ActiveDuration();
+      effect.NormalizedTiming().active_duration;
   const AnimationTimeDelta target_effect_end =
       std::max(start_delay + active_duration + end_delay, AnimationTimeDelta());
   return std::max(std::min(target_effect_end - start_delay, active_duration),
@@ -434,7 +434,7 @@ AnimationTimeDelta IterationElapsedTime(const AnimationEffect& effect,
                                         : current_iteration;
   const double iteration_start = effect.SpecifiedTiming().iteration_start;
   const AnimationTimeDelta iteration_duration =
-      effect.SpecifiedTiming().IterationDuration();
+      effect.NormalizedTiming().iteration_duration;
   return iteration_duration * (iteration_boundary - iteration_start);
 }
 
@@ -1622,7 +1622,7 @@ void CSSAnimations::TransitionEventDelegate::OnEventCondition(
     if (previous_phase_ == Timing::kPhaseNone) {
       EnqueueEvent(
           event_type_names::kTransitionrun,
-          StartTimeFromDelay(animation_node.SpecifiedTiming().start_delay));
+          StartTimeFromDelay(animation_node.NormalizedTiming().start_delay));
     }
   }
 
@@ -1633,14 +1633,14 @@ void CSSAnimations::TransitionEventDelegate::OnEventCondition(
          previous_phase_ == Timing::kPhaseBefore)) {
       EnqueueEvent(
           event_type_names::kTransitionstart,
-          StartTimeFromDelay(animation_node.SpecifiedTiming().start_delay));
+          StartTimeFromDelay(animation_node.NormalizedTiming().start_delay));
     } else if ((current_phase == Timing::kPhaseActive ||
                 current_phase == Timing::kPhaseBefore) &&
                previous_phase_ == Timing::kPhaseAfter) {
       // If the transition is progressing backwards it is considered to have
       // started at the end position.
       EnqueueEvent(event_type_names::kTransitionstart,
-                   animation_node.SpecifiedTiming().IterationDuration());
+                   animation_node.NormalizedTiming().iteration_duration);
     }
   }
 
@@ -1650,7 +1650,7 @@ void CSSAnimations::TransitionEventDelegate::OnEventCondition(
          previous_phase_ == Timing::kPhaseBefore ||
          previous_phase_ == Timing::kPhaseNone)) {
       EnqueueEvent(event_type_names::kTransitionend,
-                   animation_node.SpecifiedTiming().IterationDuration());
+                   animation_node.NormalizedTiming().iteration_duration);
     } else if (current_phase == Timing::kPhaseBefore &&
                (previous_phase_ == Timing::kPhaseActive ||
                 previous_phase_ == Timing::kPhaseAfter)) {
@@ -1658,7 +1658,7 @@ void CSSAnimations::TransitionEventDelegate::OnEventCondition(
       // ended at the start position.
       EnqueueEvent(
           event_type_names::kTransitionend,
-          StartTimeFromDelay(animation_node.SpecifiedTiming().start_delay));
+          StartTimeFromDelay(animation_node.NormalizedTiming().start_delay));
     }
   }
 
@@ -1669,10 +1669,9 @@ void CSSAnimations::TransitionEventDelegate::OnEventCondition(
       // "active time of the animation at the moment it was cancelled,
       // calculated using a fill mode of both".
       absl::optional<AnimationTimeDelta> cancel_active_time =
-          CalculateActiveTime(animation_node.SpecifiedTiming().ActiveDuration(),
+          CalculateActiveTime(animation_node.NormalizedTiming(),
                               Timing::FillMode::BOTH,
-                              animation_node.LocalTime(), previous_phase_,
-                              animation_node.SpecifiedTiming());
+                              animation_node.LocalTime(), previous_phase_);
       // Being the FillMode::BOTH the only possibility to get a null
       // cancel_active_time is that previous_phase_ is kPhaseNone. This cannot
       // happen because we know that current_phase == kPhaseNone and

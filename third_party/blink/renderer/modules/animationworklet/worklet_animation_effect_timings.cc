@@ -7,12 +7,15 @@
 namespace blink {
 
 WorkletAnimationEffectTimings::WorkletAnimationEffectTimings(
-    scoped_refptr<base::RefCountedData<Vector<Timing>>> timings)
-    : timings_(timings) {}
+    scoped_refptr<base::RefCountedData<Vector<Timing>>> timings,
+    scoped_refptr<base::RefCountedData<Vector<Timing::NormalizedTiming>>>
+        normalized_timings)
+    : timings_(timings), normalized_timings_(normalized_timings) {}
 
 std::unique_ptr<cc::AnimationEffectTimings>
 WorkletAnimationEffectTimings::Clone() const {
-  return std::make_unique<WorkletAnimationEffectTimings>(timings_);
+  return std::make_unique<WorkletAnimationEffectTimings>(timings_,
+                                                         normalized_timings_);
 }
 
 WorkletAnimationEffectTimings::~WorkletAnimationEffectTimings() {}

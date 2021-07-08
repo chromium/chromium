@@ -20,13 +20,16 @@ Animator::Animator(v8::Isolate* isolate,
                    const String& name,
                    WorkletAnimationOptions options,
                    const Vector<absl::optional<base::TimeDelta>>& local_times,
-                   const Vector<Timing>& timings)
+                   const Vector<Timing>& timings,
+                   const Vector<Timing::NormalizedTiming>& normalized_timings)
     : definition_(definition),
       instance_(isolate, instance),
       name_(name),
       options_(options),
       group_effect_(
-          MakeGarbageCollected<WorkletGroupEffect>(local_times, timings)) {
+          MakeGarbageCollected<WorkletGroupEffect>(local_times,
+                                                   timings,
+                                                   normalized_timings)) {
   DCHECK_GE(local_times.size(), 1u);
 }
 
@@ -78,6 +81,16 @@ Vector<Timing> Animator::GetTimings() const {
     timings.push_back(effect->SpecifiedTiming());
   }
   return timings;
+}
+
+Vector<Timing::NormalizedTiming> Animator::GetNormalizedTimings() const {
+  Vector<Timing::NormalizedTiming> normalized_timings;
+  normalized_timings.ReserveInitialCapacity(
+      group_effect_->getChildren().size());
+  for (const auto& effect : group_effect_->getChildren()) {
+    normalized_timings.push_back(effect->NormalizedTiming());
+  }
+  return normalized_timings;
 }
 
 bool Animator::IsStateful() const {

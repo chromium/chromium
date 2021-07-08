@@ -56,7 +56,7 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
   model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
-                 SpecifiedTiming().IterationDuration(), result);
+                 NormalizedTiming().iteration_duration, result);
 }
 
 AnimationTimeDelta InertEffect::CalculateTimeToEffectChange(

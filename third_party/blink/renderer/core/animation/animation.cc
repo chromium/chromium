@@ -300,9 +300,6 @@ Animation::Animation(ExecutionContext* execution_context,
     document_ = timeline_->GetDocument();
     DCHECK(document_);
     timeline_->AnimationAttached(this);
-
-    if (content_)
-      content_->SetTimingTimelineDuration(timeline_->GetDuration());
   } else {
     document_ = To<LocalDOMWindow>(execution_context)->document();
     DCHECK(document_);
@@ -328,12 +325,7 @@ void Animation::Dispose() {
 }
 
 AnimationTimeDelta Animation::EffectEnd() const {
-  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
-    // For progress based timelines, timeline times are mapped to be relative to
-    // Effect times, which means effect end maps to timeline duration.
-    return timeline_->GetDuration().value();
-  }
-  return content_ ? content_->SpecifiedTiming().EndTimeInternal()
+  return content_ ? content_->NormalizedTiming().end_time
                   : AnimationTimeDelta();
 }
 
@@ -883,7 +875,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
 
   // Update content timing to be based on new timeline type
   if (content_ && timeline_)
-    content_->SetTimingTimelineDuration(timeline_->GetDuration());
+    content_->InvalidateNormalizedTiming();
 
   reset_current_time_on_resume_ = false;
 

@@ -109,20 +109,18 @@ static inline AnimationTimeDelta MultiplyZeroAlwaysGivesZero(
 
 // https://drafts.csswg.org/web-animations-1/#animation-effect-phases-and-states
 static inline Timing::Phase CalculatePhase(
-    AnimationTimeDelta active_duration,
+    const Timing::NormalizedTiming& normalized,
     absl::optional<AnimationTimeDelta> local_time,
     absl::optional<Timing::Phase> timeline_phase,
-    Timing::AnimationDirection direction,
-    const Timing& specified) {
-  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(active_duration,
+    Timing::AnimationDirection direction) {
+  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
                                                  AnimationTimeDelta()));
   if (!local_time)
     return Timing::kPhaseNone;
-  AnimationTimeDelta end_time =
-      std::max(specified.start_delay + active_duration + specified.end_delay,
-               AnimationTimeDelta());
+
   AnimationTimeDelta before_active_boundary_time =
-      std::max(std::min(specified.start_delay, end_time), AnimationTimeDelta());
+      std::max(std::min(normalized.start_delay, normalized.end_time),
+               AnimationTimeDelta());
   if (local_time.value() < before_active_boundary_time ||
       (local_time.value() == before_active_boundary_time && timeline_phase &&
        timeline_phase.value() == Timing::kPhaseBefore) ||
@@ -131,7 +129,8 @@ static inline Timing::Phase CalculatePhase(
     return Timing::kPhaseBefore;
   }
   AnimationTimeDelta active_after_boundary_time =
-      std::max(std::min(specified.start_delay + active_duration, end_time),
+      std::max(std::min(normalized.start_delay + normalized.active_duration,
+                        normalized.end_time),
                AnimationTimeDelta());
   if (local_time > active_after_boundary_time ||
       (local_time.value() == active_after_boundary_time && timeline_phase &&
@@ -145,33 +144,31 @@ static inline Timing::Phase CalculatePhase(
 
 // https://drafts.csswg.org/web-animations/#calculating-the-active-time
 static inline absl::optional<AnimationTimeDelta> CalculateActiveTime(
-    AnimationTimeDelta active_duration,
+    const Timing::NormalizedTiming& normalized,
     Timing::FillMode fill_mode,
     absl::optional<AnimationTimeDelta> local_time,
-    Timing::Phase phase,
-    const Timing& specified) {
-  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(active_duration,
+    Timing::Phase phase) {
+  DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
                                                  AnimationTimeDelta()));
-
   switch (phase) {
     case Timing::kPhaseBefore:
       if (fill_mode == Timing::FillMode::BACKWARDS ||
           fill_mode == Timing::FillMode::BOTH) {
         DCHECK(local_time.has_value());
-        return std::max(local_time.value() - specified.start_delay,
+        return std::max(local_time.value() - normalized.start_delay,
                         AnimationTimeDelta());
       }
       return absl::nullopt;
     case Timing::kPhaseActive:
       DCHECK(local_time.has_value());
-      return local_time.value() - specified.start_delay;
+      return local_time.value() - normalized.start_delay;
     case Timing::kPhaseAfter:
       if (fill_mode == Timing::FillMode::FORWARDS ||
           fill_mode == Timing::FillMode::BOTH) {
         DCHECK(local_time.has_value());
         return std::max(AnimationTimeDelta(),
-                        std::min(active_duration,
-                                 local_time.value() - specified.start_delay));
+                        std::min(normalized.active_duration,
+                                 local_time.value() - normalized.start_delay));
       }
       return absl::nullopt;
     case Timing::kPhaseNone:

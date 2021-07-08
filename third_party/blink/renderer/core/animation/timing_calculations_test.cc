@@ -36,66 +36,60 @@
 namespace blink {
 
 TEST(AnimationTimingCalculationsTest, ActiveTime) {
-  Timing timing;
+  Timing::NormalizedTiming normalized_timing;
 
   // calculateActiveTime(
   //     activeDuration, fillMode, localTime, parentPhase, phase, timing)
 
   // Before Phase
-  timing.start_delay = AnimationTimeDelta::FromSecondsD(10);
-  EXPECT_FALSE(CalculateActiveTime(
-      AnimationTimeDelta::FromSecondsD(20), Timing::FillMode::FORWARDS,
-      AnimationTimeDelta(), Timing::kPhaseBefore, timing));
-  EXPECT_FALSE(CalculateActiveTime(AnimationTimeDelta::FromSecondsD(20),
-                                   Timing::FillMode::NONE, AnimationTimeDelta(),
-                                   Timing::kPhaseBefore, timing));
-  EXPECT_EQ(
-      AnimationTimeDelta(),
-      CalculateActiveTime(AnimationTimeDelta::FromSecondsD(20),
-                          Timing::FillMode::BACKWARDS, AnimationTimeDelta(),
-                          Timing::kPhaseBefore, timing));
+  normalized_timing.start_delay = AnimationTimeDelta::FromSecondsD(10);
+  normalized_timing.active_duration = AnimationTimeDelta::FromSecondsD(20);
+  EXPECT_FALSE(CalculateActiveTime(normalized_timing,
+                                   Timing::FillMode::FORWARDS,
+                                   AnimationTimeDelta(), Timing::kPhaseBefore));
+  EXPECT_FALSE(CalculateActiveTime(normalized_timing, Timing::FillMode::NONE,
+                                   AnimationTimeDelta(), Timing::kPhaseBefore));
   EXPECT_EQ(AnimationTimeDelta(),
-            CalculateActiveTime(AnimationTimeDelta::FromSecondsD(20),
-                                Timing::FillMode::BOTH, AnimationTimeDelta(),
-                                Timing::kPhaseBefore, timing));
-  timing.start_delay = AnimationTimeDelta::FromSecondsD(-10);
+            CalculateActiveTime(normalized_timing, Timing::FillMode::BACKWARDS,
+                                AnimationTimeDelta(), Timing::kPhaseBefore));
+  EXPECT_EQ(AnimationTimeDelta(),
+            CalculateActiveTime(normalized_timing, Timing::FillMode::BOTH,
+                                AnimationTimeDelta(), Timing::kPhaseBefore));
+  normalized_timing.start_delay = AnimationTimeDelta::FromSecondsD(-10);
   EXPECT_EQ(AnimationTimeDelta::FromSecondsD(5),
-            CalculateActiveTime(AnimationTimeDelta::FromSecondsD(20),
-                                Timing::FillMode::BACKWARDS,
+            CalculateActiveTime(normalized_timing, Timing::FillMode::BACKWARDS,
                                 AnimationTimeDelta::FromSecondsD(-5),
-                                Timing::kPhaseBefore, timing));
+                                Timing::kPhaseBefore));
 
   // Active Phase
-  timing.start_delay = AnimationTimeDelta::FromSecondsD(10);
+  normalized_timing.start_delay = AnimationTimeDelta::FromSecondsD(10);
   EXPECT_EQ(AnimationTimeDelta::FromSecondsD(5),
-            CalculateActiveTime(AnimationTimeDelta::FromSecondsD(20),
-                                Timing::FillMode::FORWARDS,
+            CalculateActiveTime(normalized_timing, Timing::FillMode::FORWARDS,
                                 AnimationTimeDelta::FromSecondsD(15),
-                                Timing::kPhaseActive, timing));
+                                Timing::kPhaseActive));
 
   // After Phase
-  timing.start_delay = AnimationTimeDelta::FromSecondsD(10);
+  normalized_timing.start_delay = AnimationTimeDelta::FromSecondsD(10);
+  normalized_timing.active_duration = AnimationTimeDelta::FromSecondsD(21);
   EXPECT_EQ(AnimationTimeDelta::FromSecondsD(21),
-            CalculateActiveTime(AnimationTimeDelta::FromSecondsD(21),
-                                Timing::FillMode::FORWARDS,
+            CalculateActiveTime(normalized_timing, Timing::FillMode::FORWARDS,
                                 AnimationTimeDelta::FromSecondsD(45),
-                                Timing::kPhaseAfter, timing));
+                                Timing::kPhaseAfter));
   EXPECT_EQ(AnimationTimeDelta::FromSecondsD(21),
-            CalculateActiveTime(AnimationTimeDelta::FromSecondsD(21),
-                                Timing::FillMode::BOTH,
+            CalculateActiveTime(normalized_timing, Timing::FillMode::BOTH,
                                 AnimationTimeDelta::FromSecondsD(45),
-                                Timing::kPhaseAfter, timing));
+                                Timing::kPhaseAfter));
   EXPECT_FALSE(CalculateActiveTime(
-      AnimationTimeDelta::FromSecondsD(21), Timing::FillMode::BACKWARDS,
-      AnimationTimeDelta::FromSecondsD(45), Timing::kPhaseAfter, timing));
-  EXPECT_FALSE(CalculateActiveTime(
-      AnimationTimeDelta::FromSecondsD(21), Timing::FillMode::NONE,
-      AnimationTimeDelta::FromSecondsD(45), Timing::kPhaseAfter, timing));
+      normalized_timing, Timing::FillMode::BACKWARDS,
+      AnimationTimeDelta::FromSecondsD(45), Timing::kPhaseAfter));
+  EXPECT_FALSE(CalculateActiveTime(normalized_timing, Timing::FillMode::NONE,
+                                   AnimationTimeDelta::FromSecondsD(45),
+                                   Timing::kPhaseAfter));
 
   // None
-  EXPECT_FALSE(CalculateActiveTime(AnimationTimeDelta::FromSecondsD(32),
-                                   Timing::FillMode::NONE, absl::nullopt,
-                                   Timing::kPhaseNone, timing));
+  normalized_timing.active_duration = AnimationTimeDelta::FromSecondsD(32);
+  EXPECT_FALSE(CalculateActiveTime(normalized_timing, Timing::FillMode::NONE,
+                                   absl::nullopt, Timing::kPhaseNone));
 }
 
 TEST(AnimationTimingCalculationsTest, OffsetActiveTime) {

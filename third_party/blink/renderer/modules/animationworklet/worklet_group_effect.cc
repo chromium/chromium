@@ -8,14 +8,16 @@ namespace blink {
 
 WorkletGroupEffect::WorkletGroupEffect(
     const Vector<absl::optional<base::TimeDelta>>& local_times,
-    const Vector<Timing>& timings) {
+    const Vector<Timing>& timings,
+    const Vector<Timing::NormalizedTiming>& normalized_timings) {
   DCHECK_GE(local_times.size(), 1u);
   DCHECK_EQ(local_times.size(), timings.size());
+  DCHECK_EQ(local_times.size(), normalized_timings.size());
 
   effects_.ReserveInitialCapacity(timings.size());
   for (int i = 0; i < static_cast<int>(local_times.size()); i++) {
     effects_.push_back(MakeGarbageCollected<WorkletAnimationEffect>(
-        local_times[i], timings[i]));
+        local_times[i], timings[i], normalized_timings[i]));
   }
 }
 

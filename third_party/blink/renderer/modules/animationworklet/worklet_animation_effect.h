@@ -20,15 +20,20 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
 
  public:
   WorkletAnimationEffect(absl::optional<base::TimeDelta> local_time,
-                         const Timing& timing);
+                         const Timing& timing,
+                         const Timing::NormalizedTiming& normalized_timing);
 
   // Because getTiming needs to be used below, SpecifiedTiming will be used to
   // return the specified Timing object given at initialization
   const Timing& SpecifiedTiming() { return specified_timing_; }
+  const Timing::NormalizedTiming& NormalizedTiming() {
+    return normalized_timing_;
+  }
 
   // This function is named getTiming() as opposed to getEffectTiming() because
   // that is how it is defined in worklet_animation_effect.idl
   EffectTiming* getTiming() const;
+
   ComputedEffectTiming* getComputedTiming() const;
 
   absl::optional<double> localTime() const;
@@ -43,6 +48,7 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
   // above function call getTiming() which returns a pointer to an EffectTiming
   // object, as is defined in worklet_animation_effect.idl.
   const Timing specified_timing_;
+  const Timing::NormalizedTiming normalized_timing_;
   mutable Timing::CalculatedTiming calculated_;
   // last_update_time_ has type base::TimeDelta to match the type of local_time_
   // since it is a cached value of local_time_
