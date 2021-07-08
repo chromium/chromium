@@ -344,8 +344,14 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(1, 2), ::testing::Bool()),
     AccessibilityHitTestingBrowserTest::TestPassToString());
 
+#if defined(THREAD_SANITIZER)
+// TODO(https://crbug.com/1224979): Times out flakily on TSAN builds.
+#define MAYBE_CachingAsyncHitTest DISABLED_CachingAsyncHitTest
+#else
+#define MAYBE_CachingAsyncHitTest CachingAsyncHitTest
+#endif
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
-                       CachingAsyncHitTest) {
+                       MAYBE_CachingAsyncHitTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
@@ -380,7 +386,13 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, HitTest) {
+#if defined(THREAD_SANITIZER)
+// TODO(https://crbug.com/1224938): Times out flakily on TSAN builds.
+#define MAYBE_HitTest DISABLED_HitTest
+#else
+#define MAYBE_HitTest HitTest
+#endif
+IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
@@ -635,8 +647,14 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 
+#if defined(THREAD_SANITIZER)
+// TODO(https://crbug.com/1224978): Times out flakily on TSAN builds.
+#define MAYBE_HitTest_WithPinchZoom DISABLED_HitTest_WithPinchZoom
+#else
+#define MAYBE_HitTest_WithPinchZoom HitTest_WithPinchZoom
+#endif
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
-                       HitTest_WithPinchZoom) {
+                       MAYBE_HitTest_WithPinchZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
