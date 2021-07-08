@@ -41,6 +41,7 @@ class DesksClient {
 
  private:
   friend class DesksClientTest;
+  friend class ScopedDeskClientAppLaunchHandlerSetter;
 
   // Callback function that is ran after a desk is created, or has failed to be
   // created.

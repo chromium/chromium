@@ -17,6 +17,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ui/ash/desk_template_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -33,10 +35,13 @@
 #include "components/full_restore/restore_data.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
+
+using ::testing::_;
 
 namespace {
 
@@ -62,9 +67,65 @@ std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
   return urls;
 }
 
+class MockDeskTemplateAppLaunchHandler : public DeskTemplateAppLaunchHandler {
+ public:
+  explicit MockDeskTemplateAppLaunchHandler(Profile* profile)
+      : DeskTemplateAppLaunchHandler(profile) {}
+  MockDeskTemplateAppLaunchHandler(const MockDeskTemplateAppLaunchHandler&) =
+      delete;
+  MockDeskTemplateAppLaunchHandler& operator=(
+      const MockDeskTemplateAppLaunchHandler&) = delete;
+  ~MockDeskTemplateAppLaunchHandler() override = default;
+
+  MOCK_METHOD(void,
+              LaunchSystemWebAppOrChromeApp,
+              (apps::mojom::AppType,
+               const std::string&,
+               const ::full_restore::RestoreData::LaunchList&),
+              (override));
+};
+
 }  // namespace
 
-class DesksClientTest : public InProcessBrowserTest {
+// Scoped class that temporarily sets a new app launch handler for testing
+// purposes.
+class ScopedDeskClientAppLaunchHandlerSetter {
+ public:
+  explicit ScopedDeskClientAppLaunchHandlerSetter(
+      std::unique_ptr<DeskTemplateAppLaunchHandler> launch_handler) {
+    DCHECK_EQ(0, instance_count_);
+    ++instance_count_;
+
+    DesksClient* desks_client = DesksClient::Get();
+    DCHECK(desks_client);
+    old_app_launch_handler_ = std::move(desks_client->app_launch_handler_);
+    desks_client->app_launch_handler_ = std::move(launch_handler);
+  }
+  ScopedDeskClientAppLaunchHandlerSetter(
+      const ScopedDeskClientAppLaunchHandlerSetter&) = delete;
+  ScopedDeskClientAppLaunchHandlerSetter& operator=(
+      const ScopedDeskClientAppLaunchHandlerSetter&) = delete;
+  ~ScopedDeskClientAppLaunchHandlerSetter() {
+    DCHECK_EQ(1, instance_count_);
+    --instance_count_;
+
+    DesksClient* desks_client = DesksClient::Get();
+    DCHECK(desks_client);
+    desks_client->app_launch_handler_ = std::move(old_app_launch_handler_);
+  }
+
+ private:
+  // Variable to ensure we never have more than one instance of this object.
+  static int instance_count_;
+
+  // The old app launch handler prior to the object being created. May be
+  // nullptr.
+  std::unique_ptr<DeskTemplateAppLaunchHandler> old_app_launch_handler_;
+};
+
+int ScopedDeskClientAppLaunchHandlerSetter::instance_count_ = 0;
+
+class DesksClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksClientTest() {
     // This feature depends on full restore feature, so need to enable it.
@@ -75,7 +136,7 @@ class DesksClientTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     ::full_restore::SetActiveProfilePath(browser()->profile()->GetPath());
-    InProcessBrowserTest::SetUpOnMainThread();
+    extensions::PlatformAppBrowserTest::SetUpOnMainThread();
   }
 
   void SetLaunchTemplate(std::unique_ptr<ash::DeskTemplate> launch_template) {
@@ -380,4 +441,63 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   EXPECT_EQ(ash::Shell::GetContainer(settings_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
             settings_window->parent());
+}
+
+// Tests that launching a template that contains a chrome app works as expected.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithChromeApp) {
+  DesksClient* desks_client = DesksClient::Get();
+  ASSERT_TRUE(desks_client);
+
+  // Create a chrome app.
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("launch", "Launched");
+  ASSERT_TRUE(extension);
+
+  const std::string extension_id = extension->id();
+  ::full_restore::SaveAppLaunchInfo(
+      browser()->profile()->GetPath(),
+      std::make_unique<::full_restore::AppLaunchInfo>(
+          extension_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
+          std::vector<base::FilePath>{}, nullptr));
+
+  extensions::AppWindow* app_window =
+      CreateAppWindow(browser()->profile(), extension);
+  ASSERT_TRUE(app_window);
+  ASSERT_TRUE(GetFirstAppWindowForApp(extension_id));
+
+  // Capture the active desk, which contains the chrome app.
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      DesksClient::Get()->CaptureActiveDeskAsTemplate();
+  ASSERT_TRUE(desk_template);
+
+  // Close the chrome app window. We'll need to verify if it reopens later.
+  views::Widget* app_widget =
+      views::Widget::GetWidgetForNativeWindow(app_window->GetNativeWindow());
+  app_widget->CloseNow();
+  ASSERT_FALSE(GetFirstAppWindowForApp(extension_id));
+
+  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
+  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+
+  // `BrowserAppLauncher::LaunchAppWithParams()` does not launch the chrome app
+  // in tests, so here we set up a mock app launch handler and just verify a
+  // `LaunchSystemWebAppOrChromeApp()` call with the associated extension is
+  // seen.
+  auto mock_app_launch_handler =
+      std::make_unique<MockDeskTemplateAppLaunchHandler>(browser()->profile());
+  MockDeskTemplateAppLaunchHandler* mock_app_launch_handler_ptr =
+      mock_app_launch_handler.get();
+  ScopedDeskClientAppLaunchHandlerSetter scoped_launch_handler(
+      std::move(mock_app_launch_handler));
+
+  EXPECT_CALL(*mock_app_launch_handler_ptr,
+              LaunchSystemWebAppOrChromeApp(_, extension_id, _));
+
+  // Set the template we created as the template we want to launch.
+  ash::DeskTemplate* desk_template_ptr = desk_template.get();
+  SetLaunchTemplate(std::move(desk_template));
+  ash::DeskSwitchAnimationWaiter waiter;
+  DesksClient::Get()->LaunchDeskTemplate(desk_template_ptr->uuid());
+  waiter.Wait();
 }
