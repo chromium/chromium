@@ -1267,23 +1267,26 @@ const CallSetupStateTracker& RTCPeerConnection::call_setup_state_tracker()
 void RTCPeerConnection::NoteCallSetupStateEventPending(
     RTCPeerConnection::SetSdpOperationType operation,
     const RTCSessionDescriptionInit& description) {
+  if (!description.hasType())
+    return;
+
   switch (operation) {
     case RTCPeerConnection::SetSdpOperationType::kSetLocalDescription:
-      if (description.type() == "offer") {
+      if (description.type() == V8RTCSdpType::Enum::kOffer) {
         call_setup_state_tracker_.NoteOffererStateEvent(
             OffererState::kSetLocalOfferPending, HasDocumentMedia());
-      } else if (description.type() == "answer" ||
-                 description.type() == "pranswer") {
+      } else if (description.type() == V8RTCSdpType::Enum::kAnswer ||
+                 description.type() == V8RTCSdpType::Enum::kPranswer) {
         call_setup_state_tracker_.NoteAnswererStateEvent(
             AnswererState::kSetLocalAnswerPending, HasDocumentMedia());
       }
       break;
     case RTCPeerConnection::SetSdpOperationType::kSetRemoteDescription:
-      if (description.type() == "offer") {
+      if (description.type() == V8RTCSdpType::Enum::kOffer) {
         call_setup_state_tracker_.NoteAnswererStateEvent(
             AnswererState::kSetRemoteOfferPending, HasDocumentMedia());
-      } else if (description.type() == "answer" ||
-                 description.type() == "pranswer") {
+      } else if (description.type() == V8RTCSdpType::Enum::kAnswer ||
+                 description.type() == V8RTCSdpType::Enum::kPranswer) {
         call_setup_state_tracker_.NoteOffererStateEvent(
             OffererState::kSetRemoteAnswerPending, HasDocumentMedia());
       }
